@@ -27,6 +27,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
@@ -56,10 +57,26 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
     }
 
     @Test
+    void shouldNotTriggerPopulateDatesEventWhenCaseIsNotInGatekeepingState() {
+        CallbackRequest callbackRequest = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(12345L)
+                .jurisdiction(JURISDICTION)
+                .caseTypeId(CASE_TYPE)
+                .state("Submitted")
+                .build())
+            .build();
+
+        postSubmittedEvent(callbackRequest);
+
+        checkThat(() -> verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), any(), any()));
+    }
+
+    @Test
     void shouldNotTriggerPopulateDatesEventWhenThereAreNoEmptyDates() {
         postSubmittedEvent(callbackRequestWithNoEmptyDates());
 
-        verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), any(), any());
+        checkThat(() -> verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), any(), any()));
     }
 
     private CallbackRequest callbackRequestWithEmptyDates() {
@@ -68,8 +85,8 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
                 .id(12345L)
                 .jurisdiction(JURISDICTION)
                 .caseTypeId(CASE_TYPE)
-                .data(Map.of(
-                    "hearingDetails", wrapElements(Map.of("startDate", "2050-05-20T13:00")),
+                .state("Gatekeeping")
+                .data(Map.of("hearingDetails", wrapElements(Map.of("startDate", "2050-05-20T13:00")),
                     ALL_PARTIES.getValue(),
                     wrapElements(
                         buildDirection("allParties1"),
@@ -106,6 +123,7 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
                 .id(12345L)
                 .jurisdiction(JURISDICTION)
                 .caseTypeId(CASE_TYPE)
+                .state("Submitted")
                 .data(Map.of(
                     "hearingDetails", wrapElements(Map.of("startDate", "2050-05-20T13:00")),
                     ALL_PARTIES.getValue(),
@@ -143,8 +161,7 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
         hearingDetails.put("id", null);
         hearingDetails.put("value", Map.of("startDate", "2050-05-20T13:00"));
 
-        return Map.of(
-            "hearingDetails", List.of(hearingDetails),
+        return Map.of("hearingDetails", List.of(hearingDetails),
             ALL_PARTIES.getValue(),
             wrapElements(
                 buildDirection("allParties1", LocalDateTime.of(2050, 5, 17, 12, 0, 0)),
