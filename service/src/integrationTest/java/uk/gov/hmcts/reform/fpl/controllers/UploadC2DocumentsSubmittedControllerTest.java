@@ -175,20 +175,6 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldNotMakePaymentWhenFeatureToggleIsFalse() {
-        given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(false);
-        Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
-            .putAll(buildCommonNotificationParameters())
-            .putAll(buildC2DocumentBundle(YES))
-            .put("displayAmountToPay", YES.getValue())
-            .build();
-
-        postSubmittedEvent(createCase(caseData));
-
-        verify(paymentService, never()).makePaymentForC2(any(), any());
-    }
-
-    @Test
     void shouldNotMakePaymentWhenAmountToPayWasNotDisplayed() {
         given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()

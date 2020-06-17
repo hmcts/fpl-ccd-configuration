@@ -25,8 +25,6 @@ import static uk.gov.hmcts.reform.fpl.model.email.EmailAttachment.json;
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-@ConditionalOnProperty(prefix = "feature.toggle", name = "robotics.case-number.notification.enabled",
-    havingValue = "true")
 public class RoboticsNotificationService {
     private final EmailService emailService;
     private final RoboticsDataService roboticsDataService;

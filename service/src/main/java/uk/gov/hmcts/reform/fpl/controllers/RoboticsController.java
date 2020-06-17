@@ -23,7 +23,6 @@ import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 @Api
 @RestController
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-@ConditionalOnProperty(prefix = "feature.toggle", name = "robotics.support.api.enabled", havingValue = "true")
 public class RoboticsController {
     private static final List<String> EXCLUDED_STATES = of(OPEN.getValue(), DELETED.getValue());
 
