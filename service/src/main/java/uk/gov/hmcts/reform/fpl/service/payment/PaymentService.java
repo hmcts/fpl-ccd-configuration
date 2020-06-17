@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 import java.math.BigDecimal;
 
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Currency.GBP;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Service.FPL;
@@ -58,8 +59,8 @@ public class PaymentService {
             ApplicantParty applicantParty = getFirstApplicantParty(caseData);
             CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseId,
                 applicantParty.getPbaNumber(),
-                defaultParameterValueIfBlank(applicantParty.getClientCode()),
-                defaultParameterValueIfBlank(applicantParty.getCustomerReference()),
+                defaultIfBlank(applicantParty.getClientCode(),BLANK_PARAMETER_VALUE),
+                defaultIfBlank(applicantParty.getCustomerReference(),BLANK_PARAMETER_VALUE),
                 localAuthorityName,
                 feesData);
 
@@ -79,8 +80,8 @@ public class PaymentService {
 
         CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseId,
             c2DocumentBundle.getPbaNumber(),
-            defaultParameterValueIfBlank(c2DocumentBundle.getClientCode()),
-            defaultParameterValueIfBlank(c2DocumentBundle.getFileReference()),
+            defaultIfBlank(c2DocumentBundle.getClientCode(),BLANK_PARAMETER_VALUE),
+            defaultIfBlank(c2DocumentBundle.getFileReference(), BLANK_PARAMETER_VALUE),
             localAuthorityName,
             feesData);
 
