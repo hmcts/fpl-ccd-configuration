@@ -14,6 +14,7 @@
     "RetriesTimeoutURLSubmittedEvent": "1,2,3,4,5",
     "ShowSummary": "N",
     "ShowEventNotes": "N",
+    "CanSaveDraft": "Y",
     "EndButtonLabel": "Save and continue"
   },
   {
