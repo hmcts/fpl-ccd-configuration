@@ -9,18 +9,17 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "caseStateInfo",
+    "CaseFieldID": "caseStateAdmin",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "xxx",
+    "CaseFieldID": "caseStateAdminLabel",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "R"
   },
-
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",

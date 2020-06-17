@@ -2,21 +2,21 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "caseStateInfo",
+    "CaseFieldID": "caseStateLA",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "caseStateInfo",
+    "CaseFieldID": "caseStateLA",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "xxx",
+    "CaseFieldID": "caseStateLALabel",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "R"
   },

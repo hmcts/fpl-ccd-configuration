@@ -4,7 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.AllEvents;
+import uk.gov.hmcts.reform.fpl.FplEvent;
+import uk.gov.hmcts.reform.fpl.controllers.guards.EventGuardProvider;
+import uk.gov.hmcts.reform.fpl.enums.Roles;
 import uk.gov.hmcts.reform.fpl.enums.Section;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseValidatorService;
 
@@ -23,12 +28,18 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 public class CaseStateService {
 
     @Autowired
+    AllEvents eventsService;
+
+    @Autowired
     CaseValidatorService validationService;
 
     @Autowired
     ObjectMapper objectMapper;
 
-    public String getStatus(CaseDetails caseDetails) {
+    @Autowired
+    EventGuardProvider eventGuardProvider;
+
+    public String getStatusForLA(CaseDetails caseDetails) {
 
         List<String> messages = new ArrayList<>();
 
@@ -36,8 +47,11 @@ public class CaseStateService {
 
         messages.add(getCaseProgressMessage(state));
 
+        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        Long caseId = caseDetails.getId();
+
         if (caseDetails.getState().equals("Open")) {
-            CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
 
             Set<Section> sectionWithErrors = validationService.validateCaseDetails2(caseData);
             List<String> validationErrors = validationService.validateCaseDetails3(caseData);
@@ -61,6 +75,38 @@ public class CaseStateService {
                 messages.add("## Errors in application\r\n\r\n " + String.join("\r\n\r\n", validationErrors));
             }
         }
+
+        return String.join("\r\n\r\n", messages);
+    }
+
+    public String getStatusForAdmin(CaseDetails caseDetails) {
+
+        List<String> messages = new ArrayList<>();
+
+        String state = caseDetails.getState();
+
+        messages.add(getCaseProgressMessage(state));
+
+        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        Long caseId = caseDetails.getId();
+
+        List<FplEvent> mandatoryEvents = eventsService.getMandatoryEvents(State.SUBMITTED, Roles.ADMIN);
+        List<FplEvent> optionalEvents = eventsService.getOptionalEvents(State.SUBMITTED, Roles.ADMIN);
+
+        if (!mandatoryEvents.isEmpty()) {
+            messages.add("## To progress the case\r\n\r\n<div class='width-50'>");
+            mandatoryEvents.forEach(event -> messages.add(buildLink(caseId, event, caseData, caseDetails)));
+            messages.add("</div>\r\n\r\n");
+        }
+
+        if (!optionalEvents.isEmpty()) {
+            messages.add("## Other things you can do now\r\n\r\n<div class='width-50'>");
+            optionalEvents.forEach(event -> messages.add(buildLink(caseId, event, caseData, caseDetails)));
+            messages.add("</div>\r\n\r\n");
+        }
+
+
         return String.join("\r\n\r\n", messages);
     }
 
@@ -69,6 +115,19 @@ public class CaseStateService {
             return String.format("[%s](/case/%s/%s/%s/trigger/%s)<img align='right' src='%s'>\r\n___", label, JURISDICTION, CASE_TYPE, caseId, event, getImageUrl("completed.png"));
         } else {
             return String.format("[%s](/case/%s/%s/%s/trigger/%s)\r\n___", label, JURISDICTION, CASE_TYPE, caseId, event);
+        }
+    }
+
+    private String buildLink(Long caseId, FplEvent event, CaseData caseData, CaseDetails caseDetails) {
+        if (event.getCompletedPredicate().test(caseData)) {
+            return String.format("[%s](/case/%s/%s/%s/trigger/%s)<img align='right' src='%s'>\r\n___", event.getName(), JURISDICTION, CASE_TYPE, caseId, event.getId(), getImageUrl("completed.png"));
+        } else {
+            List<String> errors = eventGuardProvider.getEventGuard(event).validate(caseDetails);
+            if (errors.isEmpty()) {
+                return String.format("[%s](/case/%s/%s/%s/trigger/%s)\r\n___", event.getName(), JURISDICTION, CASE_TYPE, caseId, event.getId());
+            } else {
+                return String.format("%s<img align='right' src='%s' title='%s'>\r\n___", event.getName(), getImageUrl("unavailable.png"), String.join("\n", errors));
+            }
         }
     }
 

@@ -15,7 +15,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.GatewayConfiguration;
+import uk.gov.hmcts.reform.fpl.controllers.guards.EventGuardProvider;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
+import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -39,7 +41,6 @@ import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -47,6 +48,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static uk.gov.hmcts.reform.fpl.FplEvent.CREATE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
@@ -67,7 +69,6 @@ public class GeneratedOrderController {
 
     private final ObjectMapper mapper;
     private final GeneratedOrderService service;
-    private final ValidateGroupService validateGroupService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
     private final ApplicationEventPublisher applicationEventPublisher;
@@ -77,6 +78,7 @@ public class GeneratedOrderController {
     private final DocumentDownloadService documentDownloadService;
     private final FeatureToggleService featureToggleService;
     private final Time time;
+    private final EventGuardProvider eventGuardProvider;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -84,7 +86,7 @@ public class GeneratedOrderController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        List<String> errors = validateGroupService.validateGroup(caseData, ValidateFamilyManCaseNumberGroup.class);
+        List<String> errors =  eventGuardProvider.getEventGuard(CREATE_ORDER).validate(caseDetails);
 
         if (errors.isEmpty()) {
             data.put("pageShow", caseData.getAllChildren().size() <= 1 ? "No" : "Yes");
@@ -271,6 +273,8 @@ public class GeneratedOrderController {
             concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(
                 mostRecentUploadedDocument.getBinaryUrl()),
             documentDownloadService.downloadDocument(mostRecentUploadedDocument.getBinaryUrl())));
+
+        applicationEventPublisher.publishEvent(new CaseDataChanged(callbackRequest));
     }
 
     private JudgeAndLegalAdvisor setAllocatedJudgeLabel(Judge allocatedJudge) {

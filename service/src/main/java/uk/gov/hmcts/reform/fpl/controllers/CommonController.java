@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,18 +11,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
-import uk.gov.hmcts.reform.fpl.events.NotifyAllocatedJudgeEvent;
 
 @Api
 @RestController
-@RequestMapping("/callback/allocated-judge")
+@RequestMapping("/callback/update-case-info")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class AllocatedJudgeController {
+public class CommonController {
+
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @PostMapping("/submitted")
-    public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        applicationEventPublisher.publishEvent(new NotifyAllocatedJudgeEvent(callbackRequest));
+    public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
         applicationEventPublisher.publishEvent(new CaseDataChanged(callbackRequest));
     }
 }
