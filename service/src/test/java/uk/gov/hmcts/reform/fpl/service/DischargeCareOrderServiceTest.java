@@ -6,22 +6,24 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
-import java.util.Arrays;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildParty;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testEmail;
 
-@SuppressWarnings("unchecked")
 @ExtendWith(SpringExtension.class)
 class DischargeCareOrderServiceTest {
 
@@ -112,10 +114,10 @@ class DischargeCareOrderServiceTest {
 
         @Test
         void shouldReturnCareOrderChildren() {
-            Element<Child> child1 = testChild();
-            Element<Child> child2 = testChild();
-            Element<Child> child3 = testChild();
-            Element<Child> child4 = testChild();
+            Child child1 = child(testChildParty());
+            Child child2 = child(testChildParty());
+            Child child3 = child(testChildParty());
+            Child child4 = child(testChildParty());
 
             GeneratedOrder order1 = order("Interim care order", "1 May 2019", child1);
             GeneratedOrder order2 = order("Final supervision order", "3 May 2019", child2);
@@ -125,17 +127,17 @@ class DischargeCareOrderServiceTest {
 
             CaseData caseData = caseWithOrders(List.of(order1, order2, order3), selected);
 
-            List<Element<Child>> actualChildren = dischargeCareOrderService.getChildrenInSelectedCareOrders(caseData);
+            List<Child> actualChildren = dischargeCareOrderService.getChildrenInSelectedCareOrders(caseData);
 
             assertThat(actualChildren).containsExactly(child1);
         }
 
         @Test
         void shouldReturnAllSelectedCareOrdersChildren() {
-            Element<Child> child1 = testChild();
-            Element<Child> child2 = testChild();
-            Element<Child> child3 = testChild();
-            Element<Child> child4 = testChild();
+            Child child1 = child(testChildParty());
+            Child child2 = child(testChildParty());
+            Child child3 = child(testChildParty());
+            Child child4 = child(testChildParty());
 
             GeneratedOrder order1 = order("Interim care order", "1 May 2019", child1);
             GeneratedOrder order2 = order("Final supervision order", "3 May 2019", child2);
@@ -145,9 +147,40 @@ class DischargeCareOrderServiceTest {
 
             CaseData caseData = caseWithOrders(List.of(order1, order2, order3), selected);
 
-            List<Element<Child>> actualChildren = dischargeCareOrderService.getChildrenInSelectedCareOrders(caseData);
+            List<Child> actualChildren = dischargeCareOrderService.getChildrenInSelectedCareOrders(caseData);
 
             assertThat(actualChildren).containsExactly(child1, child3, child4);
+        }
+
+        @Test
+        void shouldReturnChildrenWithUniqueNameAndDob() {
+            ChildParty.ChildPartyBuilder party = ChildParty.builder()
+                .firstName("Alex")
+                .lastName("Smith")
+                .dateOfBirth(LocalDate.now().minusYears(10));
+
+            Child child1 = child(party.build());
+            Child child2 = child(party.firstName("Alexander").build());
+            Child child3 = child(party.lastName("Smithy").build());
+            Child child4 = child(party.dateOfBirth(LocalDate.now().minusYears(8)).build());
+
+            Child child5 = child(party.fathersName("Green").build());
+            Child child6 = child(party.email(testEmail()).build());
+
+            GeneratedOrder order1 = order("Interim care order", "1 May 2019", child1);
+            GeneratedOrder order2 = order("Interim care order", "2 May 2019", child2);
+            GeneratedOrder order3 = order("Interim care order", "3 May 2019", child3);
+            GeneratedOrder order4 = order("Interim care order", "4 May 2019", child4);
+            GeneratedOrder order5 = order("Interim care order", "5 May 2019", child5);
+            GeneratedOrder order6 = order("Interim care order", "6 May 2019", child6);
+
+            List<Integer> selected = List.of(0, 1, 2, 3, 4, 5);
+
+            CaseData caseData = caseWithOrders(List.of(order1, order2, order3, order4, order5, order6), selected);
+
+            List<Child> actualChildren = dischargeCareOrderService.getChildrenInSelectedCareOrders(caseData);
+
+            assertThat(actualChildren).containsExactly(child1, child2, child3, child4);
         }
 
         @Test
@@ -156,9 +189,9 @@ class DischargeCareOrderServiceTest {
 
             CaseData caseData = caseWithOrders(List.of(order), null);
 
-            List<Element<Child>> actualChildren = dischargeCareOrderService.getChildrenInSelectedCareOrders(caseData);
+            List<Child> actualChildren = dischargeCareOrderService.getChildrenInSelectedCareOrders(caseData);
 
-            assertThat(actualChildren).isEqualTo(caseData.getAllChildren());
+            assertThat(actualChildren).isEqualTo(unwrapElements(caseData.getAllChildren()));
         }
     }
 
@@ -167,7 +200,7 @@ class DischargeCareOrderServiceTest {
 
         @Test
         void shouldReturnLabelForSingleCareOrder() {
-            Element<Child> child = child("John", "Smith");
+            Child child = child("John", "Smith");
 
             GeneratedOrder order = order("Interim care order", "1 May 2019", child);
 
@@ -178,10 +211,10 @@ class DischargeCareOrderServiceTest {
 
         @Test
         void shouldReturnLabelForMultipleCareOrders() {
-            Element<Child> child1 = child("John", "Smith");
-            Element<Child> child2 = child("Alex", "Green");
-            Element<Child> child3 = child("Emma", "Johnson");
-            Element<Child> child4 = child("James", "Black");
+            Child child1 = child("John", "Smith");
+            Child child2 = child("Alex", "Green");
+            Child child3 = child("Emma", "Johnson");
+            Child child4 = child("James", "Black");
 
             GeneratedOrder order1 = order("Interim care order", "1 May 2019", child1);
             GeneratedOrder order2 = order("Final care order", "2 May 2019", child2, child3, child4);
@@ -193,16 +226,20 @@ class DischargeCareOrderServiceTest {
         }
     }
 
-    private static GeneratedOrder order(String type, String issueDate, Element<Child>... children) {
+    private static GeneratedOrder order(String type, String issueDate, Child... children) {
         return GeneratedOrder.builder()
             .type(type)
             .dateOfIssue(issueDate)
-            .children(Arrays.asList(children))
+            .children(wrapElements(children))
             .build();
     }
 
-    private static Element<Child> child(String firstName, String lastName) {
-        return testChild(firstName, lastName, null, null);
+    private static Child child(String firstName, String lastName) {
+        return child(testChildParty(firstName, lastName, null, null));
+    }
+
+    private static Child child(ChildParty childParty) {
+        return Child.builder().party(childParty).build();
     }
 
     private static CaseData caseWithOrders(List<GeneratedOrder> orders) {

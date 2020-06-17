@@ -16,9 +16,9 @@ import uk.gov.hmcts.reform.fpl.service.DischargeCareOrderService;
 import java.util.List;
 
 import static java.lang.String.format;
-import static java.lang.System.lineSeparator;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
 
 @Service
@@ -41,7 +41,7 @@ public class DischargeCareOrderGenerationService extends GeneratedOrderTemplateD
 
     @Override
     List<Element<Child>> getSelectedChildren(CaseData caseData) {
-        return dischargeCareOrder.getChildrenInSelectedCareOrders(caseData);
+        return wrapElements(dischargeCareOrder.getChildrenInSelectedCareOrders(caseData));
     }
 
     private String formatOrderDetails(CaseData caseData) {
@@ -59,7 +59,7 @@ public class DischargeCareOrderGenerationService extends GeneratedOrderTemplateD
                 .map(order -> format("The care order made by the %s on %s",
                     defaultIfNull(order.getCourtName(), defaultCourtName),
                     order.getDateOfIssue()))
-                .collect(joining(lineSeparator()));
+                .collect(joining("\n"));
 
             return format("The court discharges:%n%s", formatted);
         }

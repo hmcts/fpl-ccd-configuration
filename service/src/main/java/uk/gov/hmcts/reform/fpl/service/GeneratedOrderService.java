@@ -48,6 +48,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @Slf4j
 @Service
@@ -118,7 +119,7 @@ public class GeneratedOrderService {
 
     private List<Element<Child>> getChildren(GeneratedOrderType orderType, CaseData caseData) {
         if (orderType == DISCHARGE_OF_CARE_ORDER) {
-            return dischargeCareOrder.getChildrenInSelectedCareOrders(caseData);
+            return wrapElements(dischargeCareOrder.getChildrenInSelectedCareOrders(caseData));
         } else {
             return childrenService.getSelectedChildren(caseData);
         }

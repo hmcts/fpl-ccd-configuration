@@ -12,7 +12,12 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.utils.OrderHelper;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
@@ -46,10 +51,11 @@ public class DischargeCareOrderService {
         }
     }
 
-    public List<Element<Child>> getChildrenInSelectedCareOrders(CaseData caseData) {
+    public List<Child> getChildrenInSelectedCareOrders(CaseData caseData) {
         return getSelectedCareOrders(caseData).stream()
             .flatMap(order -> (isEmpty(order.getChildren()) ? caseData.getAllChildren() : order.getChildren()).stream())
-            .distinct()
+            .map(Element::getValue)
+            .filter(distinct(child -> Arrays.asList(child.getParty().getFullName(), child.getParty().getDateOfBirth())))
             .collect(toList());
     }
 
@@ -70,5 +76,10 @@ public class DischargeCareOrderService {
             .map(Child::getParty)
             .map(Party::getFullName)
             .collect(joining(" and "));
+    }
+
+    private static <T> Predicate<T> distinct(Function<? super T, ?> keyExtractor) {
+        Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+        return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
     }
 }
