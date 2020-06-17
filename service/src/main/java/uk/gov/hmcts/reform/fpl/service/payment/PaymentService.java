@@ -27,7 +27,7 @@ import static uk.gov.hmcts.reform.fnp.model.payment.enums.Service.FPL;
 public class PaymentService {
 
     private static final String DESCRIPTION_TEMPLATE = "Payment for case: %s";
-    private static final String BLANK_CUSTOMER_REFERENCE_VALUE = "Not provided";
+    private static final String BLANK_PARAMETER_VALUE = "Not provided";
 
     private final FeeService feeService;
     private final PaymentApi paymentApi;
@@ -58,8 +58,8 @@ public class PaymentService {
             ApplicantParty applicantParty = getFirstApplicantParty(caseData);
             CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseId,
                 applicantParty.getPbaNumber(),
-                applicantParty.getClientCode(),
-                defaultCustomerReferenceIfBlank(applicantParty.getCustomerReference()),
+                defaultParameterValueIfBlank(applicantParty.getClientCode()),
+                defaultParameterValueIfBlank(applicantParty.getCustomerReference()),
                 localAuthorityName,
                 feesData);
 
@@ -79,16 +79,16 @@ public class PaymentService {
 
         CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseId,
             c2DocumentBundle.getPbaNumber(),
-            c2DocumentBundle.getClientCode(),
-            defaultCustomerReferenceIfBlank(c2DocumentBundle.getFileReference()),
+            defaultParameterValueIfBlank(c2DocumentBundle.getClientCode()),
+            defaultParameterValueIfBlank(c2DocumentBundle.getFileReference()),
             localAuthorityName,
             feesData);
 
         callPaymentsApi(paymentRequest);
     }
 
-    private String defaultCustomerReferenceIfBlank(final String currentValue) {
-        return isNotBlank(currentValue) ? currentValue : BLANK_CUSTOMER_REFERENCE_VALUE;
+    private String defaultParameterValueIfBlank(final String currentValue) {
+        return isNotBlank(currentValue) ? currentValue : BLANK_PARAMETER_VALUE;
     }
 
     private CreditAccountPaymentRequest getCreditAccountPaymentRequest(Long caseId, String pbaNumber,
