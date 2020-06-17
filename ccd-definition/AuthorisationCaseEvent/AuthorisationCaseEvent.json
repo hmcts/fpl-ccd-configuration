@@ -410,7 +410,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "hearingBookingDetails",
     "UserRole": "caseworker-publiclaw-judiciary",
-    "CRUD": "CRU"
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -641,7 +641,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "allocatedJudge",
     "UserRole": "caseworker-publiclaw-judiciary",
-    "CRUD": "CRU"
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -746,7 +746,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "expertReport",
     "UserRole": "caseworker-publiclaw-judiciary",
-    "CRUD": "CRU"
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -970,7 +970,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "extend26WeekTimeline",
     "UserRole": "caseworker-publiclaw-judiciary",
-    "CRUD": "CRU"
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
