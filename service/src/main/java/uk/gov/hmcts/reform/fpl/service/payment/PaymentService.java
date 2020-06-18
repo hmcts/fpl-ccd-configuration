@@ -56,10 +56,11 @@ public class PaymentService {
             String localAuthorityName =
                 localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseData.getCaseLocalAuthority());
             ApplicantParty applicantParty = getFirstApplicantParty(caseData);
+
             CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseId,
                 applicantParty.getPbaNumber(),
-                defaultIfBlank(applicantParty.getClientCode(),BLANK_PARAMETER_VALUE),
-                defaultIfBlank(applicantParty.getCustomerReference(),BLANK_PARAMETER_VALUE),
+                defaultIfBlank(applicantParty.getClientCode(), BLANK_PARAMETER_VALUE),
+                defaultIfBlank(applicantParty.getCustomerReference(), BLANK_PARAMETER_VALUE),
                 localAuthorityName,
                 feesData);
 
@@ -79,7 +80,7 @@ public class PaymentService {
 
         CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseId,
             c2DocumentBundle.getPbaNumber(),
-            defaultIfBlank(c2DocumentBundle.getClientCode(),BLANK_PARAMETER_VALUE),
+            defaultIfBlank(c2DocumentBundle.getClientCode(), BLANK_PARAMETER_VALUE),
             defaultIfBlank(c2DocumentBundle.getFileReference(), BLANK_PARAMETER_VALUE),
             localAuthorityName,
             feesData);

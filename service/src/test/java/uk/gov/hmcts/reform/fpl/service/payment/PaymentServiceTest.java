@@ -111,6 +111,7 @@ class PaymentServiceTest {
                     .fileReference(customerReference)
                     .build())))
                 .build();
+
             CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
                 .customerReference(customerReference)
                 .amount(feeForC2WithNotice.getCalculatedAmount())
@@ -129,6 +130,7 @@ class PaymentServiceTest {
         void shouldMakeCorrectPaymentForC2WithNoticeWhenCustomerReferenceIsInvalid(final String customerReference) {
             String clientCode = "clientCode";
             CaseData caseData = buildCaseData(clientCode,customerReference, WITH_NOTICE);
+
             CreditAccountPaymentRequest expectedPaymentRequest = buildCreditAccountPaymentRequest(clientCode,
                 customerReference,
                 feeForC2WithNotice);
@@ -145,6 +147,7 @@ class PaymentServiceTest {
         void shouldMakeCorrectPaymentForC2WithNoticeWhenCaseReferenceIsInvalid(final String clientCode) {
             String customerReference = "customerReference";
             CaseData caseData = buildCaseData(clientCode,customerReference, WITH_NOTICE);
+
             CreditAccountPaymentRequest expectedPaymentRequest = buildCreditAccountPaymentRequest(clientCode,
                 customerReference,
                 feeForC2WithNotice);
@@ -168,6 +171,7 @@ class PaymentServiceTest {
                     .fileReference(customerReference)
                     .build())))
                 .build();
+
             CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
                 .customerReference(customerReference)
                 .amount(feeForC2WithoutNotice.getCalculatedAmount())
@@ -186,6 +190,7 @@ class PaymentServiceTest {
         void shouldMakeCorrectPaymentForC2WithoutNoticeWhenCustomerReferenceIsInvalid(final String customerReference) {
             String clientCode = "clientCode";
             CaseData caseData = buildCaseData(clientCode,customerReference, WITHOUT_NOTICE);
+
             CreditAccountPaymentRequest expectedPaymentRequest = buildCreditAccountPaymentRequest(clientCode,
                 customerReference,
                 feeForC2WithoutNotice);
@@ -202,6 +207,7 @@ class PaymentServiceTest {
         void shouldMakeCorrectPaymentForC2WithoutNoticeWhenCaseReferenceIsInvalid(final String clientCode) {
             String customerReference = "customerReference";
             CaseData caseData = buildCaseData(clientCode,customerReference, WITHOUT_NOTICE);
+
             CreditAccountPaymentRequest expectedPaymentRequest = buildCreditAccountPaymentRequest(clientCode,
                 customerReference,
                 feeForC2WithoutNotice);
@@ -300,11 +306,14 @@ class PaymentServiceTest {
         @NullAndEmptySource
         void shouldMakeCorrectPaymentForC110AWhenCustomerReferenceIsInvalid(final String customerReference) {
             String clientCode = "clientCode";
+
             when(feeService.getFeesDataForOrders(orders)).thenReturn(FeesData.builder()
                 .totalAmount(BigDecimal.TEN)
                 .fees(List.of(careOrderFee, supervisionOrderFee))
                 .build());
+
             CaseData caseData = buildCaseDataForC110Application(clientCode,customerReference, orders);
+
             CreditAccountPaymentRequest expectedPaymentRequest = buildCreditAccountPaymentRequestForC110Application(
                 clientCode,
                 customerReference);
@@ -320,11 +329,14 @@ class PaymentServiceTest {
         @NullAndEmptySource
         void shouldMakeCorrectPaymentForC110AWhenCaseReferenceIsInvalid(final String clientCode) {
             String customerReference = "customerReference";
+
             when(feeService.getFeesDataForOrders(orders)).thenReturn(FeesData.builder()
                 .totalAmount(BigDecimal.TEN)
                 .fees(List.of(careOrderFee, supervisionOrderFee))
                 .build());
+
             CaseData caseData = buildCaseDataForC110Application(clientCode,customerReference, orders);
+
             CreditAccountPaymentRequest expectedPaymentRequest = buildCreditAccountPaymentRequestForC110Application(
                 clientCode,
                 customerReference);
@@ -381,7 +393,8 @@ class PaymentServiceTest {
                 .pbaNumber("PBA123")
                 .clientCode(clientCode)
                 .fileReference(customerReference)
-                .build()))).build();
+                .build())))
+            .build();
     }
 
     private CreditAccountPaymentRequest buildCreditAccountPaymentRequestForC110Application(String caseReference,
@@ -397,8 +410,10 @@ class PaymentServiceTest {
             .service(FPL)
             .siteId("TEST_SITE_ID")
             .amount(BigDecimal.TEN)
-            .fees(List.of(FeeDto.builder().calculatedAmount(BigDecimal.ONE).build(),
-                FeeDto.builder().calculatedAmount(BigDecimal.TEN).build())).build();
+            .fees(List.of(
+                FeeDto.builder().calculatedAmount(BigDecimal.ONE).build(),
+                FeeDto.builder().calculatedAmount(BigDecimal.TEN).build()))
+            .build();
     }
 
     private CaseData buildCaseDataForC110Application(String clientCode, String customerReference, Orders orders) {
