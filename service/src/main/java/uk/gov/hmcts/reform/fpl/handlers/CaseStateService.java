@@ -20,12 +20,17 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Stream;
 
+import static org.apache.commons.lang.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.FplEvent.SUBMIT_APPLICATION;
 
 
 @Service
 public class CaseStateService {
+
+    private static final String LINE_SEPARATOR = "\n\n";
+    private static final String HORIZONTAL_RULE = "\n___";
 
     @Autowired
     AllEvents eventsService;
@@ -39,7 +44,7 @@ public class CaseStateService {
     @Autowired
     EventGuardProvider eventGuardProvider;
 
-    public String getStatusForLA(CaseDetails caseDetails) {
+    String getStatusForLA(CaseDetails caseDetails) {
 
         List<String> messages = new ArrayList<>();
 
@@ -49,14 +54,13 @@ public class CaseStateService {
 
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Long caseId = caseDetails.getId();
-
         if (caseDetails.getState().equals("Open")) {
 
             Set<Section> sectionWithErrors = validationService.validateCaseDetails2(caseData);
             List<String> validationErrors = validationService.validateCaseDetails3(caseData);
 
-            messages.add("## Your application\r\n\r\n<div class='width-50'>");
+            messages.add("## Your application");
+            messages.add("<div class='width-50'>");
 
             Map<Section, Boolean> completedBySection = new TreeMap<>();
             Stream.of(Section.values()).forEach(v -> completedBySection.put(v, true));
@@ -64,22 +68,25 @@ public class CaseStateService {
             sectionWithErrors.forEach(f -> completedBySection.put(f, false));
 
             completedBySection.forEach((k, v) -> {
-                messages.add(buildLink(caseDetails.getId(), k.getEvent(), k.getLabel(), v));
+                messages.add(buildLink(caseDetails.getId(), k.getEvent(), v));
+                messages.add(HORIZONTAL_RULE);
             });
 
-            messages.add("</div>\r\n\r\n");
+            messages.add("</div>");
 
             if (sectionWithErrors.isEmpty()) {
-                messages.add(String.format("## Send your application\r\n\r\n %s", buildLink(caseDetails.getId(), "submitApplication", "Send your application", false)));
+                messages.add("## Send your application");
+                messages.add(buildLink(caseDetails.getId(), SUBMIT_APPLICATION, caseData, caseDetails));
             } else {
-                messages.add("## Errors in application\r\n\r\n " + String.join("\r\n\r\n", validationErrors));
+                messages.add("## Errors in application");
+                messages.addAll(validationErrors);
             }
         }
 
-        return String.join("\r\n\r\n", messages);
+        return String.join(LINE_SEPARATOR, messages);
     }
 
-    public String getStatusForAdmin(CaseDetails caseDetails) {
+    String getStatusForAdmin(CaseDetails caseDetails) {
 
         List<String> messages = new ArrayList<>();
 
@@ -95,38 +102,59 @@ public class CaseStateService {
         List<FplEvent> optionalEvents = eventsService.getOptionalEvents(State.SUBMITTED, Roles.ADMIN);
 
         if (!mandatoryEvents.isEmpty()) {
-            messages.add("## To progress the case\r\n\r\n<div class='width-50'>");
-            mandatoryEvents.forEach(event -> messages.add(buildLink(caseId, event, caseData, caseDetails)));
-            messages.add("</div>\r\n\r\n");
+            messages.add("## To progress the case");
+            messages.add("<div class='width-50'>");
+            mandatoryEvents.forEach(event -> {
+                messages.add(buildLink(caseId, event, caseData, caseDetails));
+                messages.add(HORIZONTAL_RULE);
+            });
+            messages.add("</div>");
         }
 
         if (!optionalEvents.isEmpty()) {
-            messages.add("## Other things you can do now\r\n\r\n<div class='width-50'>");
-            optionalEvents.forEach(event -> messages.add(buildLink(caseId, event, caseData, caseDetails)));
-            messages.add("</div>\r\n\r\n");
+            messages.add("## Other things you can do");
+            messages.add("<div class='width-50'>");
+            optionalEvents.forEach(event -> {
+                messages.add(buildLink(caseId, event, caseData, caseDetails));
+                messages.add(HORIZONTAL_RULE);
+            });
+            messages.add("</div>");
         }
 
 
-        return String.join("\r\n\r\n", messages);
+        return String.join(LINE_SEPARATOR, messages);
     }
 
-    private String buildLink(Long caseId, String event, String label, boolean completed) {
+    private String buildLinkWithImage(Long caseId, FplEvent event, String image, String imageTitle) {
+        return isEmpty(image) ? eventLink(caseId, event) : eventLink(caseId, event) + image(getImageUrl(image), imageTitle);
+    }
+
+
+    private String image(String image, String title) {
+        return String.format("<img align='right' src='%s' title='%s'>", image, title);
+    }
+
+    private String eventLink(Long caseId, FplEvent event) {
+        return String.format("[%s](/case/%s/%s/%s/trigger/%s)", event.getName(), JURISDICTION, CASE_TYPE, caseId, event.getId());
+    }
+
+    private String buildLink(Long caseId, FplEvent event, boolean completed) {
         if (completed) {
-            return String.format("[%s](/case/%s/%s/%s/trigger/%s)<img align='right' src='%s'>\r\n___", label, JURISDICTION, CASE_TYPE, caseId, event, getImageUrl("completed.png"));
+            return buildLinkWithImage(caseId, event, "completed.png", "Completed");
         } else {
-            return String.format("[%s](/case/%s/%s/%s/trigger/%s)\r\n___", label, JURISDICTION, CASE_TYPE, caseId, event);
+            return buildLinkWithImage(caseId, event, null, null);
         }
     }
 
     private String buildLink(Long caseId, FplEvent event, CaseData caseData, CaseDetails caseDetails) {
         if (event.getCompletedPredicate().test(caseData)) {
-            return String.format("[%s](/case/%s/%s/%s/trigger/%s)<img align='right' src='%s'>\r\n___", event.getName(), JURISDICTION, CASE_TYPE, caseId, event.getId(), getImageUrl("completed.png"));
+            return buildLinkWithImage(caseId, event, "completed.png", "Completed");
         } else {
             List<String> errors = eventGuardProvider.getEventGuard(event).validate(caseDetails);
             if (errors.isEmpty()) {
-                return String.format("[%s](/case/%s/%s/%s/trigger/%s)\r\n___", event.getName(), JURISDICTION, CASE_TYPE, caseId, event.getId());
+                return buildLinkWithImage(caseId, event, null, null);
             } else {
-                return String.format("%s<img align='right' src='%s' title='%s'>\r\n___", event.getName(), getImageUrl("unavailable.png"), String.join("\n", errors));
+                return buildLinkWithImage(caseId, event, "unavailable.png", String.join("\n", errors));
             }
         }
     }
@@ -137,6 +165,6 @@ public class CaseStateService {
 
     private String getCaseProgressMessage(String state) {
         var image = state.equals("Open") ? "open.png" : "submitted.png";
-        return String.format("## Case progress\r\n ![Submitted](%s)", getImageUrl(image));
+        return String.format("## Case progress\n ![Submitted](%s)", getImageUrl(image));
     }
 }
