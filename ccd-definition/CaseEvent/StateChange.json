@@ -53,7 +53,7 @@
     "Name": "Return application",
     "Description": "Return an application to the LA",
     "DisplayOrder": 19,
-    "PreConditionState(s)": "Submitted;Gatekeeping",
+    "PreConditionState(s)": "Submitted",
     "PostConditionState": "RETURNED",
     "SecurityClassification": "Public",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/return-application/about-to-start",
