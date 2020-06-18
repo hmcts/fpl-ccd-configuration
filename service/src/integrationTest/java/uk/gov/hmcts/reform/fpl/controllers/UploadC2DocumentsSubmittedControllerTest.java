@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.google.common.collect.ImmutableMap;
-import com.launchdarkly.sdk.server.LDClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -26,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -57,9 +55,6 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
 
     @MockBean(name = "uk.gov.hmcts.reform.idam.client.IdamApi")
     private IdamApi idamApi;
-
-    @MockBean
-    private LDClient ldClient;
 
     @MockBean
     private PaymentService paymentService;
@@ -161,8 +156,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldMakePaymentWhenFeatureToggleIsTrueAndAmountToPayWasDisplayed() {
-        given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
+    void shouldMakePaymentWhenAmountToPayWasDisplayed() {
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
             .putAll(buildC2DocumentBundle(YES))
@@ -176,7 +170,6 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldNotMakePaymentWhenAmountToPayWasNotDisplayed() {
-        given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
             .putAll(buildC2DocumentBundle(YES))
@@ -190,7 +183,6 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldSendFailedPaymentNotificationOnPaymentsApiException() throws NotificationClientException {
-        given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
             .putAll(buildC2DocumentBundle(YES))
@@ -216,7 +208,6 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldSendFailedPaymentNotificationOnHiddenDisplayAmountToPay() throws NotificationClientException {
-        given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
             .putAll(buildC2DocumentBundle(YES))
@@ -240,7 +231,6 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldNotSendFailedPaymentNotificationWhenDisplayAmountToPayNotSet() throws NotificationClientException {
-        given(ldClient.boolVariation(eq("payments"), any(), anyBoolean())).willReturn(true);
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
             .putAll(buildC2DocumentBundle(YES))

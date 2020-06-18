@@ -35,7 +35,7 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldAddAmountToPayFieldWhenFeatureToggleIsTrue() {
+    void shouldAddAmountToPayField() {
         given(feeService.getFeesDataForC2(WITH_NOTICE)).willReturn(FeesData.builder()
             .totalAmount(BigDecimal.TEN)
             .build());

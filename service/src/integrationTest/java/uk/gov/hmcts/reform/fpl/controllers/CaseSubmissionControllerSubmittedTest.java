@@ -170,7 +170,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldMakePaymentOfAnOpenCaseWhenFeatureToggleIsTrueAndAmountToPayWasDisplayed() {
+    void shouldMakePaymentOfAnOpenCaseWhenAmountToPayWasDisplayed() {
         CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
         caseDetails.getData().put("displayAmountToPay", YES.getValue());
         CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, OPEN);
@@ -194,7 +194,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldNotMakePaymentOnAReturnedCaseWhenFeatureToggleIsTrueAndAmountToPayWasDisplayed() {
+    void shouldNotMakePaymentOnAReturnedCaseWhenAmountToPayWasDisplayed() {
         CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
         caseDetails.getData().put("displayAmountToPay", YES.getValue());
         CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, RETURNED);

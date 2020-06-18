@@ -82,7 +82,7 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldAddAmountToPayFieldToAnOpenedCaseWhenFeatureToggle() {
+    void shouldAddAmountToPayFieldToAnOpenedCase() {
         Orders orders = Orders.builder().orderType(List.of(OrderType.CARE_ORDER)).build();
         FeesData feesData = FeesData.builder()
             .totalAmount(BigDecimal.valueOf(123))
@@ -97,16 +97,6 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
 
         assertThat(response.getData()).containsEntry("amountToPay", "12300");
         assertThat(response.getData()).containsEntry("displayAmountToPay", YES.getValue());
-    }
-
-    @Test
-    void shouldNotAddAmountToPayFieldToAnOpenedCaseWhenFeatureToggleIsFalse() {
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
-            .data(of())
-            .build());
-
-        verify(feeService, never()).getFeesDataForOrders(any());
-        assertThat(response.getData()).doesNotContainKeys("amountToPay", "displayAmountToPay");
     }
 
     @Test
