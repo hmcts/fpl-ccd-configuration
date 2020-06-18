@@ -175,7 +175,7 @@ class SubmittedCaseEventHandlerTest {
         }
 
         @Test
-        void shouldPayWhenPaymentIsToggledOnAndCaseIsOpenedAndPaymentDesicionIsYes() {
+        void shouldPayWhenCaseIsOpenedAndPaymentDesicionIsYes() {
             final CallbackRequest request = callbackRequest(OPEN, Map.of("displayAmountToPay", "Yes"));
             final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
 
