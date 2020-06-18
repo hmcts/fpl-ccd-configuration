@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import java.math.BigDecimal;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Currency.GBP;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Service.FPL;
 
@@ -28,7 +27,7 @@ import static uk.gov.hmcts.reform.fnp.model.payment.enums.Service.FPL;
 public class PaymentService {
 
     private static final String DESCRIPTION_TEMPLATE = "Payment for case: %s";
-    private static final String BLANK_PARAMETER_VALUE = "Not provided";
+    public static final String BLANK_PARAMETER_VALUE = "Not provided";
 
     private final FeeService feeService;
     private final PaymentApi paymentApi;
@@ -86,10 +85,6 @@ public class PaymentService {
             feesData);
 
         callPaymentsApi(paymentRequest);
-    }
-
-    private String defaultParameterValueIfBlank(final String currentValue) {
-        return isNotBlank(currentValue) ? currentValue : BLANK_PARAMETER_VALUE;
     }
 
     private CreditAccountPaymentRequest getCreditAccountPaymentRequest(Long caseId, String pbaNumber,
