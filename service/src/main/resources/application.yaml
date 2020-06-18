@@ -368,16 +368,6 @@ robotics:
     sender: sender@example.com
     recipient: FamilyPublicLaw+robotics@gmail.com
 
-feature:
-  toggle:
-    robotics:
-      case-number:
-        notification:
-          enabled: true
-      support:
-        api:
-          enabled: true
-
 scheduler:
   enabled: false
 
