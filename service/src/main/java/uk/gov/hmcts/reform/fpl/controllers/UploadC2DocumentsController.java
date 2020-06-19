@@ -48,6 +48,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UploadC2DocumentsController {
     private static final String DISPLAY_AMOUNT_TO_PAY = "displayAmountToPay";
+    private static final String AMOUNT_TO_PAY = "amountToPay";
     private static final String TEMPORARY_C2_DOCUMENT = "temporaryC2Document";
     private final ObjectMapper mapper;
     private final UserDetailsService userDetailsService;
@@ -69,7 +70,7 @@ public class UploadC2DocumentsController {
 
         try {
             FeesData feesData = feeService.getFeesDataForC2(caseData.getC2ApplicationType().get("type"));
-            data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
+            data.put(AMOUNT_TO_PAY, BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
             data.put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
         } catch (FeeRegisterException ignore) {
             data.put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
@@ -102,7 +103,7 @@ public class UploadC2DocumentsController {
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         data.put("c2DocumentBundle", buildC2DocumentBundle(caseData));
-        data.keySet().removeAll(Set.of(TEMPORARY_C2_DOCUMENT, "c2ApplicationType", "amountToPay"));
+        data.keySet().removeAll(Set.of(TEMPORARY_C2_DOCUMENT, "c2ApplicationType", AMOUNT_TO_PAY));
 
         return AboutToStartOrSubmitCallbackResponse.builder().data(data).build();
     }
@@ -120,9 +121,7 @@ public class UploadC2DocumentsController {
             } catch (FeeRegisterException | PaymentsApiException ignore) {
                 applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, C2_APPLICATION));
             }
-        }
-
-        if (NO.getValue().equals(caseDetails.getData().get(DISPLAY_AMOUNT_TO_PAY))) {
+        } else {
             applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, C2_APPLICATION));
         }
 

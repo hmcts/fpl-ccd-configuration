@@ -60,6 +60,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     private static final String HMCTS_ADMIN_EMAIL = "admin@family-court.com";
     private static final String CAFCASS_EMAIL = "cafcass@cafcass.com";
     private static final String CTSC_EMAIL = "FamilyPublicLaw+ctsc@gmail.com";
+    private static final String DISPLAY_AMOUNT_TO_PAY = "displayAmountToPay";
     private final Long caseId = nextLong();
 
     @MockBean
@@ -172,7 +173,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     @Test
     void shouldMakePaymentOfAnOpenCaseWhenAmountToPayWasDisplayed() {
         CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
-        caseDetails.getData().put("displayAmountToPay", YES.getValue());
+        caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
         CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, OPEN);
 
         postSubmittedEvent(callbackRequest);
@@ -185,7 +186,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     @Test
     void shouldNotMakePaymentOfAnOpenCaseWhenAmountToPayWasNotDisplayed() {
         CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
-        caseDetails.getData().put("displayAmountToPay", NO.getValue());
+        caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
         CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, OPEN);
 
         postSubmittedEvent(callbackRequest);
@@ -196,7 +197,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     @Test
     void shouldNotMakePaymentOnAReturnedCaseWhenAmountToPayWasDisplayed() {
         CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
-        caseDetails.getData().put("displayAmountToPay", YES.getValue());
+        caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
         CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, RETURNED);
 
         postSubmittedEvent(callbackRequest);
@@ -207,7 +208,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     @Test
     void shouldSendFailedPaymentNotificationOnPaymentsApiException() {
         CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
-        caseDetails.getData().put("displayAmountToPay", YES.getValue());
+        caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
         CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, OPEN);
 
         doThrow(new PaymentsApiException("", new Throwable())).when(paymentService)
@@ -256,7 +257,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     @Test
     void shouldSendFailedPaymentNotificationOnHiddenDisplayAmountToPay() {
         CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
-        caseDetails.getData().put("displayAmountToPay", NO.getValue());
+        caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
 
         CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, OPEN);
         postSubmittedEvent(callbackRequest);
@@ -279,7 +280,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     @Test
     void shouldNotifyHmctsAdminWhenTheLocalAuthorityHasSubmittedAReturnedCase() {
         CaseDetails caseDetails = enableSendToCtscOnCaseDetails(NO);
-        caseDetails.getData().put("displayAmountToPay", NO.getValue());
+        caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
 
         CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, RETURNED);
         postSubmittedEvent(callbackRequest);
@@ -300,7 +301,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     @Test
     void shouldNotifyCtscAdminWhenTheLocalAuthorityHasSubmittedAReturnedCase() {
         CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
-        caseDetails.getData().put("displayAmountToPay", NO.getValue());
+        caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
 
         CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, RETURNED);
         postSubmittedEvent(callbackRequest);
@@ -323,7 +324,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     @Test
     void shouldNotNotifyAdminOfAReturnedCaseWhenTheCaseIsSubmittedFromOpenState() {
         CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
-        caseDetails.getData().put("displayAmountToPay", NO.getValue());
+        caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
 
         CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, OPEN);
         postSubmittedEvent(callbackRequest);
