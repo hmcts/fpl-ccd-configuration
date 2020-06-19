@@ -24,15 +24,35 @@ module.exports = {
   async enterRepresentative(representative) {
     const elementIndex = await this.getActiveElementIndex();
 
-    I.fillField(this.fields(elementIndex).representative.fullName, representative.fullName);
-    I.fillField(this.fields(elementIndex).representative.positionInACase, representative.positionInACase);
-    I.fillField(this.fields(elementIndex).representative.email, representative.email);
-    I.fillField(this.fields(elementIndex).representative.telephone, representative.telephone);
-    within(this.fields(elementIndex).representative.address, () => {
-      postcodeLookup.enterAddressManually(representative.address);
-    });
+    if(representative.fullName) {
+      I.fillField(this.fields(elementIndex).representative.fullName, representative.fullName);
+    }
+    if(representative.positionInACase) {
+      I.fillField(this.fields(elementIndex).representative.positionInACase, representative.positionInACase);
+    }
+    if(representative.email) {
+      I.fillField(this.fields(elementIndex).representative.email, representative.email);
+    }
+    if(representative.telephone) {
+      I.fillField(this.fields(elementIndex).representative.telephone, representative.telephone);
+    }
+    if(representative.address) {
+      within(this.fields(elementIndex).representative.address, () => {
+        postcodeLookup.enterAddressManually(representative.address);
+      });
+    }
+    if(representative.servingPreferences) {
+      await this.setServingPreferences(representative.servingPreferences.toLowerCase());
+    }
+    if(representative.role) {
+      I.selectOption(this.fields(elementIndex).representative.role, representative.role);
+    }
+  },
 
-    switch (representative.servingPreferences.toLowerCase()) {
+  async setServingPreferences(servingPreferences) {
+    const elementIndex = await this.getActiveElementIndex();
+
+    switch (servingPreferences) {
       case 'email':
         I.checkOption(this.fields(elementIndex).representative.servingPreferences.email);
         break;
@@ -43,10 +63,8 @@ module.exports = {
         I.checkOption(this.fields(elementIndex).representative.servingPreferences.digitalService);
         break;
       default:
-        throw new Error('Unsupported representative serving preferences ' + representative.servingPreferences);
+        throw new Error(`Unsupported representative serving preferences ${servingPreferences}`);
     }
-
-    I.selectOption(this.fields(elementIndex).representative.role, representative.role);
   },
 
   async getActiveElementIndex() {

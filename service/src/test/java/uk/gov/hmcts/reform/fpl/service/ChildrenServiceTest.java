@@ -1,316 +1,256 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.fpl.enums.PartyType;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import uk.gov.hmcts.reform.fpl.model.Address;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
 
-@ExtendWith(SpringExtension.class)
 class ChildrenServiceTest {
-    private static final UUID ID = randomUUID();
 
     private final ChildrenService service = new ChildrenService();
 
     @Test
-    void shouldAddEmptyElementWhenChildrenIsEmpty() {
-        List<Element<Child>> children = service.prepareChildren(CaseData.builder().build());
-
-        assertThat(getParty(children, 0).partyId).isNotNull();
+    void shouldBuildExpectedLabelWhenEmptyList() {
+        String label = service.getChildrenLabel(List.of(), false);
+        assertThat(label).isEqualTo("No children in the case");
     }
 
     @Test
-    void shouldReturnChildrenIfChildrenIsPrePopulated() {
-        CaseData caseData = CaseData.builder()
-            .children1(ImmutableList.of(childWithRemovedConfidentialFields(ID)))
-            .build();
-
-        List<Element<Child>> children = service.prepareChildren(caseData);
-
-        assertThat(children).containsExactly(childWithRemovedConfidentialFields(ID));
+    void shouldBuildExpectedLabelWhenPopulatedList() {
+        String label = service.getChildrenLabel(List.of(childWithConfidentialFields(randomUUID())), false);
+        assertThat(label).isEqualTo("Child 1: James\n");
     }
 
     @Test
-    void shouldPrepareChildWithConfidentialValuesWhenConfidentialChildrenIsNotEmpty() {
-        CaseData caseData = CaseData.builder()
-            .children1(ImmutableList.of(childWithRemovedConfidentialFields(ID)))
-            .confidentialChildren(ImmutableList.of(childWithConfidentialFields(ID)))
-            .build();
+    void shouldBuildExpectedLabelWhenPopulatedListAndFinalOrderIssuedOnChild() {
+        List<Element<Child>> children = List.of(childWithConfidentialFields(randomUUID()),
+            childWithFinalOrderIssued("Jack", "Hill"));
+        String label = service.getChildrenLabel(children, true);
+        assertThat(label).isEqualTo("Child 1: James\nChild 2: Jack Hill - Care order issued\n");
+    }
 
-        List<Element<Child>> children = service.prepareChildren(caseData);
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldReturnFalseWhenListEmptyOrNull(List<Element<Child>> list) {
+        boolean result = service.allChildrenHaveFinalOrder(list);
 
-        assertThat(children).containsOnly(childWithConfidentialFields(ID));
+        assertThat(result).isFalse();
     }
 
     @Test
-    void shouldReturnChildWithoutConfidentialDetailsWhenThereIsNoMatchingConfidentialChild() {
-        CaseData caseData = CaseData.builder()
-            .children1(ImmutableList.of(childWithRemovedConfidentialFields(ID)))
-            .confidentialChildren(ImmutableList.of(childWithConfidentialFields(randomUUID())))
-            .build();
+    void shouldReturnFalseWhenAtLeastOneChildDoesNotHaveFinalOrder() {
+        List<Element<Child>> children = List.of(childWithFinalOrderIssuedYes(), childWithFinalOrderIssuedNo());
 
-        List<Element<Child>> children = service.prepareChildren(caseData);
+        boolean result = service.allChildrenHaveFinalOrder(children);
 
-        assertThat(children).containsOnly(childWithRemovedConfidentialFields(ID));
+        assertThat(result).isFalse();
     }
 
     @Test
-    void shouldAddExpectedChildWhenHiddenDetailsMarkedAsNo() {
-        CaseData caseData = CaseData.builder()
-            .children1(ImmutableList.of(childWithDetailsHiddenNo(ID)))
-            .confidentialChildren(ImmutableList.of(childWithConfidentialFields(ID)))
-            .build();
+    void shouldReturnTrueWhenAllChildrenHaveFinalOrder() {
+        List<Element<Child>> children = List.of(childWithFinalOrderIssuedYes(), childWithFinalOrderIssuedYes());
 
-        List<Element<Child>> children = service.prepareChildren(caseData);
+        boolean result = service.allChildrenHaveFinalOrder(children);
 
-        assertThat(children).containsOnly(childWithDetailsHiddenNo(ID));
+        assertThat(result).isTrue();
     }
 
     @Test
-    void shouldMaintainOrderingOfChildrenWhenComplexScenario() {
-        UUID otherId = randomUUID();
+    void shouldUpdateFinalOrderIssuedWhenAppliesToAllChildren() {
+        List<Element<Child>> result = service.updateFinalOrderIssued(CARE_ORDER, testChildren(), "Yes", null, null);
 
-        List<Element<Child>> children = ImmutableList.of(
-            childWithRemovedConfidentialFields(ID),
-            childWithDetailsHiddenNo(randomUUID()),
-            childWithRemovedConfidentialFields(otherId));
+        assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
+            .containsExactly("Yes", "Yes", "Yes");
 
-        List<Element<Child>> confidentialChildren = ImmutableList.of(
-            childWithConfidentialFields(ID),
-            childWithConfidentialFields(otherId));
-
-        CaseData caseData = CaseData.builder()
-            .children1(children)
-            .confidentialChildren(confidentialChildren)
-            .build();
-
-        List<Element<Child>> updatedChildren = service.prepareChildren(caseData);
-
-        assertThat(updatedChildren.get(0)).isEqualTo(confidentialChildren.get(0));
-        assertThat(updatedChildren.get(1)).isEqualTo(children.get(1));
-        assertThat(updatedChildren.get(2)).isEqualTo(confidentialChildren.get(1));
+        assertThat(result).extracting(element -> element.getValue().getFinalOrderIssuedType())
+            .containsExactly("Care order", "Care order", "Care order");
     }
 
     @Test
-    void shouldAddPartyIDAndPartyTypeValuesToSingleChild() {
-        List<Element<Child>> children = ImmutableList.of(
-            Element.<Child>builder()
-                .id(randomUUID())
-                .value(Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("James")
-                        .build())
-                    .build())
-                .build());
+    void shouldUpdateFinalOrderIssuedWhenAppliesToSelectedChildren() {
+        List<Element<Child>> children = testChildren();
 
-        CaseData caseData = CaseData.builder()
-            .children1(children)
+        ChildSelector childSelector = ChildSelector.builder()
+            .childCount("1")
+            .selected(List.of(1))
             .build();
 
-        List<Element<Child>> updatedChildren = service.modifyHiddenValues(caseData.getAllChildren());
+        List<Element<Child>> result = service.updateFinalOrderIssued(CARE_ORDER,
+            children, "No", childSelector, null);
 
-        assertThat(getParty(updatedChildren, 0).firstName).isEqualTo("James");
-        assertThat(getParty(updatedChildren, 0).partyType).isEqualTo(PartyType.INDIVIDUAL);
-        assertThat(getParty(updatedChildren, 0).partyId).isNotNull();
+        assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
+            .containsExactly("No", "Yes", "No");
+
+        assertThat(result).extracting(element -> element.getValue().getFinalOrderIssuedType())
+            .containsExactly(null, "Care order", null);
     }
 
     @Test
-    void shouldAddPartyIDAndPartyTypeValuesToMultipleChildren() {
-        List<Element<Child>> children = ImmutableList.of(
-            Element.<Child>builder()
-                .id(randomUUID())
-                .value(Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("James")
-                        .build())
-                    .build())
-                .build(),
-            Element.<Child>builder()
-                .id(randomUUID())
-                .value(Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("Lucy")
-                        .build())
-                    .build())
-                .build()
-        );
+    void shouldUpdateFinalOrderIssuedWhenAppliesToSelectedChildrenAndAlreadyIssuedForOtherChildren() {
+        List<Element<Child>> children = List.of(childWithFinalOrderIssuedNo(),
+            childWithFinalOrderIssuedYes(),
+            childWithFinalOrderIssuedNo(), childWithFinalOrderIssuedNo(), childWithFinalOrderIssuedNo());
 
-        CaseData caseData = CaseData.builder()
-            .children1(children)
+        ChildSelector childSelector = ChildSelector.builder()
+            .childCount("5")
+            .selected(List.of(0, 2))
             .build();
-        List<Element<Child>> updatedChildren = service.modifyHiddenValues(caseData.getAllChildren());
 
-        assertThat(getParty(updatedChildren, 0).firstName).isEqualTo("James");
-        assertThat(getParty(updatedChildren, 0).partyType).isEqualTo(PartyType.INDIVIDUAL);
-        assertThat(getParty(updatedChildren, 0).partyId).isNotNull();
+        List<Element<Child>> result = service.updateFinalOrderIssued(CARE_ORDER,
+            children, "No", childSelector, null);
 
-        assertThat(getParty(updatedChildren, 1).firstName).isEqualTo("Lucy");
-        assertThat(getParty(updatedChildren, 1).partyType).isEqualTo(PartyType.INDIVIDUAL);
-        assertThat(getParty(updatedChildren, 1).partyId).isNotNull();
+        assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
+            .containsExactly("Yes", "Yes", "Yes", "No", "No");
+
+        assertThat(result).extracting(element -> element.getValue().getFinalOrderIssuedType())
+            .containsExactly("Care order", "Care order", "Care order", null, null);
     }
 
     @Test
-    void shouldKeepExistingPartyID() {
-        List<Element<Child>> children = ImmutableList.of(
-            Element.<Child>builder()
-                .id(randomUUID())
-                .value(Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("James")
-                        .partyId("123")
-                        .build())
-                    .build())
-                .build());
+    void shouldUpdateFinalOrderIssuedWhenAppliesToSelectedChildrenAndOneRemainingChild() {
+        List<Element<Child>> children = List.of(childWithFinalOrderIssuedYes(),
+            childWithFinalOrderIssuedNo(),
+            childWithFinalOrderIssuedYes());
 
-        CaseData caseData = CaseData.builder()
-            .children1(children)
-            .build();
+        List<Element<Child>> result = service.updateFinalOrderIssued(SUPERVISION_ORDER,
+            children, "No", null, "1");
 
-        List<Element<Child>> updatedChildren = service.modifyHiddenValues(caseData.getAllChildren());
+        assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
+            .containsExactly("Yes", "Yes", "Yes");
 
-        assertThat(getParty(updatedChildren, 0).partyId).isEqualTo("123");
+        assertThat(result).extracting(element -> element.getValue().getFinalOrderIssuedType())
+            .containsExactly("Care order", "Supervision order", "Care order");
     }
 
     @Test
-    void shouldKeepExistingPartyIdAndContinueAddingNewPartyId() {
-        List<Element<Child>> children = ImmutableList.of(
-            Element.<Child>builder()
-                .id(randomUUID())
-                .value(Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("James")
-                        .partyId("123")
-                        .build())
-                    .build())
-                .build(),
-            Element.<Child>builder()
-                .id(randomUUID())
-                .value(Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("Lucy")
-                        .build())
-                    .build())
-                .build());
+    void shouldGetRemainingChildIndexWhenOneRemainingChild() {
+        List<Element<Child>> children = List.of(childWithFinalOrderIssuedYes(),
+            childWithFinalOrderIssuedNo(),
+            childWithFinalOrderIssuedYes());
 
-        CaseData caseData = CaseData.builder()
-            .children1(children)
-            .build();
+        Optional<Integer> result = service.getRemainingChildIndex(children);
 
-        List<Element<Child>> updatedChildren = service.modifyHiddenValues(caseData.getAllChildren());
-
-        assertThat(getParty(updatedChildren, 0).firstName).isEqualTo("James");
-        assertThat(getParty(updatedChildren, 0).partyId).isEqualTo("123");
-        assertThat(getParty(updatedChildren, 1).firstName).isEqualTo("Lucy");
-        assertThat(getParty(updatedChildren, 1).partyId).isNotNull();
+        assertThat(result.isPresent()).isTrue();
+        assertThat(result.get()).isEqualTo(1);
     }
 
     @Test
-    void shouldHideChildAddressDetailsWhenConfidentialitySelected() {
-        List<Element<Child>> children = childElementWithDetailsHiddenValue("Yes");
+    void shouldNotGetRemainingChildIndexWhenNoRemainingChild() {
+        List<Element<Child>> children = List.of(childWithFinalOrderIssuedYes(),
+            childWithFinalOrderIssuedYes());
 
-        CaseData caseData = CaseData.builder()
-            .children1(children)
-            .build();
+        Optional<Integer> result = service.getRemainingChildIndex(children);
 
-        List<Element<Child>> updatedChildren = service.modifyHiddenValues(caseData.getAllChildren());
-
-        assertThat(getParty(updatedChildren, 0).address).isNull();
-        assertThat(getParty(updatedChildren, 0).email).isNull();
-        assertThat(getParty(updatedChildren, 0).telephoneNumber).isNull();
+        assertThat(result.isPresent()).isFalse();
     }
 
     @Test
-    void shouldNotHideChildAddressDetailsWhenConfidentialitySelected() {
-        List<Element<Child>> children = childElementWithDetailsHiddenValue("No");
+    void shouldNotGetRemainingChildIndexWhenMoreThanOneRemainingChild() {
+        List<Element<Child>> children = List.of(childWithFinalOrderIssuedYes(), childWithFinalOrderIssuedNo(),
+            childWithFinalOrderIssuedYes(), childWithFinalOrderIssuedNo());
 
-        CaseData caseData = CaseData.builder()
-            .children1(children)
-            .build();
+        Optional<Integer> result = service.getRemainingChildIndex(children);
 
-        List<Element<Child>> updatedChildren = service.modifyHiddenValues(caseData.getAllChildren());
-
-        assertThat(getParty(updatedChildren, 0).address).isNotNull();
-        assertThat(getParty(updatedChildren, 0).email).isNotNull();
-        assertThat(getParty(updatedChildren, 0).telephoneNumber).isNotNull();
+        assertThat(result.isPresent()).isFalse();
     }
 
-    private Element<Child> childWithDetailsHiddenNo(UUID id) {
-        return Element.<Child>builder()
-            .id(id)
-            .value(Child.builder()
-                .party(ChildParty.builder()
-                    .firstName("James")
-                    .detailsHidden("No")
-                    .email(EmailAddress.builder().email("email@email.com").build())
-                    .address(Address.builder()
-                        .addressLine1("Address Line 1")
-                        .build())
-                    .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
-                    .build())
-                .build())
-            .build();
+    @Test
+    void shouldReturnNameOfChildWhenAChildDoesNotHaveFinalOrderIssued() {
+        List<Element<Child>> children = List.of(childWithFinalOrderIssued("Paul", "Chuckle"),
+            childWithFinalOrderIssued("Barry", "Chuckle", NO.getValue(), null));
+
+        String childrenNames = service.getRemainingChildrenNames(children);
+
+        assertThat(childrenNames).isEqualTo("Barry Chuckle");
     }
 
-    private Element<Child> childWithRemovedConfidentialFields(UUID id) {
-        return Element.<Child>builder()
-            .id(id)
-            .value(Child.builder()
-                .party(ChildParty.builder()
-                    .firstName("James")
-                    .detailsHidden("Yes")
-                    .build())
-                .build())
-            .build();
+    @Test
+    void shouldReturnEmptyStringWhenAllChildrenHaveFinalOrderIssued() {
+        List<Element<Child>> children = List.of(childWithFinalOrderIssued("Paul", "Chuckle"),
+            childWithFinalOrderIssued("Barry", "Chuckle"));
+
+        String childrenNames = service.getRemainingChildrenNames(children);
+
+        assertThat(childrenNames).isEmpty();
+    }
+
+    @Test
+    void shouldReturnChildNameWhenChildHasFinalOrderIssued() {
+        List<Element<Child>> children = List.of(childWithFinalOrderIssued("Paul", "Chuckle"),
+            childWithFinalOrderIssued("Barry", "Chuckle", NO.getValue(), null));
+
+        String childrenNames = service.getFinalOrderIssuedChildrenNames(children);
+
+        assertThat(childrenNames).isEqualTo("Paul Chuckle - Care order issued");
+    }
+
+    @Test
+    void shouldReturnEmptyStringWhenNoChildrenHaveFinalOrderIssued() {
+        List<Element<Child>> children = List.of(
+            childWithFinalOrderIssued("Paul", "Chuckle", NO.getValue(), null),
+            childWithFinalOrderIssued("Barry", "Chuckle", NO.getValue(), null));
+
+        String childrenNames = service.getFinalOrderIssuedChildrenNames(children);
+
+        assertThat(childrenNames).isEmpty();
     }
 
     private Element<Child> childWithConfidentialFields(UUID id) {
-        return Element.<Child>builder()
-            .id(id)
-            .value(Child.builder()
-                .party(ChildParty.builder()
-                    .firstName("James")
-                    .detailsHidden("Yes")
-                    .email(EmailAddress.builder().email("email@email.com").build())
-                    .address(Address.builder()
-                        .addressLine1("Address Line 1")
-                        .build())
-                    .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
-                    .build())
-                .build())
-            .build();
-    }
-
-    private List<Element<Child>> childElementWithDetailsHiddenValue(String hidden) {
-        return ImmutableList.of(Element.<Child>builder()
-            .id(randomUUID())
-            .value(Child.builder()
-                .party(ChildParty.builder()
-                    .firstName("James")
-                    .detailsHidden(hidden)
-                    .email(EmailAddress.builder().email("email@email.com").build())
-                    .address(Address.builder()
-                        .addressLine1("Address Line 1")
-                        .build())
-                    .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
-                    .build())
+        return element(id, Child.builder()
+            .party(ChildParty.builder()
+                .firstName("James")
+                .detailsHidden("Yes")
+                .email(EmailAddress.builder().email("email@email.com").build())
+                .address(Address.builder().addressLine1("Address Line 1").build())
+                .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
                 .build())
             .build());
     }
 
-    private ChildParty getParty(List<Element<Child>> updatedChildren, int i) {
-        return updatedChildren.get(i).getValue().getParty();
+    private Element<Child> childWithFinalOrderIssuedYes() {
+        return childWithFinalOrderIssued(randomAlphanumeric(10), randomAlphanumeric(10),
+            YES.getValue(), CARE_ORDER.getLabel());
     }
+
+    private Element<Child> childWithFinalOrderIssuedNo() {
+        return childWithFinalOrderIssued(randomAlphanumeric(10), randomAlphanumeric(10),
+            NO.getValue(), null);
+    }
+
+    private Element<Child> childWithFinalOrderIssued(String firstName, String lastName) {
+        return childWithFinalOrderIssued(firstName, lastName, YES.getValue(), CARE_ORDER.getLabel());
+    }
+
+    private Element<Child> childWithFinalOrderIssued(String firstName, String lastName,
+                                                     String finalOrderIssued, String orderType) {
+        return element(Child.builder()
+            .party(ChildParty.builder()
+                .firstName(firstName)
+                .lastName(lastName)
+                .build())
+            .finalOrderIssued(finalOrderIssued)
+            .finalOrderIssuedType(orderType)
+            .build());
+    }
+
 }

@@ -1,17 +1,20 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.util.UUID;
+
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 class OthersServiceTest {
+    private static final UUID ID = randomUUID();
 
     private final OthersService service = new OthersService();
 
@@ -30,28 +33,18 @@ class OthersServiceTest {
 
     @Test
     void shouldBuildExpectedLabelWhenSingleElementInListWithEmptyName() {
-        Others others = Others.builder()
-            .firstOther(Other.builder()
-                .birthplace("birth place")
-                .build())
-            .build();
+        Others others = Others.builder().firstOther(Other.builder().birthPlace("birth place").build()).build();
 
         String result = service.buildOthersLabel(others);
 
-        assertThat(result).isEqualTo("Person 1 - BLANK - Please complete\n");
+        assertThat(result).isEqualTo("Person 1 - \n");
     }
 
     @Test
     void shouldBuildExpectedLabelWhenManyElementsInList() {
         Others others = Others.builder()
-            .firstOther(Other.builder()
-                .name("James Daniels")
-                .build())
-            .additionalOthers(ImmutableList.of(Element.<Other>builder()
-                .value(Other.builder()
-                    .name("Bob Martyn")
-                    .build())
-                .build()))
+            .firstOther(Other.builder().name("James Daniels").build())
+            .additionalOthers(wrapElements((Other.builder().name("Bob Martyn").build())))
             .build();
 
         String result = service.buildOthersLabel(others);
@@ -62,19 +55,13 @@ class OthersServiceTest {
     @Test
     void shouldBuildExpectedLabelWhenManyElementsInListWithEmptyName() {
         Others others = Others.builder()
-            .firstOther(Other.builder()
-                .birthplace("birth place")
-                .build())
-            .additionalOthers(ImmutableList.of(Element.<Other>builder()
-                .value(Other.builder()
-                    .birthplace("birth place")
-                    .build())
-                .build()))
+            .firstOther(Other.builder().birthPlace("birth place").build())
+            .additionalOthers(wrapElements(Other.builder().birthPlace("birth place").build()))
             .build();
 
         String result = service.buildOthersLabel(others);
 
-        assertThat(result).isEqualTo("Person 1 - BLANK - Please complete\nOther person 1 - BLANK - Please complete\n");
+        assertThat(result).isEqualTo("Person 1 - \nOther person 1 - \n");
     }
 
     @Test

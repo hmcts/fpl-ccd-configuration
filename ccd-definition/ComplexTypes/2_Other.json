@@ -57,6 +57,7 @@
     "ListElementCode": "telephone",
     "FieldType": "Text",
     "ElementLabel": "Telephone number",
+    "Max": "24",
     "SecurityClassification": "Public"
   },
   {
@@ -64,8 +65,8 @@
     "ID": "Others",
     "ListElementCode": "childInformation",
     "FieldType": "TextArea",
-    "ElementLabel": "What is this person’s relationship to the child or children in this case?",
-    "HintText": "Include: the name of the child or children, this person’s relationship to them and whether this person has parental responsibility",
+    "ElementLabel": "What is this person's relationship to the child or children in this case?",
+    "HintText": "Include: the name of the child or children, this person's relationship to them and whether this person has parental responsibility",
     "SecurityClassification": "Public"
   },
   {

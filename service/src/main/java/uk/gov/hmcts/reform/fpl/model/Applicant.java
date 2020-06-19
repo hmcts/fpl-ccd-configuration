@@ -9,7 +9,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 @ComplexType(name = "Applicants")
 public class Applicant {

@@ -11,8 +11,6 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 @AllArgsConstructor
 public class Representative {
 
-    private String idamId;
-
     private final String fullName;
 
     private final String positionInACase;

@@ -1,8 +1,17 @@
 /* global process */
+const recorder = require('codeceptjs').recorder;
 
 module.exports = class HooksHelpers extends Helper {
   _test(test) {
     test.retries(parseInt(process.env.TEST_RETRIES || '0'));
+  }
+
+  _beforeSuite() {
+    recorder.retry({
+      retries: 10,
+      minTimeout: 1000,
+      when: err => err.message.indexOf('Execution context was destroyed') > -1,
+    });
   }
 
   _afterStep(step) {

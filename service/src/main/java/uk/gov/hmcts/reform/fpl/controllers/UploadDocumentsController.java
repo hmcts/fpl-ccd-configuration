@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,16 +17,10 @@ import uk.gov.hmcts.reform.fpl.service.DocumentsValidatorService;
 @Api
 @RestController
 @RequestMapping("/callback/upload-documents")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UploadDocumentsController {
     private final ObjectMapper objectMapper;
     private final DocumentsValidatorService documentsValidatorService;
-
-    @Autowired
-    private  UploadDocumentsController(ObjectMapper objectMapper,
-                                       DocumentsValidatorService documentsValidatorService) {
-        this.objectMapper = objectMapper;
-        this.documentsValidatorService = documentsValidatorService;
-    }
 
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {

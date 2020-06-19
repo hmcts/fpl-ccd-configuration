@@ -52,6 +52,7 @@ module.exports = {
       postcodeLookup.enterAddressManually(respondent.address);
     });
     I.fillField(this.fields(elementIndex).respondent.telephone, respondent.telephone);
+    I.fillField(this.fields(elementIndex).respondent.relationshipToChild, respondent.relationshipToChild);
   },
 
   async enterRelationshipToChild(relationship) {

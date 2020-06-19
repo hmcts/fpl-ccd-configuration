@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import feign.FeignException;
+import feign.Request;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.Test;
@@ -15,10 +16,12 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
-import uk.gov.hmcts.reform.rd.model.User;
+import uk.gov.hmcts.reform.rd.model.OrganisationUser;
 
 import java.util.Map;
 
+import static feign.Request.HttpMethod.GET;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -42,7 +45,7 @@ class RepresentativeMidEventControllerTest extends AbstractControllerTest {
     @MockBean
     private AuthTokenGenerator authTokenGenerator;
 
-    @MockBean
+    @MockBean(name = "uk.gov.hmcts.reform.rd.client.OrganisationApi")
     private OrganisationApi organisationApi;
 
     RepresentativeMidEventControllerTest() {
@@ -64,12 +67,14 @@ class RepresentativeMidEventControllerTest extends AbstractControllerTest {
             .email(representativeEmail).build());
 
         given(authTokenGenerator.generate()).willReturn(serviceAuthToken);
-        given(organisationApi.findUserByEmail(userAuthToken, serviceAuthToken, representativeEmail))
-            .willThrow(new FeignException.NotFound("User not found", null));
+        given(organisationApi.findUserByEmail(USER_AUTH_TOKEN, serviceAuthToken, representativeEmail))
+            .willThrow(new FeignException.NotFound("User not found",
+                Request.create(GET, "", Map.of(), new byte[] {}, UTF_8),
+                new byte[] {}));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 
-        verify(organisationApi).findUserByEmail(userAuthToken, serviceAuthToken, representativeEmail);
+        verify(organisationApi).findUserByEmail(USER_AUTH_TOKEN, serviceAuthToken, representativeEmail);
 
         assertThat(callbackResponse.getErrors())
             .contains("Representative must already have an account with the digital service");
@@ -81,12 +86,12 @@ class RepresentativeMidEventControllerTest extends AbstractControllerTest {
             .email(representativeEmail).build());
 
         given(authTokenGenerator.generate()).willReturn(serviceAuthToken);
-        given(organisationApi.findUserByEmail(userAuthToken, serviceAuthToken, representativeEmail))
-            .willReturn(new User(RandomStringUtils.randomAlphanumeric(10)));
+        given(organisationApi.findUserByEmail(USER_AUTH_TOKEN, serviceAuthToken, representativeEmail))
+            .willReturn(new OrganisationUser(RandomStringUtils.randomAlphanumeric(10)));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 
-        verify(organisationApi).findUserByEmail(userAuthToken, serviceAuthToken, representativeEmail);
+        verify(organisationApi).findUserByEmail(USER_AUTH_TOKEN, serviceAuthToken, representativeEmail);
 
         assertThat(callbackResponse.getErrors()).isEmpty();
     }

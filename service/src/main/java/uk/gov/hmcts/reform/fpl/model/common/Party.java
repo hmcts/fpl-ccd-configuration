@@ -10,23 +10,26 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 
 import java.time.LocalDate;
 
+import javax.validation.Valid;
+
 import static org.apache.commons.lang3.StringUtils.defaultString;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor(force = true)
 public class Party {
-    // REFACTOR: 03/12/2019 This needs to be private, effects tests as well
-    public final String partyId;
-    public final PartyType partyType;
-    public final String firstName;
-    public final String lastName;
-    public final String organisationName;
+    protected final String partyId;
+    protected final PartyType partyType;
+    protected final String firstName;
+    protected final String lastName;
+    protected final String organisationName;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    public final LocalDate dateOfBirth;
-    public final Address address;
-    public final EmailAddress email;
-    public final Telephone telephoneNumber;
+    protected final LocalDate dateOfBirth;
+    protected final Address address;
+
+    @Valid
+    protected final EmailAddress email;
+    protected final Telephone telephoneNumber;
 
     @JsonIgnore
     public String getFullName() {

@@ -1,20 +1,16 @@
 const config = require('../config.js');
 
 let caseId;
+let caseName;
 
 Feature('Application draft (empty draft)');
 
-Before(async (I) => {
-  if (!caseId) {
-    await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
-
-    // eslint-disable-next-line require-atomic-updates
-    caseId = await I.grabTextFrom('.heading-h1');
-    console.log(`Application draft ${caseId} has been created`);
-  } else {
-    await I.navigateToCaseDetails(caseId);
-  }
+BeforeSuite(async I => {
+  caseName = `Case ${new Date().toISOString()}`;
+  caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne, caseName);
 });
+
+Before(async I => await I.navigateToCaseDetails(caseId));
 
 Scenario('local authority tries to submit incomplete case', async (I, caseViewPage, submitApplicationEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.submitCase);
@@ -29,10 +25,11 @@ Scenario('local authority tries to submit incomplete case', async (I, caseViewPa
   I.see('You need to add details to grounds for the application');
 });
 
-Scenario('local authority deletes application', async (I, caseViewPage, deleteApplicationEventPage) => {
+Scenario('local authority deletes application', async (I, caseViewPage, deleteApplicationEventPage, caseListPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.deleteApplication);
   deleteApplicationEventPage.tickDeletionConsent();
-  await I.completeEvent('Delete application');
-  I.seeEventSubmissionConfirmation(config.applicationActions.deleteApplication);
-  I.dontSee(caseViewPage.actionsDropdown);
+  await I.retryUntilExists(() => I.click('Continue'), '.check-your-answers');
+  await I.retryUntilExists(() => I.click('Delete application'), '.search-block');
+  await caseListPage.searchForCasesWithName(caseName);
+  I.see('No cases found.');
 });

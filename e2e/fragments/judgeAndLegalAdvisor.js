@@ -12,9 +12,27 @@ module.exports = {
       magistrates: 'Magistrates (JP)',
       other: 'Other',
     },
+    useAllocatedJudge: {
+      groupName: 'judgeAndLegalAdvisor_useAllocatedJudge',
+      yes: 'Yes',
+      no: 'No',
+    },
     otherTitle: 'judgeAndLegalAdvisor_otherTitle',
     judgeLastName: 'judgeAndLegalAdvisor_judgeLastName',
+    judgeEmailAddress: 'judgeAndLegalAdvisor_judgeEmailAddress',
     legalAdvisorName: 'judgeAndLegalAdvisor_legalAdvisorName',
+  },
+
+  useAllocatedJudge(complexTypeAppender = '') {
+    within('#' + complexTypeAppender + this.fields.useAllocatedJudge.groupName, () => {
+      I.click(locate('label').withText(this.fields.useAllocatedJudge.yes));
+    });
+  },
+
+  useAlternateJudge(complexTypeAppender = '') {
+    within('#' + complexTypeAppender + this.fields.useAllocatedJudge.groupName, () => {
+      I.click(locate('label').withText(this.fields.useAllocatedJudge.no));
+    });
   },
 
   selectJudgeTitle(complexTypeAppender = '', title = this.fields.judgeTitleRadioGroup.herHonourJudge, otherTitle = '') {
@@ -29,6 +47,10 @@ module.exports = {
 
   enterJudgeLastName(judgeLastName, complexTypeAppender = '') {
     I.fillField('#' + complexTypeAppender + this.fields.judgeLastName, judgeLastName);
+  },
+
+  enterJudgeEmailAddress(judgeEmailAddress, complexTypeAppender = '') {
+    I.fillField('#' + complexTypeAppender + this.fields.judgeEmailAddress, judgeEmailAddress);
   },
 
   enterLegalAdvisorName(legalAdvisorName, complexTypeAppender = '') {

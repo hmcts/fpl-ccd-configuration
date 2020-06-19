@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -18,17 +18,10 @@ import java.util.Map;
 @Api
 @RestController
 @RequestMapping("/callback/case-initiation")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseInitiationController {
-
     private final LocalAuthorityService localAuthorityNameService;
     private final LocalAuthorityUserService localAuthorityUserService;
-
-    @Autowired
-    public CaseInitiationController(LocalAuthorityService localAuthorityNameService,
-                                    LocalAuthorityUserService localAuthorityUserService) {
-        this.localAuthorityNameService = localAuthorityNameService;
-        this.localAuthorityUserService = localAuthorityUserService;
-    }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(
@@ -45,14 +38,12 @@ public class CaseInitiationController {
     }
 
     @PostMapping("/submitted")
-    public void handleSubmittedEvent(@RequestHeader(value = "authorization") String authorisation,
-        @RequestHeader(value = "user-id") String userId,
-        @RequestBody CallbackRequest callbackRequest) {
+    public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         String caseId = Long.toString(caseDetails.getId());
         String caseLocalAuthority = (String) caseDetails.getData()
             .get("caseLocalAuthority");
 
-        localAuthorityUserService.grantUserAccessWithCaseRole(authorisation, userId, caseId, caseLocalAuthority);
+        localAuthorityUserService.grantUserAccessWithCaseRole(caseId, caseLocalAuthority);
     }
 }

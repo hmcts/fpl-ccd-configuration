@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.*;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
 
 import static uk.gov.hmcts.reform.fpl.enums.State.*;
@@ -21,10 +22,10 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
     @Override
     public void configure() {
         caseType("CARE_SUPERVISION_EPO");
-        buildOpenEvents();
+        buildOPENEvents();
         buildSubmittedEvents();
         buildPrepareForHearingEvents();
-        buildGatekeepingEvents();
+        buildGATEKEEPINGEvents();
         buildStateTransitions();
     }
 
@@ -79,7 +80,7 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
 
     private void buildStateTransitions() {
         event("submitApplication")
-            .forStateTransition(Open, Submitted)
+            .forStateTransition(OPEN, SUBMITTED)
             .name("Submit application")
             .displayOrder(17) // TODO - necessary?
                 .explicitGrants()
@@ -93,7 +94,7 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                     .field("submissionConsent", DisplayContext.Mandatory, null, "MultiSelectList", "Consent", " ");
 
         event("populateSDO")
-                .forStateTransition(Submitted, Gatekeeping)
+                .forStateTransition(SUBMITTED, GATEKEEPING)
                 .name("Populate standard directions")
                 .displayOrder(14) // TODO - necessary?
                 .explicitGrants()
@@ -108,7 +109,7 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                     .optional(CaseData::getCourtDirections);
 
         event("deleteApplication")
-                .forStateTransition(Open, Deleted)
+                .forStateTransition(OPEN, DELETED)
                 .displayOrder(18) // TODO - necessary?
                 .grant("CRU", LOCAL_AUTHORITY)
                 .name("Delete an application")
@@ -118,10 +119,10 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                     .field("deletionConsent", DisplayContext.Mandatory, null, "MultiSelectList", "DeletionConsent", " ");
     }
 
-    private void buildGatekeepingEvents() {
-        grant(Gatekeeping, "CRU", GATEKEEPER);
+    private void buildGATEKEEPINGEvents() {
+        grant(GATEKEEPING, "CRU", GATEKEEPER);
         event("otherAllocationDecision")
-                .forState(Gatekeeping)
+                .forState(GATEKEEPING)
                 .name("Allocation decision")
                 .description("Entering other proceedings and allocation proposals")
                 .showSummary()
@@ -131,12 +132,12 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .fields()
                     .field(CaseData::getAllocationDecision, DisplayContext.Mandatory, true);
 
-        addHearingBookingDetails( Gatekeeping);
-        buildSharedEvents( Gatekeeping);
-        buildNoticeOfProceedings( Gatekeeping);
+        addHearingBookingDetails( GATEKEEPING);
+        buildSharedEvents( GATEKEEPING);
+        buildNoticeOfProceedings( GATEKEEPING);
 
         event("draftSDO")
-                .forState(Gatekeeping)
+                .forState(GATEKEEPING)
                 .name("Draft standard directions")
                 .allWebhooks("draft-standard-directions")
                 //.midEventWebhook()
@@ -168,11 +169,11 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
 //                            .field("-").id(Order::getOrderDoc).context(DisplayContext.ReadOnly).label("Check the order").done()
                             .mandatory(Order::getOrderStatus);
 
-        buildStandardDirections( Gatekeeping, "AfterGatekeeping");
-        buildUploadC2( Gatekeeping);
-        buildC21Event( Gatekeeping);
-        event("uploadDocumentsAfterGatekeeping")
-                .forState(Gatekeeping)
+        buildStandardDirections( GATEKEEPING, "AfterGATEKEEPING");
+        buildUploadC2( GATEKEEPING);
+        buildC21Event( GATEKEEPING);
+        event("uploadDocumentsAfterGATEKEEPING")
+                .forState(GATEKEEPING)
                 .name("Documents")
                 .description("Only here for backwards compatibility with case history")
                 .explicitGrants()
@@ -209,19 +210,19 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
     }
 
     private void buildSubmittedEvents() {
-        grant(Submitted, "CRU", HMCTS_ADMIN);
+        grant(SUBMITTED, "CRU", HMCTS_ADMIN);
         event("addFamilyManCaseNumber")
-                .forState(Submitted)
+                .forState(SUBMITTED)
                 .name("Add case number")
                 .fields()
                     .optional(CaseData::getFamilyManCaseNumber);
 
-        addHearingBookingDetails( Submitted);
-        this.buildStandardDirections( Submitted, "");
-        buildUploadC2( Submitted);
+        addHearingBookingDetails( SUBMITTED);
+        this.buildStandardDirections( SUBMITTED, "");
+        buildUploadC2( SUBMITTED);
 
         event("sendToGatekeeper")
-                .forState(Submitted)
+                .forState(SUBMITTED)
                 .name("Send to gatekeeper")
                 .description("Send email to gatekeeper")
                 .explicitGrants()
@@ -230,12 +231,12 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .submittedWebhook()
                 .fields()
                     .label("gateKeeperLabel", "Let the gatekeeper know there's a new case")
-                    .mandatory(CaseData::getGatekeeperEmail);
-        buildSharedEvents( Submitted);
-        buildNoticeOfProceedings( Submitted);
+                    .mandatory(CaseData::getGatekeeperEmails);
+        buildSharedEvents( SUBMITTED);
+        buildNoticeOfProceedings( SUBMITTED);
 
         event("addStatementOfService")
-                .forState(Submitted)
+                .forState(SUBMITTED)
                 .explicitGrants()
                 .grant("CRU", LOCAL_AUTHORITY)
                 .name("Add statement of service (c9)")
@@ -248,10 +249,10 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                     .field("serviceDeclarationLabel", DisplayContext.ReadOnly, null, "Text", null, "Declaration" )
                     .field("serviceConsent", DisplayContext.Mandatory, null, "MultiSelectList", "Consent", " ");
 
-        buildC21Event( Submitted);
+        buildC21Event( SUBMITTED);
 
         event("uploadDocumentsAfterSubmission")
-                .forState(Submitted)
+                .forState(SUBMITTED)
                 .explicitGrants()
                 .grant("R", LOCAL_AUTHORITY)
                 .name("Documents")
@@ -426,10 +427,10 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .mandatory(C2DocumentBundle::getDescription);
     }
 
-    private void buildOpenEvents() {
-        grant(Open, "CRU", LOCAL_AUTHORITY);
-        event("openCase")
-                .initialState(Open)
+    private void buildOPENEvents() {
+        grant(OPEN, "CRU", LOCAL_AUTHORITY);
+        event("OPENCase")
+                .initialState(OPEN)
                 .name("Start application")
                 .description("Create a new case – add a title")
                 .aboutToSubmitURL("/case-initiation/about-to-submit")
@@ -438,20 +439,20 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .fields()
                     .optional(CaseData::getCaseName);
 
-        event("ordersNeeded").forState(Open)
+        event("ordersNeeded").forState(OPEN)
                 .name("Orders and directions needed")
                 .description("Selecting the orders needed for application")
                 .aboutToSubmitURL("/orders-needed/about-to-submit")
                 .fields()
                     .optional(CaseData::getOrders);
 
-        event("hearingNeeded").forState(Open)
+        event("hearingNeeded").forState(OPEN)
                 .name("Hearing needed")
                 .description("Selecting the hearing needed for application")
                 .fields()
                     .optional(CaseData::getHearing);
 
-        event("enterChildren").forState(Open)
+        event("enterChildren").forState(OPEN)
                 .name("Children")
                 .description("Entering the children for the case")
                 .aboutToStartURL("/enter-children/about-to-start")
@@ -459,7 +460,7 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .fields()
                     .optional(CaseData::getChildren1);
 
-        event("enterRespondents").forState(Open)
+        event("enterRespondents").forState(OPEN)
                 .name("Respondents")
                 .description("Entering the respondents for the case")
                 .aboutToStartWebhook()
@@ -467,7 +468,7 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .fields()
                     .optional(CaseData::getRespondents1);
 
-        event("enterApplicant").forState(Open)
+        event("enterApplicant").forState(OPEN)
                 .name("Applicant")
                 .description("Entering the applicant for the case")
                 .aboutToStartWebhook()
@@ -476,13 +477,13 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                     .optional(CaseData::getApplicants)
                     .optional(CaseData::getSolicitor);
 
-        event("enterOthers").forState(Open)
+        event("enterOthers").forState(OPEN)
                 .name("Others to be given notice")
                 .description("Entering others for the case")
                 .fields()
                     .optional(CaseData::getOthers);
 
-        event("enterGrounds").forState(Open)
+        event("enterGrounds").forState(OPEN)
                 .name("Grounds for the application")
                 .description("Entering the grounds for the application")
                 .fields()
@@ -490,40 +491,40 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                     .optional(CaseData::getGroundsForEPO, "EPO_REASONING_SHOW CONTAINS \"SHOW_FIELD\"")
                     .optional(CaseData::getGrounds);
 
-        event("enterRiskHarm").forState(Open)
+        event("enterRiskHarm").forState(OPEN)
                 .name("Risk and harm to children")
                 .description("Entering opinion on risk and harm to children")
                 .fields()
                     .optional(CaseData::getRisks);
 
-        event("enterParentingFactors").forState(Open)
+        event("enterParentingFactors").forState(OPEN)
                 .name("Factors affecting parenting")
                 .description("Entering the factors affecting parenting")
                 .grant("CRU", LOCAL_AUTHORITY)
                 .fields()
                     .optional(CaseData::getFactorsParenting);
 
-        event("enterInternationalElement").forState(Open)
+        event("enterInternationalElement").forState(OPEN)
                 .name("International element")
                 .description("Entering the international element")
                 .fields()
                     .optional(CaseData::getInternationalElement);
 
-        event("otherProceedings").forState(Open)
+        event("otherProceedings").forState(OPEN)
                 .name("Other proceedings")
                 .description("Entering other proceedings and proposals")
                 .fields()
                     .optional(CaseData::getProceeding);
 
-        event("otherProposal").forState(Open)
+        event("otherProposal").forState(OPEN)
                 .name("Allocation proposal")
                 .grant("CRU", GATEKEEPER)
                 .description("Entering other proceedings and allocation proposals")
                 .fields()
-                    .label("allocationProposal_label", "This should be completed by a solicitor with good knowledge of the case. Use the [President's Guidance](https://www.judiciary.uk/wp-content/uploads/2013/03/President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf) and [schedule](https://www.judiciary.uk/wp-content/uploads/2013/03/Schedule-to-the-President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf) on allocation and gatekeeping to make your recommendation.")
+                    .label("allocationProposal_label", "This should be completed by a solicitor with good knowledge of the case. Use the [President's Guidance](https://www.judiciary.uk/wp-content/uploads/2013/03/President%E2%80%99s-Guidance-on-Allocation-and-GATEKEEPING.pdf) and [schedule](https://www.judiciary.uk/wp-content/uploads/2013/03/Schedule-to-the-President%E2%80%99s-Guidance-on-Allocation-and-GATEKEEPING.pdf) on allocation and GATEKEEPING to make your recommendation.")
                     .optional(CaseData::getAllocationProposal);
 
-        event("attendingHearing").forState(Open)
+        event("attendingHearing").forState(OPEN)
                 .name("Attending the hearing")
                 .description("Enter extra support needed for anyone to take part in hearing")
                 .displayOrder(13)
@@ -547,19 +548,19 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                     .optional(CaseData::getThresholdDocument)
                     .optional(CaseData::getChecklistDocument)
                     .field("[STATE]", DisplayContext.ReadOnly, "courtBundle = \"DO_NOT_SHOW\"")
-                    .field("courtBundle", DisplayContext.Optional, "[STATE] != \"Open\"", "CourtBundle", null, "8. Court bundle")
+                    .field("courtBundle", DisplayContext.Optional, "[STATE] != \"OPEN\"", "CourtBundle", null, "8. Court bundle")
                     .label("documents_socialWorkOther_border_top", "-------------------------------------------------------------------------------------------------------------")
                     .optional(CaseData::getOtherSocialWorkDocuments)
                     .label("documents_socialWorkOther_border_bottom", "-------------------------------------------------------------------------------------------------------------");
 
-        event("changeCaseName").forState(Open)
+        event("changeCaseName").forState(OPEN)
                 .name("Change case name")
                 .description("Change case name")
                 .displayOrder(15)
                 .fields()
                     .optional(CaseData::getCaseName);
 
-        event("addCaseIDReference").forState(Open)
+        event("addCaseIDReference").forState(OPEN)
                 .name("Add case ID")
                 .description("Add case ID")
                 .explicitGrants() // Do not inherit State level role permissions

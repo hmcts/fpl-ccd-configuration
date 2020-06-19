@@ -1,0 +1,19 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EPOChildren",
+    "ListElementCode": "descriptionNeeded",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Do you want to add a description for the child[ren]?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EPOChildren",
+    "ListElementCode": "description",
+    "FieldType": "TextArea",
+    "ElementLabel": "Description",
+    "FieldShowCondition": "descriptionNeeded=\"Yes\"",
+    "SecurityClassification": "Public"
+  }
+]

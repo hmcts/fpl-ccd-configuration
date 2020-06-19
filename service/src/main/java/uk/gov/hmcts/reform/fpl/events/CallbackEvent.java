@@ -1,30 +1,25 @@
 package uk.gov.hmcts.reform.fpl.events;
 
+import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 
+@EqualsAndHashCode
 public class CallbackEvent {
 
     private final CallbackRequest callbackRequest;
-    private final String authorization;
-    private final String userId;
 
 
 
-    public CallbackEvent(CallbackRequest callbackRequest, String authorization, String userId) {
+     CallbackEvent(CallbackRequest callbackRequest) {
         this.callbackRequest = callbackRequest;
-        this.authorization = authorization;
-        this.userId = userId;
+    }
+
+    CallbackEvent(CallbackEvent callbackEvent) {
+        this.callbackRequest = callbackEvent.callbackRequest;
     }
 
     public CallbackRequest getCallbackRequest() {
         return callbackRequest;
     }
 
-    public String getAuthorization() {
-        return authorization;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
 }

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,38 +16,31 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
-import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.CHILD;
+import static uk.gov.hmcts.reform.fpl.model.Child.expandCollection;
 
 @Api
 @RestController
 @RequestMapping("/callback/enter-children")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ChildController {
     private final ObjectMapper mapper;
-    private final ChildrenService childrenService;
     private final ConfidentialDetailsService confidentialDetailsService;
-
-    @Autowired
-    public ChildController(ObjectMapper mapper,
-                           ChildrenService childrenService,
-                           ConfidentialDetailsService confidentialDetailsService) {
-        this.mapper = mapper;
-        this.childrenService = childrenService;
-        this.confidentialDetailsService = confidentialDetailsService;
-    }
+    private final Time time;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData().put("children1", childrenService.prepareChildren(caseData));
+        caseDetails.getData().put("children1", confidentialDetailsService
+            .prepareCollection(caseData.getAllChildren(), caseData.getConfidentialChildren(), expandCollection()));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -68,12 +62,7 @@ public class ChildController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<Child>> confidentialChildren =
-            confidentialDetailsService.addPartyMarkedConfidentialToList(caseData.getAllChildren());
-
-        confidentialDetailsService.addConfidentialDetailsToCaseDetails(caseDetails, confidentialChildren, CHILD);
-
-        caseDetails.getData().put("children1", childrenService.modifyHiddenValues(caseData.getAllChildren()));
+        confidentialDetailsService.addConfidentialDetailsToCase(caseDetails, caseData.getAllChildren(), CHILD);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -90,7 +79,7 @@ public class ChildController {
                 .map(Child::getParty)
                 .map(Party::getDateOfBirth)
                 .filter(Objects::nonNull)
-                .filter(dateOfBirth -> dateOfBirth.isAfter(LocalDate.now()))
+                .filter(dateOfBirth -> dateOfBirth.isAfter(time.now().toLocalDate()))
                 .findAny()
                 .ifPresent(date -> errors.add("Date of birth cannot be in the future"));
         }

@@ -1,237 +1,228 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
-import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
-import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
-import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudge;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 
-import java.io.IOException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
+import static java.lang.String.format;
+import static java.time.format.FormatStyle.LONG;
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
-import static org.springframework.util.CollectionUtils.isEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
-import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
-import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateDraftWatermarkEncodedString;
+import static org.apache.commons.lang3.StringUtils.trim;
+import static uk.gov.hmcts.reform.fpl.model.configuration.Display.Due.BY;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
 
-// Supports SDO case data. Tech debt ticket needed to refactor caseDataExtractionService and NoticeOfProceedingsService
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseDataExtractionService {
-
-    public static final String EMPTY_PLACEHOLDER = "BLANK - please complete";
-    private final DateFormatterService dateFormatterService;
-    private final HearingBookingService hearingBookingService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
-    private final OrdersLookupService ordersLookupService;
-    private final DirectionHelperService directionHelperService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
-    private final CommonCaseDataExtractionService commonCaseDataExtractionService;
 
-    // TODO
-    // No need to pass in CaseData to each method. Refactor to only use required model
-    @SuppressWarnings("unchecked")
-    public Map<String, Object> getStandardOrderDirectionData(CaseData caseData) throws IOException {
-        ImmutableMap.Builder data = ImmutableMap.<String, Object>builder();
+    public String getCourtName(String localAuthority) {
+        return hmctsCourtLookupConfiguration.getCourt(localAuthority).getName();
+    }
 
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getStandardDirectionOrder() != null
-            ? caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor() : caseData.getJudgeAndLegalAdvisor();
+    public String getHearingTime(HearingBooking hearingBooking) {
+        String hearingTime;
+        final LocalDateTime startDate = hearingBooking.getStartDate();
+        final LocalDateTime endDate = hearingBooking.getEndDate();
 
-        data.put("judgeTitleAndName", defaultIfBlank(JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
-            judgeAndLegalAdvisor), EMPTY_PLACEHOLDER));
-        data.put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(
-            judgeAndLegalAdvisor));
-
-        data.put("courtName", caseData.getCaseLocalAuthority() != null
-            ? hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName() : EMPTY_PLACEHOLDER);
-
-        data.put("familyManCaseNumber", defaultIfNull(caseData.getFamilyManCaseNumber(), EMPTY_PLACEHOLDER));
-        data.put("generationDate", dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG));
-        data.put("complianceDeadline", caseData.getDateSubmitted() != null
-            ? dateFormatterService.formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26),
-            FormatStyle.LONG) : EMPTY_PLACEHOLDER);
-        data.put("children", getChildrenDetails(caseData));
-
-        List<Map<String, String>> respondentsNameAndRelationship = getRespondentsNameAndRelationship(caseData);
-        data.put("respondents", respondentsNameAndRelationship);
-        data.put("respondentsProvided", !respondentsNameAndRelationship.isEmpty());
-
-        data.put("applicantName", getFirstApplicantName(caseData));
-        data.putAll(getGroupedDirections(caseData));
-        data.putAll(getHearingBookingData(caseData));
-
-        if (isNotEmpty(caseData.getStandardDirectionOrder())
-            && caseData.getStandardDirectionOrder().getOrderStatus() != SEALED) {
-            data.put("draftbackground", String.format("image:base64:%1$s", generateDraftWatermarkEncodedString()));
+        if (hearingBooking.hasDatesOnSameDay()) {
+            // Example 3:30pm - 5:30pm
+            hearingTime = String.format("%s - %s", formatTime(startDate), formatTime(endDate));
+        } else {
+            // Example 18 June, 3:40pm - 19 June, 2:30pm
+            hearingTime = String.format("%s - %s", formatDateTime(startDate), formatDateTime(endDate));
         }
 
-        return data.build();
+        return hearingTime;
     }
 
-    private Map<String, Object> getHearingBookingData(CaseData caseData) {
-        if (caseData.getHearingDetails() == null || caseData.getHearingDetails().isEmpty()) {
-            return ImmutableMap.<String, Object>builder()
-                .put("hearingDate", EMPTY_PLACEHOLDER)
-                .put("hearingVenue", EMPTY_PLACEHOLDER)
-                .put("preHearingAttendance", EMPTY_PLACEHOLDER)
-                .put("hearingTime", EMPTY_PLACEHOLDER)
-                .put("hearingJudgeTitleAndName", EMPTY_PLACEHOLDER)
-                .put("hearingLegalAdvisorName", "")
-                .build();
+    public Optional<String> getHearingDateIfHearingsOnSameDay(HearingBooking hearingBooking) {
+        String hearingDate = null;
+
+        // If they aren't on the same date return nothing
+        if (hearingBooking.hasDatesOnSameDay()) {
+            hearingDate = formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG);
         }
 
-        HearingBooking prioritisedHearingBooking = hearingBookingService.getMostUrgentHearingBooking(caseData
-            .getHearingDetails());
-
-        HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(prioritisedHearingBooking.getVenue());
-
-        return ImmutableMap.<String, Object>builder()
-            .put("hearingDate", commonCaseDataExtractionService.getHearingDateIfHearingsOnSameDay(
-                prioritisedHearingBooking)
-                .orElse(""))
-            .put("hearingVenue", hearingVenueLookUpService.buildHearingVenue(hearingVenue))
-            .put("preHearingAttendance", commonCaseDataExtractionService.extractPrehearingAttendance(
-                prioritisedHearingBooking))
-            .put("hearingTime", commonCaseDataExtractionService.getHearingTime(prioritisedHearingBooking))
-            .put("hearingJudgeTitleAndName", JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
-                prioritisedHearingBooking.getJudgeAndLegalAdvisor()))
-            .put("hearingLegalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(
-                prioritisedHearingBooking.getJudgeAndLegalAdvisor()))
-            .build();
+        return Optional.ofNullable(hearingDate);
     }
 
-    private String getOrderTypes(CaseData caseData) {
-        return caseData.getOrders().getOrderType().stream()
-            .map(OrderType::getLabel)
-            .collect(Collectors.joining(", "));
+    public List<DocmosisChild> getChildrenDetails(List<Element<Child>> children) {
+        return children.stream()
+            .map(element -> element.getValue().getParty())
+            .map(this::buildChild)
+            .collect(toList());
     }
 
-    String getFirstApplicantName(CaseData caseData) {
-        return caseData.getAllApplicants().stream()
-            .map(Element::getValue)
-            .filter(Objects::nonNull)
-            .map(Applicant::getParty)
-            .filter(Objects::nonNull)
+    public String getApplicantName(List<Element<Applicant>> applicants) {
+        Applicant applicant = applicants.get(0).getValue();
+        return ofNullable(applicant.getParty())
             .map(ApplicantParty::getOrganisationName)
-            .findFirst()
             .orElse("");
     }
 
-    private Map<String, List<Map<String, String>>> getGroupedDirections(CaseData caseData) throws IOException {
-        OrderDefinition standardDirectionOrder = ordersLookupService.getStandardDirectionOrder();
-
-        if (caseData.getStandardDirectionOrder() == null) {
-            return ImmutableMap.of();
-        }
-
-        Map<DirectionAssignee, List<Element<Direction>>> groupedDirections =
-            directionHelperService.sortDirectionsByAssignee(directionHelperService.numberDirections(
-                caseData.getStandardDirectionOrder().getDirections()));
-
-        ImmutableMap.Builder<String, List<Map<String, String>>> formattedDirections = ImmutableMap.builder();
-
-        groupedDirections.forEach((key, value) -> {
-            List<Map<String, String>> directionsList = value.stream()
-                .map(Element::getValue)
-                .filter(direction -> !"No".equals(direction.getDirectionNeeded()))
-                .map(direction -> ImmutableMap.of(
-                    "title", formatTitle(direction, standardDirectionOrder.getDirections()),
-                    "body", defaultIfNull(direction.getDirectionText(), EMPTY_PLACEHOLDER)))
-                .collect(toList());
-
-            //TODO: temp refactoring to deal with PARENTS_AND_RESPONDENTS value change. SDO Template to be updated in
-            // future. Ticket in backlog: FPLA-1061.
-            if (key == PARENTS_AND_RESPONDENTS) {
-                formattedDirections.put("parentsAndRespondentsDirections", directionsList);
-
-            } else {
-                formattedDirections.put(key.getValue(), directionsList);
-            }
-        });
-
-        return formattedDirections.build();
-    }
-
-    List<Map<String, String>> getRespondentsNameAndRelationship(CaseData caseData) {
-
-        if (isEmpty(caseData.getRespondents1())) {
-            return ImmutableList.of();
-        }
-
-        return caseData.getRespondents1().stream()
-            .map(Element::getValue)
-            .map(Respondent::getParty)
-            .map(respondent -> ImmutableMap.of(
-                "name", respondent.getFirstName() == null && respondent.getLastName() == null
-                    ? EMPTY_PLACEHOLDER : defaultIfNull(respondent.getFirstName(), "") + " "
-                    + defaultIfNull(respondent.getLastName(), ""),
-                "relationshipToChild", defaultIfNull(respondent.getRelationshipToChild(), EMPTY_PLACEHOLDER)))
+    public List<DocmosisRespondent> getRespondentsNameAndRelationship(List<Element<Respondent>> respondents) {
+        return respondents.stream()
+            .map(element -> element.getValue().getParty())
+            .map(this::buildRespondent)
             .collect(toList());
     }
 
-    List<Map<String, String>> getChildrenDetails(CaseData caseData) {
-        // children is validated as not null
-        return caseData.getAllChildren().stream()
-            .map(Element::getValue)
-            .map(Child::getParty)
-            .map(child -> ImmutableMap.of(
-                "name", child.getFirstName() + " " + child.getLastName(),
-                "gender", defaultIfNull(child.getGender(), EMPTY_PLACEHOLDER),
-                "dateOfBirth", child.getDateOfBirth() == null ? EMPTY_PLACEHOLDER :
-                    dateFormatterService.formatLocalDateToString(child.getDateOfBirth(), FormatStyle.LONG)))
-            .collect(toList());
+    public String extractPrehearingAttendance(HearingBooking booking) {
+        LocalDateTime time = calculatePrehearingAttendance(booking.getStartDate());
+
+        return booking.hasDatesOnSameDay() ? formatTime(time) : formatDateTimeWithYear(time);
     }
 
-    String formatTitle(Direction direction, List<DirectionConfiguration> directions) {
-        @AllArgsConstructor
-        @NoArgsConstructor
-        @Data
+    public DocmosisJudgeAndLegalAdvisor getJudgeAndLegalAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+        return DocmosisJudgeAndLegalAdvisor.builder()
+            .judgeTitleAndName(formatJudgeTitleAndName(judgeAndLegalAdvisor))
+            .legalAdvisorName(getLegalAdvisorName(judgeAndLegalAdvisor))
+            .build();
+    }
+
+    public DocmosisJudge getAllocatedJudge(JudgeAndLegalAdvisor allocatedJudge) {
+        return DocmosisJudge.builder()
+            .judgeTitleAndName(formatJudgeTitleAndName(allocatedJudge))
+            .build();
+    }
+
+    public DocmosisHearingBooking getHearingBookingData(HearingBooking hearingBooking, String value) {
+        return ofNullable(hearingBooking).map(this::buildHearingBooking).orElse(getHearingBookingWithDefault(value));
+    }
+
+    public DocmosisDirection.Builder baseDirection(Direction direction, int index) {
+        return baseDirection(direction, index, emptyList());
+    }
+
+    public DocmosisDirection.Builder baseDirection(Direction direction, int index,
+                                                   List<DirectionConfiguration> config) {
+        return DocmosisDirection.builder()
+            .assignee(direction.getAssignee())
+            .title(formatTitle(index, direction, config))
+            .body(trim(direction.getDirectionText()));
+    }
+
+    private String formatTitle(int index, Direction direction, List<DirectionConfiguration> directionConfigurations) {
+
+        // default values here cover edge case where direction title is not found in configuration.
         class DateFormattingConfig {
-            private String pattern = "h:mma, d MMMM yyyy";
-            private Display.Due due = Display.Due.BY;
+            private String pattern = TIME_DATE;
+            private Display.Due due = BY;
         }
 
-        DateFormattingConfig dateFormattingConfig = directions.stream()
-            .filter(directionConfiguration ->
-                directionConfiguration.getTitle().equals(direction.getDirectionType().substring(3)))
-            .map(DirectionConfiguration::getDisplay)
-            .map(display -> new DateFormattingConfig(display.getTemplateDateFormat(), display.getDue()))
-            .findAny()
-            .orElseGet(DateFormattingConfig::new);
+        final DateFormattingConfig config = new DateFormattingConfig();
 
-        return String.format(
-            "%s %s %s", direction.getDirectionType(), dateFormattingConfig.due.toString().toLowerCase(),
-            (direction.getDateToBeCompletedBy() != null ? dateFormatterService
-                .formatLocalDateTimeBaseUsingFormat(direction.getDateToBeCompletedBy(),
-                    dateFormattingConfig.getPattern()) : "unknown"));
+        // find the date configuration values for the given direction
+        for (DirectionConfiguration directionConfiguration : directionConfigurations) {
+            if (directionConfiguration.getTitle().equals(direction.getDirectionType())) {
+                Display display = directionConfiguration.getDisplay();
+                config.pattern = display.getTemplateDateFormat();
+                config.due = display.getDue();
+                break;
+            }
+        }
+
+        // create direction display title for docmosis in format "index. directionTitle [(by / on) date]"
+        return format("%d. %s %s", index, direction.getDirectionType(),
+            formatTitleDate(direction.getDateToBeCompletedBy(), config.pattern, config.due)).trim();
+    }
+
+    private String formatTitleDate(LocalDateTime date, String pattern, Display.Due due) {
+        if (date == null) {
+            return "";
+        }
+
+        return due.toString().toLowerCase() + " " + formatLocalDateTimeBaseUsingFormat(date, pattern);
+    }
+
+    private DocmosisHearingBooking buildHearingBooking(HearingBooking hearing) {
+        HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(hearing);
+        DocmosisJudgeAndLegalAdvisor judgeAndLegalAdvisor =
+            getJudgeAndLegalAdvisor(hearing.getJudgeAndLegalAdvisor());
+
+        return DocmosisHearingBooking.builder()
+            .hearingDate(getHearingDateIfHearingsOnSameDay(hearing).orElse(""))
+            .hearingVenue(hearingVenueLookUpService.buildHearingVenue(hearingVenue))
+            .preHearingAttendance(extractPrehearingAttendance(hearing))
+            .hearingTime(getHearingTime(hearing))
+            .hearingJudgeTitleAndName(judgeAndLegalAdvisor.getJudgeTitleAndName())
+            .hearingLegalAdvisorName(judgeAndLegalAdvisor.getLegalAdvisorName())
+            .build();
+    }
+
+    private DocmosisHearingBooking getHearingBookingWithDefault(String value) {
+        return DocmosisHearingBooking.builder()
+            .hearingDate(value)
+            .hearingVenue(value)
+            .preHearingAttendance(value)
+            .hearingTime(value)
+            .build();
+    }
+
+    private DocmosisRespondent buildRespondent(RespondentParty respondent) {
+        return DocmosisRespondent.builder()
+            .name(respondent.getFullName())
+            .relationshipToChild(respondent.getRelationshipToChild())
+            .build();
+    }
+
+    private DocmosisChild buildChild(ChildParty child) {
+        return DocmosisChild.builder()
+            .name(child.getFullName())
+            .gender(child.getGender())
+            .dateOfBirth(ofNullable(child.getDateOfBirth())
+                .map(dob -> formatLocalDateToString(child.getDateOfBirth(), LONG))
+                .orElse(null))
+            .build();
+    }
+
+    private LocalDateTime calculatePrehearingAttendance(LocalDateTime dateTime) {
+        return dateTime.minusHours(1);
+    }
+
+    private String formatDateTimeWithYear(LocalDateTime dateTime) {
+        return formatLocalDateTimeBaseUsingFormat(dateTime, DATE_TIME);
+    }
+
+    private String formatDateTime(LocalDateTime dateTime) {
+        return formatLocalDateTimeBaseUsingFormat(dateTime, "d MMMM, h:mma");
+    }
+
+    private String formatTime(LocalDateTime dateTime) {
+        return formatLocalDateTimeBaseUsingFormat(dateTime, "h:mma");
     }
 }

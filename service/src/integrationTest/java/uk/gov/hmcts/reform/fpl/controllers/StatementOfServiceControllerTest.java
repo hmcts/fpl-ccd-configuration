@@ -29,7 +29,7 @@ class StatementOfServiceControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void mockUserNameRetrieval() {
-        given(userDetailsService.getUserName(userAuthToken)).willReturn("Emma Taylor");
+        given(userDetailsService.getUserName()).willReturn("Emma Taylor");
     }
 
     @Test

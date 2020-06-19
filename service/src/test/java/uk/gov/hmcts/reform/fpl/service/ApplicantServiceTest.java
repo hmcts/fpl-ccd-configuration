@@ -1,26 +1,30 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.rd.model.ContactInformation;
+import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {ApplicantService.class, ObjectMapper.class})
+@ContextConfiguration(classes = {ApplicantService.class})
 class ApplicantServiceTest {
+
+    private static final Organisation EMPTY_ORGANISATION = Organisation.builder().build();
 
     @Autowired
     private ApplicantService service;
@@ -30,36 +34,38 @@ class ApplicantServiceTest {
         CaseData caseData = CaseData.builder().build();
 
         assertThat(caseData.getApplicants()).isNull();
-        assertThat(service.expandApplicantCollection(caseData)).hasSize(1);
+        assertThat(service.expandApplicantCollection(caseData, EMPTY_ORGANISATION)).hasSize(1);
     }
 
     @Test
     void shouldNotExpandApplicantCollectionWhenApplicantsAlreadyExists() {
-        String uuid = UUID.randomUUID().toString();
+        String applicantPartyId = UUID.randomUUID().toString();
 
-        CaseData caseData = CaseData.builder().applicants(ImmutableList.of(
-            Element.<Applicant>builder()
-                .value(Applicant.builder()
-                    .party(ApplicantParty.builder()
-                        .partyId(uuid)
-                        .build())
+        Organisation organisation = EMPTY_ORGANISATION;
+
+        CaseData caseData = CaseData.builder().applicants(wrapElements(
+            Applicant.builder()
+                .party(ApplicantParty.builder()
+                    .partyId(applicantPartyId)
                     .build())
                 .build()))
             .build();
 
-        assertThat(service.expandApplicantCollection(caseData)).hasSize(1);
-        assertThat(service.expandApplicantCollection(caseData).get(0).getValue().getParty().partyId).isEqualTo(uuid);
+        assertThat(service.expandApplicantCollection(caseData, organisation)).hasSize(1);
+        assertThat(unwrapElements(service.expandApplicantCollection(caseData, organisation))
+            .get(0).getParty().getPartyId()).isEqualTo(applicantPartyId);
+    }
+
+    @Test
+    void shouldPassThroughWhenNoApplicants() {
+        assertThat(service.addHiddenValues(CaseData.builder().build())).isEmpty();
     }
 
     @Test
     void shouldAddPartyIdAndPartyTypeValuesToApplicant() {
-        List<Element<Applicant>> applicants = ImmutableList.of(
-            Element.<Applicant>builder()
-                .id(UUID.randomUUID())
-                .value(Applicant.builder()
-                    .party(ApplicantParty.builder().build())
-                    .build())
-                .build());
+        List<Element<Applicant>> applicants = wrapElements(Applicant.builder()
+            .party(ApplicantParty.builder().build())
+            .build());
 
         CaseData caseData = CaseData.builder()
             .applicants(applicants)
@@ -73,24 +79,16 @@ class ApplicantServiceTest {
 
     @Test
     void shouldAddPartyIDAndPartyTypeValuesToManyApplicants() {
-        List<Element<Applicant>> applicants = ImmutableList.of(
-            Element.<Applicant>builder()
-                .id(UUID.randomUUID())
-                .value(Applicant.builder()
-                    .party(ApplicantParty.builder()
-                        .organisationName("Organisation 1")
-                        .build())
+        List<Element<Applicant>> applicants = wrapElements(Applicant.builder()
+                .party(ApplicantParty.builder()
+                    .organisationName("Organisation 1")
                     .build())
                 .build(),
-            Element.<Applicant>builder()
-                .id(UUID.randomUUID())
-                .value(Applicant.builder()
-                    .party(ApplicantParty.builder()
-                        .organisationName("Organisation 2")
-                        .build())
+            Applicant.builder()
+                .party(ApplicantParty.builder()
+                    .organisationName("Organisation 2")
                     .build())
-                .build()
-        );
+                .build());
 
         CaseData caseData = CaseData.builder()
             .applicants(applicants)
@@ -110,17 +108,13 @@ class ApplicantServiceTest {
 
     @Test
     void shouldNotAddNewPartyIdWhenApplicantsAlreadyHasPartyIdValue() {
-        String uuid = UUID.randomUUID().toString();
+        String applicantPartyId = UUID.randomUUID().toString();
 
-        List<Element<Applicant>> applicants = ImmutableList.of(
-            Element.<Applicant>builder()
-                .id(UUID.randomUUID())
-                .value(Applicant.builder()
-                    .party(ApplicantParty.builder()
-                        .partyId(uuid)
-                        .build())
-                    .build())
-                .build());
+        List<Element<Applicant>> applicants = wrapElements(Applicant.builder()
+            .party(ApplicantParty.builder()
+                .partyId(applicantPartyId)
+                .build())
+            .build());
 
         CaseData caseData = CaseData.builder()
             .applicants(applicants)
@@ -128,6 +122,49 @@ class ApplicantServiceTest {
 
         Applicant applicant = service.addHiddenValues(caseData).get(0).getValue();
 
-        assertThat(applicant.getParty().partyId).isEqualTo(uuid);
+        assertThat(applicant.getParty().getPartyId()).isEqualTo(applicantPartyId);
+    }
+
+    @Test
+    void shouldReturnApplicantCollectionWithOrganisationDetailsWhenOrganisationExists() {
+        CaseData caseData = CaseData.builder().build();
+        Organisation organisation = buildOrganisation();
+
+        List<Applicant> applicants = unwrapElements(service.expandApplicantCollection(
+            caseData, organisation));
+
+        assertThat(applicants.get(0).getParty().getOrganisationName())
+            .isEqualTo(organisation.getName());
+        assertThat(applicants.get(0).getParty().getAddress()).isEqualTo(organisation
+            .getContactInformation().get(0).toAddress());
+    }
+
+    @Test
+    void shouldReturnApplicantCollectionWithoutOrganisationDetailsWhenNoOrganisationExists() {
+        CaseData caseData = CaseData.builder().build();
+
+        List<Applicant> applicants = unwrapElements(service.expandApplicantCollection(
+            caseData, EMPTY_ORGANISATION));
+
+        assertThat(applicants.get(0).getParty().getOrganisationName()).isNull();
+    }
+
+    private Organisation buildOrganisation() {
+        return Organisation.builder()
+            .name("Organisation")
+            .contactInformation(buildOrganisationAddress())
+            .build();
+    }
+
+    private List<ContactInformation> buildOrganisationAddress() {
+        return List.of(ContactInformation.builder()
+            .addressLine1("Flat 12, Pinnacle Apartments")
+            .addressLine2("Saffron Central")
+            .addressLine3("Square 11")
+            .townCity("London")
+            .county("County")
+            .country("United Kingdom")
+            .postCode("CR0 2GE")
+            .build());
     }
 }

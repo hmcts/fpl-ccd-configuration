@@ -11,8 +11,10 @@ class HmctsCourtLookupConfigurationTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String COURT_NAME = "Example Court";
     private static final String COURT_EMAIL = "example@court.com";
+    private static final String COURT_CODE = "11";
 
-    private static final String CONFIG = String.format("%s=>%s:%s", LOCAL_AUTHORITY_CODE, COURT_NAME, COURT_EMAIL);
+    private static final String CONFIG = String.format("%s=>%s:%s:%s", LOCAL_AUTHORITY_CODE, COURT_NAME, COURT_EMAIL,
+        COURT_CODE);
 
     private HmctsCourtLookupConfiguration configuration = new HmctsCourtLookupConfiguration(CONFIG);
 
@@ -55,7 +57,7 @@ class HmctsCourtLookupConfigurationTest {
     void shouldReturnCourtInformationWhenLocalAuthorityCodeExists() {
         Court court = configuration.getCourt(LOCAL_AUTHORITY_CODE);
 
-        assertThat(court).isEqualToComparingFieldByField(new Court(COURT_NAME, COURT_EMAIL));
+        assertThat(court).isEqualToComparingFieldByField(new Court(COURT_NAME, COURT_EMAIL, COURT_CODE));
     }
 
 }

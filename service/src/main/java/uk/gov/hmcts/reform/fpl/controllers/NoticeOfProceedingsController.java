@@ -2,11 +2,13 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -15,58 +17,52 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
+import uk.gov.hmcts.reform.fpl.events.NoticeOfProceedingsIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
-import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
+import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsTemplateDataGenerationService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
 
 import java.time.format.FormatStyle;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.NOTICE_OF_PROCEEDINGS;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
 
-@RequestMapping("/callback/notice-of-proceedings")
 @Api
 @RestController
+@RequestMapping("/callback/notice-of-proceedings")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class NoticeOfProceedingsController {
-
     private final ObjectMapper mapper;
     private final ValidateGroupService eventValidationService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
     private final NoticeOfProceedingsService noticeOfProceedingsService;
     private final HearingBookingService hearingBookingService;
-    private final DateFormatterService dateFormatterService;
-
-    @Autowired
-    private NoticeOfProceedingsController(ObjectMapper mapper,
-                                          ValidateGroupService eventValidationService,
-                                          DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
-                                          UploadDocumentService uploadDocumentService,
-                                          HearingBookingService hearingBookingService,
-                                          DateFormatterService dateFormatterService,
-                                          NoticeOfProceedingsService noticeOfProceedingsService) {
-        this.mapper = mapper;
-        this.eventValidationService = eventValidationService;
-        this.docmosisDocumentGeneratorService = docmosisDocumentGeneratorService;
-        this.uploadDocumentService = uploadDocumentService;
-        this.hearingBookingService = hearingBookingService;
-        this.dateFormatterService = dateFormatterService;
-        this.noticeOfProceedingsService = noticeOfProceedingsService;
-    }
+    private final NoticeOfProceedingsTemplateDataGenerationService noticeOfProceedingsTemplateDataGenerationService;
+    private final ApplicationEventPublisher applicationEventPublisher;
+    private final FeatureToggleService featureToggleService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -74,12 +70,19 @@ public class NoticeOfProceedingsController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (eventValidationService.validateGroup(caseData, NoticeOfProceedingsGroup.class).isEmpty()) {
-            HearingBooking hearingBooking = hearingBookingService
-                .getMostUrgentHearingBooking(caseData.getHearingDetails());
+            hearingBookingService.getFirstHearing(caseData.getHearingDetails())
+                .ifPresent(hearingBooking ->
+                    caseDetails.getData().put("proceedingLabel", buildProceedingLabel(hearingBooking)));
+        }
 
-            caseDetails.getData().put("proceedingLabel", String.format("The case management hearing will be on the %s.",
-                dateFormatterService.formatLocalDateToString(
-                    hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG)));
+        if (isNotEmpty(caseData.getAllocatedJudge())) {
+            String assignedJudgeLabel = buildAllocatedJudgeLabel(caseData.getAllocatedJudge());
+
+            caseDetails.getData().put("noticeOfProceedings", ImmutableMap.of(
+                "judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder()
+                    .allocatedJudgeLabel(assignedJudgeLabel)
+                    .build()
+            ));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -90,19 +93,27 @@ public class NoticeOfProceedingsController {
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(
-        @RequestHeader(value = "authorization") String authorization,
-        @RequestHeader(value = "user-id") String userId,
         @RequestBody @NotNull CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Map<String, Object> templateData = noticeOfProceedingsService.getNoticeOfProceedingTemplateData(caseData);
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
+            caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge());
+
+        removeAllocatedJudgeProperties(judgeAndLegalAdvisor);
+
+        NoticeOfProceedings noticeOfProceedings = caseData.getNoticeOfProceedings();
+        noticeOfProceedings = noticeOfProceedings.toBuilder().judgeAndLegalAdvisor(judgeAndLegalAdvisor).build();
+
+        caseDetails.getData().put("noticeOfProceedings", noticeOfProceedings);
+        caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        DocmosisNoticeOfProceeding templateData = noticeOfProceedingsTemplateDataGenerationService
+            .getTemplateData(caseData);
 
         List<DocmosisTemplates> templateTypes = getProceedingTemplateTypes(caseData);
 
-        List<Document> uploadedDocuments = generateAndUploadDocuments(userId, authorization, templateData,
-            templateTypes);
+        List<Document> uploadedDocuments = generateAndUploadDocuments(templateData, templateTypes);
 
         List<Element<DocumentBundle>> noticeOfProceedingCaseData = createNoticeOfProceedingsCaseData(uploadedDocuments);
 
@@ -121,6 +132,18 @@ public class NoticeOfProceedingsController {
             .build();
     }
 
+    @PostMapping("/submitted")
+    public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
+        if (featureToggleService.isAllocatedJudgeNotificationEnabled(NOTICE_OF_PROCEEDINGS)) {
+            applicationEventPublisher.publishEvent(new NoticeOfProceedingsIssuedEvent(callbackRequest));
+        }
+    }
+
+    private String buildProceedingLabel(HearingBooking hearingBooking) {
+        return String.format("The case management hearing will be on the %s.",
+            formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG));
+    }
+
     private List<Element<DocumentBundle>> createNoticeOfProceedingsCaseData(List<Document> uploadedDocuments) {
         return uploadedDocuments.stream()
             .map(document -> Element.<DocumentBundle>builder()
@@ -136,17 +159,14 @@ public class NoticeOfProceedingsController {
             .collect(Collectors.toList());
     }
 
-    private List<Document> generateAndUploadDocuments(String userId,
-                                                      String authorization,
-                                                      Map<String, Object> templatePlaceholders,
+    private List<Document> generateAndUploadDocuments(DocmosisNoticeOfProceeding templatePlaceholders,
                                                       List<DocmosisTemplates> templates) {
         List<DocmosisDocument> docmosisDocuments = templates.stream()
             .map(template -> docmosisDocumentGeneratorService.generateDocmosisDocument(templatePlaceholders, template))
             .collect(Collectors.toList());
 
         return docmosisDocuments.stream()
-            .map(document -> uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
-                document.getDocumentTitle()))
+            .map(document -> uploadDocumentService.uploadPDF(document.getBytes(), document.getDocumentTitle()))
             .collect(Collectors.toList());
     }
 

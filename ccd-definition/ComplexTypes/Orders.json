@@ -60,7 +60,7 @@
     "ID": "Orders",
     "ListElementCode": "otherOrderLabel",
     "FieldType": "Label",
-    "ElementLabel": "## Other order under part 4 of the Children Act 1989",
+    "ElementLabel": "## Variation or discharge of care or supervision order",
     "FieldShowCondition": "orderType CONTAINS \"OTHER\"",
     "SecurityClassification": "Public"
   },

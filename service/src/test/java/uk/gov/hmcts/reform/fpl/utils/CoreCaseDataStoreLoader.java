@@ -1,10 +1,15 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.text.StringSubstitutor;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.util.Map;
+
+import static java.util.Collections.emptyMap;
 
 public class CoreCaseDataStoreLoader {
 
@@ -14,23 +19,42 @@ public class CoreCaseDataStoreLoader {
         // NO-OP
     }
 
-    public static CaseDetails emptyCaseDetails() throws IOException {
-        String response = ResourceReader.readString("core-case-data-store-api/empty-case-details.json");
-        return mapper.readValue(response, CaseDetails.class);
+    public static CaseDetails emptyCaseDetails() {
+        return emptyCaseDetails(emptyMap());
     }
 
-    public static CaseDetails populatedCaseDetails() throws IOException {
-        String response = ResourceReader.readString("core-case-data-store-api/populated-case-details.json");
-        return mapper.readValue(response, CaseDetails.class);
+    public static CaseDetails emptyCaseDetails(Map<String, Object> placeholders) {
+        String file = readFile("core-case-data-store-api/empty-case-details.json", placeholders);
+        return convert(file, CaseDetails.class);
     }
 
-    public static CallbackRequest callbackRequest() throws IOException {
-        String response = ResourceReader.readString("core-case-data-store-api/callback-request.json");
-        return mapper.readValue(response, CallbackRequest.class);
+    public static CaseDetails populatedCaseDetails() {
+        return populatedCaseDetails(emptyMap());
     }
 
-    public static CallbackRequest careOrderRequest() throws IOException {
-        String response = ResourceReader.readString("core-case-data-store-api/care-order.json");
-        return mapper.readValue(response, CallbackRequest.class);
+    public static CaseDetails populatedCaseDetails(Map<String, Object> placeholders) {
+        String file = readFile("core-case-data-store-api/populated-case-details.json", placeholders);
+        return convert(file, CaseDetails.class);
+    }
+
+    public static CallbackRequest callbackRequest() {
+        return callbackRequest(emptyMap());
+    }
+
+    public static CallbackRequest callbackRequest(Map<String, Object> placeholders) {
+        String file = readFile("core-case-data-store-api/callback-request.json", placeholders);
+        return convert(file, CallbackRequest.class);
+    }
+
+    private static String readFile(String file, Map<String, Object> placeholders) {
+        return StringSubstitutor.replace(ResourceReader.readString(file), placeholders);
+    }
+
+    private static <T> T convert(String json, Class<T> clazz) {
+        try {
+            return mapper.readValue(json, clazz);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 }

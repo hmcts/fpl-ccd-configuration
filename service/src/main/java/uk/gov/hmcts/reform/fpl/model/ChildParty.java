@@ -8,15 +8,19 @@ import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.validation.groups.SealedSDOGroup;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.HasGender;
 
 import java.time.LocalDate;
-
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PastOrPresent;
+import javax.validation.groups.Default;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-
+@HasGender(groups = {Default.class, SealedSDOGroup.class})
 public final class ChildParty extends Party {
     private final String gender;
     private final String genderIdentification;
@@ -42,18 +46,30 @@ public final class ChildParty extends Party {
     private final String detailsHiddenReason;
     private final String litigationIssues;
     private final String litigationIssuesDetails;
+    private final String showAddressInConfidentialTab;
 
+    @Override
     @NotBlank(message = "Tell us the names of all children in the case")
     public String getFirstName() {
         return super.getFirstName();
     }
 
+    @Override
     @NotBlank(message = "Tell us the names of all children in the case")
     public String getLastName() {
         return super.getLastName();
     }
 
+    @Override
+    @NotNull(message = "Tell us the date of birth of all children in the case",
+        groups = {Default.class, SealedSDOGroup.class})
+    @PastOrPresent(message = "Date of birth is in the future. You cannot send this application until that date")
+    public LocalDate getDateOfBirth() {
+        return super.getDateOfBirth();
+    }
+
     @Builder(toBuilder = true)
+    @SuppressWarnings("java:S107")
     public ChildParty(String partyId,
                       PartyType partyType,
                       String firstName,
@@ -86,7 +102,8 @@ public final class ChildParty extends Party {
                       String detailsHidden,
                       String detailsHiddenReason,
                       String litigationIssues,
-                      String litigationIssuesDetails) {
+                      String litigationIssuesDetails,
+                      String showAddressInConfidentialTab) {
         super(partyId, partyType, firstName, lastName, organisationName,
             dateOfBirth, address, email, telephoneNumber);
         this.gender = gender;
@@ -113,5 +130,6 @@ public final class ChildParty extends Party {
         this.detailsHiddenReason = detailsHiddenReason;
         this.litigationIssues = litigationIssues;
         this.litigationIssuesDetails = litigationIssuesDetails;
+        this.showAddressInConfidentialTab = showAddressInConfidentialTab;
     }
 }

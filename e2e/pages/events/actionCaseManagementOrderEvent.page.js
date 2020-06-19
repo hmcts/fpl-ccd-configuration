@@ -6,6 +6,7 @@ module.exports = {
       requestChange: '#orderAction_changeRequestedByJudge',
     },
     nextHearingDateList: '#nextHearingDateList',
+    allParties: '#allPartiesCustomCMO',
   },
 
   staticFields: {
@@ -78,5 +79,10 @@ module.exports = {
   selectNextHearingDate(date) {
     I.waitForElement(this.fields.nextHearingDateList);
     I.selectOption(this.fields.nextHearingDateList, date);
+  },
+
+  async enterDateOfIssue(date) {
+    await I.fillDate(date);
+    await I.retryUntilExists(() => I.click('Continue'), this.fields.allParties);
   },
 };

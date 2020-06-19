@@ -10,15 +10,24 @@ module.exports = {
     casePeople: 'People in the case',
     legalBasis: 'Legal basis',
     documents: 'Documents',
+    documentsSentToParties: 'Documents sent to parties',
     confidential: 'Confidential',
+    placement: 'Placement',
+    paymentHistory: 'Payment History',
+    notes: 'Notes',
+    expertReports: 'Expert Reports',
+    overview: 'Overview',
   },
   actionsDropdown: '.ccd-dropdown',
   goButton: 'Go',
+  caseTitle: '.case-title .markdown',
 
   async goToNewActions(actionSelected) {
     I.waitForElement(this.actionsDropdown);
-    I.selectOption(this.actionsDropdown, actionSelected);
-    await I.retryUntilExists(() => I.click(this.goButton), 'ccd-case-event-trigger');
+    await I.retryUntilExists(() => {
+      I.selectOption(this.actionsDropdown, actionSelected);
+      I.click(this.goButton);
+    }, 'ccd-case-event-trigger');
   },
 
   checkActionsAreAvailable(actions) {
@@ -41,5 +50,9 @@ module.exports = {
 
   selectTab(tab) {
     I.click(tab, '.tabs .tabs-list');
+  },
+
+  seeInCaseTitle(titleValue) {
+    I.seeElement(locate(this.caseTitle).withText(titleValue));
   },
 };

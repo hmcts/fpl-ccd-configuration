@@ -1,7 +1,7 @@
 module.exports = [
   {
     caseManagement: 'Case management',
-    venue: 'Cardiff, Aberdare Hearing Centre',
+    venue: 'Aberdeen Tribunal Hearing Centre',
     startDate: {
       second: '00',
       minute: '15',
@@ -32,7 +32,17 @@ module.exports = [
   },
   {
     caseManagement: 'Case management',
-    venue: 'Cardiff, Blackwood Hearing Centre, NP2 2XB',
+    venue: 'Other',
+    venueCustomAddress: {
+      buildingAndStreet: {
+        lineOne: 'Flat 11',
+        lineTwo: 'Pinnacle Court',
+        lineThree: 'Saffron Central Square',
+      },
+      town: 'Croydon',
+      postcode: 'CR0 2GE',
+      country: 'United Kingdom',
+    },
     startDate: {
       second: '00',
       minute: '00',

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
@@ -57,5 +58,15 @@ public class Direction {
             .response(responseCopy)
             .responses(responsesCopy)
             .build();
+    }
+
+    @JsonIgnore
+    public boolean isCompliedWith() {
+        return this.response != null && this.response.getComplied() != null;
+    }
+
+    @JsonIgnore
+    public boolean isNeeded() {
+        return !"No".equals(this.directionNeeded);
     }
 }

@@ -5,6 +5,7 @@
   "case_type_id": "CARE_SUPERVISION_EPO",
   "security_classification": "PUBLIC",
   "case_data": {
+    "dateSubmitted": "2020-03-20",
     "gatekeeperEmail": "FamilyPublicLaw+gatekeeper@gmail.com",
     "caseLocalAuthority": "example",
     "risks": {
@@ -341,6 +342,7 @@
             "gender": "Male",
             "dateOfBirth": "1933-04-02",
             "placeOfBirth": "Reading",
+            "relationshipToChild": "Cousin",
             "litigationIssues": "NO",
             "address": {
               "AddressLine1": "Flat 90",
@@ -477,12 +479,55 @@
         "endDate": "2020-01-02T14:30:00.000",
         "type": "CASE_MANAGEMENT",
         "venue": "1",
-        "judgeName": "1",
-        "judgeTitle": "1",
+        "judgeAndLegalAdvisor": {
+          "judgeTitle": "HIS_HONOUR_JUDGE",
+          "judgeLastName": "Walker",
+          "legalAdvisorName": "John Smith"
+        },
         "hearingNeedsBooked": ["INTERMEDIARY"],
         "hearingNeedsDetails": "ok"
       }
     }],
-    "familyManCaseNumber": "12345"
+    "familyManCaseNumber": "12345",
+    "amountToPay": "2055.0",
+    "standardDirectionOrder": {
+      "judgeAndLegalAdvisor": {
+        "judgeTitle": "HER_HONOUR_JUDGE",
+        "otherTitle": null,
+        "judgeFullName": null,
+        "judgeLastName": "Byrne",
+        "legalAdvisorName": "Maria McDonnell",
+        "judgeEmailAddress": "judge@gmail.com",
+        "useAllocatedJudge": null,
+        "allocatedJudgeLabel": null
+      }
+    },
+    "allocatedJudge": {
+      "judgeTitle": "HER_HONOUR_JUDGE",
+      "judgeLastName": "Moley",
+      "judgeEmailAddress": "moley@example.com"
+    },
+    "noticeOfProceedings": {
+      "proceedingTypes": [
+        "NOTICE_OF_PROCEEDINGS_FOR_PARTIES"
+      ],
+      "judgeAndLegalAdvisor": {
+        "judgeTitle": "HER_HONOUR_JUDGE",
+        "otherTitle": null,
+        "judgeFullName": null,
+        "judgeLastName": "Moley",
+        "legalAdvisorName": null,
+        "judgeEmailAddress": "judge@gmail.com",
+        "useAllocatedJudge": null,
+        "allocatedJudgeLabel": null
+      }
+    },
+    "amountToPay": "2055.0",
+    "returnApplication": {
+      "note": "Missing children details",
+      "reason": [
+        "INCOMPLETE", "CLARIFICATION_NEEDED"
+      ]
+    }
   }
 }

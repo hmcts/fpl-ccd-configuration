@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.ccd.sdk.types.ComplexType;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
 import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
 
@@ -15,16 +16,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 @EqualsAndHashCode
 @ComplexType(name = "RespondentNew")
-public class Respondent implements Representable, ConfidentialParty {
+public class Respondent implements Representable, ConfidentialParty<Respondent> {
     @Valid
     @NotNull(message = "You need to add details to respondents")
     private final RespondentParty party;
@@ -41,5 +43,55 @@ public class Respondent implements Representable, ConfidentialParty {
         String hiddenValue = defaultIfNull(party.getContactDetailsHidden(), "");
 
         return hiddenValue.equals("Yes");
+    }
+
+    @Override
+    public Party toParty() {
+        return party;
+    }
+
+    @Override
+    public Respondent extractConfidentialDetails() {
+        return Respondent.builder()
+            .party(RespondentParty.builder()
+                .firstName(this.party.getFirstName())
+                .lastName(this.party.getLastName())
+                .address(this.party.getAddress())
+                .telephoneNumber(this.party.getTelephoneNumber())
+                .email(this.party.getEmail())
+                .build())
+            .build();
+    }
+
+    @Override
+    public Respondent addConfidentialDetails(Party party) {
+        return this.toBuilder()
+            .party(this.getParty().toBuilder()
+                .firstName(party.getFirstName())
+                .lastName(party.getLastName())
+                .address(party.getAddress())
+                .telephoneNumber(party.getTelephoneNumber())
+                .email(party.getEmail())
+                .build())
+            .build();
+    }
+
+    @Override
+    public Respondent removeConfidentialDetails() {
+        return this.toBuilder()
+            .party(this.party.toBuilder()
+                .address(null)
+                .telephoneNumber(null)
+                .email(null)
+                .build())
+            .build();
+    }
+
+    public static Respondent expandCollection() {
+        return Respondent.builder()
+            .party(RespondentParty.builder()
+                .partyId(randomUUID().toString())
+                .build())
+            .build();
     }
 }

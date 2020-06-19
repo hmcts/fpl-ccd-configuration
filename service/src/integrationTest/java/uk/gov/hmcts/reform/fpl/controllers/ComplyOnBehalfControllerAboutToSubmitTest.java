@@ -23,7 +23,7 @@ import java.util.UUID;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.BDDMockito.given;
-import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_ON_BEHALF_SDO;
+import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_ON_BEHALF_COURT;
 import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -47,7 +47,7 @@ class ComplyOnBehalfControllerAboutToSubmitTest extends AbstractControllerTest {
     @Test
     void shouldAddResponsesOnBehalfOfPartyWhenCompliedWith() {
         CallbackRequest request = CallbackRequest.builder()
-            .eventId(COMPLY_ON_BEHALF_SDO.toString())
+            .eventId(COMPLY_ON_BEHALF_COURT.toString())
             .caseDetails(CaseDetails.builder()
                 .data(Map.of(
                     "standardDirectionOrder", orderWithAllPartiesDirection(),
@@ -72,7 +72,7 @@ class ComplyOnBehalfControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldAddResponsesOnBehalfOfWhenOtherEvent() {
-        given(userDetailsService.getUserName(AUTH_TOKEN)).willReturn("Emma Taylor");
+        given(userDetailsService.getUserName()).willReturn("Emma Taylor");
 
         CallbackRequest request = CallbackRequest.builder()
             .eventId(COMPLY_OTHERS.toString())

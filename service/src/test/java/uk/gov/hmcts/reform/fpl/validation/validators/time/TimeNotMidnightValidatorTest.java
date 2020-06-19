@@ -1,19 +1,14 @@
 package uk.gov.hmcts.reform.fpl.validation.validators.time;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Set;
-import java.util.stream.Collectors;
-import javax.validation.ConstraintViolation;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith(SpringExtension.class)
 class TimeNotMidnightValidatorTest extends TimeValidatorTest {
 
     @Test
@@ -24,10 +19,7 @@ class TimeNotMidnightValidatorTest extends TimeValidatorTest {
             .endDate(FUTURE.plusDays(1))
             .build();
 
-        final Set<String> violations = validator.validate(hearingBooking, group)
-            .stream()
-            .map(ConstraintViolation::getMessage)
-            .collect(Collectors.toSet());
+        final List<String> violations = validate(hearingBooking, group);
 
         assertThat(violations).hasSize(1).containsOnly("Enter a valid start time");
     }
@@ -39,7 +31,7 @@ class TimeNotMidnightValidatorTest extends TimeValidatorTest {
             .endDate(FUTURE.plusDays(1))
             .build();
 
-        final Set<ConstraintViolation<HearingBooking>> violations = validator.validate(hearingBooking, group);
+        final List<String> violations = validate(hearingBooking, group);
 
         assertThat(violations).isEmpty();
     }

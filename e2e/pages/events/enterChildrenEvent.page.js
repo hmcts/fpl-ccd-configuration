@@ -103,7 +103,7 @@ module.exports = {
     I.selectOption(this.fields(elementIndex).child.fatherResponsible, fatherResponsible);
   },
 
-  async enterSocialWorkerDetails(socialWorkerName = 'James Jackson', socialWorkerTel = '01234567') {
+  async enterSocialWorkerDetails(socialWorkerName = 'James Jackson', socialWorkerTel = '01234567890') {
     const elementIndex = await this.getActiveElementIndex();
 
     I.fillField(this.fields(elementIndex).child.socialWorkerName, socialWorkerName);

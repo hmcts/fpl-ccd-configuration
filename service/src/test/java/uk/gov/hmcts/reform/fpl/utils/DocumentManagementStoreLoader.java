@@ -19,10 +19,6 @@ public class DocumentManagementStoreLoader {
         return read("document-management-store-api/document.json", Document.class);
     }
 
-    public static Document c6Document() {
-        return read("document-management-store-api/c6Document.json", Document.class);
-    }
-
     public static UploadResponse successfulDocumentUploadResponse() {
         return read("document-management-store-api/responses/upload-success.json", UploadResponse.class);
     }

@@ -1,12 +1,12 @@
 const { I } = inject();
 
 module.exports = {
-    
+
   fields: {
     caseId: '#familyManCaseNumber',
   },
 
-  enterCaseID(caseId = 'mock case ID') {
+  enterCaseID(caseId = 'mockcaseID') {
     I.fillField(this.fields.caseId, caseId);
   },
 };

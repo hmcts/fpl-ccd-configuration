@@ -9,9 +9,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 public class CaseManagementOrderIssuedEvent extends CallbackEvent {
     private final byte[] documentContents;
 
-    public CaseManagementOrderIssuedEvent(CallbackRequest callbackRequest, String authorization, String userId,
-                    byte[] documentContents) {
-        super(callbackRequest, authorization, userId);
+    public CaseManagementOrderIssuedEvent(CallbackRequest callbackRequest, byte[] documentContents) {
+        super(callbackRequest);
         this.documentContents = documentContents;
     }
 }

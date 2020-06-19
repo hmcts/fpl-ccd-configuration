@@ -13,7 +13,7 @@ public class DocumentReference {
     @JsonProperty("document_url")
     private final String url;
     @JsonProperty("document_filename")
-    private final String filename;
+    private String filename;
     @JsonProperty("document_binary_url")
     private final String binaryUrl;
 

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -10,6 +11,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseUserApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseUser;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 import java.util.Set;
 
@@ -28,8 +30,16 @@ class CaseServiceTest {
     @Mock
     private CaseUserApi caseUserApi;
 
+    @Mock
+    private RequestData requestData;
+
     @InjectMocks
     private CaseService caseService;
+
+    @BeforeEach
+    public void init() {
+        when(requestData.authorisation()).thenReturn(AUTH_TOKEN);
+    }
 
     @Test
     void shouldAddUserToCase() {
@@ -39,7 +49,7 @@ class CaseServiceTest {
 
         when(authTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
 
-        caseService.addUser(AUTH_TOKEN, caseId, userId, caseRoles);
+        caseService.addUser(caseId, userId, caseRoles);
 
         verify(caseUserApi).updateCaseRolesForUser(
             AUTH_TOKEN,

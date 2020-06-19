@@ -9,6 +9,10 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -17,14 +21,18 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
 abstract class AbstractControllerTest {
 
-    final String userAuthToken = "Bearer token";
-    final String userId = "1";
+    static final String USER_AUTH_TOKEN = "Bearer token";
+    static final String SERVICE_AUTH_TOKEN = "Bearer service token";
+    static final String USER_ID = "1";
 
     @Autowired
     MockMvc mockMvc;
 
     @Autowired
     ObjectMapper mapper;
+
+    @Autowired
+    private Time time;
 
     private String eventName;
 
@@ -96,6 +104,40 @@ abstract class AbstractControllerTest {
         return postMidEvent(filename, SC_OK);
     }
 
+    AboutToStartOrSubmitCallbackResponse postMidEvent(byte[] data, int expectedStatus, String additionalPath) {
+        return postEvent(String.format("/callback/%s/%s/mid-event", eventName, additionalPath), data, expectedStatus);
+    }
+
+    AboutToStartOrSubmitCallbackResponse postMidEvent(byte[] data, String additionalPath) {
+        return postMidEvent(data, SC_OK, additionalPath);
+    }
+
+    AboutToStartOrSubmitCallbackResponse postMidEvent(CallbackRequest callbackRequest, int expectedStatus,
+                                                      String additionalPath) {
+        return postMidEvent(toBytes(callbackRequest), expectedStatus, additionalPath);
+    }
+
+    AboutToStartOrSubmitCallbackResponse postMidEvent(CallbackRequest callbackRequest, String additionalPath) {
+        return postMidEvent(callbackRequest, SC_OK, additionalPath);
+    }
+
+    AboutToStartOrSubmitCallbackResponse postMidEvent(CaseDetails caseDetails, int expectedStatus,
+                                                      String additionalPath) {
+        return postMidEvent(toCallbackRequest(caseDetails), expectedStatus, additionalPath);
+    }
+
+    AboutToStartOrSubmitCallbackResponse postMidEvent(CaseDetails caseDetails, String additionalPath) {
+        return postMidEvent(caseDetails, SC_OK, additionalPath);
+    }
+
+    AboutToStartOrSubmitCallbackResponse postMidEvent(String filename, int expectedStatus, String additionalPath) {
+        return postMidEvent(readBytes(filename), expectedStatus, additionalPath);
+    }
+
+    AboutToStartOrSubmitCallbackResponse postMidEvent(String filename, String additionalPath) {
+        return postMidEvent(filename, SC_OK, additionalPath);
+    }
+
     AboutToStartOrSubmitCallbackResponse postAboutToSubmitEvent(byte[] data, int expectedStatus) {
         return postEvent(String.format("/callback/%s/about-to-submit", eventName), data, expectedStatus);
     }
@@ -160,12 +202,20 @@ abstract class AbstractControllerTest {
         return postSubmittedEvent(filename, SC_OK);
     }
 
+    LocalDateTime now() {
+        return time.now();
+    }
+
+    LocalDate dateNow() {
+        return time.now().toLocalDate();
+    }
+
     private AboutToStartOrSubmitCallbackResponse postEvent(String path, byte[] data, int expectedStatus) {
         try {
             MvcResult response = mockMvc
                 .perform(post(path)
-                    .header("authorization", userAuthToken)
-                    .header("user-id", userId)
+                    .header("authorization", USER_AUTH_TOKEN)
+                    .header("user-id", USER_ID)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(data))
                 .andExpect(status().is(expectedStatus))

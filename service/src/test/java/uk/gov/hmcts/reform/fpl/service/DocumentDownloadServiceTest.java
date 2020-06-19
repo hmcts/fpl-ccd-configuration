@@ -11,6 +11,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.exceptions.EmptyFileException;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
@@ -26,7 +28,10 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 
 @ExtendWith(SpringExtension.class)
 public class DocumentDownloadServiceTest {
-    private final String token = "token";
+
+    private static final String AUTH_TOKEN = "token";
+    private static final String SERVICE_AUTH_TOKEN = "service-token";
+    private static final String USER_ID = "8a0a7c46-631c-4a55-9b81-4cc9fb9798f4";
 
     @Mock
     private DocumentDownloadClientApi documentDownloadClient;
@@ -38,37 +43,39 @@ public class DocumentDownloadServiceTest {
     private IdamApi idamApi;
 
     @Mock
+    private RequestData requestData;
+
+    @Mock
     private ResponseEntity<Resource> resourceResponseEntity;
+
+    @Mock
+    private ByteArrayResource byteArrayResource;
 
     private DocumentDownloadService documentDownloadService;
 
-    private String userId;
-
-    private Document document;
+    private Document document = document();
 
     @BeforeEach
-    void setup() throws Exception {
-        document = document();
-
-        given(authTokenGenerator.generate())
-            .willReturn(token);
-
-        userId = "8a0a7c46-631c-4a55-9b81-4cc9fb9798f4";
-
+    void setup() {
         UserInfo userInfo = UserInfo.builder()
             .sub("cafcass@cafcass.com")
             .roles(CAFCASS.getRoles())
-            .uid(userId)
+            .uid(USER_ID)
             .build();
 
-        given(idamApi.retrieveUserInfo(token))
-            .willReturn(userInfo);
+        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
+        given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(userInfo);
+        given(requestData.authorisation()).willReturn(AUTH_TOKEN);
+        given(requestData.userId()).willReturn(USER_ID);
 
-        documentDownloadService = new DocumentDownloadService(authTokenGenerator, documentDownloadClient, idamApi);
+        documentDownloadService = new DocumentDownloadService(authTokenGenerator,
+            documentDownloadClient,
+            idamApi,
+            requestData);
     }
 
     @Test
-    public void shouldDownloadDocumentFromDocumentManagement() throws Exception {
+    void shouldDownloadDocumentFromDocumentManagement() {
         Document document = document();
         byte[] expectedDocumentContents = "test".getBytes();
 
@@ -83,26 +90,41 @@ public class DocumentDownloadServiceTest {
             eq(join(",", CAFCASS.getRoles())), anyString(), anyString()))
             .willReturn(resourceResponseEntity);
 
-        byte[] documentContents = documentDownloadService.downloadDocument(token, userId, document.links.binary.href);
+        byte[] documentContents = documentDownloadService.downloadDocument(document.links.binary.href);
 
         assertThat(documentContents).isNotEmpty();
         assertThat(documentContents).isEqualTo(expectedDocumentContents);
 
-        verify(documentDownloadClient).downloadBinary(anyString(), anyString(),
-            eq(join(",", CAFCASS.getRoles())), anyString(), anyString());
+        verify(documentDownloadClient).downloadBinary(AUTH_TOKEN,
+            SERVICE_AUTH_TOKEN,
+            join(",", CAFCASS.getRoles()),
+            USER_ID,
+            "/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary");
     }
 
     @Test
-    void shouldThrowExceptionWhenDownloadFromDocumentManagement() {
-        ResponseEntity<Resource> expectedResponse = ResponseEntity.notFound().build();
-        given(resourceResponseEntity.getStatusCode())
-            .willReturn(expectedResponse.getStatusCode());
-
-        given(documentDownloadClient.downloadBinary(anyString(), anyString(),
-            eq(join(",", CAFCASS.getRoles())), anyString(), anyString()))
+    void shouldThrowExceptionWhenDownloadBinaryReturnsNull() {
+        ResponseEntity<Resource> responseEntity = ResponseEntity.notFound().build();
+        given(resourceResponseEntity.getStatusCode()).willReturn(responseEntity.getStatusCode());
+        given(documentDownloadClient.downloadBinary(anyString(), anyString(), anyString(), anyString(), anyString()))
             .willReturn(null);
 
-        assertThrows(IllegalArgumentException.class, () -> documentDownloadService.downloadDocument(
-            token, userId, document.links.binary.href));
+        IllegalArgumentException thrownException = assertThrows(IllegalArgumentException.class,
+            () -> documentDownloadService.downloadDocument(document.links.binary.href));
+        assertThat(thrownException.getMessage()).contains("85d97996-22a5-40d7-882e-3a382c8ae1b4")
+            .contains("/binary unsuccessful.");
     }
+
+    @Test
+    void shouldThrowExceptionWhenDocumentIsEmpty() {
+        ResponseEntity<Resource> responseEntity = ResponseEntity.ok().body(byteArrayResource);
+        given(byteArrayResource.getByteArray()).willReturn(null);
+        given(documentDownloadClient.downloadBinary(anyString(), anyString(), anyString(), anyString(), anyString()))
+            .willReturn(responseEntity);
+
+        EmptyFileException exceptionThrown = assertThrows(EmptyFileException.class,
+            () -> documentDownloadService.downloadDocument(document.links.binary.href));
+        assertThat(exceptionThrown.getMessage()).isEqualTo("File cannot be empty");
+    }
+
 }

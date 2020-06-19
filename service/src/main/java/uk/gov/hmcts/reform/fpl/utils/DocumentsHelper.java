@@ -9,7 +9,7 @@ public class DocumentsHelper {
         // No OP
     }
 
-    public static boolean hasDocumentPresent(Document document) {
+    private static boolean hasDocumentPresent(Document document) {
         return document != null;
     }
 

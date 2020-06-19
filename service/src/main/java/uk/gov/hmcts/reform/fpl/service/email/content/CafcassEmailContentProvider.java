@@ -1,37 +1,34 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
-
-import java.util.Map;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
+import uk.gov.hmcts.reform.fpl.service.email.content.base.SharedNotifyContentProvider;
 
 @Service
-public class CafcassEmailContentProvider extends AbstractEmailContentProvider {
-
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+public class CafcassEmailContentProvider extends SharedNotifyContentProvider {
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
+    private final ObjectMapper mapper;
 
-    @Autowired
-    public CafcassEmailContentProvider(LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
-                                       CafcassLookupConfiguration cafcassLookupConfiguration,
-                                       @Value("${ccd.ui.base.url}") String uiBaseUrl,
-                                       DateFormatterService dateFormatterService,
-                                       HearingBookingService hearingBookingService) {
-        super(uiBaseUrl, dateFormatterService, hearingBookingService);
-        this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
-        this.cafcassLookupConfiguration = cafcassLookupConfiguration;
-    }
+    public SubmitCaseCafcassTemplate buildCafcassSubmissionNotification(CaseDetails caseDetails,
+                                                                        String localAuthorityCode) {
 
-    public Map<String, Object> buildCafcassSubmissionNotification(CaseDetails caseDetails, String localAuthorityCode) {
-        return super.getCasePersonalisationBuilder(caseDetails)
-            .put("cafcass", cafcassLookupConfiguration.getCafcass(localAuthorityCode).getName())
-            .put("localAuthority", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
-            .build();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        SubmitCaseCafcassTemplate template = buildNotifyTemplate(new SubmitCaseCafcassTemplate(),
+            caseDetails.getId(), caseData.getOrders(), caseData.getHearing(), caseData.getRespondents1());
+
+        template.setCafcass(cafcassLookupConfiguration.getCafcass(localAuthorityCode).getName());
+        template.setLocalAuthority(localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode));
+
+        return template;
     }
 }

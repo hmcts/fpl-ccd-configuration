@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.document.domain.UploadResponse;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 import static com.google.common.collect.Lists.newArrayList;
 
@@ -21,18 +22,21 @@ public class UploadDocumentService {
 
     private final AuthTokenGenerator authTokenGenerator;
     private final DocumentUploadClientApi documentUploadClient;
+    private final RequestData requestData;
 
     @Autowired
-    public UploadDocumentService(AuthTokenGenerator authTokenGenerator, DocumentUploadClientApi documentUploadClient) {
+    public UploadDocumentService(AuthTokenGenerator authTokenGenerator, DocumentUploadClientApi documentUploadClient,
+                                 RequestData requestData) {
         this.authTokenGenerator = authTokenGenerator;
         this.documentUploadClient = documentUploadClient;
+        this.requestData = requestData;
     }
 
-    public Document uploadPDF(String userId, String authorization, byte[] pdf, String fileName) {
+    public Document uploadPDF(byte[] pdf, String fileName) {
         MultipartFile file = new InMemoryMultipartFile("files", fileName, MediaType.APPLICATION_PDF_VALUE, pdf);
 
-        UploadResponse response = documentUploadClient.upload(authorization,
-            authTokenGenerator.generate(), userId, newArrayList(file));
+        UploadResponse response = documentUploadClient.upload(requestData.authorisation(),
+            authTokenGenerator.generate(), requestData.userId(), newArrayList(file));
 
         Document document = response.getEmbedded().getDocuments().stream()
             .findFirst()

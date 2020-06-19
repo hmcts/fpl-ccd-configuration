@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.google.common.collect.ImmutableList;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,12 +9,15 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityCodeException;
 import uk.gov.hmcts.reform.fpl.exceptions.UserOrganisationLookupException;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
+import uk.gov.hmcts.reform.rd.model.Organisation;
+import uk.gov.hmcts.reform.rd.model.OrganisationUser;
 import uk.gov.hmcts.reform.rd.model.Status;
-import uk.gov.hmcts.reform.rd.model.User;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
@@ -27,17 +29,16 @@ public class OrganisationService {
     private final LocalAuthorityUserLookupConfiguration localAuthorityUserLookupConfiguration;
     private final OrganisationApi organisationApi;
     private final AuthTokenGenerator authTokenGenerator;
+    private final RequestData requestData;
 
-    public List<String> findUserIdsInSameOrganisation(String authorisation, String localAuthorityCode) {
+    public Set<String> findUserIdsInSameOrganisation(String localAuthorityCode) {
 
         try {
-            return ImmutableList
-                .copyOf(getUsersFromSameOrganisationBasedOnAppConfig(localAuthorityCode));
+            return Set.copyOf(getUsersFromSameOrganisationBasedOnAppConfig(localAuthorityCode));
         } catch (UnknownLocalAuthorityCodeException ex) {
             try {
                 return
-                    ImmutableList
-                        .copyOf(getUsersFromSameOrganisationBasedOnReferenceData(authorisation));
+                    Set.copyOf(getUsersFromSameOrganisationBasedOnReferenceData(requestData.authorisation()));
             } catch (Exception e) {
                 throw new UserOrganisationLookupException(
                     format("Can't find users for %s local authority", localAuthorityCode), e
@@ -55,17 +56,28 @@ public class OrganisationService {
             .findUsersByOrganisation(authorisation, authTokenGenerator.generate(), Status.ACTIVE)
             .getUsers()
             .stream()
-            .map(User::getUserIdentifier)
+            .map(OrganisationUser::getUserIdentifier)
             .collect(toList());
     }
 
-    public Optional<String> findUserByEmail(String authorisation, String email) {
+    public Optional<String> findUserByEmail(String email) {
         try {
-            return Optional.of(organisationApi.findUserByEmail(authorisation, authTokenGenerator.generate(), email)
-                .getUserIdentifier());
+            return Optional.of(organisationApi.findUserByEmail(requestData.authorisation(),
+                authTokenGenerator.generate(), email).getUserIdentifier());
         } catch (FeignException.NotFound notFoundException) {
             log.debug("User with email {} not found", email);
             return Optional.empty();
+        }
+    }
+
+    public Organisation findOrganisation() {
+        try {
+            return organisationApi.findOrganisationById(requestData.authorisation(),
+                authTokenGenerator.generate());
+
+        } catch (FeignException ex) {
+            log.error("Could not find the associated organisation from reference data", ex);
+            return Organisation.builder().build();
         }
     }
 }

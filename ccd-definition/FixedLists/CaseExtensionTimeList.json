@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseExtensionTimeList",
+    "ListElementCode": "EightWeekExtension",
+    "ListElement": "Extend by 8 Weeks",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseExtensionTimeList",
+    "ListElementCode": "OtherExtension",
+    "ListElement": "Enter a different date",
+    "DisplayOrder": 2
+  }
+]

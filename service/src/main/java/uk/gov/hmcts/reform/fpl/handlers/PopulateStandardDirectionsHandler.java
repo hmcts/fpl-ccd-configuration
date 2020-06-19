@@ -1,136 +1,50 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestBody;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.ccd.client.model.Event;
-import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
-import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
-import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
-import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
-import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
 
-import static java.util.stream.Collectors.toList;
+import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMapping;
 
 @Component
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class PopulateStandardDirectionsHandler {
-    private static final Boolean IGNORE_WARNING = true;
+    private final CoreCaseDataService coreCaseDataService;
+    private final StandardDirectionsService standardDirectionsService;
     private final ObjectMapper mapper;
-    private final OrdersLookupService ordersLookupService;
-    private final CoreCaseDataApi coreCaseDataApi;
-    private final AuthTokenGenerator authTokenGenerator;
-    private final IdamClient idamClient;
-    private final SystemUpdateUserConfiguration userConfig;
-    private final DirectionHelperService directionHelperService;
-    private final HearingBookingService hearingBookingService;
-
-    @Autowired
-    public PopulateStandardDirectionsHandler(ObjectMapper mapper,
-                                             OrdersLookupService ordersLookupService,
-                                             CoreCaseDataApi coreCaseDataApi,
-                                             AuthTokenGenerator authTokenGenerator,
-                                             IdamClient idamClient,
-                                             SystemUpdateUserConfiguration userConfig,
-                                             DirectionHelperService directionHelperService,
-                                             HearingBookingService hearingBookingService) {
-        this.mapper = mapper;
-        this.ordersLookupService = ordersLookupService;
-        this.coreCaseDataApi = coreCaseDataApi;
-        this.authTokenGenerator = authTokenGenerator;
-        this.idamClient = idamClient;
-        this.userConfig = userConfig;
-        this.directionHelperService = directionHelperService;
-        this.hearingBookingService = hearingBookingService;
-    }
+    private final HearingBookingService hearingService;
 
     @Async
     @EventListener
-    public void populateStandardDirections(PopulateStandardDirectionsEvent event) throws IOException {
-        String userToken = idamClient.authenticateUser(userConfig.getUserName(), userConfig.getPassword());
-        String systemUpdateUserId = idamClient.getUserDetails(userToken).getId();
+    public void populateStandardDirections(PopulateStandardDirectionsEvent event) {
+        CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
 
-        StartEventResponse startEventResponse = coreCaseDataApi.startEventForCaseWorker(
-            userToken,
-            authTokenGenerator.generate(),
-            systemUpdateUserId,
-            event.getCallbackRequest().getCaseDetails().getJurisdiction(),
-            event.getCallbackRequest().getCaseDetails().getCaseTypeId(),
-            event.getCallbackRequest().getCaseDetails().getId().toString(),
-            "populateSDO");
-
-        CaseDataContent caseDataContent = CaseDataContent.builder()
-            .eventToken(startEventResponse.getToken())
-            .event(Event.builder()
-                .id(startEventResponse.getEventId())
-                .build())
-            .data(populateStandardDirections(event.getCallbackRequest()))
-            .build();
-
-        coreCaseDataApi.submitEventForCaseWorker(
-            userToken,
-            authTokenGenerator.generate(),
-            systemUpdateUserId,
-            event.getCallbackRequest().getCaseDetails().getJurisdiction(),
-            event.getCallbackRequest().getCaseDetails().getCaseTypeId(),
-            event.getCallbackRequest().getCaseDetails().getId().toString(),
-            IGNORE_WARNING,
-            caseDataContent);
+        coreCaseDataService.triggerEvent(caseDetails.getJurisdiction(),
+            caseDetails.getCaseTypeId(),
+            caseDetails.getId(),
+            "populateSDO",
+            populateStandardDirections(caseDetails.getData()));
     }
 
-    private Map<String, Object> populateStandardDirections(
-        @RequestBody CallbackRequest callbackrequest) throws IOException {
-        CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+    private Map<String, Object> populateStandardDirections(Map<String, Object> data) {
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
+        HearingBooking hearingBooking = hearingService.getFirstHearing(caseData.getHearingDetails()).orElse(null);
 
-        OrderDefinition standardDirectionOrder = ordersLookupService.getStandardDirectionOrder();
+        getAssigneeToDirectionMapping(standardDirectionsService.getDirections(hearingBooking))
+            .forEach((assignee, directionsElements) -> data.put(assignee.getValue(), directionsElements));
 
-        List<Element<Direction>> directions = standardDirectionOrder.getDirections()
-            .stream()
-            .map(direction -> directionHelperService.constructDirectionForCCD(
-                direction, getCompleteByDate(caseData, direction)))
-            .collect(toList());
-
-        directionHelperService.sortDirectionsByAssignee(directions)
-            .forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
-
-        return caseDetails.getData();
-    }
-
-    private LocalDateTime getCompleteByDate(CaseData caseData, DirectionConfiguration direction) {
-        LocalDateTime completeBy = null;
-
-        if (direction.getDisplay().getDelta() != null && caseData.getHearingDetails() != null) {
-            HearingBooking mostUrgentBooking = hearingBookingService.getMostUrgentHearingBooking(caseData
-                .getHearingDetails());
-
-            completeBy = buildDateTime(mostUrgentBooking.getStartDate(),
-                Integer.parseInt(direction.getDisplay().getDelta()));
-        }
-        return completeBy;
-    }
-
-    private LocalDateTime buildDateTime(LocalDateTime date, int delta) {
-        return date.plusDays(delta);
+        return data;
     }
 }

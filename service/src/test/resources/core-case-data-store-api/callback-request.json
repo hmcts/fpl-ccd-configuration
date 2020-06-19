@@ -1,13 +1,32 @@
 {
   "case_details": {
-    "id": 12345,
+    "id": "${id:-12345}",
     "jurisdiction": "PUBLICLAW",
     "state": "Open",
     "case_type_id": "CARE_SUPERVISION_EPO",
     "security_classification": "PUBLIC",
     "case_data": {
-      "gateKeeperEmail": "FamilyPublicLaw+gatekeeper@gmail.com",
-      "caseLocalAuthority": "example",
+      "gatekeeperEmails": [
+        {
+          "id": "34c97e1a-eed9-499b-9693-e92496a1f541",
+          "value": {
+            "email": "FamilyPublicLaw+gatekeeper@gmail.com"
+          }
+        },
+        {
+          "id": "34c97e1a-eed9-499b-9693-e92496a1f542",
+          "value": {
+            "email": "Cafcass+gatekeeper@gmail.com"
+          }
+        },
+        {
+          "id": "34c97e1a-eed9-499b-9693-e92496a1f543",
+          "value": {
+            "email": "FamilyPublicLaw+gatekeeper@gmail.com"
+          }
+        }
+      ],
+      "caseLocalAuthority": "${localAuthority:-example}",
       "risks": {
         "neglect": "Yes",
         "sexualAbuse": "Yes",
@@ -67,7 +86,7 @@
           "childInformation": "Cousin",
           "litigationIssues": "NO",
           "genderIdentification": "Unknown",
-          "representedBy" : []
+          "representedBy": []
         },
         "additionalOthers": [
           {
@@ -332,6 +351,7 @@
               "dateOfBirth": "1933-04-02",
               "placeOfBirth": "Reading",
               "litigationIssues": "NO",
+              "relationshipToChild": "Brother",
               "address": {
                 "AddressLine1": "Flat 90",
                 "AddressLine2": "Surrey street",
@@ -455,7 +475,12 @@
       "noticeOfProceedings": {
         "proceedingTypes": [
           "NOTICE_OF_PROCEEDINGS_FOR_PARTIES"
-        ]
+        ],
+        "judgeAndLegalAdvisor": {
+          "judgeTitle": "HER_HONOUR_JUDGE",
+          "judgeLastName": "Judy",
+          "legalAdvisorName": "Peter Parker"
+        }
       },
       "temporaryC2Document": {
         "document": {
@@ -478,6 +503,9 @@
           }
         }
       ],
+      "c2ApplicationType": {
+        "type": "WITH_NOTICE"
+      },
       "orderTypeAndDocument": {
         "type": "BLANK_ORDER",
         "document": {
@@ -495,7 +523,127 @@
         "title": "Example Order",
         "details": "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit"
       },
-      "familyManCaseNumber": "12345L"
+      "familyManCaseNumber": "12345L",
+      "representatives": [
+        {
+          "id": "e3d297db-0a82-4c1a-a31b-ff9fcd4164a1",
+          "value": {
+            "fullName": "Fred Flinstone",
+            "positionInACase": "Cafcass Guardian",
+            "address": {
+              "County": "Galway",
+              "Country": "Ireland",
+              "PostCode": "SE1 2QH",
+              "PostTown": "Limerick",
+              "AddressLine1": "160 Tooley St",
+              "AddressLine2": "Tooley road",
+              "AddressLine3": "Tooley"
+            },
+            "email": "fred@flinstone.com"
+          },
+          "telephoneNumber": "0717171717",
+          "servingPreferences": "DIGITAL_SERVICE",
+          "role": "CAFCASS_GUARDIAN"
+        },
+        {
+          "id": "e3d297db-0a82-4c1a-a31b-ff9fcd4164a1",
+          "value": {
+            "fullName": "Barney Rubble",
+            "positionInACase": "Cafcass Solicitor",
+            "address": {
+              "County": "Galway",
+              "Country": "Ireland",
+              "PostCode": "SE1 2QH",
+              "PostTown": "Limerick",
+              "AddressLine1": "160 Tooley St",
+              "AddressLine2": "Tooley road",
+              "AddressLine3": "Tooley"
+            },
+            "email": "barney@rubble.com"
+          },
+          "telephoneNumber": "0717171718",
+          "servingPreferences": "EMAIL",
+          "role": "CAFCASS_SOLICITOR"
+        }
+      ],
+      "hearingDetails": [
+        {
+          "id": "51d02c7f-2a51-424b-b299-a90b98bb1774",
+          "value": {
+            "startDate": "2020-01-01T15:30:00.000",
+            "endDate": "2020-01-02T14:30:00.000",
+            "type": "CASE_MANAGEMENT",
+            "venue": "1",
+            "judgeName": "1",
+            "judgeTitle": "1",
+            "hearingNeedsBooked": [
+              "INTERMEDIARY"
+            ],
+            "hearingNeedsDetails": "ok"
+          }
+        }
+      ],
+      "standardDirectionOrder": {
+        "judgeAndLegalAdvisor": {
+          "judgeTitle": "HER_HONOUR_JUDGE",
+          "otherTitle": null,
+          "judgeFullName": null,
+          "judgeLastName": "Byrne",
+          "legalAdvisorName": "Maria McDonnell",
+          "judgeEmailAddress": "judge@gmail.com",
+          "useAllocatedJudge": null,
+          "allocatedJudgeLabel": null
+        }
+      },
+      "allocatedJudge": {
+        "judgeTitle": "HER_HONOUR_JUDGE",
+        "judgeLastName": "Moley",
+        "judgeEmailAddress": "judge@gmail.com"
+      },
+      "orderCollection": [
+        {
+          "id": "52caf114-d171-4dc5-ac33-c842dba88205",
+          "value": {
+            "date": "2:33pm, 26 May 2020",
+            "type": "Blank order (C21)",
+            "title": "Order",
+            "details": "szvd",
+            "document": {
+              "document_url": "http://dm-store:8080/documents/a8372cb0-dcfc-47d8-8810-c5292b872a33",
+              "document_filename": "blank_order_c21.pdf",
+              "document_binary_url": "http://dm-store:8080/documents/a8372cb0-dcfc-47d8-8810-c5292b872a33/binary"
+            },
+            "expiryDate": null,
+            "dateOfIssue": "26 May 2020",
+            "furtherDirections": {},
+            "judgeAndLegalAdvisor": {
+              "judgeTitle": "HER_HONOUR_JUDGE",
+              "otherTitle": null,
+              "judgeFullName": null,
+              "judgeLastName": "Moley",
+              "legalAdvisorName": null,
+              "judgeEmailAddress": "judge@gmail.com",
+              "useAllocatedJudge": null,
+              "allocatedJudgeLabel": null
+            }
+          }
+        }
+      ],
+      "noticeOfProceedings": {
+        "proceedingTypes": [
+          "NOTICE_OF_PROCEEDINGS_FOR_PARTIES"
+        ],
+        "judgeAndLegalAdvisor": {
+          "judgeTitle": "HER_HONOUR_JUDGE",
+          "otherTitle": null,
+          "judgeFullName": null,
+          "judgeLastName": "Moley",
+          "legalAdvisorName": null,
+          "judgeEmailAddress": "judge@gmail.com",
+          "useAllocatedJudge": null,
+          "allocatedJudgeLabel": null
+        }
+      }
     }
   },
   "case_details_before": {

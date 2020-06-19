@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -16,8 +15,10 @@ import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -31,6 +32,9 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(DraftOrdersController.class)
@@ -42,7 +46,39 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void aboutToStartCallbackShouldAddAllPartiesDirectionsIntoSeparateRoleCollections() throws Exception {
+    void shouldAddCorrectResponsesToCafcassAndCourtDirectionCollectionsWhenCourtIsResponding() {
+        UUID uuid = randomUUID();
+        DirectionResponse responseForCourt = directionResponseBuilder(uuid).build();
+        DirectionResponse responseForCafcass = directionResponseBuilder(uuid)
+            .respondingOnBehalfOf("CAFCASS")
+            .build();
+
+        List<Element<Direction>> directions = List.of(element(uuid, Direction.builder()
+            .assignee(ALL_PARTIES)
+            .responses(wrapElements(responseForCafcass, responseForCourt))
+            .build()));
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("standardDirectionOrder", Order.builder().directions(directions).build()))
+            .build();
+
+        CaseData caseData = getCaseData(postAboutToStartEvent(caseDetails));
+
+        assertThat(unwrapElements(caseData.getCafcassDirections()))
+            .containsOnly(Direction.builder()
+                .assignee(ALL_PARTIES)
+                .response(responseForCafcass)
+                .build());
+
+        assertThat(unwrapElements(caseData.getCourtDirectionsCustom()))
+            .containsOnly(Direction.builder()
+                .assignee(ALL_PARTIES)
+                .response(responseForCourt)
+                .build());
+    }
+
+    @Test
+    void aboutToStartCallbackShouldAddAllPartiesDirectionsIntoSeparateRoleCollections() {
         List<Direction> directions = directionsForAllRoles();
         Order sdo = Order.builder().directions(buildDirections(directions)).build();
 
@@ -78,9 +114,8 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
         assertThat(caseData.getCourtDirectionsCustom()).containsAll(sdo.getDirections());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
-    void aboutToSubmitShouldAddResponseToStandardDirectionOrderWhenEmptyServedCaseManagementOrders() throws Exception {
+    void aboutToSubmitShouldAddResponseToStandardDirectionOrderWhenEmptyServedCaseManagementOrders() {
         UUID uuid = randomUUID();
         List<Element<Direction>> directions = directions(uuid);
         Order sdo = order(uuid);
@@ -98,9 +133,8 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
         assertThat(caseData.getStandardDirectionOrder().getDirections().get(0).getValue().getResponses()).isNotEmpty();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
-    void aboutToSubmitShouldAddResponseToCaseManagementOrderWhenPopulatedServedCaseManagementOrders() throws Exception {
+    void aboutToSubmitShouldAddResponseToCaseManagementOrderWhenPopulatedServedCaseManagementOrders() {
         UUID uuid = randomUUID();
         List<Element<Direction>> directions = directions(uuid);
         Order sdo = order(uuid);
@@ -124,32 +158,25 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
     }
 
     private List<Element<CaseManagementOrder>> caseManagementOrders(UUID uuid) {
-        return ImmutableList.of(Element.<CaseManagementOrder>builder()
-            .value(CaseManagementOrder.builder()
-                .directions(directions(uuid))
-                .build())
+        return wrapElements(CaseManagementOrder.builder()
+            .directions(directions(uuid))
             .build());
     }
 
     private Order order(UUID uuid) {
-        return Order.builder().directions(ImmutableList.of(Element.<Direction>builder()
-            .id(uuid)
-            .value(Direction.builder()
+        return Order.builder()
+            .directions(List.of(element(uuid, Direction.builder()
                 .directionType("example direction")
-                .build())
-            .build()))
+                .build())))
             .build();
     }
 
     private List<Element<Direction>> directions(UUID uuid) {
-        return ImmutableList.of(Element.<Direction>builder()
-            .id(uuid)
-            .value(Direction.builder()
-                .response(DirectionResponse.builder()
-                    .complied("Yes")
-                    .build())
+        return List.of(element(uuid, Direction.builder()
+            .response(DirectionResponse.builder()
+                .complied("Yes")
                 .build())
-            .build());
+            .build()));
     }
 
     private List<Direction> directionsForAllRoles() {
@@ -159,18 +186,12 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
     }
 
     private List<Element<Direction>> buildDirections(List<Direction> directions) {
-        return directions.stream().map(direction -> Element.<Direction>builder()
-            .id(randomUUID())
-            .value(direction)
-            .build())
+        return directions.stream().map(ElementUtils::element)
             .collect(toList());
     }
 
     private List<Element<Direction>> buildDirections(Direction direction) {
-        return ImmutableList.of(Element.<Direction>builder()
-            .id(randomUUID())
-            .value(direction)
-            .build());
+        return wrapElements(direction);
     }
 
 
@@ -178,7 +199,6 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
         return mapper.convertValue(callbackResponse.getData(), CaseData.class);
     }
 
-    @SuppressWarnings("LineLength")
     private boolean collectionsContainDirectionsForRoleAndAllParties(CaseData caseData) {
         return roleDirectionsContainExpectedDirections(caseData.getLocalAuthorityDirections(), LOCAL_AUTHORITY)
             && roleDirectionsContainExpectedDirections(caseData.getCafcassDirections(), CAFCASS)
@@ -198,9 +218,8 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
             .anyMatch(x -> x.equals(allPartiesDirection) && x.equals(directions));
     }
 
-    @SuppressWarnings("unchecked")
-    private ImmutableMap.Builder createCaseDataMap(List<Element<Direction>> directions) {
-        ImmutableMap.Builder builder = ImmutableMap.<String, List<Element<Direction>>>builder();
+    private ImmutableMap.Builder<String, Object> createCaseDataMap(List<Element<Direction>> directions) {
+        ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
 
         return builder
             .put(LOCAL_AUTHORITY.getValue(), directions)
@@ -210,5 +229,12 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
             .put(CAFCASS.getValue(), buildDirections(Direction.builder().assignee(CAFCASS).build()))
             .put(OTHERS.getValue(), buildDirections(Direction.builder().assignee(OTHERS).build()))
             .put(COURT.getValue(), buildDirections(Direction.builder().assignee(COURT).build()));
+    }
+
+    private DirectionResponse.DirectionResponseBuilder directionResponseBuilder(UUID uuid) {
+        return DirectionResponse.builder()
+            .directionId(uuid)
+            .assignee(COURT)
+            .complied("Yes");
     }
 }

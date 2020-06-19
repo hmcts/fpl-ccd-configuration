@@ -11,9 +11,17 @@ module.exports = {
     },
   },
 
-  async enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName) {
-    judgeAndLegalAdvisor.selectJudgeTitle();
-    judgeAndLegalAdvisor.enterJudgeLastName(judgeLastName);
+  async skipDateOfIssue(){
+    await this.enterDateOfIssue();
+  },
+
+  async enterDateOfIssue(date){
+    await I.fillDate(date);
+    await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeAndLegalAdvisor');
+  },
+
+  async useAllocatedJudge(legalAdvisorName) {
+    judgeAndLegalAdvisor.useAllocatedJudge();
     judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName);
     await I.retryUntilExists(() => I.click('Continue'), '#allParties');
   },

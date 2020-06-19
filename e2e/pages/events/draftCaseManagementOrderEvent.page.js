@@ -21,11 +21,11 @@ module.exports = {
       keyIssues: '#schedule_keyIssues',
       partiesPositions: '#schedule_partiesPositions',
     },
-    respondentDirectionsCustom: {
-      assigneeDropdown: '#respondentDirectionsCustom_0_parentsAndRespondentsAssignee',
+    respondentDirectionsCustomCMO: {
+      assigneeDropdown: '#respondentDirectionsCustomCMO_0_parentsAndRespondentsAssignee',
     },
-    otherPartiesDirectionsCustom: {
-      assigneeDropdown: '#otherPartiesDirectionsCustom_0_otherPartiesAssignee',
+    otherPartiesDirectionsCustomCMO: {
+      assigneeDropdown: '#otherPartiesDirectionsCustomCMO_0_otherPartiesAssignee',
     },
   },
 
@@ -45,30 +45,30 @@ module.exports = {
 
   async enterDirection(direction) {
     await I.addAnotherElementToCollection();
-    await directions.enterTitleAndDescription('allPartiesCustom', direction.title, direction.description);
-    await directions.enterDate('allPartiesCustom', direction.dueDate);
+    await directions.enterTitleAndDescription('allPartiesCustomCMO', direction.title, direction.description);
+    await directions.enterDate('allPartiesCustomCMO', direction.dueDate);
     await I.retryUntilExists(() => I.click('Continue'), '#localAuthorityDirectionsLabelCMO');
     await I.addAnotherElementToCollection();
-    await directions.enterTitleAndDescription('localAuthorityDirectionsCustom', direction.title, direction.description);
-    await directions.enterDate('localAuthorityDirectionsCustom', direction.dueDate);
+    await directions.enterTitleAndDescription('localAuthorityDirectionsCustomCMO', direction.title, direction.description);
+    await directions.enterDate('localAuthorityDirectionsCustomCMO', direction.dueDate);
     await I.retryUntilExists(() => I.click('Continue'), '#respondentsDirectionLabelCMO');
     await I.addAnotherElementToCollection();
-    await directions.enterTitleAndDescription('respondentDirectionsCustom', direction.title, direction.description);
-    await I.selectOption(this.fields.respondentDirectionsCustom.assigneeDropdown, 'Respondent 1');
-    await directions.enterDate('respondentDirectionsCustom', direction.dueDate);
+    await directions.enterTitleAndDescription('respondentDirectionsCustomCMO', direction.title, direction.description);
+    await I.selectOption(this.fields.respondentDirectionsCustomCMO.assigneeDropdown, 'Respondent 1');
+    await directions.enterDate('respondentDirectionsCustomCMO', direction.dueDate);
     await I.retryUntilExists(() => I.click('Continue'), '#cafcassDirectionsLabelCMO');
     await I.addAnotherElementToCollection();
-    await directions.enterTitleAndDescription('cafcassDirectionsCustom', direction.title, direction.description);
-    await directions.enterDate('cafcassDirectionsCustom', direction.dueDate);
+    await directions.enterTitleAndDescription('cafcassDirectionsCustomCMO', direction.title, direction.description);
+    await directions.enterDate('cafcassDirectionsCustomCMO', direction.dueDate);
     await I.retryUntilExists(() => I.click('Continue'), '#otherPartiesDirectionLabelCMO');
     await I.addAnotherElementToCollection();
-    await directions.enterTitleAndDescription('otherPartiesDirectionsCustom', direction.title, direction.description);
-    I.selectOption(this.fields.otherPartiesDirectionsCustom.assigneeDropdown, 'Person 1');
-    await directions.enterDate('otherPartiesDirectionsCustom', direction.dueDate);
+    await directions.enterTitleAndDescription('otherPartiesDirectionsCustomCMO', direction.title, direction.description);
+    I.selectOption(this.fields.otherPartiesDirectionsCustomCMO.assigneeDropdown, 'Person 1');
+    await directions.enterDate('otherPartiesDirectionsCustomCMO', direction.dueDate);
     await I.retryUntilExists(() => I.click('Continue'), '#courtDirectionsLabelCMO');
     await I.addAnotherElementToCollection();
-    await directions.enterTitleAndDescription('courtDirectionsCustom', direction.title, direction.description);
-    await directions.enterDate('courtDirectionsCustom', direction.dueDate);
+    await directions.enterTitleAndDescription('courtDirectionsCustomCMO', direction.title, direction.description);
+    await directions.enterDate('courtDirectionsCustomCMO', direction.dueDate);
   },
 
   enterSchedule(schedule) {

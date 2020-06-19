@@ -1,42 +1,59 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableMap;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
+import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForC2;
+import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider {
 
-    private final ObjectMapper objectMapper;
-
-    @Autowired
-    protected C2UploadedEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
-                                             ObjectMapper objectMapper,
-                                             DateFormatterService dateFormatterService,
-                                             HearingBookingService hearingBookingService) {
-        super(uiBaseUrl,dateFormatterService,hearingBookingService);
-        this.objectMapper = objectMapper;
-    }
+    private final EmailNotificationHelper emailNotificationHelper;
+    private final ObjectMapper mapper;
 
     public Map<String, Object> buildC2UploadNotification(final CaseDetails caseDetails) {
-        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
-        final String subjectLine = EmailNotificationHelper.buildSubjectLine(caseData);
-        return Map.of(
-            "subjectLine", subjectLine,
-            "hearingDetailsCallout", subjectLine,
-            "reference", String.valueOf(caseDetails.getId()),
-            "caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseDetails.getId()
-        );
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        final String subjectLine = emailNotificationHelper.buildSubjectLine(caseData);
+
+        return ImmutableMap.<String, Object>builder()
+            .putAll(buildCommonNotificationParameters(caseDetails))
+            .put("subjectLine", subjectLine)
+            .put("hearingDetailsCallout", subjectLine)
+            .put("reference", String.valueOf(caseDetails.getId()))
+            .build();
+    }
+
+    public AllocatedJudgeTemplateForC2 buildC2UploadNotificationForAllocatedJudge(final CaseDetails caseDetails) {
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        AllocatedJudgeTemplateForC2 allocatedJudgeTemplateForC2 = new AllocatedJudgeTemplateForC2();
+        allocatedJudgeTemplateForC2.setCaseUrl(getCaseUrl(caseDetails.getId()));
+        allocatedJudgeTemplateForC2.setCallout(emailNotificationHelper
+            .buildSubjectLineWithHearingBookingDateSuffix(caseData,
+            caseData.getHearingDetails()));
+        allocatedJudgeTemplateForC2.setJudgeTitle(caseData.getAllocatedJudge().getJudgeOrMagistrateTitle());
+        allocatedJudgeTemplateForC2.setJudgeName(caseData.getAllocatedJudge().getJudgeName());
+        allocatedJudgeTemplateForC2.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
+
+        return  allocatedJudgeTemplateForC2;
+    }
+
+    public Map<String, Object> buildC2UploadPbaPaymentNotTakenNotification(final CaseDetails caseDetails) {
+        return buildCommonNotificationParameters(caseDetails);
+    }
+
+    private Map<String, Object> buildCommonNotificationParameters(final CaseDetails caseDetails) {
+        return Map.of("caseUrl", getCaseUrl(caseDetails.getId()));
     }
 }
