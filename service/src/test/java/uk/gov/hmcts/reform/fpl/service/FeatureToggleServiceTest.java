@@ -63,7 +63,7 @@ public class FeatureToggleServiceTest {
         featureToggleService.isCtscReportEnabled();
 
         verify(ldClient, atLeast(1)).boolVariation(eq("CTSC"), ldUser.capture(), eq(false));
-        assertThat(ldUser.getAllValues().get(1).getCustomAttributes()).doesNotContain(UserAttribute.forName("report"));
+        assertThat(ldUser.getAllValues().get(0).getCustomAttributes()).doesNotContain(UserAttribute.forName("report"));
     }
 
     @ParameterizedTest
