@@ -33,7 +33,7 @@ public class FeatureToggleService {
 
     public boolean isCtscReportEnabled() {
         return ldClient.boolVariation("CTSC",
-            createLDUser(Map.of("localAuthorityName", LDValue.of(true))),false);
+            createLDUser(Map.of("report", LDValue.of(true))),false);
     }
 
     public boolean isAllocatedJudgeNotificationEnabled(AllocatedJudgeNotificationType allocatedJudgeNotificationType) {

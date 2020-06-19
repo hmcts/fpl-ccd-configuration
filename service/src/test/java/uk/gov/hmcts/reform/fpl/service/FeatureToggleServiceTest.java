@@ -1,11 +1,14 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.launchdarkly.sdk.LDUser;
+import com.launchdarkly.sdk.UserAttribute;
 import com.launchdarkly.sdk.server.LDClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -14,6 +17,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.C2_APPLICATION;
@@ -31,6 +35,9 @@ public class FeatureToggleServiceTest {
     private LDClient ldClient;
 
     private FeatureToggleService featureToggleService;
+
+    @Captor
+    private ArgumentCaptor<LDUser> ldUser;
 
     @BeforeEach
     void setup() {
@@ -53,8 +60,10 @@ public class FeatureToggleServiceTest {
         givenToggle(toggleState);
 
         assertThat(featureToggleService.isCtscEnabled("test name")).isEqualTo(toggleState);
+        featureToggleService.isCtscReportEnabled();
 
-        verify(ldClient).boolVariation(eq("CTSC"), any(LDUser.class), eq(false));
+        verify(ldClient, atLeast(1)).boolVariation(eq("CTSC"), ldUser.capture(), eq(false));
+        assertThat(ldUser.getAllValues().get(1).getCustomAttributes()).doesNotContain(UserAttribute.forName("report"));
     }
 
     @ParameterizedTest
