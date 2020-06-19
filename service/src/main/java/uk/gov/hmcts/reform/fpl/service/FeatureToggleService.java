@@ -13,6 +13,7 @@ public class FeatureToggleService {
     private final LDClient ldClient;
     private final LDUser ldUser;
     private final LDUser.Builder ldUserBuilder;
+    private final String ldUserKey;
 
     @Autowired
     public FeatureToggleService(LDClient ldClient, @Value("${ld.user_key}") String ldUserKey) {
@@ -20,7 +21,7 @@ public class FeatureToggleService {
         this.ldUserBuilder = new LDUser.Builder(ldUserKey)
             .custom("timestamp", String.valueOf(System.currentTimeMillis()));
         this.ldUser = this.ldUserBuilder.build();
-
+        this.ldUserKey = ldUserKey;
     }
 
     public boolean isXeroxPrintingEnabled() {
@@ -29,8 +30,7 @@ public class FeatureToggleService {
 
     public boolean isCtscEnabled(String localAuthorityName) {
         return ldClient.boolVariation("CTSC",
-            ldUserBuilder.custom("localAuthorityName", localAuthorityName).build(),
-            false);
+            newUser("localAuthorityName", localAuthorityName),false);
     }
 
     public boolean isCtscReportEnabled() {
@@ -60,5 +60,11 @@ public class FeatureToggleService {
 
     public boolean isCloseCaseEnabled() {
         return ldClient.boolVariation("close-case", ldUser, false);
+    }
+
+    private LDUser newUser(String propertyName, String propertyValue) {
+        return new LDUser.Builder(ldUserKey)
+            .custom("timestamp", String.valueOf(System.currentTimeMillis())).custom(propertyName, propertyValue)
+            .build();
     }
 }
