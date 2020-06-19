@@ -24,26 +24,11 @@ class CaseUrlServiceTest {
 
     private final long caseId = RandomUtils.nextLong();
 
-    @MockBean
-    private FeatureToggleService featureToggleService;
-
     @Autowired
     private CaseUrlService caseUrlService;
 
     @Test
-    void shouldGetCaseUrlsForCcd() {
-        when(featureToggleService.isExpertUIEnabled()).thenReturn(false);
-
-        assertThat(caseUrlService.getCaseUrl(caseId))
-            .isEqualTo(String.format("%s/case/PUBLICLAW/CARE_SUPERVISION_EPO/%s", CCD_UI_URL, caseId));
-        assertThat(caseUrlService.getCaseUrl(caseId, "Tab1"))
-            .isEqualTo(String.format("%s/case/PUBLICLAW/CARE_SUPERVISION_EPO/%s#Tab1", CCD_UI_URL, caseId));
-    }
-
-    @Test
     void shouldGetCaseUrlsForXui() {
-        when(featureToggleService.isExpertUIEnabled()).thenReturn(true);
-
         assertThat(caseUrlService.getCaseUrl(caseId))
             .isEqualTo(String.format("%s/cases/case-details/%s", XUI_URL, caseId));
         assertThat(caseUrlService.getCaseUrl(caseId, "Tab1"))
