@@ -29,9 +29,10 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         buildStateTransitions();
     }
 
-    private void buildSharedEvents(State forState) {
+    private void buildSharedEvents() {
+        State[] states = {SUBMITTED, GATEKEEPING, PREPARE_FOR_HEARING};
         event("amendChildren")
-            .forState(forState)
+            .forStates(states)
             .name("Children")
             .description("Amending the children for the case")
             .aboutToStartWebhook("enter-children")
@@ -40,7 +41,7 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .fields()
             .optional(CaseData::getChildren1);
         event("amendRespondents")
-            .forState(forState)
+            .forStates(states)
             .name("Respondents")
             .description("Amending the respondents for the case")
             .aboutToStartWebhook("enter-respondents")
@@ -49,28 +50,28 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .fields()
             .optional(CaseData::getRespondents1);
         event("amendOthers")
-            .forState(forState)
+            .forStates(states)
             .name("Others to be given notice")
             .description("Amending others for the case")
             .showEventNotes()
             .fields()
             .optional(CaseData::getOthers);
         event("amendInternationalElement")
-            .forState(forState)
+            .forStates(states)
             .name("International element")
             .description("Amending the international element")
             .showEventNotes()
             .fields()
             .optional(CaseData::getInternationalElement);
         event("amendOtherProceedings")
-            .forState(forState)
+            .forStates(states)
             .name("Other proceedings")
             .description("Amending other proceedings and allocation proposals")
             .showEventNotes()
             .fields()
             .optional(CaseData::getProceeding);
         event("amendAttendingHearing")
-            .forState(forState)
+            .forStates(states)
             .name("Attending the hearing")
             .description("Amend extra support needed for anyone to take part in hearing")
             .showEventNotes()
@@ -132,8 +133,6 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .fields()
                     .field(CaseData::getAllocationDecision, DisplayContext.Mandatory, true);
 
-        addHearingBookingDetails( GATEKEEPING);
-        buildSharedEvents( GATEKEEPING);
         buildNoticeOfProceedings( GATEKEEPING);
 
         event("draftSDO")
@@ -169,10 +168,8 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
 //                            .field("-").id(Order::getOrderDoc).context(DisplayContext.ReadOnly).label("Check the order").done()
                             .mandatory(Order::getOrderStatus);
 
-        buildStandardDirections( GATEKEEPING, "AfterGATEKEEPING");
-        buildUploadC2( GATEKEEPING);
-        buildC21Event( GATEKEEPING);
-        event("uploadDocumentsAfterGATEKEEPING")
+
+        event("uploadDocumentsAfterGatekeeping")
                 .forState(GATEKEEPING)
                 .name("Documents")
                 .description("Only here for backwards compatibility with case history")
@@ -195,9 +192,10 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .optional(Direction::getDateToBeCompletedBy);
     }
 
-    private void buildStandardDirections(State state, String suffix) {
-        event("uploadStandardDirections" + suffix)
-                .forState(state)
+    private void buildStandardDirections() {
+        State[] states = {SUBMITTED, GATEKEEPING};
+        event("uploadStandardDirections")
+                .forStates(states)
                 .name("Documents")
                 .description("Upload standard directions")
                 .explicitGrants()
@@ -217,9 +215,10 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .fields()
                     .optional(CaseData::getFamilyManCaseNumber);
 
-        addHearingBookingDetails( SUBMITTED);
-        this.buildStandardDirections( SUBMITTED, "");
-        buildUploadC2( SUBMITTED);
+        this.buildStandardDirections();
+        buildUploadC2();
+        addHearingBookingDetails();
+
 
         event("sendToGatekeeper")
                 .forState(SUBMITTED)
@@ -232,7 +231,7 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .fields()
                     .label("gateKeeperLabel", "Let the gatekeeper know there's a new case")
                     .mandatory(CaseData::getGatekeeperEmails);
-        buildSharedEvents( SUBMITTED);
+        buildSharedEvents();
         buildNoticeOfProceedings( SUBMITTED);
 
         event("addStatementOfService")
@@ -249,7 +248,7 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                     .field("serviceDeclarationLabel", DisplayContext.ReadOnly, null, "Text", null, "Declaration" )
                     .field("serviceConsent", DisplayContext.Mandatory, null, "MultiSelectList", "Consent", " ");
 
-        buildC21Event( SUBMITTED);
+        buildC21Event();
 
         event("uploadDocumentsAfterSubmission")
                 .forState(SUBMITTED)
@@ -263,8 +262,6 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
     private void buildPrepareForHearingEvents() {
         prefix(PREPARE_FOR_HEARING, "-");
         grant(PREPARE_FOR_HEARING, "CRU", HMCTS_ADMIN);
-        addHearingBookingDetails(PREPARE_FOR_HEARING);
-        buildSharedEvents(PREPARE_FOR_HEARING);
 
         event("uploadOtherCourtAdminDocuments-PREPARE_FOR_HEARING")
                 .forState(PREPARE_FOR_HEARING)
@@ -273,7 +270,6 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .grant("CRU", HMCTS_ADMIN)
                 .fields()
                     .field("otherCourtAdminDocuments", DisplayContext.Optional, null, "Collection", "CourtAdminDocument", "Other documents");
-        buildUploadC2( PREPARE_FOR_HEARING);
         buildNoticeOfProceedings( PREPARE_FOR_HEARING);
 
         event("draftCMO")
@@ -366,9 +362,10 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .optional(Direction::getDateToBeCompletedBy);
     }
 
-    private void addHearingBookingDetails(State state) {
+    private void addHearingBookingDetails() {
+        State[] states = {SUBMITTED, GATEKEEPING, PREPARE_FOR_HEARING};
         event("hearingBookingDetails")
-                .forState(state)
+                .forStates(states)
                 .grant("CRU", UserRole.GATEKEEPER)
                 .name("Add hearing details")
                 .description("Add hearing booking details to a case")
@@ -393,6 +390,7 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
 
 
     private void buildNoticeOfProceedings(State state) {
+        State[] states = {SUBMITTED, GATEKEEPING, PREPARE_FOR_HEARING};
         event("createNoticeOfProceedings")
         .forState(state)
         .name("Create notice of proceedings")
@@ -412,9 +410,10 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .mandatory(NoticeOfProceedings::getProceedingTypes);
     }
 
-    private void buildUploadC2(State state) {
+    private void buildUploadC2() {
+        State[] states = {SUBMITTED, GATEKEEPING, PREPARE_FOR_HEARING, CLOSED};
         event("uploadC2")
-        .forState(state)
+        .forStates(states)
         .explicitGrants()
         .grant("CRU", UserRole.LOCAL_AUTHORITY, UserRole.CAFCASS, HMCTS_ADMIN)
         .name("Upload a C2")
@@ -429,7 +428,7 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
 
     private void buildOPENEvents() {
         grant(OPEN, "CRU", LOCAL_AUTHORITY);
-        event("OPENCase")
+        event("openCase")
                 .initialState(OPEN)
                 .name("Start application")
                 .description("Create a new case – add a title")
@@ -570,9 +569,10 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                     .field("caseIDReference", DisplayContext.Optional, null, "Text", null, "Case ID");
     }
 
-    private void buildC21Event(State state) {
+    private void buildC21Event() {
+        State[] states = {SUBMITTED, GATEKEEPING, PREPARE_FOR_HEARING};
         event("createOrder")
-            .forState(state)
+            .forStates(states)
             .explicitGrants()
             .grant("CRU", HMCTS_ADMIN, JUDICIARY)
             .name("Create an order")
