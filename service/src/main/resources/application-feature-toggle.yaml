@@ -1,4 +1,0 @@
-spring:
-  profiles: feature-toggle
-ld:
-  sdk_key: sdk-e6f6154e-eb74-4cbe-9550-6f5176b66526
