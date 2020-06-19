@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
-import ccd.sdk.types.Role;
 import com.google.common.collect.ImmutableList;
+import uk.gov.hmcts.ccd.sdk.types.HasRole;
 
 import java.util.List;
 
-public enum UserRole implements Role {
+public enum UserRole implements HasRole {
     LOCAL_AUTHORITY("caseworker-publiclaw-solicitor"),
     HMCTS_ADMIN("caseworker-publiclaw-courtadmin"),
     CAFCASS("caseworker-publiclaw-cafcass"),

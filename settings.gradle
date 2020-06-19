@@ -4,6 +4,7 @@ pluginManagement {
       url 'https://raw.githubusercontent.com/banderous/ccd/master'
     }
     gradlePluginPortal()
+    mavenLocal()
   }
 }
 

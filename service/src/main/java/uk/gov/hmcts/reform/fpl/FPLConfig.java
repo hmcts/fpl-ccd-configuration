@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.fpl;
 
 
-import ccd.sdk.types.*;
+import uk.gov.hmcts.ccd.sdk.types.*;
 import de.cronn.reflection.util.TypedPropertyGetter;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
@@ -65,7 +65,6 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .forState(forState)
             .name("Other proceedings")
             .description("Amending other proceedings and allocation proposals")
-            .midEventURL("/enter-other-proceedings/mid-event")
             .showEventNotes()
             .fields()
             .optional(CaseData::getProceeding);
@@ -88,7 +87,6 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .grant("CRU", LOCAL_AUTHORITY)
                 .endButtonLabel("Submit")
                 .allWebhooks("case-submission")
-                .midEventWebhook()
                 .retries(1,2,3,4,5)
                 .fields()
                     .field("submissionConsentLabel", DisplayContext.ReadOnly, null, "Text", null, " ")
@@ -141,7 +139,7 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .forState(Gatekeeping)
                 .name("Draft standard directions")
                 .allWebhooks("draft-standard-directions")
-                .midEventWebhook()
+                //.midEventWebhook()
                 .fields()
                     .page("judgeAndLegalAdvisor")
                         .optional(CaseData::getJudgeAndLegalAdvisor)
@@ -167,7 +165,7 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                         .complex(CaseData::getCourtDirectionsCustom, Direction.class, this::renderSDODirectionsCustom)
                     .page("documentReview")
                         .complex(CaseData::getStandardDirectionOrder)
-                            .field().id(Order::getOrderDoc).context(DisplayContext.ReadOnly).label("Check the order").done()
+//                            .field("-").id(Order::getOrderDoc).context(DisplayContext.ReadOnly).label("Check the order").done()
                             .mandatory(Order::getOrderStatus);
 
         buildStandardDirections( Gatekeeping, "AfterGatekeeping");
@@ -263,7 +261,6 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
 
     private void buildPrepareForHearingEvents() {
         prefix(PREPARE_FOR_HEARING, "-");
-        blacklist(PREPARE_FOR_HEARING, GATEKEEPER);
         grant(PREPARE_FOR_HEARING, "CRU", HMCTS_ADMIN);
         addHearingBookingDetails(PREPARE_FOR_HEARING);
         buildSharedEvents(PREPARE_FOR_HEARING);
@@ -334,7 +331,6 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         renderComply( "COMPLY_LOCAL_AUTHORITY", LOCAL_AUTHORITY, CaseData::getLocalAuthorityDirections, DisplayContext.Mandatory, "Allows Local Authority user access to comply with their directions as well as ones for all parties");
         renderComply( "COMPLY_CAFCASS", UserRole.CAFCASS, CaseData::getCafcassDirections, DisplayContext.Optional, "Allows Cafcass user access to comply with their directions as well as ones for all parties");
         renderComply( "COMPLY_COURT", HMCTS_ADMIN, CaseData::getCourtDirectionsCustom, DisplayContext.Optional, "Event gives Court user access to comply with their directions as well as all parties");
-        explicitState("uploadC2-PREPARE_FOR_HEARING", LOCAL_AUTHORITY, "");
     }
 
     private void renderComply(String eventId, UserRole role, TypedPropertyGetter<CaseData, ?> getter, DisplayContext reasonContext, String description) {
@@ -376,7 +372,6 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .name("Add hearing details")
                 .description("Add hearing booking details to a case")
                 .aboutToStartWebhook("add-hearing-bookings")
-                .midEventURL("/add-hearing-bookings/mid-event")
                 .showSummary()
                 .fields()
                 .complex(CaseData::getHearingDetails, HearingBooking.class)
@@ -425,7 +420,6 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         .description("Upload a c2 to the case")
         .aboutToSubmitWebhook()
         .submittedWebhook()
-        .midEventWebhook()
         .fields()
             .complex(CaseData::getTemporaryC2Document)
             .mandatory(C2DocumentBundle::getDocument)
@@ -470,7 +464,6 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .description("Entering the respondents for the case")
                 .aboutToStartWebhook()
                 .aboutToSubmitWebhook()
-                .midEventWebhook()
                 .fields()
                     .optional(CaseData::getRespondents1);
 
@@ -479,7 +472,6 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .description("Entering the applicant for the case")
                 .aboutToStartWebhook()
                 .aboutToSubmitWebhook()
-                .midEventWebhook()
                 .fields()
                     .optional(CaseData::getApplicants)
                     .optional(CaseData::getSolicitor);
@@ -520,7 +512,6 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
         event("otherProceedings").forState(Open)
                 .name("Other proceedings")
                 .description("Entering other proceedings and proposals")
-                .midEventURL("/enter-other-proceedings/mid-event")
                 .fields()
                     .optional(CaseData::getProceeding);
 
@@ -546,7 +537,6 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .name("Documents")
                 .description("Upload documents")
                 .displayOrder(14)
-                .midEventWebhook()
                 .fields()
                     .label("uploadDocuments_paragraph_1", "You must upload these documents if possible. Give the reason and date you expect to provide it if you don’t have a document yet.")
                     .optional(CaseData::getSocialWorkChronologyDocument)
@@ -587,7 +577,6 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .name("Create an order")
             .showSummary()
             .allWebhooks("create-order")
-            .midEventWebhook()
             .fields()
             .page("OrderInformation")
                 .complex(CaseData::getOrderTypeAndDocument)

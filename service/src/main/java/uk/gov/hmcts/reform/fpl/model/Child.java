@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import ccd.sdk.types.ComplexType;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.ccd.sdk.types.ComplexType;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
 
 import javax.validation.Valid;
