@@ -121,7 +121,7 @@ public class UploadC2DocumentsController {
             } catch (FeeRegisterException | PaymentsApiException ignore) {
                 applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, C2_APPLICATION));
             }
-        } else {
+        } else if (NO.getValue().equals(caseDetails.getData().get(DISPLAY_AMOUNT_TO_PAY))) {
             applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, C2_APPLICATION));
         }
 
