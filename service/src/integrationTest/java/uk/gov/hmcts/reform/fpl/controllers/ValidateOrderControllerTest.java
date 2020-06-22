@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
-import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDateTime;
@@ -118,9 +118,9 @@ class ValidateOrderControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldReturnErrorsWhenAChildIsSelected() {
+    void shouldReturnErrorsWhenNoChildIsSelected() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("childSelector", ChildSelector.builder().build()))
+            .data(Map.of("childSelector", Selector.builder().build()))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "child-selector");
@@ -131,12 +131,34 @@ class ValidateOrderControllerTest extends AbstractControllerTest {
     @Test
     void shouldNotReturnErrorsWhenAChildIsSelected() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("childSelector", ChildSelector.builder().selected(List.of(0)).build()))
+            .data(Map.of("childSelector", Selector.builder().selected(List.of(0)).build()))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "child-selector");
 
         assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
+    @Test
+    void shouldReturnErrorWhenNoCareOrderIsSelected() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("careOrderSelector", Selector.builder().build()))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseDetails, "care-orders-selection");
+
+        assertThat(response.getErrors()).containsExactly("Select care orders to be discharged.");
+    }
+
+    @Test
+    void shouldNotReturnErrorsWhenCareOrderIsSelected() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("careOrderSelector", Selector.builder().selected(List.of(0)).build()))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseDetails, "care-orders-selection");
+
+        assertThat(response.getErrors()).isEmpty();
     }
 
     private CaseDetails createCaseDetails(EPOType preventRemoval, LocalDateTime now) {
