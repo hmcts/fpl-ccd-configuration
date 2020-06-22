@@ -22,7 +22,7 @@
     "ID": "notifyGatekeeper",
     "Name": "Notify gatekeeper",
     "Description": "Send email to gatekeeper",
-    "DisplayOrder": 3,
+    "DisplayOrder": 12,
     "PreConditionState(s)": "Gatekeeping",
     "PostConditionState": "Gatekeeping",
     "SecurityClassification": "Public",
