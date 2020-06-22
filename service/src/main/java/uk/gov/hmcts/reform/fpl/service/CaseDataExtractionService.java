@@ -84,6 +84,7 @@ public class CaseDataExtractionService {
         return children.stream()
             .map(element -> element.getValue().getParty())
             .map(this::buildChild)
+            .distinct()
             .collect(toList());
     }
 

@@ -35,11 +35,13 @@ import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
-import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.utils.OrderHelper;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -52,6 +54,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA;
 import static uk.gov.hmcts.reform.fpl.controllers.CloseCaseControllerAboutToStartTest.EXPECTED_LABEL_TEXT;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
@@ -60,21 +63,22 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.DISCHARGE_OF_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
+import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(GeneratedOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
+@SuppressWarnings("unchecked")
+class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
 
-    private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
-    private static final String LOCAL_AUTHORITY_CODE = "example";
-    private final byte[] pdf = {1, 2, 3, 4, 5};
     private Document document;
 
     @MockBean
@@ -93,7 +97,7 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
     @BeforeEach
     void setUp() {
         document = document();
-        DocmosisDocument docmosisDocument = new DocmosisDocument("order.pdf", pdf);
+        DocmosisDocument docmosisDocument = new DocmosisDocument("order.pdf", DOCUMENT_CONTENT);
 
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(DocmosisData.class),
             any())).willReturn(docmosisDocument);
@@ -148,42 +152,46 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
             .build();
 
         return CaseDetails.builder()
-            .data(mapper.convertValue(caseData, new TypeReference<>() {}))
+            .data(mapper.convertValue(caseData, new TypeReference<>() {
+            }))
             .build();
     }
 
     @Nested
     class PopulateChildSelectorMidEvent {
+
+        private final String callbackType = "populate-children-selector";
+
         @Test
         void shouldPopulateChildSelectorAndLabelWithBasicInfoWhenNoIsSelectedAndOrderIsNotFinal() {
             AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
-                buildCaseDetails("No", SUPERVISION_ORDER, INTERIM), "populate-selector");
+                buildCaseDetails("No", SUPERVISION_ORDER, INTERIM), callbackType);
 
-            CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+            CaseData caseData = extractCaseData(callbackResponse);
 
             assertThat(callbackResponse.getData().get("children_label"))
                 .isEqualTo("Child 1: Wallace\nChild 2: Gromit\n");
 
-            assertThat(caseData.getChildSelector()).isEqualTo(getExpectedChildSelector());
+            assertThat(caseData.getChildSelector()).isEqualTo(newSelector(2));
         }
 
         @Test
         void shouldPopulateChildSelectorAndLabelWhenNoIsSelectedAndOrderIsFinalAndNoOneHasFinalOrderIssued() {
             AboutToStartOrSubmitCallbackResponse response = postMidEvent(
-                buildCaseDetails("No", CARE_ORDER, FINAL), "populate-selector");
+                buildCaseDetails("No", CARE_ORDER, FINAL), callbackType);
 
             CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
             assertThat(response.getData().get("children_label"))
                 .isEqualTo("Child 1: Wallace\nChild 2: Gromit\n");
 
-            assertThat(caseData.getChildSelector()).isEqualTo(getExpectedChildSelector());
+            assertThat(caseData.getChildSelector()).isEqualTo(newSelector(2));
         }
 
         @Test
         void shouldNotPopulateChildSelectorAndLabelWhenYesIsSelected() {
             AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
-                buildCaseDetails("Yes", CARE_ORDER, FINAL), "populate-selector");
+                buildCaseDetails("Yes", CARE_ORDER, FINAL), callbackType);
 
             assertThat(callbackResponse.getData()).extracting("children_label", "childSelector").containsOnlyNulls();
         }
@@ -197,29 +205,24 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
                 createChild("Bill", false));
 
             AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
-                buildCaseDetails("No", children), "populate-selector");
+                buildCaseDetails("No", children), callbackType);
 
-            CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+            CaseData caseData = extractCaseData(callbackResponse);
 
             assertThat(callbackResponse.getData().get("children_label"))
                 .isEqualTo("Child 1: Fred\nChild 2: Jane - Care order issued\nChild 3: Paul - Care order issued\n"
                     + "Child 4: Bill\n");
 
-            ChildSelector expected = ChildSelector.builder()
-                .childCount("1234")
-                .build();
+            Selector expected = newSelector(4);
             assertThat(caseData.getChildSelector()).isEqualTo(expected);
-        }
-
-        private ChildSelector getExpectedChildSelector() {
-            return ChildSelector.builder()
-                .childCount("12")
-                .build();
         }
     }
 
     @Nested
-    class AddFinalOrderFlagsMidEvent {
+    class FinalOrderFlagsPreparation {
+
+        private final String callbackType = "prepare-selected-order";
+
         @Test
         void shouldPopulateLabelsWhenSingleChildHasFinalOrderRemaining() {
             List<Element<Child>> children = wrapElements(createChild("Fred", true),
@@ -228,7 +231,7 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
                 createChild("Bill", true));
 
             AboutToStartOrSubmitCallbackResponse response = postMidEvent(
-                buildCaseDetails(children), "add-final-order-flags");
+                buildCaseDetails(children), callbackType);
 
             assertThat(response.getData().get("remainingChildIndex"))
                 .isEqualTo("1");
@@ -248,7 +251,7 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
                 createChild("Bill", true));
 
             AboutToStartOrSubmitCallbackResponse response = postMidEvent(
-                buildCaseDetails(children), "add-final-order-flags");
+                buildCaseDetails(children), callbackType);
 
             assertThat(response.getData())
                 .extracting("remainingChildIndex", "remainingChild", "otherFinalOrderChildren")
@@ -263,7 +266,7 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
                 createChild("Bill", true));
 
             AboutToStartOrSubmitCallbackResponse response = postMidEvent(
-                buildCaseDetails(null, children, SUPERVISION_ORDER, INTERIM), "add-final-order-flags");
+                buildCaseDetails(null, children, SUPERVISION_ORDER, INTERIM), callbackType);
 
             assertThat(response.getData())
                 .extracting("remainingChildIndex", "remainingChild", "otherFinalOrderChildren")
@@ -276,7 +279,7 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
                 createChild("Barry", true));
 
             AboutToStartOrSubmitCallbackResponse response = postMidEvent(
-                buildCaseDetails(chuckleBrothers), "add-final-order-flags");
+                buildCaseDetails(chuckleBrothers), callbackType);
 
             assertThat(response.getErrors()).containsOnly("All children in the case already have final orders");
         }
@@ -287,9 +290,87 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
                 createChild("Barry", true));
 
             AboutToStartOrSubmitCallbackResponse response = postMidEvent(
-                buildCaseDetails(null, chuckleBrothers, BLANK_ORDER, null), "add-final-order-flags");
+                buildCaseDetails(null, chuckleBrothers, BLANK_ORDER, null), callbackType);
 
             assertThat(response.getErrors()).isNull();
+        }
+    }
+
+    @Nested
+    class DischargeCaseOrderPreparation {
+
+        private final String callbackType = "prepare-selected-order";
+
+        @Test
+        void shouldReturnErrorWhenCurrentOrderIsDischargeOfCareOrderAndNoExistingCareOrders() {
+            GeneratedOrder order = order(SUPERVISION_ORDER, "1 May 2020");
+            CaseDetails caseDetails = caseWithOrders(DISCHARGE_OF_CARE_ORDER, order);
+
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, callbackType);
+
+            assertThat(callbackResponse.getData().get("singleCareOrder_label")).isNull();
+            assertThat(callbackResponse.getData().get("multipleCareOrder_label")).isNull();
+            assertThat(callbackResponse.getData().get("careOrderSelector")).isNull();
+            assertThat(callbackResponse.getErrors()).containsExactly("No care orders to be discharged");
+        }
+
+        @Test
+        void shouldPopulateLabelForSingleCareOrder() {
+            GeneratedOrder order = order(CARE_ORDER, INTERIM, "1 May 2020", child("John", "Smith"));
+
+            CaseDetails caseDetails = caseWithOrders(DISCHARGE_OF_CARE_ORDER, order);
+
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, callbackType);
+
+            assertThat(callbackResponse.getData().get("singleCareOrder_label"))
+                .isEqualTo("Create discharge of care order for John Smith");
+            assertThat(callbackResponse.getData().get("multipleCareOrder_label")).isNull();
+            assertThat(callbackResponse.getData().get("careOrderSelector")).isNull();
+            assertThat(callbackResponse.getErrors()).isEmpty();
+        }
+
+        @Test
+        void shouldPopulateLabelAndSelectorForMultipleCareOrders() {
+            GeneratedOrder order1 = order(CARE_ORDER, INTERIM, "1 June 2019", child("John", "Smith"));
+            GeneratedOrder order2 = order(CARE_ORDER, FINAL, "12 June 2019",
+                child("John", "Smith"),
+                child("Alex", "White"));
+
+            CaseDetails caseDetails = caseWithOrders(DISCHARGE_OF_CARE_ORDER, order1, order2);
+
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, callbackType);
+
+            CaseData updatedCaseData = extractCaseData(callbackResponse);
+
+            assertThat(callbackResponse.getData().get("multipleCareOrder_label"))
+                .isEqualTo("Order 1: John Smith, 1 June 2019\nOrder 2: John Smith and Alex White, 12 June 2019");
+            assertThat(callbackResponse.getData().get("singleCareOrder_label")).isNull();
+            assertThat(updatedCaseData.getCareOrderSelector()).isEqualTo(newSelector(2));
+            assertThat(callbackResponse.getErrors()).isEmpty();
+        }
+
+        private GeneratedOrder order(GeneratedOrderType type, GeneratedOrderSubtype subType, String issueDate,
+                                     Element<Child>... children) {
+            return GeneratedOrder.builder()
+                .type(OrderHelper.getFullOrderType(type, subType))
+                .dateOfIssue(issueDate)
+                .children(Arrays.asList(children))
+                .build();
+        }
+
+        private GeneratedOrder order(GeneratedOrderType type, String issueDate, Element<Child>... children) {
+            return order(type, null, issueDate, children);
+        }
+
+        private Element<Child> child(String firstName, String lastName) {
+            return testChild(firstName, lastName, null, null);
+        }
+
+        private CaseDetails caseWithOrders(GeneratedOrderType generatedOrderType, GeneratedOrder... orders) {
+            return asCaseDetails(CaseData.builder()
+                .orderCollection(wrapElements(orders))
+                .orderTypeAndDocument(OrderTypeAndDocument.builder().type(generatedOrderType).build())
+                .build());
         }
     }
 
@@ -297,13 +378,15 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
     @Nested
     class GenerateDocumentMidEvent {
 
+        private final String callbackType = "generate-document";
+
         @Test
         void shouldAddCloseCaseLabelAndSetFlagToYesWhenCloseCasePageCanBeShown() {
             given(toggleService.isCloseCaseEnabled()).willReturn(true);
 
-            CaseDetails caseDetails = generateFinalCareOrderWithChildren("Yes");
+            CaseData caseData = generateFinalCareOrderWithChildren("Yes");
 
-            AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseDetails, "generate-document");
+            AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, callbackType);
 
             verify(docmosisDocumentGeneratorService, never()).generateDocmosisDocument(anyMap(), any());
 
@@ -315,37 +398,34 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
         void shouldNotAddCloseCaseLabelAndSetFlagToNoWhenCloseCasePageCanNotBeShown() {
             given(toggleService.isCloseCaseEnabled()).willReturn(true);
 
-            CaseDetails caseDetails = generateFinalCareOrderWithChildren("No");
+            CaseData caseData = generateFinalCareOrderWithChildren("No");
 
-            AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseDetails, "generate-document");
+            AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, callbackType);
 
             verify(docmosisDocumentGeneratorService, never()).generateDocmosisDocument(anyMap(), any());
 
             assertThat(response.getData()).extracting("showCloseCaseFromOrderPage", "close_case_label")
                 .containsOnly("NO", null);
-
         }
 
         @ParameterizedTest
         @MethodSource("generateDocumentMidEventArgumentSource")
-        void shouldGenerateDocumentWithCorrectNameWhenOrderTypeIsValid(CaseDetails caseDetails,
+        void shouldGenerateDocumentWithCorrectNameWhenOrderTypeIsValid(CaseData caseData,
                                                                        String fileName,
                                                                        DocmosisTemplates templateName) {
-            final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
-                caseDetails, "generate-document");
+            final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, callbackType);
+            final CaseData updatedCaseData = extractCaseData(callbackResponse);
 
             verify(docmosisDocumentGeneratorService).generateDocmosisDocument(any(DocmosisData.class),
                 eq(templateName));
-            verify(uploadDocumentService).uploadPDF(pdf, fileName);
+            verify(uploadDocumentService).uploadPDF(DOCUMENT_CONTENT, fileName);
 
-            final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-
-            assertThat(caseData.getOrderTypeAndDocument().getDocument()).isEqualTo(expectedDraftDocument());
+            assertThat(updatedCaseData.getOrderTypeAndDocument().getDocument()).isEqualTo(expectedDraftDocument());
         }
 
         @Test
         void shouldNotGenerateOrderDocumentWhenOrderTypeIsCareOrderWithNoFurtherDirections() {
-            postMidEvent(generateCareOrderCaseDetailsWithoutFurtherDirections(), "generate-document");
+            postMidEvent(generateCareOrderCaseDetailsWithoutFurtherDirections(), callbackType);
 
             verify(docmosisDocumentGeneratorService, never()).generateDocmosisDocument(any(DocmosisData.class), any());
             verify(uploadDocumentService, never()).uploadPDF(any(), any());
@@ -368,82 +448,61 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
             );
         }
 
-        private CaseDetails generateEmergencyProtectionOrderCaseDetails() {
-            final CaseData.CaseDataBuilder dataBuilder = CaseData.builder();
-
-            dataBuilder.order(GeneratedOrder.builder().details("").build())
+        private CaseData generateEmergencyProtectionOrderCaseDetails() {
+            final CaseData.CaseDataBuilder dataBuilder = CaseData.builder()
+                .order(GeneratedOrder.builder().details("").build())
                 .orderTypeAndDocument(OrderTypeAndDocument.builder().type(EMERGENCY_PROTECTION_ORDER).build())
-                .dateOfIssue(dateNow());
+                .dateOfIssue(dateNow())
+                .orderFurtherDirections(FurtherDirections.builder()
+                    .directionsNeeded("Yes")
+                    .directions("Some directions")
+                    .build());
 
             generateDefaultValues(dataBuilder);
             generateEpoValues(dataBuilder);
 
-            dataBuilder.orderFurtherDirections(FurtherDirections.builder()
-                .directionsNeeded("Yes")
-                .directions("Some directions")
-                .build());
+            return dataBuilder.build();
+        }
 
-            return CaseDetails.builder()
-                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
+        private CaseData generateBlankOrderCaseDetails() {
+            return generateCommonOrderDetails(BLANK_ORDER, null)
+                .order(GeneratedOrder.builder().details("").build())
                 .build();
         }
 
-        private CaseDetails generateBlankOrderCaseDetails() {
-            final CaseData.CaseDataBuilder dataBuilder = generateCommonOrderDetails(BLANK_ORDER, null)
-                .order(GeneratedOrder.builder().details("").build());
-
-            return CaseDetails.builder()
-                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
-                .build();
+        private CaseData generateCareOrderCaseDetailsWithoutFurtherDirections() {
+            return generateCommonOrderDetails(CARE_ORDER, INTERIM).build();
         }
 
-        private CaseDetails generateCareOrderCaseDetailsWithoutFurtherDirections() {
-            final CaseData.CaseDataBuilder dataBuilder = generateCommonOrderDetails(CARE_ORDER, INTERIM);
-
-            return CaseDetails.builder()
-                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
-                .build();
-        }
-
-        private CaseDetails generateCareOrderCaseDetails(GeneratedOrderSubtype subtype) {
-            final CaseData.CaseDataBuilder dataBuilder = generateCommonOrderDetails(CARE_ORDER, subtype);
-
-            dataBuilder.orderFurtherDirections(generateOrderFurtherDirections());
+        private CaseData generateCareOrderCaseDetails(GeneratedOrderSubtype subtype) {
+            final CaseData.CaseDataBuilder dataBuilder = generateCommonOrderDetails(CARE_ORDER, subtype)
+                .orderFurtherDirections(generateOrderFurtherDirections());
 
             if (subtype == INTERIM) {
                 dataBuilder.interimEndDate(generateInterimEndDate());
             }
 
-            return CaseDetails.builder()
-                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
-                .build();
+            return dataBuilder.build();
         }
 
-        private CaseDetails generateSupervisionOrderCaseDetails(GeneratedOrderSubtype subtype) {
-            final CaseData.CaseDataBuilder dataBuilder = generateCommonOrderDetails(SUPERVISION_ORDER, subtype);
-
-            dataBuilder.orderFurtherDirections(generateOrderFurtherDirections())
+        private CaseData generateSupervisionOrderCaseDetails(GeneratedOrderSubtype subtype) {
+            final CaseData.CaseDataBuilder dataBuilder = generateCommonOrderDetails(SUPERVISION_ORDER, subtype)
+                .orderFurtherDirections(generateOrderFurtherDirections())
                 .orderMonths(5);
 
             if (subtype == INTERIM) {
                 dataBuilder.interimEndDate(generateInterimEndDate());
             }
 
-            return CaseDetails.builder()
-                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
-                .build();
+            return dataBuilder.build();
         }
 
-        private CaseDetails generateFinalCareOrderWithChildren(String finalOrderIssued) {
-            final CaseData.CaseDataBuilder dataBuilder = generateCommonOrderDetails(CARE_ORDER, FINAL);
-
-            dataBuilder.children1(List.of(
-                childWithFinalOrderIssued("Yes"),
-                childWithFinalOrderIssued(finalOrderIssued)
-            ));
-
-            return CaseDetails.builder()
-                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
+        private CaseData generateFinalCareOrderWithChildren(String finalOrderIssued) {
+            return generateCommonOrderDetails(CARE_ORDER, FINAL)
+                .children1(List.of(
+                    childWithFinalOrderIssued("Yes"),
+                    childWithFinalOrderIssued(finalOrderIssued)
+                ))
                 .build();
         }
 
@@ -456,9 +515,7 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
                     .build())
                 .dateOfIssue(dateNow());
 
-            generateDefaultValues(builder);
-
-            return builder;
+            return generateDefaultValues(builder);
         }
 
         private InterimEndDate generateInterimEndDate() {
@@ -484,10 +541,10 @@ public class GeneratedOrderControllerMidEventTest extends AbstractControllerTest
                     .build());
         }
 
-        private void generateDefaultValues(CaseData.CaseDataBuilder builder) {
-            builder.caseLocalAuthority(LOCAL_AUTHORITY_CODE);
-            builder.familyManCaseNumber(FAMILY_MAN_CASE_NUMBER);
-            builder.judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build());
+        private CaseData.CaseDataBuilder generateDefaultValues(CaseData.CaseDataBuilder builder) {
+            builder.caseLocalAuthority(DEFAULT_LA);
+            builder.familyManCaseNumber("SACCCCCCCC5676576567");
+            return builder.judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build());
         }
 
         private FurtherDirections generateOrderFurtherDirections() {

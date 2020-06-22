@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "childCount",
+    "ListElementCode": "optionCount",
     "FieldType": "Text",
     "ElementLabel": "placeholder",
     "SecurityClassification": "Public"
@@ -10,280 +10,280 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child0Hidden",
+    "ListElementCode": "option0Hidden",
     "FieldType": "YesOrNo",
     "ElementLabel": "Child 1",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child1Hidden",
+    "ListElementCode": "option1Hidden",
     "FieldType": "YesOrNo",
     "ElementLabel": "Child 1",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child2Hidden",
+    "ListElementCode": "option2Hidden",
     "FieldType": "YesOrNo",
     "ElementLabel": "Child 2",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child3Hidden",
+    "ListElementCode": "option3Hidden",
     "FieldType": "YesOrNo",
     "ElementLabel": "Child 3",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child4Hidden",
+    "ListElementCode": "option4Hidden",
     "FieldType": "YesOrNo",
     "ElementLabel": "Child 4",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child5Hidden",
+    "ListElementCode": "option5Hidden",
     "FieldType": "YesOrNo",
     "ElementLabel": "Child 5",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child6Hidden",
+    "ListElementCode": "option6Hidden",
     "FieldType": "YesOrNo",
     "ElementLabel": "Child 6",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child7Hidden",
+    "ListElementCode": "option7Hidden",
     "FieldType": "YesOrNo",
     "ElementLabel": "Child 7",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child8Hidden",
+    "ListElementCode": "option8Hidden",
     "FieldType": "YesOrNo",
     "ElementLabel": "Child 8",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
   },  {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child9Hidden",
+    "ListElementCode": "option9Hidden",
     "FieldType": "YesOrNo",
     "ElementLabel": "Child 9",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
   },  {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child10Hidden",
+    "ListElementCode": "option10Hidden",
     "FieldType": "YesOrNo",
     "ElementLabel": "Child 10",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
   },  {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child11Hidden",
+    "ListElementCode": "option11Hidden",
     "FieldType": "YesOrNo",
     "ElementLabel": "Child 11",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
   },  {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child12Hidden",
+    "ListElementCode": "option12Hidden",
     "FieldType": "YesOrNo",
     "ElementLabel": "Child 12",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
   },  {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child13Hidden",
+    "ListElementCode": "option13Hidden",
     "FieldType": "YesOrNo",
     "ElementLabel": "Child 13",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
   },  {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child14Hidden",
+    "ListElementCode": "option14Hidden",
     "FieldType": "YesOrNo",
     "ElementLabel": "Child 14",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child0",
+    "ListElementCode": "option0",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 1",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"1*\" AND child0Hidden!=\"Yes\""
+    "FieldShowCondition": "optionCount=\"1*\" AND option0Hidden!=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child1",
+    "ListElementCode": "option1",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 2",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"12*\" AND child1Hidden!=\"Yes\""
+    "FieldShowCondition": "optionCount=\"12*\" AND option1Hidden!=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child2",
+    "ListElementCode": "option2",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 3",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"123*\" AND child2Hidden!=\"Yes\""
+    "FieldShowCondition": "optionCount=\"123*\" AND option2Hidden!=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child3",
+    "ListElementCode": "option3",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 4",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"1234*\" AND child3Hidden!=\"Yes\""
+    "FieldShowCondition": "optionCount=\"1234*\" AND option3Hidden!=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child4",
+    "ListElementCode": "option4",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 5",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"12345*\" AND child4Hidden!=\"Yes\""
+    "FieldShowCondition": "optionCount=\"12345*\" AND option4Hidden!=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child5",
+    "ListElementCode": "option5",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 6",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"123456*\" AND child5Hidden!=\"Yes\""
+    "FieldShowCondition": "optionCount=\"123456*\" AND option5Hidden!=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child6",
+    "ListElementCode": "option6",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 7",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"1234567*\" AND child6Hidden!=\"Yes\""
+    "FieldShowCondition": "optionCount=\"1234567*\" AND option6Hidden!=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child7",
+    "ListElementCode": "option7",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 8",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"12345678*\" AND child7Hidden!=\"Yes\""
+    "FieldShowCondition": "optionCount=\"12345678*\" AND option7Hidden!=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child8",
+    "ListElementCode": "option8",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 9",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"123456789*\" AND child8Hidden!=\"Yes\""
+    "FieldShowCondition": "optionCount=\"123456789*\" AND option8Hidden!=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child9",
+    "ListElementCode": "option9",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 10",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"12345678910*\" AND child9Hidden!=\"Yes\""
+    "FieldShowCondition": "optionCount=\"12345678910*\" AND option9Hidden!=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child10",
+    "ListElementCode": "option10",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 11",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"1234567891011*\" AND child10Hidden!=\"Yes\""
+    "FieldShowCondition": "optionCount=\"1234567891011*\" AND option10Hidden!=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child11",
+    "ListElementCode": "option11",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 12",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"123456789101112*\" AND child11Hidden!=\"Yes\""
+    "FieldShowCondition": "optionCount=\"123456789101112*\" AND option11Hidden!=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child12",
+    "ListElementCode": "option12",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 13",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"12345678910111213*\" AND child12Hidden!=\"Yes\""
+    "FieldShowCondition": "optionCount=\"12345678910111213*\" AND option12Hidden!=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child13",
+    "ListElementCode": "option13",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 14",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"1234567891011121314*\" AND child13Hidden!=\"Yes\""
+    "FieldShowCondition": "optionCount=\"1234567891011121314*\" AND option13Hidden!=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildSelector",
-    "ListElementCode": "child14",
+    "ListElementCode": "option14",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ChildSelector",
     "ElementLabel": "Child 15",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "childCount=\"123456789101112131415\" AND child14Hidden!=\"Yes\""
+    "FieldShowCondition": "optionCount=\"123456789101112131415\" AND option14Hidden!=\"Yes\""
   }
 ]
