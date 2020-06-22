@@ -4,7 +4,6 @@ import com.launchdarkly.sdk.LDUser;
 import com.launchdarkly.sdk.UserAttribute;
 import com.launchdarkly.sdk.server.LDClient;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -40,21 +39,11 @@ class FeatureToggleServiceTest {
 
     private static final String LD_USER_KEY = "test_key";
 
-    private static LDClient ldClient; // Required to be static for use in beforeAll
-    private static FeatureToggleService service; //Required to be static for use in beforeAll and argument source
+    private static LDClient ldClient = Mockito.mock(LDClient.class);
+    private static FeatureToggleService service = new FeatureToggleService(ldClient, LD_USER_KEY);
 
     @Captor
     private ArgumentCaptor<LDUser> ldUser;
-
-    @BeforeAll
-    static void beforeAll() {
-        // If mocked with the annotation then it is null here and the reference in the service is always null
-        // Using post construct doesn't get picked up
-        // Doing this in before each is a possibility but that then removes the ability to test and ensure that issue
-        //  is removed as we will be creating a new instance of the service before each test so nothing will persist
-        ldClient = Mockito.mock(LDClient.class);
-        service = new FeatureToggleService(ldClient, LD_USER_KEY);
-    }
 
     @AfterEach
     void tearDown() {
@@ -67,7 +56,6 @@ class FeatureToggleServiceTest {
         givenToggle(toggleState);
 
         assertThat(service.isXeroxPrintingEnabled()).isEqualTo(toggleState);
-
         verify(ldClient).boolVariation(eq("xerox-printing"), ldUser.capture(), eq(false));
 
         LDUser expectedLdUser = getLdBuilder().build();
@@ -81,7 +69,6 @@ class FeatureToggleServiceTest {
         givenToggle(toggleState);
 
         assertThat(service.isCtscEnabled("test name")).isEqualTo(toggleState);
-
         verify(ldClient).boolVariation(eq("CTSC"), ldUser.capture(), eq(false));
 
         LDUser expectedLdUser = getLdBuilder()
@@ -97,7 +84,6 @@ class FeatureToggleServiceTest {
         givenToggle(toggleState);
 
         assertThat(service.isCtscReportEnabled()).isEqualTo(toggleState);
-
         verify(ldClient).boolVariation(eq("CTSC"), ldUser.capture(), eq(false));
 
         LDUser expectedLdUser = getLdBuilder()
@@ -220,9 +206,7 @@ class FeatureToggleServiceTest {
     @MethodSource("userAttributesTestSource")
     void shouldNotCarryAttributesBetweenRequests(Runnable functionToTest, Runnable accumulateFunction,
                                                  List<UserAttribute> attributes) {
-        // dummy code
         accumulateFunction.run();
-
         functionToTest.run();
 
         verify(ldClient, times(2)).boolVariation(anyString(), ldUser.capture(), anyBoolean());
@@ -269,10 +253,12 @@ class FeatureToggleServiceTest {
 
     private static List<UserAttribute> buildAttributes(String... additionalAttributes) {
         List<UserAttribute> attributes = new ArrayList<>();
+
         attributes.add(UserAttribute.forName("timestamp"));
         Arrays.stream(additionalAttributes)
             .map(UserAttribute::forName)
             .forEach(attributes::add);
+
         return attributes;
     }
 
