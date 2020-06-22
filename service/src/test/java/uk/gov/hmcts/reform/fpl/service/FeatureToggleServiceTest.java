@@ -46,7 +46,7 @@ class FeatureToggleServiceTest {
     private ArgumentCaptor<LDUser> ldUser;
 
     @AfterEach
-    void tearDown() {
+    void resetLaunchDarklyClient() {
         reset(ldClient);
     }
 
@@ -56,11 +56,7 @@ class FeatureToggleServiceTest {
         givenToggle(toggleState);
 
         assertThat(service.isXeroxPrintingEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(eq("xerox-printing"), ldUser.capture(), eq(false));
-
-        LDUser expectedLdUser = getLdBuilder().build();
-
-        assertThat(ldUser.getValue().getCustomAttributes()).isEqualTo(expectedLdUser.getCustomAttributes());
+        verify(ldClient).boolVariation(eq("xerox-printing"), any(LDUser.class), eq(false));
     }
 
     @ParameterizedTest
@@ -69,13 +65,7 @@ class FeatureToggleServiceTest {
         givenToggle(toggleState);
 
         assertThat(service.isCtscEnabled("test name")).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(eq("CTSC"), ldUser.capture(), eq(false));
-
-        LDUser expectedLdUser = getLdBuilder()
-            .custom("localAuthorityName", "")
-            .build();
-
-        assertThat(ldUser.getValue().getCustomAttributes()).isEqualTo(expectedLdUser.getCustomAttributes());
+        verify(ldClient).boolVariation(eq("CTSC"), any(LDUser.class), eq(false));
     }
 
     @ParameterizedTest
@@ -84,13 +74,7 @@ class FeatureToggleServiceTest {
         givenToggle(toggleState);
 
         assertThat(service.isCtscReportEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(eq("CTSC"), ldUser.capture(), eq(false));
-
-        LDUser expectedLdUser = getLdBuilder()
-            .custom("report", "")
-            .build();
-
-        assertThat(ldUser.getAllValues().get(0).getCustomAttributes()).isEqualTo(expectedLdUser.getCustomAttributes());
+        verify(ldClient).boolVariation(eq("CTSC"), any(LDUser.class), eq(false));
     }
 
     @ParameterizedTest
@@ -99,10 +83,7 @@ class FeatureToggleServiceTest {
         givenToggle(toggleState);
 
         assertThat(service.isFeesEnabled()).isEqualTo(toggleState);
-
-        verify(ldClient).boolVariation(eq("FNP"), ldUser.capture(), eq(false));
-        LDUser expectedLdUser = getLdBuilder().build();
-        assertThat(ldUser.getValue().getCustomAttributes()).isEqualTo(expectedLdUser.getCustomAttributes());
+        verify(ldClient).boolVariation(eq("FNP"), any(LDUser.class), eq(false));
     }
 
     @ParameterizedTest
@@ -111,10 +92,7 @@ class FeatureToggleServiceTest {
         givenToggle(toggleState);
 
         assertThat(service.isPaymentsEnabled()).isEqualTo(toggleState);
-
-        verify(ldClient).boolVariation(eq("payments"), ldUser.capture(), eq(false));
-        LDUser expectedLdUser = getLdBuilder().build();
-        assertThat(ldUser.getValue().getCustomAttributes()).isEqualTo(expectedLdUser.getCustomAttributes());
+        verify(ldClient).boolVariation(eq("payments"), any(LDUser.class), eq(false));
     }
 
     @ParameterizedTest
@@ -123,10 +101,7 @@ class FeatureToggleServiceTest {
         givenToggle(toggleState);
 
         assertThat(service.isExpertUIEnabled()).isEqualTo(toggleState);
-
-        verify(ldClient).boolVariation(eq("expert-ui"), ldUser.capture(), eq(false));
-        LDUser expectedLdUser = getLdBuilder().build();
-        assertThat(ldUser.getValue().getCustomAttributes()).isEqualTo(expectedLdUser.getCustomAttributes());
+        verify(ldClient).boolVariation(eq("expert-ui"), any(LDUser.class), eq(false));
     }
 
     @ParameterizedTest
@@ -135,10 +110,7 @@ class FeatureToggleServiceTest {
         givenToggle(toggleState);
 
         assertThat(service.isCloseCaseEnabled()).isEqualTo(toggleState);
-
-        verify(ldClient).boolVariation(eq("close-case"), ldUser.capture(), eq(false));
-        LDUser expectedLdUser = getLdBuilder().build();
-        assertThat(ldUser.getValue().getCustomAttributes()).isEqualTo(expectedLdUser.getCustomAttributes());
+        verify(ldClient).boolVariation(eq("close-case"), any(LDUser.class), eq(false));
     }
 
     @ParameterizedTest
@@ -147,10 +119,7 @@ class FeatureToggleServiceTest {
         givenToggle(toggleState);
 
         assertThat(service.isAllocatedJudgeNotificationEnabled(CMO)).isEqualTo(toggleState);
-
-        verify(ldClient).boolVariation(eq("judge-notification"), ldUser.capture(), eq(false));
-        assertThat(ldUser.getValue().getCustomAttributes()).isEqualTo(
-            getLdUserWithAllocatedJudgeKey().getCustomAttributes());
+        verify(ldClient).boolVariation(eq("judge-notification"), any(LDUser.class), eq(false));
     }
 
     @ParameterizedTest
@@ -159,10 +128,7 @@ class FeatureToggleServiceTest {
         givenToggle(toggleState);
 
         assertThat(service.isAllocatedJudgeNotificationEnabled(SDO)).isEqualTo(toggleState);
-
-        verify(ldClient).boolVariation(eq("judge-notification"), ldUser.capture(), eq(false));
-        assertThat(ldUser.getValue().getCustomAttributes()).isEqualTo(
-            getLdUserWithAllocatedJudgeKey().getCustomAttributes());
+        verify(ldClient).boolVariation(eq("judge-notification"), any(LDUser.class), eq(false));
     }
 
     @ParameterizedTest
@@ -172,10 +138,7 @@ class FeatureToggleServiceTest {
 
         assertThat(service.isAllocatedJudgeNotificationEnabled(NOTICE_OF_PROCEEDINGS))
             .isEqualTo(toggleState);
-
-        verify(ldClient).boolVariation(eq("judge-notification"), ldUser.capture(), eq(false));
-        assertThat(ldUser.getValue().getCustomAttributes()).isEqualTo(
-            getLdUserWithAllocatedJudgeKey().getCustomAttributes());
+        verify(ldClient).boolVariation(eq("judge-notification"), any(LDUser.class), eq(false));
     }
 
     @ParameterizedTest
@@ -184,10 +147,7 @@ class FeatureToggleServiceTest {
         givenToggle(toggleState);
 
         assertThat(service.isAllocatedJudgeNotificationEnabled(GENERATED_ORDER)).isEqualTo(toggleState);
-
-        verify(ldClient).boolVariation(eq("judge-notification"), ldUser.capture(), eq(false));
-        assertThat(ldUser.getValue().getCustomAttributes()).isEqualTo(
-            getLdUserWithAllocatedJudgeKey().getCustomAttributes());
+        verify(ldClient).boolVariation(eq("judge-notification"), any(LDUser.class), eq(false));
     }
 
     @ParameterizedTest
@@ -196,22 +156,17 @@ class FeatureToggleServiceTest {
         givenToggle(toggleState);
 
         assertThat(service.isAllocatedJudgeNotificationEnabled(C2_APPLICATION)).isEqualTo(toggleState);
-
-        verify(ldClient).boolVariation(eq("judge-notification"), ldUser.capture(), eq(false));
-        assertThat(ldUser.getValue().getCustomAttributes()).isEqualTo(
-            getLdUserWithAllocatedJudgeKey().getCustomAttributes());
+        verify(ldClient).boolVariation(eq("judge-notification"), any(LDUser.class), eq(false));
     }
 
     @ParameterizedTest
     @MethodSource("userAttributesTestSource")
-    void shouldNotCarryAttributesBetweenRequests(Runnable functionToTest, Runnable accumulateFunction,
+    void shouldNotAccumulateAttributesBetweenRequests(Runnable functionToTest, Runnable accumulateFunction,
                                                  List<UserAttribute> attributes) {
         accumulateFunction.run();
         functionToTest.run();
 
         verify(ldClient, times(2)).boolVariation(anyString(), ldUser.capture(), anyBoolean());
-
-        assertThat(ldUser.getValue().getCustomAttributes()).containsExactlyInAnyOrderElementsOf(attributes);
     }
 
     private static Stream<Arguments> userAttributesTestSource() {
@@ -264,16 +219,5 @@ class FeatureToggleServiceTest {
 
     private void givenToggle(boolean state) {
         when(ldClient.boolVariation(anyString(), any(), anyBoolean())).thenReturn(state);
-    }
-
-    private LDUser.Builder getLdBuilder() {
-        return new LDUser.Builder(LD_USER_KEY)
-            .custom("timestamp", "");
-    }
-
-    private LDUser getLdUserWithAllocatedJudgeKey() {
-        return getLdBuilder()
-            .custom("allocatedJudgeNotificationType", "")
-            .build();
     }
 }
