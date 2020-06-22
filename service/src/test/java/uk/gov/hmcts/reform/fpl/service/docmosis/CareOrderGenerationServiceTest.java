@@ -85,7 +85,7 @@ class CareOrderGenerationServiceTest extends AbstractOrderGenerationServiceTest 
     }
 
     private DocmosisGeneratedOrder getExpectedDocument(GeneratedOrderSubtype subtype, OrderStatus orderStatus) {
-        DocmosisGeneratedOrderBuilder orderBuilder = defaultExpectedData(CARE_ORDER, subtype, orderStatus)
+        DocmosisGeneratedOrderBuilder orderBuilder = DocmosisGeneratedOrder.builder()
             .children(getChildren())
             .orderType(CARE_ORDER)
             .localAuthorityName(LOCAL_AUTHORITY_NAME);
@@ -104,6 +104,6 @@ class CareOrderGenerationServiceTest extends AbstractOrderGenerationServiceTest 
                 .orderDetails("It is ordered that the children are placed in the care of Example Local Authority.");
         }
 
-        return orderBuilder.build();
+        return enrichWithStandardData(CARE_ORDER, subtype, orderStatus, orderBuilder).build();
     }
 }

@@ -7,7 +7,6 @@ import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder.DocmosisGeneratedOrderBuilder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -58,19 +57,23 @@ abstract class AbstractOrderGenerationServiceTest {
             ));
     }
 
-    DocmosisGeneratedOrderBuilder<?, ?> defaultExpectedData(GeneratedOrderType type, OrderStatus orderStatus) {
-        return defaultExpectedData(type, null, orderStatus);
+    DocmosisGeneratedOrderBuilder<?, ?> enrichWithStandardData(GeneratedOrderType type,
+                                                               OrderStatus orderStatus,
+                                                               DocmosisGeneratedOrderBuilder orderBuilder) {
+        return enrichWithStandardData(type, null, orderStatus, orderBuilder);
     }
 
-    DocmosisGeneratedOrderBuilder<?, ?> defaultExpectedData(GeneratedOrderType type, GeneratedOrderSubtype subtype,
-                                                            OrderStatus orderStatus) {
+    DocmosisGeneratedOrderBuilder<?, ?> enrichWithStandardData(GeneratedOrderType type,
+                                                               GeneratedOrderSubtype subtype,
+                                                               OrderStatus orderStatus,
+                                                               DocmosisGeneratedOrderBuilder orderBuilder) {
 
         DocmosisJudgeAndLegalAdvisor judgeAndLegalAdvisor = DocmosisJudgeAndLegalAdvisor.builder()
             .judgeTitleAndName("Her Honour Judge Judy")
             .legalAdvisorName("Peter Parker")
             .build();
 
-        DocmosisGeneratedOrderBuilder orderBuilder = DocmosisGeneratedOrder.builder()
+        orderBuilder
             .orderType(type)
             .furtherDirections(type != BLANK_ORDER ? "Example Directions" : "")
             .familyManCaseNumber("123")

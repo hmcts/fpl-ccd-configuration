@@ -110,8 +110,7 @@ class SupervisionOrderGenerationServiceTest extends AbstractOrderGenerationServi
                 .gender("Boy")
                 .dateOfBirth(formattedDate).build());
 
-        DocmosisGeneratedOrderBuilder orderBuilder = defaultExpectedData(SUPERVISION_ORDER, orderStatus)
-            .children(children);
+        DocmosisGeneratedOrderBuilder orderBuilder = DocmosisGeneratedOrder.builder().children(children);
 
         if (subtype == INTERIM) {
             String detailsDate = formatLocalDateToString(
@@ -134,7 +133,7 @@ class SupervisionOrderGenerationServiceTest extends AbstractOrderGenerationServi
                 .orderDetails(format("It is ordered that Example Local Authority supervises the child for 5 months "
                     + "from the date of this order until %s.", formattedDateTime));
         }
-        return orderBuilder.build();
+        return enrichWithStandardData(SUPERVISION_ORDER, orderStatus, orderBuilder).build();
     }
 
 }

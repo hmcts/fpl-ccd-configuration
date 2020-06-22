@@ -14,7 +14,9 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDischargeOfCareOrder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
@@ -33,9 +35,11 @@ import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
 import static uk.gov.hmcts.reform.fpl.enums.ChildGender.BOY;
 import static uk.gov.hmcts.reform.fpl.enums.ChildGender.GIRL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.DISCHARGE_OF_CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDischargeOfCareOrder.DocmosisDischargeOfCareOrderBuilder;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
@@ -83,9 +87,10 @@ class DischargeCareOrderGenerationServiceTest extends AbstractOrderGenerationSer
 
         DocmosisGeneratedOrder actualOrderData = service.getTemplateData(caseData);
 
-        String expectedDetails = "The court discharges the care order made by the Newcastle Court on 1 June 2020";
-        List<DocmosisChild> expectedChildren = docmosisChild(orderWithMultipleChildren.getChildren());
-        DocmosisGeneratedOrder expectedOrderData = getExpectedDocument(orderStatus, expectedDetails, expectedChildren);
+        List<DocmosisOrder> expectedOrders = docmosisOrders(orderWithMultipleChildren);
+
+        List<DocmosisChild> expectedChildren = docmosisChildren(orderWithMultipleChildren.getChildren());
+        DocmosisGeneratedOrder expectedOrderData = getExpectedDocument(orderStatus, expectedOrders, expectedChildren);
 
         assertThat(actualOrderData).isEqualToComparingFieldByField(expectedOrderData);
     }
@@ -98,12 +103,11 @@ class DischargeCareOrderGenerationServiceTest extends AbstractOrderGenerationSer
 
         DocmosisGeneratedOrder actualOrderData = service.getTemplateData(caseData);
 
-        String expectedDetails = "The court discharges:\n"
-            + "The care order made by the Newcastle Court on 1 June 2020\n"
-            + "The care order made by the Reading Court on 2 June 2020";
-        List<DocmosisChild> expectedChildren = docmosisChild(orderWithMultipleChildren.getChildren(),
+        List<DocmosisOrder> expectedOrders = docmosisOrders(orderWithMultipleChildren, orderWithSingleChild);
+
+        List<DocmosisChild> expectedChildren = docmosisChildren(orderWithMultipleChildren.getChildren(),
             orderWithSingleChild.getChildren());
-        DocmosisGeneratedOrder expectedOrderData = getExpectedDocument(orderStatus, expectedDetails, expectedChildren);
+        DocmosisGeneratedOrder expectedOrderData = getExpectedDocument(orderStatus, expectedOrders, expectedChildren);
 
         assertThat(actualOrderData).isEqualToComparingFieldByField(expectedOrderData);
     }
@@ -116,9 +120,10 @@ class DischargeCareOrderGenerationServiceTest extends AbstractOrderGenerationSer
 
         DocmosisGeneratedOrder actualOrderData = service.getTemplateData(caseData);
 
-        String expectedDetails = "The court discharges the care order made by the Newcastle Court on 1 June 2020";
-        List<DocmosisChild> expectedChildren = docmosisChild(orderWithMultipleChildren.getChildren());
-        DocmosisGeneratedOrder expectedOrder = getExpectedDocument(orderStatus, expectedDetails, expectedChildren);
+        List<DocmosisOrder> expectedOrders = docmosisOrders(orderWithMultipleChildren);
+
+        List<DocmosisChild> expectedChildren = docmosisChildren(orderWithMultipleChildren.getChildren());
+        DocmosisGeneratedOrder expectedOrder = getExpectedDocument(orderStatus, expectedOrders, expectedChildren);
 
         assertThat(actualOrderData).isEqualToComparingFieldByField(expectedOrder);
     }
@@ -131,9 +136,13 @@ class DischargeCareOrderGenerationServiceTest extends AbstractOrderGenerationSer
 
         DocmosisGeneratedOrder actualOrderData = service.getTemplateData(caseData);
 
-        String expectedDetails = "The court discharges the care order made by the Family Court on 2 June 2020";
-        List<DocmosisChild> expectedChildren = docmosisChild(caseData.getAllChildren());
-        DocmosisGeneratedOrder expectedOrderData = getExpectedDocument(orderStatus, expectedDetails, expectedChildren);
+        List<DocmosisOrder> expectedOrders = List.of(DocmosisOrder.builder()
+            .courtName(DEFAULT_LA_COURT)
+            .dateOfIssue("2 June 2020")
+            .build());
+
+        List<DocmosisChild> expectedChildren = docmosisChildren(caseData.getAllChildren());
+        DocmosisGeneratedOrder expectedOrderData = getExpectedDocument(orderStatus, expectedOrders, expectedChildren);
 
         assertThat(actualOrderData).isEqualToComparingFieldByField(expectedOrderData);
     }
@@ -157,17 +166,29 @@ class DischargeCareOrderGenerationServiceTest extends AbstractOrderGenerationSer
         return caseDataBuilder.build();
     }
 
-    private DocmosisGeneratedOrder getExpectedDocument(OrderStatus status, String details,
+    private DocmosisGeneratedOrder getExpectedDocument(OrderStatus status, List<DocmosisOrder> docmosisOrders,
                                                        List<DocmosisChild> children) {
-        return defaultExpectedData(DISCHARGE_OF_CARE_ORDER, status)
+
+        DocmosisDischargeOfCareOrderBuilder dischargeOfCareOrderBuilder = DocmosisDischargeOfCareOrder.builder()
             .orderTitle("Discharge of care order")
             .childrenAct("Section 39(1) Children Act 1989")
-            .orderDetails(details)
             .children(children)
-            .build();
+            .careOrders(docmosisOrders);
+
+        return enrichWithStandardData(DISCHARGE_OF_CARE_ORDER, status, dischargeOfCareOrderBuilder).build();
     }
 
-    private List<DocmosisChild> docmosisChild(List<Element<Child>>... children) {
+    private List<DocmosisOrder> docmosisOrders(GeneratedOrder... generatedOrders) {
+        return
+            Stream.of(generatedOrders).map(generatedOrder ->
+                DocmosisOrder.builder()
+                    .courtName(generatedOrder.getCourtName())
+                    .dateOfIssue(generatedOrder.getDateOfIssue())
+                    .build())
+                .collect(Collectors.toList());
+    }
+
+    private List<DocmosisChild> docmosisChildren(List<Element<Child>>... children) {
         return Stream.of(children).flatMap(List::stream)
             .map(Element::getValue)
             .map(Child::getParty)
