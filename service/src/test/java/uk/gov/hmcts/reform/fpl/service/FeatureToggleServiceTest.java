@@ -164,18 +164,6 @@ class FeatureToggleServiceTest {
             Arguments.of(
                 (Runnable) () -> service.isExpertUIEnabled(),
                 (Runnable) () -> service.isCtscReportEnabled(),
-                buildAttributes()),
-            Arguments.of(
-                (Runnable) () -> service.isFeesEnabled(),
-                (Runnable) () -> service.isCtscReportEnabled(),
-                buildAttributes()),
-            Arguments.of(
-                (Runnable) () -> service.isPaymentsEnabled(),
-                (Runnable) () -> service.isCtscReportEnabled(),
-                buildAttributes()),
-            Arguments.of(
-                (Runnable) () -> service.isXeroxPrintingEnabled(),
-                (Runnable) () -> service.isCtscReportEnabled(),
                 buildAttributes())
         );
     }
