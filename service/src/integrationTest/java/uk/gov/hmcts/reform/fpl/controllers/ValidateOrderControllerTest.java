@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
@@ -137,6 +138,17 @@ class ValidateOrderControllerTest extends AbstractControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "child-selector");
 
         assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
+    @Test
+    void shouldReturnErrorWhenNoCareOrderSelection() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(emptyMap())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseDetails, "care-orders-selection");
+
+        assertThat(response.getErrors()).containsExactly("Select care orders to be discharged.");
     }
 
     @Test

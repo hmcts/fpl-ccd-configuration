@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOEndDateGroup;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.NAMED_DATE;
 
@@ -123,7 +124,7 @@ public class ValidateOrderController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         List<String> errors = new ArrayList<>();
 
-        if (caseData.getCareOrderSelector().getSelected().isEmpty()) {
+        if (isEmpty(caseData.getCareOrderSelector()) || isEmpty(caseData.getCareOrderSelector().getSelected())) {
             errors.add("Select care orders to be discharged.");
         }
 
