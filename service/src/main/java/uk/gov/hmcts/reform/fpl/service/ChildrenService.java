@@ -3,15 +3,19 @@ package uk.gov.hmcts.reform.fpl.service;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.IntStream.range;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -47,7 +51,7 @@ public class ChildrenService {
     }
 
     public List<Element<Child>> updateFinalOrderIssued(GeneratedOrderType orderType, List<Element<Child>> children,
-                                                       String orderAppliesToAllChildren, ChildSelector childSelector,
+                                                       String orderAppliesToAllChildren, Selector childSelector,
                                                        String remainingChildIndex) {
         if (YES.getValue().equals(orderAppliesToAllChildren)) {
             children.forEach(child -> {
@@ -119,5 +123,38 @@ public class ChildrenService {
                 return builder.toString();
             })
             .collect(Collectors.joining("\n"));
+    }
+
+    public List<Integer> getIndexesOfChildrenWithFinalOrderIssued(CaseData caseData) {
+        return range(0, caseData.getAllChildren().size())
+            .filter(idx -> YES.getValue().equals(caseData.getAllChildren().get(idx).getValue().getFinalOrderIssued()))
+            .boxed()
+            .collect(toList());
+    }
+
+    public List<Element<Child>> getSelectedChildren(CaseData caseData) {
+        return getSelectedChildren(caseData.getAllChildren(), caseData.getChildSelector(),
+            caseData.getOrderAppliesToAllChildren(), caseData.getRemainingChildIndex());
+    }
+
+    private List<Element<Child>> getSelectedChildren(List<Element<Child>> children, Selector selector,
+                                                     String appliesToAllChildren, String remainingChildIndex) {
+
+        if (isNotBlank(remainingChildIndex)) {
+            return List.of(children.get(Integer.parseInt(remainingChildIndex)));
+        }
+
+        if (useAllChildren(appliesToAllChildren)) {
+            return children;
+        }
+
+        return selector.getSelected().stream()
+            .map(children::get)
+            .collect(toList());
+    }
+
+    private boolean useAllChildren(String appliesToAllChildren) {
+        // If there is only one child in the case then the choice will be null
+        return appliesToAllChildren == null || "Yes".equals(appliesToAllChildren);
     }
 }

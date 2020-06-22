@@ -8,48 +8,52 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import org.springframework.boot.jackson.JsonComponent;
-import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ChildSelectorType.SELECTED;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SelectorType.SELECTED;
 
 @JsonComponent
-public class ChildSelectorDeserializer extends JsonDeserializer<ChildSelector> {
+public class SelectorDeserializer extends JsonDeserializer<Selector> {
 
-    // Cannot deserialise child1Hidden etc as they are hidden fields and therefore aren't sent back to use by CCD
+    private static final String OPTION_BASE_NAME = "option";
+    private static final String OPTIONS_COUNT_NAME = "optionCount";
+    private static final String OPTION_NAME_REGEXP = "option\\d+$";
+
+    // Cannot deserialise option1Hidden etc as they are hidden fields and therefore aren't sent back to use by CCD
     @Override
-    public ChildSelector deserialize(JsonParser parser,
-                                     DeserializationContext ctxt) throws IOException {
-
+    public Selector deserialize(JsonParser parser, DeserializationContext ctxt) throws IOException {
         TreeNode rootNode = parser.getCodec().readTree(parser);
+        Selector selector = Selector.builder().build();
 
-        ChildSelector.ChildSelectorBuilder builder = ChildSelector.builder();
         List<Integer> selected = new ArrayList<>();
         Iterator<String> fieldNames = rootNode.fieldNames();
 
         fieldNames.forEachRemaining(fieldName -> {
-            if ("childCount".equals(fieldName)) {
-                builder.childCount(getChildCountContainer(rootNode));
-            } else if (isChildNode(fieldName) && isSelected(rootNode.get(fieldName))) {
-                int i = Integer.parseInt(fieldName.replace("child", ""));
+            if (OPTIONS_COUNT_NAME.equals(fieldName)) {
+                selector.setCount(getCountContainer(rootNode));
+            } else if (isOptionNode(fieldName) && isSelected(rootNode.get(fieldName))) {
+                int i = Integer.parseInt(fieldName.replace(OPTION_BASE_NAME, ""));
                 selected.add(i);
             }
         });
 
-        return builder.selected(selected).build();
+        selector.setSelected(selected);
+
+        return selector;
     }
 
-    private String getChildCountContainer(TreeNode treeNode) {
-        TreeNode node = treeNode.get("childCount");
+    private String getCountContainer(TreeNode treeNode) {
+        TreeNode node = treeNode.get(OPTIONS_COUNT_NAME);
         return isNodeNull(node) ? "" : ((TextNode) node).asText();
     }
 
-    private boolean isChildNode(String fieldName) {
-        return fieldName.matches("child\\d+$");
+    private boolean isOptionNode(String fieldName) {
+        return fieldName.matches(OPTION_NAME_REGEXP);
     }
 
     private boolean isSelected(TreeNode node) {

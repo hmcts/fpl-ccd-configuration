@@ -16,6 +16,9 @@ properties([
     string(name: 'SECURITY_RULES',
       defaultValue: 'https://raw.githubusercontent.com/hmcts/security-test-rules/FPLA-security-test-rules-DO-NOT-MERGE/conf/security-rules.conf',
       description: 'The security rules to use'),
+    string(name: 'FUNCTIONAL_TESTS_WORKERS',
+      defaultValue: '10',
+      description: 'Number of workers running functional tests'),
   ])
 ])
 
@@ -46,6 +49,7 @@ withNightlyPipeline(type, product, component) {
 
   before('fullFunctionalTest') {
     env.PROXY = params.PROXY_SERVER
+    env.PARALLEL_CHUNKS = params.FUNCTIONAL_TESTS_WORKERS
 
     try {
       sh('./gradlew --no-daemon --info --rerun-tasks functional')
