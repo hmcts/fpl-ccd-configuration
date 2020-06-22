@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.docmosis;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
@@ -13,13 +14,11 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder.DocmosisGeneratedOrderBuilder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
-import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
+import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -32,18 +31,15 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelect
 public abstract class GeneratedOrderTemplateDataGeneration
     extends DocmosisTemplateDataGeneration<DocmosisGeneratedOrder> {
 
-    private final CaseDataExtractionService caseDataExtractionService;
-    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
+    @Autowired
+    private CaseDataExtractionService caseDataExtractionService;
 
-    public GeneratedOrderTemplateDataGeneration(
-        CaseDataExtractionService caseDataExtractionService,
-        LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration) {
-        this.caseDataExtractionService = caseDataExtractionService;
-        this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
-    }
+    @Autowired
+    private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
 
-    // If we use <?, ?> there is then an issue with sonar complaining about not using wildcard types as return types
-    @SuppressWarnings("rawtypes")
+    @Autowired
+    private ChildrenService childrenService;
+
     abstract DocmosisGeneratedOrderBuilder populateCustomOrderFields(CaseData caseData);
 
     @Override
@@ -84,30 +80,13 @@ public abstract class GeneratedOrderTemplateDataGeneration
         return getChildrenDetails(caseData).size();
     }
 
-    List<DocmosisChild> getChildrenDetails(CaseData caseData) {
-        List<Element<Child>> selectedChildren = getSelectedChildren(caseData.getAllChildren(),
-            caseData.getChildSelector(), caseData.getOrderAppliesToAllChildren(), caseData.getRemainingChildIndex());
+    private List<DocmosisChild> getChildrenDetails(CaseData caseData) {
+        List<Element<Child>> selectedChildren = getSelectedChildren(caseData);
         return caseDataExtractionService.getChildrenDetails(selectedChildren);
     }
 
-    List<Element<Child>> getSelectedChildren(List<Element<Child>> allChildren, ChildSelector selector,
-                                             String choice, String remainingChildIndex) {
-        if (isNotBlank(remainingChildIndex)) {
-            return List.of(allChildren.get(Integer.parseInt(remainingChildIndex)));
-        }
-
-        if (useAllChildren(choice)) {
-            return allChildren;
-        }
-
-        return selector.getSelected().stream()
-            .map(allChildren::get)
-            .collect(Collectors.toList());
-    }
-
-    boolean useAllChildren(String choice) {
-        // If there is only one child in the case then the choice will be null
-        return choice == null || "Yes".equals(choice);
+    List<Element<Child>> getSelectedChildren(CaseData caseData) {
+        return childrenService.getSelectedChildren(caseData);
     }
 
     String getLocalAuthorityName(String caseLocalAuthority) {

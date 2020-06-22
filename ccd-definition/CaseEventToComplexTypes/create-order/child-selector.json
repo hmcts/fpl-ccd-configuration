@@ -4,7 +4,7 @@
     "ID": "ChildSelector",
     "CaseEventID": "createOrder",
     "CaseFieldID": "childSelector",
-    "ListElementCode": "childCount",
+    "ListElementCode": "optionCount",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
@@ -15,7 +15,7 @@
     "ID": "ChildSelector",
     "CaseEventID": "createOrder",
     "CaseFieldID": "childSelector",
-    "ListElementCode": "child0",
+    "ListElementCode": "option0",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 2,
     "DisplayContext": "OPTIONAL"
@@ -25,7 +25,7 @@
     "ID": "ChildSelector",
     "CaseEventID": "createOrder",
     "CaseFieldID": "childSelector",
-    "ListElementCode": "child1",
+    "ListElementCode": "option1",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 3,
     "DisplayContext": "OPTIONAL"
@@ -35,7 +35,7 @@
     "ID": "ChildSelector",
     "CaseEventID": "createOrder",
     "CaseFieldID": "childSelector",
-    "ListElementCode": "child2",
+    "ListElementCode": "option2",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 4,
     "DisplayContext": "OPTIONAL"
@@ -45,7 +45,7 @@
     "ID": "ChildSelector",
     "CaseEventID": "createOrder",
     "CaseFieldID": "childSelector",
-    "ListElementCode": "child3",
+    "ListElementCode": "option3",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 5,
     "DisplayContext": "OPTIONAL"
@@ -55,7 +55,7 @@
     "ID": "ChildSelector",
     "CaseEventID": "createOrder",
     "CaseFieldID": "childSelector",
-    "ListElementCode": "child4",
+    "ListElementCode": "option4",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 6,
     "DisplayContext": "OPTIONAL"
@@ -65,7 +65,7 @@
     "ID": "ChildSelector",
     "CaseEventID": "createOrder",
     "CaseFieldID": "childSelector",
-    "ListElementCode": "child5",
+    "ListElementCode": "option5",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 7,
     "DisplayContext": "OPTIONAL"
@@ -75,7 +75,7 @@
     "ID": "ChildSelector",
     "CaseEventID": "createOrder",
     "CaseFieldID": "childSelector",
-    "ListElementCode": "child6",
+    "ListElementCode": "option6",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 8,
     "DisplayContext": "OPTIONAL"
@@ -85,7 +85,7 @@
     "ID": "ChildSelector",
     "CaseEventID": "createOrder",
     "CaseFieldID": "childSelector",
-    "ListElementCode": "child7",
+    "ListElementCode": "option7",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 9,
     "DisplayContext": "OPTIONAL"
@@ -95,7 +95,7 @@
     "ID": "ChildSelector",
     "CaseEventID": "createOrder",
     "CaseFieldID": "childSelector",
-    "ListElementCode": "child8",
+    "ListElementCode": "option8",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 10,
     "DisplayContext": "OPTIONAL"
@@ -105,7 +105,7 @@
     "ID": "ChildSelector",
     "CaseEventID": "createOrder",
     "CaseFieldID": "childSelector",
-    "ListElementCode": "child9",
+    "ListElementCode": "option9",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 11,
     "DisplayContext": "OPTIONAL"
@@ -115,7 +115,7 @@
     "ID": "ChildSelector",
     "CaseEventID": "createOrder",
     "CaseFieldID": "childSelector",
-    "ListElementCode": "child10",
+    "ListElementCode": "option10",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 12,
     "DisplayContext": "OPTIONAL"
@@ -125,7 +125,7 @@
     "ID": "ChildSelector",
     "CaseEventID": "createOrder",
     "CaseFieldID": "childSelector",
-    "ListElementCode": "child11",
+    "ListElementCode": "option11",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 13,
     "DisplayContext": "OPTIONAL"
@@ -135,7 +135,7 @@
     "ID": "ChildSelector",
     "CaseEventID": "createOrder",
     "CaseFieldID": "childSelector",
-    "ListElementCode": "child12",
+    "ListElementCode": "option12",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 14,
     "DisplayContext": "OPTIONAL"
@@ -145,7 +145,7 @@
     "ID": "ChildSelector",
     "CaseEventID": "createOrder",
     "CaseFieldID": "childSelector",
-    "ListElementCode": "child13",
+    "ListElementCode": "option13",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 15,
     "DisplayContext": "OPTIONAL"
@@ -155,7 +155,7 @@
     "ID": "ChildSelector",
     "CaseEventID": "createOrder",
     "CaseFieldID": "childSelector",
-    "ListElementCode": "child14",
+    "ListElementCode": "option14",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 16,
     "DisplayContext": "OPTIONAL"

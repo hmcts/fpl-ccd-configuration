@@ -30,6 +30,13 @@ public class ElementUtils {
             .collect(toList());
     }
 
+    public static <T> List<Element<T>> wrapElements(List<T> elements) {
+        return nullSafeCollection(elements).stream()
+            .filter(Objects::nonNull)
+            .map(element -> Element.<T>builder().value(element).build())
+            .collect(toList());
+    }
+
     public static <T> List<T> unwrapElements(List<Element<T>> elements) {
         return nullSafeCollection(elements)
             .stream()

@@ -116,4 +116,21 @@ public class ValidateOrderController {
             .errors(validateGroupService.validateGroup(caseData, EPOEndDateGroup.class))
             .build();
     }
+
+    @PostMapping("/care-orders-selection/mid-event")
+    public AboutToStartOrSubmitCallbackResponse validateDischargedOrders(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        List<String> errors = new ArrayList<>();
+
+        if (caseData.getCareOrderSelector().getSelected().isEmpty()) {
+            errors.add("Select care orders to be discharged.");
+        }
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetails.getData())
+            .errors(errors)
+            .build();
+    }
+
 }
