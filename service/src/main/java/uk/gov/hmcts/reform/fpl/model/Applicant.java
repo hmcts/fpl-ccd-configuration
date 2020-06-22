@@ -7,6 +7,7 @@ import uk.gov.hmcts.ccd.sdk.types.ComplexType;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import uk.gov.hmcts.ccd.sdk.types.ComplexType;
 
 @Data
 @Builder(toBuilder = true)

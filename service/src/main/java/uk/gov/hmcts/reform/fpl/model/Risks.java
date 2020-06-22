@@ -6,6 +6,7 @@ import lombok.Data;
 import uk.gov.hmcts.ccd.sdk.types.ComplexType;
 
 import java.util.List;
+import uk.gov.hmcts.ccd.sdk.types.ComplexType;
 
 @Data
 @Builder

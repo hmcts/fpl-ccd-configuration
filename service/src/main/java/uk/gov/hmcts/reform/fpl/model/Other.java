@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import uk.gov.hmcts.ccd.sdk.types.ComplexType;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
@@ -26,6 +27,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @AllArgsConstructor
 @EqualsAndHashCode
 @Builder(toBuilder = true)
+@ComplexType(name = "Others")
 public class Other implements Representable, ConfidentialParty<Other> {
     @SuppressWarnings("membername")
     @JsonProperty("DOB")

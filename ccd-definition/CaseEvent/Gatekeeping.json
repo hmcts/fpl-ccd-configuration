@@ -10,7 +10,6 @@
     "PostConditionState": "Gatekeeping",
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
-    "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/allocation-decision/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/allocation-decision/about-to-submit",
@@ -55,8 +54,6 @@
     "PreConditionState(s)": "Gatekeeping",
     "PostConditionState": "Gatekeeping",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
-    "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue"
   }
 ]

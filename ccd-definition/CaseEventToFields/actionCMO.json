@@ -307,6 +307,7 @@
     "CaseFieldID": "orderAction",
     "DisplayContext": "COMPLEX",
     "PageID": "OrderActionDocumentReview",
+    "PageFieldDisplayOrder": 1,
     "PageLabel": " ",
     "PageDisplayOrder": 11,
     "PageColumnNumber": 1,

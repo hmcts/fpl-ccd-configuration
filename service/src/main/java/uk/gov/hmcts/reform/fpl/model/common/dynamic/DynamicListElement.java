@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.UUID;
+import uk.gov.hmcts.ccd.sdk.types.ComplexType;
 
 /**
  * An element of the {@link DynamicList}.
@@ -12,6 +13,7 @@ import java.util.UUID;
  */
 @Data
 @Builder
+@ComplexType(generate = false)
 public class DynamicListElement {
     public static final String DEFAULT_CODE = "-1";
     public static final String DEFAULT_LABEL = "";

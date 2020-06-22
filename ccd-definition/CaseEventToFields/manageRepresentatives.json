@@ -5,6 +5,8 @@
     "CaseEventID": "manageRepresentatives",
     "CaseFieldID": "respondents_label",
     "PageID": 1,
+    "PageColumnNumber" : 1,
+    "PageDisplayOrder" : 1,
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-representatives/mid-event"
@@ -15,6 +17,8 @@
     "CaseEventID": "manageRepresentatives",
     "CaseFieldID": "others_label",
     "PageID": 1,
+    "PageColumnNumber" : 1,
+    "PageDisplayOrder" : 1,
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "READONLY"
   },
@@ -24,6 +28,8 @@
     "CaseEventID": "manageRepresentatives",
     "CaseFieldID": "representatives",
     "PageID": 1,
+    "PageColumnNumber" : 1,
+    "PageDisplayOrder" : 1,
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "OPTIONAL"
   }

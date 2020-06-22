@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang.StringUtils;
+import uk.gov.hmcts.ccd.sdk.types.ComplexType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.common.AbstractJudge;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -12,6 +13,7 @@ import java.util.Objects;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+@ComplexType(name = "JudgeAndLegalAdvisor")
 public class Judge extends AbstractJudge {
     private final JudgeOrMagistrateTitle judgeTitle;
     private final String otherTitle;

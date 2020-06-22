@@ -9,8 +9,6 @@
     "PreConditionState(s)": "PREPARE_FOR_HEARING",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
-    "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue"
   },
   {
@@ -117,9 +115,11 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "internal-change-CMO_PROGRESSION",
     "Name": "-",
+    "Description": "-",
     "PreConditionState(s)": "PREPARE_FOR_HEARING",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public",
+    "DisplayOrder": 15,
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/cmo-progression/about-to-submit"
   }
 ]

@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
 import java.util.List;
+import uk.gov.hmcts.ccd.sdk.types.CCD;
 
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
@@ -20,6 +21,7 @@ public class ChildSelector {
     @Builder.Default
     private String childCount = "";
     @Builder.Default
+    @CCD(ignore = true)
     private List<Integer> selected = new ArrayList<>();
     @Builder.Default
     private List<Integer> hidden = new ArrayList<>();

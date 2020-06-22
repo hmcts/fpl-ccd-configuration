@@ -1,0 +1,73 @@
+[ {
+  "LiveFrom" : "01/01/2017",
+  "DisplayOrder" : 1,
+  "ListElementCode" : "BIRTH_ADOPTION_CERTIFICATE",
+  "ListElement" : "BIRTH_ADOPTION_CERTIFICATE",
+  "ID" : "PlacementDocumentType"
+}, {
+  "LiveFrom" : "01/01/2017",
+  "DisplayOrder" : 2,
+  "ListElementCode" : "PARENTS_CONSENT_FOR_ADOPTION",
+  "ListElement" : "PARENTS_CONSENT_FOR_ADOPTION",
+  "ID" : "PlacementDocumentType"
+}, {
+  "LiveFrom" : "01/01/2017",
+  "DisplayOrder" : 3,
+  "ListElementCode" : "WITHDRAWAL_OF_PARENT_CONSENT",
+  "ListElement" : "WITHDRAWAL_OF_PARENT_CONSENT",
+  "ID" : "PlacementDocumentType"
+}, {
+  "LiveFrom" : "01/01/2017",
+  "DisplayOrder" : 4,
+  "ListElementCode" : "STATEMENT_OF_FACTS",
+  "ListElement" : "STATEMENT_OF_FACTS",
+  "ID" : "PlacementDocumentType"
+}, {
+  "LiveFrom" : "01/01/2017",
+  "DisplayOrder" : 5,
+  "ListElementCode" : "FINAL_CARE_ORDER",
+  "ListElement" : "FINAL_CARE_ORDER",
+  "ID" : "PlacementDocumentType"
+}, {
+  "LiveFrom" : "01/01/2017",
+  "DisplayOrder" : 6,
+  "ListElementCode" : "PARENTAL_RESPONSIBILITY_ORDER_AGREEMENT",
+  "ListElement" : "PARENTAL_RESPONSIBILITY_ORDER_AGREEMENT",
+  "ID" : "PlacementDocumentType"
+}, {
+  "LiveFrom" : "01/01/2017",
+  "DisplayOrder" : 7,
+  "ListElementCode" : "OTHER_FINAL_ORDERS",
+  "ListElement" : "OTHER_FINAL_ORDERS",
+  "ID" : "PlacementDocumentType"
+}, {
+  "LiveFrom" : "01/01/2017",
+  "DisplayOrder" : 8,
+  "ListElementCode" : "MAINTENANCE_AGREEMENT_AWARD",
+  "ListElement" : "MAINTENANCE_AGREEMENT_AWARD",
+  "ID" : "PlacementDocumentType"
+}, {
+  "LiveFrom" : "01/01/2017",
+  "DisplayOrder" : 9,
+  "ListElementCode" : "FINAL_REPORTS_RELATING_TO_SIBLINGS",
+  "ListElement" : "FINAL_REPORTS_RELATING_TO_SIBLINGS",
+  "ID" : "PlacementDocumentType"
+}, {
+  "LiveFrom" : "01/01/2017",
+  "DisplayOrder" : 1,
+  "ListElementCode" : "ANNEX_B",
+  "ListElement" : "ANNEX_B",
+  "ID" : "PlacementDocumentType"
+}, {
+  "LiveFrom" : "01/01/2017",
+  "DisplayOrder" : 2,
+  "ListElementCode" : "GUARDIANS_REPORT",
+  "ListElement" : "GUARDIANS_REPORT",
+  "ID" : "PlacementDocumentType"
+}, {
+  "LiveFrom" : "01/01/2017",
+  "DisplayOrder" : 3,
+  "ListElementCode" : "OTHER_CONFIDENTIAL_DOCUMENTS",
+  "ListElement" : "OTHER_CONFIDENTIAL_DOCUMENTS",
+  "ID" : "PlacementDocumentType"
+} ]

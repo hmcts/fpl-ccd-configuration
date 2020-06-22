@@ -15,8 +15,6 @@
     "RetriesTimeoutURLAboutToSubmitEvent": "1,2,3,4,5",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-submission/submitted",
     "RetriesTimeoutURLSubmittedEvent": "1,2,3,4,5",
-    "ShowSummary": "N",
-    "ShowEventNotes": "N",
     "EndButtonLabel": "Submit"
   },
   {
@@ -30,8 +28,6 @@
     "PostConditionState": "Deleted",
     "SecurityClassification": "Public",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-deletion/about-to-submit",
-    "ShowSummary": "N",
-    "ShowEventNotes": "N",
     "EndButtonLabel": "Delete application"
   },
   {
@@ -71,6 +67,8 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "internal-changeState-Gatekeeping->PREPARE_FOR_HEARING",
     "Name": "-",
+    "Description": "-",
+    "DisplayOrder" : 1,
     "PreConditionState(s)": "Gatekeeping",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public"

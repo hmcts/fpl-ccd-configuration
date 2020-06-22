@@ -1,7 +1,6 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF_COURT",
     "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "directionType",
@@ -11,7 +10,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF_COURT",
     "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "directionNeeded",
@@ -21,7 +19,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF_COURT",
     "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "dateToBeCompletedBy",
@@ -31,7 +28,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF_COURT",
     "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "otherPartiesAssignee",
@@ -43,7 +39,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF_COURT",
     "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "allParties_label",
@@ -53,7 +48,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF_COURT",
     "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "responses.respondingOnBehalfOfOthers",
@@ -62,7 +56,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF_COURT",
     "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "responses.complied",
@@ -72,7 +65,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF_COURT",
     "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "responses.documentDetails",
@@ -81,7 +73,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF_COURT",
     "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "responses.file",
@@ -90,7 +81,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF_COURT",
     "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "responses.cannotComplyTitle",
@@ -100,7 +90,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF_COURT",
     "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "responses.cannotComplyReason",
@@ -109,7 +98,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF_COURT",
     "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "responses.c2Uploaded",
@@ -118,7 +106,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF_COURT",
     "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "responses.cannotComplyFile",

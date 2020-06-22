@@ -8,11 +8,13 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.ccd.sdk.types.CCD;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
@@ -327,7 +329,7 @@ public class CaseData {
     }
 
     @JsonGetter("cmoToAction")
-    private CaseManagementOrder getCaseManagementOrderForJudiciary() {
+    public CaseManagementOrder getCaseManagementOrderForJudiciary() {
         if (caseManagementOrder != null && caseManagementOrder.getStatus() == SEND_TO_JUDGE) {
             return caseManagementOrder;
         }

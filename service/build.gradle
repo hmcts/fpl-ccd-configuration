@@ -23,8 +23,8 @@ group = 'uk.gov.hmcts.reform'
 version = '1.0.0'
 
 ccd {
-  configDir = rootProject.file('ccd-definition')
-
+  configDir = file("$rootProject.buildDir/ccd-definition")
+  caseType = 'CARE_SUPERVISION_EPO'
 }
 
 sourceSets {

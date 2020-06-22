@@ -1,6 +1,6 @@
 [
   {
-    "LiveFrom": "01/01/2018",
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "attachScannedDocs",
     "CaseFieldID": "scannedDocuments",
@@ -9,18 +9,20 @@
     "PageID": 1,
     "PageLabel": "BulkScanning",
     "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "No"
   },
   {
-    "LiveFrom": "01/01/2018",
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "attachScannedDocs",
     "CaseFieldID": "evidenceHandled",
-    "PageFieldDisplayOrder": 2,
+    "PageFieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
     "PageID": 2,
     "PageLabel": "BulkScanning",
     "PageDisplayOrder": 2,
+    "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "No"
   }
 ]

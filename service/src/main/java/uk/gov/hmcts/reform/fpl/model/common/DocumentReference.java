@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.document.domain.Document;
 
 @Data
 @Builder(toBuilder = true)
-@ComplexType(name = "Document")
+@ComplexType(name = "Document", generate = false)
 public class DocumentReference {
     @JsonProperty("document_url")
     private final String url;
