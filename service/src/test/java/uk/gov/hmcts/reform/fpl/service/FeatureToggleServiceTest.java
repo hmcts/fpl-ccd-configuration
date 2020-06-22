@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.launchdarkly.sdk.LDUser;
+import com.launchdarkly.sdk.UserAttribute;
 import com.launchdarkly.sdk.server.LDClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -14,6 +15,9 @@ import org.mockito.Captor;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -213,30 +217,63 @@ class FeatureToggleServiceTest {
     }
 
     @ParameterizedTest
-    @MethodSource("featureToggleFunctions")
-    void shouldNotCarryAttributesBetweenRequests(Runnable function) {
+    @MethodSource("userAttributesTestSource")
+    void shouldNotCarryAttributesBetweenRequests(Runnable functionToTest, Runnable accumulateFunction,
+                                                 List<UserAttribute> attributes) {
         // dummy code
-        LDUser dummyUser = new LDUser.Builder("dummyKey").custom("dummyAttribute", "dummyValue").build();
-        ldClient.boolVariation("dummy", dummyUser, false);
+        accumulateFunction.run();
 
-        function.run();
+        functionToTest.run();
 
         verify(ldClient, times(2)).boolVariation(anyString(), ldUser.capture(), anyBoolean());
 
-        assertThat(ldUser.getValue().getCustomAttributes()).doesNotContainAnyElementsOf(dummyUser.getCustomAttributes());
+        assertThat(ldUser.getValue().getCustomAttributes()).containsExactlyInAnyOrderElementsOf(attributes);
     }
 
-    private static Stream<Arguments> featureToggleFunctions() {
+    private static Stream<Arguments> userAttributesTestSource() {
         return Stream.of(
-            Arguments.of((Runnable) () -> service.isCloseCaseEnabled()),
-            Arguments.of((Runnable) () -> service.isCtscReportEnabled()),
-            Arguments.of((Runnable) () -> service.isAllocatedJudgeNotificationEnabled(SDO)),
-            Arguments.of((Runnable) () -> service.isCtscEnabled("test name")),
-            Arguments.of((Runnable) () -> service.isExpertUIEnabled()),
-            Arguments.of((Runnable) () -> service.isFeesEnabled()),
-            Arguments.of((Runnable) () -> service.isPaymentsEnabled()),
-            Arguments.of((Runnable) () -> service.isXeroxPrintingEnabled())
+            Arguments.of(
+                (Runnable) () -> service.isCloseCaseEnabled(),
+                (Runnable) () -> service.isCtscReportEnabled(),
+                buildAttributes()),
+            Arguments.of(
+                (Runnable) () -> service.isCtscReportEnabled(),
+                (Runnable) () -> service.isCtscEnabled("test name"),
+                buildAttributes("report")),
+            Arguments.of(
+                (Runnable) () -> service.isAllocatedJudgeNotificationEnabled(SDO),
+                (Runnable) () -> service.isCtscReportEnabled(),
+                buildAttributes("allocatedJudgeNotificationType")),
+            Arguments.of(
+                (Runnable) () -> service.isCtscEnabled("test name"),
+                (Runnable) () -> service.isCtscReportEnabled(),
+                buildAttributes("localAuthorityName")),
+            Arguments.of(
+                (Runnable) () -> service.isExpertUIEnabled(),
+                (Runnable) () -> service.isCtscReportEnabled(),
+                buildAttributes()),
+            Arguments.of(
+                (Runnable) () -> service.isFeesEnabled(),
+                (Runnable) () -> service.isCtscReportEnabled(),
+                buildAttributes()),
+            Arguments.of(
+                (Runnable) () -> service.isPaymentsEnabled(),
+                (Runnable) () -> service.isCtscReportEnabled(),
+                buildAttributes()),
+            Arguments.of(
+                (Runnable) () -> service.isXeroxPrintingEnabled(),
+                (Runnable) () -> service.isCtscReportEnabled(),
+                buildAttributes())
         );
+    }
+
+    private static List<UserAttribute> buildAttributes(String... additionalAttributes) {
+        List<UserAttribute> attributes = new ArrayList<>();
+        attributes.add(UserAttribute.forName("timestamp"));
+        Arrays.stream(additionalAttributes)
+            .map(UserAttribute::forName)
+            .forEach(attributes::add);
+        return attributes;
     }
 
     private void givenToggle(boolean state) {
