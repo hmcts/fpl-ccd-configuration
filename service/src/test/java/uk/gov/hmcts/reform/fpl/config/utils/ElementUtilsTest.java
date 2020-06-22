@@ -204,6 +204,27 @@ public class ElementUtilsTest {
     }
 
     @Nested
+    class WrapListOfElements {
+
+        @Test
+        void shouldWrapAllObjectsWithElement() {
+            List<String> elements = List.of("First", "Second");
+            assertThat(wrapElements(elements)).extracting(Element::getValue).isEqualTo(elements);
+        }
+
+        @Test
+        void shouldReturnEmptyElementListIfNoObjectsToWrap() {
+            assertThat(wrapElements(emptyList())).isEmpty();
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenListOfElementsIsNull() {
+            List<String> elements = null;
+            assertThat(wrapElements(elements)).isEmpty();
+        }
+    }
+
+    @Nested
     class UnwrapElements {
 
         Element<String> element1 = Element.<String>builder().id(randomUUID()).value("First").build();
