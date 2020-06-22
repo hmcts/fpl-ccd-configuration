@@ -82,7 +82,7 @@ class SubmittedCaseEventHandlerTest {
     @Test
     void shouldSendEmailToHmctsAdmin() {
         final String expectedEmail = "test@test.com";
-        final CallbackRequest request = callbackRequest(OPEN);
+        final CallbackRequest request = callbackRequest();
         final SubmitCaseHmctsTemplate expectedTemplate = new SubmitCaseHmctsTemplate();
         final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
 
@@ -102,7 +102,7 @@ class SubmittedCaseEventHandlerTest {
     @Test
     void shouldSendEmailToCafcass() {
         final String expectedEmail = "test@test.com";
-        final CallbackRequest request = callbackRequest(OPEN);
+        final CallbackRequest request = callbackRequest();
         final CafcassLookupConfiguration.Cafcass cafcass =
             new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, expectedEmail);
         final SubmitCaseCafcassTemplate expectedTemplate = new SubmitCaseCafcassTemplate();
@@ -133,7 +133,7 @@ class SubmittedCaseEventHandlerTest {
 
         @Test
         void shouldNotPayIfPaymentIsToggledOff() {
-            final CallbackRequest request = callbackRequest(OPEN);
+            final CallbackRequest request = callbackRequest();
 
             final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
 
@@ -147,7 +147,7 @@ class SubmittedCaseEventHandlerTest {
         @ParameterizedTest
         @EnumSource(value = State.class, mode = EXCLUDE, names = {"OPEN"})
         void shouldNotPayIfCaseStateIsDifferentThanOpen(State state) {
-            final CallbackRequest request = callbackRequest(state);
+            final CallbackRequest request = callbackRequest();
             final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
 
             when(featureToggleService.isPaymentsEnabled()).thenReturn(true);
@@ -218,7 +218,7 @@ class SubmittedCaseEventHandlerTest {
             "makePayment");
     }
 
-    private static CallbackRequest callbackRequest(State state) {
+    private static CallbackRequest callbackRequest() {
         return callbackRequest(OPEN, emptyMap());
     }
 
