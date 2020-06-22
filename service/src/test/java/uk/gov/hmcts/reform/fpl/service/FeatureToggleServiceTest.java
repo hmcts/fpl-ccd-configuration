@@ -167,6 +167,7 @@ class FeatureToggleServiceTest {
         functionToTest.run();
 
         verify(ldClient, times(2)).boolVariation(anyString(), ldUser.capture(), anyBoolean());
+        assertThat(ldUser.getValue().getCustomAttributes()).containsExactlyInAnyOrderElementsOf(attributes);
     }
 
     private static Stream<Arguments> userAttributesTestSource() {
