@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
@@ -62,7 +61,7 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
             .data(Map.of("standardDirectionOrder", Order.builder().directions(directions).build()))
             .build();
 
-        CaseData caseData = getCaseData(postAboutToStartEvent(caseDetails));
+        CaseData caseData = extractCaseData(postAboutToStartEvent(caseDetails));
 
         assertThat(unwrapElements(caseData.getCafcassDirections()))
             .containsOnly(Direction.builder()
@@ -88,7 +87,7 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
                 .build())
             .build();
 
-        CaseData caseData = getCaseData(postAboutToStartEvent(request));
+        CaseData caseData = extractCaseData(postAboutToStartEvent(request));
 
         assertThat(collectionsContainDirectionsForRoleAndAllParties(caseData));
     }
@@ -104,7 +103,7 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
                 .build())
             .build();
 
-        CaseData caseData = getCaseData(postAboutToStartEvent(request));
+        CaseData caseData = extractCaseData(postAboutToStartEvent(request));
 
         assertThat(caseData.getAllParties()).isNull();
         assertThat(caseData.getLocalAuthorityDirections()).containsAll(sdo.getDirections());
@@ -128,7 +127,7 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
                 .build())
             .build();
 
-        CaseData caseData = getCaseData(postAboutToSubmitEvent(request));
+        CaseData caseData = extractCaseData(postAboutToSubmitEvent(request));
 
         assertThat(caseData.getStandardDirectionOrder().getDirections().get(0).getValue().getResponses()).isNotEmpty();
     }
@@ -148,7 +147,7 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
                 .build())
             .build();
 
-        CaseData caseData = getCaseData(postAboutToSubmitEvent(request));
+        CaseData caseData = extractCaseData(postAboutToSubmitEvent(request));
 
         assertThat(getResponses(caseData.getServedCaseManagementOrders().get(0).getValue())).isNotEmpty();
     }
@@ -192,11 +191,6 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
 
     private List<Element<Direction>> buildDirections(Direction direction) {
         return wrapElements(direction);
-    }
-
-
-    private CaseData getCaseData(AboutToStartOrSubmitCallbackResponse callbackResponse) {
-        return mapper.convertValue(callbackResponse.getData(), CaseData.class);
     }
 
     private boolean collectionsContainDirectionsForRoleAndAllParties(CaseData caseData) {

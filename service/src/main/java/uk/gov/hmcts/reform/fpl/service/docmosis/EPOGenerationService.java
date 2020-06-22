@@ -1,13 +1,12 @@
 package uk.gov.hmcts.reform.fpl.service.docmosis;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder.DocmosisGeneratedOrderBuilder;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
-import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDateTime;
@@ -17,16 +16,10 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class EPOGenerationService extends GeneratedOrderTemplateDataGeneration {
 
     private final Time time;
-
-    @Autowired
-    public EPOGenerationService(CaseDataExtractionService caseDataExtractionService,
-        LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration, Time time) {
-        super(caseDataExtractionService, localAuthorityNameLookupConfiguration);
-        this.time = time;
-    }
 
     @SuppressWarnings("rawtypes")
     @Override

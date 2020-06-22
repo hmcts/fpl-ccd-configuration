@@ -22,7 +22,10 @@ public enum GeneratedOrderKey {
     REMAINING_CHILD_INDEX("remainingChildIndex"),
     REMAINING_CHILD("remainingChild"),
     OTHER_FINAL_ORDER_CHILDREN("otherFinalOrderChildren"),
-    SHOW_FINAL_ORDER_SINGLE_CHILD("showFinalOrderSingleChildPage");
+    SHOW_FINAL_ORDER_SINGLE_CHILD("showFinalOrderSingleChildPage"),
+    SINGLE_CARE_ORDER_LABEL("singleCareOrder_label"),
+    MULTIPLE_CARE_ORDER_LABEL("multipleCareOrder_label"),
+    CARE_ORDER_SELECTOR("careOrderSelector");
 
     private final String key;
 }

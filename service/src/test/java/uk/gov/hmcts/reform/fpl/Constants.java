@@ -16,5 +16,7 @@ public interface Constants {
      * </code>
      */
     String SERVICE_AUTH_TOKEN = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJmcGxfY2FzZV9zZXJ2aWNlIiwiZXhwIjoyNTI0NjA3OTk5fQ.LLvcAFmBnIpTbmuoEBuFUzRE6prE0_1ALbCkEkY6mS0kHPQVghgWPNBeVOKUoa-w1P1IUqZ5H-6eYnDzJRxTwA";
+    String DEFAULT_LA = "example";
+    String DEFAULT_LA_COURT = "Family Court";
 
 }
