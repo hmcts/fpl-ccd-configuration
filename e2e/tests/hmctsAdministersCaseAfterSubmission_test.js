@@ -289,15 +289,6 @@ Scenario('HMCTS admin adds a note to the case', async (I, caseViewPage, addNoteE
   I.seeInTab(['Note 1', 'Note'], note);
 });
 
-// Scenario('HMCTS admin update FamilyMan reference number after sending case to gatekeeper', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage) => {
-//   await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
-//   enterFamilyManCaseNumberEventPage.enterCaseID('updatedmockcaseID');
-//   await I.completeEvent('Save and continue');
-//   I.seeEventSubmissionConfirmation(config.administrationActions.addFamilyManCaseNumber);
-//   caseViewPage.seeInCaseTitle('updatedmockcaseID');
-//   caseViewPage.seeInCaseTitle(caseId);
-// });
-
 Scenario('HMCTS admin adds expert report log', async (I, caseViewPage, loginPage, addExpertReportEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addExpertReportLog);
   addExpertReportEventPage.addExpertReportLog(expertReportLog[0]);

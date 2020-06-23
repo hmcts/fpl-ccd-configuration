@@ -5,7 +5,7 @@
     "ID": "sendToGatekeeper",
     "Name": "Send to gatekeeper",
     "Description": "Send email to gatekeeper",
-    "DisplayOrder": 5,
+    "DisplayOrder": 6,
     "PreConditionState(s)": "Submitted",
     "PostConditionState": "Submitted",
     "SecurityClassification": "Public",
