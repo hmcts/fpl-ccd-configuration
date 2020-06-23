@@ -15,7 +15,9 @@ public enum UserRole implements HasRole {
     BULK_SCAN("caseworker-publiclaw-bulkscan"),
     BULK_SCAN_SYSTEM_UPDATE("caseworker-publiclaw-bulkscansystemupdate"),
     CCD_SOLICITOR("[SOLICITOR]"),
-    CCD_LASOLICITOR("[LASOLICITOR]");
+    CCD_LASOLICITOR("[LASOLICITOR]"),
+    CCD_LABARRISTER("[LABARRISTER]"),
+    CCD_CAFCASSSOLICITOR("[CAFCASSSOLICITOR]");
 
 
     private final String role;

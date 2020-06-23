@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
+import uk.gov.hmcts.ccd.sdk.types.FixedList;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -62,6 +64,7 @@ public enum RepresentativeRole {
         return sequenceNo;
     }
 
+    @FixedList
     public enum Type {
         OTHER, RESPONDENT, CAFCASS, LASOLICITOR, LABARRISTER, BARRISTER
     }

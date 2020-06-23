@@ -3,10 +3,13 @@ package uk.gov.hmcts.reform.fpl.enums;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import uk.gov.hmcts.ccd.sdk.types.FixedList;
+import uk.gov.hmcts.ccd.sdk.types.HasState;
 
 @RequiredArgsConstructor
 @Getter
-public enum State {
+@FixedList
+public enum State implements HasState {
     @JsonProperty("Open")
     OPEN("Open"),
 
@@ -22,7 +25,15 @@ public enum State {
     @JsonProperty("Deleted")
     DELETED("Deleted"),
 
+    ANY ("*"),
     RETURNED("RETURNED");
 
+
+
     private final String value;
+
+    @Override
+    public String getState() {
+        return value;
+    }
 }

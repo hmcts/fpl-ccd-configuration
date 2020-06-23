@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import uk.gov.hmcts.ccd.sdk.types.CCD;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
@@ -30,6 +32,12 @@ public final class RespondentParty extends Party {
     private final String litigationIssues;
     private final String litigationIssuesDetails;
 
+    @CCD(ignore = true) //TODO to not generate into complex type
+    protected final EmailAddress email;
+
+    @CCD(ignore = true) //TODO to not generate into complex type
+    protected final String organisationName;
+
     @Override
     @NotBlank(message = "Enter the respondent's full name")
     public String getFirstName() {
@@ -47,6 +55,7 @@ public final class RespondentParty extends Party {
     public String getRelationshipToChild() {
         return relationshipToChild;
     }
+
 
     @Builder(toBuilder = true, builderClassName = "RespondentPartyBuilder")
     @SuppressWarnings("java:S107")
@@ -69,6 +78,8 @@ public final class RespondentParty extends Party {
                            String litigationIssuesDetails) {
         super(partyId, partyType, firstName, lastName, organisationName,
             dateOfBirth, address, email, telephoneNumber);
+        this.email = email;
+        this.organisationName = organisationName;
         this.gender = gender;
         this.genderIdentification = genderIdentification;
         this.placeOfBirth = placeOfBirth;

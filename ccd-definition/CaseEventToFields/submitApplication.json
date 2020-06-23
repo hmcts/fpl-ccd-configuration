@@ -20,8 +20,7 @@
     "DisplayContext": "READONLY",
     "PageID": 1,
     "PageDisplayOrder": 1,
-    "PageColumnNumber": 1,
-    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-submission/about-to-start"
+    "PageColumnNumber": 1
   },
   {
     "LiveFrom": "01/01/2017",

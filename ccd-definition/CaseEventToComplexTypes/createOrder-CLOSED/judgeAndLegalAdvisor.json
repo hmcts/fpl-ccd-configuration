@@ -1,69 +1,6 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "OrderTypeAndDocumentComplexType",
-    "CaseEventID": "createOrder-CLOSED",
-    "CaseFieldID": "orderTypeAndDocument",
-    "ListElementCode": "type",
-    "EventElementLabel": "",
-    "FieldDisplayOrder": 1,
-    "DisplayContext": "READONLY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "OrderTypeAndDocumentComplexType",
-    "CaseEventID": "createOrder-CLOSED",
-    "CaseFieldID": "orderTypeAndDocument",
-    "ListElementCode": "subtype",
-    "EventElementLabel": "",
-    "FieldDisplayOrder": 2,
-    "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "document=\"DO_NOT_SHOW\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "OrderTypeAndDocumentComplexType",
-    "CaseEventID": "createOrder-CLOSED",
-    "CaseFieldID": "orderTypeAndDocument",
-    "ListElementCode": "document",
-    "EventElementLabel": "Order document",
-    "FieldDisplayOrder": 3,
-    "DisplayContext": "READONLY",
-    "FieldShowCondition": "document=\"DO_NOT_SHOW\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "GeneratedOrderComplexType",
-    "CaseEventID": "createOrder-CLOSED",
-    "CaseFieldID": "order",
-    "ListElementCode": "title",
-    "EventElementLabel": "Order title",
-    "FieldDisplayOrder": 1,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "GeneratedOrderComplexType",
-    "CaseEventID": "createOrder-CLOSED",
-    "CaseFieldID": "order",
-    "ListElementCode": "details",
-    "EventElementLabel": "Order details",
-    "FieldDisplayOrder": 2,
-    "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "GeneratedOrderComplexType",
-    "CaseEventID": "createOrder-CLOSED",
-    "CaseFieldID": "order",
-    "ListElementCode": "date",
-    "EventElementLabel": "Date and time of upload",
-    "FieldDisplayOrder": 3,
-    "DisplayContext": "READONLY",
-    "FieldShowCondition": "document=\"DO_NOT_SHOW\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
     "ID": "JudgeAndLegalAdvisorComplexType",
     "CaseEventID": "createOrder-CLOSED",
     "CaseFieldID": "judgeAndLegalAdvisor",

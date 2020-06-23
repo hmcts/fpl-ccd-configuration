@@ -16,6 +16,28 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "otherFinalOrderChildren_label",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "caseFurtherExtensionLabel",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "remainingChild_label",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "Comments": "Do we need those, it seem to work without it, but config generates it so let's it for now",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "caseLocalAuthority",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "R"

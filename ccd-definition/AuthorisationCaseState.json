@@ -227,6 +227,14 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseStateID": "CLOSED",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "CRU",
+    "Comment": "Cafcass has got permissions to upload c2 should they get access to this state?"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseStateID": "CLOSED",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "CRU"
   },

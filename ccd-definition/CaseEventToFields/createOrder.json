@@ -22,7 +22,6 @@
     "PageID": "OrderTypeAndDocument",
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTypeAndDocument=\"DO_NOT_SHOW\""
     "FieldShowCondition": "orderTypeAndDocument=\"DO_NOT_SHOW\"",
     "ShowSummaryChangeOption": "N"
   },{
@@ -190,7 +189,7 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
     "PageID": "OrderMonths",
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "PageColumnNumber": 1,
     "PageShowCondition": "orderTypeAndDocument.type=\"SUPERVISION_ORDER\" AND orderTypeAndDocument.subtype=\"FINAL\"",
     "ShowSummaryChangeOption": "Y"
@@ -204,7 +203,7 @@
     "DisplayContext": "MANDATORY",
     "PageID": "InterimEndDate",
     "PageLabel": " ",
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 8,
     "PageColumnNumber": 1,
     "PageShowCondition": "orderTypeAndDocument.subtype=\"INTERIM\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/validate-order/interim-end-date/mid-event",
@@ -219,7 +218,7 @@
     "DisplayContext": "COMPLEX",
     "PageID": "EPOChildren",
     "PageLabel": " ",
-    "PageDisplayOrder": 7,
+    "PageDisplayOrder": 9,
     "PageColumnNumber": 1,
     "PageShowCondition": "orderTypeAndDocument.type=\"EMERGENCY_PROTECTION_ORDER\"",
     "ShowSummaryChangeOption": "Y"
@@ -233,7 +232,7 @@
     "DisplayContext": "MANDATORY",
     "PageID": "EPOType",
     "PageLabel": " ",
-    "PageDisplayOrder": 8,
+    "PageDisplayOrder": 10,
     "PageColumnNumber": 1,
     "PageShowCondition": "orderTypeAndDocument.type=\"EMERGENCY_PROTECTION_ORDER\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/validate-order/address/mid-event",
@@ -248,7 +247,7 @@
     "DisplayContext": "OPTIONAL",
     "PageID": "EPOType",
     "PageLabel": " ",
-    "PageDisplayOrder": 8,
+    "PageDisplayOrder": 10,
     "PageColumnNumber": 1,
     "FieldShowCondition": "epoType=\"PREVENT_REMOVAL\"",
     "ShowSummaryChangeOption": "Y"
@@ -262,7 +261,7 @@
     "DisplayContext": "MANDATORY",
     "PageID": "EPOPhrase",
     "PageLabel": " ",
-    "PageDisplayOrder": 9,
+    "PageDisplayOrder": 11,
     "PageColumnNumber": 1,
     "PageShowCondition": "orderTypeAndDocument.type=\"EMERGENCY_PROTECTION_ORDER\"",
     "ShowSummaryChangeOption": "Y"
@@ -276,7 +275,7 @@
     "DisplayContext": "MANDATORY",
     "PageID": "EPOEndTime",
     "PageLabel": " ",
-    "PageDisplayOrder": 10,
+    "PageDisplayOrder": 12,
     "PageColumnNumber": 1,
     "PageShowCondition": "orderTypeAndDocument.type=\"EMERGENCY_PROTECTION_ORDER\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/validate-order/epo-end-date/mid-event",
@@ -291,7 +290,7 @@
     "DisplayContext": "COMPLEX",
     "PageID": "JudgeInformation",
     "PageLabel": " ",
-    "PageDisplayOrder": 11,
+    "PageDisplayOrder": 13,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/create-order/generate-document/mid-event"
@@ -305,7 +304,7 @@
     "DisplayContext": "MANDATORY",
     "PageID": "FurtherDirections",
     "PageLabel": " ",
-    "PageDisplayOrder": 12,
+    "PageDisplayOrder": 14,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
     "PageShowCondition": "orderTypeAndDocument.type!=\"BLANK_ORDER\"",
@@ -320,7 +319,7 @@
     "DisplayContext": "MANDATORY",
     "PageID": "CloseCase",
     "PageLabel": " ",
-    "PageDisplayOrder": 13,
+    "PageDisplayOrder": 15,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
     "PageShowCondition": "showCloseCaseFromOrderPage=\"YES\""
@@ -334,7 +333,7 @@
     "DisplayContext": "READONLY",
     "PageID": "CloseCase",
     "PageLabel": " ",
-    "PageDisplayOrder": 13,
+    "PageDisplayOrder": 15,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
     "FieldShowCondition": "closeCaseFromOrder=\"Yes\""
@@ -348,7 +347,7 @@
     "DisplayContext": "READONLY",
     "PageID": "CloseCase",
     "PageLabel": " ",
-    "PageDisplayOrder": 13,
+    "PageDisplayOrder": 15,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
     "FieldShowCondition": "closeCaseFromOrder=\"DO_NOT_SHOW\""

@@ -6,8 +6,9 @@
     "CaseFieldID": "close_case_label",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
-    "PageID": "1",
+    "PageID": 1,
     "PageDisplayOrder": 1,
+    "PageColumnNumber" : 1,
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/close-case/mid-event"
   },
   {
@@ -17,7 +18,8 @@
     "CaseFieldID": "closeCase",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "COMPLEX",
-    "PageID": "1",
+    "PageID": 1,
+    "PageColumnNumber" : 1,
     "PageDisplayOrder": 1
   }
 ]

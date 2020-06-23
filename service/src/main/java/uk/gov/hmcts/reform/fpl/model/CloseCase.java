@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import uk.gov.hmcts.ccd.sdk.types.CCD;
+import uk.gov.hmcts.ccd.sdk.types.FieldType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.CloseCaseReason;
 import uk.gov.hmcts.reform.fpl.validation.groups.CloseCaseGroup;
@@ -27,6 +29,7 @@ public class CloseCase {
     // This field is hidden so runs into our favourite CCD issue of not persisting, we are ignoring the
     // deserialization of the object as we can infer what it is supposed to be from which reason field is populated
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @CCD(type = FieldType.YesOrNo)
     private YesNo showFullReason;
     @PastOrPresent(message = "The close case date must be in the past", groups = CloseCaseGroup.class)
     private LocalDate date;

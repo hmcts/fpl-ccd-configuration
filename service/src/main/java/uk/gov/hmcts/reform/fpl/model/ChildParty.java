@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import uk.gov.hmcts.ccd.sdk.types.CCD;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
@@ -22,6 +23,16 @@ import javax.validation.groups.Default;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @HasGender(groups = {Default.class, SealedSDOGroup.class})
 public final class ChildParty extends Party {
+    @CCD(ignore = true) //TODO to not generate into complex type
+    protected final EmailAddress email;
+
+    @CCD(ignore = true) //TODO to not generate into complex type
+    protected final String organisationName;
+
+    @CCD(ignore = true) //TODO to not generate into complex type
+    protected final Telephone telephoneNumber;
+
+
     private final String gender;
     private final String genderIdentification;
     private final String livingSituation;
@@ -106,6 +117,9 @@ public final class ChildParty extends Party {
                       String showAddressInConfidentialTab) {
         super(partyId, partyType, firstName, lastName, organisationName,
             dateOfBirth, address, email, telephoneNumber);
+        this.email = email;
+        this.organisationName = organisationName;
+        this.telephoneNumber = telephoneNumber;
         this.gender = gender;
         this.genderIdentification = genderIdentification;
         this.livingSituation = livingSituation;

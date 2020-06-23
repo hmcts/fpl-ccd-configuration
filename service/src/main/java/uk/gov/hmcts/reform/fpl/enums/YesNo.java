@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
 import lombok.Getter;
+import uk.gov.hmcts.ccd.sdk.types.FixedList;
 
 import java.util.stream.Stream;
 
 @Getter
+@FixedList
 public enum YesNo {
     YES("Yes"),
     NO("No"),

@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Setter;
+import uk.gov.hmcts.ccd.sdk.types.ComplexType;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
@@ -16,6 +17,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @Data
 @Builder
+@ComplexType
 public class ChildSelector {
     @Setter(AccessLevel.PRIVATE)
     @Builder.Default

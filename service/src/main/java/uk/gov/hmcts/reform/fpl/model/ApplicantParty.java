@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import uk.gov.hmcts.ccd.sdk.types.CCD;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
@@ -32,6 +33,16 @@ public class ApplicantParty extends Party implements TelephoneContacts {
     private final String pbaNumber;
     private final String clientCode;
     private final String customerReference;
+
+    @CCD(ignore = true) //TODO to not generate into complex type
+    protected LocalDate dateOfBirth;
+
+    @CCD(ignore = true) //TODO to not generate into complex type
+    protected String lastName;
+
+    @CCD(ignore = true) //TODO to not generate into complex type
+    protected String firstName;
+
 
     @Override
     @NotBlank(message = "Enter the applicant's full name")

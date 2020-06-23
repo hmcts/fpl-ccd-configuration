@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.ccd.sdk.types.CCD;
+import uk.gov.hmcts.ccd.sdk.types.FieldType;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
@@ -82,6 +83,8 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @AllArgsConstructor
 @HasDocumentsIncludedInSwet(groups = UploadDocumentsGroup.class)
 public class CaseData {
+//    @FieldType
+    @CCD(type = FieldType.Text)
     private final State state;
     @NotBlank(message = "Enter a case name")
     private final String caseName;

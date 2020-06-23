@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.ccd.sdk.types.ComplexType;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
@@ -28,6 +29,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @Data
 @Builder
 @AllArgsConstructor
+@ComplexType
 public class Directions {
     private final List<Element<Direction>> allPartiesCustomCMO;
     private final List<Element<Direction>> localAuthorityDirectionsCustomCMO;
