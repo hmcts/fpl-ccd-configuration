@@ -68,16 +68,16 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
     @MockBean
     private LocalAuthorityUserLookupConfiguration localAuthorityUserLookupConfiguration;
 
-    @MockBean(name = "uk.gov.hmcts.reform.rd.client.OrganisationApi")
+    @MockBean
     private OrganisationApi organisationApi;
 
-    @MockBean(name = "uk.gov.hmcts.reform.authorisation.ServiceAuthorisationApi")
+    @MockBean
     private ServiceAuthorisationApi serviceAuthorisationApi;
 
-    @MockBean(name = "uk.gov.hmcts.reform.idam.client.IdamApi")
+    @MockBean
     private IdamApi idamApi;
 
-    @MockBean(name = "uk.gov.hmcts.reform.ccd.client.CaseUserApi")
+    @MockBean
     private CaseUserApi caseUserApi;
 
     @MockBean
