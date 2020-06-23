@@ -39,8 +39,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
@@ -197,7 +195,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             return Map.of(
                 "respondentLastName", "Watson",
                 "caseUrl",
-                String.format("%s/case/%s/%s/%s", "http://fake-url", JURISDICTION, CASE_TYPE, parseLong(CASE_ID)));
+                String.format("%s/cases/case-details/%s", "http://fake-url", parseLong(CASE_ID)));
         }
     }
 
@@ -325,7 +323,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             return Map.of(
                 "respondentLastName", "Jones",
                 "caseUrl",
-                String.format("%s/case/%s/%s/%s", "http://fake-url", JURISDICTION, CASE_TYPE, parseLong(CASE_ID)));
+                String.format("%s/cases/case-details/%s", "http://fake-url", parseLong(CASE_ID)));
         }
 
         private Respondent respondent() {

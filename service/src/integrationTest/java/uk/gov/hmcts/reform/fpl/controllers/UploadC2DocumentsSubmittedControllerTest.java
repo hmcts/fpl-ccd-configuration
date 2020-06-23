@@ -315,7 +315,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
 
     private Map<String, Object> expectedCtscNotificationParameters() {
         return Map.of("applicationType", "C2",
-            "caseUrl", "http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345");
+            "caseUrl", "http://fake-url/cases/case-details/12345");
     }
 
     private Map<String, Object> expectedNotificationParams() {
@@ -323,13 +323,13 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
             "reference", CASE_ID.toString(),
             "hearingDetailsCallout", String.format("%s, %s", RESPONDENT_SURNAME, CASE_ID.toString()),
             "subjectLine", String.format("%s, %s", RESPONDENT_SURNAME, CASE_ID.toString()),
-            "caseUrl", "http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/" + CASE_ID
+            "caseUrl", "http://fake-url/cases/case-details/" + CASE_ID
         );
     }
 
     private Map<String, Object> expectedPbaPaymentNotTakenNotificationParams() {
         return Map.of(
-            "caseUrl", "http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/" + CASE_ID
+            "caseUrl", "http://fake-url/cases/case-details/" + CASE_ID
         );
     }
 }

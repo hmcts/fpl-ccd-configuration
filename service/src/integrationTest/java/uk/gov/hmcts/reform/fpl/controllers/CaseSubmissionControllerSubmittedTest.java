@@ -36,8 +36,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.AMENDED_APPLICATION_RETURNED_TO_THE_ADMIN;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA;
@@ -377,7 +375,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
     private Map<String, Object> expectedCtscNotificationParameters() {
         return Map.of("applicationType", "C110a",
-            "caseUrl", "http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/" + caseId);
+            "caseUrl", "http://fake-url/cases/case-details/" + caseId);
     }
 
     private CaseDetails enableSendToCtscOnCaseDetails(YesNo enableCtsc) {
@@ -450,7 +448,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     private <T extends SharedNotifyTemplate> void setSharedTemplateParameters(T template) {
         template.setLocalAuthority("Example Local Authority");
         template.setReference(caseId.toString());
-        template.setCaseUrl(String.format("http://fake-url/case/%s/%s/%s", JURISDICTION, CASE_TYPE, caseId));
+        template.setCaseUrl(String.format("http://fake-url/cases/case-details/%s", caseId));
         template.setDataPresent(YES.getValue());
         template.setFullStop(NO.getValue());
         template.setOrdersAndDirections(List.of("Emergency protection order", "Contact with any named person"));
