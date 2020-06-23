@@ -144,9 +144,7 @@ Scenario('Gatekeeper submits final version of standard directions', async (I, ca
     config.administrationActions.amendRespondents,
     config.administrationActions.amendOther,
     config.administrationActions.amendInternationalElement,
-    config.administrationActions.amendOtherProceedings,
     config.administrationActions.amendAttendingHearing,
-    config.applicationActions.uploadDocuments,
   ]);
   caseViewPage.checkActionsAreNotAvailable([
     config.applicationActions.enterAllocationDecision,
