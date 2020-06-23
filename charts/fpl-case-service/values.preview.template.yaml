@@ -59,6 +59,16 @@ xui-webapp:
       SERVICES_CCD_DATA_STORE_API: http://${SERVICE_NAME}-ccd-data-store-api
       SERVICES_TERMS_AND_CONDITIONS: http://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal
       JURISDICTIONS: PUBLICLAW
+      REDISCLOUD_URL: redis://ignore:fake-password@${SERVICE_NAME}-redis-master:6379
+  redis:
+    enabled: true
+    cluster:
+      enabled: false
+      slaveCount: 0
+    password: fake-password
+    master:
+      persistence:
+        enabled: false
 
 ccd:
   ccd:
