@@ -6,19 +6,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.CaseData.CaseDataBuilder;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder.DocmosisGeneratedOrderBuilder;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
+import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -34,7 +32,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {EPOGenerationService.class, CaseDataExtractionService.class,
     LookupTestConfig.class, HearingVenueLookUpService.class, JacksonAutoConfiguration.class,
-    FixedTimeConfiguration.class})
+    FixedTimeConfiguration.class, ChildrenService.class})
 class EPOGenerationServiceTest extends AbstractOrderGenerationServiceTest {
     @Autowired
     private EPOGenerationService service;
@@ -42,28 +40,27 @@ class EPOGenerationServiceTest extends AbstractOrderGenerationServiceTest {
     @Test
     void shouldGetTemplateDataWhenGivenPopulatedCaseData() {
         OrderStatus orderStatus = SEALED;
-        CaseData caseData = createPopulatedCaseData(orderStatus);
+        CaseData caseData = getCase(orderStatus);
 
         DocmosisGeneratedOrder templateData = service.getTemplateData(caseData);
 
-        DocmosisGeneratedOrder expectedData = createExpectedDocmosisData(EMERGENCY_PROTECTION_ORDER, orderStatus);
+        DocmosisGeneratedOrder expectedData = getExpectedDocument(orderStatus);
         assertThat(templateData).isEqualToComparingFieldByField(expectedData);
     }
 
     @Test
     void shouldGetTemplateDataWhenGivenPopulatedCaseDataInDraft() {
         OrderStatus orderStatus = DRAFT;
-        CaseData caseData = createPopulatedCaseData(orderStatus);
+        CaseData caseData = getCase(orderStatus);
 
         DocmosisGeneratedOrder templateData = service.getTemplateData(caseData);
 
-        DocmosisGeneratedOrder expectedData = createExpectedDocmosisData(EMERGENCY_PROTECTION_ORDER, orderStatus);
+        DocmosisGeneratedOrder expectedData = getExpectedDocument(orderStatus);
         assertThat(templateData).isEqualToComparingFieldByField(expectedData);
     }
 
-    @Override
-    CaseDataBuilder populateCustomCaseData(GeneratedOrderSubtype subtype) {
-        return CaseData.builder()
+    CaseData getCase(OrderStatus orderStatus) {
+        return defaultCaseData(orderStatus)
             .orderTypeAndDocument(OrderTypeAndDocument.builder()
                 .type(EMERGENCY_PROTECTION_ORDER)
                 .document(DocumentReference.builder().build())
@@ -88,13 +85,12 @@ class EPOGenerationServiceTest extends AbstractOrderGenerationServiceTest {
                 .county("Armagh")
                 .country("United Kingdom")
                 .build())
-            .orderAppliesToAllChildren(YES.getValue());
+            .orderAppliesToAllChildren(YES.getValue())
+            .build();
     }
 
-    @SuppressWarnings("rawtypes")
-    @Override
-    DocmosisGeneratedOrderBuilder populateCustomOrderFields(GeneratedOrderSubtype subtype) {
-        return DocmosisGeneratedOrder.builder()
+    private DocmosisGeneratedOrder getExpectedDocument(OrderStatus orderStatus) {
+        DocmosisGeneratedOrder.DocmosisGeneratedOrderBuilder orderBuilder = DocmosisGeneratedOrder.builder()
             .orderType(EMERGENCY_PROTECTION_ORDER)
             .localAuthorityName(LOCAL_AUTHORITY_NAME)
             .children(getChildren())
@@ -105,5 +101,7 @@ class EPOGenerationServiceTest extends AbstractOrderGenerationServiceTest {
             .epoStartDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), "d MMMM yyyy 'at' h:mma"))
             .epoEndDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), "d MMMM yyyy 'at' h:mma"))
             .children(getChildren());
+
+        return enrichWithStandardData(EMERGENCY_PROTECTION_ORDER, orderStatus, orderBuilder).build();
     }
 }

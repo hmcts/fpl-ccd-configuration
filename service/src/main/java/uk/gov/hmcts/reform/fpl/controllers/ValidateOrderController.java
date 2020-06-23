@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOEndDateGroup;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.NAMED_DATE;
 
@@ -116,4 +117,21 @@ public class ValidateOrderController {
             .errors(validateGroupService.validateGroup(caseData, EPOEndDateGroup.class))
             .build();
     }
+
+    @PostMapping("/care-orders-selection/mid-event")
+    public AboutToStartOrSubmitCallbackResponse validateDischargedOrders(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        List<String> errors = new ArrayList<>();
+
+        if (isEmpty(caseData.getCareOrderSelector()) || isEmpty(caseData.getCareOrderSelector().getSelected())) {
+            errors.add("Select care orders to be discharged.");
+        }
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetails.getData())
+            .errors(errors)
+            .build();
+    }
+
 }
