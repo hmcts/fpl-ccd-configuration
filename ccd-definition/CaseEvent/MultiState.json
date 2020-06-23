@@ -156,7 +156,7 @@
     "ID": "uploadC2",
     "Name": "Upload a C2",
     "Description": "Upload a c2 to the case",
-    "DisplayOrder": 4,
+    "DisplayOrder": 11,
     "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING;CLOSED",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
