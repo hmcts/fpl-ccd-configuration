@@ -130,7 +130,7 @@ class SubmittedCaseEventHandlerTest {
         @ParameterizedTest
         @EnumSource(value = State.class, mode = EXCLUDE, names = {"OPEN"})
         void shouldNotPayIfCaseStateIsDifferentThanOpen(State state) {
-            final CallbackRequest request = callbackRequest();
+            final CallbackRequest request = callbackRequest(state, Map.of("displayAmountToPay", "Yes"));
             final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
