@@ -242,16 +242,6 @@ security:
   anonymousPaths:
   authorisedServices:
 
-feature:
-  toggle:
-    robotics:
-      case-number:
-        notification:
-          enabled: true
-      support:
-        api:
-          enabled: true
-
 scheduler:
   enabled: false
 
@@ -367,16 +357,6 @@ robotics:
   notification:
     sender: sender@example.com
     recipient: FamilyPublicLaw+robotics@gmail.com
-
-feature:
-  toggle:
-    robotics:
-      case-number:
-        notification:
-          enabled: true
-      support:
-        api:
-          enabled: true
 
 scheduler:
   enabled: false

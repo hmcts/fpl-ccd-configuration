@@ -79,7 +79,7 @@ public class CaseSubmissionController {
         List<String> errors = validate(caseData);
 
         if (errors.isEmpty()) {
-            if (isInOpenState(caseDetails) && featureToggleService.isFeesEnabled()) {
+            if (isInOpenState(caseDetails)) {
                 try {
                     FeesData feesData = feeService.getFeesDataForOrders(caseData.getOrders());
                     data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
