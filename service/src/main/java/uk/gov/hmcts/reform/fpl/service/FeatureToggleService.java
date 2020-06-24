@@ -24,7 +24,7 @@ public class FeatureToggleService {
     }
 
     public boolean isXeroxPrintingEnabled() {
-        return ldClient.boolVariation("xerox-printing", ldUser, true);
+        return ldClient.boolVariation("xerox-printing", ldUser, false);
     }
 
     public boolean isCtscEnabled(String localAuthorityName) {
@@ -59,6 +59,6 @@ public class FeatureToggleService {
     }
 
     public boolean isCloseCaseEnabled() {
-        return ldClient.boolVariation("close-case", ldUser, true);
+        return ldClient.boolVariation("close-case", ldUser, false);
     }
 }
