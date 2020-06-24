@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.launchdarkly.sdk.server.LDClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -26,7 +25,6 @@ import java.util.List;
 import static java.util.Map.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
@@ -49,9 +47,6 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
 
     @MockBean
     private FeeService feeService;
-
-    @MockBean
-    private LDClient ldClient;
 
     @MockBean
     private CaseSubmissionService caseSubmissionService;
@@ -87,13 +82,12 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldAddAmountToPayFieldToAnOpenedCaseWhenFeatureToggle() {
+    void shouldAddAmountToPayFieldToAnOpenedCase() {
         Orders orders = Orders.builder().orderType(List.of(OrderType.CARE_ORDER)).build();
         FeesData feesData = FeesData.builder()
             .totalAmount(BigDecimal.valueOf(123))
             .build();
 
-        givenPaymentToggle(true);
         given(feeService.getFeesDataForOrders(orders)).willReturn(feesData);
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
@@ -106,20 +100,7 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldNotAddAmountToPayFieldToAnOpenedCaseWhenFeatureToggleIsFalse() {
-        givenPaymentToggle(false);
-
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
-            .data(of())
-            .build());
-
-        verify(feeService, never()).getFeesDataForOrders(any());
-        assertThat(response.getData()).doesNotContainKeys("amountToPay", "displayAmountToPay");
-    }
-
-    @Test
     void shouldNotDisplayAmountToPayFieldToAnOpenedCaseWhenErrorIsThrown() {
-        givenPaymentToggle(true);
         given(feeService.getFeesDataForOrders(any())).willThrow(new FeeRegisterException(300, "duplicate", null));
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
@@ -133,8 +114,6 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
 
     @Test
     void shouldNotDisplayAmountToPayFieldWhenCaseIsInReturnedState() {
-        givenPaymentToggle(true);
-
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
             .data(of())
             .state(RETURNED.getValue())
@@ -146,6 +125,8 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
 
     @Test
     void shouldHaveDraftApplicationDocumentInResponse() {
+        given(feeService.getFeesDataForOrders(any())).willThrow(new FeeRegisterException(300, "duplicate", null));
+
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(populatedCaseDetails());
 
         assertThat(callbackResponse.getData())
@@ -154,10 +135,6 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
                     "document_filename", "file.pdf",
                     "document_binary_url",
                     "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary"));
-    }
-
-    private void givenPaymentToggle(boolean enabled) {
-        given(ldClient.boolVariation(eq("FNP"), any(), anyBoolean())).willReturn(enabled);
     }
 
     @Nested
