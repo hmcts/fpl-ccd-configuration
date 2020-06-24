@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -16,13 +18,14 @@ import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
 import uk.gov.hmcts.reform.fpl.model.notify.SharedNotifyTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
+import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
+import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.service.notify.NotificationClient;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 
 import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
@@ -33,9 +36,14 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.AMENDED_APPLICATION_RETURNED_TO_THE_ADMIN;
+import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_CAFCASS_COURT;
+import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.AMENDED_APPLICATION_RETURNED_ADMIN_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.AMENDED_APPLICATION_RETURNED_CAFCASS_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
@@ -50,14 +58,13 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(CaseSubmissionController.class)
 @OverrideAutoConfiguration(enabled = true)
 class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
-    private static final String FAMILY_COURT = "Family Court";
-    private static final String CAFCASS_COURT = "cafcass";
     private static final String HMCTS_ADMIN_EMAIL = "admin@family-court.com";
     private static final String CAFCASS_EMAIL = "cafcass@cafcass.com";
     private static final String CTSC_EMAIL = "FamilyPublicLaw+ctsc@gmail.com";
@@ -69,6 +76,9 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
     @MockBean
     private NotificationClient notificationClient;
+
+    @MockBean
+    private DocumentDownloadService documentDownloadService;
 
     CaseSubmissionControllerSubmittedTest() {
         super("case-submission");
@@ -89,7 +99,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         Map<String, Object> expectedHmctsParameters = getExpectedHmctsParameters(true);
         Map<String, Object> completeCafcassParameters = getExpectedCafcassParameters(true);
 
-        postSubmittedEvent(callbackRequest(Map.of("id", caseId)));
+        postSubmittedEvent(buildCallbackRequest(populatedCaseDetails(Map.of("id", caseId)), OPEN));
 
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
@@ -105,12 +115,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
                 caseId.toString());
         });
 
-        checkThat(() ->
-            verify(notificationClient, never()).sendEmail(
-                HMCTS_COURT_SUBMISSION_TEMPLATE,
-                "FamilyPublicLaw+ctsc@gmail.com",
-                expectedHmctsParameters,
-                caseId.toString()));
+        checkThat(() -> verifyNoMoreInteractions(notificationClient));
     }
 
     @Test
@@ -136,12 +141,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
                 caseId.toString());
         });
 
-        checkThat(() ->
-            verify(notificationClient, never()).sendEmail(
-                HMCTS_COURT_SUBMISSION_TEMPLATE,
-                CTSC_EMAIL,
-                expectedIncompleteHmctsParameters,
-                caseId.toString()));
+        checkThat(() -> verifyNoMoreInteractions(notificationClient));
 
     }
 
@@ -189,17 +189,6 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
         caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
         CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, OPEN);
-
-        postSubmittedEvent(callbackRequest);
-
-        checkThat(() -> verify(paymentService, never()).makePaymentForCaseOrders(any(), any()));
-    }
-
-    @Test
-    void shouldNotMakePaymentOnAReturnedCaseWhenAmountToPayWasDisplayed() {
-        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
-        caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
-        CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, RETURNED);
 
         postSubmittedEvent(callbackRequest);
 
@@ -278,71 +267,59 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         });
     }
 
-    @Test
-    void shouldNotifyHmctsAdminWhenTheLocalAuthorityHasSubmittedAReturnedCase() {
-        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(NO);
-        caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
 
-        CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, RETURNED);
-        postSubmittedEvent(callbackRequest);
+    @Nested
+    class CaseResubmission {
 
-        checkUntil(() -> verify(notificationClient).sendEmail(
-            eq(AMENDED_APPLICATION_RETURNED_TO_THE_ADMIN),
-            eq(HMCTS_ADMIN_EMAIL),
-            anyMap(),
-            eq(caseId.toString())));
+        final State state = RETURNED;
 
-        checkThat(() -> verify(notificationClient, never()).sendEmail(
-            eq(AMENDED_APPLICATION_RETURNED_TO_THE_ADMIN),
-            eq(CTSC_EMAIL),
-            anyMap(),
-            eq(caseId.toString())));
-    }
+        @BeforeEach
+        void init() {
+            when(documentDownloadService.downloadDocument(any())).thenReturn(DOCUMENT_CONTENT);
+        }
 
-    @Test
-    void shouldNotifyCtscAdminWhenTheLocalAuthorityHasSubmittedAReturnedCase() {
-        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
-        caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
+        @Test
+        void shouldNotifyAdminAndCafcassWhenCaseIsResubmitted() {
+            CaseDetails caseDetails = enableSendToCtscOnCaseDetails(NO);
+            caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
 
-        CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, RETURNED);
-        postSubmittedEvent(callbackRequest);
+            CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, state);
+            postSubmittedEvent(callbackRequest);
 
-        checkUntil(() ->
+            checkUntil(() -> resubmissionNotificationsSent(HMCTS_ADMIN_EMAIL));
+            checkThat(this::paymentNotTakenAndNoMoreEmailsSent);
+        }
+
+        @Test
+        void shouldNotifyCtscAndCafcassWhenCaseIsResubmitted() {
+            CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
+            caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
+
+            CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, state);
+            postSubmittedEvent(callbackRequest);
+
+            checkUntil(() -> resubmissionNotificationsSent(CTSC_EMAIL));
+            checkThat(this::paymentNotTakenAndNoMoreEmailsSent);
+        }
+
+        private void resubmissionNotificationsSent(String adminEmail) throws Exception {
             verify(notificationClient).sendEmail(
-                eq(AMENDED_APPLICATION_RETURNED_TO_THE_ADMIN),
-                eq(CTSC_EMAIL),
-                anyMap(),
-                eq(caseId.toString())));
-
-        checkThat(() ->
-            verify(notificationClient, never()).sendEmail(
-                eq(AMENDED_APPLICATION_RETURNED_TO_THE_ADMIN),
-                eq(HMCTS_ADMIN_EMAIL),
-                anyMap(),
-                eq(caseId.toString())));
-    }
-
-    @Test
-    void shouldNotNotifyAdminOfAReturnedCaseWhenTheCaseIsSubmittedFromOpenState() {
-        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
-        caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
-
-        CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, OPEN);
-        postSubmittedEvent(callbackRequest);
-
-        checkThat(() -> {
-            verify(notificationClient, never()).sendEmail(
-                eq(AMENDED_APPLICATION_RETURNED_TO_THE_ADMIN),
-                eq(HMCTS_ADMIN_EMAIL),
+                eq(AMENDED_APPLICATION_RETURNED_ADMIN_TEMPLATE),
+                eq(adminEmail),
                 anyMap(),
                 eq(caseId.toString()));
 
-            verify(notificationClient, never()).sendEmail(
-                eq(AMENDED_APPLICATION_RETURNED_TO_THE_ADMIN),
-                eq(CTSC_EMAIL),
+            verify(notificationClient).sendEmail(
+                eq(AMENDED_APPLICATION_RETURNED_CAFCASS_TEMPLATE),
+                eq(CAFCASS_EMAIL),
                 anyMap(),
                 eq(caseId.toString()));
-        });
+        }
+
+        private void paymentNotTakenAndNoMoreEmailsSent() {
+            verifyNoMoreInteractions(notificationClient);
+            verifyNoMoreInteractions(paymentService);
+        }
     }
 
     private Map<String, Object> expectedCtscNotificationParameters() {
@@ -354,9 +331,11 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         return CaseDetails.builder()
             .id(caseId)
             .data(new HashMap<>(Map.of(
+                "submittedForm", TestDataHelper.testDocument(),
                 RETURN_APPLICATION, ReturnApplication.builder()
                     .note("Some note")
                     .reason(List.of(INCOMPLETE))
+                    .document(TestDataHelper.testDocumentReference())
                     .build(),
                 "orders", Orders.builder()
                     .emergencyProtectionOrderDirections(List.of(CONTACT_WITH_NAMED_PERSON))
@@ -376,7 +355,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
             submitCaseHmctsTemplate = getIncompleteParameters(new SubmitCaseHmctsTemplate());
         }
 
-        submitCaseHmctsTemplate.setCourt(FAMILY_COURT);
+        submitCaseHmctsTemplate.setCourt(DEFAULT_LA_COURT);
         return submitCaseHmctsTemplate.toMap(mapper);
     }
 
@@ -389,7 +368,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
             submitCaseCafcassTemplate = getIncompleteParameters(new SubmitCaseCafcassTemplate());
         }
 
-        submitCaseCafcassTemplate.setCafcass(CAFCASS_COURT);
+        submitCaseCafcassTemplate.setCafcass(DEFAULT_CAFCASS_COURT);
         return submitCaseCafcassTemplate.toMap(mapper);
     }
 

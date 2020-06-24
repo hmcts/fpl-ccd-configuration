@@ -25,7 +25,7 @@ public class ReturnedCaseEventHandler {
         EventData eventData = new EventData(event);
 
         ReturnedCaseTemplate parameters = returnedCaseContentProvider
-            .buildNotificationParameters(eventData.getCaseDetails(), eventData.getLocalAuthorityCode());
+            .parametersWithCaseUrl(eventData.getCaseDetails());
 
         String email = inboxLookupService
             .getNotificationRecipientEmail(eventData.getCaseDetails(), eventData.getLocalAuthorityCode());
