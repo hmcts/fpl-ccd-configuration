@@ -36,7 +36,7 @@
     "ID": "draftSDO",
     "Name": "Draft standard directions",
     "Description": "Draft standard directions",
-    "DisplayOrder": 2,
+    "DisplayOrder": 10,
     "PreConditionState(s)": "Gatekeeping",
     "PostConditionState": "Gatekeeping",
     "SecurityClassification": "Public",
