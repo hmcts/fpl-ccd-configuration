@@ -2,7 +2,6 @@
   "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/case-extension/mid-event_POST": "ignore",
   "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/placement/mid-event_POST": "ignore",
   "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/case-extension/about-to-start_POST": "ignore",
-  "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/case-extension/about-to-start_POST": "ignore",
   "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/draft-cmo/submitted_POST": "ignore",
   "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/upload-c2/get-fee/mid-event_POST": "ignore",
   "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/case-initiation/about-to-submit_POST": "ignore",
@@ -40,6 +39,7 @@
   "10023_Information Disclosure - Debug Error Messages_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/draft-cmo/mid-event_POST": "ignore",
   "10023_Information Disclosure - Debug Error Messages_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/statement-of-service/about-to-start_POST": "ignore",
   "10023_Information Disclosure - Debug Error Messages_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/draft-cmo/about-to-start_POST": "ignore",
+  "10023_Information Disclosure - Debug Error Messages_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/allocated-judge/submitted_POST": "ignore",
   "90022_Application Error Disclosure_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/close-case/mid-event_POST": "ignore",
   "90022_Application Error Disclosure_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/add-hearing-bookings/about-to-submit_POST": "ignore",
   "90022_Application Error Disclosure_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/add-note/about-to-submit_POST": "ignore",
@@ -64,5 +64,9 @@
   "10054_Cookie Without SameSite Attribute_http://fpl-case-service-aat.service.core-compute-aat.internal/sendRPAEmailByID/caseId_POST": "ignore",
   "100001_Unexpected Content-Type was returned_http://fpl-case-service-aat.service.core-compute-aat.internal/_GET": "ignore",
   "10023_Information Disclosure - Debug Error Messages_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/create-order/add-final-order-flags/mid-event_POST": "ignore",
-  "90022_Application Error Disclosure_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/create-order/add-final-order-flags/mid-event_POST": "ignore"
+  "90022_Application Error Disclosure_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/create-order/add-final-order-flags/mid-event_POST": "ignore",
+  "10096_Timestamp Disclosure - Unix_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/enter-applicant/about-to-start_POST": "ignore",
+  "10096_Timestamp Disclosure - Unix_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/enter-children/about-to-start_POST": "ignore",
+  "10096_Timestamp Disclosure - Unix_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/enter-respondents/about-to-start_POST": "ignore",
+  "10096_Timestamp Disclosure - Unix_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/callback/add-hearing-bookings/about-to-start_POST": "ignore"
 }

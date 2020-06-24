@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -9,6 +10,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDate;
@@ -126,6 +128,10 @@ abstract class AbstractControllerTest {
         return postMidEvent(toCallbackRequest(caseDetails), expectedStatus, additionalPath);
     }
 
+    AboutToStartOrSubmitCallbackResponse postMidEvent(CaseData caseData, String additionalPath) {
+        return postMidEvent(asCaseDetails(caseData), SC_OK, additionalPath);
+    }
+
     AboutToStartOrSubmitCallbackResponse postMidEvent(CaseDetails caseDetails, String additionalPath) {
         return postMidEvent(caseDetails, SC_OK, additionalPath);
     }
@@ -156,6 +162,10 @@ abstract class AbstractControllerTest {
 
     AboutToStartOrSubmitCallbackResponse postAboutToSubmitEvent(CaseDetails caseDetails, int expectedStatus) {
         return postAboutToSubmitEvent(toCallbackRequest(caseDetails), expectedStatus);
+    }
+
+    AboutToStartOrSubmitCallbackResponse postAboutToSubmitEvent(CaseData caseData) {
+        return postAboutToSubmitEvent(asCaseDetails(caseData), SC_OK);
     }
 
     AboutToStartOrSubmitCallbackResponse postAboutToSubmitEvent(CaseDetails caseDetails) {
@@ -200,6 +210,16 @@ abstract class AbstractControllerTest {
 
     AboutToStartOrSubmitCallbackResponse postSubmittedEvent(String filename) {
         return postSubmittedEvent(filename, SC_OK);
+    }
+
+    CaseData extractCaseData(AboutToStartOrSubmitCallbackResponse response) {
+        return mapper.convertValue(response.getData(), CaseData.class);
+    }
+
+    CaseDetails asCaseDetails(CaseData caseData) {
+        return CaseDetails.builder()
+            .data(mapper.convertValue(caseData, new TypeReference<>() {}))
+            .build();
     }
 
     LocalDateTime now() {

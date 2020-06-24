@@ -87,6 +87,23 @@ const createEmergencyProtectionOrder = async (I, createOrderEventPage, order, ha
   await I.completeEvent('Save and continue');
 };
 
+const createDischargeCareOrder = async (I, createOrderEventPage, order, hasAllocatedJudge = false) => {
+  await createOrderEventPage.selectType(order.type);
+  await selectCareOrders(I, createOrderEventPage, order);
+  await fillDateOfIssue(I, createOrderEventPage, order);
+  await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
+  await enterJudgeAndLegalAdvisor(I, createOrderEventPage, order, hasAllocatedJudge);
+  await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.directionsNeeded.id);
+  await createOrderEventPage.enterDirections('example directions');
+
+  if (order.closeCase !== undefined) {
+    await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.closeCase.id);
+    await createOrderEventPage.closeCaseFromOrder(order.closeCase);
+  }
+
+  await I.completeEvent('Save and continue');
+};
+
 const fillInterimEndDate = async (I, createOrderEventPage, order) => {
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.interimEndDate.id);
   if (order.interimEndDate.isNamedDate) {
@@ -115,6 +132,11 @@ const selectChildren = async (I, createOrderEventPage, order) => {
   }
 };
 
+const selectCareOrders = async (I, createOrderEventPage, order) => {
+  await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.careOrderSelector.id);
+  await createOrderEventPage.selectCareOrder(order.careOrders);
+};
+
 const enterJudgeAndLegalAdvisor =  (I, createOrderEventPage, order, hasAllocatedJudge) => {
   if (hasAllocatedJudge) {
     createOrderEventPage.useAllocatedJudge(order.judgeAndLegalAdvisor.legalAdvisorName);
@@ -139,6 +161,9 @@ module.exports = {
         break;
       case 'Emergency protection order':
         await createEmergencyProtectionOrder(I, createOrderEventPage, order, hasAllocatedJudge);
+        break;
+      case 'Discharge of care order':
+        await createDischargeCareOrder(I, createOrderEventPage, order, hasAllocatedJudge);
         break;
     }
   },
