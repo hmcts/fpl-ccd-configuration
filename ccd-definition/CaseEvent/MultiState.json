@@ -49,7 +49,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "allocatedJudge",
     "Name": "Allocated Judge",
-    "DisplayOrder": 8,
+    "DisplayOrder": 2,
     "Description": "Add allocated judge to a case",
     "PreConditionState(s)": "Gatekeeping;PREPARE_FOR_HEARING",
     "PostConditionState": "*",
