@@ -348,7 +348,7 @@
     "ID": "attendingHearing",
     "Name": "Attending the hearing",
     "Description": "Enter extra support needed for anyone to take part in hearing",
-    "DisplayOrder": 18,
+    "DisplayOrder": 13,
     "PreConditionState(s)": "Open;RETURNED",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
