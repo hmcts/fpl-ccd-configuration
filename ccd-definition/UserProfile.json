@@ -99,7 +99,14 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "UserIDAMId": "judgeonly@mailnesia.com",
+    "UserIDAMId": "judge-gatekeeper@mailnesia.com",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
+    "WorkBasketDefaultState": "Submitted"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "UserIDAMId": "judge-admin-gatekeeper@mailnesia.com",
     "WorkBasketDefaultJurisdiction": "PUBLICLAW",
     "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
     "WorkBasketDefaultState": "Submitted"
