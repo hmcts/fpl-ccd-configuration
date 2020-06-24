@@ -1,14 +1,18 @@
 package uk.gov.hmcts.reform.fpl.config;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskDecorator;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.request.RequestDataCache;
+import uk.gov.hmcts.reform.fpl.request.SimpleRequestData;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.Executor;
@@ -16,7 +20,10 @@ import javax.annotation.Nonnull;
 
 @Slf4j
 @Configuration
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AsyncConfiguration implements AsyncConfigurer {
+
+    private final ApplicationContext context;
 
     @Override
     public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
@@ -35,20 +42,28 @@ public class AsyncConfiguration implements AsyncConfigurer {
     @Bean
     public Executor getAsyncExecutor() {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-        taskExecutor.setTaskDecorator(new AsyncTaskDecorator());
+        taskExecutor.setTaskDecorator(new AsyncTaskDecorator(context));
         return taskExecutor;
     }
 
     static class AsyncTaskDecorator implements TaskDecorator {
+
+        final ApplicationContext context;
+
+        AsyncTaskDecorator(ApplicationContext context) {
+            this.context = context;
+        }
+
         @Override
         public Runnable decorate(@Nonnull Runnable task) {
-            RequestAttributes context = RequestContextHolder.currentRequestAttributes();
+            SimpleRequestData requestData = new SimpleRequestData(context.getBean(RequestData.class));
+
             return () -> {
+                RequestDataCache.add(requestData);
                 try {
-                    RequestContextHolder.setRequestAttributes(context);
                     task.run();
                 } finally {
-                    RequestContextHolder.resetRequestAttributes();
+                    RequestDataCache.remove();
                 }
             };
         }
