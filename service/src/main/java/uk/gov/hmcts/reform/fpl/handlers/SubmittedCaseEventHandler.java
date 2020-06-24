@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
@@ -41,7 +40,6 @@ public class SubmittedCaseEventHandler {
     private final CafcassEmailContentProvider cafcassEmailContentProvider;
     private final PaymentService paymentService;
     private final ApplicationEventPublisher applicationEventPublisher;
-    private final FeatureToggleService featureToggleService;
     private final ObjectMapper mapper;
 
     @Async
@@ -70,11 +68,6 @@ public class SubmittedCaseEventHandler {
     @EventListener
     public void makePayment(final SubmittedCaseEvent event) {
         final CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
-
-        if (!featureToggleService.isPaymentsEnabled()) {
-            log.info("Payment not taken for case {} due to feature toggle.", caseDetails.getId());
-            return;
-        }
 
         if (!isInOpenState(event.getCallbackRequest().getCaseDetailsBefore())) {
             log.info("Payment not taken for case {} due to not open state.", caseDetails.getId());
