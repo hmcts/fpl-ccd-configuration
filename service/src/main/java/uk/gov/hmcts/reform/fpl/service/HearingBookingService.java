@@ -22,6 +22,7 @@ import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.prepareJudgeFields;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
 
 @Service
@@ -64,7 +65,7 @@ public class HearingBookingService {
      * Combines two lists of hearings into one, ordered by start date.
      * Implemented due to work around with hearing start date validation.
      *
-     * @param newHearings  the first list of hearing bookings to combine.
+     * @param newHearings the first list of hearing bookings to combine.
      * @param oldHearings the second list of hearing bookings to combine.
      * @return an ordered list of hearing bookings.
      */
@@ -108,9 +109,8 @@ public class HearingBookingService {
                 HearingBooking hearingBooking = element.getValue();
                 JudgeAndLegalAdvisor judgeAndLegalAdvisor = hearingBooking.getJudgeAndLegalAdvisor();
 
-                if (judgeAndLegalAdvisor != null && allocatedJudge.hasEqualJudgeFields(judgeAndLegalAdvisor)) {
-                    judgeAndLegalAdvisor = judgeAndLegalAdvisor.reset();
-
+                if (judgeAndLegalAdvisor != null) {
+                    judgeAndLegalAdvisor = prepareJudgeFields(judgeAndLegalAdvisor, allocatedJudge);
                     hearingBooking.setJudgeAndLegalAdvisor(judgeAndLegalAdvisor);
                     return buildHearingBookingElement(element.getId(), hearingBooking);
                 }
