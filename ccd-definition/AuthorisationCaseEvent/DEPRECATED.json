@@ -447,5 +447,19 @@
     "CaseEventID": "manageRepresentatives-PREPARE_FOR_HEARING",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "otherAllocationDecision-CLOSED",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "otherAllocationDecision-CLOSED",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
   }
 ]
