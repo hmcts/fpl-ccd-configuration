@@ -109,6 +109,6 @@
     "UserIDAMId": "gatekeeper-only@mailnesia.com",
     "WorkBasketDefaultJurisdiction": "PUBLICLAW",
     "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
-    "WorkBasketDefaultState": "Submitted"
+    "WorkBasketDefaultState": "Gatekeeping"
   }
 ]
