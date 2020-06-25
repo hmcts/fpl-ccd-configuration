@@ -52,15 +52,6 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForXeroxPrinting(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isXeroxPrintingEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(eq("xerox-printing"), any(LDUser.class), eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
     void shouldMakeCorrectCallForCtsc(Boolean toggleState) {
         givenToggle(toggleState);
 
@@ -75,24 +66,6 @@ class FeatureToggleServiceTest {
 
         assertThat(service.isCtscReportEnabled()).isEqualTo(toggleState);
         verify(ldClient).boolVariation(eq("CTSC"), any(LDUser.class), eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForFees(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isFeesEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(eq("FNP"), any(LDUser.class), eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForPayments(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isPaymentsEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(eq("payments"), any(LDUser.class), eq(false));
     }
 
     @ParameterizedTest
@@ -190,18 +163,6 @@ class FeatureToggleServiceTest {
                 buildAttributes("localAuthorityName")),
             Arguments.of(
                 (Runnable) () -> service.isExpertUIEnabled(),
-                (Runnable) () -> service.isCtscReportEnabled(),
-                buildAttributes()),
-            Arguments.of(
-                (Runnable) () -> service.isFeesEnabled(),
-                (Runnable) () -> service.isCtscReportEnabled(),
-                buildAttributes()),
-            Arguments.of(
-                (Runnable) () -> service.isPaymentsEnabled(),
-                (Runnable) () -> service.isCtscReportEnabled(),
-                buildAttributes()),
-            Arguments.of(
-                (Runnable) () -> service.isXeroxPrintingEnabled(),
                 (Runnable) () -> service.isCtscReportEnabled(),
                 buildAttributes())
         );

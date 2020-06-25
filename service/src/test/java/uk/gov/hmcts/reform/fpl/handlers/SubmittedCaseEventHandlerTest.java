@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
@@ -69,9 +68,6 @@ class SubmittedCaseEventHandlerTest {
 
     @Mock
     private ApplicationEventPublisher applicationEventPublisher;
-
-    @Mock
-    private FeatureToggleService featureToggleService;
 
     @Mock
     private PaymentService paymentService;
@@ -131,26 +127,11 @@ class SubmittedCaseEventHandlerTest {
             when(mapper.convertValue(any(), eq(CaseData.class))).thenReturn(caseData);
         }
 
-        @Test
-        void shouldNotPayIfPaymentIsToggledOff() {
-            final CallbackRequest request = callbackRequest(OPEN);
-
-            final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
-
-            when(featureToggleService.isPaymentsEnabled()).thenReturn(false);
-
-            submittedCaseEventHandler.makePayment(submittedCaseEvent);
-
-            verifyNoMoreInteractions(paymentService, applicationEventPublisher);
-        }
-
         @ParameterizedTest
         @EnumSource(value = State.class, mode = EXCLUDE, names = {"OPEN"})
         void shouldNotPayIfCaseStateIsDifferentThanOpen(State state) {
             final CallbackRequest request = callbackRequest(state);
             final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
-
-            when(featureToggleService.isPaymentsEnabled()).thenReturn(true);
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 
@@ -162,8 +143,6 @@ class SubmittedCaseEventHandlerTest {
             final CallbackRequest request = callbackRequest(OPEN, emptyMap());
             final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
 
-            when(featureToggleService.isPaymentsEnabled()).thenReturn(true);
-
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 
             verifyNoMoreInteractions(paymentService, applicationEventPublisher);
@@ -173,8 +152,6 @@ class SubmittedCaseEventHandlerTest {
         void shouldNotPayAndEmitFailureEventIfPaymentDecisionsIsNo() {
             final CallbackRequest request = callbackRequest(OPEN, Map.of("displayAmountToPay", "No"));
             final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
-
-            when(featureToggleService.isPaymentsEnabled()).thenReturn(true);
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 
@@ -188,7 +165,7 @@ class SubmittedCaseEventHandlerTest {
             final CallbackRequest request = callbackRequest(OPEN, Map.of("displayAmountToPay", "Yes"));
             final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
             final Exception exception = new PaymentsApiException("", new RuntimeException());
-            when(featureToggleService.isPaymentsEnabled()).thenReturn(true);
+
             doThrow(exception).when(paymentService).makePaymentForCaseOrders(1L, caseData);
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
@@ -198,11 +175,9 @@ class SubmittedCaseEventHandlerTest {
         }
 
         @Test
-        void shouldPayWhenPaymentIsToggledOnAndCaseIsOpenedAndPaymentDesicionIsYes() {
+        void shouldPayWhenCaseIsOpenedAndPaymentDesicionIsYes() {
             final CallbackRequest request = callbackRequest(OPEN, Map.of("displayAmountToPay", "Yes"));
             final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
-
-            when(featureToggleService.isPaymentsEnabled()).thenReturn(true);
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 

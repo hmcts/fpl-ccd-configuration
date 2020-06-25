@@ -22,10 +22,6 @@ public class FeatureToggleService {
         this.ldUserKey = ldUserKey;
     }
 
-    public boolean isXeroxPrintingEnabled() {
-        return ldClient.boolVariation("xerox-printing", createLDUser(), false);
-    }
-
     public boolean isCtscEnabled(String localAuthorityName) {
         return ldClient.boolVariation("CTSC",
             createLDUser(Map.of("localAuthorityName", LDValue.of(localAuthorityName))),false);
@@ -41,15 +37,6 @@ public class FeatureToggleService {
             LDValue.of(allocatedJudgeNotificationType.getValue())));
 
         return ldClient.boolVariation("judge-notification", launchDarklyUser,false);
-    }
-
-    public boolean isFeesEnabled() {
-        return ldClient.boolVariation("FNP", createLDUser(), false);
-    }
-
-    //TODO: use FNP flag once PaymentsApi is deployed to AAT
-    public boolean isPaymentsEnabled() {
-        return ldClient.boolVariation("payments", createLDUser(), false);
     }
 
     public boolean isExpertUIEnabled() {

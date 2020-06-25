@@ -22,8 +22,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
@@ -50,15 +48,14 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UploadC2DocumentsController {
     private static final String DISPLAY_AMOUNT_TO_PAY = "displayAmountToPay";
+    private static final String AMOUNT_TO_PAY = "amountToPay";
     private static final String TEMPORARY_C2_DOCUMENT = "temporaryC2Document";
     private final ObjectMapper mapper;
     private final UserDetailsService userDetailsService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final FeeService feeService;
     private final PaymentService paymentService;
-    private final FeatureToggleService featureToggleService;
     private final PbaNumberService pbaNumberService;
-    private final RequestData requestData;
 
     @PostMapping("/get-fee/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
@@ -72,11 +69,9 @@ public class UploadC2DocumentsController {
         }
 
         try {
-            if (featureToggleService.isFeesEnabled()) {
-                FeesData feesData = feeService.getFeesDataForC2(caseData.getC2ApplicationType().get("type"));
-                data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
-                data.put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
-            }
+            FeesData feesData = feeService.getFeesDataForC2(caseData.getC2ApplicationType().get("type"));
+            data.put(AMOUNT_TO_PAY, BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
+            data.put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
         } catch (FeeRegisterException ignore) {
             data.put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
         }
@@ -108,7 +103,7 @@ public class UploadC2DocumentsController {
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         data.put("c2DocumentBundle", buildC2DocumentBundle(caseData));
-        data.keySet().removeAll(Set.of(TEMPORARY_C2_DOCUMENT, "c2ApplicationType", "amountToPay"));
+        data.keySet().removeAll(Set.of(TEMPORARY_C2_DOCUMENT, "c2ApplicationType", AMOUNT_TO_PAY));
 
         return AboutToStartOrSubmitCallbackResponse.builder().data(data).build();
     }
@@ -119,19 +114,15 @@ public class UploadC2DocumentsController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (featureToggleService.isPaymentsEnabled()) {
 
-            if (displayAmountToPay(caseDetails)) {
-                try {
-                    paymentService.makePaymentForC2(caseDetails.getId(), caseData);
-                } catch (FeeRegisterException | PaymentsApiException ignore) {
-                    applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, C2_APPLICATION));
-                }
-            }
-
-            if (NO.getValue().equals(caseDetails.getData().get(DISPLAY_AMOUNT_TO_PAY))) {
+        if (displayAmountToPay(caseDetails)) {
+            try {
+                paymentService.makePaymentForC2(caseDetails.getId(), caseData);
+            } catch (FeeRegisterException | PaymentsApiException ignore) {
                 applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, C2_APPLICATION));
             }
+        } else if (NO.getValue().equals(caseDetails.getData().get(DISPLAY_AMOUNT_TO_PAY))) {
+            applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, C2_APPLICATION));
         }
 
         applicationEventPublisher.publishEvent(new C2UploadedEvent(callbackRequest));
@@ -164,9 +155,7 @@ public class UploadC2DocumentsController {
             .author(userDetailsService.getUserName())
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(zonedDateTime.toLocalDateTime(), TIME_DATE));
 
-        if (featureToggleService.isFeesEnabled()) {
-            c2DocumentBundleBuilder.type(caseData.getC2ApplicationType().get("type"));
-        }
+        c2DocumentBundleBuilder.type(caseData.getC2ApplicationType().get("type"));
 
         c2DocumentBundle.add(Element.<C2DocumentBundle>builder()
             .id(UUID.randomUUID())
