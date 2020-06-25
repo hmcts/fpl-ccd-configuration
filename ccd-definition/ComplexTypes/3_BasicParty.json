@@ -1,0 +1,36 @@
+[
+
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "BasicParty",
+    "ListElementCode": "firstName",
+    "FieldType": "Text",
+    "ElementLabel": "First name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "BasicParty",
+    "ListElementCode": "lastName",
+    "FieldType": "Text",
+    "ElementLabel": "Last name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "BasicParty",
+    "ListElementCode": "dateOfBirth",
+    "FieldType": "Date",
+    "ElementLabel": "Date of birth",
+    "HintText": "For example, 31 3 2016",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "BasicParty",
+    "ListElementCode": "gender",
+    "FieldType": "Text",
+    "ElementLabel": "Gender",
+    "SecurityClassification": "Public"
+  }
+]

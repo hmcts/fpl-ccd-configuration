@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.launchdarkly.sdk.server.LDClient;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +30,6 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -64,9 +62,6 @@ class SendDocumentControllerTest extends AbstractControllerTest {
     private static final UUID LETTER_ID = UUID.randomUUID();
 
     @MockBean
-    private LDClient ldClient;
-
-    @MockBean
     private DocmosisCoverDocumentsService docmosisCoverDocumentsService;
 
     @MockBean
@@ -75,7 +70,7 @@ class SendDocumentControllerTest extends AbstractControllerTest {
     @MockBean
     private UploadDocumentService uploadDocumentService;
 
-    @MockBean(name = "uk.gov.hmcts.reform.sendletter.api.SendLetterApi")
+    @MockBean
     private SendLetterApi sendLetterApi;
 
     @MockBean
@@ -99,8 +94,6 @@ class SendDocumentControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldSendDocumentToRepresentativesWithPostServingPreferences() {
-        givenPrintingEnabled(true);
-
         Representative representative1 = testRepresentative(POST);
         Representative representative2 = testRepresentative(EMAIL);
         Representative representative3 = testRepresentative(DIGITAL_SERVICE);
@@ -136,8 +129,6 @@ class SendDocumentControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldNotSendDocumentWhenPrintingIsDisabled() {
-        givenPrintingEnabled(false);
-
         DocumentReference documentToBeSend = testDocumentReference();
         CaseDetails caseDetails = buildCaseData(documentToBeSend);
 
@@ -148,8 +139,6 @@ class SendDocumentControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldNotSendDocumentWhenNoRepresentativesServedByPost() {
-        givenPrintingEnabled(true);
-
         DocumentReference documentToBeSend = testDocumentReference();
         CaseDetails caseDetails = buildCaseData(
             documentToBeSend,
@@ -166,10 +155,6 @@ class SendDocumentControllerTest extends AbstractControllerTest {
         verify(documentDownloadService, never()).downloadDocument(any());
         verify(uploadDocumentService, never()).uploadPDF(any(), any());
         verify(sendLetterApi, never()).sendLetter(any(), any(LetterWithPdfsRequest.class));
-    }
-
-    private void givenPrintingEnabled(boolean enabled) {
-        given(ldClient.boolVariation(eq("xerox-printing"), any(), anyBoolean())).willReturn(enabled);
     }
 
     private static CaseDetails buildCaseData(DocumentReference documentReference, Representative... representatives) {

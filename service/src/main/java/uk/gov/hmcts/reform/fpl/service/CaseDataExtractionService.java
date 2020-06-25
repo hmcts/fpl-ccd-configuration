@@ -34,7 +34,6 @@ import static java.time.format.FormatStyle.LONG;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.StringUtils.lowerCase;
 import static org.apache.commons.lang3.StringUtils.trim;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Display.Due.BY;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
@@ -85,6 +84,7 @@ public class CaseDataExtractionService {
         return children.stream()
             .map(element -> element.getValue().getParty())
             .map(this::buildChild)
+            .distinct()
             .collect(toList());
     }
 
@@ -157,11 +157,17 @@ public class CaseDataExtractionService {
             }
         }
 
-        // create direction display title for docmosis in format "index. directionTitle (by / on) date"
-        return format("%d. %s %s %s", index, direction.getDirectionType(), lowerCase(config.due.toString()),
-            ofNullable(direction.getDateToBeCompletedBy())
-                .map(date -> formatLocalDateTimeBaseUsingFormat(date, config.pattern))
-                .orElse("unknown"));
+        // create direction display title for docmosis in format "index. directionTitle [(by / on) date]"
+        return format("%d. %s %s", index, direction.getDirectionType(),
+            formatTitleDate(direction.getDateToBeCompletedBy(), config.pattern, config.due)).trim();
+    }
+
+    private String formatTitleDate(LocalDateTime date, String pattern, Display.Due due) {
+        if (date == null) {
+            return "";
+        }
+
+        return due.toString().toLowerCase() + " " + formatLocalDateTimeBaseUsingFormat(date, pattern);
     }
 
     private DocmosisHearingBooking buildHearingBooking(HearingBooking hearing) {

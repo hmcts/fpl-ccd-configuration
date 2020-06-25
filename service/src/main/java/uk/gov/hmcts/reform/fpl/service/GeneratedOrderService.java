@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedEPOKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
@@ -22,11 +23,12 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.service.docmosis.BlankOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.CareOrderGenerationService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DischargeCareOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.EPOGenerationService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.SupervisionOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.OrderHelper;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -35,17 +37,18 @@ import java.util.Optional;
 
 import static com.google.common.collect.Iterables.getLast;
 import static java.util.Objects.requireNonNull;
-import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.DISCHARGE_OF_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @Slf4j
 @Service
@@ -55,7 +58,11 @@ public class GeneratedOrderService {
     private final CareOrderGenerationService careOrderGenerationService;
     private final SupervisionOrderGenerationService supervisionOrderGenerationService;
     private final EPOGenerationService epoGenerationService;
+    private final DischargeCareOrderGenerationService dischargeCareOrderGenerationService;
+    private final DischargeCareOrderService dischargeCareOrder;
     private final ChildrenService childrenService;
+    private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+
     private final Time time;
 
     public OrderTypeAndDocument buildOrderTypeAndDocument(OrderTypeAndDocument typeAndDocument, Document document) {
@@ -68,26 +75,10 @@ public class GeneratedOrderService {
             .build();
     }
 
-    /**
-     * Method to populate the order based on type of order selected
-     * Adds/formats the order title/details for C21 and the expiry date for supervision order
-     * Always adds order type, document, {@link JudgeAndLegalAdvisor} object and a formatted order date.
-     *
-     * @param typeAndDocument      the type of the order and the order document (document only shown in check answers)
-     * @param order                this value will contain fixed details and document values as well as customisable
-     *                             values.
-     * @param judgeAndLegalAdvisor the judge and legal advisor for the order.
-     * @param orderMonths          the number of months the supervision order is valid
-     * @param interimEndDate       the end date wrapper for an interim order
-     * @return Element containing randomUUID and a fully populated order, ready to be added to orderCollection.
-     */
-    public Element<GeneratedOrder> buildCompleteOrder(OrderTypeAndDocument typeAndDocument,
-                                                      GeneratedOrder order,
-                                                      JudgeAndLegalAdvisor judgeAndLegalAdvisor,
-                                                      LocalDate dateOfIssue,
-                                                      Integer orderMonths,
-                                                      InterimEndDate interimEndDate) {
-        GeneratedOrder generatedOrder = defaultIfNull(order, GeneratedOrder.builder().build());
+    public GeneratedOrder buildCompleteOrder(OrderTypeAndDocument typeAndDocument,
+                                             JudgeAndLegalAdvisor judgeAndLegalAdvisor,
+                                             CaseData caseData) {
+        GeneratedOrder generatedOrder = defaultIfNull(caseData.getOrder(), GeneratedOrder.builder().build());
         GeneratedOrder.GeneratedOrderBuilder orderBuilder = GeneratedOrder.builder();
 
         GeneratedOrderType orderType = typeAndDocument.getType();
@@ -102,28 +93,36 @@ public class GeneratedOrderService {
             case CARE_ORDER:
                 orderBuilder.title(null);
                 if (typeAndDocument.getSubtype() == INTERIM) {
-                    requireNonNull(interimEndDate);
-                    expiryDate = getInterimExpiryDate(interimEndDate);
+                    requireNonNull(caseData.getInterimEndDate());
+                    expiryDate = getInterimExpiryDate(caseData.getInterimEndDate());
                 }
                 break;
             case SUPERVISION_ORDER:
                 orderBuilder.title(null);
-                expiryDate = getSupervisionOrderExpiryDate(typeAndDocument, orderMonths, interimEndDate);
+                expiryDate = getSupervisionOrderExpiryDate(typeAndDocument, caseData.getOrderMonths(),
+                    caseData.getInterimEndDate());
                 break;
             default:
         }
 
         orderBuilder.expiryDate(expiryDate)
-            .dateOfIssue(formatLocalDateToString(dateOfIssue, DATE))
-            .type(typeAndDocument.getFullType(typeAndDocument.getSubtype()))
+            .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
+            .type(OrderHelper.getFullOrderType(typeAndDocument))
             .document(typeAndDocument.getDocument())
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
-            .date(formatLocalDateTimeBaseUsingFormat(time.now(), TIME_DATE));
+            .date(formatLocalDateTimeBaseUsingFormat(time.now(), TIME_DATE))
+            .courtName(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName())
+            .children(getChildren(orderType, caseData));
 
-        return Element.<GeneratedOrder>builder()
-            .id(randomUUID())
-            .value(orderBuilder.build())
-            .build();
+        return orderBuilder.build();
+    }
+
+    private List<Element<Child>> getChildren(GeneratedOrderType orderType, CaseData caseData) {
+        if (orderType == DISCHARGE_OF_CARE_ORDER) {
+            return wrapElements(dischargeCareOrder.getChildrenInSelectedCareOrders(caseData));
+        } else {
+            return childrenService.getSelectedChildren(caseData);
+        }
     }
 
     public DocmosisGeneratedOrder getOrderTemplateData(CaseData caseData) {
@@ -139,6 +138,8 @@ public class GeneratedOrderService {
                 return supervisionOrderGenerationService.getTemplateData(caseData);
             case EMERGENCY_PROTECTION_ORDER:
                 return epoGenerationService.getTemplateData(caseData);
+            case DISCHARGE_OF_CARE_ORDER:
+                return dischargeCareOrderGenerationService.getTemplateData(caseData);
             default:
                 throw new UnsupportedOperationException("Unexpected value: " + orderType);
         }
@@ -170,8 +171,8 @@ public class GeneratedOrderService {
      *
      * <p>Will return {@code true} if:
      * <ul>
-     *     <li>the order is a blank order</li>
-     *     <li>further directions have been considered (i.e it is not a blank order)</li>
+     * <li>the order is a blank order</li>
+     * <li>further directions have been considered (i.e it is not a blank order)</li>
      * </ul>
      *
      * @param orderType         type of order
@@ -187,9 +188,9 @@ public class GeneratedOrderService {
      *
      * <p>Will return {@code true} if all of the following are met:
      * <ul>
-     *     <li>close case is enabled</li>
-     *     <li>the order type is final or epo</li>
-     *     <li>all children will be marked to have a final order issued against them</li>
+     * <li>close case is enabled</li>
+     * <li>the order type is final or epo</li>
+     * <li>all children will be marked to have a final order issued against them</li>
      * </ul>
      *
      * @param orderType        type of order
@@ -204,8 +205,8 @@ public class GeneratedOrderService {
             && childrenService.allChildrenHaveFinalOrder(children);
     }
 
-    public boolean shouldNotAllowFinalOrder(OrderTypeAndDocument orderType, List<Element<Child>> children) {
-        return orderType.isClosable() && childrenService.allChildrenHaveFinalOrder(children);
+    public boolean isFinalOrderAllowed(OrderTypeAndDocument orderType, List<Element<Child>> children) {
+        return !(orderType.isClosable() && childrenService.allChildrenHaveFinalOrder(children));
     }
 
     public JudgeAndLegalAdvisor getAllocatedJudgeFromMostRecentOrder(CaseData caseData) {
