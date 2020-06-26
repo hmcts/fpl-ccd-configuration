@@ -154,9 +154,9 @@ public class CaseSubmissionController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody @NotNull CallbackRequest callbackRequest) {
-        applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest));
-
-        if (isInReturnedState(callbackRequest.getCaseDetailsBefore())) {
+        if (isInOpenState(callbackRequest.getCaseDetailsBefore())) {
+            applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest));
+        } else if (isInReturnedState(callbackRequest.getCaseDetailsBefore())) {
             applicationEventPublisher.publishEvent(new AmendedReturnedCaseEvent(callbackRequest));
         }
     }
