@@ -95,7 +95,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearingPreferences",
     "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "CRUD"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
