@@ -484,4 +484,7 @@ public class CaseData {
     public boolean hasAllocatedJudgeEmail() {
         return allocatedJudgeExists() && isNotEmpty(allocatedJudge.getJudgeEmailAddress());
     }
+
+    private final DocumentReference submittedForm;
+
 }

@@ -647,7 +647,9 @@
     }
   },
   "case_details_before": {
-    "case_data": {}
+    "case_data": {
+      "state": "Open"
+    }
   },
   "eventId": {}
 }
