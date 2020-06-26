@@ -70,6 +70,7 @@ import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -480,5 +481,10 @@ public class CaseData {
         return allocatedJudge != null;
     }
 
+    public boolean hasAllocatedJudgeEmail() {
+        return allocatedJudgeExists() && isNotEmpty(allocatedJudge.getJudgeEmailAddress());
+    }
+
     private final DocumentReference submittedForm;
+
 }

@@ -7,11 +7,13 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfProceedingsIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForNoticeOfProceedings;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfProceedingsEmailContentProvider;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PROCEEDINGS_ISSUED_JUDGE_TEMPLATE;
 
 @Service
@@ -26,12 +28,19 @@ public class NoticeOfProceedingsIssuedEventHandler {
         EventData eventData = new EventData(event);
         CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
 
-        AllocatedJudgeTemplateForNoticeOfProceedings parameters = noticeOfProceedingsEmailContentProvider
+        if (hasJudgeEmail(caseData.getNoticeOfProceedings())) {
+            AllocatedJudgeTemplateForNoticeOfProceedings parameters = noticeOfProceedingsEmailContentProvider
                 .buildAllocatedJudgeNotification(eventData.getCaseDetails());
 
-        String email = caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor().getJudgeEmailAddress();
+            String email = caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor().getJudgeEmailAddress();
 
-        notificationService.sendEmail(NOTICE_OF_PROCEEDINGS_ISSUED_JUDGE_TEMPLATE, email, parameters,
+            notificationService.sendEmail(NOTICE_OF_PROCEEDINGS_ISSUED_JUDGE_TEMPLATE, email, parameters,
                 eventData.getReference());
+        }
+    }
+
+    private boolean hasJudgeEmail(NoticeOfProceedings noticeOfProceedings) {
+        return isNotEmpty(noticeOfProceedings.getJudgeAndLegalAdvisor())
+            && isNotEmpty(noticeOfProceedings.getJudgeAndLegalAdvisor().getJudgeEmailAddress());
     }
 }
