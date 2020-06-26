@@ -331,7 +331,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         return CaseDetails.builder()
             .id(caseId)
             .data(new HashMap<>(Map.of(
-                "submittedForm", TestDataHelper.testDocument(),
+                "submittedForm", TestDataHelper.testDocumentReference(),
                 RETURN_APPLICATION, ReturnApplication.builder()
                     .note("Some note")
                     .reason(List.of(INCOMPLETE))

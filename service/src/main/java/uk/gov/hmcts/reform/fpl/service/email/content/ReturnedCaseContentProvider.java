@@ -7,17 +7,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.exceptions.DocumentException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.returnedcase.ReturnedCaseTemplate;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentFullName;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
@@ -57,7 +59,11 @@ public class ReturnedCaseContentProvider extends AbstractEmailContentProvider {
     }
 
     private Map<String, Object> linkToAttachedDocument(final DocumentReference documentReference) {
-        byte[] content = documentDownloadService.downloadDocument(documentReference.getBinaryUrl());
-        return generateAttachedDocumentLink(content).map(JSONObject::toMap).orElse(null);
+        return Optional.ofNullable(documentReference)
+            .map(DocumentReference::getBinaryUrl)
+            .map(documentDownloadService::downloadDocument)
+            .flatMap(NotifyAttachedDocumentLinkHelper::generateAttachedDocumentLink)
+            .map(JSONObject::toMap)
+            .orElseThrow(() -> new DocumentException());
     }
 }
