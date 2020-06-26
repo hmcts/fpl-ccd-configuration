@@ -210,7 +210,7 @@ dependencies {
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: versions.log4j
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: versions.log4j
 
-  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.0.1'
+  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.0.2'
 
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '11.0'
 
