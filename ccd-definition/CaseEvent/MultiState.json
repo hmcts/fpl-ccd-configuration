@@ -51,7 +51,7 @@
     "Name": "Allocated Judge",
     "DisplayOrder": 2,
     "Description": "Add allocated judge to a case",
-    "PreConditionState(s)": "Gatekeeping;PREPARE_FOR_HEARING",
+    "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING",
     "PostConditionState": "*",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/allocated-judge/submitted",
     "SecurityClassification": "Public",
