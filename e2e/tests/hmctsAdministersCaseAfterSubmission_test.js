@@ -229,6 +229,26 @@ Scenario('HMCTS admin creates notice of proceedings documents', async (I, caseVi
   I.seeInTab(['Notice of proceedings 2', 'File name'], 'Notice_of_proceedings_c6a.pdf');
 });
 
+Scenario('HMCTS admin creates notice of proceedings documents with allocated judge', async (I, caseViewPage, createNoticeOfProceedingsEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.createNoticeOfProceedings);
+  await createNoticeOfProceedingsEventPage.checkC6();
+  await createNoticeOfProceedingsEventPage.useAllocatedJudge();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.createNoticeOfProceedings);
+  await caseViewPage.goToNewActions(config.administrationActions.createNoticeOfProceedings);
+  await createNoticeOfProceedingsEventPage.checkC6A();
+  await createNoticeOfProceedingsEventPage.useAlternateJudge();
+  await createNoticeOfProceedingsEventPage.selectJudgeTitle();
+  await createNoticeOfProceedingsEventPage.enterJudgeLastName('Sarah Simpson');
+  await createNoticeOfProceedingsEventPage.enterJudgeEmailAddress('test@test.com');
+  await createNoticeOfProceedingsEventPage.enterLegalAdvisorName('Ian Watson');
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.createNoticeOfProceedings);
+  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  I.seeInTab(['Notice of proceedings 1', 'File name'], 'Notice_of_proceedings_c6a.pdf');
+  I.seeInTab(['Notice of proceedings 2', 'File name'], 'Notice_of_proceedings_c6.pdf');
+});
+
 Scenario('HMCTS admin handles supplementary evidence', async (I, caseListPage, caseViewPage, handleSupplementaryEvidenceEventPage) => {
   await I.navigateToCaseList();
   await caseListPage.searchForCasesWithHandledEvidences(submittedAt);
@@ -269,15 +289,6 @@ Scenario('HMCTS admin adds a note to the case', async (I, caseViewPage, addNoteE
   I.seeInTab(['Note 1', 'Note'], note);
 });
 
-Scenario('HMCTS admin update FamilyMan reference number after sending case to gatekeeper', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage) => {
-  await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
-  enterFamilyManCaseNumberEventPage.enterCaseID('updatedmockcaseID');
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.addFamilyManCaseNumber);
-  caseViewPage.seeInCaseTitle('updatedmockcaseID');
-  caseViewPage.seeInCaseTitle(caseId);
-});
-
 Scenario('HMCTS admin adds expert report log', async (I, caseViewPage, loginPage, addExpertReportEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addExpertReportLog);
   addExpertReportEventPage.addExpertReportLog(expertReportLog[0]);
@@ -288,6 +299,22 @@ Scenario('HMCTS admin adds expert report log', async (I, caseViewPage, loginPage
   I.seeInTab(['Report 1', 'Date requested'], '1 Mar 2020');
   I.seeInTab(['Report 1', 'Has it been approved?'], 'Yes');
   I.seeInTab(['Report 1', 'Date approved'], '2 Apr 2020');
+});
+
+Scenario('HMCTS admin makes 26-week case extension', async (I, caseViewPage, addExtend26WeekTimelineEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.extend26WeekTimeline);
+  addExtend26WeekTimelineEventPage.selectEightWeekExtensionTime();
+  addExtend26WeekTimelineEventPage.selectTimetableForChildExtensionReason();
+  addExtend26WeekTimelineEventPage.addExtensionComment('Comment');
+  I.click('Continue');
+  addExtend26WeekTimelineEventPage.addCaseExtensionTimeConfirmation();
+  addExtend26WeekTimelineEventPage.addCaseExtensionDate();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.extend26WeekTimeline);
+  caseViewPage.selectTab(caseViewPage.tabs.overview);
+  I.see('10 Oct 2030');
+  I.see('Timetable for child');
+  I.see('Comment');
 });
 
 Scenario('HMCTS admin closes the case', async (I, caseViewPage, closeTheCaseEventPage) => {
