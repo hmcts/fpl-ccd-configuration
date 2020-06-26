@@ -1,11 +1,15 @@
 package uk.gov.hmcts.reform.fpl.model.notify.returnedcase;
 
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 
+import java.util.Map;
+
 @Getter
-@Setter
+@EqualsAndHashCode
+@Builder
 public class ReturnedCaseTemplate implements NotifyData {
     private String familyManCaseNumber;
     private String returnedReasons;
@@ -14,4 +18,6 @@ public class ReturnedCaseTemplate implements NotifyData {
     private String respondentFullName;
     private String caseUrl;
     private String localAuthority;
+    //No strict type as this is defined by uk.gov.service.notify.NotificationClient
+    private Map<String, Object> applicationDocumentUrl;
 }

@@ -479,4 +479,6 @@ public class CaseData {
     public boolean allocatedJudgeExists() {
         return allocatedJudge != null;
     }
+
+    private final DocumentReference submittedForm;
 }

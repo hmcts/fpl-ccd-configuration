@@ -10,6 +10,8 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_CAFCASS_COURT;
+import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_CAFCASS_EMAIL;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
 
@@ -32,7 +34,8 @@ public class LookupTestConfig {
     @Bean
     @ConditionalOnMissingBean
     public CafcassLookupConfiguration cafcassLookupConfiguration() {
-        return new CafcassLookupConfiguration(format("%s=>cafcass:FamilyPublicLaw+cafcass@gmail.com", DEFAULT_LA));
+        return new CafcassLookupConfiguration(format("%s=>%s:%s", DEFAULT_LA, DEFAULT_CAFCASS_COURT,
+            DEFAULT_CAFCASS_EMAIL));
     }
 
     @ConditionalOnMissingBean
