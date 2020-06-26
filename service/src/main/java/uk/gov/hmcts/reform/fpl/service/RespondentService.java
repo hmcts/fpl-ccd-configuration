@@ -34,7 +34,10 @@ public class RespondentService {
 
     public List<Element<Respondent>> setPersistRepresentativeFlag(List<Element<Respondent>> respondents) {
         return respondents.stream()
-            .peek(element -> element.getValue().setPersistRepresentedBy(YES.getValue())).collect(Collectors.toList());
+            .map(element -> {
+                element.getValue().setPersistRepresentedBy(YES.getValue());
+                return element;
+            }).collect(Collectors.toList());
     }
 
     private String getRespondentFullName(RespondentParty respondentParty) {
