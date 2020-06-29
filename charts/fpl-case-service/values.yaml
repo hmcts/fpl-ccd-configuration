@@ -33,6 +33,7 @@ java:
     SCHEDULER_DB_USER: fpl_scheduler@fpl-case-service-{{ .Values.global.environment }}
     SCHEDULER_DB_HOST: fpl-case-service-{{ .Values.global.environment }}.postgres.database.azure.com
     SCHEDULER_DB_PORT: 5432
+    SURVEYS_URL_CASESUBMISSION: https://www.smartsurvey.co.uk/s/FamilyPublicLaw?pageurl=application_submission
   keyVaults:
     fpl:
       secrets:
