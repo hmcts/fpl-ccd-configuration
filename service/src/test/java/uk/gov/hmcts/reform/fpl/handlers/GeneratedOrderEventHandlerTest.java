@@ -207,6 +207,33 @@ class GeneratedOrderEventHandlerTest {
             anyString());
     }
 
+    @Test
+    void shouldNotNotifyAllocatedJudgeOnOrderIssuedWithNoJudge() {
+        CaseDetails caseDetails = callbackRequest().getCaseDetails();
+        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+        JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder().build();
+
+        given(featureToggleService.isAllocatedJudgeNotificationEnabled(AllocatedJudgeNotificationType.GENERATED_ORDER))
+            .willReturn(true);
+
+        given(generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData))
+            .willReturn(expectedJudgeAndLegalAdvisor);
+
+        final AllocatedJudgeTemplateForGeneratedOrder expectedParameters = getOrderIssuedAllocatedJudgeParameters();
+
+        given(orderIssuedEmailContentProvider.buildAllocatedJudgeOrderIssuedNotification(
+            caseDetails)).willReturn(expectedParameters);
+
+        generatedOrderEventHandler.sendNotificationToAllocatedJudgeForOrder(new GeneratedOrderEvent(callbackRequest(),
+            mostRecentUploadedDocumentUrl, DOCUMENT_CONTENTS));
+
+        verify(notificationService, never()).sendEmail(
+            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_JUDGE),
+            anyString(),
+            anyMap(),
+            anyString());
+    }
+
     private AllocatedJudgeTemplateForGeneratedOrder getOrderIssuedAllocatedJudgeParameters() {
         AllocatedJudgeTemplateForGeneratedOrder judgeTemplate = new AllocatedJudgeTemplateForGeneratedOrder();
         judgeTemplate.setOrderType("blank order (c21)");

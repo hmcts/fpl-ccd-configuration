@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfProceedingsIssuedEvent;
+import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForNoticeOfProceedings;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -72,6 +75,28 @@ class NoticeOfProceedingsIssuedEventHandlerTest {
         AllocatedJudgeTemplateForNoticeOfProceedings expectedParameters = getAllocatedJudgeTemplateParameters();
 
         given(featureToggleService.isAllocatedJudgeNotificationEnabled(NOTICE_OF_PROCEEDINGS)).willReturn(false);
+
+        given(noticeOfProceedingsEmailContentProvider.buildAllocatedJudgeNotification(
+            callbackRequest.getCaseDetails())).willReturn(expectedParameters);
+
+        noticeOfProceedingsIssuedEventHandler.notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(
+            new NoticeOfProceedingsIssuedEvent(callbackRequest));
+
+        verify(notificationService, never()).sendEmail(any(), any(), anyMap(), any());
+    }
+
+    @Test
+    void shouldNotNotifyAllocatedJudgeOfIssuedNoticeOfProceedingsWhenJudgeNotAllocated() {
+        AllocatedJudgeTemplateForNoticeOfProceedings expectedParameters = getAllocatedJudgeTemplateParameters();
+
+        CallbackRequest callbackRequest = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(1111L)
+                .data(ImmutableMap.of("noticeOfProceedings", NoticeOfProceedings.builder().build()))
+                .build())
+            .build();
+
+        given(featureToggleService.isAllocatedJudgeNotificationEnabled(NOTICE_OF_PROCEEDINGS)).willReturn(true);
 
         given(noticeOfProceedingsEmailContentProvider.buildAllocatedJudgeNotification(
             callbackRequest.getCaseDetails())).willReturn(expectedParameters);

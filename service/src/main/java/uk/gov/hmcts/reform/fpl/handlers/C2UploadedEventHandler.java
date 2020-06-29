@@ -54,16 +54,15 @@ public class C2UploadedEventHandler {
         EventData eventData = new EventData(event);
         CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
 
-        if (featureToggleService.isAllocatedJudgeNotificationEnabled(C2_APPLICATION)) {
-            if (caseData.allocatedJudgeExists()) {
-                AllocatedJudgeTemplateForC2 parameters = c2UploadedEmailContentProvider
-                    .buildC2UploadNotificationForAllocatedJudge(eventData.getCaseDetails());
+        if (featureToggleService.isAllocatedJudgeNotificationEnabled(C2_APPLICATION)
+            && caseData.hasAllocatedJudgeEmail()) {
+            AllocatedJudgeTemplateForC2 parameters = c2UploadedEmailContentProvider
+                .buildC2UploadNotificationForAllocatedJudge(eventData.getCaseDetails());
 
-                String email = caseData.getAllocatedJudge().getJudgeEmailAddress();
+            String email = caseData.getAllocatedJudge().getJudgeEmailAddress();
 
-                notificationService.sendEmail(C2_UPLOAD_NOTIFICATION_TEMPLATE_JUDGE, email, parameters,
-                    eventData.getReference());
-            }
+            notificationService.sendEmail(C2_UPLOAD_NOTIFICATION_TEMPLATE_JUDGE, email, parameters,
+                eventData.getReference());
         }
     }
 }
