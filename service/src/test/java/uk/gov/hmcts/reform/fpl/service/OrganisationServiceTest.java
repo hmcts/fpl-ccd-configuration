@@ -77,7 +77,7 @@ class OrganisationServiceTest {
     @Test
     void shouldReturnUsersFromOrganisationIfExistsInRefData() {
         OrganisationUsers usersInAnOrganisation = prepareUsersForAnOrganisation();
-        when(organisationApi.findUsersByOrganisation(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, Status.ACTIVE))
+        when(organisationApi.findUsersByOrganisation(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, Status.ACTIVE, "False"))
             .thenReturn(usersInAnOrganisation);
 
         Set<String> userIds = organisationService
@@ -89,7 +89,7 @@ class OrganisationServiceTest {
 
     @Test
     void shouldReturnEmptyListWhenTheLAIsNotKnownAndTheApiReturnsNotFound() {
-        when(organisationApi.findUsersByOrganisation(any(), any(), any()))
+        when(organisationApi.findUsersByOrganisation(any(), any(), any(), any()))
             .thenThrow(new FeignException.NotFound("No organisation", REQUEST, new byte[]{}));
 
         AssertionsForClassTypes.assertThatThrownBy(() ->

@@ -111,7 +111,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
         given(localAuthorityUserLookupConfiguration.getUserIds(LA_2_CODE))
             .willThrow(new UnknownLocalAuthorityCodeException(LA_2_CODE));
 
-        given(organisationApi.findUsersByOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, Status.ACTIVE))
+        given(organisationApi.findUsersByOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, Status.ACTIVE, "False"))
             .willReturn(organisation(LA_2_USER_IDS));
     }
 
