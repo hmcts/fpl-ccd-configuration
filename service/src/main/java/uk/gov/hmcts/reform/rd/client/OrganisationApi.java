@@ -20,7 +20,7 @@ public interface OrganisationApi {
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
         @RequestParam(value = "status") Status status,
-        @RequestParam(value = "returnRoles") String returnRoles
+        @RequestParam(value = "returnRoles") Boolean returnRoles
     );
 
     @GetMapping("/refdata/external/v1/organisations/users/accountId")

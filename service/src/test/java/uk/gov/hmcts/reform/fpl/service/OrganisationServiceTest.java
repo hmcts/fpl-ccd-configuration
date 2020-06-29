@@ -77,7 +77,7 @@ class OrganisationServiceTest {
     @Test
     void shouldReturnUsersFromOrganisationIfExistsInRefData() {
         OrganisationUsers usersInAnOrganisation = prepareUsersForAnOrganisation();
-        when(organisationApi.findUsersByOrganisation(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, Status.ACTIVE, "False"))
+        when(organisationApi.findUsersByOrganisation(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, Status.ACTIVE, false))
             .thenReturn(usersInAnOrganisation);
 
         Set<String> userIds = organisationService

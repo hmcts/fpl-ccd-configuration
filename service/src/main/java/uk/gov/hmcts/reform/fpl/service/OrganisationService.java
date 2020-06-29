@@ -53,7 +53,7 @@ public class OrganisationService {
 
     private List<String> getUsersFromSameOrganisationBasedOnReferenceData(String authorisation) {
         return organisationApi
-            .findUsersByOrganisation(authorisation, authTokenGenerator.generate(), Status.ACTIVE, "False")
+            .findUsersByOrganisation(authorisation, authTokenGenerator.generate(), Status.ACTIVE, false)
             .getUsers()
             .stream()
             .map(OrganisationUser::getUserIdentifier)
