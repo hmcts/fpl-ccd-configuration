@@ -19,6 +19,7 @@
   "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/notify-gatekeeper/submitted_POST": "ignore",
   "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/add-note/about-to-submit_POST": "ignore",
   "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/action-cmo/mid-event_POST": "ignore",
+  "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/enter-respondents/persist-representatives/mid-event_POST": "ignore",
   "10023_Information Disclosure - Debug Error Messages_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/add-note/about-to-submit_POST": "ignore",
   "10023_Information Disclosure - Debug Error Messages_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/close-case/about-to-submit_POST": "ignore",
   "10023_Information Disclosure - Debug Error Messages_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/enter-applicant/mid-event_POST": "ignore",
