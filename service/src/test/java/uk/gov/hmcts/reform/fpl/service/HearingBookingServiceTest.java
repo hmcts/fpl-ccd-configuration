@@ -265,7 +265,7 @@ class HearingBookingServiceTest {
     }
 
     @Nested
-    class HasNewHearings {
+    class GetNewHearings {
         private List<Element<HearingBooking>> oldHearingBookings;
         private List<Element<HearingBooking>> newHearingBookings;
 
@@ -276,17 +276,15 @@ class HearingBookingServiceTest {
         }
 
         @Test
-        void shouldReturnTrueWhenThereIsNewHearing() {
-            System.out.println(oldHearingBookings.toString());
-            System.out.println(newHearingBookings.toString());
-
-            assertThat(service.hasNewHearing(newHearingBookings, oldHearingBookings)).isTrue();
+        void shouldReturnListWithMoreThanOneHearingBookingsWhenThereIsNewHearing() {
+            System.out.println(service.getNewHearings(newHearingBookings, oldHearingBookings).toString());
+            assertThat(service.getNewHearings(newHearingBookings, oldHearingBookings).size()).isNotZero();
         }
 
         @Test
-        void shouldReturnFalseWhenThereAreNoNewHearings() {
+        void shouldReturnListWithZeroHearingBookingsWhenThereIsNoNewHearing() {
 
-            assertThat(service.hasNewHearing(oldHearingBookings, oldHearingBookings)).isFalse();
+            assertThat(service.getNewHearings(oldHearingBookings, oldHearingBookings).size()).isZero();
         }
     }
 
