@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Comparator.comparing;
@@ -117,6 +118,15 @@ public class HearingBookingService {
 
                 return element;
             }).collect(toList());
+    }
+
+    public boolean hasNewHearing(List<Element<HearingBooking>> newHearings, List<Element<HearingBooking>> oldHearings) {
+        List<UUID> oldHearingIDs = oldHearings.stream()
+            .map(Element::getId)
+            .collect(Collectors.toList());
+
+        return newHearings.stream()
+            .anyMatch(newHearing -> !oldHearingIDs.contains(newHearing.getId()));
     }
 
     private boolean isPastHearing(Element<HearingBooking> element) {
