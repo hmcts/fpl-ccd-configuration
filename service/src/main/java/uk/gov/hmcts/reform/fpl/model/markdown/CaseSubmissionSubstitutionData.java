@@ -1,22 +1,18 @@
 package uk.gov.hmcts.reform.fpl.model.markdown;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
+import lombok.Builder;
+import lombok.Data;
 
-@Accessors(chain = true)
-@Getter
-@Setter
+@Data
+@Builder
 public class CaseSubmissionSubstitutionData implements MarkdownSubstitutionData {
     @JsonProperty(value = "{{caseName}}")
-    private String caseName;
+    private final String caseName;
     @JsonProperty(value = "{{ccdCaseNumber}}")
-    private String ccdCaseNumber;
+    private final String ccdCaseNumber;
     @JsonProperty(value = "{{orders}}")
-    private String orders;
-    @JsonProperty(value = "{{ctscInfo}}")
-    private String ctscInfo;
+    private final String orders;
     @JsonProperty(value = "{{surveyLink}}")
-    private String surveyLink;
+    private final String surveyLink;
 }
