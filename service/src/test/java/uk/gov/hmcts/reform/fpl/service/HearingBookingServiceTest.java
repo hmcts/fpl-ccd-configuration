@@ -242,6 +242,7 @@ class HearingBookingServiceTest {
 
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = updatedHearingBookings.get(0).getValue().getJudgeAndLegalAdvisor();
 
+        assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isEqualTo(YES.getValue());
         assertThat(judgeAndLegalAdvisor.getJudgeTitle()).isEqualTo(null);
         assertThat(judgeAndLegalAdvisor.getJudgeLastName()).isEqualTo(null);
         assertThat(judgeAndLegalAdvisor.getLegalAdvisorName()).isEqualTo("Joe Bloggs");
@@ -257,6 +258,7 @@ class HearingBookingServiceTest {
 
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = updatedHearingBookings.get(0).getValue().getJudgeAndLegalAdvisor();
 
+        assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isEqualTo(NO.getValue());
         assertThat(judgeAndLegalAdvisor.getJudgeTitle()).isEqualTo(HIS_HONOUR_JUDGE);
         assertThat(judgeAndLegalAdvisor.getJudgeLastName()).isEqualTo("Richards");
         assertThat(judgeAndLegalAdvisor.getLegalAdvisorName()).isEqualTo("Joe Bloggs");
