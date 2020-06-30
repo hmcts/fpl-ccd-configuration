@@ -1,0 +1,18 @@
+[
+  {
+    "LiveFrom": "01/07/2020",
+    "ID": "hearingBookingDetails",
+    "ListElementCode": "newHearingAdded",
+    "FieldType": "Text",
+    "ElementLabel": "New hearing added",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/07/2020",
+    "ID": "NoticeOfHearing",
+    "ListElementCode": "noticeOfHearing",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Send notice of hearing",
+    "SecurityClassification": "Public"
+  }
+]

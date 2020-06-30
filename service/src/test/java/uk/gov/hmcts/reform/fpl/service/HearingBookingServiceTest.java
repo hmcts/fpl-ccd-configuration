@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -77,7 +78,7 @@ class HearingBookingServiceTest {
 
     @Test
     void shouldGetMostUrgentHearingBookingFromACollectionOfHearingBookings() {
-        List<Element<HearingBooking>> hearingBookings = createHearingBookings();
+        List<Element<HearingBooking>> hearingBookings = createHearingBookings(false);
 
         HearingBooking sortedHearingBooking = service.getMostUrgentHearingBooking(hearingBookings);
 
@@ -86,14 +87,14 @@ class HearingBookingServiceTest {
 
     @Test
     void shouldGetHearingBookingWhenKeyMatchesHearingBookingElementUUID() {
-        List<Element<HearingBooking>> hearingBookings = createHearingBookings();
+        List<Element<HearingBooking>> hearingBookings = createHearingBookings(false);
         HearingBooking hearingBooking = service.getHearingBookingByUUID(hearingBookings, HEARING_IDS[2]);
         assertThat(hearingBooking.getStartDate()).isEqualTo(futureDate);
     }
 
     @Test
     void shouldReturnNullWhenKeyDoesNotMatchHearingBookingElementUUID() {
-        List<Element<HearingBooking>> hearingBookings = createHearingBookings();
+        List<Element<HearingBooking>> hearingBookings = createHearingBookings(false);
         HearingBooking hearingBooking = service.getHearingBookingByUUID(hearingBookings, randomUUID());
 
         assertThat(hearingBooking).isNull();
@@ -175,7 +176,7 @@ class HearingBookingServiceTest {
 
     @Test
     void shouldReturnFirstHearingWhenHearingExists() {
-        assertThat(service.getFirstHearing(createHearingBookings()))
+        assertThat(service.getFirstHearing(createHearingBookings(false)))
             .isEqualTo(Optional.of(createHearingBooking(pastDate, pastDate.plusDays(1))));
     }
 
@@ -261,6 +262,32 @@ class HearingBookingServiceTest {
         assertThat(judgeAndLegalAdvisor.getLegalAdvisorName()).isEqualTo("Joe Bloggs");
     }
 
+    @Nested
+    class HasNewHearings {
+        private List<Element<HearingBooking>> oldHearingBookings;
+        private List<Element<HearingBooking>> newHearingBookings;
+
+        @BeforeEach
+        void setUp() {
+            oldHearingBookings = createHearingBookings(false);
+            newHearingBookings = createHearingBookings(true);
+        }
+
+        @Test
+        void shouldReturnTrueWhenThereIsNewHearing() {
+            System.out.println(oldHearingBookings.toString());
+            System.out.println(newHearingBookings.toString());
+
+            assertThat(service.hasNewHearing(newHearingBookings, oldHearingBookings)).isTrue();
+        }
+
+        @Test
+        void shouldReturnFalseWhenThereAreNoNewHearings() {
+
+            assertThat(service.hasNewHearing(oldHearingBookings, oldHearingBookings)).isFalse();
+        }
+    }
+
     private Judge buildAllocatedJudge() {
         return Judge.builder()
             .judgeTitle(HER_HONOUR_JUDGE)
@@ -279,13 +306,19 @@ class HearingBookingServiceTest {
             .build();
     }
 
-    private List<Element<HearingBooking>> createHearingBookings() {
-        return List.of(
+    private List<Element<HearingBooking>> createHearingBookings(boolean addHearing) {
+        List<Element<HearingBooking>> listOfHearingBookings = new ArrayList<>(List.of(
             element(HEARING_IDS[0], createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))),
             element(HEARING_IDS[1], createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3))),
             element(HEARING_IDS[2], createHearingBooking(futureDate, futureDate.plusDays(1))),
             element(HEARING_IDS[3], createHearingBooking(pastDate, pastDate.plusDays(1)))
-        );
+        ));
+
+        if (addHearing) {
+            listOfHearingBookings.add(
+                element(randomUUID(), createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))));
+        }
+        return listOfHearingBookings;
     }
 
     private Element<HearingBooking> hearingElementWithStartDate(int daysFromToday) {
