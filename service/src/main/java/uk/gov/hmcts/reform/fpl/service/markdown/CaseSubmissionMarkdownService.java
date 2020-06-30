@@ -5,18 +5,13 @@ import com.google.common.base.Splitter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.enums.OrderType;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.markdown.CaseSubmissionSubstitutionData;
 import uk.gov.hmcts.reform.fpl.model.markdown.MarkdownData;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
 import static uk.gov.hmcts.reform.fpl.enums.MarkdownTemplate.CASE_SUBMISSION;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.formatCCDCaseNumber;
 
 @Service
 public class CaseSubmissionMarkdownService extends MarkdownSubstitutionService {
@@ -26,17 +21,15 @@ public class CaseSubmissionMarkdownService extends MarkdownSubstitutionService {
 
     @Autowired
     public CaseSubmissionMarkdownService(ObjectMapper mapper,
-                                         @Value("surveys.url.caseSubmission") String surveyUrl) {
+                                         @Value("${survey.url.caseSubmission}") String surveyUrl) {
         super(mapper);
         this.surveyUrl = surveyUrl;
     }
 
-    public MarkdownData getMarkdownData(CaseData caseData, Long ccdCaseNumber) {
+    public MarkdownData getMarkdownData(String caseName) {
         CaseSubmissionSubstitutionData substitutionData = CaseSubmissionSubstitutionData.builder()
             .surveyLink(surveyUrl)
-            .caseName(defaultString(caseData.getCaseName()))
-            .ccdCaseNumber(formatCCDCaseNumber(ccdCaseNumber))
-            .orders(formatOrders(caseData.getOrders()))
+            .caseName(defaultString(caseName))
             .build();
 
         return generateMarkdown(CASE_SUBMISSION, substitutionData);
@@ -47,14 +40,8 @@ public class CaseSubmissionMarkdownService extends MarkdownSubstitutionService {
         List<String> list = Splitter.on(SEPARATOR).limit(2).splitToList(templateData);
 
         return MarkdownData.builder()
-            .header(list.get(0).trim())
-            .body(list.get(1).trim())
+            .header(list.get(0).strip())
+            .body(list.get(1).strip())
             .build();
-    }
-
-    private String formatOrders(Orders orders) {
-        return orders.getOrderType().stream()
-            .map(OrderType::getLabel)
-            .collect(Collectors.joining(", "));
     }
 }

@@ -165,7 +165,7 @@ public class CaseSubmissionController {
 
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        MarkdownData markdownData = markdownService.getMarkdownData(caseData, caseDetails.getId());
+        MarkdownData markdownData = markdownService.getMarkdownData(caseData.getCaseName());
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(markdownData.getHeader())
