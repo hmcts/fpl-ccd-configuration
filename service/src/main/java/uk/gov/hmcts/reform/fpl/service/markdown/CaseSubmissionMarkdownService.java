@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.markdown.MarkdownData;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.StringUtils.defaultString;
 import static uk.gov.hmcts.reform.fpl.enums.MarkdownTemplate.CASE_SUBMISSION;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.formatCCDCaseNumber;
 
@@ -33,7 +34,7 @@ public class CaseSubmissionMarkdownService extends MarkdownSubstitutionService {
     public MarkdownData getMarkdownData(CaseData caseData, Long ccdCaseNumber) {
         CaseSubmissionSubstitutionData substitutionData = CaseSubmissionSubstitutionData.builder()
             .surveyLink(surveyUrl)
-            .caseName(caseData.getCaseName())
+            .caseName(defaultString(caseData.getCaseName()))
             .ccdCaseNumber(formatCCDCaseNumber(ccdCaseNumber))
             .orders(formatOrders(caseData.getOrders()))
             .build();
@@ -46,8 +47,8 @@ public class CaseSubmissionMarkdownService extends MarkdownSubstitutionService {
         List<String> list = Splitter.on(SEPARATOR).limit(2).splitToList(templateData);
 
         return MarkdownData.builder()
-            .header(list.get(0))
-            .body(list.get(1))
+            .header(list.get(0).trim())
+            .body(list.get(1).trim())
             .build();
     }
 
