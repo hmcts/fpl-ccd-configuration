@@ -120,13 +120,14 @@ public class HearingBookingService {
             }).collect(toList());
     }
 
-    public boolean hasNewHearing(List<Element<HearingBooking>> newHearings, List<Element<HearingBooking>> oldHearings) {
+    public List<Element<HearingBooking>> getNewHearings(List<Element<HearingBooking>> newHearings, List<Element<HearingBooking>> oldHearings) {
         List<UUID> oldHearingIDs = oldHearings.stream()
             .map(Element::getId)
             .collect(Collectors.toList());
 
         return newHearings.stream()
-            .anyMatch(newHearing -> !oldHearingIDs.contains(newHearing.getId()));
+            .filter(newHearing -> !oldHearingIDs.contains(newHearing.getId()))
+            .collect(Collectors.toList());
     }
 
     private boolean isPastHearing(Element<HearingBooking> element) {
