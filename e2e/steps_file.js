@@ -47,12 +47,17 @@ module.exports = function () {
       return caseId;
     },
 
-    async completeEvent(button, changeDetails) {
+    async completeEvent(button, changeDetails, confirmationPage = false) {
       await this.retryUntilExists(() => this.click('Continue'), '.check-your-answers');
       if (changeDetails != null) {
         eventSummaryPage.provideSummary(changeDetails.summary, changeDetails.description);
       }
-      await eventSummaryPage.submit(button);
+      if (!confirmationPage) {
+        await eventSummaryPage.submit(button);
+      } else {
+        await eventSummaryPage.submit(button, '#confirmation-body');
+        await this.retryUntilExists(() => this.click('Close and Return to case details'), '.alert-success');
+      }
     },
 
     seeCheckAnswers(checkAnswerTitle) {

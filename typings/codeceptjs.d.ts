@@ -285,6 +285,7 @@ declare namespace CodeceptJS {
     logInAndCreateCase(user:{email: string, password: string}) : Promise<string>,
     completeEvent(buttonLocator) : Promise<void>,
     completeEvent(buttonLocator, changeDetails: { summary: string, description: string }) : Promise<void>,
+    completeEvent(buttonLocator, changeDetails: { summary: string, description: string }, confirmationPage: boolean) : Promise<void>,
     seeEventSubmissionConfirmation(event: string) : void,
     clickHyperlink(link: string, urlNavigatedTo: string) : void,
     seeDocument(title: string, name: string, status?: string, reason?: string) : void,
