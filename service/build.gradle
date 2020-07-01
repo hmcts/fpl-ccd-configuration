@@ -249,6 +249,7 @@ dependencies {
     exclude group: "com.vaadin.external.google", module:"android-json"
   }
 
+  integrationTestImplementation group: 'org.apache.commons', name: 'commons-text', version: '1.8'
   testCompile group: 'org.awaitility', name: 'awaitility', version: '4.0.3'
 
   testCompile group: 'org.springframework.security', name: 'spring-security-test'
