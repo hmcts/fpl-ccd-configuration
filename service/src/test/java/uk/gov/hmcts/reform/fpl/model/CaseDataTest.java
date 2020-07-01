@@ -498,6 +498,39 @@ class CaseDataTest {
         assertThat(caseData.allocatedJudgeExists()).isEqualTo(false);
     }
 
+    @Test
+    void shouldReturnTrueWhenAllocatedJudgeEmailHasEmail() {
+        CaseData caseData = CaseData.builder()
+            .allocatedJudge(Judge.builder()
+                .judgeEmailAddress("test@test.com")
+                .build())
+            .build();
+
+        assertThat(caseData.hasAllocatedJudgeEmail()).isEqualTo(true);
+    }
+
+    @Test
+    void shouldReturnFalseWhenAllocatedJudgeEmailIsAnEmptyString() {
+        CaseData caseData = CaseData.builder()
+            .allocatedJudge(Judge.builder()
+                .judgeEmailAddress("")
+                .build())
+            .build();
+
+        assertThat(caseData.hasAllocatedJudgeEmail()).isEqualTo(false);
+    }
+
+    @Test
+    void shouldReturnFalseWhenAllocatedJudgeEmailDoesNotExist() {
+        CaseData caseData = CaseData.builder()
+            .allocatedJudge(Judge.builder()
+                .judgeLastName("Stevens")
+                .build())
+            .build();
+
+        assertThat(caseData.hasAllocatedJudgeEmail()).isEqualTo(false);
+    }
+
     private String buildJsonDirections(UUID id) throws JsonProcessingException {
         List<Element<Direction>> directions = List.of(element(id, Direction.builder().directionType("title").build()));
         String directionString = mapper.writeValueAsString(directions);

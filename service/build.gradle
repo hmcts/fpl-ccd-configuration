@@ -215,7 +215,7 @@ dependencies {
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '11.0'
 
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.14'
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '6.4.4'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '6.5.0'
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
@@ -225,7 +225,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
 
   compile group: 'uk.gov.hmcts.reform', name: 'pdf-generator', version: '1.0.2'
-  compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '1.5.3'
+  compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '1.5.4'
   compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.6.4'
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.2'
