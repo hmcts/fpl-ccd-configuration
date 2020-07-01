@@ -29,10 +29,10 @@ module.exports = function () {
         }
 
         if(await this.hasSelector(signedInSelector)){
-          this.signOut();
+          this.click('Sign out');
         }
 
-        loginPage.signIn(user);
+        await loginPage.signIn(user);
       }, signedInSelector);
     },
 
@@ -116,11 +116,6 @@ module.exports = function () {
 
     dontSeeCaseInSearchResult(caseId) {
       this.dontSeeElement(caseListPage.locateCase(normalizeCaseId(caseId)));
-    },
-
-    signOut() {
-      this.click('Sign out');
-      this.waitForText('Sign in', 20);
     },
 
     async navigateToCaseDetails(caseId) {
@@ -208,7 +203,11 @@ module.exports = function () {
           output.log(`retryUntilExists(${locator}): element found before try #${tryNumber} was executed`);
           break;
         }
-        await action();
+        try {
+          await action();
+        }catch(error){
+          console.log(error);
+        }
         if (await this.waitForSelector(locator) != null) {
           output.log(`retryUntilExists(${locator}): element found after try #${tryNumber} was executed`);
           break;
