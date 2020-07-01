@@ -1,8 +1,11 @@
 # Application sent
 
 ## ${caseName}
+
 <break>
+
 ## What happens next
+
 We’ll check your application – we might need to ask you more questions, or send it back to you to amend.
 
 If we have no questions, we’ll send your application to the local court gatekeeper.

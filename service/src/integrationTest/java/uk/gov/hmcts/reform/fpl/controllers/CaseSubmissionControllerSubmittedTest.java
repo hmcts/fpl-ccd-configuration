@@ -282,7 +282,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
         SubmittedCallbackResponse response = postSubmittedEvent(request);
         String expectedHeader = "# Application sent\n\n## " + caseName;
-        String expectedBody = "## What happens next\n"
+        String expectedBody = "## What happens next\n\n"
             + "We’ll check your application – we might need to ask you more questions, or send it back to you to amend."
             + "\n\nIf we have no questions, we’ll send your application to the local court gatekeeper.\n\n"
             + "You can contact us at contactFPL@justice.gov.uk.\n\n"
