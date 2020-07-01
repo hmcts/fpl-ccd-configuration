@@ -114,6 +114,7 @@ class RepresentativesServiceTest {
 
         List<String> validationErrors = representativesService.validateRepresentatives(caseData);
 
+        assertThat(validationErrors).isNotEmpty();
         assertThat(validationErrors).doesNotContain(
             "Respondent 1 represented by Representative 1 doesn't exist."
                 + " Choose a respondent who is associated with this case",
