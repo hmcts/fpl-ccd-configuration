@@ -18,7 +18,7 @@ public abstract class MarkdownSubstitutionService {
     private final ObjectMapper mapper;
 
     protected MarkdownData generateMarkdown(MarkdownTemplate template, MarkdownSubstitutionData markdownData) {
-        String templateData = readFile(template);
+        String templateData = readMarkdownTemplate(template);
         templateData = substitute(templateData, markdownData);
         return transform(templateData);
     }
@@ -29,13 +29,17 @@ public abstract class MarkdownSubstitutionService {
         Map<String, String> data = mapper.convertValue(markdownData, new TypeReference<>() {});
 
         for (Map.Entry<String, String> entry : data.entrySet()) {
-            templateData = StringUtils.replace(templateData, entry.getKey(), entry.getValue());
+            templateData = StringUtils.replace(templateData, toVariable(entry.getKey()), entry.getValue());
         }
 
         return templateData;
     }
 
-    private String readFile(MarkdownTemplate template) {
+    private String toVariable(String variableName) {
+        return "{{" + variableName + "}}";
+    }
+
+    private String readMarkdownTemplate(MarkdownTemplate template) {
         return ResourceReader.readString(String.format("%s/%s.md", TEMPLATE_DIRECTORY, template.getFile()));
     }
 }
