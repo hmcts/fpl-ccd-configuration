@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
@@ -36,7 +35,7 @@ class NewNoticeOfHearingEmailContentProviderTest extends AbstractEmailContentPro
 
         System.out.println();
 
-        assertThat(newNoticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(populatedCaseDetails(), caseDetails).getHearingDetails().get(0).).isEqualTo(expectedMap());
+        assertThat(newNoticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(populatedCaseDetails(), caseDetails).getHearingDetails().get(0)).isEqualTo(expectedMap());
     }
 
     private NewNoticeOfHearingTemplate expectedMap() {
