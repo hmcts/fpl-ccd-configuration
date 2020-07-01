@@ -16,7 +16,6 @@ java:
     LD_USER_KEY: FPLA_PREVIEW
     SCHEDULER_ENABLED: false
     TESTING_SUPPORT_ENABLED: true
-    SURVEYS_URL_CASESUBMISSION: https://www.smartsurvey.co.uk/s/preview/FamilyPublicLaw/44945E4F1F8CBEE3E10D79A4CED903 # Do I need it in both?
   keyVaults:
     fpl:
       secrets:
