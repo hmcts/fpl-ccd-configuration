@@ -17,12 +17,17 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingValidatorService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.HEARING_SELECTOR;
+import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInGatekeepingState;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -70,7 +75,18 @@ public class HearingBookingDetailsController {
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        CaseDetails caseDetailsBefore = callbackrequest.getCaseDetailsBefore();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
+
+        List<UUID> oldHearingIds =caseDataBefore.getHearingDetails().stream().map(Element::getId).collect(Collectors.toList());
+        List<Element<HearingBooking>> newBookings = caseData.getHearingDetails().stream()
+            .filter(x->!oldHearingIds.contains(x.getId())).collect(Collectors.toList());
+
+        //TODO have a service which returns new HearingBookings
+
+        caseDetails.getData().put("hearingNotice_label", newBookings.isEmpty() ? null : "Provide label here");
+        caseDetails.getData().put(HEARING_SELECTOR.getKey(), newSelector(newBookings.size()));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -84,6 +100,9 @@ public class HearingBookingDetailsController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
         CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
+
+        Selector hearingSelector = caseData.getHearingSelector();
+        //based in hearingSelector.getSelected() generate documents, send notifications
 
         List<Element<HearingBooking>> hearingDetailsBefore = service.expandHearingBookingCollection(caseDataBefore);
         List<Element<HearingBooking>> pastHearings = service.getPastHearings(hearingDetailsBefore);

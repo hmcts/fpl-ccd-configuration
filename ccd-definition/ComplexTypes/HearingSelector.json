@@ -1,0 +1,56 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingSelector",
+    "ListElementCode": "optionCount",
+    "FieldType": "Text",
+    "ElementLabel": "placeholder",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"DON NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingSelector",
+    "ListElementCode": "option0",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Hearing 1",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"1*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingSelector",
+    "ListElementCode": "option1",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Hearing 2",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"12*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingSelector",
+    "ListElementCode": "option2",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Hearing 3",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"123*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingSelector",
+    "ListElementCode": "option3",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Hearing 4",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"1234*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingSelector",
+    "ListElementCode": "option4",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Hearing 5",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"12345*\""
+  }
+]
