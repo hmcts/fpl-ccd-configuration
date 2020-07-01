@@ -436,14 +436,14 @@ Scenario('local authority uploads documents @create-case-with-mandatory-sections
   uploadDocumentsHelper.assertCaseDocuments(I);
 });
 
-xScenario('local authority cannot upload court bundle', async (I, caseViewPage, uploadDocumentsEventPage) => {
+Scenario('local authority cannot upload court bundle', async (I, caseViewPage, uploadDocumentsEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
   I.dontSeeElement(uploadDocumentsEventPage.documents.courtBundle);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
 });
 
-xScenario('local authority tries to submit without giving consent', async (I, caseViewPage, submitApplicationEventPage) => {
+Scenario('local authority tries to submit without giving consent', async (I, caseViewPage, submitApplicationEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationEventPage.seeDraftApplicationFile();
   I.see(`I, ${config.swanseaLocalAuthorityUserOne.forename} ${config.swanseaLocalAuthorityUserOne.surname}, believe that the facts stated in this application are true.`);
