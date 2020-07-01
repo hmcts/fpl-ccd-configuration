@@ -137,6 +137,11 @@ scheduler:
 testing:
   support:
     enabled: ${TESTING_SUPPORT_ENABLED:false}
+
+survey:
+  url:
+    caseSubmission: 'https://www.smartsurvey.co.uk/s/FamilyPublicLaw?pageurl=application_submission'
+
 ---
 
 spring:
