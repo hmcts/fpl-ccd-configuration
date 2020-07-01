@@ -38,8 +38,7 @@ module.exports = function () {
 
     async logInAndCreateCase(user, caseName) {
       await this.signIn(user);
-      this.click('Create case');
-      this.waitForElement(`#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
+      await this.retryUntilExists(() => this.click('Create case'), `#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
       await openApplicationEventPage.populateForm(caseName);
       await this.completeEvent('Save and continue');
       const caseId = normalizeCaseId(await this.grabTextFrom('.markdown h2'));
