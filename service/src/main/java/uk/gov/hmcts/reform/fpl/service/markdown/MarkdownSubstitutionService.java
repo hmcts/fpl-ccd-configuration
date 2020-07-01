@@ -3,13 +3,14 @@ package uk.gov.hmcts.reform.fpl.service.markdown;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.fpl.enums.MarkdownTemplate;
 import uk.gov.hmcts.reform.fpl.model.markdown.MarkdownData;
 import uk.gov.hmcts.reform.fpl.model.markdown.MarkdownSubstitutionData;
 import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
 
 import java.util.Map;
+
+import static org.apache.commons.text.StringSubstitutor.replace;
 
 @RequiredArgsConstructor
 public abstract class MarkdownSubstitutionService {
@@ -26,17 +27,7 @@ public abstract class MarkdownSubstitutionService {
     protected abstract MarkdownData transform(String templateData);
 
     private String substitute(String templateData, MarkdownSubstitutionData markdownData) {
-        Map<String, String> data = mapper.convertValue(markdownData, new TypeReference<>() {});
-
-        for (Map.Entry<String, String> entry : data.entrySet()) {
-            templateData = StringUtils.replace(templateData, toVariable(entry.getKey()), entry.getValue());
-        }
-
-        return templateData;
-    }
-
-    private String toVariable(String variableName) {
-        return "{{" + variableName + "}}";
+        return replace(templateData, mapper.<Map<String, String>>convertValue(markdownData, new TypeReference<>() {}));
     }
 
     private String readMarkdownTemplate(MarkdownTemplate template) {

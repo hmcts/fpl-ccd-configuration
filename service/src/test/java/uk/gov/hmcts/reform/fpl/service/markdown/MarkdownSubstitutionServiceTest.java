@@ -42,7 +42,7 @@ class MarkdownSubstitutionServiceTest {
 
         MarkdownData markdownData = markdownSubstitutionService.generateMarkdown(CASE_SUBMISSION, data);
 
-        assertThat(markdownData).isEqualTo(expectedData(CASE_NAME, "{{surveyLink}}"));
+        assertThat(markdownData).isEqualTo(expectedData(CASE_NAME, "${surveyLink}"));
     }
 
     @Test
@@ -51,7 +51,7 @@ class MarkdownSubstitutionServiceTest {
 
         MarkdownData markdownData = markdownSubstitutionService.generateMarkdown(CASE_SUBMISSION, data);
 
-        assertThat(markdownData).isEqualTo(expectedData("{{caseName}}", "{{surveyLink}}"));
+        assertThat(markdownData).isEqualTo(expectedData("${caseName}", "${surveyLink}"));
     }
 
     private MarkdownData expectedData(String caseName, String surveyLink) {

@@ -1,6 +1,6 @@
 # Application sent
 
-## {{caseName}}
+## ${caseName}
 <break>
 ## What happens next
 We’ll check your application – we might need to ask you more questions, or send it back to you to amend.
@@ -11,4 +11,4 @@ You can contact us at contactFPL@justice.gov.uk.
 
 ## Help us improve this service
 
-Tell us how this service was today on our <a href="{{surveyLink}}" target="_blank">feedback form</a>.
+Tell us how this service was today on our <a href="${surveyLink}" target="_blank">feedback form</a>.
