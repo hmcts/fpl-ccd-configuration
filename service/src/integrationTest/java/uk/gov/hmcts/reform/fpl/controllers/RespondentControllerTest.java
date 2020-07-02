@@ -11,9 +11,11 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -58,16 +60,7 @@ class RespondentControllerTest extends AbstractControllerTest {
     @Test
     void shouldReturnDateOfBirthErrorsForRespondentWhenThereIsMultipleRespondents() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("respondents1", wrapElements(Respondent.builder()
-                    .party(RespondentParty.builder()
-                        .dateOfBirth(dateNow().plusDays(1))
-                        .build())
-                    .build(),
-                Respondent.builder()
-                    .party(RespondentParty.builder()
-                        .dateOfBirth(dateNow().plusDays(1))
-                        .build())
-                    .build())))
+            .data(Map.of("respondents1", buildRespondents()))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
@@ -91,6 +84,23 @@ class RespondentControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void shouldSetPersistRepresentativesFlagToYesOnRespondents() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("respondents1", buildRespondents()))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse 
+            = postMidEvent(caseDetails, "persist-representatives");
+
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        Respondent firstRespondent = caseData.getRespondents1().get(0).getValue();
+        Respondent secondRespondent = caseData.getRespondents1().get(0).getValue();
+
+        assertThat(firstRespondent.getPersistRepresentedBy()).isEqualTo(YES.getValue());
+        assertThat(secondRespondent.getPersistRepresentedBy()).isEqualTo(YES.getValue());
+    }
+
+    @Test
     void aboutToSubmitShouldAddConfidentialRespondentsToCaseDataWhenConfidentialRespondentsExist() {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest());
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
@@ -101,6 +111,19 @@ class RespondentControllerTest extends AbstractControllerTest {
 
         assertThat(caseData.getRespondents1().get(0).getValue().getParty().getAddress()).isNull();
         assertThat(caseData.getRespondents1().get(1).getValue().getParty().getAddress()).isNotNull();
+    }
+
+    private List<Element<Respondent>> buildRespondents() {
+        return wrapElements(Respondent.builder()
+                .party(RespondentParty.builder()
+                    .dateOfBirth(dateNow().plusDays(1))
+                    .build())
+                .build(),
+            Respondent.builder()
+                .party(RespondentParty.builder()
+                    .dateOfBirth(dateNow().plusDays(1))
+                    .build())
+                .build());
     }
 
     private Element<Respondent> retainConfidentialDetails(Element<Respondent> respondent) {

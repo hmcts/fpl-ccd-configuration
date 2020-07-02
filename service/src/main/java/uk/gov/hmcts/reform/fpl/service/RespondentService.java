@@ -6,9 +6,11 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @Service
 public class RespondentService {
@@ -28,6 +30,14 @@ public class RespondentService {
         }
 
         return sb.toString();
+    }
+
+    public List<Element<Respondent>> setPersistRepresentativeFlag(List<Element<Respondent>> respondents) {
+        return respondents.stream()
+            .map(element -> {
+                element.getValue().setPersistRepresentedBy(YES.getValue());
+                return element;
+            }).collect(Collectors.toList());
     }
 
     private String getRespondentFullName(RespondentParty respondentParty) {
