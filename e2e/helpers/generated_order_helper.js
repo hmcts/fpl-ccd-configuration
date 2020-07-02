@@ -168,9 +168,10 @@ module.exports = {
     }
   },
 
-  async assertOrder(I, caseViewPage, order, orderNum, defaultIssuedDate, hasAllocatedJudge = false) {
-    const orderHeading = 'Order ' + orderNum;
+  async assertOrder(I, caseViewPage, order, defaultIssuedDate, hasAllocatedJudge = false) {
     caseViewPage.selectTab(caseViewPage.tabs.orders);
+    const numberOfOrders = await I.grabNumberOfVisibleElements('//*[text() = \'Type of order\']');
+    const orderHeading = `Order ${numberOfOrders}`;
     I.seeInTab([orderHeading, 'Type of order'], order.fullType);
 
     if (order.type === 'Blank order (C21)') {
@@ -192,9 +193,10 @@ module.exports = {
     }
   },
 
-  async assertOrderSentToParty(I, caseViewPage, partyName, order, orderNum) {
+  async assertOrderSentToParty(I, caseViewPage, partyName, order) {
     caseViewPage.selectTab(caseViewPage.tabs.documentsSentToParties);
+    const numberOfDocuments = await I.grabNumberOfVisibleElements(`//*[text() = '${partyName}']/ancestor::ccd-read-complex-field-table//ccd-read-complex-field-table`);
     I.seeInTab(['Party 1', 'Representative name'], partyName);
-    I.seeInTab(['Party 1', `Document ${orderNum}`, 'File'], order.document);
+    I.seeInTab(['Party 1', `Document ${numberOfDocuments}`, 'File'], order.document);
   },
 };
