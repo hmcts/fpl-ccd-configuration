@@ -1241,15 +1241,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "hearingNotice_label",
-    "Label": " ",
+    "ID": "newHearing_label",
+    "Label": "New hearing added",
     "FieldType": "TextArea",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "hearingSelector",
+    "ID": "newHearingSelector",
     "Label": "Send notice of hearing",
     "FieldType": "HearingSelector",
     "SecurityClassification": "Public"

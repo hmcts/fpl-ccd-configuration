@@ -11,11 +11,56 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingSelector",
+    "ListElementCode": "option0Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "HHearing 1",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingSelector",
+    "ListElementCode": "option1Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "HHearing 2",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingSelector",
+    "ListElementCode": "option2Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "HHearing 3",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingSelector",
+    "ListElementCode": "option3Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "HHearing 4",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingSelector",
+    "ListElementCode": "option4Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "HHearing 5",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingSelector",
     "ListElementCode": "option0",
     "FieldType": "YesOrNo",
     "ElementLabel": "Hearing 1",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"1*\""
+    "FieldShowCondition": "optionCount=\"1*\" AND option0Hidden!=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -24,7 +69,7 @@
     "FieldType": "YesOrNo",
     "ElementLabel": "Hearing 2",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"12*\""
+    "FieldShowCondition": "optionCount=\"12*\" AND option1Hidden!=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -33,7 +78,7 @@
     "FieldType": "YesOrNo",
     "ElementLabel": "Hearing 3",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"123*\""
+    "FieldShowCondition": "optionCount=\"123*\" AND option2Hidden!=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -42,7 +87,7 @@
     "FieldType": "YesOrNo",
     "ElementLabel": "Hearing 4",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"1234*\""
+    "FieldShowCondition": "optionCount=\"1234*\" AND option3Hidden!=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -51,6 +96,6 @@
     "FieldType": "YesOrNo",
     "ElementLabel": "Hearing 5",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"12345*\""
+    "FieldShowCondition": "optionCount=\"12345*\" AND option4Hidden!=\"Yes\""
   }
 ]

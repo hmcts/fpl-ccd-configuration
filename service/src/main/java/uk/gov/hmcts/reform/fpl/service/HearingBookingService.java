@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.List;
@@ -17,9 +18,14 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static java.lang.String.format;
 import static java.util.Comparator.comparing;
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.IntStream.range;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
@@ -129,6 +135,30 @@ public class HearingBookingService {
             .filter(newHearing -> !oldHearingIDs.contains(newHearing.getId()))
             .collect(Collectors.toList());
     }
+
+    public String getHearingNoticeLabel(List<Element<HearingBooking>> newHearings, List<Element<HearingBooking>> oldHearings) {
+        return range(oldHearings.size(), newHearings.size())
+            .mapToObj(index -> format("Hearing %d: %s hearing %s",
+                index + 1,
+                newHearings.get(index).getValue().getType().getLabel(),
+                formatLocalDateTimeBaseUsingFormat(newHearings.get(index).getValue().getStartDate(), DATE)))
+            .collect(joining("\n"));
+
+    }
+
+    public List<HearingBooking> getSelectedHearings(CaseData caseData) {
+        Selector hearingSelector = caseData.getNewHearingSelector();
+        List<Element<HearingBooking>> hearings = caseData.getHearingDetails();
+        if (hearingSelector == null) {
+            return List.of();
+        } else {
+            return hearingSelector.getSelected().stream()
+                .map(hearings::get)
+                .map(Element::getValue)
+                .collect(toList());
+        }
+    }
+
 
     private boolean isPastHearing(Element<HearingBooking> element) {
         return ofNullable(element.getValue())

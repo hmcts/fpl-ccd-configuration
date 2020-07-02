@@ -21,12 +21,12 @@ import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingValidatorService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
 
 import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
-import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.HEARING_SELECTOR;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.NEW_HEARING_LABEL;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.NEW_HEARING_SELECTOR;
 import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInGatekeepingState;
@@ -43,6 +43,7 @@ public class HearingBookingDetailsController {
     private final ObjectMapper mapper;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final StandardDirectionsService standardDirectionsService;
+    private final NoticeOfHearingGenerationService noticeOfHearingGenerationService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -79,14 +80,12 @@ public class HearingBookingDetailsController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
 
-        List<UUID> oldHearingIds =caseDataBefore.getHearingDetails().stream().map(Element::getId).collect(Collectors.toList());
-        List<Element<HearingBooking>> newBookings = caseData.getHearingDetails().stream()
-            .filter(x->!oldHearingIds.contains(x.getId())).collect(Collectors.toList());
+        List<Element<HearingBooking>> newBookings = caseData.getHearingDetails();
+        List<Element<HearingBooking>> oldBookings = caseDataBefore.getHearingDetails();
 
-        //TODO have a service which returns new HearingBookings
 
-        caseDetails.getData().put("hearingNotice_label", newBookings.isEmpty() ? null : "Provide label here");
-        caseDetails.getData().put(HEARING_SELECTOR.getKey(), newSelector(newBookings.size()));
+        caseDetails.getData().put(NEW_HEARING_LABEL.getKey(), service.getHearingNoticeLabel(newBookings, oldBookings));
+        caseDetails.getData().put(NEW_HEARING_SELECTOR.getKey(), newSelector(newBookings.size(), oldBookings.size(), newBookings.size()));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -101,8 +100,13 @@ public class HearingBookingDetailsController {
         CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
         CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
 
-        Selector hearingSelector = caseData.getHearingSelector();
-        //based in hearingSelector.getSelected() generate documents, send notifications
+        Selector newHearingSelector = caseData.getNewHearingSelector();
+        //based in newHearingSelector.getSelected() generate documents, send notifications
+
+        List<HearingBooking> selectedHearings = service.getSelectedHearings(caseData);
+        selectedHearings.stream().parallel()
+            .forEach(hearing -> );
+        noticeOfHearingGenerationService.getTemplateData(caseData);
 
         List<Element<HearingBooking>> hearingDetailsBefore = service.expandHearingBookingCollection(caseDataBefore);
         List<Element<HearingBooking>> pastHearings = service.getPastHearings(hearingDetailsBefore);
@@ -123,9 +127,17 @@ public class HearingBookingDetailsController {
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
+        CaseData caseDataBefore = mapper.convertValue(callbackRequest.getCaseDetailsBefore().getData(), CaseData.class);
         if (isInGatekeepingState(callbackRequest.getCaseDetails())
             && standardDirectionsService.hasEmptyDates(caseData)) {
             applicationEventPublisher.publishEvent(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
         }
+
+        Selector newHearingSelector = caseData.getNewHearingSelector();
+
+        List<Element<HearingBooking>> hearingDetailsBefore = service.expandHearingBookingCollection(caseDataBefore);
+        List<Element<HearingBooking>> pastHearings = service.getPastHearings(hearingDetailsBefore);
+
+
     }
 }

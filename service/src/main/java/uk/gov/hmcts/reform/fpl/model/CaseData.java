@@ -245,7 +245,7 @@ public class CaseData {
     private final InterimEndDate interimEndDate;
     private final Selector childSelector;
     private final Selector careOrderSelector;
-    private final Selector hearingSelector;
+    private final Selector newHearingSelector;
 
     private final String orderAppliesToAllChildren;
 
