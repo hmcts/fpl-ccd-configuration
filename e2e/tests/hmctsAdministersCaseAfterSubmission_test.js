@@ -1,6 +1,12 @@
 const config = require('../config.js');
 const hearingDetails = require('../fixtures/hearingTypeDetails.js');
-const orders = require('../fixtures/orders.js');
+const blankOrder = require('../fixtures/orders/blankOrder.js');
+const interimSuperVisionOrder = require('../fixtures/orders/interimSupervision.js');
+const finalSuperVisionOrder = require('../fixtures/orders/finalSupervisionOrder.js');
+const emergencyProtectionOrder = require('../fixtures/orders/emergencyProtectionOrder.js');
+const interimCareOrder = require('../fixtures/orders/interimCareOrder.js');
+const finalCareOrder = require('../fixtures/orders/finalCareOrder.js');
+const dischargeOfCareOrder = require('../fixtures/orders/dischargeOfCareOrder.js');
 const orderFunctions = require('../helpers/generated_order_helper');
 const representatives = require('../fixtures/representatives.js');
 const c2Payment = require('../fixtures/c2Payment.js');
@@ -201,16 +207,32 @@ Scenario('HMCTS admin revoke case access from representative', async (I, caseVie
   I.see('No cases found.');
 });
 
-Scenario('HMCTS admin creates multiple orders for the case', async (I, caseViewPage, createOrderEventPage) => {
-  for (let i = 0; i < orders.length; i++) {
-    const order = orders[i];
-    await caseViewPage.goToNewActions(config.administrationActions.createOrder);
-    const defaultIssuedDate = new Date();
-    await orderFunctions.createOrder(I, createOrderEventPage, order);
-    I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
-    await orderFunctions.assertOrder(I, caseViewPage, order, i + 1, defaultIssuedDate);
-    await orderFunctions.assertOrderSentToParty(I, caseViewPage, representatives.servedByPost.fullName, order, i + 1);
-  }
+Scenario('HMCTS admin creates blank order', async (I, caseViewPage, createOrderEventPage) => {
+  await verifyOrderCreation(I, caseViewPage, createOrderEventPage, blankOrder);
+});
+
+Scenario('HMCTS admin creates interim supervision order', async (I, caseViewPage, createOrderEventPage) => {
+  await verifyOrderCreation(I, caseViewPage, createOrderEventPage, interimSuperVisionOrder);
+});
+
+Scenario('HMCTS admin creates final supervision order', async (I, caseViewPage, createOrderEventPage) => {
+  await verifyOrderCreation(I, caseViewPage, createOrderEventPage, finalSuperVisionOrder);
+});
+
+Scenario('HMCTS admin creates emergency protection order', async (I, caseViewPage, createOrderEventPage) => {
+  await verifyOrderCreation(I, caseViewPage, createOrderEventPage, emergencyProtectionOrder);
+});
+
+Scenario('HMCTS admin creates interim care order', async (I, caseViewPage, createOrderEventPage) => {
+  await verifyOrderCreation(I, caseViewPage, createOrderEventPage, interimCareOrder);
+});
+
+Scenario('HMCTS admin creates final care order', async (I, caseViewPage, createOrderEventPage) => {
+  await verifyOrderCreation(I, caseViewPage, createOrderEventPage, finalCareOrder);
+});
+
+Scenario('HMCTS admin creates discharge of care order', async (I, caseViewPage, createOrderEventPage) => {
+  await verifyOrderCreation(I, caseViewPage, createOrderEventPage, dischargeOfCareOrder);
 });
 
 Scenario('HMCTS admin creates notice of proceedings documents', async (I, caseViewPage, createNoticeOfProceedingsEventPage) => {
@@ -326,3 +348,12 @@ Scenario('HMCTS admin closes the case', async (I, caseViewPage, closeTheCaseEven
   I.seeInTab(['Close the case', 'Date'], '12 Mar 2020');
   I.seeInTab(['Close the case', 'Reason'], 'Deprivation of liberty');
 });
+
+const verifyOrderCreation = async function(I, caseViewPage, createOrderEventPage, order){
+  await caseViewPage.goToNewActions(config.administrationActions.createOrder);
+  const defaultIssuedDate = new Date();
+  await orderFunctions.createOrder(I, createOrderEventPage, order);
+  I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
+  await orderFunctions.assertOrder(I, caseViewPage, order, defaultIssuedDate);
+  await orderFunctions.assertOrderSentToParty(I, caseViewPage, representatives.servedByPost.fullName, order);
+};

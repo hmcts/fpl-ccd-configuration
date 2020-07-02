@@ -29,6 +29,7 @@ public class Respondent implements Representable, ConfidentialParty<Respondent> 
     @NotNull(message = "You need to add details to respondents")
     private final RespondentParty party;
     private final String leadRespondentIndicator;
+    private String persistRepresentedBy;
     private final List<Element<UUID>> representedBy = new ArrayList<>();
 
     public void addRepresentative(UUID representativeId) {
