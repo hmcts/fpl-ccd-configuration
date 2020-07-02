@@ -1,4 +1,4 @@
 [submodule "fpla-docker"]
 	path = fpla-docker
 	url = https://github.com/hmcts/fpla-docker
-	branch = master
+	branch = dev/openid-migration-test
