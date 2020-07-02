@@ -37,17 +37,6 @@ public class RepresentativeNotificationService {
         }
     }
 
-    public void sendToUpdatedRepresentatives(final String templateId,
-                                             final Map<String, Object> templateParameters,
-                                             final EventData eventData,
-                                             List<Representative> representatives) {
-
-        if (!representatives.isEmpty()) {
-            sendNotificationToRepresentatives(eventData.getReference(), templateParameters, representatives,
-                templateId);
-        }
-    }
-
     private void sendNotificationToRepresentatives(final String caseId,
                                                    final Map<String, Object> parameters,
                                                    final List<Representative> representatives,
