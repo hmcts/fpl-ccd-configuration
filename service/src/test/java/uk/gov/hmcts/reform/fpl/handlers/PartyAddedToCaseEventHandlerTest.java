@@ -11,9 +11,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseEvent;
-import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
@@ -21,14 +19,9 @@ import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.PartyAddedToCaseContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
@@ -109,43 +102,6 @@ public class PartyAddedToCaseEventHandlerTest {
             PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_EMAIL,
             expectedDigitalParameters,
             "12345");
-    }
-
-    @Test
-    void shouldNotSendEmailToPartiesWhichHaveNotBeenUpdated() {
-        CaseDetails caseDetails = callbackRequest().getCaseDetails();
-        CaseDetails caseDetailsBefore = callbackRequest().getCaseDetailsBefore();
-        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
-        CaseData caseDataBefore = objectMapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
-
-        given(representativeService.getUpdatedRepresentatives(caseData.getRepresentatives(),
-            caseDataBefore.getRepresentatives(), DIGITAL_SERVICE)).willReturn(getUpdatedRepresentatives());
-
-        given(representativeService.getUpdatedRepresentatives(caseData.getRepresentatives(),
-            caseDataBefore.getRepresentatives(), EMAIL)).willReturn(Collections.emptyList());
-
-        partyAddedToCaseEventHandler.sendEmailToPartiesAddedToCase(
-            new PartyAddedToCaseEvent(callbackRequest()));
-
-        verify(notificationService, never()).sendEmail(
-            eq(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE),
-            eq(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_EMAIL),
-            anyMap(),
-            eq("12345"));
-
-        //verify email was sent to john smith
-
-
-    }
-
-    private List<Representative> getUpdatedRepresentatives() {
-        return List.of(Representative.builder()
-            .fullName("John Smith")
-            .address(Address.builder()
-                .addressLine1("A1")
-                .postcode("CR0 2GE")
-                .build())
-            .build());
     }
 
     private Map<String, Object> getPartyAddedByEmailNotificationParameters() {
