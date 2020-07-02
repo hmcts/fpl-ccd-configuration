@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.apache.commons.lang3.RandomUtils.nextLong;
-import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -87,17 +86,6 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
     CaseSubmissionControllerSubmittedTest() {
         super("case-submission");
-    }
-
-    // Do we need these 2 tests?
-    @Test
-    void shouldReturnUnsuccessfulResponseWithNoData() {
-        postSubmittedEvent(new byte[] {}, SC_BAD_REQUEST);
-    }
-
-    @Test
-    void shouldReturnUnsuccessfulResponseWithMalformedData() {
-        postSubmittedEvent("Mock".getBytes(), SC_BAD_REQUEST);
     }
 
     @Test

@@ -17,21 +17,21 @@ class CaseSubmissionMarkdownServiceTest {
     void shouldSplitOnSeparator() {
         MarkdownData markdownData = service.getMarkdownData(CASE_NAME);
 
-        assertThat(markdownData).isEqualTo(buildExpectedData());
+        assertThat(markdownData).isEqualTo(buildExpectedMarkdownData());
     }
 
     @Test
-    void shouldRemoveInitialBlankLinesWhenCaseNameNotProvided() {
+    void shouldTrimBlankLinesWhenCaseNameNotProvided() {
         MarkdownData markdownData = service.getMarkdownData(null);
 
-        assertThat(markdownData).isEqualTo(buildExpectedData(""));
+        assertThat(markdownData).isEqualTo(buildExpectedMarkdownData(""));
     }
 
-    private MarkdownData buildExpectedData() {
-        return buildExpectedData(CASE_NAME);
+    private MarkdownData buildExpectedMarkdownData() {
+        return buildExpectedMarkdownData(CASE_NAME);
     }
 
-    private MarkdownData buildExpectedData(String caseName) {
+    private MarkdownData buildExpectedMarkdownData(String caseName) {
         return MarkdownData.builder()
             .header(caseName.trim())
             .body(SURVEY_URL)
