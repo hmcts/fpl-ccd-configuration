@@ -160,21 +160,21 @@ class EmailNotificationHelperTest {
     @Test
     void shouldFormatUrlCorrectlyWhenBaseUrlAndCaseIdProvided() {
         String formattedUrl = formatCaseUrl("http://testurl", 123L);
-        String expectedUrl = "http://testurl/case/PUBLICLAW/CARE_SUPERVISION_EPO/123";
+        String expectedUrl = "http://testurl/cases/case-details/123";
         assertThat(formattedUrl).isEqualTo(expectedUrl);
     }
 
     @Test
     void shouldFormatUrlCorrectlyWhenBaseUrlCaseIdAndTabProvided() {
         String formattedUrl = formatCaseUrl("http://testurl", 123L, "tab1");
-        String expectedUrl = "http://testurl/case/PUBLICLAW/CARE_SUPERVISION_EPO/123#tab1";
+        String expectedUrl = "http://testurl/cases/case-details/123#tab1";
         assertThat(formattedUrl).isEqualTo(expectedUrl);
     }
 
     @Test
     void shouldFormatUrlCorrectlyWhenBaseUrlCaseIdAndTabIsEmpty() {
         String formattedUrl = formatCaseUrl("http://testurl", 123L, "");
-        String expectedUrl = "http://testurl/case/PUBLICLAW/CARE_SUPERVISION_EPO/123";
+        String expectedUrl = "http://testurl/cases/case-details/123";
         assertThat(formattedUrl).isEqualTo(expectedUrl);
     }
 }

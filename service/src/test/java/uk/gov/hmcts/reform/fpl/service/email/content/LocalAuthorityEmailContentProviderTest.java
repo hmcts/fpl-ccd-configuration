@@ -14,8 +14,6 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -61,7 +59,7 @@ class LocalAuthorityEmailContentProviderTest extends AbstractEmailContentProvide
             .put("hearingDate", "")
             .put("leadRespondentsName", "Moley")
             .put("reference", "1")
-            .put("caseUrl", String.format("http://fake-url/case/%s/%s/%s", JURISDICTION, CASE_TYPE, 1L))
+            .put("caseUrl", String.format("http://fake-url/cases/case-details/%s", 1L))
             .build();
     }
 
