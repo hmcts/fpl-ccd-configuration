@@ -77,6 +77,9 @@ public class HearingBookingDetailsController {
             caseDetails.getData().put("allocatedJudgeLabel", buildAllocatedJudgeLabel(caseData.getAllocatedJudge()));
         }
 
+        caseDetails.getData().remove(NEW_HEARING_LABEL.getKey());
+        caseDetails.getData().remove(NEW_HEARING_SELECTOR.getKey());
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .errors(errors)
