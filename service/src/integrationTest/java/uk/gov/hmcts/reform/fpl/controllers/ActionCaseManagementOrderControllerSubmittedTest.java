@@ -245,7 +245,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
             .put("localAuthorityNameOrRepresentativeFullName", recipientName)
             .put("subjectLineWithHearingDate", subjectLine)
             .put("reference", CASE_ID)
-            .put("caseUrl", String.format("http://fake-url/case/%s/%s/12345", JURISDICTION, CASE_TYPE))
+            .put("caseUrl", "http://fake-url/cases/case-details/12345")
             .build();
     }
 
@@ -260,7 +260,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
             .put("cafcassOrRespondentName", recipientName)
             .put("subjectLineWithHearingDate", subjectLine)
             .put("reference", CASE_ID)
-            .put("caseUrl", String.format("http://fake-url/case/%s/%s/12345", JURISDICTION, CASE_TYPE))
+            .put("caseUrl", "http://fake-url/cases/case-details/12345")
             .put("link_to_document", jsonFileObject)
             .build();
     }

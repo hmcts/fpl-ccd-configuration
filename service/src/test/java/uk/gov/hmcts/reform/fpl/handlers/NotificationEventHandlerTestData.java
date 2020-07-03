@@ -75,7 +75,7 @@ public class NotificationEventHandlerTestData {
         allocatedJudgeTemplate.setJudgeTitle("Her Honour Judge");
         allocatedJudgeTemplate.setJudgeName("Moley");
         allocatedJudgeTemplate.setCaseName("test");
-        allocatedJudgeTemplate.setCaseUrl("http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345");
+        allocatedJudgeTemplate.setCaseUrl("http://fake-url/cases/case-details/12345");
 
         return allocatedJudgeTemplate;
     }

@@ -57,7 +57,7 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
     private AllocatedJudgeTemplateForC2 getAllocatedJudgeParametersForC2() {
         AllocatedJudgeTemplateForC2 allocatedJudgeTemplateForC2 = new AllocatedJudgeTemplateForC2();
 
-        allocatedJudgeTemplateForC2.setCaseUrl("http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345");
+        allocatedJudgeTemplateForC2.setCaseUrl("http://fake-url/cases/case-details/12345");
         allocatedJudgeTemplateForC2.setCallout(format("Smith, %s", CASE_REFERENCE));
         allocatedJudgeTemplateForC2.setJudgeTitle("Her Honour Judge");
         allocatedJudgeTemplateForC2.setJudgeName("Moley");
