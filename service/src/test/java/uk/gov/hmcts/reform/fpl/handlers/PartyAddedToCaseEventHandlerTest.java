@@ -124,6 +124,9 @@ public class PartyAddedToCaseEventHandlerTest {
         given(representativeService.getUpdatedRepresentatives(caseData.getRepresentatives(),
             caseDataBefore.getRepresentatives(), EMAIL)).willReturn(Collections.emptyList());
 
+        given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(
+            callbackRequest().getCaseDetails(), DIGITAL_SERVICE)).willReturn(getPartyAddedByDigitalServiceNotificationParameters());
+
         partyAddedToCaseEventHandler.sendEmailToPartiesAddedToCase(
             new PartyAddedToCaseEvent(callbackRequest()));
 
@@ -141,15 +144,15 @@ public class PartyAddedToCaseEventHandlerTest {
 
         verify(notificationService).sendEmail(
             eq(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE),
-            eq("johnsmith@test.com"),
-            anyMap(),
+            eq("johnmoley@test.com"),
+            eq(getPartyAddedByDigitalServiceNotificationParameters()),
             eq("12345"));
     }
 
     private List<Representative> getUpdatedRepresentatives() {
         return List.of(Representative.builder()
-            .fullName("John Smith")
-            .email("johnsmith@test.com")
+            .fullName("John Moley")
+            .email("johnmoley@test.com")
             .servingPreferences(DIGITAL_SERVICE)
             .address(Address.builder()
                 .addressLine1("A1")

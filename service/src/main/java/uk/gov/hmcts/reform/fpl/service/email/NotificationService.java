@@ -19,6 +19,7 @@ public class NotificationService {
     private final ObjectMapper mapper;
 
     public void sendEmail(String templateId, String email, Map<String, Object> parameters, String reference) {
+        System.out.println("Params are " + parameters);
         log.debug("Sending email (with template id: {}) to {}", templateId, email);
         try {
             notificationClient.sendEmail(templateId, email, parameters, reference);
