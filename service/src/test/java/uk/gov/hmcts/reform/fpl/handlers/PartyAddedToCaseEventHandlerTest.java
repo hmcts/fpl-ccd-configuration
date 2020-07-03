@@ -133,14 +133,24 @@ public class PartyAddedToCaseEventHandlerTest {
             anyMap(),
             eq("12345"));
 
-        //verify email was sent to john smith
+        verify(notificationService, never()).sendEmail(
+            eq(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE),
+            eq(PARTY_ADDED_TO_CASE_BY_EMAIL_ADDRESS),
+            anyMap(),
+            eq("12345"));
 
-
+        verify(notificationService).sendEmail(
+            eq(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE),
+            eq("johnsmith@test.com"),
+            anyMap(),
+            eq("12345"));
     }
 
     private List<Representative> getUpdatedRepresentatives() {
         return List.of(Representative.builder()
             .fullName("John Smith")
+            .email("johnsmith@test.com")
+            .servingPreferences(DIGITAL_SERVICE)
             .address(Address.builder()
                 .addressLine1("A1")
                 .postcode("CR0 2GE")
