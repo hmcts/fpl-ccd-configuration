@@ -125,7 +125,8 @@ public class PartyAddedToCaseEventHandlerTest {
             caseDataBefore.getRepresentatives(), EMAIL)).willReturn(Collections.emptyList());
 
         given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(
-            callbackRequest().getCaseDetails(), DIGITAL_SERVICE)).willReturn(getPartyAddedByDigitalServiceNotificationParameters());
+            callbackRequest().getCaseDetails(), DIGITAL_SERVICE))
+            .willReturn(getPartyAddedByDigitalServiceNotificationParameters());
 
         partyAddedToCaseEventHandler.sendEmailToPartiesAddedToCase(
             new PartyAddedToCaseEvent(callbackRequest()));
