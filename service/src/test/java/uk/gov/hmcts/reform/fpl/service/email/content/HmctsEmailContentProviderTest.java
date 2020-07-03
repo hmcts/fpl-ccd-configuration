@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.google.common.collect.ImmutableMap;
 import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -32,12 +33,17 @@ class HmctsEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     private static final byte[] APPLICATION_BINARY = TestDataHelper.DOCUMENT_CONTENT;
 
-    @Test
-    void shouldReturnExpectedMapWithValidCaseDetails() {
-        final DocumentReference applicationDocument = testDocumentReference();
+    private static DocumentReference applicationDocument;
+
+    @BeforeEach
+    void init() {
+        applicationDocument = testDocumentReference();
         when(documentDownloadService.downloadDocument(applicationDocument.getBinaryUrl()))
             .thenReturn(APPLICATION_BINARY);
+    }
 
+    @Test
+    void shouldReturnExpectedMapWithValidCaseDetails() {
         List<String> ordersAndDirections = List.of("Emergency protection order", "Contact with any named person");
 
         SubmitCaseHmctsTemplate hmctsSubmissionTemplate = new SubmitCaseHmctsTemplate();
@@ -66,10 +72,6 @@ class HmctsEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     @Test
     void shouldReturnSuccessfullyWithIncompleteCaseDetails() {
-        final DocumentReference applicationDocument = testDocumentReference();
-        when(documentDownloadService.downloadDocument(applicationDocument.getBinaryUrl()))
-            .thenReturn(APPLICATION_BINARY);
-
         SubmitCaseHmctsTemplate hmctsSubmissionTemplate = new SubmitCaseHmctsTemplate();
 
         hmctsSubmissionTemplate.setCourt(COURT_NAME);
