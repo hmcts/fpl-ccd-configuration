@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,15 +65,15 @@ public class PartyAddedToCaseEventHandlerTest {
     @Autowired
     private PartyAddedToCaseEventHandler partyAddedToCaseEventHandler;
 
-    @Test
-    void shouldSendEmailToPartiesWhenAddedToCase() {
-        CaseDetails caseDetails = callbackRequest().getCaseDetails();
-        CaseDetails caseDetailsBefore = callbackRequest().getCaseDetailsBefore();
-        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
-        CaseData caseDataBefore = objectMapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
+    private static CaseDetails caseDetails = callbackRequest().getCaseDetails();
+    private static CaseDetails caseDetailsBefore = callbackRequest().getCaseDetailsBefore();
+    private static CaseData caseData;
+    private static CaseData caseDataBefore;
 
-        final Map<String, Object> expectedEmailParameters = getPartyAddedByEmailNotificationParameters();
-        final Map<String, Object> expectedDigitalParameters = getPartyAddedByDigitalServiceNotificationParameters();
+    @BeforeEach
+    void init() {
+        caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+        caseDataBefore = objectMapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
 
         given(representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(),
             DIGITAL_SERVICE))
@@ -88,6 +89,12 @@ public class PartyAddedToCaseEventHandlerTest {
         given(representativeService.getUpdatedRepresentatives(caseData.getRepresentatives(),
             caseDataBefore.getRepresentatives(), DIGITAL_SERVICE))
             .willReturn(getExpectedDigitalRepresentativesForAddingPartiesToCase());
+    }
+
+    @Test
+    void shouldSendEmailToPartiesWhenAddedToCase() {
+        final Map<String, Object> expectedEmailParameters = getPartyAddedByEmailNotificationParameters();
+        final Map<String, Object> expectedDigitalParameters = getPartyAddedByDigitalServiceNotificationParameters();
 
         given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(
             callbackRequest().getCaseDetails(), EMAIL)).willReturn(expectedEmailParameters);
@@ -113,11 +120,6 @@ public class PartyAddedToCaseEventHandlerTest {
 
     @Test
     void shouldNotSendEmailToPartiesWhichHaveNotBeenUpdated() {
-        CaseDetails caseDetails = callbackRequest().getCaseDetails();
-        CaseDetails caseDetailsBefore = callbackRequest().getCaseDetailsBefore();
-        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
-        CaseData caseDataBefore = objectMapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
-
         given(representativeService.getUpdatedRepresentatives(caseData.getRepresentatives(),
             caseDataBefore.getRepresentatives(), DIGITAL_SERVICE)).willReturn(getUpdatedRepresentatives());
 
