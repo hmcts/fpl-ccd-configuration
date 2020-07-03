@@ -32,7 +32,7 @@ fees-register:
       event: general application
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: ${FEES_REGISTER_C2_WITHOUT_NOTICE_KEYWORD:without-notice}
+      keyword: ${FEES_REGISTER_C2_WITHOUT_NOTICE_KEYWORD:GeneralAppWithoutNotice}
       service: other
     C2_WITH_NOTICE:
       channel: default
