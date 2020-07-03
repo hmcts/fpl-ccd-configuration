@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -47,8 +46,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 @SpringBootTest(classes = {PartyAddedToCaseEventHandler.class, LookupTestConfig.class, JacksonAutoConfiguration.class,
     RepresentativeNotificationService.class})
 public class PartyAddedToCaseEventHandlerTest {
-    @MockBean
-    private RequestData requestData;
 
     @MockBean
     private NotificationService notificationService;
