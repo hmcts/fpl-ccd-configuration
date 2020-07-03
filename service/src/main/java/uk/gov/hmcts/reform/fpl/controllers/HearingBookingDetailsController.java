@@ -12,19 +12,27 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.events.HearingsUpdated;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingValidatorService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
+import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
 
 import java.util.List;
 
+import static java.time.LocalDate.now;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.NEW_HEARING_LABEL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.NEW_HEARING_SELECTOR;
 import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
@@ -44,6 +52,8 @@ public class HearingBookingDetailsController {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final StandardDirectionsService standardDirectionsService;
     private final NoticeOfHearingGenerationService noticeOfHearingGenerationService;
+    private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
+    private final UploadDocumentService uploadDocumentService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -83,10 +93,14 @@ public class HearingBookingDetailsController {
         List<Element<HearingBooking>> newBookings = caseData.getHearingDetails();
         List<Element<HearingBooking>> oldBookings = caseDataBefore.getHearingDetails();
 
-
-        caseDetails.getData().put(NEW_HEARING_LABEL.getKey(), service.getHearingNoticeLabel(newBookings, oldBookings));
-        caseDetails.getData().put(NEW_HEARING_SELECTOR.getKey(), newSelector(newBookings.size(), oldBookings.size(), newBookings.size()));
-
+        if (!service.getNewHearings(newBookings, oldBookings).isEmpty()) {
+            caseDetails.getData().put(NEW_HEARING_LABEL.getKey(), service.getHearingNoticeLabel(newBookings, oldBookings));
+            //TODO this needs to be checked in scanrio that we remove old and add new hearing in one go
+            caseDetails.getData().put(NEW_HEARING_SELECTOR.getKey(), newSelector(newBookings.size(), oldBookings.size(), newBookings.size()));
+        } else {
+            caseDetails.getData().remove(NEW_HEARING_LABEL.getKey());
+            caseDetails.getData().remove(NEW_HEARING_SELECTOR.getKey());
+        }
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .errors(validationService.validateHearingBookings(unwrapElements(caseData.getHearingDetails())))
@@ -100,13 +114,15 @@ public class HearingBookingDetailsController {
         CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
         CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
 
-        Selector newHearingSelector = caseData.getNewHearingSelector();
-        //based in newHearingSelector.getSelected() generate documents, send notifications
-
-        List<HearingBooking> selectedHearings = service.getSelectedHearings(caseData);
+        List<Element<HearingBooking>> selectedHearings = service.getSelectedHearings(caseData);
         selectedHearings.stream().parallel()
-            .forEach(hearing -> );
-        noticeOfHearingGenerationService.getTemplateData(caseData);
+            .forEach(hearing -> {
+                HearingBooking booking = hearing.getValue();
+                DocmosisNoticeOfHearing dnof = noticeOfHearingGenerationService.getTemplateData(caseData, hearing.getValue());
+                DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(dnof, NOTICE_OF_HEARING);
+                Document document = uploadDocumentService.uploadPDF(docmosisDocument.getBytes(), NOTICE_OF_HEARING.getDocumentTitle(now()));
+                booking.setNoticeOfHearing(DocumentReference.buildFromDocument(document));
+            });
 
         List<Element<HearingBooking>> hearingDetailsBefore = service.expandHearingBookingCollection(caseDataBefore);
         List<Element<HearingBooking>> pastHearings = service.getPastHearings(hearingDetailsBefore);
@@ -127,17 +143,12 @@ public class HearingBookingDetailsController {
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
-        CaseData caseDataBefore = mapper.convertValue(callbackRequest.getCaseDetailsBefore().getData(), CaseData.class);
         if (isInGatekeepingState(callbackRequest.getCaseDetails())
             && standardDirectionsService.hasEmptyDates(caseData)) {
             applicationEventPublisher.publishEvent(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
         }
 
-        Selector newHearingSelector = caseData.getNewHearingSelector();
-
-        List<Element<HearingBooking>> hearingDetailsBefore = service.expandHearingBookingCollection(caseDataBefore);
-        List<Element<HearingBooking>> pastHearings = service.getPastHearings(hearingDetailsBefore);
-
+        applicationEventPublisher.publishEvent(new HearingsUpdated(callbackRequest));
 
     }
 }

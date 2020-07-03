@@ -146,7 +146,7 @@ public class HearingBookingService {
 
     }
 
-    public List<HearingBooking> getSelectedHearings(CaseData caseData) {
+    public List<Element<HearingBooking>> getSelectedHearings(CaseData caseData) {
         Selector hearingSelector = caseData.getNewHearingSelector();
         List<Element<HearingBooking>> hearings = caseData.getHearingDetails();
         if (hearingSelector == null) {
@@ -154,7 +154,6 @@ public class HearingBookingService {
         } else {
             return hearingSelector.getSelected().stream()
                 .map(hearings::get)
-                .map(Element::getValue)
                 .collect(toList());
         }
     }

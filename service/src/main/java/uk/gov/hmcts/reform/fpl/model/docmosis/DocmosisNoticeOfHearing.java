@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @SuperBuilder
 @EqualsAndHashCode
-public class DocmosisNoticeOfHearing {
+public class DocmosisNoticeOfHearing implements DocmosisData {
     private final List<DocmosisChild> children;
     private final DocmosisJudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private String postingDate;
