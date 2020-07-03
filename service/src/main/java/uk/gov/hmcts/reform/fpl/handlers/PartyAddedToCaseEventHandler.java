@@ -44,7 +44,6 @@ public class PartyAddedToCaseEventHandler {
         List<Representative> representativesServedByEmail = representativeService.getUpdatedRepresentatives(
             caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), EMAIL);
 
-
         Map<String, Object> servedByEmailParameters = partyAddedToCaseContentProvider
             .getPartyAddedToCaseNotificationParameters(caseDetails, EMAIL);
 
