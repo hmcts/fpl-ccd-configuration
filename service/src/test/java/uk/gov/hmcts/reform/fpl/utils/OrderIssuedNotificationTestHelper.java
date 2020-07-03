@@ -61,7 +61,7 @@ public class OrderIssuedNotificationTestHelper {
         allocatedJudgeTemplate.setRespondentLastName("Jones");
         allocatedJudgeTemplate.setJudgeTitle("Deputy District Judge");
         allocatedJudgeTemplate.setJudgeName("Scott");
-        allocatedJudgeTemplate.setCaseUrl("http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345");
+        allocatedJudgeTemplate.setCaseUrl("http://fake-url/cases/case-details/12345");
 
         return allocatedJudgeTemplate;
     }
