@@ -115,7 +115,7 @@ public class DraftOrdersControllerSubmittedTest extends AbstractControllerTest {
             .put("leadRespondentsName", "Moley")
             .put("hearingDate", "20 October 2020")
             .put("reference", String.valueOf(CASE_ID))
-            .put("caseUrl", String.format("http://fake-url/case/%s/%s/%s", JURISDICTION, CASE_TYPE, CASE_ID))
+            .put("caseUrl", String.format("http://fake-url/cases/case-details/%s", CASE_ID))
             .build();
     }
 

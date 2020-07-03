@@ -214,11 +214,6 @@ manage-case:
     base:
       url: http://fake-url
 
-ccd:
-  ui:
-    base:
-      url: http://fake-url
-
 fees-register:
   api:
     url: http://fake-fees-register-api
@@ -339,11 +334,6 @@ manage-case:
   ui:
     base:
       url: http://localhost:3333
-
-ccd:
-  ui:
-    base:
-      url: http://localhost:3451
 
 bankHolidays:
   api:
