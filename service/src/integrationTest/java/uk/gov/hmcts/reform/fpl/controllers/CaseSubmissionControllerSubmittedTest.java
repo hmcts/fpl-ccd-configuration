@@ -280,11 +280,6 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
         final State state = RETURNED;
 
-        @BeforeEach
-        void init() {
-            when(documentDownloadService.downloadDocument(any())).thenReturn(DOCUMENT_CONTENT);
-        }
-
         @Test
         void shouldNotifyAdminAndCafcassWhenCaseIsResubmitted() {
             CaseDetails caseDetails = enableSendToCtscOnCaseDetails(NO);
