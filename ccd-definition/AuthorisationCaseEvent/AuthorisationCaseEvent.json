@@ -1261,5 +1261,12 @@
     "CaseEventID": "draftSDO",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "uploadC2",
+    "UserRole": "[CAFCASSSOLICITOR]",
+    "CRUD": "CRU"
   }
 ]

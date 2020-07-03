@@ -50,11 +50,10 @@ withNightlyPipeline(type, product, component) {
   before('fullFunctionalTest') {
     env.PROXY = params.PROXY_SERVER
     env.PARALLEL_CHUNKS = params.FUNCTIONAL_TESTS_WORKERS
+    env.TEST_RETRIES = 2
+  }
 
-    try {
-      sh('./gradlew --no-daemon --info --rerun-tasks functional')
-    } finally {
-      archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
-    }
+  after('fullFunctionalTest') {
+    archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
 }
