@@ -2,22 +2,14 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.exceptions.DocumentException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.returnedcase.ReturnedCaseTemplate;
-import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper;
-
-import java.util.Map;
-import java.util.Optional;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentFullName;
@@ -28,7 +20,6 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 public class ReturnedCaseContentProvider extends AbstractEmailContentProvider {
     private final ObjectMapper mapper;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookup;
-    private final DocumentDownloadService documentDownloadService;
 
     public ReturnedCaseTemplate parametersWithCaseUrl(CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
@@ -56,14 +47,5 @@ public class ReturnedCaseContentProvider extends AbstractEmailContentProvider {
             .familyManCaseNumber(defaultIfNull(caseData.getFamilyManCaseNumber(), ""))
             .returnedReasons(returnApplication.getFormattedReturnReasons())
             .returnedNote(returnApplication.getNote());
-    }
-
-    private Map<String, Object> linkToAttachedDocument(final DocumentReference documentReference) {
-        return Optional.ofNullable(documentReference)
-            .map(DocumentReference::getBinaryUrl)
-            .map(documentDownloadService::downloadDocument)
-            .flatMap(NotifyAttachedDocumentLinkHelper::generateAttachedDocumentLink)
-            .map(JSONObject::toMap)
-            .orElseThrow(() -> new DocumentException());
     }
 }

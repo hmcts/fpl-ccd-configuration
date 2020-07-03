@@ -4,13 +4,11 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.exceptions.DocumentException;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.returnedcase.ReturnedCaseTemplate;
-import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
@@ -28,9 +26,6 @@ import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.gen
 class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
 
     private static final byte[] APPLICATION_BINARY = TestDataHelper.DOCUMENT_CONTENT;
-
-    @MockBean
-    private DocumentDownloadService documentDownloadService;
 
     @Autowired
     private ReturnedCaseContentProvider returnedCaseContentProvider;
@@ -57,7 +52,6 @@ class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
 
         assertThat(actualTemplate).isEqualTo(expectedTemplate);
     }
-
 
     @Nested
     class TemplateWithApplicationLink {
