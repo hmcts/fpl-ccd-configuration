@@ -44,7 +44,8 @@ public class Selector {
     public static Selector newSelector(Integer size, Integer min, Integer max) {
         Selector selector = Selector.builder().build().setNumberOfOptions(size);
 
-        List<Integer> hidden = IntStream.range(0, size).filter(x -> x < min && x < max).boxed().collect(Collectors.toList());
+        List<Integer> hidden = IntStream.range(0, size)
+            .filter(x -> x < min && x < max).boxed().collect(Collectors.toList());
         selector.setHidden(hidden);
         return selector;
     }

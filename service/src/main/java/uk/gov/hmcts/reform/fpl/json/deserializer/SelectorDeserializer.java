@@ -60,11 +60,13 @@ public class SelectorDeserializer extends JsonDeserializer<Selector> {
 
     private boolean isSelected(TreeNode node) {
         return !isNodeNull(node) && (
-            (node.isArray() && containsSelected((ArrayNode) node)) || node.isValueNode() && YesNo.YES.getValue().equals(((ValueNode) node).asText()));
+            (node.isArray() && containsSelected((ArrayNode) node))
+                || node.isValueNode() && YesNo.YES.getValue().equals(((ValueNode) node).asText()));
     }
 
     private boolean containsSelected(ArrayNode node) {
-        return node.size() == 1 && (SELECTED.name().equals(node.get(0).asText()) || YesNo.YES.getValue().equals(node.get(0).asText()));
+        return node.size() == 1 && (SELECTED.name().equals(node.get(0).asText())
+            || YesNo.YES.getValue().equals(node.get(0).asText()));
     }
 
     private boolean isNodeNull(TreeNode node) {

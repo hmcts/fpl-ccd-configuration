@@ -126,7 +126,8 @@ public class HearingBookingService {
             }).collect(toList());
     }
 
-    public List<Element<HearingBooking>> getNewHearings(List<Element<HearingBooking>> newHearings, List<Element<HearingBooking>> oldHearings) {
+    public List<Element<HearingBooking>> getNewHearings(
+        List<Element<HearingBooking>> newHearings, List<Element<HearingBooking>> oldHearings) {
         List<UUID> oldHearingIDs = oldHearings.stream()
             .map(Element::getId)
             .collect(Collectors.toList());
@@ -136,7 +137,8 @@ public class HearingBookingService {
             .collect(Collectors.toList());
     }
 
-    public String getHearingNoticeLabel(List<Element<HearingBooking>> newHearings, List<Element<HearingBooking>> oldHearings) {
+    public String getHearingNoticeLabel(
+        List<Element<HearingBooking>> newHearings, List<Element<HearingBooking>> oldHearings) {
         return range(oldHearings.size(), newHearings.size())
             .mapToObj(index -> format("Hearing %d: %s hearing %s",
                 index + 1,

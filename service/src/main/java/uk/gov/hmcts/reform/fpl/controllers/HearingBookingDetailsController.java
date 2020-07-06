@@ -97,9 +97,13 @@ public class HearingBookingDetailsController {
         List<Element<HearingBooking>> oldBookings = caseDataBefore.getHearingDetails();
 
         if (!service.getNewHearings(newBookings, oldBookings).isEmpty()) {
-            caseDetails.getData().put(NEW_HEARING_LABEL.getKey(), service.getHearingNoticeLabel(newBookings, oldBookings));
+            caseDetails.getData().put(
+                NEW_HEARING_LABEL.getKey(),
+                service.getHearingNoticeLabel(newBookings, oldBookings));
             //TODO this needs to be checked in scanrio that we remove old and add new hearing in one go
-            caseDetails.getData().put(NEW_HEARING_SELECTOR.getKey(), newSelector(newBookings.size(), oldBookings.size(), newBookings.size()));
+            caseDetails.getData().put(
+                NEW_HEARING_SELECTOR.getKey(),
+                newSelector(newBookings.size(), oldBookings.size(), newBookings.size()));
         } else {
             caseDetails.getData().remove(NEW_HEARING_LABEL.getKey());
             caseDetails.getData().remove(NEW_HEARING_SELECTOR.getKey());
@@ -121,9 +125,12 @@ public class HearingBookingDetailsController {
         selectedHearings.stream().parallel()
             .forEach(hearing -> {
                 HearingBooking booking = hearing.getValue();
-                DocmosisNoticeOfHearing dnof = noticeOfHearingGenerationService.getTemplateData(caseData, hearing.getValue());
-                DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(dnof, NOTICE_OF_HEARING);
-                Document document = uploadDocumentService.uploadPDF(docmosisDocument.getBytes(), NOTICE_OF_HEARING.getDocumentTitle(now()));
+                DocmosisNoticeOfHearing dnof =
+                    noticeOfHearingGenerationService.getTemplateData(caseData, hearing.getValue());
+                DocmosisDocument docmosisDocument =
+                    docmosisDocumentGeneratorService.generateDocmosisDocument(dnof, NOTICE_OF_HEARING);
+                Document document = uploadDocumentService
+                    .uploadPDF(docmosisDocument.getBytes(), NOTICE_OF_HEARING.getDocumentTitle(now()));
                 booking.setNoticeOfHearing(DocumentReference.buildFromDocument(document));
             });
 

@@ -18,14 +18,15 @@ public class NewNoticeOfHearingEmailContentProvider extends AbstractEmailContent
 
     private final ObjectMapper mapper;
 
-    public NewNoticeOfHearingTemplate buildNewNoticeOfHearingNotification(CaseDetails caseDetails, HearingBooking hearingBooking) {
+    public NewNoticeOfHearingTemplate buildNewNoticeOfHearingNotification(
+        CaseDetails caseDetails, HearingBooking hearingBooking) {
         final CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         return NewNoticeOfHearingTemplate.builder()
             .hearingType(hearingBooking.getType().getLabel())
             .hearingDate(hearingBooking.getStartDate().toString())
             .hearingVenue(hearingBooking.getVenue())
-//            .preHearingTime(hearingBooking)
+            //.preHearingTime(hearingBooking)
             .caseUrl(getCaseUrl(caseDetails.getId()))
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .respondentLastName(getFirstRespondentLastName(caseData.getRespondents1()))
