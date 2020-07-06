@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -21,5 +22,6 @@ public class SharedNotifyTemplate implements NotifyData {
     private String firstRespondentName;
     private String reference;
     private String caseUrl;
+    private Map<String, Object> documentLink;
     private String localAuthority;
 }
