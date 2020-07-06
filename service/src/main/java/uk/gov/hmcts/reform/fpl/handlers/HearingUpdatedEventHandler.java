@@ -61,15 +61,13 @@ public class HearingUpdatedEventHandler {
 
         List<Element<HearingBooking>> hearings = hearingBookingService.getSelectedHearings(caseData);
 
-        newNoticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(caseDetails);
-
         hearings.forEach(hearing -> {
 
             List<String> emailList = getEmailList(eventData, caseDetails, caseData);
 
             emailList.forEach(recipientEmail -> {
                 notificationService.sendEmail(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE, recipientEmail,
-                    buildNotificationParameters(), "");
+                    buildNotificationParameters(caseDetails, hearing.getValue()), "");
             });
         });
 
@@ -91,7 +89,8 @@ public class HearingUpdatedEventHandler {
         return emailList;
     }
 
-    private Map<String, Object> buildNotificationParameters() {
+    private Map<String, Object> buildNotificationParameters(CaseDetails caseDetails, HearingBooking hearingBooking) {
+        newNoticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(caseDetails, hearingBooking);
         return Map.of();
     }
 
