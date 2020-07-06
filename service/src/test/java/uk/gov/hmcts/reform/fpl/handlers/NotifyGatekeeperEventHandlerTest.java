@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeepersEvent;
 import uk.gov.hmcts.reform.fpl.model.notify.sendtogatekeeper.NotifyGatekeeperTemplate;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
+import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
@@ -46,6 +47,8 @@ public class NotifyGatekeeperEventHandlerTest {
     private NotifyGatekeeperEventHandler notifyGatekeeperEventHandler;
     @MockBean
     private CaseUrlService caseUrlService;
+    @MockBean
+    private DocumentDownloadService documentDownloadService;
 
     @BeforeEach
     void init() {
