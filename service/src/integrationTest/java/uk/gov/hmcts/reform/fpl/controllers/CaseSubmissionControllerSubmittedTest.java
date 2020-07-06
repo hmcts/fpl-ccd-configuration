@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import org.apache.commons.codec.binary.Base64;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -28,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -84,6 +87,11 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
     CaseSubmissionControllerSubmittedTest() {
         super("case-submission");
+    }
+
+    @BeforeEach
+    void init() {
+        when(documentDownloadService.downloadDocument(any())).thenReturn(DOCUMENT_CONTENT);
     }
 
     @Test
@@ -285,11 +293,6 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
         final State state = RETURNED;
 
-        @BeforeEach
-        void init() {
-            when(documentDownloadService.downloadDocument(any())).thenReturn(DOCUMENT_CONTENT);
-        }
-
         @Test
         void shouldNotifyAdminAndCafcassWhenCaseIsResubmitted() {
             CaseDetails caseDetails = enableSendToCtscOnCaseDetails(NO);
@@ -409,12 +412,16 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     }
 
     private <T extends SharedNotifyTemplate> void setSharedTemplateParameters(T template) {
+        String fileContent = new String(Base64.encodeBase64(DOCUMENT_CONTENT), ISO_8859_1);
+        JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
+
         template.setLocalAuthority("Example Local Authority");
         template.setReference(caseId.toString());
         template.setCaseUrl(String.format("http://fake-url/cases/case-details/%s", caseId));
         template.setDataPresent(YES.getValue());
         template.setFullStop(NO.getValue());
         template.setOrdersAndDirections(List.of("Emergency protection order", "Contact with any named person"));
+        template.setDocumentLink(jsonFileObject.toMap());
     }
 
     private CallbackRequest buildCallbackRequest(CaseDetails caseDetails, State stateBefore) {
