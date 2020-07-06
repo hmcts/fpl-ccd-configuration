@@ -6,8 +6,8 @@ public class NotifyTemplates {
         //NO-OP
     }
 
-    public static final String HMCTS_COURT_SUBMISSION_TEMPLATE = "6027dfc4-fac8-473b-87b4-378f0a06b2b1";
-    public static final String CAFCASS_SUBMISSION_TEMPLATE = "1f5303e3-94ba-485d-b33e-b364ee22767c";
+    public static final String HMCTS_COURT_SUBMISSION_TEMPLATE = "a1562b56-4ff7-4e3e-b62d-5fb9f086ee8f";
+    public static final String CAFCASS_SUBMISSION_TEMPLATE = "e5630e8b-3b25-4773-a41a-a42af123bebc";
     public static final String GATEKEEPER_SUBMISSION_TEMPLATE = "1e8f7e14-64aa-44ce-a5c1-83affff5f1a0";
     public static final String STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE = "c06968ea-048b-49d6-a4b5-1f13ee995ba1";
     public static final String STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE = "f9551e87-f646-4e5e-b7be-7a00e498934b";
