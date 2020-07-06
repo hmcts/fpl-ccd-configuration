@@ -314,6 +314,9 @@ gateway:
 notify:
   api_key: fake-key
 
+sendgrid:
+  api_key: fake-key
+
 rd_professional:
   api:
     url: http://localhost:8765

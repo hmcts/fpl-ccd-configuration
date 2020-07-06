@@ -55,4 +55,5 @@ java:
         - ctsc-inbox
         - AppInsightsInstrumentationKey
         - scheduler-db-password
+        - sendgrid-api-key
   applicationPort: 4000

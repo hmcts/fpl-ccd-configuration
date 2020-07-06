@@ -1,0 +1,18 @@
+[
+  {
+    "LiveFrom": "01/01/2018",
+    "ID": "SendGridEmail",
+    "ListElementCode": "subject",
+    "FieldType": "Text",
+    "ElementLabel": "Message subject",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "ID": "SendGridEmail",
+    "ListElementCode": "message",
+    "FieldType": "Text",
+    "ElementLabel": "Message",
+    "SecurityClassification": "Public"
+  }
+]

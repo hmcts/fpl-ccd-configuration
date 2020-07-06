@@ -36,6 +36,7 @@ java:
         - robotics-notification-recipient
         - ld-sdk-key
         - ctsc-inbox
+        - sendgrid-api-key
 
 idam-pr:
   releaseNameOverride: ${SERVICE_NAME}-xui-idam-pr

@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.robotics.RoboticsNotificationService;
 
+import java.io.IOException;
 import java.util.List;
 
 import static java.util.List.of;
@@ -30,7 +31,7 @@ public class RoboticsController {
 
     @PostMapping("/sendRPAEmailByID/{caseId}")
     @Secured("caseworker-publiclaw-systemupdate")
-    public void resendCaseDataNotification(@PathVariable("caseId") String caseId) {
+    public void resendCaseDataNotification(@PathVariable("caseId") String caseId) throws IOException {
         CaseDetails caseDetails = coreCaseDataService.findCaseDetailsById(caseId);
 
         performVerification(caseId, caseDetails);

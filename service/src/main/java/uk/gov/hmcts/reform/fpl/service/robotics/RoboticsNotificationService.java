@@ -14,6 +14,9 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.email.EmailData;
 import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
 import uk.gov.hmcts.reform.fpl.service.EmailService;
+import uk.gov.hmcts.reform.fpl.service.SendGridService;
+
+import java.io.IOException;
 
 import static java.util.Set.of;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -28,14 +31,15 @@ public class RoboticsNotificationService {
     private final EmailService emailService;
     private final RoboticsDataService roboticsDataService;
     private final RoboticsEmailConfiguration roboticsEmailConfiguration;
+    private final SendGridService sendGridService;
     private final ObjectMapper mapper;
 
     @EventListener
-    public void notifyRoboticsOfSubmittedCaseData(final CaseNumberAdded event) {
+    public void notifyRoboticsOfSubmittedCaseData(final CaseNumberAdded event) throws IOException {
         sendSubmittedCaseData(event.getCaseDetails());
     }
 
-    public void sendSubmittedCaseData(final CaseDetails caseDetails) {
+    public void sendSubmittedCaseData(final CaseDetails caseDetails) throws IOException {
         if (isNotEmpty(caseDetails) && isNotEmpty(caseDetails.getData())) {
             CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -43,6 +47,7 @@ public class RoboticsNotificationService {
                 RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, caseDetails.getId());
 
                 EmailData emailData = prepareEmailData(roboticsData);
+                sendGridService.sendEmail(emailData);
 
                 emailService.sendEmail(roboticsEmailConfiguration.getSender(), emailData);
                 log.info("Robotics email notification successful for case with caseId {} and familyManNumber {}",
