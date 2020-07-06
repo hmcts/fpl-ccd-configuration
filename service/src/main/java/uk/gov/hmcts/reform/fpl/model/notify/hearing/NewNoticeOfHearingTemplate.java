@@ -5,15 +5,19 @@ import lombok.Getter;
 import lombok.Setter;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 
-import java.util.List;
-
 @Getter
 @Setter
 @Builder
 public final class NewNoticeOfHearingTemplate implements NotifyData {
+    private String emailSubject;
+    private String hearingType;
     private String familyManCaseNumber;
     private String respondentLastName;
     private String localAuthority;
-    private List<String> hearingDetails;
+    private String hearingDate;
+    private String hearingVenue;
+    private String preHearingTime;
+    private String hearingTime;
     private String caseUrl;
+    private String documentLink;
 }

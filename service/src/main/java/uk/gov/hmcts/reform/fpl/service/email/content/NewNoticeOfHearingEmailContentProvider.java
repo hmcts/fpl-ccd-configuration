@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.NewNoticeOfHearingTemplate;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.List;
 
@@ -23,19 +24,19 @@ public class NewNoticeOfHearingEmailContentProvider extends AbstractEmailContent
 
     private final ObjectMapper mapper;
     private final HearingBookingService hearingBookingService;
+    private final EmailNotificationHelper emailNotificationHelper;
 
-    public NewNoticeOfHearingTemplate buildNewNoticeOfHearingNotification(CaseDetails newCaseDetails, CaseDetails oldCaseDetails) {
-        CaseData newCaseData = mapper.convertValue(newCaseDetails.getData(), CaseData.class);
-        CaseData oldCaseData = mapper.convertValue(oldCaseDetails.getData(), CaseData.class);
+    public NewNoticeOfHearingTemplate buildNewNoticeOfHearingNotification(CaseDetails caseDetails) {
+        final CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        List<Element<HearingBooking>> hearings = hearingBookingService.getSelectedHearings(caseData);
 
-        List<Element<HearingBooking>> listOfHearingBookings = hearingBookingService.getNewHearings(newCaseData.getHearingDetails(), oldCaseData.getHearingDetails());
+        String subject = emailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix(caseData, caseData.getHearingDetails());
 
         return NewNoticeOfHearingTemplate.builder()
-            .caseUrl(getCaseUrl(newCaseDetails.getId()))
-            .familyManCaseNumber(newCaseData.getFamilyManCaseNumber())
-            .hearingDetails(buildNewHearingBookings(listOfHearingBookings))
-            .localAuthority(newCaseData.getCaseLocalAuthority())
-            .respondentLastName(getFirstRespondentLastName(newCaseData.getRespondents1()))
+            .caseUrl(getCaseUrl(caseDetails.getId()))
+            .familyManCaseNumber(caseData.getFamilyManCaseNumber())
+            .localAuthority(caseData.getCaseLocalAuthority())
+            .respondentLastName(getFirstRespondentLastName(caseData.getRespondents1()))
             .build();
     }
 
