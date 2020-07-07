@@ -28,6 +28,21 @@ public class NewNoticeOfHearingEmailContentProvider extends AbstractEmailContent
         RepresentativeServingPreferences representativeServingPreferences) {
         final CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
+        return getNewNoticeOfHearingTemplateBuilder(caseDetails, hearingBooking, caseData)
+            .digitalPreference(representativeServingPreferences == DIGITAL_SERVICE ? "Yes" : "No")
+            .build();
+    }
+
+    public NewNoticeOfHearingTemplate buildNewNoticeOfHearingNotification(
+        CaseDetails caseDetails,
+        HearingBooking hearingBooking) {
+        final CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        return getNewNoticeOfHearingTemplateBuilder(caseDetails, hearingBooking, caseData)
+            .build();
+    }
+
+    private NewNoticeOfHearingTemplate.NewNoticeOfHearingTemplateBuilder getNewNoticeOfHearingTemplateBuilder(CaseDetails caseDetails, HearingBooking hearingBooking, CaseData caseData) {
         return NewNoticeOfHearingTemplate.builder()
             .hearingType(hearingBooking.getType().getLabel())
             .hearingDate(hearingBooking.getStartDate().toString())
@@ -37,8 +52,6 @@ public class NewNoticeOfHearingEmailContentProvider extends AbstractEmailContent
             .caseUrl(getCaseUrl(caseDetails.getId()))
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .respondentLastName(getFirstRespondentLastName(caseData.getRespondents1()))
-            .documentLink(linkToAttachedDocument(hearingBooking.getNoticeOfHearing()))
-            .digitalPreference(representativeServingPreferences == DIGITAL_SERVICE ? "Yes" : "No")
-            .build();
+            .documentLink(linkToAttachedDocument(hearingBooking.getNoticeOfHearing()));
     }
 }
