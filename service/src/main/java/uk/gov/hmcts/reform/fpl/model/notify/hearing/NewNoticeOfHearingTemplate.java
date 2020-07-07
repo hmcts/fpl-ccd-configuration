@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 
+import java.util.Map;
+
 @Getter
 @Setter
 @Builder
@@ -17,5 +19,6 @@ public final class NewNoticeOfHearingTemplate implements NotifyData {
     private String preHearingTime;
     private String hearingTime;
     private String caseUrl;
-    private String documentLink;
+    private Map<String, Object> documentLink;
+    private String digitalPreference;
 }

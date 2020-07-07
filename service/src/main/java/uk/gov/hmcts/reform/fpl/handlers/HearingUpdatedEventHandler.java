@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
+import uk.gov.hmcts.reform.fpl.model.notify.hearing.NewNoticeOfHearingTemplate;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -22,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.service.email.content.NewNoticeOfHearingEmailCont
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
 import java.util.List;
-import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING;
 
@@ -51,35 +51,37 @@ public class HearingUpdatedEventHandler {
         List<Element<HearingBooking>> hearings = hearingBookingService.getSelectedHearings(caseData);
 
         hearings.forEach(hearing -> {
-            sendNotificationToLA(eventData, caseDetails, hearing.getValue());
-            sendNotificationToCafcass(eventData, caseDetails, hearing.getValue());
-            sendNotificationToRepresentatives(eventData, caseDetails, hearing.getValue());
+            NewNoticeOfHearingTemplate params = buildNotificationParameters(caseDetails, hearing.getValue());
+
+            sendNotificationToLA(eventData, caseDetails, params);
+            sendNotificationToCafcass(eventData, params);
+            sendNotificationToRepresentatives(eventData, params);
         });
 
     }
 
-    private void sendNotificationToLA(EventData eventData, CaseDetails caseDetails, HearingBooking hearing) {
+    private void sendNotificationToLA(EventData eventData, CaseDetails caseDetails, NewNoticeOfHearingTemplate params) {
         String email = inboxLookupService.getNotificationRecipientEmail(caseDetails,
             eventData.getLocalAuthorityCode());
         notificationService.sendEmail(NOTICE_OF_NEW_HEARING, email,
-            buildNotificationParameters(caseDetails, hearing), eventData.getReference());
+            params, eventData.getReference());
     }
 
-    private void sendNotificationToCafcass(EventData eventData, CaseDetails caseDetails, HearingBooking hearing) {
+    private void sendNotificationToCafcass(EventData eventData, NewNoticeOfHearingTemplate params) {
         String email = cafcassLookupConfiguration.getCafcass(eventData.getLocalAuthorityCode()).getEmail();
         notificationService.sendEmail(NOTICE_OF_NEW_HEARING, email,
-            buildNotificationParameters(caseDetails, hearing), eventData.getReference());
+            params, eventData.getReference());
     }
 
     private void sendNotificationToRepresentatives(
-        EventData eventData, CaseDetails caseDetails, HearingBooking hearing) {
+        EventData eventData, NewNoticeOfHearingTemplate params) {
         representativeNotificationService
             .sendToRepresentativesByServedPreference(RepresentativeServingPreferences.EMAIL, NOTICE_OF_NEW_HEARING,
-            buildNotificationParameters(caseDetails, hearing), eventData);
+                params.toMap(mapper), eventData);
     }
 
-    private Map<String, Object> buildNotificationParameters(CaseDetails caseDetails, HearingBooking hearingBooking) {
+    private NewNoticeOfHearingTemplate buildNotificationParameters(CaseDetails caseDetails, HearingBooking hearingBooking) {
         return newNoticeOfHearingEmailContentProvider
-            .buildNewNoticeOfHearingNotification(caseDetails, hearingBooking).toMap(mapper);
+            .buildNewNoticeOfHearingNotification(caseDetails, hearingBooking, RepresentativeServingPreferences.DIGITAL_SERVICE);
     }
 }
