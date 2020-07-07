@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
-import uk.gov.hmcts.reform.fpl.events.HearingsUpdated;
+import uk.gov.hmcts.reform.fpl.events.NewHearingsAddedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
@@ -30,7 +30,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMA
 @Slf4j
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class HearingUpdatedEventHandler {
+public class NewHearingsAddedEventHandler {
 
     private static final List<RepresentativeServingPreferences> SERVING_PREFERENCES = List.of(EMAIL, DIGITAL_SERVICE);
 
@@ -43,7 +43,7 @@ public class HearingUpdatedEventHandler {
 
     @Async
     @EventListener
-    public void sendEmail(final HearingsUpdated event) {
+    public void sendEmail(final NewHearingsAddedEvent event) {
         EventData eventData = new EventData(event);
 
         final CaseDetails caseDetails = mapper
@@ -51,27 +51,26 @@ public class HearingUpdatedEventHandler {
         final CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         caseData.getSelectedHearings().forEach(hearing -> {
-            NewNoticeOfHearingTemplate params = newHearingContent.buildNewNoticeOfHearingNotification(caseDetails,
+            NewNoticeOfHearingTemplate templateData = newHearingContent.buildNewNoticeOfHearingNotification(caseDetails,
                 hearing.getValue());
 
-            sendNotificationToLA(eventData, caseDetails, params);
-            sendNotificationToCafcass(eventData, params);
+            sendNotificationToLA(eventData, caseDetails, templateData);
+            sendNotificationToCafcass(eventData, templateData);
             sendNotificationToRepresentatives(eventData, caseDetails, hearing.getValue());
         });
-
     }
 
-    private void sendNotificationToLA(EventData eventData, CaseDetails caseDetails, NewNoticeOfHearingTemplate params) {
+    private void sendNotificationToLA(EventData eventData, CaseDetails caseDetails, NewNoticeOfHearingTemplate templateData) {
         String email = inboxLookupService.getNotificationRecipientEmail(caseDetails,
             eventData.getLocalAuthorityCode());
-        notificationService.sendEmail(NOTICE_OF_NEW_HEARING, email,
-            params, eventData.getReference());
+
+        notificationService.sendEmail(NOTICE_OF_NEW_HEARING, email, templateData, eventData.getReference());
     }
 
-    private void sendNotificationToCafcass(EventData eventData, NewNoticeOfHearingTemplate params) {
+    private void sendNotificationToCafcass(EventData eventData, NewNoticeOfHearingTemplate templateData) {
         String email = cafcassLookupConfiguration.getCafcass(eventData.getLocalAuthorityCode()).getEmail();
-        notificationService.sendEmail(NOTICE_OF_NEW_HEARING, email,
-            params, eventData.getReference());
+
+        notificationService.sendEmail(NOTICE_OF_NEW_HEARING, email, templateData, eventData.getReference());
     }
 
     private void sendNotificationToRepresentatives(
@@ -79,12 +78,12 @@ public class HearingUpdatedEventHandler {
 
         SERVING_PREFERENCES.forEach(
             servingPreference -> {
-                Map<String, Object> templateParameters = newHearingContent.buildNewNoticeOfHearingNotification(
-                    caseDetails, hearingBooking, servingPreference).toMap(mapper);
+                NewNoticeOfHearingTemplate templateParameters = newHearingContent.buildNewNoticeOfHearingNotification(
+                    caseDetails, hearingBooking, servingPreference);
 
                 representativeNotificationService
                     .sendToRepresentativesByServedPreference(servingPreference, NOTICE_OF_NEW_HEARING,
-                        templateParameters, eventData);
+                        templateParameters.toMap(mapper), eventData);
             }
         );
     }
