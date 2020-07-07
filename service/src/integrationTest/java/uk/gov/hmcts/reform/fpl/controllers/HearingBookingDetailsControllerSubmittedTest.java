@@ -7,8 +7,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.service.notify.NotificationClient;
+import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -16,11 +22,14 @@ import java.util.List;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -28,6 +37,8 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
@@ -36,9 +47,17 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTest {
 
     private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
+    private static final long CASE_ID = 12345L;
+    private static final String CASE_REFERENCE = "12345";
+    private static final String LOCAL_AUTHORITY_CODE = "example";
+    private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
+    private static final String CAFCASS_EMAIL = "cafcass@cafcass.com";
 
     @MockBean
     private CoreCaseDataService coreCaseDataService;
+
+    @MockBean
+    private NotificationClient notificationClient;
 
     HearingBookingDetailsControllerSubmittedTest() {
         super("add-hearing-bookings");
@@ -60,10 +79,11 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
     void shouldNotTriggerPopulateDatesEventWhenCaseIsNotInGatekeepingState() {
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
-                .id(12345L)
+                .id(CASE_ID)
                 .jurisdiction(JURISDICTION)
                 .caseTypeId(CASE_TYPE)
                 .state("Submitted")
+                .data(Map.of())
                 .build())
             .build();
 
@@ -79,10 +99,54 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
         checkThat(() -> verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), any(), any()));
     }
 
+    @Test
+    void shouldTriggerPopulateNewHearingsEventWhenNewHearingsHaveBeenAdded() throws NotificationClientException {
+        HearingBooking hearingBooking = buildHearingBooking();
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(CASE_ID)
+            .data(Map.of(
+                "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
+                "familyManCaseNumber", "111222",
+                "selectedHearings", wrapElements(hearingBooking),
+                "representatives", createRepresentatives(RepresentativeServingPreferences.EMAIL),
+                "respondents1", createRespondents()
+            )).build();
+
+        postSubmittedEvent(caseDetails);
+
+        checkThat(() -> {
+            verify(notificationClient).sendEmail(
+                eq(NOTICE_OF_NEW_HEARING),
+                eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+                anyMap(),
+                eq(CASE_REFERENCE));
+
+            verify(notificationClient).sendEmail(
+                eq(NOTICE_OF_NEW_HEARING),
+                eq(CAFCASS_EMAIL),
+                anyMap(),
+                eq(CASE_REFERENCE));
+
+            verify(notificationClient).sendEmail(
+                eq(NOTICE_OF_NEW_HEARING),
+                eq("abc@example.com"),
+                anyMap(),
+                eq(CASE_REFERENCE));
+        });
+    }
+
+    @Test
+    void shouldNotTriggerPopulateNewHearingsEventWhenNoNewHearingsArePresent() {
+        postSubmittedEvent(callbackRequestWithNoEmptyDates());
+
+        checkThat(() -> verify(notificationClient, never()).sendEmail(any(), any(), any(), any(), any()));
+    }
+
     private CallbackRequest callbackRequestWithEmptyDates() {
         return CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
-                .id(12345L)
+                .id(CASE_ID)
                 .jurisdiction(JURISDICTION)
                 .caseTypeId(CASE_TYPE)
                 .state("Gatekeeping")
@@ -120,7 +184,7 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
     private CallbackRequest callbackRequestWithNoEmptyDates() {
         return CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
-                .id(12345L)
+                .id(CASE_ID)
                 .jurisdiction(JURISDICTION)
                 .caseTypeId(CASE_TYPE)
                 .state("Submitted")
@@ -196,5 +260,21 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
 
     private Direction buildDirection(String text, LocalDateTime dateTime) {
         return Direction.builder().directionText(text).responses(List.of()).dateToBeCompletedBy(dateTime).build();
+    }
+
+    private HearingBooking buildHearingBooking() {
+        LocalDateTime hearingDate = LocalDateTime.of(2020, 1, 1, 0, 0, 0);
+
+        return HearingBooking.builder()
+            .venue("Test venue")
+            .startDate(hearingDate)
+            .endDate(hearingDate.plusDays(1))
+            .type(HearingType.FINAL)
+            .noticeOfHearing(DocumentReference.builder()
+                .filename("Test document")
+                .url("http://test.net")
+                .binaryUrl("http://test.net")
+                .build())
+            .build();
     }
 }

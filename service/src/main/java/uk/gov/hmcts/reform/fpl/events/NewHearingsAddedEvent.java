@@ -9,8 +9,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 @Value
 @Generated
 @EqualsAndHashCode(callSuper = true)
-public class HearingsUpdated extends CallbackEvent {
-    public HearingsUpdated(CallbackRequest callbackRequest) {
+public class NewHearingsAddedEvent extends CallbackEvent {
+    public NewHearingsAddedEvent(CallbackRequest callbackRequest) {
         super(callbackRequest);
     }
 }

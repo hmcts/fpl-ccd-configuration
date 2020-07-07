@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.events.HearingsUpdated;
+import uk.gov.hmcts.reform.fpl.events.NewHearingsAddedEvent;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -168,7 +168,8 @@ public class HearingBookingDetailsController {
             applicationEventPublisher.publishEvent(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
         }
 
-            applicationEventPublisher.publishEvent(new HearingsUpdated(callbackRequest));
+        applicationEventPublisher.publishEvent(new NewHearingsAddedEvent(callbackRequest));
+
 
     }
 }
