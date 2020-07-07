@@ -25,6 +25,11 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.NEXT_HEARING
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SERVED_CASE_MANAGEMENT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.DRAFT_CASE_MANAGEMENT_ORDER;
 
+/**
+ * Service manging the flow of CMO objects between judge and LA.
+ *
+ * @deprecated to be removed with {@link CaseManagementOrder}, withdraw FPLA-1478 as well?
+ */
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseManagementOrderProgressionService {
