@@ -20,14 +20,21 @@ import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NewNoticeOfHearingEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
+import java.util.List;
+import java.util.Map;
+
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class HearingUpdatedEventHandler {
 
-    private final NewNoticeOfHearingEmailContentProvider newNoticeOfHearingEmailContentProvider;
+    private static final List<RepresentativeServingPreferences> SERVING_PREFERENCES = List.of(EMAIL, DIGITAL_SERVICE);
+
+    private final NewNoticeOfHearingEmailContentProvider newHearingContent;
     private final ObjectMapper mapper;
     private final NotificationService notificationService;
     private final RepresentativeNotificationService representativeNotificationService;
@@ -44,11 +51,12 @@ public class HearingUpdatedEventHandler {
         final CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         caseData.getSelectedHearings().forEach(hearing -> {
-            NewNoticeOfHearingTemplate params = buildNotificationParameters(caseDetails, hearing.getValue());
+            NewNoticeOfHearingTemplate params = newHearingContent.buildNewNoticeOfHearingNotification(caseDetails,
+                hearing.getValue());
 
             sendNotificationToLA(eventData, caseDetails, params);
             sendNotificationToCafcass(eventData, params);
-            sendNotificationToRepresentatives(eventData, params);
+            sendNotificationToRepresentatives(eventData, caseDetails, hearing.getValue());
         });
 
     }
@@ -67,16 +75,17 @@ public class HearingUpdatedEventHandler {
     }
 
     private void sendNotificationToRepresentatives(
-        EventData eventData, NewNoticeOfHearingTemplate params) {
-        representativeNotificationService
-            .sendToRepresentativesByServedPreference(RepresentativeServingPreferences.EMAIL, NOTICE_OF_NEW_HEARING,
-                params.toMap(mapper), eventData);
-    }
+        EventData eventData, CaseDetails caseDetails, HearingBooking hearingBooking) {
 
-    private NewNoticeOfHearingTemplate buildNotificationParameters(CaseDetails caseDetails,
-                                                                   HearingBooking hearingBooking) {
-        return newNoticeOfHearingEmailContentProvider
-            .buildNewNoticeOfHearingNotification(caseDetails, hearingBooking,
-                RepresentativeServingPreferences.DIGITAL_SERVICE);
+        SERVING_PREFERENCES.forEach(
+            servingPreference -> {
+                Map<String, Object> templateParameters = newHearingContent.buildNewNoticeOfHearingNotification(
+                    caseDetails, hearingBooking, servingPreference).toMap(mapper);
+
+                representativeNotificationService
+                    .sendToRepresentativesByServedPreference(servingPreference, NOTICE_OF_NEW_HEARING,
+                        templateParameters, eventData);
+            }
+        );
     }
 }
