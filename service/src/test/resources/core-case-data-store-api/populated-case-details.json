@@ -116,7 +116,7 @@
       "withoutNoticeReason": "Notice without hearing needed",
       "respondentsAwareReason": "They seek to care for baby in mother and baby unit"
     },
-    "caseName": "test",
+    "caseName": "${caseName:-test}",
     "children1": [
       {
         "id": "3b0b9640-2894-41eb-bef2-a031d18c8457",
@@ -527,7 +527,6 @@
         "allocatedJudgeLabel": null
       }
     },
-    "amountToPay": "2055.0",
     "returnApplication": {
       "note": "Missing children details",
       "reason": [

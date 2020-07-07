@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import org.apache.commons.codec.binary.Base64;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -9,6 +11,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
@@ -27,8 +30,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static org.apache.commons.lang3.RandomUtils.nextLong;
-import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -67,6 +71,9 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     private static final String CAFCASS_EMAIL = "cafcass@cafcass.com";
     private static final String CTSC_EMAIL = "FamilyPublicLaw+ctsc@gmail.com";
     private static final String DISPLAY_AMOUNT_TO_PAY = "displayAmountToPay";
+    private static final String SURVEY_LINK = "https://www.smartsurvey.co"
+        + ".uk/s/preview/FamilyPublicLaw/44945E4F1F8CBEE3E10D79A4CED903";
+
     private final Long caseId = nextLong();
 
     @MockBean
@@ -82,14 +89,9 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         super("case-submission");
     }
 
-    @Test
-    void shouldReturnUnsuccessfulResponseWithNoData() {
-        postSubmittedEvent(new byte[]{}, SC_BAD_REQUEST);
-    }
-
-    @Test
-    void shouldReturnUnsuccessfulResponseWithMalformedData() {
-        postSubmittedEvent("Mock".getBytes(), SC_BAD_REQUEST);
+    @BeforeEach
+    void init() {
+        when(documentDownloadService.downloadDocument(any())).thenReturn(DOCUMENT_CONTENT);
     }
 
     @Test
@@ -265,16 +267,31 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         });
     }
 
+    @Test
+    void shouldPopulateResponseWithMarkdown() {
+        String caseName = "Names are hard";
+        CallbackRequest request = buildCallbackRequest(populatedCaseDetails(
+            Map.of("caseName", caseName)
+        ), OPEN);
+
+        SubmittedCallbackResponse response = postSubmittedEvent(request);
+        String expectedHeader = "# Application sent\n\n## " + caseName;
+        String expectedBody = "## What happens next\n\n"
+            + "We’ll check your application – we might need to ask you more questions, or send it back to you to amend."
+            + "\n\nIf we have no questions, we’ll send your application to the local court gatekeeper.\n\n"
+            + "You can contact us at contactFPL@justice.gov.uk.\n\n"
+            + "## Help us improve this service\n\n"
+            + "Tell us how this service was today on our <a href=\"" + SURVEY_LINK + "\" target=\"_blank\">feedback "
+            + "form</a>.";
+
+        assertThat(response).extracting("confirmationHeader", "confirmationBody")
+            .containsExactly(expectedHeader, expectedBody);
+    }
 
     @Nested
     class CaseResubmission {
 
         final State state = RETURNED;
-
-        @BeforeEach
-        void init() {
-            when(documentDownloadService.downloadDocument(any())).thenReturn(DOCUMENT_CONTENT);
-        }
 
         @Test
         void shouldNotifyAdminAndCafcassWhenCaseIsResubmitted() {
@@ -395,12 +412,16 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     }
 
     private <T extends SharedNotifyTemplate> void setSharedTemplateParameters(T template) {
+        String fileContent = new String(Base64.encodeBase64(DOCUMENT_CONTENT), ISO_8859_1);
+        JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
+
         template.setLocalAuthority("Example Local Authority");
         template.setReference(caseId.toString());
         template.setCaseUrl(String.format("http://fake-url/cases/case-details/%s", caseId));
         template.setDataPresent(YES.getValue());
         template.setFullStop(NO.getValue());
         template.setOrdersAndDirections(List.of("Emergency protection order", "Contact with any named person"));
+        template.setDocumentLink(jsonFileObject.toMap());
     }
 
     private CallbackRequest buildCallbackRequest(CaseDetails caseDetails, State stateBefore) {
