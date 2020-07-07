@@ -7,6 +7,7 @@ public enum CMOStatus {
      *
      * @deprecated no longer used in the new CMO status model but preserved for old cases.
      */
+    @Deprecated
     PARTIES_REVIEW,
     SELF_REVIEW
 }

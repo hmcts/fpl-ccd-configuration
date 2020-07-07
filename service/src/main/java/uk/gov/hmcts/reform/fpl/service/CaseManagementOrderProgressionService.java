@@ -32,6 +32,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.DRAFT_CASE_MANAGEMENT_ORDER;
  */
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@Deprecated
 public class CaseManagementOrderProgressionService {
     //TODO: better CCD ids for the below:
     // sharedDraftCMODocument -> sharedCaseManagementOrderDocument

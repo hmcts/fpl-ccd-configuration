@@ -270,6 +270,7 @@ public class CaseData {
      * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
      */
     @JsonIgnore
+    @Deprecated
     private CaseManagementOrder caseManagementOrder;
 
     /**
@@ -279,6 +280,7 @@ public class CaseData {
      *
      * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
      */
+    @Deprecated
     public CaseManagementOrder getCaseManagementOrder() {
         return prepareCaseManagementOrder();
     }
@@ -288,6 +290,7 @@ public class CaseData {
      *
      * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
      */
+    @Deprecated
     private CaseManagementOrder prepareCaseManagementOrder() {
         //existing order
         Optional<CaseManagementOrder> oldOrder = ofNullable(caseManagementOrder);
@@ -338,6 +341,7 @@ public class CaseData {
      *
      * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
      */
+    @Deprecated
     @JsonGetter("caseManagementOrder")
     private CaseManagementOrder getCaseManagementOrderForLocalAuthority() {
         if (caseManagementOrder != null && caseManagementOrder.getStatus() != SEND_TO_JUDGE) {
@@ -351,6 +355,7 @@ public class CaseData {
      *
      * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
      */
+    @Deprecated
     @JsonSetter("caseManagementOrder")
     private void setCaseManagementOrderForLocalAuthority(CaseManagementOrder order) {
         if (order != null) {
@@ -363,6 +368,7 @@ public class CaseData {
      *
      * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
      */
+    @Deprecated
     @JsonGetter("cmoToAction")
     private CaseManagementOrder getCaseManagementOrderForJudiciary() {
         if (caseManagementOrder != null && caseManagementOrder.getStatus() == SEND_TO_JUDGE) {
@@ -376,6 +382,7 @@ public class CaseData {
      *
      * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
      */
+    @Deprecated
     @JsonSetter("cmoToAction")
     private void setCaseManagementOrderForJudiciary(CaseManagementOrder order) {
         if (order != null) {
@@ -388,30 +395,35 @@ public class CaseData {
      *
      * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
      */
+    @Deprecated
     private final OrderAction orderAction;
     /**
      * Date list for CMO.
      *
      * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
      */
+    @Deprecated
     private final DynamicList cmoHearingDateList;
     /**
      * Schedule for CMO.
      *
      * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
      */
+    @Deprecated
     private final Schedule schedule;
     /**
      * Recitals for CMO.
      *
      * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
      */
+    @Deprecated
     private final List<Element<Recital>> recitals;
     /**
      * Document object for other other parties to view.
      *
      * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
      */
+    @Deprecated
     private final DocumentReference sharedDraftCMODocument;
 
     /**
@@ -419,6 +431,7 @@ public class CaseData {
      *
      * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
      */
+    @Deprecated
     private final List<Element<CaseManagementOrder>> servedCaseManagementOrders;
 
     /**
@@ -426,6 +439,7 @@ public class CaseData {
      *
      * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
      */
+    @Deprecated
     public List<Element<CaseManagementOrder>> getServedCaseManagementOrders() {
         return defaultIfNull(servedCaseManagementOrders, new ArrayList<>());
     }
@@ -435,6 +449,7 @@ public class CaseData {
      *
      * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
      */
+    @Deprecated
     private final DynamicList nextHearingDateList;
 
     private final Others others;

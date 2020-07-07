@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
  *
  * @deprecated to be removed, will be using {@link CMOStatus} hopefully in rework
  */
+@Deprecated
 public enum ActionType {
     SEND_TO_ALL_PARTIES,
     JUDGE_REQUESTED_CHANGE,
