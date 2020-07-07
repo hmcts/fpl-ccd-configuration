@@ -10,6 +10,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
@@ -180,35 +181,36 @@ abstract class AbstractControllerTest {
         return postAboutToSubmitEvent(readBytes(filename), SC_OK);
     }
 
-    AboutToStartOrSubmitCallbackResponse postSubmittedEvent(byte[] data, int expectedStatus) {
-        return postEvent(String.format("/callback/%s/submitted", eventName), data, expectedStatus);
+    SubmittedCallbackResponse postSubmittedEvent(byte[] data, int expectedStatus) {
+        return postEvent(String.format("/callback/%s/submitted", eventName), data, expectedStatus,
+            SubmittedCallbackResponse.class);
     }
 
-    AboutToStartOrSubmitCallbackResponse postSubmittedEvent(byte[] data) {
+    SubmittedCallbackResponse postSubmittedEvent(byte[] data) {
         return postSubmittedEvent(data, SC_OK);
     }
 
-    AboutToStartOrSubmitCallbackResponse postSubmittedEvent(CallbackRequest callbackRequest, int expectedStatus) {
+    SubmittedCallbackResponse postSubmittedEvent(CallbackRequest callbackRequest, int expectedStatus) {
         return postSubmittedEvent(toBytes(callbackRequest), expectedStatus);
     }
 
-    AboutToStartOrSubmitCallbackResponse postSubmittedEvent(CallbackRequest callbackRequest) {
+    SubmittedCallbackResponse postSubmittedEvent(CallbackRequest callbackRequest) {
         return postSubmittedEvent(callbackRequest, SC_OK);
     }
 
-    AboutToStartOrSubmitCallbackResponse postSubmittedEvent(CaseDetails caseDetails, int expectedStatus) {
+    SubmittedCallbackResponse postSubmittedEvent(CaseDetails caseDetails, int expectedStatus) {
         return postSubmittedEvent(toCallbackRequest(caseDetails), expectedStatus);
     }
 
-    AboutToStartOrSubmitCallbackResponse postSubmittedEvent(CaseDetails caseDetails) {
+    SubmittedCallbackResponse postSubmittedEvent(CaseDetails caseDetails) {
         return postSubmittedEvent(caseDetails, SC_OK);
     }
 
-    AboutToStartOrSubmitCallbackResponse postSubmittedEvent(String filename, int expectedStatus) {
+    SubmittedCallbackResponse postSubmittedEvent(String filename, int expectedStatus) {
         return postSubmittedEvent(readBytes(filename), expectedStatus);
     }
 
-    AboutToStartOrSubmitCallbackResponse postSubmittedEvent(String filename) {
+    SubmittedCallbackResponse postSubmittedEvent(String filename) {
         return postSubmittedEvent(filename, SC_OK);
     }
 
@@ -231,6 +233,10 @@ abstract class AbstractControllerTest {
     }
 
     private AboutToStartOrSubmitCallbackResponse postEvent(String path, byte[] data, int expectedStatus) {
+        return postEvent(path, data, expectedStatus, AboutToStartOrSubmitCallbackResponse.class);
+    }
+
+    private <T> T postEvent(String path, byte[] data, int expectedStatus, Class<T> responseType) {
         try {
             MvcResult response = mockMvc
                 .perform(post(path)
@@ -244,7 +250,7 @@ abstract class AbstractControllerTest {
             byte[] responseBody = response.getResponse().getContentAsByteArray();
 
             if (responseBody.length > 0) {
-                return mapper.readValue(responseBody, AboutToStartOrSubmitCallbackResponse.class);
+                return mapper.readValue(responseBody, responseType);
             } else {
                 return null;
             }
