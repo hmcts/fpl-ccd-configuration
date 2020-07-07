@@ -179,6 +179,6 @@ public class HearingBookingDetailsController {
     }
 
     private boolean hasSelectedHearings(CaseData caseData) {
-        return caseData.getSelectedHearings() != null && isNotEmpty(caseData.getSelectedHearings());
+        return isNotEmpty(caseData.getSelectedHearings());
     }
 }
