@@ -36,7 +36,6 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAll
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class HearingBookingService {
     public static final String HEARING_DETAILS_KEY = "hearingDetails";
-    public static final String SELECTED_HEARINGS_KEY = "selectedHearings";
 
     private final Time time;
 

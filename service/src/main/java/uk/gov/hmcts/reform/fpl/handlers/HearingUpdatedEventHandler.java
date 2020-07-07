@@ -13,28 +13,26 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.events.HearingsUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.NewNoticeOfHearingTemplate;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NewNoticeOfHearingEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
 import java.util.List;
-import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class HearingUpdatedEventHandler {
 
-    private static final List<RepresentativeServingPreferences> SERVING_PREFERENCES = List.of(EMAIL, DIGITAL_SERVICE);
-
-    private final NewNoticeOfHearingEmailContentProvider newHearingContent;
+    private final NewNoticeOfHearingEmailContentProvider newNoticeOfHearingEmailContentProvider;
+    private final HearingBookingService hearingBookingService;
     private final ObjectMapper mapper;
     private final NotificationService notificationService;
     private final RepresentativeNotificationService representativeNotificationService;
@@ -50,13 +48,15 @@ public class HearingUpdatedEventHandler {
             .convertValue(event.getCallbackRequest().getCaseDetails(), CaseDetails.class);
         final CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseData.getSelectedHearings().forEach(hearing -> {
-            NewNoticeOfHearingTemplate params = newHearingContent.buildNewNoticeOfHearingNotification(caseDetails,
-                hearing.getValue());
+        List<Element<HearingBooking>> hearings = hearingBookingService.getSelectedHearings(
+            caseData.getNewHearingSelector(), caseData.getHearingDetails());
+
+        hearings.forEach(hearing -> {
+            NewNoticeOfHearingTemplate params = buildNotificationParameters(caseDetails, hearing.getValue());
 
             sendNotificationToLA(eventData, caseDetails, params);
             sendNotificationToCafcass(eventData, params);
-            sendNotificationToRepresentatives(eventData, caseDetails, hearing.getValue());
+            sendNotificationToRepresentatives(eventData, params);
         });
 
     }
@@ -75,17 +75,16 @@ public class HearingUpdatedEventHandler {
     }
 
     private void sendNotificationToRepresentatives(
-        EventData eventData, CaseDetails caseDetails, HearingBooking hearingBooking) {
+        EventData eventData, NewNoticeOfHearingTemplate params) {
+        representativeNotificationService
+            .sendToRepresentativesByServedPreference(RepresentativeServingPreferences.EMAIL, NOTICE_OF_NEW_HEARING,
+                params.toMap(mapper), eventData);
+    }
 
-        SERVING_PREFERENCES.forEach(
-            servingPreference -> {
-                Map<String, Object> templateParameters = newHearingContent.buildNewNoticeOfHearingNotification(
-                    caseDetails, hearingBooking, servingPreference).toMap(mapper);
-
-                representativeNotificationService
-                    .sendToRepresentativesByServedPreference(servingPreference, NOTICE_OF_NEW_HEARING,
-                        templateParameters, eventData);
-            }
-        );
+    private NewNoticeOfHearingTemplate buildNotificationParameters(CaseDetails caseDetails,
+                                                                   HearingBooking hearingBooking) {
+        return newNoticeOfHearingEmailContentProvider
+            .buildNewNoticeOfHearingNotification(caseDetails, hearingBooking,
+                RepresentativeServingPreferences.DIGITAL_SERVICE);
     }
 }

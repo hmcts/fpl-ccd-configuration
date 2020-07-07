@@ -1257,15 +1257,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "selectedHearings",
-    "Label": "Hearing",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "HearingBooking",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "childrenList",
     "Label": "Which child?",
     "FieldType": "DynamicList",
