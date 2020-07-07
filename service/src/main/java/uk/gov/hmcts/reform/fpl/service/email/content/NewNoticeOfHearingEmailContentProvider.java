@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.NewNoticeOfHearingTemplate;
+import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
@@ -17,6 +18,7 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 public class NewNoticeOfHearingEmailContentProvider extends AbstractEmailContentProvider {
 
     private final ObjectMapper mapper;
+    private final CaseDataExtractionService caseDataExtractionService;
 
     public NewNoticeOfHearingTemplate buildNewNoticeOfHearingNotification(
         CaseDetails caseDetails, HearingBooking hearingBooking) {
@@ -26,11 +28,12 @@ public class NewNoticeOfHearingEmailContentProvider extends AbstractEmailContent
             .hearingType(hearingBooking.getType().getLabel())
             .hearingDate(hearingBooking.getStartDate().toString())
             .hearingVenue(hearingBooking.getVenue())
-            //.preHearingTime(hearingBooking)
+            .hearingTime(caseDataExtractionService.getHearingTime(hearingBooking))
+            .preHearingTime(caseDataExtractionService.extractPrehearingAttendance(hearingBooking))
             .caseUrl(getCaseUrl(caseDetails.getId()))
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .respondentLastName(getFirstRespondentLastName(caseData.getRespondents1()))
+//            .documentLink()
             .build();
     }
-
 }
