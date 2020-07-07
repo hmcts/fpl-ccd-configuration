@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.hearing.NewNoticeOfHearingTemplate;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
@@ -35,7 +36,7 @@ public class NewNoticeOfHearingEmailContentProvider extends AbstractEmailContent
             .hearingTime(caseDataExtractionService.getHearingTime(hearingBooking))
             .preHearingTime(caseDataExtractionService.extractPrehearingAttendance(hearingBooking))
             .caseUrl(getCaseUrl(caseDetails.getId()))
-            .familyManCaseNumber(caseData.getFamilyManCaseNumber())
+            .familyManCaseNumber(defaultIfNull(caseData.getFamilyManCaseNumber(), ""))
             .respondentLastName(getFirstRespondentLastName(caseData.getRespondents1()))
             .documentLink(linkToAttachedDocument(hearingBooking.getNoticeOfHearing()))
             .digitalPreference(representativeServingPreferences == DIGITAL_SERVICE ? "Yes" : "No")

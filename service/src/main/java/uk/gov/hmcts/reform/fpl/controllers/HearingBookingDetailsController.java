@@ -40,6 +40,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.NEW_HEARING_LABEL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.NEW_HEARING_SELECTOR;
 import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
+import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.SELECTED_HEARINGS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInGatekeepingState;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
@@ -82,6 +83,8 @@ public class HearingBookingDetailsController {
 
         caseDetails.getData().remove(NEW_HEARING_LABEL.getKey());
         caseDetails.getData().remove(NEW_HEARING_SELECTOR.getKey());
+        caseDetails.getData().remove(SELECTED_HEARINGS_KEY);
+
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -153,6 +156,7 @@ public class HearingBookingDetailsController {
             service.combineHearingDetails(updatedHearings, pastHearings);
 
         caseDetails.getData().put(HEARING_DETAILS_KEY, combinedHearingDetails);
+        caseDetails.getData().put(SELECTED_HEARINGS_KEY, selectedHearings);
         caseDetails.getData().remove((NEW_HEARING_SELECTOR.getKey()));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -163,12 +167,15 @@ public class HearingBookingDetailsController {
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
+
         if (isInGatekeepingState(callbackRequest.getCaseDetails())
             && standardDirectionsService.hasEmptyDates(caseData)) {
             applicationEventPublisher.publishEvent(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
         }
 
-        applicationEventPublisher.publishEvent(new HearingsUpdated(callbackRequest));
+        if (!caseData.getSelectedHearings().isEmpty()) {
+            applicationEventPublisher.publishEvent(new HearingsUpdated(callbackRequest));
+        }
 
     }
 }

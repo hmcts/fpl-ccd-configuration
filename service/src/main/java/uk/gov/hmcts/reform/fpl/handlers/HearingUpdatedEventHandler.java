@@ -13,16 +13,12 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.events.HearingsUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.NewNoticeOfHearingTemplate;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NewNoticeOfHearingEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
-
-import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING;
 
@@ -32,7 +28,6 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING;
 public class HearingUpdatedEventHandler {
 
     private final NewNoticeOfHearingEmailContentProvider newNoticeOfHearingEmailContentProvider;
-    private final HearingBookingService hearingBookingService;
     private final ObjectMapper mapper;
     private final NotificationService notificationService;
     private final RepresentativeNotificationService representativeNotificationService;
@@ -48,9 +43,7 @@ public class HearingUpdatedEventHandler {
             .convertValue(event.getCallbackRequest().getCaseDetails(), CaseDetails.class);
         final CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<HearingBooking>> hearings = hearingBookingService.getSelectedHearings(caseData);
-
-        hearings.forEach(hearing -> {
+        caseData.getSelectedHearings().forEach(hearing -> {
             NewNoticeOfHearingTemplate params = buildNotificationParameters(caseDetails, hearing.getValue());
 
             sendNotificationToLA(eventData, caseDetails, params);
@@ -80,8 +73,10 @@ public class HearingUpdatedEventHandler {
                 params.toMap(mapper), eventData);
     }
 
-    private NewNoticeOfHearingTemplate buildNotificationParameters(CaseDetails caseDetails, HearingBooking hearingBooking) {
+    private NewNoticeOfHearingTemplate buildNotificationParameters(CaseDetails caseDetails,
+                                                                   HearingBooking hearingBooking) {
         return newNoticeOfHearingEmailContentProvider
-            .buildNewNoticeOfHearingNotification(caseDetails, hearingBooking, RepresentativeServingPreferences.DIGITAL_SERVICE);
+            .buildNewNoticeOfHearingNotification(caseDetails, hearingBooking,
+                RepresentativeServingPreferences.DIGITAL_SERVICE);
     }
 }
