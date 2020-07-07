@@ -14,6 +14,7 @@ import java.util.UUID;
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Deprecated
 public class NextHearing {
     private final UUID id;
     private final String date;

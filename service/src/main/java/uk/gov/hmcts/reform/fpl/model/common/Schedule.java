@@ -10,6 +10,7 @@ import lombok.Data;
  */
 @Data
 @Builder(toBuilder = true)
+@Deprecated
 public class Schedule {
     private final String includeSchedule;
     private final String allocation;

@@ -10,6 +10,7 @@ import lombok.Data;
  */
 @Data
 @Builder(toBuilder = true)
+@Deprecated
 public class Recital {
     private final String title;
     private final String description;

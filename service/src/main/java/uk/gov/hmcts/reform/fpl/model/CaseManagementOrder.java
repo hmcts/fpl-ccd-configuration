@@ -29,6 +29,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
  * {@link uk.gov.hmcts.reform.fpl.model.order.UploadedCaseManagementOrder UploadedCaseManagementOrder}.
  */
 @Getter
+@Deprecated
 public class CaseManagementOrder extends OrderForHearing implements IssuableOrder {
     private final UUID id;
     private final Schedule schedule;
