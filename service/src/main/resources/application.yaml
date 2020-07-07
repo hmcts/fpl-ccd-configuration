@@ -137,6 +137,12 @@ scheduler:
 testing:
   support:
     enabled: ${TESTING_SUPPORT_ENABLED:false}
+
+# Actual survey will be injected through flux for prod
+survey:
+  url:
+    caseSubmission: 'https://www.smartsurvey.co.uk/s/preview/FamilyPublicLaw/44945E4F1F8CBEE3E10D79A4CED903'
+
 ---
 
 spring:

@@ -40,7 +40,7 @@ Scenario('LA makes corrections to the application', async (I, caseViewPage, ente
   await caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationEventPage.seeDraftApplicationFile();
   submitApplicationEventPage.giveConsent();
-  await I.completeEvent('Submit');
+  await I.completeEvent('Submit', null, true);
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.see('e2e_test_case.pdf');
