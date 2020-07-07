@@ -27,10 +27,6 @@ public class HearingUpdatedEventHandler {
     @EventListener
     public void sendEmail(final HearingsUpdated event) {
         final CaseData caseData = mapper.convertValue(event.getCallbackRequest().getCaseDetails().getData(), CaseData.class);
-
-
-        List<Element<HearingBooking>> hearings = hearingBookingService.getSelectedHearings(caseData);
-
     }
 
 

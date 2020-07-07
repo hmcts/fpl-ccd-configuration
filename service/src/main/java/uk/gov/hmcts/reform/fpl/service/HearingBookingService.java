@@ -146,10 +146,8 @@ public class HearingBookingService {
 
     }
 
-    public List<Element<HearingBooking>> getSelectedHearings(CaseData caseData) {
-        Selector hearingSelector = caseData.getNewHearingSelector();
-        List<Element<HearingBooking>> hearings = caseData.getHearingDetails();
-        if (hearingSelector == null) {
+    public List<Element<HearingBooking>> getSelectedHearings(Selector hearingSelector, List<Element<HearingBooking>> hearings) {
+        if (hearings.isEmpty() || hearingSelector == null || hearingSelector.getSelected().isEmpty()) {
             return List.of();
         } else {
             return hearingSelector.getSelected().stream()

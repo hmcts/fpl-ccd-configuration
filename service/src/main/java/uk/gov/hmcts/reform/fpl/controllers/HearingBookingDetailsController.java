@@ -32,6 +32,9 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService
 import java.util.List;
 
 import static java.time.LocalDate.now;
+import static java.util.Collections.emptyList;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.NEW_HEARING_LABEL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.NEW_HEARING_SELECTOR;
@@ -94,15 +97,24 @@ public class HearingBookingDetailsController {
         CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
 
         List<Element<HearingBooking>> newBookings = caseData.getHearingDetails();
-        List<Element<HearingBooking>> oldBookings = caseDataBefore.getHearingDetails();
+        List<Element<HearingBooking>> oldBookings = defaultIfNull(caseDataBefore.getHearingDetails(), emptyList());
 
-        if (!service.getNewHearings(newBookings, oldBookings).isEmpty()) {
-            caseDetails.getData().put(NEW_HEARING_LABEL.getKey(), service.getHearingNoticeLabel(newBookings, oldBookings));
-            //TODO this needs to be checked in scanrio that we remove old and add new hearing in one go
-            caseDetails.getData().put(NEW_HEARING_SELECTOR.getKey(), newSelector(newBookings.size(), oldBookings.size(), newBookings.size()));
+        if (isNotEmpty(oldBookings)) {
+            List<Element<HearingBooking>> pastHearings = service.getPastHearings(oldBookings);
+            oldBookings.removeAll(pastHearings);
+        }
+
+        List<Element<HearingBooking>> newHearings = service.getNewHearings(newBookings, oldBookings);
+
+        if (!newHearings.isEmpty()) {
+            caseDetails.getData().put(NEW_HEARING_LABEL.getKey(),
+                service.getHearingNoticeLabel(newBookings, oldBookings));
+            //TODO this needs to be checked in scenario that we remove old and add new hearing in one go
+            caseDetails.getData().put(NEW_HEARING_SELECTOR.getKey(),
+                newSelector(newBookings.size(), oldBookings.size(), newBookings.size()));
         } else {
-            caseDetails.getData().remove(NEW_HEARING_LABEL.getKey());
-            caseDetails.getData().remove(NEW_HEARING_SELECTOR.getKey());
+            caseDetails.getData().put(NEW_HEARING_LABEL.getKey(), "");
+            caseDetails.getData().put(NEW_HEARING_SELECTOR.getKey(), null);
         }
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -117,26 +129,31 @@ public class HearingBookingDetailsController {
         CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
         CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
 
-        List<Element<HearingBooking>> selectedHearings = service.getSelectedHearings(caseData);
+        List<Element<HearingBooking>> updatedHearings =
+            service.setHearingJudge(caseData.getHearingDetails(), caseData.getAllocatedJudge());
+
+        List<Element<HearingBooking>> selectedHearings = service.getSelectedHearings(caseData.getNewHearingSelector(),
+            updatedHearings);
         selectedHearings.stream().parallel()
             .forEach(hearing -> {
                 HearingBooking booking = hearing.getValue();
-                DocmosisNoticeOfHearing dnof = noticeOfHearingGenerationService.getTemplateData(caseData, hearing.getValue());
-                DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(dnof, NOTICE_OF_HEARING);
-                Document document = uploadDocumentService.uploadPDF(docmosisDocument.getBytes(), NOTICE_OF_HEARING.getDocumentTitle(now()));
+                DocmosisNoticeOfHearing dnof = noticeOfHearingGenerationService.getTemplateData(caseData,
+                    hearing.getValue());
+                DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(dnof,
+                    NOTICE_OF_HEARING);
+                Document document = uploadDocumentService.uploadPDF(docmosisDocument.getBytes(),
+                    NOTICE_OF_HEARING.getDocumentTitle(now()));
                 booking.setNoticeOfHearing(DocumentReference.buildFromDocument(document));
             });
 
         List<Element<HearingBooking>> hearingDetailsBefore = service.expandHearingBookingCollection(caseDataBefore);
         List<Element<HearingBooking>> pastHearings = service.getPastHearings(hearingDetailsBefore);
 
-        List<Element<HearingBooking>> updatedHearings =
-            service.setHearingJudge(caseData.getHearingDetails(), caseData.getAllocatedJudge());
-
         List<Element<HearingBooking>> combinedHearingDetails =
             service.combineHearingDetails(updatedHearings, pastHearings);
 
         caseDetails.getData().put(HEARING_DETAILS_KEY, combinedHearingDetails);
+        caseDetails.getData().remove((NEW_HEARING_SELECTOR.getKey()));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
