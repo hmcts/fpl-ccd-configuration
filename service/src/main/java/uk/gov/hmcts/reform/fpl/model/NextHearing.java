@@ -6,6 +6,11 @@ import lombok.Data;
 
 import java.util.UUID;
 
+/**
+ * Pointer to the next hearing after the CMO.
+ *
+ * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
+ */
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)

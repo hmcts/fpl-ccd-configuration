@@ -43,6 +43,12 @@ import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.defaultString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
+/**
+ * Service to generate docmosis objects that can be sent to
+ * {@link uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates#CMO the CMO template}.
+ *
+ * @deprecated to be removed with {@link CaseManagementOrder}
+ */
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGeneration<DocmosisCaseManagementOrder> {
@@ -66,7 +72,7 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
         HearingBooking hearingBooking = hearingService
             .getHearingBookingByUUID(hearingDetails, caseManagementOrder.getId());
 
-        DocmosisCaseManagementOrder.DocmosisCaseManagementOrderBuilder<?,?> order
+        DocmosisCaseManagementOrder.DocmosisCaseManagementOrderBuilder<?, ?> order
             = DocmosisCaseManagementOrder.builder()
             .judgeAndLegalAdvisor(getJudgeAndLegalAdvisor(hearingBooking))
             .allocatedJudge(getAllocatedJudge(caseData.getAllocatedJudge()))

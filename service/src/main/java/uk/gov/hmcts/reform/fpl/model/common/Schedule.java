@@ -3,6 +3,11 @@ package uk.gov.hmcts.reform.fpl.model.common;
 import lombok.Builder;
 import lombok.Data;
 
+/**
+ * Schedule for the CMO.
+ *
+ * @deprecated to be removed along with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
+ */
 @Data
 @Builder(toBuilder = true)
 public class Schedule {

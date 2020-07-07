@@ -22,6 +22,12 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
 
+/**
+ * Old model of case management order.
+ *
+ * @deprecated replaced with temporary solution of
+ * {@link uk.gov.hmcts.reform.fpl.model.order.UploadedCaseManagementOrder UploadedCaseManagementOrder}.
+ */
 @Getter
 public class CaseManagementOrder extends OrderForHearing implements IssuableOrder {
     private final UUID id;
