@@ -64,6 +64,7 @@ public class NewNoticeOfHearingEmailContentProvider extends AbstractEmailContent
             .caseUrl(getCaseUrl(caseDetails.getId()))
             .documentLink(linkToAttachedDocument(hearingBooking.getNoticeOfHearing()))
             .familyManCaseNumber(defaultIfNull(caseData.getFamilyManCaseNumber(), ""))
+            .documentLink(linkToAttachedDocument(hearingBooking.getNoticeOfHearing()))
             .respondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
     }
 }
