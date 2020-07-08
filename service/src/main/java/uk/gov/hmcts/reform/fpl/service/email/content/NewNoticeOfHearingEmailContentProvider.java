@@ -12,8 +12,11 @@ import uk.gov.hmcts.reform.fpl.model.notify.hearing.NewNoticeOfHearingTemplate;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
+import java.time.format.FormatStyle;
+
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 @Service
@@ -49,7 +52,7 @@ public class NewNoticeOfHearingEmailContentProvider extends AbstractEmailContent
     private NewNoticeOfHearingTemplate.NewNoticeOfHearingTemplateBuilder getNewNoticeOfHearingTemplateBuilder(CaseDetails caseDetails, HearingBooking hearingBooking, CaseData caseData) {
         return NewNoticeOfHearingTemplate.builder()
             .hearingType(hearingBooking.getType().getLabel())
-            .hearingDate(hearingBooking.getStartDate().toString())
+            .hearingDate(formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG))
             .hearingVenue(hearingBooking.getVenue())
             .hearingTime(caseDataExtractionService.getHearingTime(hearingBooking))
             .preHearingTime(caseDataExtractionService.extractPrehearingAttendance(hearingBooking))
