@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -28,6 +29,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -288,6 +290,19 @@ class HearingBookingServiceTest {
         }
     }
 
+    @Nested
+    class GetSelectedHearings {
+
+        @Test
+        void shouldReturnSelectedHearings() {
+            List<Element<HearingBooking>> hearingBookings = createHearingBookings(false);
+            Selector selector = Selector.builder().selected(List.of(1)).build();
+
+            assertThat(service.getSelectedHearings(selector, hearingBookings).size()).isEqualTo(1);
+            assertThat(service.getSelectedHearings(selector, hearingBookings).get(0).getValue().getType()).isEqualTo(CASE_MANAGEMENT);
+        }
+    }
+
     private Judge buildAllocatedJudge() {
         return Judge.builder()
             .judgeTitle(HER_HONOUR_JUDGE)
@@ -314,7 +329,7 @@ class HearingBookingServiceTest {
             element(HEARING_IDS[3], createHearingBooking(pastDate, pastDate.plusDays(1)))
         ));
 
-        if (addHearing) {
+        if (Boolean.TRUE.equals(addHearing)) {
             listOfHearingBookings.add(
                 element(randomUUID(), createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))));
         }
