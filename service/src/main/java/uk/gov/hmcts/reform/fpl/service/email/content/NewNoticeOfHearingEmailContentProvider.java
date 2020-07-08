@@ -34,24 +34,6 @@ public class NewNoticeOfHearingEmailContentProvider extends AbstractEmailContent
         RepresentativeServingPreferences representativeServingPreferences) {
         final CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        return getNewNoticeOfHearingTemplateBuilder(caseDetails, hearingBooking, caseData)
-            .digitalPreference(representativeServingPreferences == DIGITAL_SERVICE ? "Yes" : "No")
-            .caseUrl(representativeServingPreferences == DIGITAL_SERVICE ? getCaseUrl(caseDetails.getId()) : "")
-            .build();
-    }
-
-    public NewNoticeOfHearingTemplate buildNewNoticeOfHearingNotification(
-        CaseDetails caseDetails,
-        HearingBooking hearingBooking) {
-        final CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
-        return getNewNoticeOfHearingTemplateBuilder(caseDetails, hearingBooking, caseData)
-            .digitalPreference("No")
-            .caseUrl("")
-            .build();
-    }
-
-    private NewNoticeOfHearingTemplate.NewNoticeOfHearingTemplateBuilder getNewNoticeOfHearingTemplateBuilder(CaseDetails caseDetails, HearingBooking hearingBooking, CaseData caseData) {
         return NewNoticeOfHearingTemplate.builder()
             .hearingType(hearingBooking.getType().getLabel().toLowerCase())
             .hearingDate(formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG))
@@ -61,6 +43,9 @@ public class NewNoticeOfHearingEmailContentProvider extends AbstractEmailContent
             .caseUrl(getCaseUrl(caseDetails.getId()))
             .documentLink(linkToAttachedDocument(hearingBooking.getNoticeOfHearing()))
             .familyManCaseNumber(defaultIfNull(caseData.getFamilyManCaseNumber(), ""))
-            .respondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
+            .respondentLastName(getFirstRespondentLastName(caseData.getRespondents1()))
+            .digitalPreference(representativeServingPreferences == DIGITAL_SERVICE ? "Yes" : "No")
+            .caseUrl(representativeServingPreferences == DIGITAL_SERVICE ? getCaseUrl(caseDetails.getId()) : "")
+            .build();
     }
 }
