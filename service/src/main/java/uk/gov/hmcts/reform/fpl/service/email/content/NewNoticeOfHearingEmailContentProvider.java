@@ -49,7 +49,10 @@ public class NewNoticeOfHearingEmailContentProvider extends AbstractEmailContent
             .build();
     }
 
-    private NewNoticeOfHearingTemplate.NewNoticeOfHearingTemplateBuilder getNewNoticeOfHearingTemplateBuilder(CaseDetails caseDetails, HearingBooking hearingBooking, CaseData caseData) {
+    private NewNoticeOfHearingTemplate.NewNoticeOfHearingTemplateBuilder getNewNoticeOfHearingTemplateBuilder(
+        CaseDetails caseDetails,
+        HearingBooking hearingBooking,
+        CaseData caseData) {
         return NewNoticeOfHearingTemplate.builder()
             .hearingType(hearingBooking.getType().getLabel())
             .hearingDate(formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG))
@@ -57,6 +60,7 @@ public class NewNoticeOfHearingEmailContentProvider extends AbstractEmailContent
             .hearingTime(caseDataExtractionService.getHearingTime(hearingBooking))
             .preHearingTime(caseDataExtractionService.extractPrehearingAttendance(hearingBooking))
             .caseUrl(getCaseUrl(caseDetails.getId()))
+            .documentLink(linkToAttachedDocument(hearingBooking.getNoticeOfHearing()))
             .familyManCaseNumber(defaultIfNull(caseData.getFamilyManCaseNumber(), ""))
             .respondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
     }
