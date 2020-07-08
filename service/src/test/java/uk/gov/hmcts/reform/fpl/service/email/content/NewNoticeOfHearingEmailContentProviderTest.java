@@ -36,7 +36,6 @@ class NewNoticeOfHearingEmailContentProviderTest extends AbstractEmailContentPro
             .data(Map.of("hearingDetails", wrapElements(createHearingBooking(hearingDate, hearingDate.plusDays(1)))))
             .build();
 
-        assertThat(newNoticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(populatedCaseDetails(), HearingBooking.builder().build())).isEqualTo(expectedMap());
     }
 
     private NewNoticeOfHearingTemplate expectedMap() {

@@ -151,7 +151,13 @@ public class HearingBookingService {
                 String newHearingLabel = format("Hearing %d: %s hearing %s", i + 1,
                     newHearings.get(i).getValue().getType().getLabel(),
                     formatLocalDateTimeBaseUsingFormat(newHearings.get(i).getValue().getStartDate(), DATE));
-                stringBuilder.append(newHearingLabel).append("\n");
+
+                stringBuilder.append(newHearingLabel);
+
+                if (newHearings.size() > 2) {
+                    stringBuilder.append("\n");
+                }
+
                 if (selectorMinValue < 0) {
                     selectorMinValue = i;
                 }
