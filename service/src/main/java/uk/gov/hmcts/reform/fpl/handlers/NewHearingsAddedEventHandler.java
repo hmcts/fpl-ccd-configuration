@@ -56,26 +56,29 @@ public class NewHearingsAddedEventHandler {
             caseData.getNewHearingSelector(), caseData.getHearingDetails());
 
         hearings.forEach(hearing -> {
-            NewNoticeOfHearingTemplate templateData = newHearingContent.buildNewNoticeOfHearingNotification(caseDetails,
-                hearing.getValue());
-
-            sendNotificationToLA(eventData, caseDetails, templateData);
-            sendNotificationToCafcass(eventData, templateData);
+            sendNotificationToLA(eventData, caseDetails, hearing.getValue());
+            sendNotificationToCafcass(eventData, caseDetails, hearing.getValue());
             sendNotificationToRepresentatives(eventData, caseDetails, hearing.getValue());
         });
     }
 
     private void sendNotificationToLA(EventData eventData,
                                       CaseDetails caseDetails,
-                                      NewNoticeOfHearingTemplate templateData) {
+                                      HearingBooking hearing) {
         String email = inboxLookupService.getNotificationRecipientEmail(caseDetails,
             eventData.getLocalAuthorityCode());
+
+        NewNoticeOfHearingTemplate templateData = newHearingContent.buildNewNoticeOfHearingNotification(caseDetails,
+            hearing, DIGITAL_SERVICE);
 
         notificationService.sendEmail(NOTICE_OF_NEW_HEARING, email, templateData, eventData.getReference());
     }
 
-    private void sendNotificationToCafcass(EventData eventData, NewNoticeOfHearingTemplate templateData) {
+    private void sendNotificationToCafcass(EventData eventData, CaseDetails caseDetails, HearingBooking hearing) {
         String email = cafcassLookupConfiguration.getCafcass(eventData.getLocalAuthorityCode()).getEmail();
+
+        NewNoticeOfHearingTemplate templateData = newHearingContent.buildNewNoticeOfHearingNotification(caseDetails,
+            hearing, EMAIL);
 
         notificationService.sendEmail(NOTICE_OF_NEW_HEARING, email, templateData, eventData.getReference());
     }

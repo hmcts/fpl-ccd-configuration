@@ -93,7 +93,7 @@ module.exports = {
     judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName, complexTypeAppender);
   },
 
-  async sendNoticeOfHearing(sendNoticeOfHearing = 'Yes', index = 0) {
+  sendNoticeOfHearing(sendNoticeOfHearing = 'Yes', index = 0) {
     within('#newHearingSelector_newHearingSelector', () => {
       if (sendNoticeOfHearing == 'Yes') {
         I.click(this.fields(index).sendNoticeOfHearing.yes);

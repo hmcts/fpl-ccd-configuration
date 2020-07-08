@@ -12,6 +12,8 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
+import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -23,7 +25,9 @@ import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
@@ -40,6 +44,7 @@ import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(HearingBookingDetailsController.class)
@@ -58,6 +63,9 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
 
     @MockBean
     private NotificationClient notificationClient;
+
+    @MockBean
+    private DocumentDownloadService documentDownloadService;
 
     HearingBookingDetailsControllerSubmittedTest() {
         super("add-hearing-bookings");
@@ -108,10 +116,13 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
             .data(Map.of(
                 "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
                 "familyManCaseNumber", "111222",
-                "selectedHearings", wrapElements(hearingBooking),
+                "hearingDetails", wrapElements(hearingBooking),
                 "representatives", createRepresentatives(RepresentativeServingPreferences.EMAIL),
-                "respondents1", createRespondents()
+                "respondents1", createRespondents(),
+                "newHearingSelector", Selector.builder().selected(List.of(0)).build()
             )).build();
+
+        given(documentDownloadService.downloadDocument(anyString())).willReturn(DOCUMENT_CONTENT);
 
         postSubmittedEvent(caseDetails);
 

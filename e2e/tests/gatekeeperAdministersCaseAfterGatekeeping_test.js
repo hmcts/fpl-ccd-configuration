@@ -72,7 +72,7 @@ Scenario('Gatekeeper enters hearing details and submits', async (I, caseViewPage
   await I.retryUntilExists(() => I.click('Continue'), '#newHearingSelector_newHearingSelector');
   await addHearingBookingDetailsEventPage.sendNoticeOfHearing(hearingDetails[0].sendNoticeOfHearing);
   await addHearingBookingDetailsEventPage.sendNoticeOfHearing(hearingDetails[1].sendNoticeOfHearing, 1);
-  I.seeCheckAnswers('Add hearing details');
+  await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.addHearingBookingDetails);
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
 
