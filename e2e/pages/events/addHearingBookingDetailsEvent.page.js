@@ -34,6 +34,10 @@ module.exports = {
         giveDetails: `#hearingDetails_${index}_hearingNeedsDetails`,
         venueCustomAddress: `#hearingDetails_${index}_venueCustomAddress_venueCustomAddress`,
       },
+      sendNoticeOfHearing: {
+        yes: `#newHearingSelector_option${index}-Yes`,
+        no: `#newHearingSelector_option${index}-No`,
+      },
     };
   },
 
@@ -87,6 +91,16 @@ module.exports = {
     const elementIndex = await this.getActiveElementIndex();
     const complexTypeAppender = `hearingDetails_${elementIndex}_`;
     judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName, complexTypeAppender);
+  },
+
+  sendNoticeOfHearing(sendNoticeOfHearing = 'Yes', index = 0) {
+    within('#newHearingSelector_newHearingSelector', () => {
+      if (sendNoticeOfHearing == 'Yes') {
+        I.click(this.fields(index).sendNoticeOfHearing.yes);
+      } else {
+        I.click(this.fields(index).sendNoticeOfHearing.no);
+      }
+    });
   },
 
   async getActiveElementIndex() {

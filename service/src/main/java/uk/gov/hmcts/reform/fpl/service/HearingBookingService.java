@@ -139,6 +139,16 @@ public class HearingBookingService {
 
     public String getHearingNoticeLabel(
         List<Element<HearingBooking>> newHearings, List<Element<HearingBooking>> oldHearings) {
+        List<UUID> oldHearingIDs = oldHearings.stream()
+            .map(Element::getId)
+            .collect(Collectors.toList());
+
+        for (int i = 0; i < newHearings.size(); i++) {
+            if (!oldHearingIDs.contains(newHearings.get(i).getId())) {
+                System.out.println("New hearing at position " + (i + 1));
+            }
+        }
+
         return range(oldHearings.size(), newHearings.size())
             .mapToObj(index -> format("Hearing %d: %s hearing %s",
                 index + 1,
@@ -148,7 +158,8 @@ public class HearingBookingService {
 
     }
 
-    public List<Element<HearingBooking>> getSelectedHearings(Selector hearingSelector, List<Element<HearingBooking>> hearings) {
+    public List<Element<HearingBooking>> getSelectedHearings(Selector hearingSelector,
+                                                             List<Element<HearingBooking>> hearings) {
         if (hearings.isEmpty() || hearingSelector == null || hearingSelector.getSelected().isEmpty()) {
             return List.of();
         } else {
@@ -157,7 +168,6 @@ public class HearingBookingService {
                 .collect(toList());
         }
     }
-
 
     private boolean isPastHearing(Element<HearingBooking> element) {
         return ofNullable(element.getValue())

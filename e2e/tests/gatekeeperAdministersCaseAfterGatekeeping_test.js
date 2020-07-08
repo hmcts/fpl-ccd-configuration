@@ -69,12 +69,17 @@ Scenario('Gatekeeper enters hearing details and submits', async (I, caseViewPage
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);
   await addHearingBookingDetailsEventPage.enterJudge(hearingDetails[1].judgeAndLegalAdvisor);
   await addHearingBookingDetailsEventPage.enterLegalAdvisor(hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
-  await I.completeEvent('Save and continue', {summary: 'summary', description: 'description'});
+  await I.retryUntilExists(() => I.click('Continue'), '#newHearingSelector_newHearingSelector');
+  await addHearingBookingDetailsEventPage.sendNoticeOfHearing(hearingDetails[0].sendNoticeOfHearing);
+  await addHearingBookingDetailsEventPage.sendNoticeOfHearing(hearingDetails[1].sendNoticeOfHearing, 1);
+  await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.addHearingBookingDetails);
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
 
   let startDate = dateToString(hearingDetails[0].startDate);
   let endDate = dateToString(hearingDetails[0].endDate);
+  let submittedAt = new Date();
+
   I.seeInTab(['Hearing 1', 'Type of hearing'], hearingDetails[0].caseManagement);
   I.seeInTab(['Hearing 1', 'Venue'], hearingDetails[0].venue);
   I.seeInTab(['Hearing 1', 'Start date and time'], dateFormat(startDate, 'd mmm yyyy, h:MM:ss TT'));
@@ -84,6 +89,7 @@ Scenario('Gatekeeper enters hearing details and submits', async (I, caseViewPage
   I.seeInTab(['Hearing 1', 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], 'Her Honour Judge');
   I.seeInTab(['Hearing 1', 'Judge and Justices\' Legal Adviser', 'Last name'], 'Moley');
   I.seeInTab(['Hearing 1', 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name'], hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
+  I.seeInTab(['Hearing 1', 'Notice of hearing'], `Notice_of_hearing_${dateFormat(submittedAt, 'ddmmmm')}.pdf`);
 
   startDate = dateToString(hearingDetails[1].startDate);
   endDate = dateToString(hearingDetails[1].endDate);
