@@ -62,7 +62,6 @@ public class NewNoticeOfHearingEmailContentProvider extends AbstractEmailContent
             .hearingTime(caseDataExtractionService.getHearingTime(hearingBooking))
             .preHearingTime(caseDataExtractionService.extractPrehearingAttendance(hearingBooking))
             .caseUrl(getCaseUrl(caseDetails.getId()))
-            .documentLink(linkToAttachedDocument(hearingBooking.getNoticeOfHearing()))
             .familyManCaseNumber(defaultIfNull(caseData.getFamilyManCaseNumber(), ""))
             .documentLink(linkToAttachedDocument(hearingBooking.getNoticeOfHearing()))
             .respondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));

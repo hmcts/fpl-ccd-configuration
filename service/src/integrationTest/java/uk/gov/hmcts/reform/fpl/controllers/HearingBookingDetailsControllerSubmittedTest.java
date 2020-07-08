@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
@@ -115,9 +116,10 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
             .data(Map.of(
                 "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
                 "familyManCaseNumber", "111222",
-                "selectedHearings", wrapElements(hearingBooking),
+                "hearingDetails", wrapElements(hearingBooking),
                 "representatives", createRepresentatives(RepresentativeServingPreferences.EMAIL),
-                "respondents1", createRespondents()
+                "respondents1", createRespondents(),
+                "newHearingSelector", Selector.builder().selected(List.of(0)).build()
             )).build();
 
         given(documentDownloadService.downloadDocument(anyString())).willReturn(DOCUMENT_CONTENT);
