@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -21,9 +22,9 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.String.format;
 import static java.util.Comparator.comparing;
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.IntStream.range;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.NEW_HEARING_LABEL;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.NEW_HEARING_SELECTOR;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -137,25 +138,28 @@ public class HearingBookingService {
             .collect(Collectors.toList());
     }
 
-    public String getHearingNoticeLabel(
+    public Map<String, Object> getHearingNoticeData(
         List<Element<HearingBooking>> newHearings, List<Element<HearingBooking>> oldHearings) {
+        StringBuilder stringBuilder = new StringBuilder();
         List<UUID> oldHearingIDs = oldHearings.stream()
             .map(Element::getId)
             .collect(Collectors.toList());
 
+        int selectorMinValue = -1;
         for (int i = 0; i < newHearings.size(); i++) {
             if (!oldHearingIDs.contains(newHearings.get(i).getId())) {
-                System.out.println("New hearing at position " + (i + 1));
+                String newHearingLabel = format("Hearing %d: %s hearing %s", i + 1,
+                    newHearings.get(i).getValue().getType().getLabel(),
+                    formatLocalDateTimeBaseUsingFormat(newHearings.get(i).getValue().getStartDate(), DATE));
+                stringBuilder.append(newHearingLabel).append("\n");
+                if (selectorMinValue < 0) {
+                    selectorMinValue = i;
+                }
             }
         }
+        Selector selector = Selector.newSelector(newHearings.size(), selectorMinValue, newHearings.size());
 
-        return range(oldHearings.size(), newHearings.size())
-            .mapToObj(index -> format("Hearing %d: %s hearing %s",
-                index + 1,
-                newHearings.get(index).getValue().getType().getLabel(),
-                formatLocalDateTimeBaseUsingFormat(newHearings.get(index).getValue().getStartDate(), DATE)))
-            .collect(joining("\n"));
-
+        return Map.of(NEW_HEARING_LABEL.getKey(), stringBuilder.toString(), NEW_HEARING_SELECTOR.getKey(), selector);
     }
 
     public List<Element<HearingBooking>> getSelectedHearings(Selector hearingSelector,

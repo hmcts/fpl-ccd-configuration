@@ -96,22 +96,18 @@ public class HearingBookingDetailsController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
 
-        List<Element<HearingBooking>> newBookings = caseData.getHearingDetails();
-        List<Element<HearingBooking>> oldBookings = defaultIfNull(caseDataBefore.getHearingDetails(), emptyList());
+        List<Element<HearingBooking>> hearings = caseData.getHearingDetails();
+        List<Element<HearingBooking>> hearingsBefore = defaultIfNull(caseDataBefore.getHearingDetails(), emptyList());
 
-        if (isNotEmpty(oldBookings)) {
-            List<Element<HearingBooking>> pastHearings = service.getPastHearings(oldBookings);
-            oldBookings.removeAll(pastHearings);
+        if (isNotEmpty(hearingsBefore)) {
+            List<Element<HearingBooking>> pastHearings = service.getPastHearings(hearingsBefore);
+            hearingsBefore.removeAll(pastHearings);
         }
 
-        List<Element<HearingBooking>> newHearings = service.getNewHearings(newBookings, oldBookings);
+        List<Element<HearingBooking>> newHearings = service.getNewHearings(hearings, hearingsBefore);
 
         if (!newHearings.isEmpty()) {
-            caseDetails.getData().put(NEW_HEARING_LABEL.getKey(),
-                service.getHearingNoticeLabel(newBookings, oldBookings));
-            //TODO this needs to be checked in scenario that we remove old and add new hearing in one go
-            caseDetails.getData().put(NEW_HEARING_SELECTOR.getKey(),
-                newSelector(newBookings.size(), oldBookings.size(), newBookings.size()));
+            caseDetails.getData().putAll(service.getHearingNoticeData(hearings, hearingsBefore));
         } else {
             caseDetails.getData().put(NEW_HEARING_LABEL.getKey(), "");
             caseDetails.getData().put(NEW_HEARING_SELECTOR.getKey(), null);
@@ -128,6 +124,17 @@ public class HearingBookingDetailsController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
         CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
+
+        List<Element<HearingBooking>> newBookings = caseData.getHearingDetails();
+        List<Element<HearingBooking>> oldBookings = defaultIfNull(caseDataBefore.getHearingDetails(), emptyList());
+        if (isNotEmpty(oldBookings)) {
+            List<Element<HearingBooking>> pastHearings = service.getPastHearings(oldBookings);
+            oldBookings.removeAll(pastHearings);
+        }
+        List<Element<HearingBooking>> newHearings = service.getNewHearings(newBookings, oldBookings);
+        if (newHearings.isEmpty()) {
+            caseDetails.getData().put(NEW_HEARING_SELECTOR.getKey(), null);
+        }
 
         List<Element<HearingBooking>> updatedHearings =
             service.setHearingJudge(caseData.getHearingDetails(), caseData.getAllocatedJudge());
