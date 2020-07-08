@@ -153,7 +153,6 @@ public class HearingBookingDetailsController {
             service.combineHearingDetails(updatedHearings, pastHearings);
 
         caseDetails.getData().put(HEARING_DETAILS_KEY, combinedHearingDetails);
-
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
@@ -169,7 +168,6 @@ public class HearingBookingDetailsController {
         }
 
         applicationEventPublisher.publishEvent(new NewHearingsAddedEvent(callbackRequest));
-
 
     }
 }
