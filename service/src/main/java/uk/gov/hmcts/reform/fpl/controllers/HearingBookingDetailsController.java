@@ -107,7 +107,7 @@ public class HearingBookingDetailsController {
         List<Element<HearingBooking>> newHearings = service.getNewHearings(hearings, hearingsBefore);
 
         if (!newHearings.isEmpty()) {
-            caseDetails.getData().putAll(service.getHearingNoticeData(hearings, hearingsBefore));
+            caseDetails.getData().putAll(service.getHearingNoticeCaseFields(hearings, hearingsBefore));
         } else {
             caseDetails.getData().put(NEW_HEARING_LABEL.getKey(), "");
             caseDetails.getData().put(NEW_HEARING_SELECTOR.getKey(), null);
@@ -141,7 +141,7 @@ public class HearingBookingDetailsController {
 
         List<Element<HearingBooking>> selectedHearings = service.getSelectedHearings(caseData.getNewHearingSelector(),
             updatedHearings);
-        selectedHearings.stream().parallel()
+        selectedHearings
             .forEach(hearing -> {
                 HearingBooking booking = hearing.getValue();
                 DocmosisNoticeOfHearing dnof = noticeOfHearingGenerationService.getTemplateData(caseData,

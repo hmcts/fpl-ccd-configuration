@@ -138,7 +138,7 @@ public class HearingBookingService {
             .collect(Collectors.toList());
     }
 
-    public Map<String, Object> getHearingNoticeData(
+    public Map<String, Object> getHearingNoticeCaseFields(
         List<Element<HearingBooking>> newHearings, List<Element<HearingBooking>> oldHearings) {
         StringBuilder stringBuilder = new StringBuilder();
         List<UUID> oldHearingIDs = oldHearings.stream()
