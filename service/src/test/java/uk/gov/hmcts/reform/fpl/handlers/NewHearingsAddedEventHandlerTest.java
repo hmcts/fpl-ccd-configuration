@@ -61,6 +61,7 @@ class NewHearingsAddedEventHandlerTest {
     void setUp() {
         futureDate = time.now().plusDays(1);
     }
+
     @Test
     void shouldSendNotificationToLAWhenNewHearingIsAdded() {
         CallbackRequest callbackRequest = callbackRequest();

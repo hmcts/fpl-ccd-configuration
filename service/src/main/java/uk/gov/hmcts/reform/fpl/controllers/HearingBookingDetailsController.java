@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingValidatorService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
@@ -125,6 +126,7 @@ public class HearingBookingDetailsController {
 
         List<Element<HearingBooking>> hearings = caseData.getHearingDetails();
         List<Element<HearingBooking>> hearingsBefore = defaultIfNull(caseDataBefore.getHearingDetails(), emptyList());
+        final List<Element<HearingBooking>> hearingsBeforeUnmodified = List.copyOf(hearingsBefore);
         if (isNotEmpty(hearingsBefore)) {
             List<Element<HearingBooking>> pastHearings = service.getPastHearings(hearingsBefore);
             hearingsBefore.removeAll(pastHearings);
@@ -137,8 +139,11 @@ public class HearingBookingDetailsController {
         List<Element<HearingBooking>> updatedHearings =
             service.setHearingJudge(caseData.getHearingDetails(), caseData.getAllocatedJudge());
 
-        List<Element<HearingBooking>> selectedHearings = service.getSelectedHearings(caseData.getNewHearingSelector(),
+        Selector newHearingSelector = mapper.convertValue(caseDetails.getData().get(NEW_HEARING_SELECTOR.getKey()),
+            Selector.class);
+        List<Element<HearingBooking>> selectedHearings = service.getSelectedHearings(newHearingSelector,
             updatedHearings);
+
         selectedHearings
             .forEach(hearing -> {
                 HearingBooking booking = hearing.getValue();
@@ -151,11 +156,8 @@ public class HearingBookingDetailsController {
                 booking.setNoticeOfHearing(DocumentReference.buildFromDocument(document));
             });
 
-        List<Element<HearingBooking>> hearingDetailsBefore = service.expandHearingBookingCollection(caseDataBefore);
-        List<Element<HearingBooking>> pastHearings = service.getPastHearings(hearingDetailsBefore);
-
-        List<Element<HearingBooking>> combinedHearingDetails =
-            service.combineHearingDetails(updatedHearings, pastHearings);
+        List<Element<HearingBooking>> combinedHearingDetails = service.combineHearingDetails(updatedHearings,
+            service.getPastHearings(hearingsBeforeUnmodified));
 
         caseDetails.getData().put(HEARING_DETAILS_KEY, combinedHearingDetails);
         return AboutToStartOrSubmitCallbackResponse.builder()

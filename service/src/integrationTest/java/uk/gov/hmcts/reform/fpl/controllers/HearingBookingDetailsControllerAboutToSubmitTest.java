@@ -95,7 +95,7 @@ class HearingBookingDetailsControllerAboutToSubmitTest extends AbstractControlle
 
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
-        assertThat(caseData.getHearingDetails()).containsExactly(pastHearing, hearing);
+        assertThat(caseData.getHearingDetails()).contains(pastHearing, hearing);
     }
 
     @Test
