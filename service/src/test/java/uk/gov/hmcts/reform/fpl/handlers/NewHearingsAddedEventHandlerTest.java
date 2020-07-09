@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NewNoticeOfHearingEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -40,9 +41,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {
     NewHearingsAddedEventHandler.class,
-
     JacksonAutoConfiguration.class,
-    LookupTestConfig.class})
+    LookupTestConfig.class,
+    FixedTimeConfiguration.class})
 class NewHearingsAddedEventHandlerTest {
     private static final String CASE_REFERENCE = "12345";
 
@@ -63,6 +64,9 @@ class NewHearingsAddedEventHandlerTest {
 
     @MockBean
     private InboxLookupService inboxLookupService;
+
+    @MockBean
+    private RepresentativeNotificationService representativeNotificationService;
 
     private LocalDateTime futureDate;
 
