@@ -1,12 +1,15 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.HearingType;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.NewNoticeOfHearingTemplate;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
@@ -16,59 +19,105 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.time.LocalDateTime;
+import java.time.format.FormatStyle;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
-@ContextConfiguration(
-    classes = {NewNoticeOfHearingEmailContentProvider.class,
-        CaseDataExtractionService.class,
-        HearingVenueLookUpService.class,
-        LookupTestConfig.class,
-        FixedTimeConfiguration.class
-    })
+@ContextConfiguration(classes = {NewNoticeOfHearingEmailContentProvider.class, CaseDataExtractionService.class,
+    HearingVenueLookUpService.class, LookupTestConfig.class, FixedTimeConfiguration.class})
 class NewNoticeOfHearingEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     @Autowired
     private NewNoticeOfHearingEmailContentProvider newNoticeOfHearingEmailContentProvider;
 
     @Autowired
+    private CaseDataExtractionService caseDataExtractionService;
+
+    @Autowired
+    private HearingVenueLookUpService hearingVenueLookUpService;
+
+    @Autowired
     private Time time;
 
-    private LocalDateTime futureDate;
+    private CaseDetails caseDetails;
+    private HearingBooking hearingBooking;
     private static final byte[] APPLICATION_BINARY = TestDataHelper.DOCUMENT_CONTENT;
-    private static DocumentReference applicationDocument;
+    private static final String FAMILY_MAN_ID = "123";
 
     @BeforeEach
     void setUp() {
-        futureDate = time.now().plusDays(1);
-        applicationDocument = testDocumentReference();
-        when(documentDownloadService.downloadDocument(applicationDocument.getBinaryUrl()))
-            .thenReturn(APPLICATION_BINARY);
+
+        LocalDateTime futureDate = time.now().plusDays(1);
+        caseDetails = buildCaseDetails();
+        hearingBooking = buildHearingBooking(futureDate, futureDate.plusDays(1));
+        given(documentDownloadService.downloadDocument(anyString())).willReturn(APPLICATION_BINARY);
     }
 
     @Test
-    void shouldReturnExpectedTemplateWithValidHearingContent() {
+    void shouldReturnExpectedNewHearingTemplateWithDigitalPreference() {
+        NewNoticeOfHearingTemplate expectedTemplateData = buildExpectedTemplate(hearingBooking, YES);
 
-        LocalDateTime hearingDate = LocalDateTime.of(2020, 1, 1, 0, 0, 0);
-
-        CaseDetails caseDetails = populatedCaseDetails(
-            Map.of("applicationBinaryUrl", applicationDocument.getBinaryUrl()));
-
-        assertThat(expectedMap()).isEqualTo(newNoticeOfHearingEmailContentProvider
-            .buildNewNoticeOfHearingNotification(
-                caseDetails, createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3)), DIGITAL_SERVICE));
+        assertThat(newNoticeOfHearingEmailContentProvider
+            .buildNewNoticeOfHearingNotification(caseDetails, hearingBooking, DIGITAL_SERVICE))
+            .isEqualToComparingFieldByField(expectedTemplateData);
     }
 
-    private NewNoticeOfHearingTemplate expectedMap() {
-        return NewNoticeOfHearingTemplate.builder()
-            .hearingVenue("testVenue")
-            .hearingType(HearingType.FINAL.getLabel())
+    @Test
+    void shouldReturnExpectedNewHearingTemplateWithEmailPreference() {
+        NewNoticeOfHearingTemplate expectedTemplateData = buildExpectedTemplate(hearingBooking, NO);
+
+        assertThat(newNoticeOfHearingEmailContentProvider
+            .buildNewNoticeOfHearingNotification(caseDetails, hearingBooking, EMAIL))
+            .isEqualToComparingFieldByField(expectedTemplateData);
+    }
+
+    private HearingBooking buildHearingBooking(LocalDateTime startDate, LocalDateTime endDate) {
+        return HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .startDate(startDate)
+            .venue("Venue")
+            .endDate(endDate)
+            .noticeOfHearing(testDocumentReference())
             .build();
+    }
+
+    private NewNoticeOfHearingTemplate buildExpectedTemplate(HearingBooking hearingBooking,
+                                                             YesNo hasDigitalPreference) {
+        return NewNoticeOfHearingTemplate.builder()
+            .hearingType(CASE_MANAGEMENT.getLabel().toLowerCase())
+            .hearingDate(formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG))
+            .hearingVenue("Venue")
+            .hearingTime(caseDataExtractionService.getHearingTime(hearingBooking))
+            .preHearingTime(caseDataExtractionService.extractPrehearingAttendance(hearingBooking))
+            .caseUrl(hasDigitalPreference.equals(YES) ? "http://fake-url/cases/case-details/1111" : "")
+            .familyManCaseNumber(FAMILY_MAN_ID)
+            .documentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
+                .map(JSONObject::toMap)
+                .orElse(null))
+            .digitalPreference(hasDigitalPreference.getValue())
+            .respondentLastName("Wilson")
+            .build();
+    }
+
+    private CaseDetails buildCaseDetails() {
+        return CaseDetails.builder()
+            .id(1111L)
+            .data(Map.of(
+                "respondents1", wrapElements(Respondent.builder()
+                    .party(RespondentParty.builder().lastName("Wilson").build())
+                    .build()),
+                "familyManCaseNumber", FAMILY_MAN_ID)).build();
     }
 }
