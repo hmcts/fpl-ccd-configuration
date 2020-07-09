@@ -52,7 +52,8 @@ class PopulateStandardDirectionsHandlerTest {
     private static final List<Element<HearingBooking>> HEARING_DETAILS = List.of(element(HearingBooking.builder()
         .type(HearingType.ISSUE_RESOLUTION)
         .build()));
-    private static final HearingBooking FIRST_HEARING = HearingBooking.builder().type(HearingType.CASE_MANAGEMENT).build();
+    private static final HearingBooking FIRST_HEARING = HearingBooking.builder()
+        .type(HearingType.CASE_MANAGEMENT).build();
     private static final Element<Direction> ALL_PARTIES_DIRECTION =
         element(Direction.builder().assignee(ALL_PARTIES).build());
     private static final Element<Direction> LOCAL_AUTHORITY_DIRECTION =

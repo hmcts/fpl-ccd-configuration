@@ -299,7 +299,8 @@ class HearingBookingServiceTest {
             Selector selector = Selector.builder().selected(List.of(1)).build();
 
             assertThat(service.getSelectedHearings(selector, hearingBookings).size()).isEqualTo(1);
-            assertThat(service.getSelectedHearings(selector, hearingBookings).get(0).getValue().getType()).isEqualTo(CASE_MANAGEMENT);
+            assertThat(service.getSelectedHearings(selector, hearingBookings).get(0).getValue().getType())
+                .isEqualTo(CASE_MANAGEMENT);
         }
     }
 
