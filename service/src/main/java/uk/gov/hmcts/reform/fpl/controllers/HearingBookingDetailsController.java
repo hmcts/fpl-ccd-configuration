@@ -38,7 +38,6 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.NEW_HEARING_LABEL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.NEW_HEARING_SELECTOR;
-import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInGatekeepingState;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -112,6 +111,7 @@ public class HearingBookingDetailsController {
             caseDetails.getData().put(NEW_HEARING_LABEL.getKey(), "");
             caseDetails.getData().put(NEW_HEARING_SELECTOR.getKey(), null);
         }
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .errors(validationService.validateHearingBookings(unwrapElements(caseData.getHearingDetails())))
