@@ -148,15 +148,12 @@ public class HearingBookingService {
         int selectorMinValue = -1;
         for (int i = 0; i < newHearings.size(); i++) {
             if (!oldHearingIDs.contains(newHearings.get(i).getId())) {
+                Element<HearingBooking> hearingElement = newHearings.get(i);
                 String newHearingLabel = format("Hearing %d: %s hearing %s", i + 1,
-                    newHearings.get(i).getValue().getType().getLabel(),
-                    formatLocalDateTimeBaseUsingFormat(newHearings.get(i).getValue().getStartDate(), DATE));
+                    hearingElement.getValue().getType().getLabel(),
+                    formatLocalDateTimeBaseUsingFormat(hearingElement.getValue().getStartDate(), DATE));
 
-                stringBuilder.append(newHearingLabel);
-
-                if (newHearings.size() > 2) {
-                    stringBuilder.append("\n");
-                }
+                stringBuilder.append(newHearingLabel).append("\n");
 
                 if (selectorMinValue < 0) {
                     selectorMinValue = i;
