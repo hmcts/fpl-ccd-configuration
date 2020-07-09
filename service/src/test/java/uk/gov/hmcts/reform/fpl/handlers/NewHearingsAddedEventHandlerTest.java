@@ -2,9 +2,13 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -15,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
+import uk.gov.hmcts.reform.fpl.service.email.content.NewNoticeOfHearingEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -32,11 +37,12 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
-@ContextConfiguration(classes = {
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = {
     NewHearingsAddedEventHandler.class,
-    LookupTestConfig.class,
-    FixedTimeConfiguration.class
-})
+
+    JacksonAutoConfiguration.class,
+    LookupTestConfig.class})
 class NewHearingsAddedEventHandlerTest {
     private static final String CASE_REFERENCE = "12345";
 
@@ -50,6 +56,9 @@ class NewHearingsAddedEventHandlerTest {
     private NotificationService notificationService;
 
     @MockBean
+    private NewNoticeOfHearingEmailContentProvider newNoticeOfHearingEmailContentProvider;
+
+    @MockBean
     private HearingBookingService hearingBookingService;
 
     @MockBean
@@ -61,6 +70,7 @@ class NewHearingsAddedEventHandlerTest {
     void setUp() {
         futureDate = time.now().plusDays(1);
     }
+
     @Test
     void shouldSendNotificationToLAWhenNewHearingIsAdded() {
         CallbackRequest callbackRequest = callbackRequest();
