@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
-import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -41,6 +40,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -108,8 +108,8 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
     }
 
     @Test
-    void shouldTriggerPopulateNewHearingsEventWhenNewHearingsHaveBeenAdded() throws NotificationClientException {
-        HearingBooking hearingBooking = buildHearingBooking();
+    void shouldTriggerPopulateNewHearingsEventWhenNewHearingsHaveBeenAdded() {
+        HearingBooking hearingBooking = createHearingBooking(now().plusHours(2), now().plusDays(2));
 
         CaseDetails caseDetails = CaseDetails.builder()
             .id(CASE_ID)
@@ -271,21 +271,5 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
 
     private Direction buildDirection(String text, LocalDateTime dateTime) {
         return Direction.builder().directionText(text).responses(List.of()).dateToBeCompletedBy(dateTime).build();
-    }
-
-    private HearingBooking buildHearingBooking() {
-        LocalDateTime hearingDate = LocalDateTime.of(2020, 1, 1, 0, 0, 0);
-
-        return HearingBooking.builder()
-            .venue("Test venue")
-            .startDate(hearingDate)
-            .endDate(hearingDate.plusDays(1))
-            .type(HearingType.FINAL)
-            .noticeOfHearing(DocumentReference.builder()
-                .filename("Test document")
-                .url("http://test.net")
-                .binaryUrl("http://test.net")
-                .build())
-            .build();
     }
 }
