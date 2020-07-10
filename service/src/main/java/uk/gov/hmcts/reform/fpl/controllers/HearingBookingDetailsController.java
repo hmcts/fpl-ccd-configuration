@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.time.LocalDate.now;
@@ -125,12 +126,10 @@ public class HearingBookingDetailsController {
         CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
 
         List<Element<HearingBooking>> hearings = caseData.getHearingDetails();
-        List<Element<HearingBooking>> hearingsBefore = defaultIfNull(caseDataBefore.getHearingDetails(), emptyList());
-        final List<Element<HearingBooking>> hearingsBeforeUnmodified = List.copyOf(hearingsBefore);
-        if (isNotEmpty(hearingsBefore)) {
-            List<Element<HearingBooking>> pastHearings = service.getPastHearings(hearingsBefore);
-            hearingsBefore.removeAll(pastHearings);
-        }
+        List<Element<HearingBooking>> hearingsBefore = new ArrayList<>(
+            defaultIfNull(caseDataBefore.getHearingDetails(), emptyList()));
+        List<Element<HearingBooking>> pastHearings = service.getPastHearings(hearingsBefore);
+        hearingsBefore.removeAll(pastHearings);
 
         if (service.getNewHearings(hearings, hearingsBefore).isEmpty()) {
             caseDetails.getData().put(NEW_HEARING_SELECTOR.getKey(), null);
@@ -157,7 +156,7 @@ public class HearingBookingDetailsController {
             });
 
         List<Element<HearingBooking>> combinedHearingDetails = service.combineHearingDetails(updatedHearings,
-            service.getPastHearings(hearingsBeforeUnmodified));
+            service.getPastHearings(defaultIfNull(caseDataBefore.getHearingDetails(), emptyList())));
 
         caseDetails.getData().put(HEARING_DETAILS_KEY, combinedHearingDetails);
         return AboutToStartOrSubmitCallbackResponse.builder()
