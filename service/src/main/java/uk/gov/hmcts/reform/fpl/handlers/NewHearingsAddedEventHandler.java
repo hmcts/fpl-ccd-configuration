@@ -50,10 +50,13 @@ public class NewHearingsAddedEventHandler {
             .convertValue(event.getCallbackRequest().getCaseDetails(), CaseDetails.class);
         final CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<HearingBooking>> hearings = hearingBookingService.getSelectedHearings(
-            caseData.getNewHearingSelector(), caseData.getHearingDetails());
+        List<Element<HearingBooking>> hearings = caseData.getHearingDetails();
+        hearings.removeAll(hearingBookingService.getPastHearings(caseData.getHearingDetails()));
 
-        hearings.forEach(hearing -> {
+        List<Element<HearingBooking>> selectedHearings = hearingBookingService.getSelectedHearings(
+            caseData.getNewHearingSelector(), hearings);
+
+        selectedHearings.forEach(hearing -> {
             sendNotificationToLA(eventData, caseDetails, hearing.getValue());
             sendNotificationToCafcass(eventData, caseDetails, hearing.getValue());
             sendNotificationToRepresentatives(eventData, caseDetails, hearing.getValue());
