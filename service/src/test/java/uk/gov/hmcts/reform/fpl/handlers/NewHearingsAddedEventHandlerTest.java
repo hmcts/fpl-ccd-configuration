@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,11 +31,11 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
@@ -80,33 +81,51 @@ class NewHearingsAddedEventHandlerTest {
 
     @Test
     void shouldSendNotificationToLAWhenNewHearingIsAdded() {
-        CallbackRequest callbackRequest = callbackRequest();
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        final ObjectMapper mapper = new ObjectMapper();
+        final CallbackRequest callbackRequest = callbackRequest();
+        final EventData eventData = new EventData(new NewHearingsAddedEvent(callbackRequest));
+        final CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(UUID.randomUUID(), createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))));
+        NewNoticeOfHearingTemplate newNoticeOfHearingTemplate =
+            NewNoticeOfHearingTemplate.builder().build();
 
         given(hearingBookingService.getSelectedHearings(any(), any())).willReturn(hearingBookings);
         given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
             .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
         given(newNoticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(
             any(CaseDetails.class), any(HearingBooking.class), any()))
-            .willReturn(NewNoticeOfHearingTemplate.builder().build());
+            .willReturn(newNoticeOfHearingTemplate);
 
         newHearingsAddedEventHandler.sendEmail(new NewHearingsAddedEvent(callbackRequest));
 
-        verify(notificationService, times(2)).sendEmail(
-            anyString(),
-            anyString(),
-            any(NewNoticeOfHearingTemplate.class),
-            anyString());
+        verify(notificationService, times(1)).sendEmail(
+            NOTICE_OF_NEW_HEARING,
+            LOCAL_AUTHORITY_EMAIL_ADDRESS,
+            newNoticeOfHearingTemplate,
+            CASE_REFERENCE);
 
-        verify(representativeNotificationService, times(2))
+        verify(notificationService, times(1)).sendEmail(
+            NOTICE_OF_NEW_HEARING,
+            CAFCASS_EMAIL_ADDRESS,
+            newNoticeOfHearingTemplate,
+            CASE_REFERENCE);
+
+        verify(representativeNotificationService, times(1))
             .sendToRepresentativesByServedPreference(
-                any(RepresentativeServingPreferences.class),
-                anyString(),
-                anyMap(),
-                any(EventData.class)
+                RepresentativeServingPreferences.EMAIL,
+                NOTICE_OF_NEW_HEARING,
+                newNoticeOfHearingTemplate.toMap(mapper),
+                eventData
+            );
+
+        verify(representativeNotificationService, times(1))
+            .sendToRepresentativesByServedPreference(
+                RepresentativeServingPreferences.DIGITAL_SERVICE,
+                NOTICE_OF_NEW_HEARING,
+                newNoticeOfHearingTemplate.toMap(mapper),
+                eventData
             );
     }
 }
