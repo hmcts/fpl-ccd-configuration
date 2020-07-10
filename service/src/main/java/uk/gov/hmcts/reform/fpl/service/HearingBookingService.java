@@ -174,7 +174,7 @@ public class HearingBookingService {
 
     public List<Element<HearingBooking>> getSelectedHearings(Selector hearingSelector,
                                                              List<Element<HearingBooking>> hearings) {
-        if (hearings.isEmpty() || hearingSelector == null || hearingSelector.getSelected().isEmpty()) {
+        if (hearings.isEmpty() || hearingSelector == null) {
             return List.of();
         } else {
             return hearingSelector.getSelected().stream()
