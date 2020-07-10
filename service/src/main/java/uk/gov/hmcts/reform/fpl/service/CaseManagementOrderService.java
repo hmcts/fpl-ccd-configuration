@@ -15,12 +15,14 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.docmosis.CaseManagementOrderGenerationService;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
@@ -31,6 +33,8 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.CMO;
 import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMapping;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @Service
@@ -44,17 +48,38 @@ public class CaseManagementOrderService {
         return documentService.getDocumentFromDocmosisOrderTemplate(templateData, CMO);
     }
 
+    public DynamicList getPastHearingList(List<Element<HearingBooking>> hearings) {
+        List<Element<HearingBooking>> filtered = hearings.stream()
+            .filter(hearingInPast())
+            .filter(hasNoAssociatedCMO())
+            .collect(toList());
+
+        return ElementUtils.asDynamicList(filtered,
+            hearing -> formatLocalDateTimeBaseUsingFormat(hearing.getStartDate(), DATE_TIME));
+    }
+
+    private Predicate<Element<HearingBooking>> hasNoAssociatedCMO() {
+        return hearing -> hearing.getValue().getCaseManagementOrderId() == null;
+    }
+
+    private Predicate<Element<HearingBooking>> hearingInPast() {
+        return hearing -> !hearing.getValue().startsAfterToday();
+    }
+
+    @Deprecated
     public void removeTransientObjectsFromCaseData(Map<String, Object> caseData) {
         final Set<String> keysToRemove = Set.of(HEARING_DATE_LIST.getKey(), SCHEDULE.getKey(), RECITALS.getKey());
 
         keysToRemove.forEach(caseData::remove);
     }
 
+    @Deprecated
     public void prepareCustomDirections(CaseDetails caseDetails, CaseManagementOrder caseManagementOrder) {
         ofNullable(caseManagementOrder).ifPresentOrElse(
             order -> addDirections(caseDetails, order.getDirections()), () -> removeDirections(caseDetails));
     }
 
+    @Deprecated
     public DynamicList getHearingDateDynamicList(CaseData caseData, CaseManagementOrder order) {
         List<DynamicListElement> values = getDateElements(caseData, false);
 
@@ -68,6 +93,7 @@ public class CaseManagementOrderService {
             .build();
     }
 
+    @Deprecated
     public DynamicList getNextHearingDateDynamicList(CaseData caseData) {
         return DynamicList.builder()
             .listItems(getDateElements(caseData, true))
@@ -75,15 +101,18 @@ public class CaseManagementOrderService {
             .build();
     }
 
+    @Deprecated
     private void addDirections(CaseDetails caseDetails, List<Element<Direction>> directions) {
         getAssigneeToDirectionMapping(directions)
             .forEach((key, value) -> caseDetails.getData().put(key.toCaseManagementOrderDirectionField(), value));
     }
 
+    @Deprecated
     private void removeDirections(CaseDetails caseDetails) {
         Stream.of(Directions.class.getDeclaredFields()).forEach(field -> caseDetails.getData().remove(field.getName()));
     }
 
+    @Deprecated
     private List<DynamicListElement> getDateElements(CaseData caseData, boolean excludePastDates) {
         var sealedCmoHearingDateIds = getSealedCmoHearingDateIds(caseData);
 
@@ -97,6 +126,7 @@ public class CaseManagementOrderService {
         return hearingDetailsStream.map(this::buildDynamicListElement).collect(toList());
     }
 
+    @Deprecated
     private Set<UUID> getSealedCmoHearingDateIds(CaseData caseData) {
         return caseData.getServedCaseManagementOrders()
             .stream()
@@ -104,6 +134,7 @@ public class CaseManagementOrderService {
             .collect(toSet());
     }
 
+    @Deprecated
     private DynamicListElement buildDynamicListElement(Element<HearingBooking> element) {
         return DynamicListElement.builder()
             .label(formatLocalDateToString(element.getValue().getStartDate().toLocalDate(), FormatStyle.MEDIUM))
@@ -111,6 +142,7 @@ public class CaseManagementOrderService {
             .build();
     }
 
+    @Deprecated
     private DynamicListElement getPreselectedDate(List<DynamicListElement> list, UUID id) {
         return list.stream()
             .filter(item -> item.getCode().equals(id))
