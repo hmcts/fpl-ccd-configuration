@@ -80,7 +80,7 @@ class NewHearingsAddedEventHandlerTest {
     }
 
     @Test
-    void shouldSendNotificationToLAWhenNewHearingIsAdded() {
+    void shouldSendNotificationToLACafcassAndRepresentativesWhenNewHearingIsAdded() {
         final ObjectMapper mapper = new ObjectMapper();
         final CallbackRequest callbackRequest = callbackRequest();
         final EventData eventData = new EventData(new NewHearingsAddedEvent(callbackRequest));
