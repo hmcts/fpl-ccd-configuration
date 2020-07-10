@@ -152,9 +152,12 @@ class HearingBookingServiceTest {
 
         @Test
         void shouldNotRemovePastHearingsWhenNoPastHearingsExist() {
-            List<Element<HearingBooking>> hearingBooking = newArrayList(hearingElementWithStartDate(5));
+            Element<HearingBooking> hearingBookingElement = hearingElementWithStartDate(5);
+            List<Element<HearingBooking>> hearingBooking = newArrayList(hearingBookingElement);
+            List<Element<HearingBooking>> expectedHearing = newArrayList(hearingBookingElement);
+
             service.removePastHearings(hearingBooking);
-            assertThat(hearingBooking).isEqualTo(hearingBooking);
+            assertThat(hearingBooking).isEqualTo(expectedHearing);
         }
 
         @Test
