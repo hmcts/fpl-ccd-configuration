@@ -45,6 +45,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 })
 class NoticeOfHearingGenerationServiceTest {
 
+    private static final String HEARING_DATE_AND_TIME_FORMAT = "d MMMM, h:mma";
+    private static final String HEARING_TIME_FORMAT = "h:mma";
+
     @Autowired
     NoticeOfHearingGenerationService service;
 
@@ -53,36 +56,57 @@ class NoticeOfHearingGenerationServiceTest {
         LocalDateTime now = LocalDateTime.now();
 
         CaseData caseData = buildCaseData(now.toLocalDate());
-        HearingBooking hearingBooking = buildHearingBooking(now);
+        HearingBooking hearingBooking = buildHearingBooking(now, now.plusDays(1));
         DocmosisNoticeOfHearing docmosisNoticeOfHearing = service.getTemplateData(caseData, hearingBooking);
-        DocmosisNoticeOfHearing expectedDocmosisNoticeOfHearing
-            = getExpectedDocmosisTemplate(now.toLocalDate(), hearingBooking);
+        DocmosisNoticeOfHearing.DocmosisNoticeOfHearingBuilder docmosisNoticeOfHearingBuilder
+            = getDocmosisNoticeOfHearingBuilder(now.toLocalDate());
 
-        assertThat(docmosisNoticeOfHearing).isEqualToComparingFieldByField(expectedDocmosisNoticeOfHearing);
+        docmosisNoticeOfHearingBuilder.hearingTime(String.format("%s - %s",
+            formatLocalDateTime(hearingBooking.getStartDate(), HEARING_DATE_AND_TIME_FORMAT),
+            formatLocalDateTime(hearingBooking.getEndDate(), HEARING_DATE_AND_TIME_FORMAT)));
+
+        docmosisNoticeOfHearingBuilder.hearingDate("");
+
+        assertThat(docmosisNoticeOfHearing).isEqualToComparingFieldByField(docmosisNoticeOfHearingBuilder.build());
     }
 
-    private DocmosisNoticeOfHearing getExpectedDocmosisTemplate(LocalDate dateOfBirth, HearingBooking hearingBooking) {
+    @Test
+    void shouldBuildExpectedTemplateDataWithHearingDateAndTimeWhenHearingStartAndEndDateAreTheSame() {
+        LocalDateTime now = LocalDateTime.now();
 
+        CaseData caseData = buildCaseData(now.toLocalDate());
+        HearingBooking hearingBooking = buildHearingBooking(now, now);
+        DocmosisNoticeOfHearing docmosisNoticeOfHearing = service.getTemplateData(caseData, hearingBooking);
+        DocmosisNoticeOfHearing.DocmosisNoticeOfHearingBuilder docmosisNoticeOfHearingBuilder
+            = getDocmosisNoticeOfHearingBuilder(now.toLocalDate());
+
+        docmosisNoticeOfHearingBuilder.hearingDate(formatLocalDateTime(now, DATE));
+
+        docmosisNoticeOfHearingBuilder.hearingTime(String.format("%s - %s",
+            formatLocalDateTime(now, HEARING_TIME_FORMAT),
+            formatLocalDateTime(now, HEARING_TIME_FORMAT)));
+
+        assertThat(docmosisNoticeOfHearing).isEqualToComparingFieldByField(docmosisNoticeOfHearingBuilder.build());
+    }
+
+    private DocmosisNoticeOfHearing.DocmosisNoticeOfHearingBuilder getDocmosisNoticeOfHearingBuilder(
+        LocalDate dateOfBirth) {
         return DocmosisNoticeOfHearing.builder()
             .children(getExpectedDocmosisChildren(dateOfBirth))
-            .hearingDate("")
-            .hearingTime(String.format("%s - %s", formatHearingDate(hearingBooking.getStartDate()),
-                formatHearingDate(hearingBooking.getEndDate())))
             .hearingType(CASE_MANAGEMENT.getLabel().toLowerCase())
             .hearingVenue("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW")
             .judgeAndLegalAdvisor(getExpectedDocmosisJudgeAndLegalAdvisor())
             .postingDate(formatLocalDateToString(LocalDate.now(), DATE))
             .courtseal(COURT_SEAL.getValue())
-            .crest(CREST.getValue())
-            .build();
+            .crest(CREST.getValue());
     }
 
-    private HearingBooking buildHearingBooking(LocalDateTime startDate) {
+    private HearingBooking buildHearingBooking(LocalDateTime startDate, LocalDateTime endDate) {
         return HearingBooking.builder()
             .type(CASE_MANAGEMENT)
             .startDate(startDate)
             .venue("Venue")
-            .endDate(startDate.plusDays(1))
+            .endDate(endDate)
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeTitle(HER_HONOUR_JUDGE)
                 .judgeLastName("Law")
@@ -133,7 +157,7 @@ class NoticeOfHearingGenerationServiceTest {
         )).build();
     }
 
-    private String formatHearingDate(LocalDateTime dateTime) {
-        return formatLocalDateTimeBaseUsingFormat(dateTime, "d MMMM, h:mma");
+    private String formatLocalDateTime(LocalDateTime dateTime, String format) {
+        return formatLocalDateTimeBaseUsingFormat(dateTime, format);
     }
 }
