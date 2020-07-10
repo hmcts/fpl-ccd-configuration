@@ -106,7 +106,7 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
     }
 
     @Test
-    void shouldTriggerPopulateNewHearingsEventWhenNewHearingsHaveBeenAdded() {
+    void shouldInvokeNotificationClientWhenNewHearingsHaveBeenAdded() {
         HearingBooking hearingBooking = createHearingBooking(now().plusHours(2), now().plusDays(2));
 
         CaseDetails caseDetails = CaseDetails.builder()
@@ -146,7 +146,7 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
     }
 
     @Test
-    void shouldNotTriggerPopulateNewHearingsEventWhenNoNewHearingsArePresent() {
+    void shouldNotInvokeNotificationClientWhenNoNewHearingsArePresent() {
         postSubmittedEvent(callbackRequestWithNoEmptyDates());
 
         checkThat(() -> verify(notificationClient, never()).sendEmail(any(), any(), any(), any(), any()));
