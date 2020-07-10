@@ -152,9 +152,12 @@ class HearingBookingServiceTest {
 
         @Test
         void shouldNotRemovePastHearingsWhenNoPastHearingsExist() {
-            List<Element<HearingBooking>> hearingBooking = newArrayList(hearingElementWithStartDate(5));
+            Element<HearingBooking> hearingBookingElement = hearingElementWithStartDate(5);
+            List<Element<HearingBooking>> hearingBooking = newArrayList(hearingBookingElement);
+            List<Element<HearingBooking>> expectedHearing = newArrayList(hearingBookingElement);
+
             service.removePastHearings(hearingBooking);
-            assertThat(hearingBooking).isEqualTo(hearingBooking);
+            assertThat(hearingBooking).isEqualTo(expectedHearing);
         }
 
         @Test
@@ -322,6 +325,13 @@ class HearingBookingServiceTest {
             assertThat(service.getSelectedHearings(selector, hearingBookings).size()).isEqualTo(1);
             assertThat(service.getSelectedHearings(selector, hearingBookings).get(0).getValue().getType())
                 .isEqualTo(CASE_MANAGEMENT);
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenNoHearings() {
+            Selector selector = Selector.builder().selected(List.of(1)).build();
+
+            assertThat(service.getSelectedHearings(selector, emptyList())).isEmpty();
         }
     }
 
