@@ -23,6 +23,7 @@ import static java.lang.String.format;
 import static java.util.Comparator.comparing;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.NEW_HEARING_LABEL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.NEW_HEARING_SELECTOR;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -47,6 +48,12 @@ public class HearingBookingService {
 
     public List<Element<HearingBooking>> getPastHearings(List<Element<HearingBooking>> hearingDetails) {
         return hearingDetails.stream().filter(this::isPastHearing).collect(toList());
+    }
+
+    public void removePastHearings(List<Element<HearingBooking>> hearingDetails) {
+        if (isNotEmpty(hearingDetails)) {
+            hearingDetails.removeAll(getPastHearings(hearingDetails));
+        }
     }
 
     public HearingBooking getMostUrgentHearingBooking(List<Element<HearingBooking>> hearingDetails) {

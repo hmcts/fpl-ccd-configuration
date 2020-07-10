@@ -103,7 +103,7 @@ class HearingBookingServiceTest {
     }
 
     @Nested
-    class GetPastHearings {
+    class PastHearings {
 
         @Test
         void shouldReturnEmptyListWhenNoHearingsHaveBeenCreated() {
@@ -141,6 +141,27 @@ class HearingBookingServiceTest {
             List<Element<HearingBooking>> hearingBookings = newArrayList(futureHearingBooking, pastHearingBooking);
 
             assertThat(service.getPastHearings(hearingBookings)).isEqualTo(List.of(pastHearingBooking));
+        }
+
+        @Test
+        void shouldRemovePastHearingsWhenPastHearingsExist() {
+            List<Element<HearingBooking>> hearingBooking = newArrayList(hearingElementWithStartDate(-5));
+            service.removePastHearings(hearingBooking);
+            assertThat(hearingBooking).isEmpty();
+        }
+
+        @Test
+        void shouldNotRemovePastHearingsWhenNoPastHearingsExist() {
+            List<Element<HearingBooking>> hearingBooking = newArrayList(hearingElementWithStartDate(5));
+            service.removePastHearings(hearingBooking);
+            assertThat(hearingBooking).isEqualTo(hearingBooking);
+        }
+
+        @Test
+        void shouldNotRemovePastHearingsWhenNoHearingsExist() {
+            List<Element<HearingBooking>> hearingBooking = emptyList();
+            service.removePastHearings(hearingBooking);
+            assertThat(hearingBooking).isEmpty();
         }
     }
 

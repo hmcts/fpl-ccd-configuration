@@ -73,9 +73,7 @@ public class HearingBookingDetailsController {
 
             hearingDetails = service.resetHearingJudge(hearingDetails, allocatedJudge);
 
-            List<Element<HearingBooking>> pastHearings = service.getPastHearings(hearingDetails);
-
-            hearingDetails.removeAll(pastHearings);
+            service.removePastHearings(hearingDetails);
 
             caseDetails.getData().put(HEARING_DETAILS_KEY, hearingDetails);
             caseDetails.getData().put("allocatedJudgeLabel", buildAllocatedJudgeLabel(caseData.getAllocatedJudge()));
@@ -100,10 +98,7 @@ public class HearingBookingDetailsController {
         List<Element<HearingBooking>> hearings = caseData.getHearingDetails();
         List<Element<HearingBooking>> hearingsBefore = defaultIfNull(caseDataBefore.getHearingDetails(), emptyList());
 
-        if (isNotEmpty(hearingsBefore)) {
-            List<Element<HearingBooking>> pastHearings = service.getPastHearings(hearingsBefore);
-            hearingsBefore.removeAll(pastHearings);
-        }
+        service.removePastHearings(hearingsBefore);
 
         if (!service.getNewHearings(hearings, hearingsBefore).isEmpty()) {
             caseDetails.getData().putAll(service.getHearingNoticeCaseFields(hearings, hearingsBefore));
@@ -128,8 +123,8 @@ public class HearingBookingDetailsController {
         List<Element<HearingBooking>> hearings = caseData.getHearingDetails();
         List<Element<HearingBooking>> hearingsBefore = new ArrayList<>(
             defaultIfNull(caseDataBefore.getHearingDetails(), emptyList()));
-        List<Element<HearingBooking>> pastHearings = service.getPastHearings(hearingsBefore);
-        hearingsBefore.removeAll(pastHearings);
+
+        service.removePastHearings(hearingsBefore);
 
         if (service.getNewHearings(hearings, hearingsBefore).isEmpty()) {
             caseDetails.getData().put(NEW_HEARING_SELECTOR.getKey(), null);
