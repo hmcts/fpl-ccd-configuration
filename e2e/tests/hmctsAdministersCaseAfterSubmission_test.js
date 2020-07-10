@@ -126,8 +126,8 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   await addHearingBookingDetailsEventPage.enterJudge(hearingDetails[1].judgeAndLegalAdvisor);
   await addHearingBookingDetailsEventPage.enterLegalAdvisor(hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
   await I.retryUntilExists(() => I.click('Continue'), '#newHearingSelector_newHearingSelector');
-  await addHearingBookingDetailsEventPage.sendNoticeOfHearing(hearingDetails[0].sendNoticeOfHearing);
-  await addHearingBookingDetailsEventPage.sendNoticeOfHearing(hearingDetails[1].sendNoticeOfHearing, 1);
+  addHearingBookingDetailsEventPage.sendNoticeOfHearing(hearingDetails[0].sendNoticeOfHearing);
+  addHearingBookingDetailsEventPage.sendNoticeOfHearing(hearingDetails[1].sendNoticeOfHearing, 1);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.addHearingBookingDetails);
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
