@@ -108,6 +108,7 @@ class NoticeOfHearingGenerationServiceTest {
     private DocmosisJudgeAndLegalAdvisor getExpectedDocmosisJudgeAndLegalAdvisor() {
         return DocmosisJudgeAndLegalAdvisor.builder()
             .legalAdvisorName("Watson")
+            .judgeTitleAndName("Her Honour Judge Law")
             .build();
     }
 
