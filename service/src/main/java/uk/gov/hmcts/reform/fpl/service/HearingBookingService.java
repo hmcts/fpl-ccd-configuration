@@ -1,17 +1,26 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -20,10 +29,14 @@ import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.String.format;
+import static java.time.LocalDate.now;
+import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparing;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.NEW_HEARING_LABEL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.NEW_HEARING_SELECTOR;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -40,6 +53,10 @@ public class HearingBookingService {
     public static final String HEARING_DETAILS_KEY = "hearingDetails";
 
     private final Time time;
+    private final ObjectMapper mapper;
+    private final NoticeOfHearingGenerationService noticeOfHearingGenerationService;
+    private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
+    private final UploadDocumentService uploadDocumentService;
 
     public List<Element<HearingBooking>> expandHearingBookingCollection(CaseData caseData) {
         return ofNullable(caseData.getHearingDetails())
@@ -181,6 +198,42 @@ public class HearingBookingService {
                 .map(hearings::get)
                 .collect(toList());
         }
+    }
+
+    public List<Element<HearingBooking>> getHearingDetails(
+        CaseDetails caseDetails, CaseData caseData, CaseData caseDataBefore) {
+        List<Element<HearingBooking>> hearings = caseData.getHearingDetails();
+        List<Element<HearingBooking>> hearingsBefore = new ArrayList<>(
+            defaultIfNull(caseDataBefore.getHearingDetails(), emptyList()));
+
+        removePastHearings(hearingsBefore);
+
+        if (getNewHearings(hearings, hearingsBefore).isEmpty()) {
+            caseDetails.getData().put(NEW_HEARING_SELECTOR.getKey(), null);
+        }
+
+        List<Element<HearingBooking>> updatedHearings =
+            setHearingJudge(caseData.getHearingDetails(), caseData.getAllocatedJudge());
+
+        Selector newHearingSelector = mapper.convertValue(caseDetails.getData().get(NEW_HEARING_SELECTOR.getKey()),
+            Selector.class);
+        List<Element<HearingBooking>> selectedHearings = getSelectedHearings(newHearingSelector,
+            updatedHearings);
+
+        selectedHearings
+            .forEach(hearing -> {
+                HearingBooking booking = hearing.getValue();
+                DocmosisNoticeOfHearing dnof = noticeOfHearingGenerationService.getTemplateData(caseData,
+                    hearing.getValue());
+                DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(dnof,
+                    NOTICE_OF_HEARING);
+                Document document = uploadDocumentService.uploadPDF(docmosisDocument.getBytes(),
+                    NOTICE_OF_HEARING.getDocumentTitle(now()));
+                booking.setNoticeOfHearing(DocumentReference.buildFromDocument(document));
+            });
+
+        return combineHearingDetails(updatedHearings,
+            getPastHearings(defaultIfNull(caseDataBefore.getHearingDetails(), emptyList())));
     }
 
     private boolean isPastHearing(Element<HearingBooking> element) {

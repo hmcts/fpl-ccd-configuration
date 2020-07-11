@@ -303,7 +303,6 @@ class HearingBookingServiceTest {
 
         @Test
         void shouldReturnListWithMoreThanOneHearingBookingsWhenThereIsNewHearing() {
-            System.out.println(service.getNewHearings(newHearingBookings, oldHearingBookings).toString());
             assertThat(service.getNewHearings(newHearingBookings, oldHearingBookings).size()).isNotZero();
         }
 
