@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -11,7 +13,13 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
+import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
+import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDateTime;
@@ -25,8 +33,16 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { EmailNotificationHelper.class, HearingBookingService.class,
-    FixedTimeConfiguration.class})
+@ContextConfiguration(classes = {
+    EmailNotificationHelper.class,
+    JacksonAutoConfiguration.class,
+    LookupTestConfig.class,
+    HearingBookingService.class,
+    CaseDataExtractionService.class,
+    NoticeOfHearingGenerationService.class,
+    FixedTimeConfiguration.class,
+    HearingVenueLookUpService.class
+})
 class EmailNotificationHelperTest {
 
     @Autowired
@@ -34,6 +50,12 @@ class EmailNotificationHelperTest {
 
     @Autowired
     private EmailNotificationHelper helper;
+
+    @MockBean
+    private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
+
+    @MockBean
+    private UploadDocumentService uploadDocumentService;
 
     @Test
     void subjectLineShouldBeEmptyWhenNoRespondentOrCaseNumberEmpty() {

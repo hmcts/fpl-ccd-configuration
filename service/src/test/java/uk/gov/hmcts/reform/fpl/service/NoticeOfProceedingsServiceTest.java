@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
@@ -14,6 +15,8 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.util.List;
@@ -27,13 +30,25 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6A;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {NoticeOfProceedingsService.class})
 @ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, LookupTestConfig.class, HearingBookingService.class,
-    HearingVenueLookUpService.class, CaseDataExtractionService.class, FixedTimeConfiguration.class
+    JacksonAutoConfiguration.class,
+    LookupTestConfig.class,
+    HearingBookingService.class,
+    HearingVenueLookUpService.class,
+    CaseDataExtractionService.class,
+    FixedTimeConfiguration.class,
+    NoticeOfHearingGenerationService.class,
+    HearingVenueLookUpService.class
 })
 class NoticeOfProceedingsServiceTest {
 
     @Autowired
     private NoticeOfProceedingsService noticeOfProceedingService;
+
+    @MockBean
+    private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
+
+    @MockBean
+    private UploadDocumentService uploadDocumentService;
 
     @Test
     void shouldRetrieveExistingC6AWhenC6ANotIncludedInTemplateList() {

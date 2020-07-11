@@ -12,9 +12,14 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
+import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
+import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
+import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -37,8 +42,14 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.ge
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedCaseUrlParameters;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
 
-@ContextConfiguration(classes = {OrderIssuedEmailContentProvider.class, LookupTestConfig.class,
-    EmailNotificationHelper.class, HearingBookingService.class, FixedTimeConfiguration.class,
+@ContextConfiguration(classes = {OrderIssuedEmailContentProvider.class,
+    LookupTestConfig.class,
+    EmailNotificationHelper.class,
+    HearingBookingService.class,
+    FixedTimeConfiguration.class,
+    CaseDataExtractionService.class,
+    NoticeOfHearingGenerationService.class,
+    HearingVenueLookUpService.class
 })
 class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
@@ -46,6 +57,12 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
 
     @MockBean
     private GeneratedOrderService generatedOrderService;
+
+    @MockBean
+    private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
+
+    @MockBean
+    private UploadDocumentService uploadDocumentService;
 
     @Autowired
     private OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;

@@ -3,12 +3,19 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
+import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
+import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
+import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.util.Map;
@@ -17,13 +24,26 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ContextConfiguration(classes = {LocalAuthorityEmailContentProvider.class, LookupTestConfig.class,
-    HearingBookingService.class, FixedTimeConfiguration.class
+@ContextConfiguration(classes = {
+    LocalAuthorityEmailContentProvider.class,
+    LookupTestConfig.class,
+    HearingBookingService.class,
+    FixedTimeConfiguration.class,
+    EmailNotificationHelper.class,
+    CaseDataExtractionService.class,
+    NoticeOfHearingGenerationService.class,
+    HearingVenueLookUpService.class
 })
 class LocalAuthorityEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     @Autowired
     private LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
+
+    @MockBean
+    private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
+
+    @MockBean
+    private UploadDocumentService uploadDocumentService;
 
     @Test
     void shouldReturnExpectedMapWithValidSDODetails() {
