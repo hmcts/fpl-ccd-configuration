@@ -215,6 +215,17 @@ public class HearingBookingService {
         List<Element<HearingBooking>> updatedHearings =
             setHearingJudge(caseData.getHearingDetails(), caseData.getAllocatedJudge());
 
+        sendDocumentsForSelectedHearings(caseDetails, caseData, updatedHearings);
+
+        return combineHearingDetails(updatedHearings,
+            getPastHearings(defaultIfNull(caseDataBefore.getHearingDetails(), emptyList())));
+    }
+
+    private void sendDocumentsForSelectedHearings(
+        CaseDetails caseDetails,
+        CaseData caseData,
+        List<Element<HearingBooking>> updatedHearings
+    ) {
         Selector newHearingSelector = mapper.convertValue(caseDetails.getData().get(NEW_HEARING_SELECTOR.getKey()),
             Selector.class);
         List<Element<HearingBooking>> selectedHearings = getSelectedHearings(newHearingSelector,
@@ -231,9 +242,6 @@ public class HearingBookingService {
                     NOTICE_OF_HEARING.getDocumentTitle(now()));
                 booking.setNoticeOfHearing(DocumentReference.buildFromDocument(document));
             });
-
-        return combineHearingDetails(updatedHearings,
-            getPastHearings(defaultIfNull(caseDataBefore.getHearingDetails(), emptyList())));
     }
 
     private boolean isPastHearing(Element<HearingBooking> element) {
