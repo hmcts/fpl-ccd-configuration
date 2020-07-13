@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
@@ -199,8 +200,10 @@ class HearingBookingDetailsControllerAboutToSubmitTest extends AbstractControlle
 
             AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(callbackRequest);
             CaseData responseData = mapper.convertValue(response.getData(), CaseData.class);
+            DocumentReference noticeOfHearing = responseData.getHearingDetails().get(1).getValue().getNoticeOfHearing();
+
             assertThat(responseData.getHearingDetails().get(0).getValue().getNoticeOfHearing()).isNull();
-            assertThat(responseData.getHearingDetails().get(1).getValue().getNoticeOfHearing()).isNotNull();
+            assertThat(noticeOfHearing).isEqualTo(DocumentReference.buildFromDocument(document));
             assertThat(responseData.getHearingDetails().get(2).getValue().getNoticeOfHearing()).isNull();
         }
     }
