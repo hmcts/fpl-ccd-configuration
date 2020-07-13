@@ -122,7 +122,9 @@ public class HearingBookingDetailsController {
             applicationEventPublisher.publishEvent(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
         }
 
-        applicationEventPublisher.publishEvent(new NewHearingsAddedEvent(callbackRequest));
+        List<Element<HearingBooking>> newHearings = service.getSelectedHearings(caseData.getNewHearingSelector(),
+            caseData.getHearingDetails());
+        applicationEventPublisher.publishEvent(new NewHearingsAddedEvent(callbackRequest, newHearings));
 
     }
 }

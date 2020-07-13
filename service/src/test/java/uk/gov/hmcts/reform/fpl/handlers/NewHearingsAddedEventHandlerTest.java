@@ -83,13 +83,14 @@ class NewHearingsAddedEventHandlerTest {
     void shouldSendNotificationToLACafcassAndRepresentativesWhenNewHearingIsAdded() {
         final ObjectMapper mapper = new ObjectMapper();
         final CallbackRequest callbackRequest = callbackRequest();
-        final EventData eventData = new EventData(new NewHearingsAddedEvent(callbackRequest));
         final CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(UUID.randomUUID(), createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))));
-        NewNoticeOfHearingTemplate newNoticeOfHearingTemplate =
-            NewNoticeOfHearingTemplate.builder().build();
+
+        final EventData eventData = new EventData(new NewHearingsAddedEvent(callbackRequest, hearingBookings));
+
+        NewNoticeOfHearingTemplate newNoticeOfHearingTemplate = NewNoticeOfHearingTemplate.builder().build();
 
         given(hearingBookingService.getSelectedHearings(any(), any())).willReturn(hearingBookings);
         given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
@@ -98,7 +99,7 @@ class NewHearingsAddedEventHandlerTest {
             any(CaseDetails.class), any(HearingBooking.class), any()))
             .willReturn(newNoticeOfHearingTemplate);
 
-        newHearingsAddedEventHandler.sendEmail(new NewHearingsAddedEvent(callbackRequest));
+        newHearingsAddedEventHandler.sendEmail(new NewHearingsAddedEvent(callbackRequest, hearingBookings));
 
         verify(notificationService, times(1)).sendEmail(
             NOTICE_OF_NEW_HEARING,
