@@ -46,6 +46,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
     FixedTimeConfiguration.class})
 class NewHearingsAddedHandlerTest {
     private static final String CASE_REFERENCE = "12345";
+    private final NewNoticeOfHearingTemplate newNoticeOfHearingTemplate = NewNoticeOfHearingTemplate.builder().build();
 
     @Autowired
     private NewHearingsAddedHandler newHearingsAddedHandler;
@@ -69,8 +70,6 @@ class NewHearingsAddedHandlerTest {
     private RepresentativeNotificationService representativeNotificationService;
 
     private LocalDateTime futureDate;
-
-    private NewNoticeOfHearingTemplate newNoticeOfHearingTemplate = NewNoticeOfHearingTemplate.builder().build();
 
     @BeforeEach
     void setUp() {
@@ -108,12 +107,6 @@ class NewHearingsAddedHandlerTest {
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(UUID.randomUUID(), createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))));
 
-        NewNoticeOfHearingTemplate newNoticeOfHearingTemplate = NewNoticeOfHearingTemplate.builder().build();
-
-        given(newNoticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(
-            any(CaseDetails.class), any(HearingBooking.class), any()))
-            .willReturn(newNoticeOfHearingTemplate);
-
         newHearingsAddedHandler.sendEmailToCafcass(new NewHearingsAdded(callbackRequest, hearingBookings));
 
         verify(notificationService, times(1)).sendEmail(
@@ -130,12 +123,6 @@ class NewHearingsAddedHandlerTest {
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(UUID.randomUUID(), createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))));
         final EventData eventData = new EventData(new NewHearingsAdded(callbackRequest, hearingBookings));
-
-        NewNoticeOfHearingTemplate newNoticeOfHearingTemplate = NewNoticeOfHearingTemplate.builder().build();
-
-        given(newNoticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(
-            any(CaseDetails.class), any(HearingBooking.class), any()))
-            .willReturn(newNoticeOfHearingTemplate);
 
         newHearingsAddedHandler.sendEmailToRepresentatives(new NewHearingsAdded(callbackRequest, hearingBookings));
 
