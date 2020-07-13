@@ -23,10 +23,8 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.JsonOrdersLookupService;
-import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -64,10 +62,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
     JacksonAutoConfiguration.class, JsonOrdersLookupService.class, HearingVenueLookUpService.class,
-    LookupTestConfig.class, StandardDirectionOrderGenerationService.class, HearingBookingService.class,
-    CaseDataExtractionService.class, FixedTimeConfiguration.class,
-    HearingBookingService.class,
-    NoticeOfHearingGenerationService.class
+    LookupTestConfig.class, StandardDirectionOrderGenerationService.class,
+    CaseDataExtractionService.class, FixedTimeConfiguration.class
 })
 class StandardDirectionOrderGenerationServiceTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
@@ -81,12 +77,6 @@ class StandardDirectionOrderGenerationServiceTest {
 
     @Autowired
     private StandardDirectionOrderGenerationService service;
-
-    @MockBean
-    private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
-
-    @MockBean
-    private UploadDocumentService uploadDocumentService;
 
     @BeforeEach
     void setup() {

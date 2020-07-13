@@ -11,16 +11,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
-import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
-import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
-import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
-import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
@@ -50,20 +44,10 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.ge
 import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {
-    CaseManagementOrderIssuedEventHandler.class,
-    JacksonAutoConfiguration.class,
-    LookupTestConfig.class,
-    CaseManagementOrderCaseLinkNotificationHandler.class,
-    CaseManagementOrderDocumentLinkNotificationHandler.class,
-    IssuedOrderAdminNotificationHandler.class,
-    HmctsAdminNotificationHandler.class,
-    HearingBookingService.class,
-    FixedTimeConfiguration.class,
-    CaseDataExtractionService.class,
-    NoticeOfHearingGenerationService.class,
-    HearingVenueLookUpService.class
-})
+@SpringBootTest(classes = {CaseManagementOrderIssuedEventHandler.class, JacksonAutoConfiguration.class,
+    LookupTestConfig.class, CaseManagementOrderCaseLinkNotificationHandler.class,
+    CaseManagementOrderDocumentLinkNotificationHandler.class, IssuedOrderAdminNotificationHandler.class,
+    HmctsAdminNotificationHandler.class, FixedTimeConfiguration.class})
 public class CaseManagementOrderIssuedEventHandlerTest {
 
     @MockBean
@@ -74,12 +58,6 @@ public class CaseManagementOrderIssuedEventHandlerTest {
 
     @MockBean
     private RepresentativeService representativeService;
-
-    @MockBean
-    private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
-
-    @MockBean
-    private UploadDocumentService uploadDocumentService;
 
     @MockBean
     private OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;

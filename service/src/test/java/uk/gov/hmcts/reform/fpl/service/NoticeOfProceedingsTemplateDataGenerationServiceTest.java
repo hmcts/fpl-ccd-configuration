@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -19,8 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
-import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
-import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -43,14 +40,9 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class,
-    LookupTestConfig.class,
-    HearingBookingService.class,
-    HearingVenueLookUpService.class,
-    CaseDataExtractionService.class,
-    FixedTimeConfiguration.class,
-    NoticeOfProceedingsTemplateDataGenerationService.class,
-    NoticeOfHearingGenerationService.class
+    JacksonAutoConfiguration.class, LookupTestConfig.class,
+    HearingVenueLookUpService.class, CaseDataExtractionService.class, FixedTimeConfiguration.class,
+    NoticeOfProceedingsTemplateDataGenerationService.class
 })
 class NoticeOfProceedingsTemplateDataGenerationServiceTest {
 
@@ -61,12 +53,6 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
     private NoticeOfProceedingsTemplateDataGenerationService noticeOfProceedingsTemplateDataGenerationService;
 
     private LocalDate futureDate;
-
-    @MockBean
-    DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
-
-    @MockBean
-    UploadDocumentService uploadDocumentService;
 
     @BeforeEach
     void setup() {

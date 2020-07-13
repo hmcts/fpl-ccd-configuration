@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
@@ -492,6 +493,13 @@ public class CaseData {
     public Optional<HearingBooking> getFirstHearing() {
         return unwrapElements(hearingDetails).stream()
             .min(comparing(HearingBooking::getStartDate));
+    }
+
+    public HearingBooking getMostUrgentHearingBookingAfter(LocalDateTime time) {
+        return unwrapElements(hearingDetails).stream()
+            .filter(hearing -> hearing.getStartDate().isAfter(time))
+            .min(comparing(HearingBooking::getStartDate))
+            .orElseThrow(NoHearingBookingException::new);
     }
 
     private final DocumentReference submittedForm;

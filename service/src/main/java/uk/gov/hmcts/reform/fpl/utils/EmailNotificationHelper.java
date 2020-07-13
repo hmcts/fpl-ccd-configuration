@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.format.FormatStyle;
 import java.util.List;
@@ -24,7 +24,7 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class EmailNotificationHelper {
 
-    private final HearingBookingService hearingBookingService;
+    private final Time time;
 
     public String buildSubjectLine(final CaseData caseData) {
         final String respondentlastName = getFirstRespondentLastName(caseData.getRespondents1());
@@ -41,7 +41,7 @@ public class EmailNotificationHelper {
         String hearingDateText = "";
 
         if (hasFutureHearing(hearingBookings)) {
-            hearingDateText = buildHearingDateText(hearingBookings);
+            hearingDateText = buildHearingDateText(caseData);
         }
 
         return Stream.of(subjectLine, hearingDateText)
@@ -63,8 +63,8 @@ public class EmailNotificationHelper {
             .anyMatch(hearing -> hearing.getValue().startsAfterToday());
     }
 
-    private String buildHearingDateText(final List<Element<HearingBooking>> hearingBookings) {
-        return " hearing " + formatLocalDateToString(hearingBookingService.getMostUrgentHearingBooking(hearingBookings)
+    private String buildHearingDateText(final CaseData caseData) {
+        return " hearing " + formatLocalDateToString(caseData.getMostUrgentHearingBookingAfter(time.now())
             .getStartDate().toLocalDate(), FormatStyle.MEDIUM);
     }
 }
