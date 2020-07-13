@@ -22,6 +22,5 @@ public enum CMOStatus {
     /**
      * Indicates that the CMO has been approved.
      */
-    APPROVED,
-
+    APPROVED
 }
