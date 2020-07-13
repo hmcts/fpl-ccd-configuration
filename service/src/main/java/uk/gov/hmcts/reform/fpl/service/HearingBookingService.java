@@ -200,7 +200,7 @@ public class HearingBookingService {
         }
     }
 
-    public List<Element<HearingBooking>> getHearingDetails(
+    public List<Element<HearingBooking>> prepareHearingDetails(
         CaseDetails caseDetails, CaseData caseData, CaseData caseDataBefore) {
         List<Element<HearingBooking>> hearings = caseData.getHearingDetails();
         List<Element<HearingBooking>> hearingsBefore = new ArrayList<>(
@@ -215,13 +215,13 @@ public class HearingBookingService {
         List<Element<HearingBooking>> updatedHearings =
             setHearingJudge(caseData.getHearingDetails(), caseData.getAllocatedJudge());
 
-        sendDocumentsForSelectedHearings(caseDetails, caseData, updatedHearings);
+        attachDocumentsForSelectedHearings(caseDetails, caseData, updatedHearings);
 
         return combineHearingDetails(updatedHearings,
             getPastHearings(defaultIfNull(caseDataBefore.getHearingDetails(), emptyList())));
     }
 
-    private void sendDocumentsForSelectedHearings(
+    private void attachDocumentsForSelectedHearings(
         CaseDetails caseDetails,
         CaseData caseData,
         List<Element<HearingBooking>> updatedHearings

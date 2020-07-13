@@ -105,7 +105,7 @@ public class HearingBookingDetailsController {
         CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
         CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
 
-        List<Element<HearingBooking>> hearingDetails = service.getHearingDetails(caseDetails, caseData, caseDataBefore);
+        List<Element<HearingBooking>> hearingDetails = service.prepareHearingDetails(caseDetails, caseData, caseDataBefore);
 
         caseDetails.getData().put(HEARING_DETAILS_KEY, hearingDetails);
         return AboutToStartOrSubmitCallbackResponse.builder()
