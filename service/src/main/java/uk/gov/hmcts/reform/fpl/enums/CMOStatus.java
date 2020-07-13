@@ -13,11 +13,15 @@ public enum CMOStatus {
     @Deprecated
     PARTIES_REVIEW,
     /**
-     * Indicates that the CMO has been returned to LA.
+     * Indicates that the CMO is still being worked on by the LA or has been sent back to the LA by the judge.
+     *
+     * @deprecated no longer used in the new CMO status model but preserved for old cases.
      */
+    @Deprecated
     SELF_REVIEW,
     /**
      * Indicates that the CMO has been approved.
      */
-    APPROVED
+    APPROVED,
+
 }
