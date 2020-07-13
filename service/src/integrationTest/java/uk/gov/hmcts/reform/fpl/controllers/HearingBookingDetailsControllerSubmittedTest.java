@@ -105,6 +105,7 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
         checkThat(() -> verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), any(), any()));
     }
 
+    //TODO Seems to randomly fail, should be investigated
     @Test
     void shouldInvokeNotificationClientWhenNewHearingsHaveBeenAdded() {
         HearingBooking hearingBooking = createHearingBooking(now().plusHours(2), now().plusDays(2));

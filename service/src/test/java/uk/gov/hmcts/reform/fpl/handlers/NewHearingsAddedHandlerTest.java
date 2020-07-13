@@ -12,7 +12,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
-import uk.gov.hmcts.reform.fpl.events.NewHearingsAddedEvent;
+import uk.gov.hmcts.reform.fpl.events.NewHearingsAdded;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
@@ -44,15 +44,15 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {
-    NewHearingsAddedEventHandler.class,
+    NewHearingsAddedHandler.class,
     JacksonAutoConfiguration.class,
     LookupTestConfig.class,
     FixedTimeConfiguration.class})
-class NewHearingsAddedEventHandlerTest {
+class NewHearingsAddedHandlerTest {
     private static final String CASE_REFERENCE = "12345";
 
     @Autowired
-    private NewHearingsAddedEventHandler newHearingsAddedEventHandler;
+    private NewHearingsAddedHandler newHearingsAddedHandler;
 
     @Autowired
     private Time time;
@@ -88,7 +88,7 @@ class NewHearingsAddedEventHandlerTest {
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(UUID.randomUUID(), createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))));
 
-        final EventData eventData = new EventData(new NewHearingsAddedEvent(callbackRequest, hearingBookings));
+        final EventData eventData = new EventData(new NewHearingsAdded(callbackRequest, hearingBookings));
 
         NewNoticeOfHearingTemplate newNoticeOfHearingTemplate = NewNoticeOfHearingTemplate.builder().build();
 
@@ -99,7 +99,7 @@ class NewHearingsAddedEventHandlerTest {
             any(CaseDetails.class), any(HearingBooking.class), any()))
             .willReturn(newNoticeOfHearingTemplate);
 
-        newHearingsAddedEventHandler.sendEmail(new NewHearingsAddedEvent(callbackRequest, hearingBookings));
+        newHearingsAddedHandler.sendEmail(new NewHearingsAdded(callbackRequest, hearingBookings));
 
         verify(notificationService, times(1)).sendEmail(
             NOTICE_OF_NEW_HEARING,

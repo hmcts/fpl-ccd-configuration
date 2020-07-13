@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.events.NewHearingsAddedEvent;
+import uk.gov.hmcts.reform.fpl.events.NewHearingsAdded;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -124,7 +124,8 @@ public class HearingBookingDetailsController {
 
         List<Element<HearingBooking>> newHearings = service.getSelectedHearings(caseData.getNewHearingSelector(),
             caseData.getHearingDetails());
-        applicationEventPublisher.publishEvent(new NewHearingsAddedEvent(callbackRequest, newHearings));
-
+        if (!newHearings.isEmpty()) {
+            applicationEventPublisher.publishEvent(new NewHearingsAdded(callbackRequest, newHearings));
+        }
     }
 }

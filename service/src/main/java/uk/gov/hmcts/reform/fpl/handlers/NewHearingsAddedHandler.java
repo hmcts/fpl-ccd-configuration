@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
-import uk.gov.hmcts.reform.fpl.events.NewHearingsAddedEvent;
+import uk.gov.hmcts.reform.fpl.events.NewHearingsAdded;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.NewNoticeOfHearingTemplate;
@@ -26,7 +26,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMA
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class NewHearingsAddedEventHandler {
+public class NewHearingsAddedHandler {
 
     private static final List<RepresentativeServingPreferences> SERVING_PREFERENCES = List.of(EMAIL, DIGITAL_SERVICE);
 
@@ -39,7 +39,7 @@ public class NewHearingsAddedEventHandler {
 
     @Async
     @EventListener
-    public void sendEmail(final NewHearingsAddedEvent event) {
+    public void sendEmail(final NewHearingsAdded event) {
         EventData eventData = new EventData(event);
 
         final CaseDetails caseDetails = mapper

@@ -12,11 +12,11 @@ import java.util.List;
 @Value
 @Generated
 @EqualsAndHashCode(callSuper = true)
-public class NewHearingsAddedEvent extends CallbackEvent {
+public class NewHearingsAdded extends CallbackEvent {
 
     private List<Element<HearingBooking>> newHearings;
 
-    public NewHearingsAddedEvent(CallbackRequest callbackRequest, List<Element<HearingBooking>> newHearings) {
+    public NewHearingsAdded(CallbackRequest callbackRequest, List<Element<HearingBooking>> newHearings) {
         super(callbackRequest);
         this.newHearings = newHearings;
     }
