@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
-import uk.gov.hmcts.reform.fpl.model.notify.hearing.NewNoticeOfHearingTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.hearing.NoticeOfHearingTemplate;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
@@ -46,9 +46,6 @@ class NewNoticeOfHearingEmailContentProviderTest extends AbstractEmailContentPro
     private CaseDataExtractionService caseDataExtractionService;
 
     @Autowired
-    private HearingVenueLookUpService hearingVenueLookUpService;
-
-    @Autowired
     private Time time;
 
     private CaseDetails caseDetails;
@@ -67,7 +64,7 @@ class NewNoticeOfHearingEmailContentProviderTest extends AbstractEmailContentPro
 
     @Test
     void shouldReturnExpectedNewHearingTemplateWithDigitalPreference() {
-        NewNoticeOfHearingTemplate expectedTemplateData = buildExpectedTemplate(hearingBooking, YES);
+        NoticeOfHearingTemplate expectedTemplateData = buildExpectedTemplate(hearingBooking, YES);
 
         assertThat(newNoticeOfHearingEmailContentProvider
             .buildNewNoticeOfHearingNotification(caseDetails, hearingBooking, DIGITAL_SERVICE))
@@ -76,7 +73,7 @@ class NewNoticeOfHearingEmailContentProviderTest extends AbstractEmailContentPro
 
     @Test
     void shouldReturnExpectedNewHearingTemplateWithEmailPreference() {
-        NewNoticeOfHearingTemplate expectedTemplateData = buildExpectedTemplate(hearingBooking, NO);
+        NoticeOfHearingTemplate expectedTemplateData = buildExpectedTemplate(hearingBooking, NO);
 
         assertThat(newNoticeOfHearingEmailContentProvider
             .buildNewNoticeOfHearingNotification(caseDetails, hearingBooking, EMAIL))
@@ -93,9 +90,9 @@ class NewNoticeOfHearingEmailContentProviderTest extends AbstractEmailContentPro
             .build();
     }
 
-    private NewNoticeOfHearingTemplate buildExpectedTemplate(HearingBooking hearingBooking,
-                                                             YesNo hasDigitalPreference) {
-        return NewNoticeOfHearingTemplate.builder()
+    private NoticeOfHearingTemplate buildExpectedTemplate(HearingBooking hearingBooking,
+                                                          YesNo hasDigitalPreference) {
+        return NoticeOfHearingTemplate.builder()
             .hearingType(CASE_MANAGEMENT.getLabel().toLowerCase())
             .hearingDate(formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG))
             .hearingVenue("Venue")

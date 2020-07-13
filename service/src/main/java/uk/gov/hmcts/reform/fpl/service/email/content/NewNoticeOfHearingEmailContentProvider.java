@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.notify.hearing.NewNoticeOfHearingTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.hearing.NoticeOfHearingTemplate;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
@@ -28,13 +28,13 @@ public class NewNoticeOfHearingEmailContentProvider extends AbstractEmailContent
     private final CaseDataExtractionService caseDataExtractionService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
 
-    public NewNoticeOfHearingTemplate buildNewNoticeOfHearingNotification(
+    public NoticeOfHearingTemplate buildNewNoticeOfHearingNotification(
         CaseDetails caseDetails,
         HearingBooking hearingBooking,
         RepresentativeServingPreferences representativeServingPreferences) {
         final CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        return NewNoticeOfHearingTemplate.builder()
+        return NoticeOfHearingTemplate.builder()
             .hearingType(hearingBooking.getType().getLabel().toLowerCase())
             .hearingDate(formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG))
             .hearingVenue(hearingVenueLookUpService.getHearingVenue(hearingBooking).getVenue())
