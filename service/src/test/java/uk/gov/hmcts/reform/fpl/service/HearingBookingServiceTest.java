@@ -45,15 +45,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {
-    HearingBookingService.class,
-    FixedTimeConfiguration.class,
-    JacksonAutoConfiguration.class,
-    LookupTestConfig.class,
-    EmailNotificationHelper.class,
-    CaseDataExtractionService.class,
-    NoticeOfHearingGenerationService.class,
-    HearingVenueLookUpService.class
+@ContextConfiguration(classes = {HearingBookingService.class, FixedTimeConfiguration.class,
+    JacksonAutoConfiguration.class, LookupTestConfig.class, EmailNotificationHelper.class,
+    CaseDataExtractionService.class, NoticeOfHearingGenerationService.class, HearingVenueLookUpService.class
 })
 class HearingBookingServiceTest {
     private static final UUID[] HEARING_IDS = {randomUUID(), randomUUID(), randomUUID(), randomUUID()};

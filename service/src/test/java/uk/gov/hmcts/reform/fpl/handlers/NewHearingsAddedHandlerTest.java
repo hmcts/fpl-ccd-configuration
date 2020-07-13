@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.NewNoticeOfHearingTemplate;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -43,10 +42,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {
-    NewHearingsAddedHandler.class,
-    JacksonAutoConfiguration.class,
-    LookupTestConfig.class,
+@SpringBootTest(classes = {NewHearingsAddedHandler.class, JacksonAutoConfiguration.class, LookupTestConfig.class,
     FixedTimeConfiguration.class})
 class NewHearingsAddedHandlerTest {
     private static final String CASE_REFERENCE = "12345";
@@ -56,6 +52,9 @@ class NewHearingsAddedHandlerTest {
 
     @Autowired
     private Time time;
+
+    @Autowired
+    private ObjectMapper mapper;
 
     @MockBean
     private NotificationService notificationService;
@@ -71,9 +70,15 @@ class NewHearingsAddedHandlerTest {
 
     private LocalDateTime futureDate;
 
+    private NewNoticeOfHearingTemplate newNoticeOfHearingTemplate = NewNoticeOfHearingTemplate.builder().build();
+
     @BeforeEach
     void setUp() {
         futureDate = time.now().plusDays(1);
+
+        given(newNoticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(
+            any(CaseDetails.class), any(HearingBooking.class), any()))
+            .willReturn(newNoticeOfHearingTemplate);
     }
 
     @Test
@@ -84,13 +89,8 @@ class NewHearingsAddedHandlerTest {
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(UUID.randomUUID(), createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))));
 
-        NewNoticeOfHearingTemplate newNoticeOfHearingTemplate = NewNoticeOfHearingTemplate.builder().build();
-
         given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
             .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
-        given(newNoticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(
-            any(CaseDetails.class), any(HearingBooking.class), any()))
-            .willReturn(newNoticeOfHearingTemplate);
 
         newHearingsAddedHandler.sendEmailToLA(new NewHearingsAdded(callbackRequest, hearingBookings));
 
@@ -125,7 +125,6 @@ class NewHearingsAddedHandlerTest {
 
     @Test
     void shouldSendNotificationToRepresentativesWhenNewHearingIsAdded() {
-        final ObjectMapper mapper = new ObjectMapper();
         final CallbackRequest callbackRequest = callbackRequest();
 
         List<Element<HearingBooking>> hearingBookings = List.of(
@@ -139,7 +138,6 @@ class NewHearingsAddedHandlerTest {
             .willReturn(newNoticeOfHearingTemplate);
 
         newHearingsAddedHandler.sendEmailToRepresentatives(new NewHearingsAdded(callbackRequest, hearingBookings));
-
 
         verify(representativeNotificationService, times(1))
             .sendToRepresentativesByServedPreference(
