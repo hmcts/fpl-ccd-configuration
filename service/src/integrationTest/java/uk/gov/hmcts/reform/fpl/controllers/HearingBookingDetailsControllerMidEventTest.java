@@ -130,7 +130,7 @@ class HearingBookingDetailsControllerMidEventTest extends AbstractControllerTest
         LocalDateTime date = now().plusDays(5);
         UUID hearingId = randomUUID();
 
-        List<Element<HearingBooking>> newHearingBooking = listBookingWithStartDate(hearingId, date);
+        List<Element<HearingBooking>> newHearingBooking = listBookingWithStartDate(hearingId, date.plusDays(3));
         List<Element<HearingBooking>> oldHearingBooking = listBookingWithStartDate(hearingId, date);
 
         CallbackRequest request = callbackRequestWithEditedBooking(newHearingBooking, oldHearingBooking);
