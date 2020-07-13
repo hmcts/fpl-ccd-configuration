@@ -34,6 +34,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -64,7 +65,7 @@ class NoticeOfHearingGenerationServiceTest {
 
         CaseData caseData = buildCaseData(now.toLocalDate());
         HearingBooking hearingBooking = buildHearingBooking(now, now.plusDays(1));
-        DocmosisNoticeOfHearing docmosisNoticeOfHearing = service.getTemplateData(caseData, hearingBooking);
+        final DocmosisNoticeOfHearing docmosisNoticeOfHearing = service.getTemplateData(caseData, hearingBooking);
         DocmosisNoticeOfHearing.DocmosisNoticeOfHearingBuilder docmosisNoticeOfHearingBuilder
             = getDocmosisNoticeOfHearingBuilder(now.toLocalDate());
 
@@ -72,6 +73,7 @@ class NoticeOfHearingGenerationServiceTest {
             formatLocalDateTime(hearingBooking.getStartDate(), HEARING_DATE_AND_TIME_FORMAT),
             formatLocalDateTime(hearingBooking.getEndDate(), HEARING_DATE_AND_TIME_FORMAT)));
 
+        docmosisNoticeOfHearingBuilder.preHearingAttendance(formatLocalDateTime(now.minusHours(1), DATE_TIME));
         docmosisNoticeOfHearingBuilder.hearingDate("");
 
         assertThat(docmosisNoticeOfHearing).isEqualToComparingFieldByField(docmosisNoticeOfHearingBuilder.build());
@@ -83,12 +85,12 @@ class NoticeOfHearingGenerationServiceTest {
 
         CaseData caseData = buildCaseData(now.toLocalDate());
         HearingBooking hearingBooking = buildHearingBooking(now, now);
-        DocmosisNoticeOfHearing docmosisNoticeOfHearing = service.getTemplateData(caseData, hearingBooking);
+        final DocmosisNoticeOfHearing docmosisNoticeOfHearing = service.getTemplateData(caseData, hearingBooking);
         DocmosisNoticeOfHearing.DocmosisNoticeOfHearingBuilder docmosisNoticeOfHearingBuilder
             = getDocmosisNoticeOfHearingBuilder(now.toLocalDate());
 
         docmosisNoticeOfHearingBuilder.hearingDate(formatLocalDateTime(now, DATE));
-
+        docmosisNoticeOfHearingBuilder.preHearingAttendance(formatLocalDateTime(now.minusHours(1), "h:mma"));
         docmosisNoticeOfHearingBuilder.hearingTime(String.format("%s - %s",
             formatLocalDateTime(now, HEARING_TIME_FORMAT),
             formatLocalDateTime(now, HEARING_TIME_FORMAT)));

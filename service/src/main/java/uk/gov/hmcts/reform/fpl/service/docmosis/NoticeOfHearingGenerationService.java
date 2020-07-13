@@ -32,6 +32,7 @@ public class NoticeOfHearingGenerationService {
             .hearingTime(dataService.getHearingTime(hearingBooking))
             .hearingType(hearingBooking.getType().getLabel().toLowerCase())
             .hearingVenue(hearingVenueLookUpService.buildHearingVenue(venue))
+            .preHearingAttendance(dataService.extractPrehearingAttendance(hearingBooking))
             .judgeAndLegalAdvisor(dataService.getJudgeAndLegalAdvisor(hearingBooking.getJudgeAndLegalAdvisor()))
             .postingDate(formatLocalDateToString(LocalDate.now(), DATE))
             .courtseal(COURT_SEAL.getValue())
