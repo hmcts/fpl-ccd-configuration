@@ -107,12 +107,6 @@ class NewHearingsAddedHandlerTest {
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(UUID.randomUUID(), createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))));
 
-        NoticeOfHearingTemplate noticeOfHearingTemplate = NoticeOfHearingTemplate.builder().build();
-
-        given(newNoticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(
-            any(CaseDetails.class), any(HearingBooking.class), any()))
-            .willReturn(noticeOfHearingTemplate);
-
         newHearingsAddedHandler.sendEmailToCafcass(new NewHearingsAdded(callbackRequest, hearingBookings));
 
         verify(notificationService).sendEmail(
@@ -129,12 +123,6 @@ class NewHearingsAddedHandlerTest {
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(UUID.randomUUID(), createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))));
         final EventData eventData = new EventData(new NewHearingsAdded(callbackRequest, hearingBookings));
-
-        NoticeOfHearingTemplate noticeOfHearingTemplate = NoticeOfHearingTemplate.builder().build();
-
-        given(newNoticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(
-            any(CaseDetails.class), any(HearingBooking.class), any()))
-            .willReturn(noticeOfHearingTemplate);
 
         newHearingsAddedHandler.sendEmailToRepresentatives(new NewHearingsAdded(callbackRequest, hearingBookings));
 
