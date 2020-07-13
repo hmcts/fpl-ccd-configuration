@@ -38,6 +38,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
@@ -105,7 +106,6 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
         checkThat(() -> verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), any(), any()));
     }
 
-    //TODO Seems to randomly fail, should be investigated
     @Test
     void shouldInvokeNotificationClientWhenNewHearingsHaveBeenAdded() {
         HearingBooking hearingBooking = createHearingBooking(now().plusHours(2), now().plusDays(2));
@@ -125,7 +125,7 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
 
         postSubmittedEvent(caseDetails);
 
-        checkThat(() -> {
+        checkUntil(() -> {
             verify(notificationClient).sendEmail(
                 eq(NOTICE_OF_NEW_HEARING),
                 eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
