@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.events.NewHearingsAdded;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
-import uk.gov.hmcts.reform.fpl.model.notify.hearing.NewNoticeOfHearingTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.hearing.NoticeOfHearingTemplate;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NewNoticeOfHearingEmailContentProvider;
@@ -47,7 +47,7 @@ public class NewHearingsAddedHandler {
             eventData.getLocalAuthorityCode());
 
         event.getNewHearings().forEach(hearing -> {
-            NewNoticeOfHearingTemplate templateData = newHearingContent.buildNewNoticeOfHearingNotification(caseDetails,
+            NoticeOfHearingTemplate templateData = newHearingContent.buildNewNoticeOfHearingNotification(caseDetails,
                 hearing.getValue(), DIGITAL_SERVICE);
 
             notificationService.sendEmail(NOTICE_OF_NEW_HEARING, email, templateData, eventData.getReference());
@@ -64,7 +64,7 @@ public class NewHearingsAddedHandler {
             .convertValue(event.getCallbackRequest().getCaseDetails(), CaseDetails.class);
 
         event.getNewHearings().forEach(hearing -> {
-            NewNoticeOfHearingTemplate templateData = newHearingContent.buildNewNoticeOfHearingNotification(caseDetails,
+            NoticeOfHearingTemplate templateData = newHearingContent.buildNewNoticeOfHearingNotification(caseDetails,
                 hearing.getValue(), EMAIL);
 
             notificationService.sendEmail(NOTICE_OF_NEW_HEARING, email, templateData, eventData.getReference());
@@ -81,7 +81,7 @@ public class NewHearingsAddedHandler {
 
         event.getNewHearings().forEach(hearing -> SERVING_PREFERENCES.forEach(
             servingPreference -> {
-                NewNoticeOfHearingTemplate templateParameters =
+                NoticeOfHearingTemplate templateParameters =
                     newHearingContent.buildNewNoticeOfHearingNotification(
                         caseDetails, hearing.getValue(), servingPreference);
 

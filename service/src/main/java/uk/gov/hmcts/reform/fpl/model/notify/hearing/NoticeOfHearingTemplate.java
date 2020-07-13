@@ -10,7 +10,7 @@ import java.util.Map;
 @Getter
 @Setter
 @Builder
-public final class NewNoticeOfHearingTemplate implements NotifyData {
+public final class NoticeOfHearingTemplate implements NotifyData {
     private String hearingType;
     private String familyManCaseNumber;
     private String respondentLastName;

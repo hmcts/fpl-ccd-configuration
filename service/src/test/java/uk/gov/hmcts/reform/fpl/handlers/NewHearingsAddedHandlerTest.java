@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.fpl.events.NewHearingsAdded;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
-import uk.gov.hmcts.reform.fpl.model.notify.hearing.NewNoticeOfHearingTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.hearing.NoticeOfHearingTemplate;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -70,7 +70,7 @@ class NewHearingsAddedHandlerTest {
 
     private LocalDateTime futureDate;
 
-    private NewNoticeOfHearingTemplate newNoticeOfHearingTemplate = NewNoticeOfHearingTemplate.builder().build();
+    private NoticeOfHearingTemplate noticeOfHearingTemplate = NoticeOfHearingTemplate.builder().build();
 
     @BeforeEach
     void setUp() {
@@ -78,7 +78,7 @@ class NewHearingsAddedHandlerTest {
 
         given(newNoticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(
             any(CaseDetails.class), any(HearingBooking.class), any()))
-            .willReturn(newNoticeOfHearingTemplate);
+            .willReturn(noticeOfHearingTemplate);
     }
 
     @Test
@@ -94,10 +94,10 @@ class NewHearingsAddedHandlerTest {
 
         newHearingsAddedHandler.sendEmailToLA(new NewHearingsAdded(callbackRequest, hearingBookings));
 
-        verify(notificationService, times(1)).sendEmail(
+        verify(notificationService).sendEmail(
             NOTICE_OF_NEW_HEARING,
             LOCAL_AUTHORITY_EMAIL_ADDRESS,
-            newNoticeOfHearingTemplate,
+            noticeOfHearingTemplate,
             CASE_REFERENCE);
     }
 
@@ -108,18 +108,18 @@ class NewHearingsAddedHandlerTest {
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(UUID.randomUUID(), createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))));
 
-        NewNoticeOfHearingTemplate newNoticeOfHearingTemplate = NewNoticeOfHearingTemplate.builder().build();
+        NoticeOfHearingTemplate noticeOfHearingTemplate = NoticeOfHearingTemplate.builder().build();
 
         given(newNoticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(
             any(CaseDetails.class), any(HearingBooking.class), any()))
-            .willReturn(newNoticeOfHearingTemplate);
+            .willReturn(noticeOfHearingTemplate);
 
         newHearingsAddedHandler.sendEmailToCafcass(new NewHearingsAdded(callbackRequest, hearingBookings));
 
-        verify(notificationService, times(1)).sendEmail(
+        verify(notificationService).sendEmail(
             NOTICE_OF_NEW_HEARING,
             CAFCASS_EMAIL_ADDRESS,
-            newNoticeOfHearingTemplate,
+            noticeOfHearingTemplate,
             CASE_REFERENCE);
     }
 
@@ -131,27 +131,27 @@ class NewHearingsAddedHandlerTest {
             element(UUID.randomUUID(), createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))));
         final EventData eventData = new EventData(new NewHearingsAdded(callbackRequest, hearingBookings));
 
-        NewNoticeOfHearingTemplate newNoticeOfHearingTemplate = NewNoticeOfHearingTemplate.builder().build();
+        NoticeOfHearingTemplate noticeOfHearingTemplate = NoticeOfHearingTemplate.builder().build();
 
         given(newNoticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(
             any(CaseDetails.class), any(HearingBooking.class), any()))
-            .willReturn(newNoticeOfHearingTemplate);
+            .willReturn(noticeOfHearingTemplate);
 
         newHearingsAddedHandler.sendEmailToRepresentatives(new NewHearingsAdded(callbackRequest, hearingBookings));
 
-        verify(representativeNotificationService, times(1))
+        verify(representativeNotificationService)
             .sendToRepresentativesByServedPreference(
                 RepresentativeServingPreferences.EMAIL,
                 NOTICE_OF_NEW_HEARING,
-                newNoticeOfHearingTemplate.toMap(mapper),
+                noticeOfHearingTemplate.toMap(mapper),
                 eventData
             );
 
-        verify(representativeNotificationService, times(1))
+        verify(representativeNotificationService)
             .sendToRepresentativesByServedPreference(
                 RepresentativeServingPreferences.DIGITAL_SERVICE,
                 NOTICE_OF_NEW_HEARING,
-                newNoticeOfHearingTemplate.toMap(mapper),
+                noticeOfHearingTemplate.toMap(mapper),
                 eventData
             );
     }
