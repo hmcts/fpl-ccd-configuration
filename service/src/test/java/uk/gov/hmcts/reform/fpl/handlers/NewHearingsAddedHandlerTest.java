@@ -64,9 +64,6 @@ class NewHearingsAddedHandlerTest {
     private NewNoticeOfHearingEmailContentProvider newNoticeOfHearingEmailContentProvider;
 
     @MockBean
-    private HearingBookingService hearingBookingService;
-
-    @MockBean
     private InboxLookupService inboxLookupService;
 
     @MockBean
@@ -80,38 +77,69 @@ class NewHearingsAddedHandlerTest {
     }
 
     @Test
-    void shouldSendNotificationToLACafcassAndRepresentativesWhenNewHearingIsAdded() {
-        final ObjectMapper mapper = new ObjectMapper();
+    void shouldSendNotificationToLAWhenNewHearingIsAdded() {
         final CallbackRequest callbackRequest = callbackRequest();
         final CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(UUID.randomUUID(), createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))));
 
-        final EventData eventData = new EventData(new NewHearingsAdded(callbackRequest, hearingBookings));
-
         NewNoticeOfHearingTemplate newNoticeOfHearingTemplate = NewNoticeOfHearingTemplate.builder().build();
 
-        given(hearingBookingService.getSelectedHearings(any(), any())).willReturn(hearingBookings);
         given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
             .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
         given(newNoticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(
             any(CaseDetails.class), any(HearingBooking.class), any()))
             .willReturn(newNoticeOfHearingTemplate);
 
-        newHearingsAddedHandler.sendEmail(new NewHearingsAdded(callbackRequest, hearingBookings));
+        newHearingsAddedHandler.sendEmailToLA(new NewHearingsAdded(callbackRequest, hearingBookings));
 
         verify(notificationService, times(1)).sendEmail(
             NOTICE_OF_NEW_HEARING,
             LOCAL_AUTHORITY_EMAIL_ADDRESS,
             newNoticeOfHearingTemplate,
             CASE_REFERENCE);
+    }
+
+    @Test
+    void shouldSendNotificationToCafcassWhenNewHearingIsAdded() {
+        final CallbackRequest callbackRequest = callbackRequest();
+
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(UUID.randomUUID(), createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))));
+
+        NewNoticeOfHearingTemplate newNoticeOfHearingTemplate = NewNoticeOfHearingTemplate.builder().build();
+
+        given(newNoticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(
+            any(CaseDetails.class), any(HearingBooking.class), any()))
+            .willReturn(newNoticeOfHearingTemplate);
+
+        newHearingsAddedHandler.sendEmailToCafcass(new NewHearingsAdded(callbackRequest, hearingBookings));
 
         verify(notificationService, times(1)).sendEmail(
             NOTICE_OF_NEW_HEARING,
             CAFCASS_EMAIL_ADDRESS,
             newNoticeOfHearingTemplate,
             CASE_REFERENCE);
+    }
+
+    @Test
+    void shouldSendNotificationToRepresentativesWhenNewHearingIsAdded() {
+        final ObjectMapper mapper = new ObjectMapper();
+        final CallbackRequest callbackRequest = callbackRequest();
+
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(UUID.randomUUID(), createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))));
+        final EventData eventData = new EventData(new NewHearingsAdded(callbackRequest, hearingBookings));
+
+        NewNoticeOfHearingTemplate newNoticeOfHearingTemplate = NewNoticeOfHearingTemplate.builder().build();
+
+        given(newNoticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(
+            any(CaseDetails.class), any(HearingBooking.class), any()))
+            .willReturn(newNoticeOfHearingTemplate);
+
+        newHearingsAddedHandler.sendEmailToRepresentatives(new NewHearingsAdded(callbackRequest, hearingBookings));
+
 
         verify(representativeNotificationService, times(1))
             .sendToRepresentativesByServedPreference(
