@@ -31,6 +31,7 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
@@ -93,7 +94,7 @@ class NewHearingsAddedHandlerTest {
 
         newHearingsAddedHandler.sendEmailToLA(new NewHearingsAdded(callbackRequest, hearingBookings));
 
-        verify(notificationService).sendEmail(
+        verify(notificationService, times(1)).sendEmail(
             NOTICE_OF_NEW_HEARING,
             LOCAL_AUTHORITY_EMAIL_ADDRESS,
             noticeOfHearingTemplate,
@@ -107,15 +108,9 @@ class NewHearingsAddedHandlerTest {
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(UUID.randomUUID(), createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))));
 
-        NoticeOfHearingTemplate noticeOfHearingTemplate = NoticeOfHearingTemplate.builder().build();
-
-        given(newNoticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(
-            any(CaseDetails.class), any(HearingBooking.class), any()))
-            .willReturn(noticeOfHearingTemplate);
-
         newHearingsAddedHandler.sendEmailToCafcass(new NewHearingsAdded(callbackRequest, hearingBookings));
 
-        verify(notificationService).sendEmail(
+        verify(notificationService, times(1)).sendEmail(
             NOTICE_OF_NEW_HEARING,
             CAFCASS_EMAIL_ADDRESS,
             noticeOfHearingTemplate,
@@ -130,15 +125,9 @@ class NewHearingsAddedHandlerTest {
             element(UUID.randomUUID(), createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))));
         final EventData eventData = new EventData(new NewHearingsAdded(callbackRequest, hearingBookings));
 
-        NoticeOfHearingTemplate noticeOfHearingTemplate = NoticeOfHearingTemplate.builder().build();
-
-        given(newNoticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(
-            any(CaseDetails.class), any(HearingBooking.class), any()))
-            .willReturn(noticeOfHearingTemplate);
-
         newHearingsAddedHandler.sendEmailToRepresentatives(new NewHearingsAdded(callbackRequest, hearingBookings));
 
-        verify(representativeNotificationService)
+        verify(representativeNotificationService, times(1))
             .sendToRepresentativesByServedPreference(
                 RepresentativeServingPreferences.EMAIL,
                 NOTICE_OF_NEW_HEARING,
@@ -146,7 +135,7 @@ class NewHearingsAddedHandlerTest {
                 eventData
             );
 
-        verify(representativeNotificationService)
+        verify(representativeNotificationService, times(1))
             .sendToRepresentativesByServedPreference(
                 RepresentativeServingPreferences.DIGITAL_SERVICE,
                 NOTICE_OF_NEW_HEARING,
