@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
+import uk.gov.hmcts.reform.fpl.model.order.UploadedCaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
@@ -583,4 +584,11 @@ public class CaseData {
 
     private final DocumentReference submittedForm;
 
+    private final DocumentReference uploadedCaseManagementOrder;
+    private final List<Element<UploadedCaseManagementOrder>> draftUploadedCMOs;
+    private final DynamicList pastHearingList;
+
+    public List<Element<UploadedCaseManagementOrder>> getDraftUploadedCMOs() {
+        return defaultIfNull(draftUploadedCMOs, new ArrayList<>());
+    }
 }

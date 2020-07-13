@@ -6,5 +6,29 @@
     "FieldType": "Document",
     "ElementLabel": "Case Management Order",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadedCaseManagementOrder",
+    "ListElementCode": "hearing",
+    "FieldType": "Text",
+    "ElementLabel": "Hearing",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadedCaseManagementOrder",
+    "ListElementCode": "dateSent",
+    "FieldType": "Date",
+    "ElementLabel": "Date sent",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadedCaseManagementOrder",
+    "ListElementCode": "status",
+    "FieldType": "CaseManagementOrderStatus",
+    "ElementLabel": "Status",
+    "SecurityClassification": "Public"
   }
 ]
