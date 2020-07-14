@@ -39,7 +39,8 @@
     "ID": "uploadedCaseManagementOrder",
     "Label": "${cmoHearingInfo}",
     "FieldType": "Document",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "RegularExpression": ".pdf"
   },
   {
     "LiveFrom": "01/01/2017",
