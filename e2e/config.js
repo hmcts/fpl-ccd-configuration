@@ -30,11 +30,11 @@ module.exports = {
     password: process.env.CAFCASS_USER_PASSWORD || defaultPassword,
   },
   gateKeeperUser: {
-    email: 'gatekeeper@mailnesia.com',
+    email: 'gatekeeper-only@mailnesia.com',
     password: process.env.GATEKEEPER_USER_PASSWORD || defaultPassword,
   },
   judicaryUser: {
-    email: 'judiciary@mailnesia.com',
+    email: 'judiciary-only@mailnesia.com',
     password: process.env.JUDICIARY_USER_PASSWORD || defaultPassword,
   },
   systemUpdateUser: {

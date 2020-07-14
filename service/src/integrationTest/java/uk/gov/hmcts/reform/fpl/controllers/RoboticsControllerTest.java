@@ -42,7 +42,7 @@ public class RoboticsControllerTest {
     @MockBean
     private AuthTokenGenerator authTokenGenerator;
 
-    @MockBean(name = "uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi")
+    @MockBean
     private CoreCaseDataApi coreCaseDataApi;
 
     @MockBean

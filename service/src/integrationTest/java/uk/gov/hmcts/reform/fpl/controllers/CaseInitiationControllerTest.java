@@ -68,16 +68,16 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
     @MockBean
     private LocalAuthorityUserLookupConfiguration localAuthorityUserLookupConfiguration;
 
-    @MockBean(name = "uk.gov.hmcts.reform.rd.client.OrganisationApi")
+    @MockBean
     private OrganisationApi organisationApi;
 
-    @MockBean(name = "uk.gov.hmcts.reform.authorisation.ServiceAuthorisationApi")
+    @MockBean
     private ServiceAuthorisationApi serviceAuthorisationApi;
 
-    @MockBean(name = "uk.gov.hmcts.reform.idam.client.IdamApi")
+    @MockBean
     private IdamApi idamApi;
 
-    @MockBean(name = "uk.gov.hmcts.reform.ccd.client.CaseUserApi")
+    @MockBean
     private CaseUserApi caseUserApi;
 
     @MockBean
@@ -111,7 +111,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
         given(localAuthorityUserLookupConfiguration.getUserIds(LA_2_CODE))
             .willThrow(new UnknownLocalAuthorityCodeException(LA_2_CODE));
 
-        given(organisationApi.findUsersByOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, Status.ACTIVE))
+        given(organisationApi.findUsersByOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, Status.ACTIVE, false))
             .willReturn(organisation(LA_2_USER_IDS));
     }
 

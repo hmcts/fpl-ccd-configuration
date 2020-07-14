@@ -31,8 +31,9 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.service.DischargeCareOrderService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
@@ -44,18 +45,25 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.FplEvent.CREATE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.CARE_ORDER_SELECTOR;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.MULTIPLE_CARE_ORDER_LABEL;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.SINGLE_CARE_ORDER_LABEL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.DISCHARGE_OF_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.CloseCaseReason.FINAL_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
@@ -75,6 +83,7 @@ public class GeneratedOrderController {
     private final GatewayConfiguration gatewayConfiguration;
     private final CoreCaseDataService coreCaseDataService;
     private final ChildrenService childrenService;
+    private final DischargeCareOrderService dischargeCareOrder;
     private final DocumentDownloadService documentDownloadService;
     private final FeatureToggleService featureToggleService;
     private final Time time;
@@ -108,15 +117,36 @@ public class GeneratedOrderController {
             .build();
     }
 
-    @PostMapping("/add-final-order-flags/mid-event")
+    @PostMapping("/prepare-selected-order/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleFinalOrderFlagsMidEvent(
         @RequestBody CallbackRequest callbackRequest) {
 
         Map<String, Object> data = callbackRequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
+        final OrderTypeAndDocument currentOrder = caseData.getOrderTypeAndDocument();
+
+        if (DISCHARGE_OF_CARE_ORDER == currentOrder.getType()) {
+            final List<String> errors = new ArrayList<>();
+            List<GeneratedOrder> careOrders = dischargeCareOrder.getCareOrders(caseData);
+
+            if (careOrders.isEmpty()) {
+                errors.add("No care orders to be discharged");
+            } else if (careOrders.size() == 1) {
+                data.put(SINGLE_CARE_ORDER_LABEL.getKey(), dischargeCareOrder.getOrdersLabel(careOrders));
+            } else {
+                data.put(CARE_ORDER_SELECTOR.getKey(), newSelector(careOrders.size()));
+                data.put(MULTIPLE_CARE_ORDER_LABEL.getKey(), dischargeCareOrder.getOrdersLabel(careOrders));
+            }
+
+            return AboutToStartOrSubmitCallbackResponse.builder()
+                .data(data)
+                .errors(errors)
+                .build();
+        }
+
         List<Element<Child>> children = caseData.getAllChildren();
 
-        if (service.shouldNotAllowFinalOrder(caseData.getOrderTypeAndDocument(), children)) {
+        if (!service.isFinalOrderAllowed(caseData.getOrderTypeAndDocument(), children)) {
             return AboutToStartOrSubmitCallbackResponse.builder()
                 .data(data)
                 .errors(List.of("All children in the case already have final orders"))
@@ -140,7 +170,7 @@ public class GeneratedOrderController {
             .build();
     }
 
-    @PostMapping("/populate-selector/mid-event")
+    @PostMapping("/populate-children-selector/mid-event")
     public AboutToStartOrSubmitCallbackResponse handlePopulateSelectorMidEvent(
         @RequestBody CallbackRequest callbackRequest) {
 
@@ -148,11 +178,11 @@ public class GeneratedOrderController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (NO.getValue().equals(caseData.getOrderAppliesToAllChildren())) {
-            ChildSelector childSelector = ChildSelector.builder().build();
-            childSelector.setChildCountFromInt(caseData.getAllChildren().size());
+            final Selector childSelector = newSelector(caseData.getAllChildren().size());
             boolean closable = caseData.getOrderTypeAndDocument().isClosable();
+
             if (closable) {
-                childSelector.setHiddenFromChildList(caseData.getAllChildren());
+                childSelector.setHidden(childrenService.getIndexesOfChildrenWithFinalOrderIssued(caseData));
             }
             caseDetails.getData().put("childSelector", childSelector);
             caseDetails.getData().put("children_label",
@@ -223,10 +253,7 @@ public class GeneratedOrderController {
 
         removeAllocatedJudgeProperties(judgeAndLegalAdvisor);
 
-        // Builds an order with custom values based on order type and adds it to list of orders
-        orders.add(service.buildCompleteOrder(orderTypeAndDocument, caseData.getOrder(),
-            judgeAndLegalAdvisor, caseData.getDateOfIssue(), caseData.getOrderMonths(),
-            caseData.getInterimEndDate()));
+        orders.add(element(service.buildCompleteOrder(orderTypeAndDocument, judgeAndLegalAdvisor, caseData)));
 
         data.put("orderCollection", orders);
 

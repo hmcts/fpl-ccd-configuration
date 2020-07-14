@@ -230,58 +230,48 @@ public class CaseDataGeneratorHelper {
                 .telephone(TELEPHONE)
                 .address(address())
                 .build())
-            .additionalOthers(ImmutableList.of(
-                Element.<Other>builder()
-                    .value(Other.builder()
+            .additionalOthers(ElementUtils.wrapElements(Other.builder()
                         .birthPlace("Craigavon")
                         .DOB("02/02/05")
                         .gender("Female")
                         .name("Sarah Simpson")
                         .telephone(TELEPHONE)
                         .address(address())
-                        .build())
-                    .build()
-            )).build();
+                        .build()))
+            .build();
     }
 
     public static List<Element<GeneratedOrder>> createOrders(DocumentReference lastOrderDocumentReference) {
         final String orderType = "Blank order (C21)";
-        return ImmutableList.of(
-            Element.<GeneratedOrder>builder()
-                .value(GeneratedOrder.builder()
-                    .type(orderType)
-                    .title("Example Order")
-                    .details(
-                        "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
-                    .date(formatLocalDateTimeBaseUsingFormat(LocalDateTime.now().plusDays(57), TIME_DATE))
-                    .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Peter Parker",
-                        "Judy", null, HER_HONOUR_JUDGE))
-                    .build())
+        return ElementUtils.wrapElements(
+            GeneratedOrder.builder()
+                .type(orderType)
+                .title("Example Order")
+                .details(
+                    "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
+                .date(formatLocalDateTimeBaseUsingFormat(LocalDateTime.now().plusDays(57), TIME_DATE))
+                .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Peter Parker",
+                    "Judy", null, HER_HONOUR_JUDGE))
                 .build(),
-            Element.<GeneratedOrder>builder()
-                .id(UUID.randomUUID())
-                .value(GeneratedOrder.builder()
-                    .type(orderType)
-                    .title("Winter is here")
-                    .details("Westeros")
-                    .date(formatLocalDateTimeBaseUsingFormat(LocalDateTime.now().plusDays(59), TIME_DATE))
-                    .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Baratheon",
-                        "Tyrion Lannister", "Lannister", HIS_HONOUR_JUDGE))
-                    .document(createDocumentReference(randomUUID().toString()))
-                    .build())
+            GeneratedOrder.builder()
+                .type(orderType)
+                .title("Winter is here")
+                .details("Westeros")
+                .date(formatLocalDateTimeBaseUsingFormat(LocalDateTime.now().plusDays(59), TIME_DATE))
+                .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Baratheon",
+                    "Tyrion Lannister", "Lannister", HIS_HONOUR_JUDGE))
+                .document(createDocumentReference(randomUUID().toString()))
                 .build(),
-            Element.<GeneratedOrder>builder()
-                .id(UUID.randomUUID())
-                .value(GeneratedOrder.builder()
-                    .type(orderType)
-                    .title("Black Sails")
-                    .details("Long John Silver")
-                    .date(formatLocalDateTimeBaseUsingFormat(LocalDateTime.now().plusDays(60), TIME_DATE))
-                    .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Edward Teach",
-                        "Captain Flint", "Scott", DEPUTY_DISTRICT_JUDGE))
-                    .document(lastOrderDocumentReference)
-                    .build())
-                .build());
+            GeneratedOrder.builder()
+                .type(orderType)
+                .title("Black Sails")
+                .details("Long John Silver")
+                .date(formatLocalDateTimeBaseUsingFormat(LocalDateTime.now().plusDays(60), TIME_DATE))
+                .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Edward Teach",
+                    "Captain Flint", "Scott", DEPUTY_DISTRICT_JUDGE))
+                .document(lastOrderDocumentReference)
+                .build()
+        );
     }
 
     public static List<Element<HearingBooking>> createHearingBookings(final LocalDateTime startDate,

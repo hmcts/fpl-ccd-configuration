@@ -21,7 +21,6 @@ java:
     PAYMENT_API_URL: http://payment-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     FEES_REGISTER_API_URL: http://fees-register-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     DOCUMENT_MANAGEMENT_URL: http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
-    CCD_UI_BASE_URL: https://www-ccd.{{ .Values.global.environment }}.platform.hmcts.net
     MANAGE_CASE_UI_BASE_URL: https://manage-case.{{ .Values.global.environment }}.platform.hmcts.net
     DOCMOSIS_TORNADO_URL: https://docmosis-development.platform.hmcts.net
     SPRING_MAIL_HOST: mta.reform.hmcts.net
@@ -33,8 +32,6 @@ java:
     SCHEDULER_DB_USER: fpl_scheduler@fpl-case-service-{{ .Values.global.environment }}
     SCHEDULER_DB_HOST: fpl-case-service-{{ .Values.global.environment }}.postgres.database.azure.com
     SCHEDULER_DB_PORT: 5432
-    FEATURE_TOGGLE_ROBOTICS_CASE_NUMBER_NOTIFICATION_ENABLED: true
-    FEATURE_TOGGLE_ROBOTICS_SUPPORT_API_ENABLED: true
   keyVaults:
     fpl:
       secrets:

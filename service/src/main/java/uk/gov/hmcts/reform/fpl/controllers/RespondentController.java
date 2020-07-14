@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
+import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.List;
@@ -34,6 +35,7 @@ import static uk.gov.hmcts.reform.fpl.model.Respondent.expandCollection;
 public class RespondentController {
     private final ObjectMapper mapper;
     private final ConfidentialDetailsService confidentialDetailsService;
+    private final RespondentService respondentService;
     private final Time time;
     private final ApplicationEventPublisher applicationEventPublisher;
 
@@ -59,6 +61,20 @@ public class RespondentController {
             .errors(validate(caseDetails))
             .build();
     }
+
+    @PostMapping("persist-representatives/mid-event")
+    public AboutToStartOrSubmitCallbackResponse persistRepresentatives(@RequestBody CallbackRequest callbackrequest) {
+        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        caseDetails.getData().put("respondents1",
+            respondentService.setPersistRepresentativeFlag(caseData.getRespondents1()));
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(callbackrequest.getCaseDetails().getData())
+            .build();
+    }
+
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {

@@ -1,11 +1,16 @@
 {
-  "id": 12345,
+  "id": "${id:-12345}",
   "jurisdiction": "PUBLICLAW",
   "state": "Open",
   "case_type_id": "CARE_SUPERVISION_EPO",
   "security_classification": "PUBLIC",
   "case_data": {
     "dateSubmitted": "2020-03-20",
+    "submittedForm": {
+      "document_url": "http://dm-store:8080/documents/be17a76e-38ed-4448-8b83-45de1aa93f55",
+      "document_filename": "form.pdf",
+      "document_binary_url": "${applicationBinaryUrl:-http://dm-store:8080/documents/be17a76e-38ed-4448-8b83-45de1aa93f55/binary}"
+    },
     "gatekeeperEmail": "FamilyPublicLaw+gatekeeper@gmail.com",
     "caseLocalAuthority": "example",
     "risks": {
@@ -111,7 +116,7 @@
       "withoutNoticeReason": "Notice without hearing needed",
       "respondentsAwareReason": "They seek to care for baby in mother and baby unit"
     },
-    "caseName": "test",
+    "caseName": "${caseName:-test}",
     "children1": [
       {
         "id": "3b0b9640-2894-41eb-bef2-a031d18c8457",
@@ -488,7 +493,7 @@
         "hearingNeedsDetails": "ok"
       }
     }],
-    "familyManCaseNumber": "12345",
+    "familyManCaseNumber": "${familyManCaseNumber:-12345}",
     "amountToPay": "2055.0",
     "standardDirectionOrder": {
       "judgeAndLegalAdvisor": {
@@ -522,12 +527,16 @@
         "allocatedJudgeLabel": null
       }
     },
-    "amountToPay": "2055.0",
     "returnApplication": {
       "note": "Missing children details",
       "reason": [
         "INCOMPLETE", "CLARIFICATION_NEEDED"
-      ]
+      ],
+      "document": {
+        "document_url": "http://dm-store:8080/documents/be17a76e-38ed-4448-8b83-45de1aa93f55",
+        "document_filename": "form.pdf",
+        "document_binary_url": "http://dm-store:8080/documents/be17a76e-38ed-4448-8b83-45de1aa93f55/binary}"
+      }
     }
   }
 }

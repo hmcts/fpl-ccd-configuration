@@ -87,6 +87,23 @@ const createEmergencyProtectionOrder = async (I, createOrderEventPage, order, ha
   await I.completeEvent('Save and continue');
 };
 
+const createDischargeCareOrder = async (I, createOrderEventPage, order, hasAllocatedJudge = false) => {
+  await createOrderEventPage.selectType(order.type);
+  await selectCareOrders(I, createOrderEventPage, order);
+  await fillDateOfIssue(I, createOrderEventPage, order);
+  await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
+  await enterJudgeAndLegalAdvisor(I, createOrderEventPage, order, hasAllocatedJudge);
+  await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.directionsNeeded.id);
+  await createOrderEventPage.enterDirections('example directions');
+
+  if (order.closeCase !== undefined) {
+    await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.closeCase.id);
+    await createOrderEventPage.closeCaseFromOrder(order.closeCase);
+  }
+
+  await I.completeEvent('Save and continue');
+};
+
 const fillInterimEndDate = async (I, createOrderEventPage, order) => {
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.interimEndDate.id);
   if (order.interimEndDate.isNamedDate) {
@@ -115,6 +132,11 @@ const selectChildren = async (I, createOrderEventPage, order) => {
   }
 };
 
+const selectCareOrders = async (I, createOrderEventPage, order) => {
+  await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.careOrderSelector.id);
+  await createOrderEventPage.selectCareOrder(order.careOrders);
+};
+
 const enterJudgeAndLegalAdvisor =  (I, createOrderEventPage, order, hasAllocatedJudge) => {
   if (hasAllocatedJudge) {
     createOrderEventPage.useAllocatedJudge(order.judgeAndLegalAdvisor.legalAdvisorName);
@@ -140,12 +162,16 @@ module.exports = {
       case 'Emergency protection order':
         await createEmergencyProtectionOrder(I, createOrderEventPage, order, hasAllocatedJudge);
         break;
+      case 'Discharge of care order':
+        await createDischargeCareOrder(I, createOrderEventPage, order, hasAllocatedJudge);
+        break;
     }
   },
 
-  async assertOrder(I, caseViewPage, order, orderNum, defaultIssuedDate, hasAllocatedJudge = false) {
-    const orderHeading = 'Order ' + orderNum;
+  async assertOrder(I, caseViewPage, order, defaultIssuedDate, hasAllocatedJudge = false) {
     caseViewPage.selectTab(caseViewPage.tabs.orders);
+    const numberOfOrders = await I.grabNumberOfVisibleElements('//*[text() = \'Type of order\']');
+    const orderHeading = `Order ${numberOfOrders}`;
     I.seeInTab([orderHeading, 'Type of order'], order.fullType);
 
     if (order.type === 'Blank order (C21)') {
@@ -167,9 +193,10 @@ module.exports = {
     }
   },
 
-  async assertOrderSentToParty(I, caseViewPage, partyName, order, orderNum) {
+  async assertOrderSentToParty(I, caseViewPage, partyName, order) {
     caseViewPage.selectTab(caseViewPage.tabs.documentsSentToParties);
+    const numberOfDocuments = await I.grabNumberOfVisibleElements(`//*[text() = '${partyName}']/ancestor::ccd-read-complex-field-table//ccd-read-complex-field-table`);
     I.seeInTab(['Party 1', 'Representative name'], partyName);
-    I.seeInTab(['Party 1', `Document ${orderNum}`, 'File'], order.document);
+    I.seeInTab(['Party 1', `Document ${numberOfDocuments}`, 'File'], order.document);
   },
 };

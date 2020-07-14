@@ -95,31 +95,13 @@ ccd:
       ingressHost: gateway-${SERVICE_FQDN}
       ingressIP: ${INGRESS_IP}
       keyVaults:
-  ccd-case-management-web:
-    idam-pr:
-      cpuLimits: 50m
-      cpuRequests: 25m
-      enabled: true
-      memoryLimits: 16Mi
-      memoryRequests: 8Mi
-      releaseNameOverride: ${SERVICE_NAME}-ccd-idam-pr
-    nodejs:
-      imagePullPolicy: Always
-      environment:
-        CCD_ACTIVITY_URL: null
-        DM_URL: https://gateway-${SERVICE_FQDN}/documents
-        DM_URL_REMOTE: https?://(gateway-${SERVICE_FQDN}:443|dm-store-aat.service.core-compute-aat.internal)/documents
-        NODE_TLS_REJECT_UNAUTHORIZED: 0
-      ingressHost: case-management-web-${SERVICE_FQDN}
-      ingressIP: ${INGRESS_IP}
   ccd-data-store-api:
     java:
       imagePullPolicy: Always
       environment:
         DATA_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
         DATA_STORE_IDAM_KEY: ${CCD_DATA_STORE_S2S_SECRET}
-        #workaround for https://tools.hmcts.net/jira/browse/RDM-8742
-        CCD_DM_DOMAIN: ^http://(?:gateway-${SERVICE_FQDN}|xui-${SERVICE_FQDN}|dm-store.*)
+        IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
       keyVaults:
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
   ccd-definition-store-api:

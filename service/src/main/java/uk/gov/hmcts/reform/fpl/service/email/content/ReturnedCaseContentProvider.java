@@ -19,24 +19,33 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ReturnedCaseContentProvider extends AbstractEmailContentProvider {
     private final ObjectMapper mapper;
-    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
+    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookup;
 
-    public ReturnedCaseTemplate buildNotificationParameters(CaseDetails caseDetails, String localAuthority) {
+    public ReturnedCaseTemplate parametersWithCaseUrl(CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
+        return templateData(caseData)
+            .caseUrl(getCaseUrl(caseDetails.getId()))
+            .build();
+    }
+
+    public ReturnedCaseTemplate parametersWithApplicationLink(CaseDetails caseDetails) {
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        return templateData(caseData)
+            .applicationDocumentUrl(linkToAttachedDocument(caseData.getSubmittedForm()))
+            .build();
+    }
+
+    private ReturnedCaseTemplate.ReturnedCaseTemplateBuilder templateData(CaseData caseData) {
         ReturnApplication returnApplication = caseData.getReturnApplication();
-        ReturnedCaseTemplate returnedCaseTemplate = new ReturnedCaseTemplate();
 
-        returnedCaseTemplate.setLocalAuthority(
-            localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthority));
-
-        returnedCaseTemplate.setRespondentFullName(getFirstRespondentFullName(caseData.getRespondents1()));
-        returnedCaseTemplate.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
-        returnedCaseTemplate.setFamilyManCaseNumber(defaultIfNull(caseData.getFamilyManCaseNumber(), ""));
-        returnedCaseTemplate.setReturnedReasons(returnApplication.getFormattedReturnReasons());
-        returnedCaseTemplate.setReturnedNote(returnApplication.getNote());
-        returnedCaseTemplate.setCaseUrl(getCaseUrl(caseDetails.getId()));
-
-        return returnedCaseTemplate;
+        return ReturnedCaseTemplate.builder()
+            .localAuthority(localAuthorityNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()))
+            .respondentFullName(getFirstRespondentFullName(caseData.getRespondents1()))
+            .respondentLastName(getFirstRespondentLastName(caseData.getRespondents1()))
+            .familyManCaseNumber(defaultIfNull(caseData.getFamilyManCaseNumber(), ""))
+            .returnedReasons(returnApplication.getFormattedReturnReasons())
+            .returnedNote(returnApplication.getNote());
     }
 }

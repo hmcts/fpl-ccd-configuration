@@ -9,13 +9,20 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 
+import static java.lang.String.format;
+import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_CAFCASS_COURT;
+import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_CAFCASS_EMAIL;
+import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA;
+import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
+
 @Configuration
 public class LookupTestConfig {
 
     @ConditionalOnMissingBean
     @Bean
     public HmctsCourtLookupConfiguration courtLookupConfiguration() {
-        return new HmctsCourtLookupConfiguration("example=>Family Court:admin@family-court.com:11");
+        return new HmctsCourtLookupConfiguration(format("%s=>%s:admin@family-court.com:11", DEFAULT_LA,
+            DEFAULT_LA_COURT));
     }
 
     @Bean
@@ -27,18 +34,19 @@ public class LookupTestConfig {
     @Bean
     @ConditionalOnMissingBean
     public CafcassLookupConfiguration cafcassLookupConfiguration() {
-        return new CafcassLookupConfiguration("example=>cafcass:FamilyPublicLaw+cafcass@gmail.com");
+        return new CafcassLookupConfiguration(format("%s=>%s:%s", DEFAULT_LA, DEFAULT_CAFCASS_COURT,
+            DEFAULT_CAFCASS_EMAIL));
     }
 
     @ConditionalOnMissingBean
     @Bean
     public LocalAuthorityNameLookupConfiguration nameLookupConfiguration() {
-        return new LocalAuthorityNameLookupConfiguration("example=>Example Local Authority");
+        return new LocalAuthorityNameLookupConfiguration(format("%s=>Example Local Authority", DEFAULT_LA));
     }
 
     @Bean
     @ConditionalOnMissingBean
     public LocalAuthorityEmailLookupConfiguration emailLookupConfiguration() {
-        return new LocalAuthorityEmailLookupConfiguration("example=>FamilyPublicLaw+sa@gmail.com");
+        return new LocalAuthorityEmailLookupConfiguration(format("%s=>FamilyPublicLaw+sa@gmail.com", DEFAULT_LA));
     }
 }

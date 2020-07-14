@@ -285,7 +285,7 @@ class CaseDataExtractionServiceTest {
         assertThat(service.baseDirection(direction, 1))
             .isEqualToComparingFieldByField(DocmosisDirection.builder()
                 .assignee(DirectionAssignee.LOCAL_AUTHORITY)
-                .title("1. Example title by unknown")
+                .title("1. Example title")
                 .body("Example description"));
     }
 

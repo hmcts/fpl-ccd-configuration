@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DocumentSenderService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.SentDocumentHistoryService;
 
@@ -36,7 +35,6 @@ public class SendDocumentController {
     private final DocumentSenderService documentSenderService;
     private final SentDocumentHistoryService sentDocumentHistoryService;
     private final RepresentativeService representativeService;
-    private final FeatureToggleService featureToggleService;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSave(@RequestBody CallbackRequest callbackRequest) {
@@ -46,7 +44,7 @@ public class SendDocumentController {
         var representativesServedByPost =
             representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(), POST);
 
-        if (featureToggleService.isXeroxPrintingEnabled() && !representativesServedByPost.isEmpty()) {
+        if (!representativesServedByPost.isEmpty()) {
             DocumentReference documentToBeSent = mapper.convertValue(caseDetails.getData()
                 .get(DOCUMENT_TO_BE_SENT_KEY), DocumentReference.class);
 

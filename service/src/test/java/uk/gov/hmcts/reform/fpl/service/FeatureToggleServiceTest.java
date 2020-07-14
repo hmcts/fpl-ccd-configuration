@@ -1,19 +1,31 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.launchdarkly.sdk.LDUser;
+import com.launchdarkly.sdk.UserAttribute;
 import com.launchdarkly.sdk.server.LDClient;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.C2_APPLICATION;
@@ -22,140 +34,149 @@ import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.GENER
 import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.NOTICE_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.SDO;
 
-@ExtendWith(SpringExtension.class)
-public class FeatureToggleServiceTest {
+@ExtendWith(MockitoExtension.class)
+class FeatureToggleServiceTest {
 
     private static final String LD_USER_KEY = "test_key";
 
-    @MockBean
-    private LDClient ldClient;
+    private static LDClient ldClient = Mockito.mock(LDClient.class);
+    private static FeatureToggleService service = new FeatureToggleService(ldClient, LD_USER_KEY);
 
-    private FeatureToggleService featureToggleService;
+    @Captor
+    private ArgumentCaptor<LDUser> ldUser;
 
-    @BeforeEach
-    void setup() {
-        featureToggleService = new FeatureToggleService(ldClient, LD_USER_KEY);
+    @AfterEach
+    void resetLaunchDarklyClient() {
+        reset(ldClient);
     }
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    public void shouldMakeCorrectCallForXeroxPrinting(Boolean toggleState) {
+    void shouldMakeCorrectCallForCtsc(Boolean toggleState) {
         givenToggle(toggleState);
 
-        assertThat(featureToggleService.isXeroxPrintingEnabled()).isEqualTo(toggleState);
-
-        verify(ldClient).boolVariation(eq("xerox-printing"), any(LDUser.class), eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    public void shouldMakeCorrectCallForCtsc(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(featureToggleService.isCtscEnabled("test name")).isEqualTo(toggleState);
-
+        assertThat(service.isCtscEnabled("test name")).isEqualTo(toggleState);
         verify(ldClient).boolVariation(eq("CTSC"), any(LDUser.class), eq(false));
     }
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    public void shouldMakeCorrectCallForCtscReport(Boolean toggleState) {
+    void shouldMakeCorrectCallForCtscReport(Boolean toggleState) {
         givenToggle(toggleState);
 
-        assertThat(featureToggleService.isCtscReportEnabled()).isEqualTo(toggleState);
-
+        assertThat(service.isCtscReportEnabled()).isEqualTo(toggleState);
         verify(ldClient).boolVariation(eq("CTSC"), any(LDUser.class), eq(false));
     }
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    public void shouldMakeCorrectCallForFees(Boolean toggleState) {
+    void shouldMakeCorrectCallForExpertUI(Boolean toggleState) {
         givenToggle(toggleState);
 
-        assertThat(featureToggleService.isFeesEnabled()).isEqualTo(toggleState);
-
-        verify(ldClient).boolVariation(eq("FNP"), any(LDUser.class), eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    public void shouldMakeCorrectCallForPayments(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(featureToggleService.isPaymentsEnabled()).isEqualTo(toggleState);
-
-        verify(ldClient).boolVariation(eq("payments"), any(LDUser.class), eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    public void shouldMakeCorrectCallForExpertUI(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(featureToggleService.isExpertUIEnabled()).isEqualTo(toggleState);
-
+        assertThat(service.isExpertUIEnabled()).isEqualTo(toggleState);
         verify(ldClient).boolVariation(eq("expert-ui"), any(LDUser.class), eq(false));
     }
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    public void shouldMakeCorrectCallForCloseCase(Boolean toggleState) {
+    void shouldMakeCorrectCallForCloseCase(Boolean toggleState) {
         givenToggle(toggleState);
 
-        assertThat(featureToggleService.isCloseCaseEnabled()).isEqualTo(toggleState);
-
+        assertThat(service.isCloseCaseEnabled()).isEqualTo(toggleState);
         verify(ldClient).boolVariation(eq("close-case"), any(LDUser.class), eq(false));
     }
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    public void shouldMakeCorrectCallForAllocatedJudgeNotificationCMO(Boolean toggleState) {
+    void shouldMakeCorrectCallForAllocatedJudgeNotificationCMO(Boolean toggleState) {
         givenToggle(toggleState);
 
-        assertThat(featureToggleService.isAllocatedJudgeNotificationEnabled(CMO)).isEqualTo(toggleState);
-
+        assertThat(service.isAllocatedJudgeNotificationEnabled(CMO)).isEqualTo(toggleState);
         verify(ldClient).boolVariation(eq("judge-notification"), any(LDUser.class), eq(false));
     }
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    public void shouldMakeCorrectCallForAllocatedJudgeNotificationSDO(Boolean toggleState) {
+    void shouldMakeCorrectCallForAllocatedJudgeNotificationSDO(Boolean toggleState) {
         givenToggle(toggleState);
 
-        assertThat(featureToggleService.isAllocatedJudgeNotificationEnabled(SDO)).isEqualTo(toggleState);
-
+        assertThat(service.isAllocatedJudgeNotificationEnabled(SDO)).isEqualTo(toggleState);
         verify(ldClient).boolVariation(eq("judge-notification"), any(LDUser.class), eq(false));
     }
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    public void shouldMakeCorrectCallForAllocatedJudgeNotificationNoticeOfProceedings(Boolean toggleState) {
+    void shouldMakeCorrectCallForAllocatedJudgeNotificationNoticeOfProceedings(Boolean toggleState) {
         givenToggle(toggleState);
 
-        assertThat(featureToggleService.isAllocatedJudgeNotificationEnabled(NOTICE_OF_PROCEEDINGS))
+        assertThat(service.isAllocatedJudgeNotificationEnabled(NOTICE_OF_PROCEEDINGS))
             .isEqualTo(toggleState);
-
         verify(ldClient).boolVariation(eq("judge-notification"), any(LDUser.class), eq(false));
     }
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    public void shouldMakeCorrectCallForAllocatedJudgeNotificationGeneratedOrder(Boolean toggleState) {
+    void shouldMakeCorrectCallForAllocatedJudgeNotificationGeneratedOrder(Boolean toggleState) {
         givenToggle(toggleState);
 
-        assertThat(featureToggleService.isAllocatedJudgeNotificationEnabled(GENERATED_ORDER)).isEqualTo(toggleState);
-
+        assertThat(service.isAllocatedJudgeNotificationEnabled(GENERATED_ORDER)).isEqualTo(toggleState);
         verify(ldClient).boolVariation(eq("judge-notification"), any(LDUser.class), eq(false));
     }
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    public void shouldMakeCorrectCallForAllocatedJudgeNotificationC2Application(Boolean toggleState) {
+    void shouldMakeCorrectCallForAllocatedJudgeNotificationC2Application(Boolean toggleState) {
         givenToggle(toggleState);
 
-        assertThat(featureToggleService.isAllocatedJudgeNotificationEnabled(C2_APPLICATION)).isEqualTo(toggleState);
-
+        assertThat(service.isAllocatedJudgeNotificationEnabled(C2_APPLICATION)).isEqualTo(toggleState);
         verify(ldClient).boolVariation(eq("judge-notification"), any(LDUser.class), eq(false));
+    }
+
+    @ParameterizedTest
+    @MethodSource("userAttributesTestSource")
+    void shouldNotAccumulateAttributesBetweenRequests(Runnable functionToTest, Runnable accumulateFunction,
+                                                 List<UserAttribute> attributes) {
+        accumulateFunction.run();
+        functionToTest.run();
+
+        verify(ldClient, times(2)).boolVariation(anyString(), ldUser.capture(), anyBoolean());
+        assertThat(ldUser.getValue().getCustomAttributes()).containsExactlyInAnyOrderElementsOf(attributes);
+    }
+
+    private static Stream<Arguments> userAttributesTestSource() {
+        return Stream.of(
+            Arguments.of(
+                (Runnable) () -> service.isCloseCaseEnabled(),
+                (Runnable) () -> service.isCtscReportEnabled(),
+                buildAttributes()),
+            Arguments.of(
+                (Runnable) () -> service.isCtscReportEnabled(),
+                (Runnable) () -> service.isCtscEnabled("test name"),
+                buildAttributes("report")),
+            Arguments.of(
+                (Runnable) () -> service.isAllocatedJudgeNotificationEnabled(SDO),
+                (Runnable) () -> service.isCtscReportEnabled(),
+                buildAttributes("allocatedJudgeNotificationType")),
+            Arguments.of(
+                (Runnable) () -> service.isCtscEnabled("test name"),
+                (Runnable) () -> service.isCtscReportEnabled(),
+                buildAttributes("localAuthorityName")),
+            Arguments.of(
+                (Runnable) () -> service.isExpertUIEnabled(),
+                (Runnable) () -> service.isCtscReportEnabled(),
+                buildAttributes())
+        );
+    }
+
+    private static List<UserAttribute> buildAttributes(String... additionalAttributes) {
+        List<UserAttribute> attributes = new ArrayList<>();
+
+        attributes.add(UserAttribute.forName("timestamp"));
+        Arrays.stream(additionalAttributes)
+            .map(UserAttribute::forName)
+            .forEach(attributes::add);
+
+        return attributes;
     }
 
     private void givenToggle(boolean state) {

@@ -9,8 +9,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
+import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForSDO;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
@@ -132,6 +134,28 @@ public class StandardDirectionsOrderIssuedEventHandlerTest {
         final AllocatedJudgeTemplateForSDO expectedParameters = getAllocatedJudgeSDOTemplateParameters();
 
         given(featureToggleService.isAllocatedJudgeNotificationEnabled(SDO)).willReturn(false);
+
+        given(standardDirectionOrderIssuedEmailContentProvider.buildNotificationParametersForAllocatedJudge(
+            callbackRequest.getCaseDetails())).willReturn(expectedParameters);
+
+        standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(
+            new StandardDirectionsOrderIssuedEvent(callbackRequest));
+
+        verify(notificationService, never()).sendEmail(any(), any(), anyMap(), any());
+    }
+
+    @Test
+    void shouldNotNotifyAllocatedJudgeOfIssuedStandardDirectionsOrderWhenJudgeNotAllocated() {
+        final AllocatedJudgeTemplateForSDO expectedParameters = getAllocatedJudgeSDOTemplateParameters();
+
+        CallbackRequest callbackRequest = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(111L)
+                .data(ImmutableMap.of("standardDirectionOrder", Order.builder().build()))
+                .build())
+            .build();
+
+        given(featureToggleService.isAllocatedJudgeNotificationEnabled(SDO)).willReturn(true);
 
         given(standardDirectionOrderIssuedEmailContentProvider.buildNotificationParametersForAllocatedJudge(
             callbackRequest.getCaseDetails())).willReturn(expectedParameters);

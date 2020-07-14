@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
@@ -24,10 +25,12 @@ import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
+import uk.gov.hmcts.reform.fpl.model.markdown.MarkdownData;
 import uk.gov.hmcts.reform.fpl.service.CaseValidatorService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
+import uk.gov.hmcts.reform.fpl.service.markdown.CaseSubmissionMarkdownService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
@@ -38,7 +41,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -63,6 +65,7 @@ public class CaseSubmissionController {
     private final FeeService feeService;
     private final FeatureToggleService featureToggleService;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
+    private final CaseSubmissionMarkdownService markdownService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
@@ -80,7 +83,7 @@ public class CaseSubmissionController {
         List<String> errors = validate(caseData);
 
         if (errors.isEmpty()) {
-            if (isInOpenState(caseDetails) && featureToggleService.isFeesEnabled()) {
+            if (isInOpenState(caseDetails)) {
                 try {
                     FeesData feesData = feeService.getFeesDataForOrders(caseData.getOrders());
                     data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
@@ -154,14 +157,23 @@ public class CaseSubmissionController {
     }
 
     @PostMapping("/submitted")
-    public void handleSubmittedEvent(@RequestBody @NotNull CallbackRequest callbackRequest) {
-        applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest));
-
-        if (isInReturnedState(callbackRequest.getCaseDetailsBefore())) {
+    public SubmittedCallbackResponse handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
+        if (isInOpenState(callbackRequest.getCaseDetailsBefore())) {
+            applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest));
+        } else if (isInReturnedState(callbackRequest.getCaseDetailsBefore())) {
             applicationEventPublisher.publishEvent(new AmendedReturnedCaseEvent(callbackRequest));
         }
 
         applicationEventPublisher.publishEvent(new CaseDataChanged(callbackRequest));
+
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        MarkdownData markdownData = markdownService.getMarkdownData(caseData.getCaseName());
+
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader(markdownData.getHeader())
+            .confirmationBody(markdownData.getBody())
+            .build();
     }
 
     private YesNo setSendToCtsc(String caseLocalAuthority) {

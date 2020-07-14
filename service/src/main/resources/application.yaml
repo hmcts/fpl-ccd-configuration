@@ -32,7 +32,7 @@ fees-register:
       event: general application
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: without-notice
+      keyword: ${FEES_REGISTER_C2_WITHOUT_NOTICE_KEYWORD:GeneralAppWithoutNotice}
       service: other
     C2_WITH_NOTICE:
       channel: default
@@ -137,6 +137,12 @@ scheduler:
 testing:
   support:
     enabled: ${TESTING_SUPPORT_ENABLED:false}
+
+# Actual survey will be injected through flux for prod
+survey:
+  url:
+    caseSubmission: 'https://www.smartsurvey.co.uk/s/preview/FamilyPublicLaw/44945E4F1F8CBEE3E10D79A4CED903'
+
 ---
 
 spring:
@@ -208,11 +214,6 @@ manage-case:
     base:
       url: http://fake-url
 
-ccd:
-  ui:
-    base:
-      url: http://fake-url
-
 fees-register:
   api:
     url: http://fake-fees-register-api
@@ -246,16 +247,6 @@ robotics:
 security:
   anonymousPaths:
   authorisedServices:
-
-feature:
-  toggle:
-    robotics:
-      case-number:
-        notification:
-          enabled: true
-      support:
-        api:
-          enabled: true
 
 scheduler:
   enabled: false
@@ -344,11 +335,6 @@ manage-case:
     base:
       url: http://localhost:3333
 
-ccd:
-  ui:
-    base:
-      url: http://localhost:3451
-
 bankHolidays:
   api:
     url: http://localhost:8765
@@ -377,16 +363,6 @@ robotics:
   notification:
     sender: sender@example.com
     recipient: FamilyPublicLaw+robotics@gmail.com
-
-feature:
-  toggle:
-    robotics:
-      case-number:
-        notification:
-          enabled: true
-      support:
-        api:
-          enabled: true
 
 scheduler:
   enabled: false
