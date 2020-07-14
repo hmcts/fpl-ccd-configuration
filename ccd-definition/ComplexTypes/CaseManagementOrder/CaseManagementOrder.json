@@ -2,9 +2,9 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "UploadedCaseManagementOrder",
-    "ListElementCode": "caseManagementOrder",
+    "ListElementCode": "order",
     "FieldType": "Document",
-    "ElementLabel": "Case Management Order",
+    "ElementLabel": "Order",
     "SecurityClassification": "Public"
   },
   {

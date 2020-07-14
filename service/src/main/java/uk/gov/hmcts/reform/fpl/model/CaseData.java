@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
-import uk.gov.hmcts.reform.fpl.model.order.UploadedCaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
@@ -585,10 +584,17 @@ public class CaseData {
     private final DocumentReference submittedForm;
 
     private final DocumentReference uploadedCaseManagementOrder;
-    private final List<Element<UploadedCaseManagementOrder>> draftUploadedCMOs;
+    private final List<Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder>> draftUploadedCMOs;
     private final DynamicList pastHearingList;
 
-    public List<Element<UploadedCaseManagementOrder>> getDraftUploadedCMOs() {
+    public List<Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder>> getDraftUploadedCMOs() {
         return defaultIfNull(draftUploadedCMOs, new ArrayList<>());
+    }
+
+    @JsonIgnore
+    public List<Element<HearingBooking>> getPastHearings() {
+        return defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()).stream()
+            .filter(hearing -> !hearing.getValue().startsAfterToday())
+            .collect(toList());
     }
 }

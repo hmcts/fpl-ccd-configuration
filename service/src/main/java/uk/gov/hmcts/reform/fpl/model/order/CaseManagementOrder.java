@@ -9,8 +9,8 @@ import java.time.LocalDate;
 
 @Data
 @Builder
-public class UploadedCaseManagementOrder {
-    private DocumentReference caseManagementOrder;
+public class CaseManagementOrder {
+    private DocumentReference order;
     private String hearing;
     private LocalDate dateSent;
     private CMOStatus status;
