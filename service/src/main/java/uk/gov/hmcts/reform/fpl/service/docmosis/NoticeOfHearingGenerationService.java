@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.docmosis;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
@@ -22,11 +23,14 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 public class NoticeOfHearingGenerationService {
     private final CaseDataExtractionService dataService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
+    private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
     public DocmosisNoticeOfHearing getTemplateData(CaseData caseData, HearingBooking hearingBooking) {
         HearingVenue venue = hearingVenueLookUpService.getHearingVenue(hearingBooking);
 
         return DocmosisNoticeOfHearing.builder()
+            .familyManCaseNumber(caseData.getFamilyManCaseNumber())
+            .courtName(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName())
             .children(dataService.getChildrenDetails(caseData.getChildren1()))
             .hearingDate(dataService.getHearingDateIfHearingsOnSameDay(hearingBooking).orElse(""))
             .hearingTime(dataService.getHearingTime(hearingBooking))

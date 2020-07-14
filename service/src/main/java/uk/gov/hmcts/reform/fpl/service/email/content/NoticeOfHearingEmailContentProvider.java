@@ -22,7 +22,7 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class NewNoticeOfHearingEmailContentProvider extends AbstractEmailContentProvider {
+public class NoticeOfHearingEmailContentProvider extends AbstractEmailContentProvider {
 
     private final ObjectMapper mapper;
     private final CaseDataExtractionService caseDataExtractionService;

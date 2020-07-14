@@ -35,12 +35,12 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
-@ContextConfiguration(classes = {NewNoticeOfHearingEmailContentProvider.class, CaseDataExtractionService.class,
+@ContextConfiguration(classes = {NoticeOfHearingEmailContentProvider.class, CaseDataExtractionService.class,
     HearingVenueLookUpService.class, LookupTestConfig.class, FixedTimeConfiguration.class})
-class NewNoticeOfHearingEmailContentProviderTest extends AbstractEmailContentProviderTest {
+class NoticeOfHearingEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     @Autowired
-    private NewNoticeOfHearingEmailContentProvider newNoticeOfHearingEmailContentProvider;
+    private NoticeOfHearingEmailContentProvider noticeOfHearingEmailContentProvider;
 
     @Autowired
     private CaseDataExtractionService caseDataExtractionService;
@@ -66,7 +66,7 @@ class NewNoticeOfHearingEmailContentProviderTest extends AbstractEmailContentPro
     void shouldReturnExpectedNewHearingTemplateWithDigitalPreference() {
         NoticeOfHearingTemplate expectedTemplateData = buildExpectedTemplate(hearingBooking, YES);
 
-        assertThat(newNoticeOfHearingEmailContentProvider
+        assertThat(noticeOfHearingEmailContentProvider
             .buildNewNoticeOfHearingNotification(caseDetails, hearingBooking, DIGITAL_SERVICE))
             .isEqualToComparingFieldByField(expectedTemplateData);
     }
@@ -75,7 +75,7 @@ class NewNoticeOfHearingEmailContentProviderTest extends AbstractEmailContentPro
     void shouldReturnExpectedNewHearingTemplateWithEmailPreference() {
         NoticeOfHearingTemplate expectedTemplateData = buildExpectedTemplate(hearingBooking, NO);
 
-        assertThat(newNoticeOfHearingEmailContentProvider
+        assertThat(noticeOfHearingEmailContentProvider
             .buildNewNoticeOfHearingNotification(caseDetails, hearingBooking, EMAIL))
             .isEqualToComparingFieldByField(expectedTemplateData);
     }

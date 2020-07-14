@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.NoticeOfHearingTemplate;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
-import uk.gov.hmcts.reform.fpl.service.email.content.NewNoticeOfHearingEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
 import java.util.List;
@@ -29,7 +29,7 @@ public class NewHearingsAddedHandler {
 
     private static final List<RepresentativeServingPreferences> SERVING_PREFERENCES = List.of(EMAIL, DIGITAL_SERVICE);
 
-    private final NewNoticeOfHearingEmailContentProvider newHearingContent;
+    private final NoticeOfHearingEmailContentProvider newHearingContent;
     private final ObjectMapper mapper;
     private final NotificationService notificationService;
     private final RepresentativeNotificationService representativeNotificationService;
@@ -91,4 +91,5 @@ public class NewHearingsAddedHandler {
             }
         ));
     }
+    //New listener for post representatives
 }

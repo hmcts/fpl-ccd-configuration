@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
@@ -19,7 +19,9 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+import static java.util.UUID.fromString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -108,17 +110,28 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
 
     @Test
     void shouldInvokeNotificationClientWhenNewHearingsHaveBeenAdded() {
-        HearingBooking hearingBooking = createHearingBooking(now().plusHours(2), now().plusDays(2));
+        HearingBooking newBooking = createHearingBooking(now().plusHours(2), now().plusDays(2));
+        HearingBooking existingBooking = createHearingBooking(now().plusHours(2), now());
+
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            Element.<HearingBooking>builder()
+                .id(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
+                .value(newBooking)
+                .build(),
+            Element.<HearingBooking>builder()
+                .id(fromString("a14ce00f-e151-47f2-8e5f-374cc6fc7562"))
+                .value(existingBooking)
+                .build());
 
         CaseDetails caseDetails = CaseDetails.builder()
             .id(CASE_ID)
             .data(Map.of(
+                "selectedHearingIds", wrapElements(UUID.fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657")),
                 "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
                 "familyManCaseNumber", "111222",
-                "hearingDetails", wrapElements(hearingBooking),
+                "hearingDetails", hearingBookings,
                 "representatives", createRepresentatives(RepresentativeServingPreferences.EMAIL),
-                "respondents1", createRespondents(),
-                "newHearingSelector", Selector.builder().selected(List.of(0)).build()
+                "respondents1", createRespondents()
             )).build();
 
         given(documentDownloadService.downloadDocument(anyString())).willReturn(DOCUMENT_CONTENT);

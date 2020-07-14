@@ -181,6 +181,7 @@ class HearingBookingDetailsControllerAboutToSubmitTest extends AbstractControlle
         @Test
         void shouldAddNoticeOfHearingToNewHearingsWhenHearingHasBeenSelected() {
             CaseData caseData = CaseData.builder()
+                .caseLocalAuthority("example")
                 .newHearingSelector(Selector.builder().selected(List.of(1)).build())
                 .hearingDetails(wrapElements(
                     createHearingBooking(LocalDateTime.now()),

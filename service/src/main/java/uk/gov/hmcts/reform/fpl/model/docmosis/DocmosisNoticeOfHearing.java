@@ -12,6 +12,8 @@ import java.util.List;
 public class DocmosisNoticeOfHearing implements DocmosisData {
     private final List<DocmosisChild> children;
     private final DocmosisJudgeAndLegalAdvisor judgeAndLegalAdvisor;
+    private String familyManCaseNumber;
+    private String courtName;
     private String postingDate;
     private String hearingType;
     private String hearingVenue;

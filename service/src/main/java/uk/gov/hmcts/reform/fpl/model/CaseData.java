@@ -221,6 +221,7 @@ public class CaseData {
     @NotNull(message = "Enter hearing details", groups = NoticeOfProceedingsGroup.class)
     @NotEmpty(message = "You need to enter a hearing date.", groups = SealedSDOGroup.class)
     private final List<Element<HearingBooking>> hearingDetails;
+    private final List<Element<UUID>> selectedHearingIds;
 
     private LocalDate dateSubmitted;
     private final List<Element<DocumentBundle>> noticeOfProceedingsBundle;

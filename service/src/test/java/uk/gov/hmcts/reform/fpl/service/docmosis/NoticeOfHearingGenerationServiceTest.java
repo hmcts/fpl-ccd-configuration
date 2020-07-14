@@ -101,6 +101,8 @@ class NoticeOfHearingGenerationServiceTest {
     private DocmosisNoticeOfHearing.DocmosisNoticeOfHearingBuilder getDocmosisNoticeOfHearingBuilder(
         LocalDate dateOfBirth) {
         return DocmosisNoticeOfHearing.builder()
+            .familyManCaseNumber("12345")
+            .courtName("Family Court")
             .children(getExpectedDocmosisChildren(dateOfBirth))
             .hearingType(CASE_MANAGEMENT.getLabel().toLowerCase())
             .hearingVenue("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW")
@@ -146,24 +148,27 @@ class NoticeOfHearingGenerationServiceTest {
     }
 
     private CaseData buildCaseData(LocalDate dateOfBirth) {
-        return CaseData.builder().children1(wrapElements(
-            Child.builder()
-                .party(ChildParty.builder()
-                    .firstName("Tom")
-                    .lastName("Stevens")
-                    .dateOfBirth(dateOfBirth)
-                    .gender("Male")
-                    .build())
-                .build(),
-            Child.builder()
-                .party(ChildParty.builder()
-                    .firstName("Sarah")
-                    .lastName("Stevens")
-                    .dateOfBirth(dateOfBirth.minusDays(2))
-                    .gender("Female")
-                    .build())
-                .build()
-        )).build();
+        return CaseData.builder()
+            .familyManCaseNumber("12345")
+            .caseLocalAuthority("example")
+            .children1(wrapElements(
+                Child.builder()
+                    .party(ChildParty.builder()
+                        .firstName("Tom")
+                        .lastName("Stevens")
+                        .dateOfBirth(dateOfBirth)
+                        .gender("Male")
+                        .build())
+                    .build(),
+                Child.builder()
+                    .party(ChildParty.builder()
+                        .firstName("Sarah")
+                        .lastName("Stevens")
+                        .dateOfBirth(dateOfBirth.minusDays(2))
+                        .gender("Female")
+                        .build())
+                    .build()
+            )).build();
     }
 
     private String formatLocalDateTime(LocalDateTime dateTime, String format) {

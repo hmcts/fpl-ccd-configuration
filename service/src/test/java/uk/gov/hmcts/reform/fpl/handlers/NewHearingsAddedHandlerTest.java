@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.hearing.NoticeOfHearingTemplate;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
-import uk.gov.hmcts.reform.fpl.service.email.content.NewNoticeOfHearingEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -60,7 +60,7 @@ class NewHearingsAddedHandlerTest {
     private NotificationService notificationService;
 
     @MockBean
-    private NewNoticeOfHearingEmailContentProvider newNoticeOfHearingEmailContentProvider;
+    private NoticeOfHearingEmailContentProvider noticeOfHearingEmailContentProvider;
 
     @MockBean
     private InboxLookupService inboxLookupService;
@@ -76,7 +76,7 @@ class NewHearingsAddedHandlerTest {
     void setUp() {
         futureDate = time.now().plusDays(1);
 
-        given(newNoticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(
+        given(noticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(
             any(CaseDetails.class), any(HearingBooking.class), any()))
             .willReturn(noticeOfHearingTemplate);
     }

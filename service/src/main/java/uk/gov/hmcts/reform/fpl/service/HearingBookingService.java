@@ -1,10 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -20,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService
 import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -30,11 +27,9 @@ import java.util.stream.Collectors;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.String.format;
 import static java.time.LocalDate.now;
-import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparing;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.NEW_HEARING_LABEL;
@@ -51,9 +46,9 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAll
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class HearingBookingService {
     public static final String HEARING_DETAILS_KEY = "hearingDetails";
+    public static final String SELECTED_HEARING_IDS = "selectedHearingIds";
 
     private final Time time;
-    private final ObjectMapper mapper;
     private final NoticeOfHearingGenerationService noticeOfHearingGenerationService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
@@ -200,37 +195,22 @@ public class HearingBookingService {
         }
     }
 
-    public List<Element<HearingBooking>> prepareHearingDetails(
-        CaseDetails caseDetails, CaseData caseData, CaseData caseDataBefore) {
-        List<Element<HearingBooking>> hearings = caseData.getHearingDetails();
-        List<Element<HearingBooking>> hearingsBefore = new ArrayList<>(
-            defaultIfNull(caseDataBefore.getHearingDetails(), emptyList()));
-
-        removePastHearings(hearingsBefore);
-
-        if (getNewHearings(hearings, hearingsBefore).isEmpty()) {
-            caseDetails.getData().put(NEW_HEARING_SELECTOR.getKey(), null);
+    public List<Element<HearingBooking>> getSelectedHearings(List<UUID> selectedHearingIDs,
+                                                             List<Element<HearingBooking>> hearings) {
+        if (hearings == null || hearings.isEmpty() || selectedHearingIDs == null || selectedHearingIDs.isEmpty()) {
+            return List.of();
+        } else {
+            List<Element<HearingBooking>> selectedHearings = newArrayList();
+            hearings.forEach(hearing -> {
+                if (selectedHearingIDs.stream().anyMatch(id -> id.equals(hearing.getId()))) {
+                    selectedHearings.add(hearing);
+                }
+            });
+            return selectedHearings;
         }
-
-        List<Element<HearingBooking>> updatedHearings =
-            setHearingJudge(caseData.getHearingDetails(), caseData.getAllocatedJudge());
-
-        attachDocumentsForSelectedHearings(caseDetails, caseData, updatedHearings);
-
-        return combineHearingDetails(updatedHearings,
-            getPastHearings(defaultIfNull(caseDataBefore.getHearingDetails(), emptyList())));
     }
 
-    private void attachDocumentsForSelectedHearings(
-        CaseDetails caseDetails,
-        CaseData caseData,
-        List<Element<HearingBooking>> updatedHearings
-    ) {
-        Selector newHearingSelector = mapper.convertValue(caseDetails.getData().get(NEW_HEARING_SELECTOR.getKey()),
-            Selector.class);
-        List<Element<HearingBooking>> selectedHearings = getSelectedHearings(newHearingSelector,
-            updatedHearings);
-
+    public void attachDocumentsForSelectedHearings(CaseData caseData, List<Element<HearingBooking>> selectedHearings) {
         selectedHearings
             .forEach(hearing -> {
                 HearingBooking booking = hearing.getValue();
