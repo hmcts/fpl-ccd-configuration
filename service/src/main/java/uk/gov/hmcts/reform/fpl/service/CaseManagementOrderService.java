@@ -11,13 +11,11 @@ import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.Directions;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.docmosis.CaseManagementOrderGenerationService;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.format.FormatStyle;
 import java.util.List;
@@ -29,14 +27,12 @@ import java.util.stream.Stream;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.CMO;
 import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMapping;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
@@ -46,19 +42,13 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJud
 public class CaseManagementOrderService {
     private final CaseManagementOrderGenerationService templateDataGenerationService;
     private final DocumentService documentService;
-    private final Time time;
-
-    public Document getOrderDocument(CaseData caseData) {
-        DocmosisCaseManagementOrder templateData = templateDataGenerationService.getTemplateData(caseData);
-        return documentService.getDocumentFromDocmosisOrderTemplate(templateData, CMO);
-    }
 
     public DynamicList getHearingsWithoutCMO(List<Element<HearingBooking>> hearings) {
         List<Element<HearingBooking>> filtered = hearings.stream()
-            .filter(this::hasNoAssociatedCMO)
+            .filter(hearing -> !hearing.getValue().hasCMOAssociation())
             .collect(toList());
 
-        return asDynamicList(filtered, this::getHearingInfo);
+        return asDynamicList(filtered, (hearing) -> hearing.asString(DATE));
     }
 
     public Map<String, Object> getJudgeAndHearingLabels(DynamicList pastHearingList,
@@ -67,7 +57,7 @@ public class CaseManagementOrderService {
 
         return Map.of(
             "cmoJudgeInfo", formatJudgeTitleAndName(selected.getJudgeAndLegalAdvisor()),
-            "cmoHearingInfo", getHearingInfo(selected)
+            "cmoHearingInfo", selected.asString(DATE)
         );
     }
 
@@ -80,16 +70,6 @@ public class CaseManagementOrderService {
             .getValue();
     }
 
-    public uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder createDraftCMO(DocumentReference documentReference,
-                                                                                  HearingBooking hearing) {
-        return uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.builder()
-            .order(documentReference)
-            .hearing(getHearingInfo(hearing))
-            .dateSent(time.now().toLocalDate())
-            .status(SEND_TO_JUDGE)
-            .build();
-    }
-
     public void mapToHearing(DynamicList pastHearingList, List<Element<HearingBooking>> hearings,
                              Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder> cmo) {
         hearings.stream()
@@ -99,14 +79,10 @@ public class CaseManagementOrderService {
             );
     }
 
-    private String getHearingInfo(HearingBooking hearing) {
-        return String.format("%s hearing, %s",
-            hearing.getType().getLabel(),
-            formatLocalDateTimeBaseUsingFormat(hearing.getStartDate(), DATE));
-    }
-
-    private boolean hasNoAssociatedCMO(Element<HearingBooking> hearing) {
-        return hearing.getValue().getCaseManagementOrderId() == null;
+    @Deprecated
+    public Document getOrderDocument(CaseData caseData) {
+        DocmosisCaseManagementOrder templateData = templateDataGenerationService.getTemplateData(caseData);
+        return documentService.getDocumentFromDocmosisOrderTemplate(templateData, CMO);
     }
 
     @Deprecated

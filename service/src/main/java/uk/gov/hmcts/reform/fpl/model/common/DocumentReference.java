@@ -16,7 +16,6 @@ public class DocumentReference {
     private final String binaryUrl;
 
     public boolean hasExtension(String extension) {
-        extension = extension.startsWith(".") ? extension : ".".concat(extension);
         return filename.endsWith(extension);
     }
 

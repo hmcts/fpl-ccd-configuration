@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.UUID;
 import javax.validation.constraints.Future;
 
+import static java.lang.String.format;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -42,5 +45,13 @@ public class HearingBooking {
 
     public boolean startsAfterToday() {
         return startDate.isAfter(ZonedDateTime.now(ZoneId.of("Europe/London")).toLocalDateTime());
+    }
+
+    public boolean hasCMOAssociation() {
+        return caseManagementOrderId != null;
+    }
+
+    public String asString(String dateFormat) {
+        return format("%s hearing, %s", type.getLabel(), formatLocalDateTimeBaseUsingFormat(startDate, dateFormat));
     }
 }

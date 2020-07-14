@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @RequestMapping("/callback/upload-cmo")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class DraftCaseManagementOrderController {
+    private final Time time;
     private final CaseManagementOrderService cmoService;
     private final ObjectMapper mapper;
 
@@ -84,7 +86,7 @@ public class DraftCaseManagementOrderController {
         DocumentReference doc = mapper.convertValue(data.get("uploadedCaseManagementOrder"), DocumentReference.class);
 
         List<String> errors = new ArrayList<>();
-        if (!doc.hasExtension("pdf")) {
+        if (!doc.hasExtension(".pdf")) {
             errors.add("The file must be a pdf");
         }
 
@@ -108,7 +110,7 @@ public class DraftCaseManagementOrderController {
         // QUESTION: 10/07/2020 Should these 5 statements all be part of the one method in the service
         // map cmo to hearing
         HearingBooking hearing = cmoService.getSelectedHearing(pastHearingList, hearings);
-        CaseManagementOrder draftCMO = cmoService.createDraftCMO(uploadedCMO, hearing);
+        CaseManagementOrder draftCMO =  CaseManagementOrder.createDraft(uploadedCMO, hearing, time.now().toLocalDate());
         Element<CaseManagementOrder> element = element(draftCMO);
         cmoService.mapToHearing(pastHearingList, hearings, element);
         // add to list
