@@ -1,7 +1,7 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "Channel": "CaseWorker",
     "TabID": "CaseOverview",
     "TabLabel": "Case Overview",
@@ -11,7 +11,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "Channel": "CaseWorker", "TabID": "CaseOverview",
     "TabLabel": "Case Overview",
     "TabDisplayOrder": 1,
@@ -20,7 +20,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "Channel": "CaseWorker",
     "TabID": "CaseOverview",
     "TabLabel": "Case Overview",
@@ -30,7 +30,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "Channel": "CaseWorker",
     "TabID": "CaseOverview",
     "TabLabel": "Case Overview",
@@ -40,7 +40,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "Channel": "CaseWorker",
     "TabID": "CaseOverview",
     "TabLabel": "Case Overview",
@@ -50,7 +50,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "Channel": "CaseWorker",
     "TabID": "CaseOverview",
     "TabLabel": "Case Overview",
@@ -60,7 +60,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "Channel": "CaseWorker",
     "TabID": "CaseOverview",
     "TabLabel": "Case Overview",
@@ -70,7 +70,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "Channel": "CaseWorker",
     "TabID": "CaseOverview",
     "TabLabel": "Case Overview",
@@ -80,7 +80,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "Channel": "CaseWorker",
     "TabID": "CaseOverview",
     "TabLabel": "Case Overview",
@@ -90,7 +90,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "Channel": "CaseWorker",
     "TabID": "CaseOverview",
     "TabLabel": "Case Overview",
@@ -100,7 +100,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "Channel": "CaseWorker",
     "TabID": "CaseOverview",
     "TabLabel": "Case Overview",
@@ -110,7 +110,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "Channel": "CaseWorker",
     "TabID": "CaseOverview",
     "TabLabel": "Case Overview",
@@ -120,7 +120,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "Channel": "CaseWorker",
     "TabID": "CaseOverview",
     "TabLabel": "Case Overview",

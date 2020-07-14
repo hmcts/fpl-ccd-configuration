@@ -1,11 +1,11 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
-    "CaseEventID": "addAnnex",
-    "CaseFieldID": "uploadedAnnex",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseEventID": "addCaseIDReference",
+    "CaseFieldID": "caseIDReference",
     "PageID": 1,
-    "PageLabel": "Upload Annex documentation",
+    "PageLabel": "Add Case ID",
     "DisplayContext": "OPTIONAL",
     "PageColumnNumber": 1,
     "PageDisplayOrder": 1,

@@ -49,13 +49,13 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "RU"
   }

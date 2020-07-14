@@ -43,21 +43,21 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "caseLocalAuthority",
     "Label": "Local authority",
     "DisplayOrder": 1
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "caseIDReference",
     "Label": "Case ID",
     "DisplayOrder": 2
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "[CREATED_DATE]",
     "Label": "Case creation date",
     "DisplayOrder": 3

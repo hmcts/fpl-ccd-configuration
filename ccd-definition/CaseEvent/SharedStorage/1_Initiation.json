@@ -1,7 +1,7 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "initiateCase",
     "Name": "Initiate Case",
     "Description": "Create a new case – add a title",
@@ -11,7 +11,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "addApplication",
     "Name": "Upload application",
     "Description": "Upload application document to the case",
@@ -23,7 +23,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "addAnnexDocuments",
     "Name": "Upload annex documents",
     "Description": "Upload annex documents to the case",
@@ -35,7 +35,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "addCaseIDReference",
     "Name": "Add Case ID",
     "Description": "Add Case ID to the case",
@@ -47,7 +47,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "addBundle",
     "Name": "Upload bundle",
     "Description": "Add bundle document to the case",
@@ -59,7 +59,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "amendCaseTitle",
     "Name": "Amend case title",
     "Description": "Amend case title",
@@ -71,7 +71,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "addAnnex",
     "Name": "Upload annex collection",
     "Description": "Upload annex documentation",

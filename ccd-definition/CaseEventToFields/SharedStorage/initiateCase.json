@@ -1,7 +1,7 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "initiateCase",
     "CaseFieldID": "caseTitleL",
     "PageID": 1,
@@ -13,7 +13,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "initiateCase",
     "CaseFieldID": "caseTitle",
     "PageID": 1,
@@ -25,7 +25,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "initiateCase",
     "CaseFieldID": "caseLocalAuthority",
     "PageID": 1,
@@ -37,7 +37,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "initiateCase",
     "CaseFieldID": "uploadedApplication",
     "PageID": 1,
@@ -49,7 +49,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "initiateCase",
     "CaseFieldID": "annexLabel",
     "PageID": 1,
@@ -61,7 +61,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "initiateCase",
     "CaseFieldID": "uploadedAnnexA",
     "PageID": 1,
@@ -73,7 +73,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "initiateCase",
     "CaseFieldID": "uploadedAnnexB",
     "PageID": 1,
@@ -85,7 +85,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "initiateCase",
     "CaseFieldID": "uploadedAnnexC",
     "PageID": 1,
@@ -97,7 +97,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "initiateCase",
     "CaseFieldID": "uploadedAnnexD",
     "PageID": 1,
@@ -109,7 +109,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "initiateCase",
     "CaseFieldID": "uploadedAnnexE",
     "PageID": 1, "PageLabel": "Create a case",
@@ -120,7 +120,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "initiateCase",
     "CaseFieldID": "uploadedAnnex",
     "PageID": 1,

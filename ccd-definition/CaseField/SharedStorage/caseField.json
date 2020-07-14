@@ -1,7 +1,7 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "caseTitleL",
     "Label": "-----------------------------------------------------",
     "FieldType": "Label",
@@ -9,7 +9,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "caseTitle",
     "Label": "Case Title : - ",
     "FieldType": "Text",
@@ -17,7 +17,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "caseLocalAuthority",
     "Label": "Local Authority : ",
     "FieldType": "FixedList",
@@ -26,7 +26,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "caseIDReference",
     "Label": "Case ID",
     "FieldType": "Text ",
@@ -34,7 +34,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "uploadedApplication",
     "Label": "Application Form C110a",
     "HintText": "Application for a care or supervision order and other orders under Part 4 of the Children Act 1989 or an Emergency Protection Order under Section 44 of the Children Act 1989",
@@ -43,7 +43,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "annexLabel",
     "Label": "Annex Documentation",
     "FieldType": "Label",
@@ -51,7 +51,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "uploadedAnnexA",
     "Label": "Social Work Chronology",
     "FieldType": "Document",
@@ -59,7 +59,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "uploadedAnnexB",
     "Label": "Social Work Statement & Genogram",
     "FieldType": "Document",
@@ -67,7 +67,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "uploadedAnnexC",
     "Label": "Current assessment of child",
     "HintText": "The current assessment relating to the child and/or the family and friends of the child to which the Social Work Statement refers and on which the local authority relies ",
@@ -76,7 +76,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "uploadedAnnexD",
     "Label": "Care plan",
     "FieldType": "Document",
@@ -84,7 +84,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "uploadedAnnexE",
     "Label": "Index of checklist documents",
     "FieldType": "Document",
@@ -92,7 +92,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "bundleLabel",
     "Label": "Bundle Documentation",
     "FieldType": "Label",
@@ -100,7 +100,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "bundleTitle",
     "Label": "Bundle title",
     "FieldType": "Text",
@@ -108,7 +108,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "uploadedBundle",
     "Label": "Bundle document",
     "FieldType": "Document",
@@ -116,7 +116,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "shortBundleDescription",
     "Label": "Short description of bundle",
     "FieldType": "Text",
@@ -124,7 +124,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "SHARED_STORAGE",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "uploadedAnnex",
     "Label": "Annex document",
     "HintText": "Annex documentation",

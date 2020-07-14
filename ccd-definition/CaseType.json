@@ -9,9 +9,9 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "SHARED_STORAGE",
-    "Name": "Shared storage",
-    "Description": "Shared storage",
+    "ID": "Shared_Storage_DRAFTType",
+    "Name": "Shared storage draft",
+    "Description": "Shared storage draft",
     "JurisdictionID": "PUBLICLAW",
     "SecurityClassification": "Public"
   }
