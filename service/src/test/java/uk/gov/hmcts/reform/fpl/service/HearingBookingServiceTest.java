@@ -95,7 +95,7 @@ class HearingBookingServiceTest {
 
     @Test
     void shouldGetMostUrgentHearingBookingFromACollectionOfHearingBookings() {
-        List<Element<HearingBooking>> hearingBookings = createHearingBookings(false);
+        List<Element<HearingBooking>> hearingBookings = createHearingBookings();
 
         HearingBooking sortedHearingBooking = service.getMostUrgentHearingBooking(hearingBookings);
 
@@ -104,14 +104,14 @@ class HearingBookingServiceTest {
 
     @Test
     void shouldGetHearingBookingWhenKeyMatchesHearingBookingElementUUID() {
-        List<Element<HearingBooking>> hearingBookings = createHearingBookings(false);
+        List<Element<HearingBooking>> hearingBookings = createHearingBookings();
         HearingBooking hearingBooking = service.getHearingBookingByUUID(hearingBookings, HEARING_IDS[2]);
         assertThat(hearingBooking.getStartDate()).isEqualTo(futureDate);
     }
 
     @Test
     void shouldReturnNullWhenKeyDoesNotMatchHearingBookingElementUUID() {
-        List<Element<HearingBooking>> hearingBookings = createHearingBookings(false);
+        List<Element<HearingBooking>> hearingBookings = createHearingBookings();
         HearingBooking hearingBooking = service.getHearingBookingByUUID(hearingBookings, randomUUID());
 
         assertThat(hearingBooking).isNull();
@@ -217,7 +217,7 @@ class HearingBookingServiceTest {
 
     @Test
     void shouldReturnFirstHearingWhenHearingExists() {
-        assertThat(service.getFirstHearing(createHearingBookings(false)))
+        assertThat(service.getFirstHearing(createHearingBookings()))
             .isEqualTo(Optional.of(createHearingBooking(pastDate, pastDate.plusDays(1))));
     }
 
@@ -312,8 +312,8 @@ class HearingBookingServiceTest {
 
         @BeforeEach
         void setUp() {
-            oldHearingBookings = createHearingBookings(false);
-            newHearingBookings = createHearingBookings(true);
+            oldHearingBookings = createHearingBookings();
+            newHearingBookings = addNewHearingToExistingHearingBookings();
         }
 
         @Test
@@ -333,7 +333,7 @@ class HearingBookingServiceTest {
 
         @Test
         void shouldReturnSelectedHearings() {
-            List<Element<HearingBooking>> hearingBookings = createHearingBookings(false);
+            List<Element<HearingBooking>> hearingBookings = createHearingBookings();
             Selector selector = Selector.builder().selected(List.of(1)).build();
 
             assertThat(service.getSelectedHearings(selector, hearingBookings).size()).isEqualTo(1);
@@ -367,18 +367,19 @@ class HearingBookingServiceTest {
             .build();
     }
 
-    private List<Element<HearingBooking>> createHearingBookings(boolean addHearing) {
-        List<Element<HearingBooking>> listOfHearingBookings = new ArrayList<>(List.of(
+    private List<Element<HearingBooking>> createHearingBookings() {
+        return new ArrayList<>(List.of(
             element(HEARING_IDS[0], createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))),
             element(HEARING_IDS[1], createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3))),
             element(HEARING_IDS[2], createHearingBooking(futureDate, futureDate.plusDays(1))),
             element(HEARING_IDS[3], createHearingBooking(pastDate, pastDate.plusDays(1)))
         ));
+    }
 
-        if (Boolean.TRUE.equals(addHearing)) {
-            listOfHearingBookings.add(
-                element(randomUUID(), createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))));
-        }
+    private List<Element<HearingBooking>> addNewHearingToExistingHearingBookings() {
+        List<Element<HearingBooking>> listOfHearingBookings = createHearingBookings();
+        listOfHearingBookings.add(
+            element(randomUUID(), createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))));
         return listOfHearingBookings;
     }
 

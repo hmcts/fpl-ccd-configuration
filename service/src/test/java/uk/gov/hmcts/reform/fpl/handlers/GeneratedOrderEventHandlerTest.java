@@ -17,18 +17,12 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
-import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
-import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
-import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
-import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
@@ -61,20 +55,10 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.ge
 import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {
-    GeneratedOrderEventHandler.class,
-    InboxLookupService.class,
-    JacksonAutoConfiguration.class,
-    LookupTestConfig.class,
-    IssuedOrderAdminNotificationHandler.class,
-    RepresentativeNotificationService.class,
-    HmctsAdminNotificationHandler.class,
-    HearingBookingService.class,
-    FixedTimeConfiguration.class,
-    CaseDataExtractionService.class,
-    NoticeOfHearingGenerationService.class,
-    HearingVenueLookUpService.class
-})
+@SpringBootTest(classes = {GeneratedOrderEventHandler.class, InboxLookupService.class,
+    JacksonAutoConfiguration.class, LookupTestConfig.class, IssuedOrderAdminNotificationHandler.class,
+    RepresentativeNotificationService.class, HmctsAdminNotificationHandler.class,
+    FixedTimeConfiguration.class})
 class GeneratedOrderEventHandlerTest {
 
     final String mostRecentUploadedDocumentUrl =
@@ -88,12 +72,6 @@ class GeneratedOrderEventHandlerTest {
 
     @MockBean
     private InboxLookupService inboxLookupService;
-
-    @MockBean
-    private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
-
-    @MockBean
-    private UploadDocumentService uploadDocumentService;
 
     @MockBean
     private RepresentativeService representativeService;

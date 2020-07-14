@@ -16,14 +16,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForPartyReviewEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
-import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
-import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
-import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
-import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
@@ -46,17 +40,9 @@ import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUr
 import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {
-    CaseManagementOrderReadyForPartyReviewEventHandler.class,
-    JacksonAutoConfiguration.class,
-    LookupTestConfig.class,
-    RepresentativeNotificationService.class,
-    HearingBookingService.class,
-    CaseDataExtractionService.class,
-    FixedTimeConfiguration.class,
-    NoticeOfHearingGenerationService.class,
-    HearingVenueLookUpService.class
-})
+@SpringBootTest(classes = {CaseManagementOrderReadyForPartyReviewEventHandler.class, JacksonAutoConfiguration.class,
+    LookupTestConfig.class, RepresentativeNotificationService.class,
+    FixedTimeConfiguration.class})
 class CaseManagementOrderReadyForPartyReviewEventHandlerTest {
 
     @MockBean
@@ -67,12 +53,6 @@ class CaseManagementOrderReadyForPartyReviewEventHandlerTest {
 
     @MockBean
     private CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
-
-    @MockBean
-    private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
-
-    @MockBean
-    private UploadDocumentService uploadDocumentService;
 
     @Autowired
     private ObjectMapper objectMapper;
