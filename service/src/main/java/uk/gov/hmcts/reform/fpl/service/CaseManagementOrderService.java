@@ -101,7 +101,7 @@ public class CaseManagementOrderService {
 
     private String getHearingInfo(HearingBooking hearing) {
         return String.format("%s hearing, %s",
-            hearing.getType(),
+            hearing.getType().getLabel(),
             formatLocalDateTimeBaseUsingFormat(hearing.getStartDate(), DATE));
     }
 
