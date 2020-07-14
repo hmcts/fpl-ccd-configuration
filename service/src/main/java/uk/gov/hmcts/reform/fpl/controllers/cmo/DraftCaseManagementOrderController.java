@@ -28,7 +28,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Api
 @RestController
-@RequestMapping("upload-cmo")
+@RequestMapping("/callback/upload-cmo")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class DraftCaseManagementOrderController {
     private final CaseManagementOrderService cmoService;
