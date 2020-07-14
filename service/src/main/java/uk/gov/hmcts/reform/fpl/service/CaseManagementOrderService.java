@@ -48,7 +48,7 @@ public class CaseManagementOrderService {
             .filter(hearing -> !hearing.getValue().hasCMOAssociation())
             .collect(toList());
 
-        return asDynamicList(filtered, (hearing) -> hearing.asString(DATE));
+        return asDynamicList(filtered, (hearing) -> hearing.toLabel(DATE));
     }
 
     public Map<String, Object> getJudgeAndHearingLabels(DynamicList pastHearingList,
@@ -57,7 +57,7 @@ public class CaseManagementOrderService {
 
         return Map.of(
             "cmoJudgeInfo", formatJudgeTitleAndName(selected.getJudgeAndLegalAdvisor()),
-            "cmoHearingInfo", selected.asString(DATE)
+            "cmoHearingInfo", selected.toLabel(DATE)
         );
     }
 

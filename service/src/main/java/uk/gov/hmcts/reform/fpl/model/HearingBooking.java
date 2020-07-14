@@ -17,6 +17,7 @@ import java.util.UUID;
 import javax.validation.constraints.Future;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
 @Data
@@ -51,7 +52,8 @@ public class HearingBooking {
         return caseManagementOrderId != null;
     }
 
-    public String asString(String dateFormat) {
-        return format("%s hearing, %s", type.getLabel(), formatLocalDateTimeBaseUsingFormat(startDate, dateFormat));
+    public String toLabel(String dateFormat) {
+        String label = OTHER == type ? typeDetails : type.getLabel();
+        return format("%s hearing, %s", label, formatLocalDateTimeBaseUsingFormat(startDate, dateFormat));
     }
 }

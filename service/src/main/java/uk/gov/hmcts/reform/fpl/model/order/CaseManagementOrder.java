@@ -22,7 +22,7 @@ public class CaseManagementOrder {
     public static CaseManagementOrder createDraft(DocumentReference order, HearingBooking hearing, LocalDate date) {
         return CaseManagementOrder.builder()
             .order(order)
-            .hearing(hearing.asString(DATE))
+            .hearing(hearing.toLabel(DATE))
             .dateSent(date)
             .status(SEND_TO_JUDGE)
             .build();
