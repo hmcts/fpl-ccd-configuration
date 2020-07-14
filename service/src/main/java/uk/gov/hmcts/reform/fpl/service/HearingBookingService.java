@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -39,6 +40,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.NEW_HEARING_LABEL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.NEW_HEARING_SELECTOR;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -173,8 +175,10 @@ public class HearingBookingService {
         for (int i = 0; i < newHearings.size(); i++) {
             if (!oldHearingIDs.contains(newHearings.get(i).getId())) {
                 Element<HearingBooking> hearingElement = newHearings.get(i);
+                HearingBooking hearingBooking = hearingElement.getValue();
                 String newHearingLabel = format("Hearing %d: %s hearing %s", i + 1,
-                    hearingElement.getValue().getType().getLabel(),
+                    hearingBooking.getType() != OTHER
+                        ? hearingBooking.getType().getLabel() : StringUtils.capitalize(hearingBooking.getTypeDetails()),
                     formatLocalDateTimeBaseUsingFormat(hearingElement.getValue().getStartDate(), DATE));
 
                 stringBuilder.append(newHearingLabel).append("\n");
