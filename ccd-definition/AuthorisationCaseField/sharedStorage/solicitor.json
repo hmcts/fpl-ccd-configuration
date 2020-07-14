@@ -1,0 +1,200 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "caseHistory",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "otherCourtAdminDocuments",
+    "UserRole": "caseworker-publiclaw-solicitor",
+    "Comment": "This should have [SOLICITOR] role but not implemented properly in ccd yet",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "temporaryC2Document",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "c2DocumentBundle",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "c2ApplicationType",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "hearing",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "orders",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "internationalElement",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "factorsParenting",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "risks",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "allocationProposal_label",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "allocationProposal",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "hearingPreferences",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "grounds",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "documents_socialWorkChronology_document",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "documents_socialWorkStatement_document",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "documents_socialWorkAssessment_document",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "documents_socialWorkCarePlan_document",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "documents_socialWorkEvidenceTemplate_document",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "documents_threshold_document",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "documents_checklist_document",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "respondents_label",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "others_label",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "placements",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "allocatedJudge",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "sendToCtsc",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "amountToPay",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "displayAmountToPay",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "CRUD"
+  }
+]
+

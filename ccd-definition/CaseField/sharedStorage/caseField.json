@@ -1,0 +1,1581 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "caseHistory",
+    "Label": " ",
+    "FieldType": "CaseHistoryViewer",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "caseName",
+    "Label": "Case name",
+    "HintText": "Include the Local Authority name and respondent's last name. For example, Endley Council v Smith/Tate/Jones",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "caseLocalAuthority",
+    "Label": "Local Authority :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "AuthorityFixedList",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "EPO_REASONING_SHOW",
+    "Label": "EPO Reason show or hide",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ShowHide",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "groundsForEPO",
+    "Label": "How are there grounds for an emergency protection order?",
+    "FieldType": "GroundsForEPO",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "grounds",
+    "Label": "How does this case meet the threshold criteria?",
+    "FieldType": "Grounds",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "hearing",
+    "Label": "Hearing needed",
+    "FieldType": "Hearing",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "internationalElement",
+    "Label": "International element",
+    "FieldType": "InternationalElement",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "factorsParenting",
+    "Label": "Factors affecting parenting",
+    "FieldType": "FactorsParenting",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "uploadDocuments_paragraph_1",
+    "Label": "You must upload these documents if possible. Give the reason and date you expect to provide it if you don't have a document yet.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "documents_socialWorkChronology_document",
+    "Label": "1. Social work chronology",
+    "FieldType": "UploadDocument",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "documents_socialWorkStatement_document",
+    "Label": "2. Social work statement and genogram",
+    "FieldType": "UploadDocument",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "documents_socialWorkAssessment_document",
+    "Label": "3. Social work assessment",
+    "FieldType": "UploadDocument",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "documents_socialWorkCarePlan_document",
+    "Label": "4. Care plan",
+    "FieldType": "UploadDocument",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "documents_socialWorkEvidenceTemplate_document",
+    "Label": "5. Social work evidence template (SWET)",
+    "FieldType": "UploadSwetDocument",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "documents_threshold_document",
+    "Label": "6. Threshold document",
+    "FieldType": "UploadDocument",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "documents_checklist_document",
+    "Label": "7. Checklist document",
+    "FieldType": "UploadDocument",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "documents_socialWorkOther_border_top",
+    "Label": "-------------------------------------------------------------------------------------------------------------",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "documents_socialWorkOther",
+    "Label": "Additional documents",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "OtherDocument",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "documents_socialWorkOther_border_bottom",
+    "Label": "-------------------------------------------------------------------------------------------------------------",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "courtBundle",
+    "Label": "8. Court bundle",
+    "FieldType": "CourtBundle",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "children1",
+    "Label": "Child",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ChildrenNew",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "applicants",
+    "Label": "Applicants",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Applicants",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "solicitor",
+    "Label": "Solicitor",
+    "FieldType": "Solicitor",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "risks",
+    "Label": "Risks and harm to children",
+    "FieldType": "RiskAndHarm",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "proceeding",
+    "Label": "Other proceedings",
+    "FieldType": "Proceeding",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "hearingPreferences",
+    "Label": "Attending the hearing",
+    "FieldType": "HearingPreferences",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "allocationProposal_label",
+    "Label": "This should be completed by a solicitor with good knowledge of the case. Use the [President's Guidance](https://www.judiciary.uk/wp-content/uploads/2013/03/President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf) and [schedule](https://www.judiciary.uk/wp-content/uploads/2013/03/Schedule-to-the-President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf) on allocation and gatekeeping to make your recommendation.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "allocationProposal",
+    "Label": "Allocation proposal",
+    "FieldType": "AllocationProposal",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "allocationDecision",
+    "Label": "Allocation decision",
+    "FieldType": "AllocationDecision",
+    "SecurityClassification": "Public",
+    "ShowSummaryContentOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "others",
+    "Label": "Others to be given notice",
+    "FieldType": "Person",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "respondents1",
+    "Label": "Respondents",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "RespondentNew",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "orders",
+    "Label": "Orders and directions needed",
+    "FieldType": "Orders",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "submittedForm",
+    "Label": "C110a Application",
+    "FieldType": "Document",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "familyManCaseNumber",
+    "Label": "FamilyMan case number",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "standardDirectionsLabel",
+    "Label": "Upload standard directions and other relevant documents, for example the C6 Notice of Proceedings or C9 statement of service.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "standardDirectionsTitle",
+    "Label": "## 1. Standard directions",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "standardDirectionsDocument",
+    "Label": "Upload a file",
+    "FieldType": "Document",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "otherCourtAdminDocuments",
+    "Label": "Other documents",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "CourtAdminDocument",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "submissionConsentLabel",
+    "Label": "Declaration",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "downloadApplicationForReviewHintLabel",
+    "Label": "**Download application** <br>Use this link to download and check the application before <br>sending:",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "draftApplicationDocument",
+    "FieldType": "Document",
+    "Label": " ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "submissionConsent",
+    "Label": " ",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "Consent",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "gateKeeperLabel",
+    "Label": "### Let the gatekeeper know there's a new case",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "gatekeeperHintLabel",
+    "Label": "You must add at least 1 gatekeeper",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "gateKeeperEmail",
+    "Label": "Gatekeeper's email address",
+    "FieldType": "Email",
+    "HintText": "For example, joe.bloggs@la.gov.uk",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "gatekeeperEmails",
+    "Label": "Gatekeeper",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GatekeeperEmail",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "dateAndTimeSubmitted",
+    "Label": "Date submitted",
+    "FieldType": "DateTime",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "dateSubmitted",
+    "Label": "Date submitted",
+    "FieldType": "Date",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "deletionConsent",
+    "Label": " ",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "DeletionConsent",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "proceedingLabel",
+    "FieldType": "Text",
+    "Label": " ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "noticeOfProceedings",
+    "Label": " ",
+    "FieldType": "NoticeOfProceedings",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "judgeAndLegalAdvisor",
+    "Label": "Judge and Justices' Legal Adviser",
+    "FieldType": "JudgeAndLegalAdvisor",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "allocatedJudge",
+    "Label": "Allocated Judge",
+    "FieldType": "JudgeAndLegalAdvisor",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "allocatedJudgeLabel",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "hearingDetails",
+    "Label": "Hearing",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingBooking",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "allPartiesHearingDate",
+    "Label": "Hearing date",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "localAuthorityDirectionsHearingDate",
+    "Label": "Hearing date",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "respondentDirectionsHearingDate",
+    "Label": "Hearing date",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "cafcassDirectionsHearingDate",
+    "Label": "Hearing date",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "otherPartiesDirectionsHearingDate",
+    "Label": "Hearing date",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "courtDirectionsHearingDate",
+    "Label": "Hearing date",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "noticeOfProceedingsBundle",
+    "Label": "Notice of proceedings",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "NoticeOfProceedingsBundle",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "c9Declaration",
+    "Label": "If you send documents to a party's solicitor or a children's guardian, give their details",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "statementOfService",
+    "Label": "Recipients",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Recipients",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "serviceDeclarationLabel",
+    "Label": "Declaration",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "serviceConsent",
+    "Label": " ",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "Consent",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "standardDirectionOrder",
+    "Label": "Standard directions order",
+    "FieldType": "StandardDirectionOrder",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "allPartiesPrecedentLabelCMO",
+    "Label": "Add completed directions from the precedent library or your own template.",
+    "FieldType": "Label",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "allParties",
+    "Label": "For all parties",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "allPartiesCustom",
+    "Label": "Add directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "allPartiesCustomCMO",
+    "Label": "Add directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "localAuthorityDirections",
+    "Label": "Local Authority Directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "localAuthorityDirectionsCustom",
+    "Label": "Add directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "localAuthorityDirectionsCustomCMO",
+    "Label": "Add directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "cafcassDirections",
+    "Label": "Cafcass Directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "cafcassDirectionsCustom",
+    "Label": "Add directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "cafcassDirectionsCustomCMO",
+    "Label": "Add directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "respondentDirections",
+    "Label": "Parents and respondents directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "respondentDirectionsCustom",
+    "Label": "Add directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "respondentDirectionsCustomCMO",
+    "Label": "Add directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "otherPartiesDirections",
+    "Label": "Other parties directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "otherPartiesDirectionsCustom",
+    "Label": "Add directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "otherPartiesDirectionsCustomCMO",
+    "Label": "Add directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "courtDirections",
+    "Label": "Court directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "courtDirectionsCustom",
+    "Label": "Add directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "courtDirectionsCustomCMO",
+    "Label": "Add directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "c2DocumentBundle",
+    "Label": "C2 Application",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "C2DocumentBundle",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "temporaryC2Document",
+    "Label": "Upload C2",
+    "FieldType": "C2DocumentBundle",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "c2ApplicationType",
+    "Label": "Upload C2",
+    "FieldType": "C2ApplicationTypeSelection",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "respondents_label",
+    "Label": " ",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public",
+    "Comment": "Displays a list of names for respondents"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "others_label",
+    "Label": " ",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public",
+    "Comment": "Displays a list of names for others"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "orderTypeAndDocument",
+    "Label": "Type of order",
+    "FieldType": "OrderTypeAndDocument",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "orderFurtherDirections",
+    "Label": "Further directions",
+    "FieldType": "FurtherDirections",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "orderCollection",
+    "Label": "Order",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "order",
+    "Label": "Create an order",
+    "FieldType": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Comment": "Event is single order centric: order added to Collection of orderCollection above (displayed in orders tab) then deleted from case data so that event can be used to create a new order"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "cmoHearingDateList",
+    "Label": "Which hearing is this order for?",
+    "FieldType": "DynamicList",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "caseManagementOrder",
+    "Label": "Case management order",
+    "FieldType": "CaseManagementOrder",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "allPartiesLabelCMO",
+    "Label": "## For all parties",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "localAuthorityDirectionsLabelCMO",
+    "Label": "## For the local authority",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "cafcassDirectionsLabelCMO",
+    "Label": "## For Cafcass",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "courtDirectionsLabelCMO",
+    "Label": "## For the court",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "schedule",
+    "Label": "Schedule",
+    "FieldType": "Schedule",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "orderBasisLabel",
+    "Label": "## Basis of order",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "addRecitalLabel",
+    "Label": "### Add recital",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "recitals",
+    "Label": "Recitals",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Recitals",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "respondentsDirectionLabelCMO",
+    "Label": "## For the parents or respondents",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "otherPartiesDirectionLabelCMO",
+    "Label": "## For other parties",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "sharedDraftCMODocument",
+    "Label": "Draft case management order",
+    "FieldType": "Document",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "orderAction",
+    "Label": " ",
+    "FieldType": "OrderAction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "cmoActionTypeLabel",
+    "Label": "### Is this ready to be sent to parties?",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "cmoToAction",
+    "Label": "Case management order",
+    "FieldType": "CaseManagementOrder",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "servedCaseManagementOrders",
+    "Label": "Case management orders",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "CaseManagementOrder",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "nextHearingDateHeading",
+    "Label": "## Check date and venue details",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "nextHearingDateHintText",
+    "Label": "Check the 'Hearings' tab to confirm date and venue details.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "nextHearingDateList",
+    "Label": "Which hearing is next?",
+    "FieldType": "DynamicList",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "nextHearing",
+    "Label": " ",
+    "FieldType": "NextHearing",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "actionCMOPlaceholderHeading",
+    "Label": "## You cannot edit this order",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "actionCMOPlaceholderHint",
+    "Label": "You can only review the draft order after it has been submitted",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "cmoEventId",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "representatives",
+    "Label": "Representatives",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Representative",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "confidentialChildren",
+    "Label": "Child",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ChildrenNew",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "confidentialRespondents",
+    "Label": "Respondents",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "RespondentNew",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "documentToBeSent",
+    "Label": "Document to be sent",
+    "FieldType": "Document",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "documentsSentToParties",
+    "Label": "Party",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsSentToParty",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "confidentialOthers",
+    "Label": "Others",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Others",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "cmoDraftInReviewHeading",
+    "Label": "## You can no longer edit this order",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "cmoDraftInReviewHint",
+    "Label": "The judge is reviewing this order. You can only edit it if the judge asks for changes.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "orderMonths",
+    "Label": "How many months will this order remain in place",
+    "FieldType": "Number",
+    "SecurityClassification": "Public",
+    "Max": "99",
+    "Min": "1"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "epoChildren",
+    "Label": "Describe the children",
+    "FieldType": "EPOChildren",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "epoType",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "EPOTypes",
+    "Label": "What type of EPO are you requesting?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "epoRemovalAddress",
+    "FieldType": "AddressUK",
+    "Label": "Address",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "epoPhrase",
+    "Label": "Do you want to include this phrase in the order?",
+    "FieldType": "EPOPhrase",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "epoEndDate",
+    "Label": "When does the order end",
+    "FieldType": "DateTime",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "interimEndDate",
+    "Label": "When will this order end?",
+    "FieldType": "InterimEndDate",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "childSelector",
+    "Label": "Who’s included in the order?",
+    "FieldType": "ChildSelector",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "orderAppliesToAllChildren",
+    "Label": "Is the order about all the children?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "pageShow",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "children_label",
+    "Label": " ",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public",
+    "Comment": "Displays a list of names for children, usage of this should be readonly"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "showFinalOrderSingleChildPage",
+    "FieldType": "YesOrNo",
+    "Label": " ",
+    "SecurityClassification": "Public",
+    "Comment": "Field to contain condition for hiding the page displaying the single child without a final order issued"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "remainingChildIndex",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "remainingChild_label",
+    "Label": "## Create order for",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "remainingChild",
+    "Label": "Child included in the order",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Comment": "Displays a list of names for children, usage of this should be readonly"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "otherFinalOrderChildren_label",
+    "Label": "### Other children in this case with final orders:",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "otherFinalOrderChildren",
+    "Label": " ",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public",
+    "Comment": "Displays a list of names for children, usage of this should be readonly"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "singleCareOrder_label",
+    "Label": " ",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "multipleCareOrder_label",
+    "Label": " ",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "careOrderSelector",
+    "Label": "Which orders are being discharged?",
+    "FieldType": "CareOrderSelector",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "childrenList",
+    "Label": "Which child?",
+    "FieldType": "DynamicList",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "singleChild",
+    "Label": "Single child",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "placementChildName",
+    "Label": "Child name",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "placementLabel",
+    "Label": "# ${placementChildName}",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "placement",
+    "Label": "Placement application",
+    "FieldType": "Placement",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "placements",
+    "Label": "Child",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Placement",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "confidentialPlacements",
+    "Label": "Child",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Placement",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "placementsWithoutPlacementOrder",
+    "Label": "Child",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Placement",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "evidenceHandled",
+    "Label": "Supplementary evidence handled",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "sendToCtsc",
+    "Label": " ",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Comment": "Used to record whether a case has been sent to CTSC. Move to CTSC set for 30th March 2020."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "amountToPay",
+    "Label": "Application fee to pay",
+    "FieldType": "MoneyGBP",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "displayAmountToPay",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Comment": "Used to hide the amountToPay field, mainly in the event of an error with the Fee Register"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "scannedDocuments",
+    "Label": "Scanned Documents",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ScannedDocument",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "expertReport",
+    "Label": "Report",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ExpertReport",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "dateOfIssue_label",
+    "Label": "## Date of issue",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "dateOfIssue",
+    "Label": "Enter the date that the order was issued",
+    "FieldType": "Date",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "paymentHistory",
+    "Label": "A history of payments associated with a the case",
+    "FieldType": "CasePaymentHistoryViewer",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "caseNote",
+    "Label": "Note",
+    "HintText": "Add note detail, including relevant dates and people involved",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public",
+    "Comment": "The note field to be displayed in an event"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "caseNotes",
+    "Label": "Note",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "CaseNote",
+    "SecurityClassification": "Public",
+    "Comment": "The note fields to be displayed in the tab"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "extensionComments",
+    "Label": "Add comments",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "extensionDateEightWeeks",
+    "Label": "Case extension date",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "shouldBeCompletedByConfirmationLabel",
+    "Label": "You've select to extend the case by 8 weeks. The case should now be completed by ${extensionDateEightWeeks}.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "caseFurtherExtensionLabel",
+    "Label": "You can extend this date again, but you will not be able to revert back to the original date.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "caseExtensionTimeConfirmationList",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "CaseExtensionTimeConfirmationList",
+    "Label": "Do you still want to extend the date by 8 weeks?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "eightWeeksExtensionDateOther",
+    "FieldType": "Date",
+    "Label": "New end date",
+    "HintText": "For example, 31 3 1980",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "shouldBeCompletedByDate",
+    "Label": "Date case should be completed by",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "shouldBeCompletedByLabel",
+    "FieldType": "Label",
+    "Label": "This case should be completed by ${shouldBeCompletedByDate}.",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "extendByEightWeeksOrOtherLabel",
+    "FieldType": "Label",
+    "Label": "You can either extend this date by 8 weeks, or enter a different end date.",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "extensionDateOther",
+    "FieldType": "Date",
+    "Label": "New end date",
+    "HintText": "For example, 31 3 1980",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "caseExtensionTimeList",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "CaseExtensionTimeList",
+    "Label": "You can extend this date again, but you will not be able to revert back to the original date.",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "caseExtensionReasonList",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "CaseExtensionReasonList",
+    "Label": "Why is this case being extended?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "caseCompletionDate",
+    "FieldType": "Date",
+    "Label": "26-week timeline date",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "close_case_label",
+    "FieldType": "TextArea",
+    "Label": " ",
+    "SecurityClassification": "Public",
+    "Comment": "Design preferred this over the style the CCD label provided"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "closeCase",
+    "FieldType": "CloseCase",
+    "Label": " ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "closeCaseTabField",
+    "FieldType": "CloseCase",
+    "Label": "Close the case",
+    "SecurityClassification": "Public",
+    "Comment": "Couldn't work out how to show the label of the field for the tab view yet hide it in the event, could do it with the elements of the complex type but not the actual case field"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "deprivationOfLiberty",
+    "FieldType": "YesOrNo",
+    "Label": "Flag for whether a case was closed due to deprivation of liberty",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "closeCaseFromOrder",
+    "FieldType": "YesOrNo",
+    "Label": "Do you want to close the case?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "showCloseCaseFromOrderPage",
+    "FieldType": "Text",
+    "Label": " ",
+    "SecurityClassification": "Public",
+    "Comment": "Field to contain condition for hiding the close case page in the create order flow"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "state",
+    "FieldType": "Text",
+    "Label": "End State",
+    "SecurityClassification": "Public",
+    "Comment": "Field required for changing state in a controller"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "returnApplication",
+    "Label": "Return details",
+    "FieldType": "ReturnApplication",
+    "SecurityClassification": "Public"
+  }
+]

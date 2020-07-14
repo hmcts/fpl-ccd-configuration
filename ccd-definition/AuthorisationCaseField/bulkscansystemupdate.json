@@ -12,5 +12,19 @@
     "CaseFieldID": "evidenceHandled",
     "UserRole": "caseworker-publiclaw-bulkscansystemupdate",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "scannedDocuments",
+    "UserRole": "caseworker-publiclaw-bulkscansystemupdate",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "evidenceHandled",
+    "UserRole": "caseworker-publiclaw-bulkscansystemupdate",
+    "CRUD": "CRU"
   }
 ]

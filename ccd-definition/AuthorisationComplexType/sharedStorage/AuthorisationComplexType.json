@@ -1,7 +1,7 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseTypeID": "SHARED_STORAGE",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeTitle",
     "UserRole":"[LASOLICITOR]",
@@ -9,7 +9,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseTypeID": "SHARED_STORAGE",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "otherTitle",
     "UserRole":"[LASOLICITOR]",
@@ -17,7 +17,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseTypeID": "SHARED_STORAGE",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeLastName",
     "UserRole":"[LASOLICITOR]",
@@ -25,7 +25,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseTypeID": "SHARED_STORAGE",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeFullName",
     "UserRole":"[LASOLICITOR]",
@@ -33,7 +33,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseTypeID": "SHARED_STORAGE",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeTitle",
     "UserRole":"[SOLICITOR]",
@@ -41,7 +41,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseTypeID": "SHARED_STORAGE",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "otherTitle",
     "UserRole":"[SOLICITOR]",
@@ -49,7 +49,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseTypeID": "SHARED_STORAGE",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeLastName",
     "UserRole":"[SOLICITOR]",
@@ -57,7 +57,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseTypeID": "SHARED_STORAGE",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeFullName",
     "UserRole":"[SOLICITOR]",
@@ -65,7 +65,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseTypeID": "SHARED_STORAGE",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeTitle",
     "UserRole":"[LABARRISTER]",
@@ -73,7 +73,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseTypeID": "SHARED_STORAGE",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "otherTitle",
     "UserRole":"[LABARRISTER]",
@@ -81,7 +81,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseTypeID": "SHARED_STORAGE",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeLastName",
     "UserRole":"[LABARRISTER]",
@@ -89,7 +89,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseTypeID": "SHARED_STORAGE",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeFullName",
     "UserRole":"[LABARRISTER]",
@@ -97,7 +97,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseTypeID": "SHARED_STORAGE",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeTitle",
     "UserRole":"caseworker-publiclaw-cafcass",
@@ -105,7 +105,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseTypeID": "SHARED_STORAGE",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "otherTitle",
     "UserRole":"caseworker-publiclaw-cafcass",
@@ -113,7 +113,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseTypeID": "SHARED_STORAGE",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeLastName",
     "UserRole":"caseworker-publiclaw-cafcass",
@@ -121,7 +121,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseTypeID": "SHARED_STORAGE",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeFullName",
     "UserRole":"caseworker-publiclaw-cafcass",
@@ -129,7 +129,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseTypeID": "SHARED_STORAGE",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeTitle",
     "UserRole":"[CAFCASSSOLICITOR]",
@@ -137,7 +137,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseTypeID": "SHARED_STORAGE",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "otherTitle",
     "UserRole":"[CAFCASSSOLICITOR]",
@@ -145,7 +145,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseTypeID": "SHARED_STORAGE",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeLastName",
     "UserRole":"[CAFCASSSOLICITOR]",
@@ -153,7 +153,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseTypeID": "SHARED_STORAGE",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeFullName",
     "UserRole":"[CAFCASSSOLICITOR]",
@@ -161,7 +161,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseTypeID": "SHARED_STORAGE",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeTitle",
     "UserRole":"[BARRISTER]",
@@ -169,7 +169,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseTypeID": "SHARED_STORAGE",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "otherTitle",
     "UserRole":"[BARRISTER]",
@@ -177,7 +177,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseTypeID": "SHARED_STORAGE",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeLastName",
     "UserRole":"[BARRISTER]",
@@ -185,10 +185,34 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseTypeID": "SHARED_STORAGE",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeFullName",
     "UserRole":"[BARRISTER]",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "representedBy",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "leadRespondentIndicator",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
   }
 ]

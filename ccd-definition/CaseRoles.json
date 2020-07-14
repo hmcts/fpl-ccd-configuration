@@ -27,17 +27,62 @@
     "SecurityClassification": "Public"
   },
   {
-  "LiveFrom": "01/01/2017",
-  "CaseTypeID": "CARE_SUPERVISION_EPO",
-  "ID": "[BARRISTER]",
-  "Name": "Barrister",
-  "Description": "Barrister role",
-  "JurisdictionID": "PUBLICLAW",
-  "SecurityClassification": "Public"
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[BARRISTER]",
+    "Name": "Barrister",
+    "Description": "Barrister role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[CAFCASSSOLICITOR]",
+    "Name": "Cafcass Solicitor",
+    "Description": "Cafcass Solicitor role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "[LASOLICITOR]",
+    "Name": "LA Solicitor",
+    "Description": "La Solicitor role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "[SOLICITOR]",
+    "Name": "Solicitor",
+    "Description": "Solicitor role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "[LABARRISTER]",
+    "Name": "LA Barrister",
+    "Description": "LA Barrister role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "ID": "[BARRISTER]",
+    "Name": "Barrister",
+    "Description": "Barrister role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
     "ID": "[CAFCASSSOLICITOR]",
     "Name": "Cafcass Solicitor",
     "Description": "Cafcass Solicitor role",

@@ -11,5 +11,18 @@
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "CaseEventFieldLabel": "Direction"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "SHARED_STORAGE",
+    "CaseEventID": "COMPLY_CAFCASS",
+    "CaseFieldID": "cafcassDirections",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "COMPLEX",
+    "PageID": "1",
+    "PageLabel": " ",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "CaseEventFieldLabel": "Direction"
   }
 ]

@@ -110,5 +110,117 @@
     "WorkBasketDefaultJurisdiction": "PUBLICLAW",
     "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
     "WorkBasketDefaultState": "Gatekeeping"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "UserIDAMId": "damian@swansea.gov.uk",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "SHARED_STORAGE",
+    "WorkBasketDefaultState": "Open"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "UserIDAMId": "kurt@swansea.gov.uk",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "SHARED_STORAGE",
+    "WorkBasketDefaultState": "Open"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "UserIDAMId": "james@swansea.gov.uk",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "SHARED_STORAGE",
+    "WorkBasketDefaultState": "Open"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "UserIDAMId": "sam@hillingdon.gov.uk",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "SHARED_STORAGE",
+    "WorkBasketDefaultState": "Open"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "UserIDAMId": "siva@hillingdon.gov.uk",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "SHARED_STORAGE",
+    "WorkBasketDefaultState": "Open"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "UserIDAMId": "sam@swindon.gov.uk",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "SHARED_STORAGE",
+    "WorkBasketDefaultState": "Open"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "UserIDAMId": "raghu@swindon.gov.uk",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "SHARED_STORAGE",
+    "WorkBasketDefaultState": "Open"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "UserIDAMId": "sam@wiltshire.gov.uk",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "SHARED_STORAGE",
+    "WorkBasketDefaultState": "Open"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "UserIDAMId": "raghu@wiltshire.gov.uk",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "SHARED_STORAGE",
+    "WorkBasketDefaultState": "Open"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "UserIDAMId": "hmcts-admin@example.com",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "SHARED_STORAGE",
+    "WorkBasketDefaultState": "Submitted"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "UserIDAMId": "cafcass@example.com",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "SHARED_STORAGE",
+    "WorkBasketDefaultState": "Submitted"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "UserIDAMId": "gatekeeper@mailnesia.com",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "SHARED_STORAGE",
+    "WorkBasketDefaultState": "Gatekeeping"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "UserIDAMId": "judiciary@mailnesia.com",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "SHARED_STORAGE",
+    "WorkBasketDefaultState": "Submitted"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "UserIDAMId": "fpl-system-update@mailnesia.com",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "SHARED_STORAGE",
+    "WorkBasketDefaultState": "Submitted"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "UserIDAMId": "judiciary-only@mailnesia.com",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "SHARED_STORAGE",
+    "WorkBasketDefaultState": "Submitted"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "UserIDAMId": "gatekeeper-only@mailnesia.com",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "SHARED_STORAGE",
+    "WorkBasketDefaultState": "Gatekeeping"
   }
 ]
