@@ -5,65 +5,108 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.Directions;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.docmosis.CaseManagementOrderGenerationService;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.CMO;
 import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMapping;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseManagementOrderService {
     private final CaseManagementOrderGenerationService templateDataGenerationService;
     private final DocumentService documentService;
+    private final Time time;
 
     public Document getOrderDocument(CaseData caseData) {
         DocmosisCaseManagementOrder templateData = templateDataGenerationService.getTemplateData(caseData);
         return documentService.getDocumentFromDocmosisOrderTemplate(templateData, CMO);
     }
 
-    public DynamicList getPastHearingList(List<Element<HearingBooking>> hearings) {
+    public DynamicList getHearingsWithoutCMO(List<Element<HearingBooking>> hearings) {
         List<Element<HearingBooking>> filtered = hearings.stream()
-            .filter(hearingInPast())
-            .filter(hasNoAssociatedCMO())
+            .filter(this::hasNoAssociatedCMO)
             .collect(toList());
 
-        return ElementUtils.asDynamicList(filtered,
-            hearing -> formatLocalDateTimeBaseUsingFormat(hearing.getStartDate(), DATE_TIME));
+        return asDynamicList(filtered, this::getHearingInfo);
     }
 
-    private Predicate<Element<HearingBooking>> hasNoAssociatedCMO() {
-        return hearing -> hearing.getValue().getCaseManagementOrderId() == null;
+    public Map<String, Object> getJudgeAndHearingLabels(DynamicList pastHearingList,
+                                                        List<Element<HearingBooking>> hearings) {
+        HearingBooking selected = getSelectedHearing(pastHearingList, hearings);
+
+        return Map.of(
+            "cmoJudgeInfo", formatJudgeTitleAndName(selected.getJudgeAndLegalAdvisor()),
+            "cmoHearingInfo", getHearingInfo(selected)
+        );
     }
 
-    private Predicate<Element<HearingBooking>> hearingInPast() {
-        return hearing -> !hearing.getValue().startsAfterToday();
+    public HearingBooking getSelectedHearing(DynamicList pastHearingList, List<Element<HearingBooking>> hearings) {
+        UUID uuid = pastHearingList.getValue().getCode();
+        return hearings.stream()
+            .filter(hearing -> hearing.getId().equals(uuid))
+            .findFirst()
+            .orElseThrow(() -> new HearingNotFoundException("No hearing found with id " + uuid))
+            .getValue();
+    }
+
+    public uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder createDraftCMO(DocumentReference documentReference,
+                                                                                  HearingBooking hearing) {
+        return uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.builder()
+            .order(documentReference)
+            .hearing(getHearingInfo(hearing))
+            .dateSent(time.now().toLocalDate())
+            .status(SEND_TO_JUDGE)
+            .build();
+    }
+
+    public void mapToHearing(DynamicList pastHearingList, List<Element<HearingBooking>> hearings,
+                             Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder> cmo) {
+        hearings.stream()
+            .filter(bookingElement -> bookingElement.getId().equals(pastHearingList.getValue().getCode()))
+            .forEach(hearingElement -> hearingElement.getValue()
+                .setCaseManagementOrderId(cmo.getId())
+            );
+    }
+
+    private String getHearingInfo(HearingBooking hearing) {
+        return String.format("%s hearing, %s",
+            hearing.getType(),
+            formatLocalDateTimeBaseUsingFormat(hearing.getStartDate(), DATE));
+    }
+
+    private boolean hasNoAssociatedCMO(Element<HearingBooking> hearing) {
+        return hearing.getValue().getCaseManagementOrderId() == null;
     }
 
     @Deprecated

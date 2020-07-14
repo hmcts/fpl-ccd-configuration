@@ -15,6 +15,11 @@ public class DocumentReference {
     @JsonProperty("document_binary_url")
     private final String binaryUrl;
 
+    public boolean hasExtension(String extension) {
+        extension = extension.startsWith(".") ? extension : ".".concat(extension);
+        return filename.endsWith(extension);
+    }
+
     public static DocumentReference buildFromDocument(Document document) {
         return DocumentReference.builder()
             .url(document.links.self.href)
