@@ -17,20 +17,6 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'info.solidsoft.pitest'
 
-// https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/configuration.html
-dependencyCheck {
-  // Specifies if the build should be failed if a CVSS score above a specified level is identified.
-  // range of 0-10 fails the build, anything greater and it doesn't fail the build
-  suppressionFile = 'config/owasp/suppressions.xml'
-  analyzers {
-    // Disable scanning of .NET related binaries
-    assemblyEnabled = false
-  }
-  analyzedTypes = ['jar']
-  scanConfigurations = ['runtimeClasspath']
-}
-
-
 group = 'uk.gov.hmcts.reform'
 version = '1.0.0'
 
@@ -150,6 +136,17 @@ dependencyUpdates.resolutionStrategy = {
       }
     }
   }
+}
+
+// https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/configuration.html
+dependencyCheck {
+  suppressionFile = 'config/owasp/suppressions.xml'
+  analyzers {
+    // Disable scanning of .NET related binaries
+    assemblyEnabled = false
+  }
+  analyzedTypes = ['jar']
+  scanConfigurations = ['runtimeClasspath']
 }
 
 sonarqube {
