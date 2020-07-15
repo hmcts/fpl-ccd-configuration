@@ -95,7 +95,7 @@ class NoticeOfHearingEmailContentProviderTest extends AbstractEmailContentProvid
         return NoticeOfHearingTemplate.builder()
             .hearingType(CASE_MANAGEMENT.getLabel().toLowerCase())
             .hearingDate(formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG))
-            .hearingVenue("Venue")
+            .hearingVenue("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW")
             .hearingTime(caseDataExtractionService.getHearingTime(hearingBooking))
             .preHearingTime(caseDataExtractionService.extractPrehearingAttendance(hearingBooking))
             .caseUrl(hasDigitalPreference.equals(YES) ? "http://fake-url/cases/case-details/1111" : "")

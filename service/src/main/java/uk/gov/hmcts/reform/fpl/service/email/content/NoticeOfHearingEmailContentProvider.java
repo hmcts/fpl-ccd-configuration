@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.NoticeOfHearingTemplate;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
@@ -34,11 +35,12 @@ public class NoticeOfHearingEmailContentProvider extends AbstractEmailContentPro
         HearingBooking hearingBooking,
         RepresentativeServingPreferences representativeServingPreferences) {
         final CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        HearingVenue venue = hearingVenueLookUpService.getHearingVenue(hearingBooking);
 
         return NoticeOfHearingTemplate.builder()
             .hearingType(getHearingType(hearingBooking))
             .hearingDate(formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG))
-            .hearingVenue(hearingVenueLookUpService.getHearingVenue(hearingBooking).getVenue())
+            .hearingVenue(hearingVenueLookUpService.buildHearingVenue(venue))
             .hearingTime(caseDataExtractionService.getHearingTime(hearingBooking))
             .preHearingTime(caseDataExtractionService.extractPrehearingAttendance(hearingBooking))
             .caseUrl(getCaseUrl(caseDetails.getId()))
