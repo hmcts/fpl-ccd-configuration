@@ -17,10 +17,6 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'info.solidsoft.pitest'
 
-subprojects {
-  apply plugin: 'org.owasp.dependencycheck'
-}
-
 // https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/configuration.html
 dependencyCheck {
   // Specifies if the build should be failed if a CVSS score above a specified level is identified.
