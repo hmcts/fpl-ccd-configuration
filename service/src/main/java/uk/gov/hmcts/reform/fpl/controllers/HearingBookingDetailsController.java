@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.FplEvent;
 import uk.gov.hmcts.reform.fpl.controllers.guards.EventGuardProvider;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
+import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
@@ -107,10 +108,11 @@ public class HearingBookingDetailsController {
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
-//        if (isInGatekeepingState(callbackRequest.getCaseDetails())
+        if (isInGatekeepingState(callbackRequest.getCaseDetails())
             && standardDirectionsService.hasEmptyDates(caseData)) {
-//            applicationEventPublisher.publishEvent(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
-//        }
-        applicationEventPublisher.publishEvent(new CaseDataChanged(callbackRequest));
+            applicationEventPublisher.publishEvent(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
+            applicationEventPublisher.publishEvent(new CaseDataChanged(callbackRequest));
+
+        }
     }
 }
