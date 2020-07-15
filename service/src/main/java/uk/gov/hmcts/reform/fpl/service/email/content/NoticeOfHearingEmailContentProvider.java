@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentPr
 import java.time.format.FormatStyle;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
@@ -35,7 +36,7 @@ public class NoticeOfHearingEmailContentProvider extends AbstractEmailContentPro
         final CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         return NoticeOfHearingTemplate.builder()
-            .hearingType(hearingBooking.getType().getLabel().toLowerCase())
+            .hearingType(getHearingType(hearingBooking))
             .hearingDate(formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG))
             .hearingVenue(hearingVenueLookUpService.getHearingVenue(hearingBooking).getVenue())
             .hearingTime(caseDataExtractionService.getHearingTime(hearingBooking))
@@ -47,5 +48,10 @@ public class NoticeOfHearingEmailContentProvider extends AbstractEmailContentPro
             .digitalPreference(representativeServingPreferences == DIGITAL_SERVICE ? "Yes" : "No")
             .caseUrl(representativeServingPreferences == DIGITAL_SERVICE ? getCaseUrl(caseDetails.getId()) : "")
             .build();
+    }
+
+    private String getHearingType(HearingBooking hearingBooking) {
+        return hearingBooking.getType() != OTHER ? hearingBooking.getType().getLabel().toLowerCase() :
+            hearingBooking.getTypeDetails();
     }
 }

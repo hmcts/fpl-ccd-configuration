@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 
 import java.time.LocalDate;
 
-import static org.apache.commons.lang3.StringUtils.capitalize;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
@@ -47,8 +46,8 @@ public class NoticeOfHearingGenerationService {
     }
 
     private String getHearingType(HearingBooking hearingBooking) {
-        return hearingBooking.getType() != OTHER ? hearingBooking.getType().getLabel()
-            : capitalize(hearingBooking.getTypeDetails());
+        return hearingBooking.getType() != OTHER ? hearingBooking.getType().getLabel().toLowerCase() :
+            hearingBooking.getTypeDetails();
     }
 
 }
