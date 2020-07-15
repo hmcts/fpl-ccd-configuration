@@ -11,7 +11,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "pastHearingList",
+    "ID": "pastHearingSelector",
     "Label": "Which CMO do you want to send to the judge to review?",
     "HintText": "All CMOs must have been discussed by all parties at the hearing.",
     "FieldType": "DynamicList",
@@ -29,7 +29,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "cmoHearingInfo",
-    "Label": " ",
+    "Label": "Hearing for the CMO",
     "FieldType": "Text",
     "SecurityClassification": "Public"
   },
@@ -37,7 +37,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "uploadedCaseManagementOrder",
-    "Label": "${cmoHearingInfo}",
+    "Label": " ",
+    "HintText": "Files must be converted to PDF",
     "FieldType": "Document",
     "SecurityClassification": "Public",
     "RegularExpression": ".pdf"
@@ -47,6 +48,14 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "draftCMOs",
     "Label": "${draftUploadedCMOs.order}",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "cmoHearingInfoLabel",
+    "Label": "## ${cmoHearingInfo}",
     "FieldType": "Label",
     "SecurityClassification": "Public"
   }

@@ -15,14 +15,15 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -41,7 +42,7 @@ public class UploadCMOController {
         Map<String, Object> data = request.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        data.putAll(cmoService.getInitialPageData(caseData));
+        data.putAll(cmoService.getInitialPageData(caseData.getPastHearings()));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -53,16 +54,12 @@ public class UploadCMOController {
         Map<String, Object> data = request.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        if (caseData.getPastHearingSelector().getSelected().size() != 1) {
-            return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(data)
-                .errors(List.of("Only select one hearing"))
-                .build();
-        }
-
         // update judge and hearing labels
         List<Element<HearingBooking>> hearings = cmoService.getHearingsWithoutCMO(caseData.getHearingDetails());
-        data.putAll(cmoService.getJudgeAndHearingLabels(caseData.getPastHearingSelector(), hearings));
+        UUID selectedHearing = cmoService.getSelectedHearingId(caseData.getPastHearingSelector());
+        data.putAll(cmoService.getJudgeAndHearingLabels(selectedHearing, hearings));
+
+        reconstructDynamicList(data, hearings, caseData.getPastHearingSelector());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -72,12 +69,16 @@ public class UploadCMOController {
     @PostMapping("/validate-extension/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleValidationMidEvent(@RequestBody CallbackRequest request) {
         Map<String, Object> data = request.getCaseDetails().getData();
-        DocumentReference doc = mapper.convertValue(data.get("uploadedCaseManagementOrder"), DocumentReference.class);
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         List<String> errors = new ArrayList<>();
-        if (!doc.hasExtension(".pdf")) {
+        if (!caseData.getUploadedCaseManagementOrder().hasExtension(".pdf")) {
             errors.add("The file must be a PDF");
         }
+
+        // reconstruct dynamic list
+        List<Element<HearingBooking>> hearings = cmoService.getHearingsWithoutCMO(caseData.getHearingDetails());
+        reconstructDynamicList(data, hearings, caseData.getPastHearingSelector());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -91,16 +92,17 @@ public class UploadCMOController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        Selector pastHearingSelector = caseData.getPastHearingSelector();
+        Object pastHearingSelector = caseData.getPastHearingSelector();
         List<Element<HearingBooking>> hearings = cmoService.getHearingsWithoutCMO(caseData.getHearingDetails());
         DocumentReference uploadedCMO = caseData.getUploadedCaseManagementOrder();
         List<Element<CaseManagementOrder>> draftCMOs = caseData.getDraftUploadedCMOs();
 
-        // QUESTION: 10/07/2020 Should these 5 statements all be part of the one method in the service
-        HearingBooking hearing = cmoService.getSelectedHearing(pastHearingSelector, hearings);
+        // QUESTION: 10/07/2020 Should these statements all be part of the one method in the service
+        UUID selectedHearingId = cmoService.getSelectedHearingId(pastHearingSelector);
+        HearingBooking hearing = cmoService.getSelectedHearing(selectedHearingId, hearings);
         CaseManagementOrder draftCMO = CaseManagementOrder.createDraft(uploadedCMO, hearing, time.now().toLocalDate());
         Element<CaseManagementOrder> element = element(draftCMO);
-        cmoService.mapToHearing(pastHearingSelector, hearings, element);
+        cmoService.mapToHearing(selectedHearingId, hearings, element);
         draftCMOs.add(element);
 
 
@@ -124,5 +126,19 @@ public class UploadCMOController {
     @PostMapping("/submitted")
     public void handelSubmitted(@RequestBody CallbackRequest request) {
         // send notification
+    }
+
+    private void reconstructDynamicList(Map<String, Object> data, List<Element<HearingBooking>> hearings,
+                                        Object oldList) {
+        DynamicList pastHearingList;
+
+        if (oldList instanceof DynamicList) {
+            pastHearingList = (DynamicList) oldList;
+        } else {
+            UUID selectedHearing = cmoService.getSelectedHearingId(oldList);
+            pastHearingList = cmoService.buildDynamicList(hearings, selectedHearing);
+        }
+
+        data.put("pastHearingSelector", pastHearingList);
     }
 }
