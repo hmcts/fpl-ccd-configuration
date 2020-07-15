@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
@@ -32,6 +31,7 @@ import static java.util.Comparator.comparing;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.capitalize;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.NEW_HEARING_LABEL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.NEW_HEARING_SELECTOR;
@@ -171,10 +171,7 @@ public class HearingBookingService {
             if (!oldHearingIDs.contains(newHearings.get(i).getId())) {
                 Element<HearingBooking> hearingElement = newHearings.get(i);
                 HearingBooking hearingBooking = hearingElement.getValue();
-                String newHearingLabel = format("Hearing %d: %s hearing %s", i + 1,
-                    hearingBooking.getType() != OTHER
-                        ? hearingBooking.getType().getLabel() : StringUtils.capitalize(hearingBooking.getTypeDetails()),
-                    formatLocalDateTimeBaseUsingFormat(hearingElement.getValue().getStartDate(), DATE));
+                String newHearingLabel = buildNewHearingLabel(hearingBooking, i);
 
                 stringBuilder.append(newHearingLabel).append("\n");
 
@@ -240,5 +237,11 @@ public class HearingBookingService {
             .id(id)
             .value(hearingBooking)
             .build();
+    }
+
+    private String buildNewHearingLabel(HearingBooking hearingBooking, int i) {
+        return format("Hearing %d: %s hearing %s", i + 1, hearingBooking.getType() != OTHER
+                ? hearingBooking.getType().getLabel() : capitalize(hearingBooking.getTypeDetails()),
+            formatLocalDateTimeBaseUsingFormat(hearingBooking.getStartDate(), DATE));
     }
 }

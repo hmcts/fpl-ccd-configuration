@@ -13,8 +13,10 @@ import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 
 import java.time.LocalDate;
 
+import static org.apache.commons.lang3.StringUtils.capitalize;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
@@ -34,7 +36,7 @@ public class NoticeOfHearingGenerationService {
             .children(dataService.getChildrenDetails(caseData.getChildren1()))
             .hearingDate(dataService.getHearingDateIfHearingsOnSameDay(hearingBooking).orElse(""))
             .hearingTime(dataService.getHearingTime(hearingBooking))
-            .hearingType(hearingBooking.getType().getLabel().toLowerCase())
+            .hearingType(getHearingType(hearingBooking))
             .hearingVenue(hearingVenueLookUpService.buildHearingVenue(venue))
             .preHearingAttendance(dataService.extractPrehearingAttendance(hearingBooking))
             .judgeAndLegalAdvisor(dataService.getJudgeAndLegalAdvisor(hearingBooking.getJudgeAndLegalAdvisor()))
@@ -42,6 +44,11 @@ public class NoticeOfHearingGenerationService {
             .courtseal(COURT_SEAL.getValue())
             .crest(CREST.getValue())
             .build();
+    }
+
+    private String getHearingType(HearingBooking hearingBooking) {
+        return hearingBooking.getType() != OTHER ? hearingBooking.getType().getLabel()
+            : capitalize(hearingBooking.getTypeDetails());
     }
 
 }
