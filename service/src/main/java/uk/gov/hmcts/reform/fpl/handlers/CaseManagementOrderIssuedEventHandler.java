@@ -17,8 +17,7 @@ public class CaseManagementOrderIssuedEventHandler {
     public void sendEmailsForIssuedCaseManagementOrder(final CaseManagementOrderIssuedEvent event) {
         EventData eventData = new EventData(event);
 
-        caseLinkNotificationHandler.sendNotifications(eventData);
-        documentLinkNotificationHandler.sendNotifications(eventData,
-            event.getDocumentContents());
+        caseLinkNotificationHandler.sendNotifications(eventData, event.getDocumentContents());
+        documentLinkNotificationHandler.sendNotifications(eventData, event.getDocumentContents());
     }
 }

@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForCMO;
+import uk.gov.hmcts.reform.fpl.model.notify.draftCMO.ApprovedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
@@ -38,15 +39,22 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
             .build();
     }
 
-    public Map<String, Object> buildCMOIssuedDocumentLinkNotificationParameters(final CaseDetails caseDetails,
-                                                                                final String recipientName,
-                                                                                final byte[] documentContents) {
+    public ApprovedCMOTemplate buildCMOIssuedNotificationParameters(
+        final CaseDetails caseDetails,
+        RepresentativeServingPreferences representativeServingPreferences,
+        final byte[] documentContents) {
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        return ImmutableMap.<String, Object>builder()
-            .putAll(buildCommonCMONotificationParameters(caseDetails))
-            .putAll(linkToAttachedDocument(documentContents))
-            .put("cafcassOrRespondentName", recipientName)
-            .build();
+        ApprovedCMOTemplate template = new ApprovedCMOTemplate();
+
+        template.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
+        template.setFamilyManCaseNumber(caseData.getFamilyManCaseNumber());
+        template.setHearingDate(caseData.getCaseManagementOrder().getHearingDate());
+        template.setDigitalPreference(representativeServingPreferences == DIGITAL_SERVICE ? "Yes" : "No");
+        template.setDocumentLink(linkToAttachedDocument(documentContents));
+        template.setCaseUrl((representativeServingPreferences == DIGITAL_SERVICE ? getCaseUrl(caseDetails.getId()) : ""));
+
+        return template;
     }
 
     public Map<String, Object> buildCMORejectedByJudgeNotificationParameters(final CaseDetails caseDetails) {

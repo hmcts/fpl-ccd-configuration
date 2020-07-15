@@ -20,10 +20,17 @@ public class NotifyTemplates {
     public static final String ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_JUDGE = "e8a21f19-3e51-4cdd-99cf-a32b4e5fedd4";
     public static final String ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES =
         "1827ae2d-d7c3-4094-8978-c2f77d7713fa";
+
+    // To be removed
     public static final String CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE =
         "64cc7ea5-ca74-4679-912f-6d84d1c7e4cd";
+    // To be removed
     public static final String CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE =
         "931dcd86-d331-4273-abaa-208daed0761a";
+    // Both above replaced by
+    public static final String CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE_NEW =
+        "1587187b-7c5a-4665-880c-3d52073124bc";
+
     public static final String CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE =
         "58aa7e13-e80a-4630-a610-ee7fc1b6f9f9";
     public static final String CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE =
