@@ -10,6 +10,7 @@
         This one seems to be false positive targetting now spring security 5.0.5
       ]]>
     </notes>
+    <gav regex="true">^org\.springframework\.security:.*$</gav>
     <cve>CVE-2018-1258</cve>
   </suppress>
 </suppressions>
