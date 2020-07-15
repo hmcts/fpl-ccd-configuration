@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -15,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.docmosis.CaseManagementOrderGenerationService;
 
 import java.time.format.FormatStyle;
@@ -34,7 +34,6 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.CMO;
 import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMapping;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
 @Service
@@ -43,40 +42,71 @@ public class CaseManagementOrderService {
     private final CaseManagementOrderGenerationService templateDataGenerationService;
     private final DocumentService documentService;
 
-    public DynamicList getHearingsWithoutCMO(List<Element<HearingBooking>> hearings) {
-        List<Element<HearingBooking>> filtered = hearings.stream()
-            .filter(hearing -> !hearing.getValue().hasCMOAssociation())
-            .collect(toList());
+    public Map<String, Object> getInitialPageData(CaseData caseData) {
+        // TODO: 10/07/2020
+        //    • Complete the default scenario for the switch statement (2 or more hearings)
+        //    • Next case is there is only 1 hearing
+        //    • Handle no possible hearings
 
-        return asDynamicList(filtered, (hearing) -> hearing.toLabel(DATE));
+        // populate the list or past hearing dates
+        List<Element<HearingBooking>> pastHearings = getHearingsWithoutCMO(caseData.getPastHearings());
+
+        switch (pastHearings.size()) {
+            case 0:
+                // handle case of 0 hearings
+                // hide list page, show label
+                // return Map.of();
+            case 1:
+                // handle case of only 1 hearing
+                // hide first page and go straight to doc upload
+                // return Map.of();
+            default:
+                Selector selector = Selector.builder()
+                    .build()
+                    .setNumberOfOptions(pastHearings.size());
+                return Map.of(
+                    "pastHearingSelector", selector,
+                    "pastHearingsLabel", buildPastHearingLabel(pastHearings)
+                );
+        }
     }
 
-    public Map<String, Object> getJudgeAndHearingLabels(DynamicList pastHearingList,
-                                                        List<Element<HearingBooking>> hearings) {
-        HearingBooking selected = getSelectedHearing(pastHearingList, hearings);
+    public List<Element<HearingBooking>> getHearingsWithoutCMO(List<Element<HearingBooking>> hearings) {
+        return hearings.stream()
+            .filter(hearing -> !hearing.getValue().hasCMOAssociation())
+            .collect(toList());
+    }
 
+    public HearingBooking getSelectedHearing(Selector selector, List<Element<HearingBooking>> hearings) {
+        return hearings.get(selector.getSelected().get(0)).getValue();
+    }
+
+    public Map<String, Object> getJudgeAndHearingLabels(Selector pastHearingSelector,
+                                                        List<Element<HearingBooking>> hearings) {
+        HearingBooking selected = getSelectedHearing(pastHearingSelector, hearings);
         return Map.of(
             "cmoJudgeInfo", formatJudgeTitleAndName(selected.getJudgeAndLegalAdvisor()),
             "cmoHearingInfo", selected.toLabel(DATE)
         );
     }
 
-    public HearingBooking getSelectedHearing(DynamicList pastHearingList, List<Element<HearingBooking>> hearings) {
-        UUID uuid = pastHearingList.getValue().getCode();
-        return hearings.stream()
-            .filter(hearing -> hearing.getId().equals(uuid))
-            .findFirst()
-            .orElseThrow(() -> new HearingNotFoundException("No hearing found with id " + uuid))
-            .getValue();
+    public void mapToHearing(Selector selector, List<Element<HearingBooking>> hearings,
+                             Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder> cmo) {
+        // There should only be one selected
+        getSelectedHearing(selector, hearings).setCaseManagementOrderId(cmo.getId());
     }
 
-    public void mapToHearing(DynamicList pastHearingList, List<Element<HearingBooking>> hearings,
-                             Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder> cmo) {
-        hearings.stream()
-            .filter(bookingElement -> bookingElement.getId().equals(pastHearingList.getValue().getCode()))
-            .forEach(hearingElement -> hearingElement.getValue()
-                .setCaseManagementOrderId(cmo.getId())
-            );
+    private String buildPastHearingLabel(List<Element<HearingBooking>> hearings) {
+        StringBuilder builder = new StringBuilder();
+        String sep = "";
+
+        for (int i = 0; i < hearings.size(); i++) {
+            HearingBooking hearing = hearings.get(i).getValue();
+            builder.append(sep).append("Hearing ").append(i + 1).append(": ").append(hearing.toLabel(DATE));
+            sep = "\n";
+        }
+
+        return builder.toString();
     }
 
     @Deprecated

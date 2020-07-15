@@ -15,8 +15,8 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
@@ -31,36 +31,17 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @RestController
 @RequestMapping("/callback/upload-cmo")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
-public class DraftCaseManagementOrderController {
+public class UploadCMOController {
     private final Time time;
     private final CaseManagementOrderService cmoService;
     private final ObjectMapper mapper;
-
-    // TODO: 10/07/2020
-    //    • Complete the default scenario for the switch statement (2 or more hearings)
-    //    • Next case is there is only 1 hearing
-    //    • Handle no possible hearings
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
         Map<String, Object> data = request.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        // populate the list or past hearing dates
-        DynamicList pastHearingList = cmoService.getHearingsWithoutCMO(caseData.getPastHearings());
-
-        switch (pastHearingList.getListItems().size()) {
-            case 0:
-                // handle case of 0 hearings
-                // hide list page, show label
-                break;
-            case 1:
-                // handle case of only 1 hearing
-                // hide first page and go straight to doc upload
-                break;
-            default:
-                data.put("pastHearingList", pastHearingList);
-        }
+        data.putAll(cmoService.getInitialPageData(caseData));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -72,8 +53,16 @@ public class DraftCaseManagementOrderController {
         Map<String, Object> data = request.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
+        if (caseData.getPastHearingSelector().getSelected().size() != 1) {
+            return AboutToStartOrSubmitCallbackResponse.builder()
+                .data(data)
+                .errors(List.of("Only select one hearing"))
+                .build();
+        }
+
         // update judge and hearing labels
-        data.putAll(cmoService.getJudgeAndHearingLabels(caseData.getPastHearingList(), caseData.getHearingDetails()));
+        List<Element<HearingBooking>> hearings = cmoService.getHearingsWithoutCMO(caseData.getHearingDetails());
+        data.putAll(cmoService.getJudgeAndHearingLabels(caseData.getPastHearingSelector(), hearings));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -87,7 +76,7 @@ public class DraftCaseManagementOrderController {
 
         List<String> errors = new ArrayList<>();
         if (!doc.hasExtension(".pdf")) {
-            errors.add("The file must be a pdf");
+            errors.add("The file must be a PDF");
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -102,18 +91,16 @@ public class DraftCaseManagementOrderController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        DynamicList pastHearingList = caseData.getPastHearingList();
-        List<Element<HearingBooking>> hearings = caseData.getHearingDetails();
+        Selector pastHearingSelector = caseData.getPastHearingSelector();
+        List<Element<HearingBooking>> hearings = cmoService.getHearingsWithoutCMO(caseData.getHearingDetails());
         DocumentReference uploadedCMO = caseData.getUploadedCaseManagementOrder();
         List<Element<CaseManagementOrder>> draftCMOs = caseData.getDraftUploadedCMOs();
 
         // QUESTION: 10/07/2020 Should these 5 statements all be part of the one method in the service
-        // map cmo to hearing
-        HearingBooking hearing = cmoService.getSelectedHearing(pastHearingList, hearings);
-        CaseManagementOrder draftCMO =  CaseManagementOrder.createDraft(uploadedCMO, hearing, time.now().toLocalDate());
+        HearingBooking hearing = cmoService.getSelectedHearing(pastHearingSelector, hearings);
+        CaseManagementOrder draftCMO = CaseManagementOrder.createDraft(uploadedCMO, hearing, time.now().toLocalDate());
         Element<CaseManagementOrder> element = element(draftCMO);
-        cmoService.mapToHearing(pastHearingList, hearings, element);
-        // add to list
+        cmoService.mapToHearing(pastHearingSelector, hearings, element);
         draftCMOs.add(element);
 
 
@@ -124,9 +111,10 @@ public class DraftCaseManagementOrderController {
         // remove transient fields
         removeTemporaryFields(caseDetails,
             "uploadedCaseManagementOrder",
-            "pastHearingList",
+            "pastHearingSelector",
             "cmoJudgeInfo",
-            "cmoHearingInfo");
+            "cmoHearingInfo",
+            "pastHearingsLabel");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)

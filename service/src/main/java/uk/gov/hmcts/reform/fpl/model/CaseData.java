@@ -585,7 +585,7 @@ public class CaseData {
 
     private final DocumentReference uploadedCaseManagementOrder;
     private final List<Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder>> draftUploadedCMOs;
-    private final DynamicList pastHearingList;
+    private final Selector pastHearingSelector;
 
     @JsonIgnore
     public List<Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder>> getDraftUploadedCMOs() {
