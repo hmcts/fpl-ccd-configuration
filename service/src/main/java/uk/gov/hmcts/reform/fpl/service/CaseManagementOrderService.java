@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.docmosis.CaseManagementOrderGenerationService;
 
 import java.time.format.FormatStyle;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,29 +47,38 @@ public class CaseManagementOrderService {
     private final DocumentService documentService;
     private final ObjectMapper mapper;
 
+    private static final String SINGLE = "SINGLE";
+    private static final String MULTI = "MULTI";
+    private static final String NONE = "";
+    public static final String[] TRANSIENT_FIELDS = {
+        "uploadedCaseManagementOrder", "pastHearingSelector",
+        "cmoJudgeInfo", "cmoHearingInfo", "numHearings"
+    };
+
     public Map<String, Object> getInitialPageData(List<Element<HearingBooking>> hearings) {
         // TODO: 10/07/2020
-        //    • Complete the default scenario for the switch statement (2 or more hearings)
         //    • Next case is there is only 1 hearing
-        //    • Handle no possible hearings
+        //    • update ccd def for hearing booking
 
-        // populate the list or past hearing dates
         List<Element<HearingBooking>> pastHearings = getHearingsWithoutCMO(hearings);
 
+        Map<String, Object> data = new HashMap<>();
         switch (pastHearings.size()) {
             case 0:
-                // handle case of 0 hearings
-                // hide list page, show label
-                // return Map.of();
+                data.put("numHearings", NONE);
+                break;
             case 1:
-                // handle case of only 1 hearing
-                // hide first page and go straight to doc upload
-                // return Map.of();
+                data.put("numHearings", SINGLE);
+                data.putAll(getJudgeAndHearingLabels(pastHearings.get(0).getId(), pastHearings));
+                break;
             default:
-                return Map.of(
-                    "pastHearingSelector", buildDynamicList(pastHearings)
-                );
+                data.put("numHearings", MULTI);
+                data.put("pastHearingSelector", buildDynamicList(pastHearings));
         }
+
+        data.put("numHearings", NONE);
+
+        return data;
     }
 
     public List<Element<HearingBooking>> getHearingsWithoutCMO(List<Element<HearingBooking>> hearings) {
@@ -88,12 +98,11 @@ public class CaseManagementOrderService {
 
     public void mapToHearing(UUID selectedHearing, List<Element<HearingBooking>> hearings,
                              Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder> cmo) {
-        // There should only be one selected
         getSelectedHearing(selectedHearing, hearings).setCaseManagementOrderId(cmo.getId());
     }
 
     public UUID getSelectedHearingId(Object dynamicList) {
-        //see RDM-5696
+        //see RDM-5696 and RDM-6651
         if (dynamicList instanceof String) {
             return UUID.fromString(dynamicList.toString());
         }

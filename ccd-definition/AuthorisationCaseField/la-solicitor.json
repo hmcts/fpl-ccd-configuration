@@ -856,5 +856,19 @@
     "CaseFieldID": "cmoHearingInfoLabel",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "noHearingsForCMOs",
+    "UserRole": "[LASOLICITOR]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "numHearings",
+    "UserRole": "[LASOLICITOR]",
+    "CRUD": "CRU"
   }
 ]

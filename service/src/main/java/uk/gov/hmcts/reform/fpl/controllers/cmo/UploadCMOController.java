@@ -75,31 +75,29 @@ public class UploadCMOController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        Object pastHearingSelector = caseData.getPastHearingSelector();
         List<Element<HearingBooking>> hearings = cmoService.getHearingsWithoutCMO(caseData.getHearingDetails());
-        DocumentReference uploadedCMO = caseData.getUploadedCaseManagementOrder();
-        List<Element<CaseManagementOrder>> draftCMOs = caseData.getDraftUploadedCMOs();
+        if (hearings.size() != 0) {
+            Object pastHearingSelector = caseData.getPastHearingSelector();
+            DocumentReference uploadedCMO = caseData.getUploadedCaseManagementOrder();
+            List<Element<CaseManagementOrder>> draftCMOs = caseData.getDraftUploadedCMOs();
 
-        // QUESTION: 10/07/2020 Should these statements all be part of the one method in the service
-        UUID selectedHearingId = cmoService.getSelectedHearingId(pastHearingSelector);
-        HearingBooking hearing = cmoService.getSelectedHearing(selectedHearingId, hearings);
-        CaseManagementOrder draftCMO = CaseManagementOrder.createDraft(uploadedCMO, hearing, time.now().toLocalDate());
-        Element<CaseManagementOrder> element = element(draftCMO);
-        cmoService.mapToHearing(selectedHearingId, hearings, element);
-        draftCMOs.add(element);
+            // QUESTION: 10/07/2020 Should these statements all be part of the one method in the service
+            UUID selectedHearingId = cmoService.getSelectedHearingId(pastHearingSelector);
+            HearingBooking hearing = cmoService.getSelectedHearing(selectedHearingId, hearings);
+            CaseManagementOrder draftCMO = CaseManagementOrder.createDraft(uploadedCMO,
+                hearing,
+                time.now().toLocalDate());
+            Element<CaseManagementOrder> element = element(draftCMO);
+            cmoService.mapToHearing(selectedHearingId, hearings, element);
+            draftCMOs.add(element);
 
 
-        // update case data
-        data.put("draftUploadedCMOs", draftCMOs);
-        data.put("hearingDetails", hearings);
-
+            // update case data
+            data.put("draftUploadedCMOs", draftCMOs);
+            data.put("hearingDetails", hearings);
+        }
         // remove transient fields
-        removeTemporaryFields(caseDetails,
-            "uploadedCaseManagementOrder",
-            "pastHearingSelector",
-            "cmoJudgeInfo",
-            "cmoHearingInfo",
-            "pastHearingsLabel");
+        removeTemporaryFields(caseDetails, CaseManagementOrderService.TRANSIENT_FIELDS);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -108,7 +106,13 @@ public class UploadCMOController {
 
     @PostMapping("/submitted")
     public void handelSubmitted(@RequestBody CallbackRequest request) {
-        // send notification
+        CaseDetails caseDetailsBefore = request.getCaseDetailsBefore();
+        Map<String, Object> dataBefore = caseDetailsBefore.getData();
+        CaseData caseDataBefore = mapper.convertValue(dataBefore, CaseData.class);
+
+        if (cmoService.getHearingsWithoutCMO(caseDataBefore.getPastHearings()).size() != 0) {
+            // send notification
+        }
     }
 
 }
