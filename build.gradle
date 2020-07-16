@@ -12,7 +12,6 @@ plugins {
 allprojects {
   sourceCompatibility = '11'
   targetCompatibility = '11'
-  apply plugin: 'org.owasp.dependencycheck'
 }
 
 sourceSets {
@@ -37,5 +36,10 @@ dependencies {
 
 dependencyCheck {
   suppressionFile = 'config/owasp/suppressions.xml'
+  analyzers {
+  // Disable scanning of .NET related binaries
+    assemblyEnabled = false
+  }
+  analyzedTypes = ['jar']
   scanConfigurations = ['runtimeClasspath']
 }

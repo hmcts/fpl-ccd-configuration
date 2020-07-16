@@ -138,17 +138,6 @@ dependencyUpdates.resolutionStrategy = {
   }
 }
 
-// https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/configuration.html
-dependencyCheck {
-  suppressionFile = 'config/owasp/suppressions.xml'
-  analyzers {
-    // Disable scanning of .NET related binaries
-    assemblyEnabled = false
-  }
-  analyzedTypes = ['jar']
-  scanConfigurations = ['runtimeClasspath']
-}
-
 sonarqube {
   properties {
     property "sonar.projectName", "FPL :: Service"
