@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.draftcmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
@@ -47,7 +46,7 @@ import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {CaseManagementOrderIssuedEventHandler.class, JacksonAutoConfiguration.class,
     LookupTestConfig.class, IssuedOrderAdminNotificationHandler.class, HmctsAdminNotificationHandler.class,
-    HearingBookingService.class, FixedTimeConfiguration.class})
+    FixedTimeConfiguration.class})
 public class CaseManagementOrderIssuedEventHandlerTest {
 
     @MockBean

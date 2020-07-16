@@ -7,7 +7,6 @@ import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -17,8 +16,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ContextConfiguration(classes = {LocalAuthorityEmailContentProvider.class, LookupTestConfig.class,
-    HearingBookingService.class, FixedTimeConfiguration.class
+@ContextConfiguration(classes = {
+    LocalAuthorityEmailContentProvider.class,
+    LookupTestConfig.class,
+    FixedTimeConfiguration.class
 })
 class LocalAuthorityEmailContentProviderTest extends AbstractEmailContentProviderTest {
 

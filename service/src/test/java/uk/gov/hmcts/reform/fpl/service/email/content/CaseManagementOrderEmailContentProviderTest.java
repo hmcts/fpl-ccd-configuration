@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForCMO;
 import uk.gov.hmcts.reform.fpl.model.notify.draftcmo.IssuedCMOTemplate;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
@@ -34,7 +33,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
 
 @ContextConfiguration(classes = {CaseManagementOrderEmailContentProvider.class, EmailNotificationHelper.class,
-    HearingBookingService.class, FixedTimeConfiguration.class})
+    FixedTimeConfiguration.class})
 class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     @Autowired
