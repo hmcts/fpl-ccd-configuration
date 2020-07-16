@@ -25,7 +25,9 @@ public enum GeneratedOrderKey {
     SHOW_FINAL_ORDER_SINGLE_CHILD("showFinalOrderSingleChildPage"),
     SINGLE_CARE_ORDER_LABEL("singleCareOrder_label"),
     MULTIPLE_CARE_ORDER_LABEL("multipleCareOrder_label"),
-    CARE_ORDER_SELECTOR("careOrderSelector");
+    CARE_ORDER_SELECTOR("careOrderSelector"),
+    NEW_HEARING_SELECTOR("newHearingSelector"),
+    NEW_HEARING_LABEL("newHearing_label");
 
     private final String key;
 }
