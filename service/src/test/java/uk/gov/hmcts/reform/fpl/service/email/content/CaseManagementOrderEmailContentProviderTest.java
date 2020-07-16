@@ -57,7 +57,7 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
     }
 
     @Test
-    void shouldBuildCMOIssuedExpectedParametersWithoutCaseUrl() {
+    void shouldBuildCMOIssuedExpectedParametersWithEmptyCaseUrl() {
         given(documentDownloadService.downloadDocument(anyString())).willReturn(APPLICATION_BINARY);
 
         IssuedCMOTemplate expectedTemplate = new IssuedCMOTemplate();
@@ -77,7 +77,7 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
     }
 
     @Test
-    void shouldBuildCMOIssuedExpectedParametersWithCaseUrl() {
+    void shouldBuildCMOIssuedExpectedParametersWithPopulatedCaseUrl() {
         given(documentDownloadService.downloadDocument(anyString())).willReturn(APPLICATION_BINARY);
 
         IssuedCMOTemplate expectedTemplate = new IssuedCMOTemplate();
