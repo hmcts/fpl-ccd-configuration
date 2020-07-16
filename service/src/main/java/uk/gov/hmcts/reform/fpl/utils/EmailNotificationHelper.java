@@ -17,8 +17,6 @@ import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
@@ -52,7 +50,7 @@ public class EmailNotificationHelper {
     }
 
     public static String formatCaseUrl(String uiBaseUrl, Long caseId) {
-        return String.format("%s/case/%s/%s/%s", uiBaseUrl, JURISDICTION, CASE_TYPE, caseId);
+        return String.format("%s/cases/case-details/%s", uiBaseUrl, caseId);
     }
 
     public static String formatCaseUrl(String uiBaseUrl, Long caseId, String tab) {

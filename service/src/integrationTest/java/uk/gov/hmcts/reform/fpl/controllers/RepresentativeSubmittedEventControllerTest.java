@@ -145,7 +145,7 @@ class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest 
         return ImmutableMap.of(
             "familyManCaseNumber", "",
             "firstRespondentLastName", RESPONDENT_SURNAME,
-            "caseUrl", "http://fake-url/case/PUBLICLAW/CARE_SUPERVISION_EPO/12345"
+            "caseUrl", "http://fake-url/cases/case-details/12345"
         );
     }
 

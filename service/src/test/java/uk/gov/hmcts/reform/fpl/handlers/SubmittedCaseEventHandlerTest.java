@@ -78,7 +78,7 @@ class SubmittedCaseEventHandlerTest {
     @Test
     void shouldSendEmailToHmctsAdmin() {
         final String expectedEmail = "test@test.com";
-        final CallbackRequest request = callbackRequest(OPEN);
+        final CallbackRequest request = callbackRequest();
         final SubmitCaseHmctsTemplate expectedTemplate = new SubmitCaseHmctsTemplate();
         final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
 
@@ -98,7 +98,7 @@ class SubmittedCaseEventHandlerTest {
     @Test
     void shouldSendEmailToCafcass() {
         final String expectedEmail = "test@test.com";
-        final CallbackRequest request = callbackRequest(OPEN);
+        final CallbackRequest request = callbackRequest();
         final CafcassLookupConfiguration.Cafcass cafcass =
             new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, expectedEmail);
         final SubmitCaseCafcassTemplate expectedTemplate = new SubmitCaseCafcassTemplate();
@@ -130,7 +130,7 @@ class SubmittedCaseEventHandlerTest {
         @ParameterizedTest
         @EnumSource(value = State.class, mode = EXCLUDE, names = {"OPEN"})
         void shouldNotPayIfCaseStateIsDifferentThanOpen(State state) {
-            final CallbackRequest request = callbackRequest(state);
+            final CallbackRequest request = callbackRequest(state, Map.of("displayAmountToPay", "Yes"));
             final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
@@ -193,7 +193,7 @@ class SubmittedCaseEventHandlerTest {
             "makePayment");
     }
 
-    private static CallbackRequest callbackRequest(State state) {
+    private static CallbackRequest callbackRequest() {
         return callbackRequest(OPEN, emptyMap());
     }
 
