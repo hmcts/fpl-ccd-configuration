@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -55,34 +54,18 @@ public class UploadCMOController {
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         // update judge and hearing labels
+        Object dynamicList = caseData.getPastHearingSelector();
         List<Element<HearingBooking>> hearings = cmoService.getHearingsWithoutCMO(caseData.getHearingDetails());
-        UUID selectedHearing = cmoService.getSelectedHearingId(caseData.getPastHearingSelector());
+        UUID selectedHearing = cmoService.getSelectedHearingId(dynamicList);
         data.putAll(cmoService.getJudgeAndHearingLabels(selectedHearing, hearings));
 
-        reconstructDynamicList(data, hearings, caseData.getPastHearingSelector());
-
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .build();
-    }
-
-    @PostMapping("/validate-extension/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleValidationMidEvent(@RequestBody CallbackRequest request) {
-        Map<String, Object> data = request.getCaseDetails().getData();
-        CaseData caseData = mapper.convertValue(data, CaseData.class);
-
-        List<String> errors = new ArrayList<>();
-        if (!caseData.getUploadedCaseManagementOrder().hasExtension(".pdf")) {
-            errors.add("The file must be a PDF");
+        if (!(dynamicList instanceof DynamicList)) {
+            // reconstruct dynamic list
+            data.put("pastHearingSelector", cmoService.buildDynamicList(hearings, selectedHearing));
         }
 
-        // reconstruct dynamic list
-        List<Element<HearingBooking>> hearings = cmoService.getHearingsWithoutCMO(caseData.getHearingDetails());
-        reconstructDynamicList(data, hearings, caseData.getPastHearingSelector());
-
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
-            .errors(errors)
             .build();
     }
 
@@ -128,17 +111,4 @@ public class UploadCMOController {
         // send notification
     }
 
-    private void reconstructDynamicList(Map<String, Object> data, List<Element<HearingBooking>> hearings,
-                                        Object oldList) {
-        DynamicList pastHearingList;
-
-        if (oldList instanceof DynamicList) {
-            pastHearingList = (DynamicList) oldList;
-        } else {
-            UUID selectedHearing = cmoService.getSelectedHearingId(oldList);
-            pastHearingList = cmoService.buildDynamicList(hearings, selectedHearing);
-        }
-
-        data.put("pastHearingSelector", pastHearingList);
-    }
 }
