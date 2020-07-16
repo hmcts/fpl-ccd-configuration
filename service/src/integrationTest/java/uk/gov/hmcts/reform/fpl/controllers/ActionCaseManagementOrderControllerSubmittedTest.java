@@ -26,6 +26,7 @@ import java.util.UUID;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -111,25 +112,25 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
         verify(notificationClient).sendEmail(
             eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
             eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            any(),
+            anyMap(),
             eq(CASE_ID));
 
         verify(notificationClient).sendEmail(
             eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
             eq(DIGITAL_SERVED_REPRESENTATIVE_ADDRESS),
-            any(),
+            anyMap(),
             eq(CASE_ID));
 
         verify(notificationClient).sendEmail(
             eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
             eq(CAFCASS_EMAIL_ADDRESS),
-            any(),
+            anyMap(),
             eq(CASE_ID));
 
         verify(notificationClient).sendEmail(
             eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
             eq(EMAIL_SERVED_REPRESENTATIVE_ADDRESS),
-            any(),
+            anyMap(),
             eq(CASE_ID));
 
         verify(notificationClient).sendEmail(
@@ -155,7 +156,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
         verify(notificationClient, never()).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
             eq(ADMIN_EMAIL_ADDRESS),
-            any(),
+            anyMap(),
             any());
 
         verify(notificationClient).sendEmail(
