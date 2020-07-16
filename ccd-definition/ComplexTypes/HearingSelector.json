@@ -6,7 +6,7 @@
     "FieldType": "Text",
     "ElementLabel": "placeholder",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"DON NOT SHOW\""
+    "FieldShowCondition": "optionCount=\"DO NOT SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -57,8 +57,9 @@
     "LiveFrom": "01/01/2017",
     "ID": "HearingSelector",
     "ListElementCode": "option0",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Hearing 1",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "HearingSelector0",
+    "ElementLabel": " ",
     "SecurityClassification": "Public",
     "FieldShowCondition": "optionCount=\"1*\" AND option0Hidden!=\"Yes\""
   },
@@ -66,8 +67,9 @@
     "LiveFrom": "01/01/2017",
     "ID": "HearingSelector",
     "ListElementCode": "option1",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Hearing 2",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "HearingSelector1",
+    "ElementLabel": " ",
     "SecurityClassification": "Public",
     "FieldShowCondition": "optionCount=\"12*\" AND option1Hidden!=\"Yes\""
   },
@@ -75,8 +77,9 @@
     "LiveFrom": "01/01/2017",
     "ID": "HearingSelector",
     "ListElementCode": "option2",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Hearing 3",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "HearingSelector2",
+    "ElementLabel": " ",
     "SecurityClassification": "Public",
     "FieldShowCondition": "optionCount=\"123*\" AND option2Hidden!=\"Yes\""
   },
@@ -84,8 +87,9 @@
     "LiveFrom": "01/01/2017",
     "ID": "HearingSelector",
     "ListElementCode": "option3",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Hearing 4",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "HearingSelector3",
+    "ElementLabel": " ",
     "SecurityClassification": "Public",
     "FieldShowCondition": "optionCount=\"1234*\" AND option3Hidden!=\"Yes\""
   },
@@ -93,8 +97,9 @@
     "LiveFrom": "01/01/2017",
     "ID": "HearingSelector",
     "ListElementCode": "option4",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Hearing 5",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "HearingSelector4",
+    "ElementLabel": " ",
     "SecurityClassification": "Public",
     "FieldShowCondition": "optionCount=\"12345*\" AND option4Hidden!=\"Yes\""
   }

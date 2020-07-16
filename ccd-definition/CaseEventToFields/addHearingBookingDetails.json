@@ -43,7 +43,7 @@
     "CaseEventID": "hearingBookingDetails",
     "CaseFieldID": "newHearingSelector",
     "PageFieldDisplayOrder": 2,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "OPTIONAL",
     "PageID": "HearingNotices",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 2,

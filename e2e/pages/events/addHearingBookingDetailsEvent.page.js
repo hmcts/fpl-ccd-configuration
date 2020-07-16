@@ -1,4 +1,4 @@
-const { I } = inject();
+const {I} = inject();
 const judgeAndLegalAdvisor = require('../../fragments/judgeAndLegalAdvisor');
 const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 
@@ -34,10 +34,7 @@ module.exports = {
         giveDetails: `#hearingDetails_${index}_hearingNeedsDetails`,
         venueCustomAddress: `#hearingDetails_${index}_venueCustomAddress_venueCustomAddress`,
       },
-      sendNoticeOfHearing: {
-        yes: `#newHearingSelector_option${index}-Yes`,
-        no: `#newHearingSelector_option${index}-No`,
-      },
+      sendNoticeOfHearing: `#newHearingSelector_option${index}-SELECTED`,
     };
   },
 
@@ -48,7 +45,7 @@ module.exports = {
     I.click(this.fields(elementIndex).hearingBooking.type);
     I.selectOption(this.fields(elementIndex).hearingBooking.venue, hearingDetails.venue);
 
-    if(hearingDetails.venue === 'Other') {
+    if (hearingDetails.venue === 'Other') {
       within(this.fields(elementIndex).hearingBooking.venueCustomAddress, () => {
         postcodeLookup.enterAddressManually(hearingDetails.venueCustomAddress);
       });
@@ -96,9 +93,7 @@ module.exports = {
   sendNoticeOfHearing(sendNoticeOfHearing = 'Yes', index = 0) {
     within('#newHearingSelector_newHearingSelector', () => {
       if (sendNoticeOfHearing == 'Yes') {
-        I.click(this.fields(index).sendNoticeOfHearing.yes);
-      } else {
-        I.click(this.fields(index).sendNoticeOfHearing.no);
+        I.click(this.fields(index).sendNoticeOfHearing);
       }
     });
   },
