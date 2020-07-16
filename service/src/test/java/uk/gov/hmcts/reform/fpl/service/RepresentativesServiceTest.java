@@ -73,7 +73,6 @@ class RepresentativesServiceTest {
 
     @BeforeEach
     private void init() {
-        System.out.println("before");
         when(requestData.authorisation()).thenReturn(authorisation);
     }
 
@@ -81,7 +80,6 @@ class RepresentativesServiceTest {
     private void verifyNoUnexpectedInteractions() {
         verifyNoMoreInteractions(organisationService);
         verifyNoMoreInteractions(caseService);
-        System.out.println("after");
     }
 
     @Test
