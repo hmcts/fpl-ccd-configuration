@@ -77,5 +77,13 @@
     "FieldType": "JudgeAndLegalAdvisor",
     "ElementLabel": "Judge and Justices' Legal Adviser",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "noticeOfHearing",
+    "FieldType": "Document",
+    "ElementLabel": "Notice of hearing",
+    "SecurityClassification": "Public"
   }
 ]

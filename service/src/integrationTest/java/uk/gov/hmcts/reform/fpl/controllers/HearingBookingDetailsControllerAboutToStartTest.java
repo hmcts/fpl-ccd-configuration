@@ -19,6 +19,8 @@ import java.util.Map;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.NEW_HEARING_LABEL;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.NEW_HEARING_SELECTOR;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
@@ -107,6 +109,19 @@ class HearingBookingDetailsControllerAboutToStartTest extends AbstractController
         assertThat(judgeAndLegalAdvisor.getJudgeTitle()).isNull();
         assertThat(judgeAndLegalAdvisor.getJudgeLastName()).isNull();
         assertThat(judgeAndLegalAdvisor.getLegalAdvisorName()).isEqualTo("Joe Bloggs");
+    }
+
+    @Test
+    void shouldResetSendNoticeOfProceedingsFields() {
+        Map<String, Object> data = Map.of(
+            NEW_HEARING_LABEL.getKey(), "Hearing 1: Final hearing on 08 July",
+            NEW_HEARING_SELECTOR.getKey(), "test data");
+
+        CaseDetails caseDetails = caseDetails(data);
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
+
+        assertThat(response.getData()).doesNotContainKey(NEW_HEARING_LABEL.getKey());
+        assertThat(response.getData()).doesNotContainKey(NEW_HEARING_SELECTOR.getKey());
     }
 
     private CaseDetails caseDetails(Map<String, Object> data) {
