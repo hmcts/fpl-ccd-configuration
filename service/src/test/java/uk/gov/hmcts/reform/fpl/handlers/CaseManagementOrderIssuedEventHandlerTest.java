@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.notify.draftcmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
@@ -24,7 +25,7 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
@@ -39,16 +40,14 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.buildCaseDataWithRepresentatives;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.expectedRepresentatives;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.getCMOIssuedCaseLinkNotificationParameters;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.getExpectedCMOIssuedCaseLinkNotificationParametersForRepresentative;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedCaseUrlParameters;
 import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {CaseManagementOrderIssuedEventHandler.class, JacksonAutoConfiguration.class,
-    LookupTestConfig.class, CaseManagementOrderCaseLinkNotificationHandler.class,
-    CaseManagementOrderDocumentLinkNotificationHandler.class, IssuedOrderAdminNotificationHandler.class,
-    HmctsAdminNotificationHandler.class, HearingBookingService.class, FixedTimeConfiguration.class})
+    LookupTestConfig.class, IssuedOrderAdminNotificationHandler.class, HmctsAdminNotificationHandler.class,
+    HearingBookingService.class, FixedTimeConfiguration.class})
 public class CaseManagementOrderIssuedEventHandlerTest {
 
     @MockBean
@@ -72,6 +71,8 @@ public class CaseManagementOrderIssuedEventHandlerTest {
     @Autowired
     private CaseManagementOrderIssuedEventHandler caseManagementOrderIssuedEventHandler;
 
+    private final IssuedCMOTemplate issuedCMOTemplate = new IssuedCMOTemplate();
+
     @Test
     void shouldNotifyHmctsAdminAndLocalAuthorityOfCMOIssued() {
         CallbackRequest callbackRequest = callbackRequest();
@@ -80,9 +81,9 @@ public class CaseManagementOrderIssuedEventHandlerTest {
         given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
             .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
 
-        given(caseManagementOrderEmailContentProvider.buildCMOIssuedCaseLinkNotificationParameters(caseDetails,
-            LOCAL_AUTHORITY_NAME))
-            .willReturn(getCMOIssuedCaseLinkNotificationParameters());
+        given(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(caseDetails,
+            DIGITAL_SERVICE))
+            .willReturn(issuedCMOTemplate);
 
         given(orderIssuedEmailContentProvider.buildParametersWithCaseUrl(
             callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, DOCUMENT_CONTENTS, CMO))
@@ -92,9 +93,9 @@ public class CaseManagementOrderIssuedEventHandlerTest {
             new CaseManagementOrderIssuedEvent(callbackRequest, DOCUMENT_CONTENTS));
 
         verify(notificationService).sendEmail(
-            CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE,
+            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE,
             LOCAL_AUTHORITY_EMAIL_ADDRESS,
-            getCMOIssuedCaseLinkNotificationParameters(),
+            issuedCMOTemplate,
             "12345");
 
         verify(notificationService).sendEmail(
@@ -138,17 +139,17 @@ public class CaseManagementOrderIssuedEventHandlerTest {
             DIGITAL_SERVICE))
             .willReturn(expectedRepresentatives());
 
-        given(caseManagementOrderEmailContentProvider.buildCMOIssuedCaseLinkNotificationParameters(caseDetails,
-            "Jon Snow"))
-            .willReturn(getExpectedCMOIssuedCaseLinkNotificationParametersForRepresentative());
+        given(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(caseDetails,
+            DIGITAL_SERVICE))
+            .willReturn(issuedCMOTemplate);
 
         caseManagementOrderIssuedEventHandler.sendEmailsForIssuedCaseManagementOrder(
             new CaseManagementOrderIssuedEvent(callbackRequest, DOCUMENT_CONTENTS));
 
         verify(notificationService).sendEmail(
-            CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE,
+            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE,
             "abc@example.com",
-            getExpectedCMOIssuedCaseLinkNotificationParametersForRepresentative(),
+            issuedCMOTemplate,
             "12345");
     }
 }
