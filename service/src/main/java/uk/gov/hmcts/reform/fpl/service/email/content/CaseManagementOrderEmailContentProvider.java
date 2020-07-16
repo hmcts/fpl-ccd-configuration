@@ -121,7 +121,7 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
         return url.build();
     }
 
-    private Boolean hasDigitalServingPreference(RepresentativeServingPreferences servingPreference) {
+    private boolean hasDigitalServingPreference(RepresentativeServingPreferences servingPreference) {
         return servingPreference == DIGITAL_SERVICE;
     }
 }
