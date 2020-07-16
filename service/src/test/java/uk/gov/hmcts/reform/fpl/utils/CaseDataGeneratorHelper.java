@@ -5,6 +5,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.DocumentStatus;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
@@ -81,6 +82,7 @@ public class CaseDataGeneratorHelper {
 
     public static HearingBooking createHearingBooking(LocalDateTime startDate, LocalDateTime endDate) {
         return HearingBooking.builder()
+            .type(HearingType.CASE_MANAGEMENT)
             .startDate(startDate)
             .venue("Venue")
             .endDate(endDate)
@@ -88,6 +90,11 @@ public class CaseDataGeneratorHelper {
                 .judgeTitle(HER_HONOUR_JUDGE)
                 .judgeLastName("Law")
                 .legalAdvisorName("Peter Parker")
+                .build())
+            .noticeOfHearing(DocumentReference.builder()
+                .filename("fileName")
+                .binaryUrl("binary_url")
+                .url("www.url.com")
                 .build())
             .build();
     }
