@@ -4,5 +4,11 @@
     "ID": "AuthorityFixedListSharedStorage",
     "ListElementCode": "Swansea",
     "ListElement": "Swansea Local Authority"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedListSharedStorage",
+    "ListElementCode": "Leicestershire",
+    "ListElement": "Leicestershire Local Authority"
   }
 ]
