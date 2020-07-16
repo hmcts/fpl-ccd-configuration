@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForC2;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
@@ -21,6 +22,7 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
 
     private final EmailNotificationHelper emailNotificationHelper;
     private final ObjectMapper mapper;
+    private final HearingBookingService hearingBookingService;
 
     public Map<String, Object> buildC2UploadNotification(final CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
@@ -39,14 +41,22 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
 
         AllocatedJudgeTemplateForC2 allocatedJudgeTemplateForC2 = new AllocatedJudgeTemplateForC2();
         allocatedJudgeTemplateForC2.setCaseUrl(getCaseUrl(caseDetails.getId()));
-        allocatedJudgeTemplateForC2.setCallout(emailNotificationHelper
-            .buildSubjectLineWithHearingBookingDateSuffix(caseData,
-            caseData.getHearingDetails()));
+        allocatedJudgeTemplateForC2.setCallout(setCallout(caseData));
         allocatedJudgeTemplateForC2.setJudgeTitle(caseData.getAllocatedJudge().getJudgeOrMagistrateTitle());
         allocatedJudgeTemplateForC2.setJudgeName(caseData.getAllocatedJudge().getJudgeName());
         allocatedJudgeTemplateForC2.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
 
         return  allocatedJudgeTemplateForC2;
+    }
+
+    // we need to check hasFutureHearing here otherwise an exception will be thrown on getMostUrgentHearingBooking
+    private String setCallout(CaseData caseData) {
+        if(hearingBookingService.hasFutureHearing(caseData.getHearingDetails())) {
+            return emailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix(caseData,
+                hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails()));
+        } else {
+            return emailNotificationHelper.buildSubjectLineWithoutHearingBookingDateSuffix(caseData);
+        }
     }
 
     public Map<String, Object> buildC2UploadPbaPaymentNotTakenNotification(final CaseDetails caseDetails) {

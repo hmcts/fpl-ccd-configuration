@@ -19,6 +19,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Comparator.comparing;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
@@ -117,6 +118,11 @@ public class HearingBookingService {
 
                 return element;
             }).collect(toList());
+    }
+
+    public boolean hasFutureHearing(List<Element<HearingBooking>> hearingBookings) {
+        return isNotEmpty(hearingBookings) && hearingBookings.stream()
+            .anyMatch(hearing -> hearing.getValue().startsAfterToday());
     }
 
     private boolean isPastHearing(Element<HearingBooking> element) {
