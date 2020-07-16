@@ -124,7 +124,7 @@ class RepresentativesServiceTest {
             "Enter a full name for Representative 3",
             "Enter a position in the case for Representative 3",
             "Select how Representative 3 wants to get case information"
-            );
+        );
     }
 
     @Test
