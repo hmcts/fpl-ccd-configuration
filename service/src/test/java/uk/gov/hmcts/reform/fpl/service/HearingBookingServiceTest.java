@@ -266,7 +266,7 @@ class HearingBookingServiceTest {
     @Test
     void shouldReturnTrueWhenFutureHearingExists() {
         List<Element<HearingBooking>> hearingBooking =
-            newArrayList(element(HEARING_IDS[0], createHearingBooking(time.now(),
+            newArrayList(element(HEARING_IDS[0], createHearingBooking(time.now().plusDays(6),
                 time.now().plusDays(6))));
 
         Boolean hearingBookingInFuture = service.hasFutureHearing(hearingBooking);

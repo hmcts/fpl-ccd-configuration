@@ -121,11 +121,7 @@ class EmailNotificationHelperTest {
             .familyManCaseNumber("FamilyManCaseNumber")
             .build();
 
-        HearingBooking hearingBooking = unwrapElements(caseData.getHearingDetails()).get(1);
-
-        System.out.println("It is " + dateInTenMonths);
-        System.out.println("It is 1" + caseData.getHearingDetails().get(0).getValue().getStartDate());
-        System.out.println("It is 1" + formatLocalDateTimeBaseUsingFormat(dateInTenMonths, "d MMM yyyy"));
+        HearingBooking hearingBooking = unwrapElements(caseData.getHearingDetails()).get(2);
 
         String expectedSubjectLine = "Jones, FamilyManCaseNumber, hearing "
             + formatLocalDateTimeBaseUsingFormat(dateInTenMonths, "d MMM yyyy");

@@ -75,7 +75,7 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
     }
 
     private String buildCallout(CaseData caseData) {
-        if(hearingBookingService.hasFutureHearing(caseData.getHearingDetails())) {
+        if (hearingBookingService.hasFutureHearing(caseData.getHearingDetails())) {
             return buildSubjectLineWithHearingBookingDateSuffix(caseData,
                 hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails()));
         } else {

@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 
@@ -16,8 +14,10 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class EmailNotificationHelper {
+
+    private EmailNotificationHelper() {
+    }
 
     public static String buildSubjectLine(final CaseData caseData) {
         final String respondentlastName = getFirstRespondentLastName(caseData.getRespondents1());

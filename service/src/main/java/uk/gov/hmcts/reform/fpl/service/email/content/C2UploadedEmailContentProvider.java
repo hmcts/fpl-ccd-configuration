@@ -51,7 +51,7 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
     }
 
     private String buildCallout(CaseData caseData) {
-        if(hearingBookingService.hasFutureHearing(caseData.getHearingDetails())) {
+        if (hearingBookingService.hasFutureHearing(caseData.getHearingDetails())) {
             return buildSubjectLineWithHearingBookingDateSuffix(caseData,
                 hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails()));
         } else {
