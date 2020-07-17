@@ -125,10 +125,10 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);
   await addHearingBookingDetailsEventPage.enterJudge(hearingDetails[1].judgeAndLegalAdvisor);
   await addHearingBookingDetailsEventPage.enterLegalAdvisor(hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
-  await I.retryUntilExists(() => I.click('Continue'), '#newHearingSelector_newHearingSelector');
-  addHearingBookingDetailsEventPage.sendNoticeOfHearing(hearingDetails[0].sendNoticeOfHearing);
-  addHearingBookingDetailsEventPage.sendNoticeOfHearing(hearingDetails[1].sendNoticeOfHearing, 1);
-  await I.completeEvent('Save and continue');
+  // await I.retryUntilExists(() => I.click('Continue'), '#newHearingSelector_newHearingSelector');
+  // addHearingBookingDetailsEventPage.sendNoticeOfHearing(hearingDetails[0].sendNoticeOfHearing);
+  // addHearingBookingDetailsEventPage.sendNoticeOfHearing(hearingDetails[1].sendNoticeOfHearing, 1);
+  // await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.addHearingBookingDetails);
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
 
@@ -143,7 +143,7 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   I.seeInTab(['Hearing 1', 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], 'Her Honour Judge');
   I.seeInTab(['Hearing 1', 'Judge and Justices\' Legal Adviser', 'Last name'], 'Moley');
   I.seeInTab(['Hearing 1', 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name'], hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
-  I.seeInTab(['Hearing 1', 'Notice of hearing'], `Notice_of_hearing_${dateFormat(submittedAt, 'ddmmmm')}.pdf`);
+  // I.seeInTab(['Hearing 1', 'Notice of hearing'], `Notice_of_hearing_${dateFormat(submittedAt, 'ddmmmm')}.pdf`);
 
   startDate = dateToString(hearingDetails[1].startDate);
   endDate = dateToString(hearingDetails[1].endDate);
