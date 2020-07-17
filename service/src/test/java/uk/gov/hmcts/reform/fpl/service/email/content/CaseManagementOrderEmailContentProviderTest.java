@@ -39,8 +39,6 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
     @Autowired
     private CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
 
-    private static final byte[] APPLICATION_BINARY = TestDataHelper.DOCUMENT_CONTENT;
-
     @Test
     void shouldBuildCMOIssuedCaseLinkNotificationExpectedParameters() {
         Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
@@ -57,7 +55,7 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
 
     @Test
     void shouldBuildCMOIssuedExpectedParametersWithEmptyCaseUrl() {
-        given(documentDownloadService.downloadDocument(anyString())).willReturn(APPLICATION_BINARY);
+        given(documentDownloadService.downloadDocument(anyString())).willReturn(TestDataHelper.DOCUMENT_CONTENT);
 
         IssuedCMOTemplate expectedTemplate = new IssuedCMOTemplate();
 
@@ -66,7 +64,7 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
         expectedTemplate.setDigitalPreference("No");
         expectedTemplate.setHearingDate("Test");
         expectedTemplate.setCaseUrl("");
-        expectedTemplate.setDocumentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
+        expectedTemplate.setDocumentLink(generateAttachedDocumentLink(TestDataHelper.DOCUMENT_CONTENT)
             .map(JSONObject::toMap)
             .orElse(null));
 
@@ -77,7 +75,7 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
 
     @Test
     void shouldBuildCMOIssuedExpectedParametersWithPopulatedCaseUrl() {
-        given(documentDownloadService.downloadDocument(anyString())).willReturn(APPLICATION_BINARY);
+        given(documentDownloadService.downloadDocument(anyString())).willReturn(TestDataHelper.DOCUMENT_CONTENT);
 
         IssuedCMOTemplate expectedTemplate = new IssuedCMOTemplate();
 
@@ -86,7 +84,7 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
         expectedTemplate.setDigitalPreference("Yes");
         expectedTemplate.setCaseUrl("http://fake-url/cases/case-details/" + CASE_REFERENCE);
         expectedTemplate.setHearingDate("Test");
-        expectedTemplate.setDocumentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
+        expectedTemplate.setDocumentLink(generateAttachedDocumentLink(TestDataHelper.DOCUMENT_CONTENT)
             .map(JSONObject::toMap)
             .orElse(null));
 
