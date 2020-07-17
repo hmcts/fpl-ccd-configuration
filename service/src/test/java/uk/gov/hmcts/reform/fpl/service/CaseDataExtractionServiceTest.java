@@ -53,19 +53,19 @@ class CaseDataExtractionServiceTest {
     private CaseDataExtractionService service;
 
     @Test
-    void shouldReturnTheFormattedDateWhenStartAndEndDateAreNotTheSame() {
+    void shouldReturnAnEmptyStringWhenStartAndEndDateAreNotTheSame() {
         hearingBooking = createHearingBookingWithTimesOnDifferentDays();
 
-        Optional<String> hearingDate = service.getHearingDateIfHearingsOnSameDay(hearingBooking);
+        Optional<String> hearingDate = service.getHearingDate(hearingBooking);
 
         assertThat(hearingDate).isEmpty();
     }
 
     @Test
-    void shouldReturnAnEmptyStringWhenStartAndEndDateAreTheSame() {
+    void shouldReturnTheFormattedDateWhenStartAndEndDateAreTheSame() {
         hearingBooking = createHearingBookingWithTimesOnSameDay();
 
-        Optional<String> hearingDate = service.getHearingDateIfHearingsOnSameDay(hearingBooking);
+        Optional<String> hearingDate = service.getHearingDate(hearingBooking);
 
         assertThat(hearingDate.orElse("")).isEqualTo("11 December 2020");
     }

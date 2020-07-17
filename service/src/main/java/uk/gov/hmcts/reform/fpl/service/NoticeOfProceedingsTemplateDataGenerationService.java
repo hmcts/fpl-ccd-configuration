@@ -54,7 +54,7 @@ public class NoticeOfProceedingsTemplateDataGenerationService
                 caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()))
             .legalAdvisorName(JudgeAndLegalAdvisorHelper.getLegalAdvisorName(
                 caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()))
-            .hearingDate(caseDataExtractionService.getHearingDateIfHearingsOnSameDay(
+            .hearingDate(caseDataExtractionService.getHearingDate(
                 prioritisedHearingBooking)
                 .orElse(""))
             .hearingVenue(hearingVenueLookUpService.buildHearingVenue(hearingVenue))
