@@ -44,10 +44,6 @@ public class CaseManagementOrderIssuedEventHandler {
         sendToCafcass(eventData);
         sendToRepresentatives(eventData, DIGITAL_SERVICE);
         sendToRepresentatives(eventData, EMAIL);
-
-        // TODO
-        // Refactor issuedOrderAdminNotificationHandler to use Java object for template so we can avoid passing byte
-        // to method
         issuedOrderAdminNotificationHandler.sendToAdmin(eventData, event.getDocumentContents(), CMO);
     }
 
