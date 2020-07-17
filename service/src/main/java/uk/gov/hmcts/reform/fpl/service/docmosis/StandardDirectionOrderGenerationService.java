@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class StandardDirectionOrderGenerationService extends
     DocmosisTemplateDataGeneration<DocmosisStandardDirectionOrder> {
+    private final HearingBookingService hearingBookingService;
     private final OrdersLookupService ordersLookupService;
     private final CaseDataExtractionService dataService;
 
@@ -34,7 +36,7 @@ public class StandardDirectionOrderGenerationService extends
     public DocmosisStandardDirectionOrder getTemplateData(CaseData caseData) {
         Order standardDirectionOrder = caseData.getStandardDirectionOrder();
 
-        HearingBooking firstHearing = caseData.getFirstHearing()
+        HearingBooking firstHearing = hearingBookingService.getFirstHearing(caseData.getHearingDetails())
             .orElse(null);
 
         DocmosisStandardDirectionOrder.DocmosisStandardDirectionOrderBuilder<?,?> orderBuilder =

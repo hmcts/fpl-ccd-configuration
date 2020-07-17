@@ -1,4 +1,4 @@
-const {I} = inject();
+const { I } = inject();
 const judgeAndLegalAdvisor = require('../../fragments/judgeAndLegalAdvisor');
 const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 
@@ -34,7 +34,6 @@ module.exports = {
         giveDetails: `#hearingDetails_${index}_hearingNeedsDetails`,
         venueCustomAddress: `#hearingDetails_${index}_venueCustomAddress_venueCustomAddress`,
       },
-      sendNoticeOfHearing: `#newHearingSelector_option${index}-SELECTED`,
     };
   },
 
@@ -45,7 +44,7 @@ module.exports = {
     I.click(this.fields(elementIndex).hearingBooking.type);
     I.selectOption(this.fields(elementIndex).hearingBooking.venue, hearingDetails.venue);
 
-    if (hearingDetails.venue === 'Other') {
+    if(hearingDetails.venue === 'Other') {
       within(this.fields(elementIndex).hearingBooking.venueCustomAddress, () => {
         postcodeLookup.enterAddressManually(hearingDetails.venueCustomAddress);
       });
@@ -88,14 +87,6 @@ module.exports = {
     const elementIndex = await this.getActiveElementIndex();
     const complexTypeAppender = `hearingDetails_${elementIndex}_`;
     judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName, complexTypeAppender);
-  },
-
-  sendNoticeOfHearing(sendNoticeOfHearing = 'Yes', index = 0) {
-    within('#newHearingSelector_newHearingSelector', () => {
-      if (sendNoticeOfHearing == 'Yes') {
-        I.click(this.fields(index).sendNoticeOfHearing);
-      }
-    });
   },
 
   async getActiveElementIndex() {
