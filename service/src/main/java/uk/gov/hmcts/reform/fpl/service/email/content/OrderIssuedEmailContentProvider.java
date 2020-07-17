@@ -85,9 +85,8 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
         if (hearingBookingService.hasFutureHearing(caseData.getHearingDetails())) {
             return "^" + buildSubjectLineWithHearingBookingDateSuffix(caseData,
                 hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails()));
-        } else {
-            return "^" + buildSubjectLineWithoutHearingBookingDateSuffix(caseData);
         }
+        return "^" + buildSubjectLineWithoutHearingBookingDateSuffix(caseData);
     }
 
     private String getTypeOfOrder(CaseData caseData, IssuedOrderType issuedOrderType) {

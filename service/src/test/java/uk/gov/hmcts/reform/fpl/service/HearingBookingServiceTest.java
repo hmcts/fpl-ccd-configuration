@@ -274,6 +274,17 @@ class HearingBookingServiceTest {
         assertThat(hearingBookingInFuture).isTrue();
     }
 
+    @Test
+    void shouldReturnFalseWhenNoFutureHearingExists() {
+        List<Element<HearingBooking>> hearingBooking =
+            newArrayList(element(HEARING_IDS[0], createHearingBooking(time.now().minusDays(6),
+                time.now().plusDays(6))));
+
+        Boolean hearingBookingInFuture = service.hasFutureHearing(hearingBooking);
+
+        assertThat(hearingBookingInFuture).isFalse();
+    }
+
     private Judge buildAllocatedJudge() {
         return Judge.builder()
             .judgeTitle(HER_HONOUR_JUDGE)

@@ -78,9 +78,8 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
         if (hearingBookingService.hasFutureHearing(caseData.getHearingDetails())) {
             return buildSubjectLineWithHearingBookingDateSuffix(caseData,
                 hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails()));
-        } else {
-            return buildSubjectLineWithoutHearingBookingDateSuffix(caseData);
         }
+        return buildSubjectLineWithoutHearingBookingDateSuffix(caseData);
     }
 
     public AllocatedJudgeTemplateForCMO buildCMOReadyForJudgeReviewNotificationParameters(

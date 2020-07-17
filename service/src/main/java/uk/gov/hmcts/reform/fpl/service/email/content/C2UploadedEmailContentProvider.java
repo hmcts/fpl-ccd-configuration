@@ -54,9 +54,8 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
         if (hearingBookingService.hasFutureHearing(caseData.getHearingDetails())) {
             return buildSubjectLineWithHearingBookingDateSuffix(caseData,
                 hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails()));
-        } else {
-            return buildSubjectLineWithoutHearingBookingDateSuffix(caseData);
         }
+        return buildSubjectLineWithoutHearingBookingDateSuffix(caseData);
     }
 
     public Map<String, Object> buildC2UploadPbaPaymentNotTakenNotification(final CaseDetails caseDetails) {
