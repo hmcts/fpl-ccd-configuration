@@ -56,7 +56,7 @@ class CaseDataExtractionServiceTest {
     void shouldReturnAnEmptyStringWhenStartAndEndDateAreNotTheSame() {
         hearingBooking = createHearingBookingWithTimesOnDifferentDays();
 
-        Optional<String> hearingDate = service.getHearingDate(hearingBooking);
+        Optional<String> hearingDate = service.getHearingDateIfHearingsOnSameDay(hearingBooking);
 
         assertThat(hearingDate).isEmpty();
     }
@@ -65,7 +65,7 @@ class CaseDataExtractionServiceTest {
     void shouldReturnTheFormattedDateWhenStartAndEndDateAreTheSame() {
         hearingBooking = createHearingBookingWithTimesOnSameDay();
 
-        Optional<String> hearingDate = service.getHearingDate(hearingBooking);
+        Optional<String> hearingDate = service.getHearingDateIfHearingsOnSameDay(hearingBooking);
 
         assertThat(hearingDate.orElse("")).isEqualTo("11 December 2020");
     }

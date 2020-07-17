@@ -33,7 +33,7 @@ public class NoticeOfHearingGenerationService {
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .courtName(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName())
             .children(dataService.getChildrenDetails(caseData.getChildren1()))
-            .hearingDate(dataService.getHearingDate(hearingBooking).orElse(""))
+            .hearingDate(dataService.getHearingDateIfHearingsOnSameDay(hearingBooking).orElse(""))
             .hearingTime(dataService.getHearingTime(hearingBooking))
             .hearingType(getHearingType(hearingBooking))
             .hearingVenue(hearingVenueLookUpService.buildHearingVenue(venue))

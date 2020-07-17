@@ -69,7 +69,7 @@ public class CaseDataExtractionService {
         return hearingTime;
     }
 
-    public Optional<String> getHearingDate(HearingBooking hearingBooking) {
+    public Optional<String> getHearingDateIfHearingsOnSameDay(HearingBooking hearingBooking) {
         String hearingDate = null;
 
         // If they are on same day, then return formatted date
@@ -177,7 +177,7 @@ public class CaseDataExtractionService {
             getJudgeAndLegalAdvisor(hearing.getJudgeAndLegalAdvisor());
 
         return DocmosisHearingBooking.builder()
-            .hearingDate(getHearingDate(hearing).orElse(""))
+            .hearingDate(getHearingDateIfHearingsOnSameDay(hearing).orElse(""))
             .hearingVenue(hearingVenueLookUpService.buildHearingVenue(hearingVenue))
             .preHearingAttendance(extractPrehearingAttendance(hearing))
             .hearingTime(getHearingTime(hearing))
