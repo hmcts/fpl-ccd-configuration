@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
@@ -30,19 +31,18 @@ public class EmailNotificationHelper {
     public String buildSubjectLineWithHearingBookingDateSuffix(final CaseData caseData,
                                                                HearingBooking hearingBooking) {
         String subjectLine = buildSubjectLine(caseData);
-        String hearingDateText = "";
-
-        buildHearingDateText(hearingBooking);
-
-        return Stream.of(subjectLine, hearingDateText)
-            .filter(StringUtils::isNotBlank)
-            .collect(joining(","));
+        String hearingDateText = buildHearingDateText(hearingBooking);
+        
+        return buildCommonSubjectLine(subjectLine, hearingDateText);
     }
 
     public String buildSubjectLineWithoutHearingBookingDateSuffix(final CaseData caseData) {
         String subjectLine = buildSubjectLine(caseData);
-        String hearingDateText = "";
 
+        return buildCommonSubjectLine(subjectLine, EMPTY);
+    }
+
+    private String buildCommonSubjectLine(String subjectLine, String hearingDateText) {
         return Stream.of(subjectLine, hearingDateText)
             .filter(StringUtils::isNotBlank)
             .collect(joining(","));
