@@ -22,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookingsFromInitialDate;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 
 @ExtendWith(SpringExtension.class)
@@ -120,10 +121,16 @@ class EmailNotificationHelperTest {
             .familyManCaseNumber("FamilyManCaseNumber")
             .build();
 
+        HearingBooking hearingBooking = unwrapElements(caseData.getHearingDetails()).get(1);
+
+        System.out.println("It is " + dateInTenMonths);
+        System.out.println("It is 1" + caseData.getHearingDetails().get(0).getValue().getStartDate());
+        System.out.println("It is 1" + formatLocalDateTimeBaseUsingFormat(dateInTenMonths, "d MMM yyyy"));
+
         String expectedSubjectLine = "Jones, FamilyManCaseNumber, hearing "
             + formatLocalDateTimeBaseUsingFormat(dateInTenMonths, "d MMM yyyy");
         String returnedSubjectLine = helper.buildSubjectLineWithHearingBookingDateSuffix(caseData,
-            caseData.getHearingDetails());
+            hearingBooking);
         assertThat(returnedSubjectLine).isEqualTo(expectedSubjectLine);
     }
 
@@ -136,8 +143,7 @@ class EmailNotificationHelperTest {
             .build();
 
         String expectedSubjectLine = "Jones, FamilyManCaseNumber";
-        String returnedSubjectLine = helper.buildSubjectLineWithHearingBookingDateSuffix(caseData,
-            caseData.getHearingDetails());
+        String returnedSubjectLine = helper.buildSubjectLineWithoutHearingBookingDateSuffix(caseData);
         assertThat(returnedSubjectLine).isEqualTo(expectedSubjectLine);
     }
 
@@ -152,7 +158,7 @@ class EmailNotificationHelperTest {
             .build();
 
         String expected = "Jones, FamilyManCaseNumber";
-        String actual = helper.buildSubjectLineWithHearingBookingDateSuffix(caseData, caseData.getHearingDetails());
+        String actual = helper.buildSubjectLineWithoutHearingBookingDateSuffix(caseData);
 
         assertThat(actual).isEqualTo(expected);
     }

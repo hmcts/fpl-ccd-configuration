@@ -14,13 +14,15 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithoutHearingBookingDateSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
@@ -29,9 +31,9 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvider {
     private final HmctsCourtLookupConfiguration config;
-    private final EmailNotificationHelper emailNotificationHelper;
     private final ObjectMapper mapper;
     private final GeneratedOrderService generatedOrderService;
+    private final HearingBookingService hearingBookingService;
 
     public Map<String, Object> buildParametersWithoutCaseUrl(final CaseDetails caseDetails,
                                                              final String localAuthorityCode,
@@ -80,9 +82,12 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
     }
 
     private String buildCallout(CaseData caseData) {
-        return "^" + emailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix(
-            caseData,
-            caseData.getHearingDetails());
+        if(hearingBookingService.hasFutureHearing(caseData.getHearingDetails())) {
+            return "^" + buildSubjectLineWithHearingBookingDateSuffix(caseData,
+                hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails()));
+        } else {
+            return "^" + buildSubjectLineWithoutHearingBookingDateSuffix(caseData);
+        }
     }
 
     private String getTypeOfOrder(CaseData caseData, IssuedOrderType issuedOrderType) {

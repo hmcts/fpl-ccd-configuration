@@ -10,12 +10,14 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForCMO;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithoutHearingBookingDateSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
@@ -24,8 +26,8 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseManagementOrderEmailContentProvider extends AbstractEmailContentProvider {
 
-    private final EmailNotificationHelper emailNotificationHelper;
     private final ObjectMapper mapper;
+    private final HearingBookingService hearingBookingService;
 
     private static final String CASE_URL = "caseUrl";
     private static final String SUBJECT_LINE = "subjectLineWithHearingDate";
@@ -64,14 +66,21 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         return ImmutableMap.<String, Object>builder()
-            .put(SUBJECT_LINE, emailNotificationHelper
-                .buildSubjectLineWithHearingBookingDateSuffix(caseData,
-                    caseData.getHearingDetails()))
+            .put(SUBJECT_LINE, buildCallout(caseData))
             .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
             .put("digitalPreference", servingPreference == DIGITAL_SERVICE ? "Yes" : "No")
             .put(CASE_URL, servingPreference == DIGITAL_SERVICE ? getCaseUrl(caseDetails.getId()) : "")
             .putAll(linkToAttachedDocument(documentContents))
             .build();
+    }
+
+    private String buildCallout(CaseData caseData) {
+        if(hearingBookingService.hasFutureHearing(caseData.getHearingDetails())) {
+            return buildSubjectLineWithHearingBookingDateSuffix(caseData,
+                hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails()));
+        } else {
+            return buildSubjectLineWithoutHearingBookingDateSuffix(caseData);
+        }
     }
 
     public AllocatedJudgeTemplateForCMO buildCMOReadyForJudgeReviewNotificationParameters(
@@ -97,9 +106,7 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         return ImmutableMap.of(
-            SUBJECT_LINE, emailNotificationHelper
-                .buildSubjectLineWithHearingBookingDateSuffix(caseData,
-                    caseData.getHearingDetails()),
+            SUBJECT_LINE, buildCallout(caseData),
             "reference", String.valueOf(caseDetails.getId()),
             CASE_URL, getCaseUrl(caseDetails.getId())
         );

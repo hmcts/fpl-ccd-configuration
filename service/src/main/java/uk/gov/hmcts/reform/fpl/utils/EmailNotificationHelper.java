@@ -19,7 +19,7 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class EmailNotificationHelper {
 
-    public String buildSubjectLine(final CaseData caseData) {
+    public static String buildSubjectLine(final CaseData caseData) {
         final String respondentlastName = getFirstRespondentLastName(caseData.getRespondents1());
         final String familyManCaseNumber = defaultIfNull(caseData.getFamilyManCaseNumber(), "");
 
@@ -28,21 +28,21 @@ public class EmailNotificationHelper {
             .collect(joining(", "));
     }
 
-    public String buildSubjectLineWithHearingBookingDateSuffix(final CaseData caseData,
+    public static String buildSubjectLineWithHearingBookingDateSuffix(final CaseData caseData,
                                                                HearingBooking hearingBooking) {
         String subjectLine = buildSubjectLine(caseData);
         String hearingDateText = buildHearingDateText(hearingBooking);
-        
+
         return buildCommonSubjectLine(subjectLine, hearingDateText);
     }
 
-    public String buildSubjectLineWithoutHearingBookingDateSuffix(final CaseData caseData) {
+    public static String buildSubjectLineWithoutHearingBookingDateSuffix(final CaseData caseData) {
         String subjectLine = buildSubjectLine(caseData);
 
         return buildCommonSubjectLine(subjectLine, EMPTY);
     }
 
-    private String buildCommonSubjectLine(String subjectLine, String hearingDateText) {
+    private static String buildCommonSubjectLine(String subjectLine, String hearingDateText) {
         return Stream.of(subjectLine, hearingDateText)
             .filter(StringUtils::isNotBlank)
             .collect(joining(","));
@@ -57,7 +57,7 @@ public class EmailNotificationHelper {
         return isBlank(tab) ? caseUrl : String.format("%s#%s", caseUrl, tab);
     }
 
-    private String buildHearingDateText(HearingBooking hearingBooking) {
+    private static String buildHearingDateText(HearingBooking hearingBooking) {
         return " hearing " + formatLocalDateToString(hearingBooking
             .getStartDate().toLocalDate(), FormatStyle.MEDIUM);
     }

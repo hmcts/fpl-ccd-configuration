@@ -10,23 +10,24 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForC2;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithoutHearingBookingDateSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider {
 
-    private final EmailNotificationHelper emailNotificationHelper;
     private final ObjectMapper mapper;
     private final HearingBookingService hearingBookingService;
 
     public Map<String, Object> buildC2UploadNotification(final CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        final String subjectLine = emailNotificationHelper.buildSubjectLine(caseData);
+        final String subjectLine = buildSubjectLine(caseData);
 
         return ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters(caseDetails))
@@ -41,7 +42,7 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
 
         AllocatedJudgeTemplateForC2 allocatedJudgeTemplateForC2 = new AllocatedJudgeTemplateForC2();
         allocatedJudgeTemplateForC2.setCaseUrl(getCaseUrl(caseDetails.getId()));
-        allocatedJudgeTemplateForC2.setCallout(setCallout(caseData));
+        allocatedJudgeTemplateForC2.setCallout(buildCallout(caseData));
         allocatedJudgeTemplateForC2.setJudgeTitle(caseData.getAllocatedJudge().getJudgeOrMagistrateTitle());
         allocatedJudgeTemplateForC2.setJudgeName(caseData.getAllocatedJudge().getJudgeName());
         allocatedJudgeTemplateForC2.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
@@ -49,13 +50,12 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
         return  allocatedJudgeTemplateForC2;
     }
 
-    // we need to check hasFutureHearing here otherwise an exception will be thrown on getMostUrgentHearingBooking
-    private String setCallout(CaseData caseData) {
+    private String buildCallout(CaseData caseData) {
         if(hearingBookingService.hasFutureHearing(caseData.getHearingDetails())) {
-            return emailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix(caseData,
+            return buildSubjectLineWithHearingBookingDateSuffix(caseData,
                 hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails()));
         } else {
-            return emailNotificationHelper.buildSubjectLineWithoutHearingBookingDateSuffix(caseData);
+            return buildSubjectLineWithoutHearingBookingDateSuffix(caseData);
         }
     }
 
