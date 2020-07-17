@@ -72,7 +72,8 @@ public class CaseDataExtractionService {
     public Optional<String> getHearingDateIfHearingsOnSameDay(HearingBooking hearingBooking) {
         String hearingDate = null;
 
-        // If they aren't on the same date return nothing
+        // If they are on same day, then return formatted date
+        // and If they aren't on the same day, then return nothing
         if (hearingBooking.hasDatesOnSameDay()) {
             hearingDate = formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG);
         }
