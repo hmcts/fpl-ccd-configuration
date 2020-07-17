@@ -6,14 +6,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.model.notify.draftcmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
+import java.util.List;
+
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
@@ -25,7 +31,7 @@ public class CaseManagementOrderIssuedEventHandler {
     private final ObjectMapper mapper;
     private final InboxLookupService inboxLookupService;
     private final NotificationService notificationService;
-    private final RepresentativeNotificationService representativeNotificationService;
+    private final RepresentativeService representativeService;
     private final CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final IssuedOrderAdminNotificationHandler issuedOrderAdminNotificationHandler;
@@ -36,7 +42,8 @@ public class CaseManagementOrderIssuedEventHandler {
 
         sendToLocalAuthority(eventData);
         sendToCafcass(eventData);
-        sendToRepresentatives(eventData);
+        sendToRepresentatives(eventData, DIGITAL_SERVICE);
+        sendToRepresentatives(eventData, EMAIL);
 
         // TODO
         // Refactor issuedOrderAdminNotificationHandler to use Java object for template so we can avoid passing byte
@@ -66,20 +73,20 @@ public class CaseManagementOrderIssuedEventHandler {
             eventData.getReference());
     }
 
-    private void sendToRepresentatives(final EventData eventData) {
-        IssuedCMOTemplate digitalServiceRepresentativeNotificationParameters =
-            caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(
-                eventData.getCaseDetails(), DIGITAL_SERVICE);
+    private void sendToRepresentatives(final EventData eventData, RepresentativeServingPreferences servingPreference) {
+        CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
+        List<Representative> representatives = representativeService.getRepresentativesByServedPreference(
+            caseData.getRepresentatives(), servingPreference);
 
-        IssuedCMOTemplate emailRepresentativeNotificationParameters =
-            caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(
-                eventData.getCaseDetails(), EMAIL);
+        representatives.stream()
+            .filter(representative -> isNotBlank(representative.getEmail()))
+            .forEach(representative -> {
+                IssuedCMOTemplate representativeNotificationParameters =
+                    caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(
+                        eventData.getCaseDetails(), servingPreference);
 
-        representativeNotificationService.sendToRepresentativesByServedPreference(DIGITAL_SERVICE,
-            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, digitalServiceRepresentativeNotificationParameters.toMap(mapper),
-            eventData);
-
-        representativeNotificationService.sendToRepresentativesByServedPreference(EMAIL,
-            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, emailRepresentativeNotificationParameters.toMap(mapper), eventData);
+                notificationService.sendEmail(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, representative.getEmail(),
+                    representativeNotificationParameters, eventData.getReference());
+            });
     }
 }

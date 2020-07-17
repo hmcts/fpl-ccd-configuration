@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import static org.mockito.ArgumentMatchers.eq;
@@ -30,7 +28,6 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICAT
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.DOCUMENT_CONTENTS;
@@ -49,7 +46,7 @@ import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {CaseManagementOrderIssuedEventHandler.class, JacksonAutoConfiguration.class,
     LookupTestConfig.class, IssuedOrderAdminNotificationHandler.class, HmctsAdminNotificationHandler.class,
-    RepresentativeService.class, RepresentativeNotificationService.class, FixedTimeConfiguration.class})
+    RepresentativeService.class,  FixedTimeConfiguration.class})
 public class CaseManagementOrderIssuedEventHandlerTest {
 
     @MockBean
@@ -85,10 +82,6 @@ public class CaseManagementOrderIssuedEventHandlerTest {
 
         given(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(caseDetails,
             DIGITAL_SERVICE))
-            .willReturn(issuedCMOTemplate);
-
-        given(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(caseDetails,
-            EMAIL))
             .willReturn(issuedCMOTemplate);
 
         given(orderIssuedEmailContentProvider.buildParametersWithCaseUrl(
@@ -147,10 +140,6 @@ public class CaseManagementOrderIssuedEventHandlerTest {
 
         given(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(caseDetails,
             DIGITAL_SERVICE))
-            .willReturn(issuedCMOTemplate);
-
-        given(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(caseDetails,
-            EMAIL))
             .willReturn(issuedCMOTemplate);
 
         caseManagementOrderIssuedEventHandler.sendEmailsForIssuedCaseManagementOrder(
