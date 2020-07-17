@@ -29,7 +29,6 @@ module.exports = [
       judgeLastName: 'Reed',
       legalAdvisorName: 'Rupert Robert',
     },
-    sendNoticeOfHearing: 'Yes',
   },
   {
     caseManagement: 'Case management',
@@ -72,6 +71,5 @@ module.exports = [
       judgeLastName: 'Law',
       legalAdvisorName: 'Peter Parker',
     },
-    sendNoticeOfHearing: 'No',
   },
 ];

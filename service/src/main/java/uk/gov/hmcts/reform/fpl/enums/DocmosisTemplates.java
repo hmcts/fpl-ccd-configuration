@@ -1,19 +1,15 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
 public enum DocmosisTemplates {
-    C110A("FL-PLW-APP-ENG-00095.doc", "c110a_application_%s"),
-    C6("FL-PLW-HNO-ENG-00092.doc", "Notice_of_proceedings_c6"),
-    C6A("FL-PLW-HNO-ENG-00093.doc", "Notice_of_proceedings_c6a"),
-    NOTICE_OF_HEARING("FL-PLW-HNO-ENG-00094.doc", "Notice_of_hearing"),
-    SDO("FL-PLW-STD-ENG-00099.doc", "standard-directions-order"),
+    C110A("FL-PLW-APP-ENG-00095.doc", "c110a_application_%s.pdf"),
+    C6("FL-PLW-HNO-ENG-00092.doc", "Notice_of_proceedings_c6.pdf"),
+    C6A("FL-PLW-HNO-ENG-00093.doc", "Notice_of_proceedings_c6a.pdf"),
+    SDO("FL-PLW-STD-ENG-00099.doc", "standard-directions-order.pdf"),
     //fallback title 'order.pdf' - file name is generated in GeneratedOrderService based on type of order
-    ORDER("FL-PLW-GOR-ENG-00218.doc", "order"),
-    EPO("FL-PLW-GOR-ENG-00228.doc", "emergency_protection_order"),
-    CMO("FL-PLW-GOR-ENG-00225.doc", "case_management_order"),
-    COVER_DOCS("FL-PLW-LET-ENG-00232.doc", "cover_documents");
+    ORDER("FL-PLW-GOR-ENG-00218.doc", "order.pdf"),
+    EPO("FL-PLW-GOR-ENG-00228.doc", "emergency_protection_order.pdf"),
+    CMO("FL-PLW-GOR-ENG-00225.doc", "case_management_order.pdf"),
+    COVER_DOCS("FL-PLW-LET-ENG-00232.doc", "cover_documents.pdf");
 
     private final String template;
     private final String documentTitle;
@@ -28,10 +24,6 @@ public enum DocmosisTemplates {
     }
 
     public String getDocumentTitle() {
-        return documentTitle + ".pdf";
-    }
-
-    public String getDocumentTitle(LocalDate date) {
-        return String.format("%s_%s.%s", documentTitle, date.format(DateTimeFormatter.ofPattern("ddMMMM")), "pdf");
+        return documentTitle;
     }
 }
