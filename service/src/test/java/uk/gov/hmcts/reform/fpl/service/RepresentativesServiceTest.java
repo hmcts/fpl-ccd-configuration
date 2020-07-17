@@ -114,13 +114,17 @@ class RepresentativesServiceTest {
 
         List<String> validationErrors = representativesService.validateRepresentatives(caseData);
 
-        assertThat(validationErrors).doesNotContain(
-            "Respondent 1 represented by Representative 1 doesn't exist."
-                + " Choose a respondent who is associated with this case",
-            "Person represented by Representative 2 doesn't exist."
-                + " Choose a person who is associated with this case",
-            "Other person 1 represented by Representative 3 doesn't exist."
-                + " Choose a person who is associated with this case");
+        assertThat(validationErrors).containsExactly(
+            "Enter a full name for Representative 1",
+            "Enter a position in the case for Representative 1",
+            "Select how Representative 1 wants to get case information",
+            "Enter a full name for Representative 2",
+            "Enter a position in the case for Representative 2",
+            "Select how Representative 2 wants to get case information",
+            "Enter a full name for Representative 3",
+            "Enter a position in the case for Representative 3",
+            "Select how Representative 3 wants to get case information"
+        );
     }
 
     @Test
