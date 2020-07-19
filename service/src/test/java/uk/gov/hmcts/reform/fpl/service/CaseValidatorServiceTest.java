@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.enums.Section;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
@@ -35,7 +36,10 @@ import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
+import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -261,6 +265,16 @@ class CaseValidatorServiceTest {
             "In the applicant section:",
             "• Enter a valid email address"
         );
+    }
+
+    @Test
+    void shouldReturnExpectedInvalidSections() {
+        CaseData caseData = partialCaseData
+            .applicants(applicants(false))
+            .build();
+
+        Set<Section> errors = caseValidatorService.getInvalidSections(caseData);
+        assertThat(errors).contains(Section.APPLICANT, Section.ALLOCATION_PROPOSAL, Section.GROUNDS);
     }
 
     private CaseData emptyMandatoryCaseData() {

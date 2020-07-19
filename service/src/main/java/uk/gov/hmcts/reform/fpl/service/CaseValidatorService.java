@@ -36,16 +36,7 @@ public class CaseValidatorService {
             .collect(toList());
     }
 
-    public List<String> validateCaseDetails3(CaseData caseData, Class<?>...groups) {
-        Set<ConstraintViolation<CaseData>> violations = validator.validate(caseData, groups);
-
-        return Stream.of(Section.values())
-            .flatMap(section -> Stream.of(groupViolationsBySection3(violations, section)))
-            .flatMap(Collection::stream)
-            .collect(toList());
-    }
-
-    public Set<Section> validateCaseDetails2(CaseData caseData, Class<?>...groups) {
+    public Set<Section> getInvalidSections(CaseData caseData, Class<?>...groups) {
         Set<ConstraintViolation<CaseData>> violations = validator.validate(caseData, groups);
 
         Map<Section, List<ConstraintViolation<CaseData>>> m= violations.stream()
@@ -64,22 +55,6 @@ public class CaseValidatorService {
 
         if (!errorList.isEmpty()) {
             errorList.add(0, String.format("In the %s section:", section.getSectionHeaderName()));
-        }
-
-        return errorList;
-    }
-
-    private List<String> groupViolationsBySection3(Set<ConstraintViolation<CaseData>> constraintViolations,
-                                                  Section section) {
-
-        List<String> errorList = constraintViolations.stream()
-            .filter(error -> isAssignableError(error.getPropertyPath().toString(), section))
-            .map(error -> String.format("+ %s", error.getMessage()))
-            .distinct()
-            .collect(Collectors.toList());
-
-        if (!errorList.isEmpty()) {
-            errorList.add(0, String.format("1. In the %s section:", section.getSectionHeaderName()));
         }
 
         return errorList;

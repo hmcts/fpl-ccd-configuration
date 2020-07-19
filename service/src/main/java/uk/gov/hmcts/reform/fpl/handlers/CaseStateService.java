@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -9,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.FplEvent;
 import uk.gov.hmcts.reform.fpl.controllers.guards.EventGuardProvider;
 import uk.gov.hmcts.reform.fpl.enums.Roles;
 import uk.gov.hmcts.reform.fpl.enums.Section;
+import uk.gov.hmcts.reform.fpl.enums.SectionTitle;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseValidatorService;
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
@@ -25,26 +28,19 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.FplEvent.SUBMIT_APPLICATION;
 
-
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseStateService {
 
     private static final String LINE_SEPARATOR = "\n\n";
     private static final String HORIZONTAL_RULE = "\n___";
 
-    @Autowired
-    AllEvents eventsService;
+    private final CaseValidatorService validationService;
+    private final ObjectMapper objectMapper;
+    private final AllEvents eventsService;
+    private final EventGuardProvider eventGuardProvider;
 
-    @Autowired
-    CaseValidatorService validationService;
-
-    @Autowired
-    ObjectMapper objectMapper;
-
-    @Autowired
-    EventGuardProvider eventGuardProvider;
-
-    String getStatusForLA(CaseDetails caseDetails) {
+    public String getStatusForLA(CaseDetails caseDetails) {
 
         List<String> messages = new ArrayList<>();
 
@@ -55,21 +51,28 @@ public class CaseStateService {
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (caseDetails.getState().equals("Open")) {
-
-            Set<Section> sectionWithErrors = validationService.validateCaseDetails2(caseData);
-            List<String> validationErrors = validationService.validateCaseDetails3(caseData);
-
             messages.add("## Your application");
             messages.add("<div class='width-50'>");
 
+            List<String> validationErrors = validationService.validateCaseDetails(caseData);
+            Set<Section> sectionWithErrors = validationService.getInvalidSections(caseData);
+
             Map<Section, Boolean> completedBySection = new TreeMap<>();
-            Stream.of(Section.values()).forEach(v -> completedBySection.put(v, true));
+            Set<String> sectionHeaders = ConcurrentHashMap.newKeySet();
+            Stream.of(Section.values())
+                .forEach(v -> {
+                    completedBySection.put(v, true);
+                    sectionHeaders.add(v.getSectionHeaderName());
+                });
 
             sectionWithErrors.forEach(f -> completedBySection.put(f, false));
 
-            completedBySection.forEach((k, v) -> {
-                messages.add(buildLink(caseDetails.getId(), k.getEvent(), v));
-                messages.add(HORIZONTAL_RULE);
+            sectionHeaders.forEach( header -> {
+                messages.add("## " + header);
+                completedBySection.forEach((k, v) -> {
+                    messages.add(buildLink(caseDetails.getId(), k.getEvent(), v));
+                    messages.add(HORIZONTAL_RULE);
+                });
             });
 
             messages.add("</div>");
