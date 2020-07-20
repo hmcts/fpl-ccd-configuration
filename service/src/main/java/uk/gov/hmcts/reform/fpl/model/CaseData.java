@@ -263,34 +263,13 @@ public class CaseData {
         return orderCollection != null ? orderCollection : new ArrayList<>();
     }
 
-    /**
-     * General object for CMO. Can be either in a draft state or action state. Ignored by jackson so that custom
-     * getters and setters can be used.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
     @JsonIgnore
-    @Deprecated
     private CaseManagementOrder caseManagementOrder;
 
-    /**
-     * Gets a merged cmo.
-     *
-     * @see #prepareCaseManagementOrder()
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated
     public CaseManagementOrder getCaseManagementOrder() {
         return prepareCaseManagementOrder();
     }
 
-    /**
-     * Merges the current populated CMO with the individual components of the CMO.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated
     private CaseManagementOrder prepareCaseManagementOrder() {
         //existing order
         Optional<CaseManagementOrder> oldOrder = ofNullable(caseManagementOrder);
@@ -336,12 +315,6 @@ public class CaseData {
         return preparedOrder;
     }
 
-    /**
-     * Populates the CCD field caseManagementOrder when the CMO is for the LA.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated
     @JsonGetter("caseManagementOrder")
     private CaseManagementOrder getCaseManagementOrderForLocalAuthority() {
         if (caseManagementOrder != null && caseManagementOrder.getStatus() != SEND_TO_JUDGE) {
@@ -350,12 +323,6 @@ public class CaseData {
         return null;
     }
 
-    /**
-     * Populates {@link #caseManagementOrder} with the CMO for the LA.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated
     @JsonSetter("caseManagementOrder")
     private void setCaseManagementOrderForLocalAuthority(CaseManagementOrder order) {
         if (order != null) {
@@ -363,12 +330,6 @@ public class CaseData {
         }
     }
 
-    /**
-     * Populates the CCD field cmoToAction when the CMO is to be sent to judge.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated
     @JsonGetter("cmoToAction")
     private CaseManagementOrder getCaseManagementOrderForJudiciary() {
         if (caseManagementOrder != null && caseManagementOrder.getStatus() == SEND_TO_JUDGE) {
@@ -377,12 +338,6 @@ public class CaseData {
         return null;
     }
 
-    /**
-     * Populates {@link #caseManagementOrder} with the CMO for the judge.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated
     @JsonSetter("cmoToAction")
     private void setCaseManagementOrderForJudiciary(CaseManagementOrder order) {
         if (order != null) {
@@ -390,66 +345,22 @@ public class CaseData {
         }
     }
 
-    /**
-     * Action decided by judge for CMO.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated
     private final OrderAction orderAction;
-    /**
-     * Date list for CMO.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated
+
     private final DynamicList cmoHearingDateList;
-    /**
-     * Schedule for CMO.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated
+
     private final Schedule schedule;
-    /**
-     * Recitals for CMO.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated
+
     private final List<Element<Recital>> recitals;
-    /**
-     * Document object for other other parties to view.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated
+
     private final DocumentReference sharedDraftCMODocument;
 
-    /**
-     * All CMOs that have been served.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated
     private final List<Element<CaseManagementOrder>> servedCaseManagementOrders;
 
-    /**
-     * Get all served CMOs returning an empty list if null.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated
     public List<Element<CaseManagementOrder>> getServedCaseManagementOrders() {
         return defaultIfNull(servedCaseManagementOrders, new ArrayList<>());
     }
 
-    /**
-     * List of dates for the next hearing after the CMO.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated
     private final DynamicList nextHearingDateList;
 
     private final Others others;

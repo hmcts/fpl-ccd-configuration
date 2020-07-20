@@ -43,15 +43,8 @@ import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.defaultString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
-/**
- * Service to generate docmosis objects that can be sent to
- * {@link uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates#CMO the CMO template}.
- *
- * @deprecated to be removed with {@link CaseManagementOrder}
- */
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-@Deprecated
 public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGeneration<DocmosisCaseManagementOrder> {
     private static final String HEARING_EMPTY_PLACEHOLDER = "This will appear on the issued CMO";
     private static final String DEFAULT = EMPTY;

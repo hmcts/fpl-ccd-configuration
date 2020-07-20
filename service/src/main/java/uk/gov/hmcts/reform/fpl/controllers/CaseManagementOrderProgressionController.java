@@ -12,16 +12,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderProgressionService;
 
-/**
- * Controller for the end point managing the CMO flow between Judge and LA.
- *
- * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
- */
 @Api
 @RestController
 @RequestMapping("/callback/cmo-progression")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-@Deprecated
 public class CaseManagementOrderProgressionController {
     private final CaseManagementOrderProgressionService progressionService;
 
