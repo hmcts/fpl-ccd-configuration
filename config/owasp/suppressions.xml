@@ -7,9 +7,20 @@
         instance. In order to be impacted, an honest application must provide a seed and make the resulting random
         material available to an attacker for inspection. Waiting for an update of org.springframework.boot to address
         this issue.
+        This one seems to be false positive targeting old spring security 5.0.5
       ]]>
     </notes>
     <gav regex="true">^org\.springframework\.security:.*$</gav>
     <cve>CVE-2018-1258</cve>
+  </suppress>
+  <suppress>
+    <gav regex="true">^org\.apache\.tomcat\.embed:tomcat-embed-websocket:.*$</gav>
+    <cve>CVE-2020-13934</cve>
+    <cve>CVE-2020-13935</cve>
+  </suppress>
+  <suppress>
+    <gav regex="true">^org\.apache\.tomcat\.embed:tomcat-embed-core:.*$</gav>
+    <cve>CVE-2020-13934</cve>
+    <cve>CVE-2020-13935</cve>
   </suppress>
 </suppressions>
