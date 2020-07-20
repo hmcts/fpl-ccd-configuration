@@ -39,12 +39,22 @@ public class CaseManagementOrderService {
     private final CaseManagementOrderGenerationService templateDataGenerationService;
     private final DocumentService documentService;
 
+    /**
+     * Method for old CMO flow.
+     *
+     * @deprecated remove once FPLA-1915 goes live
+     */
     @Deprecated(since = "FPLA-1915")
     public Document getOrderDocument(CaseData caseData) {
         DocmosisCaseManagementOrder templateData = templateDataGenerationService.getTemplateData(caseData);
         return documentService.getDocumentFromDocmosisOrderTemplate(templateData, CMO);
     }
 
+    /**
+     * Method for old CMO flow.
+     *
+     * @deprecated remove once FPLA-1915 goes live
+     */
     @Deprecated(since = "FPLA-1915")
     public void removeTransientObjectsFromCaseData(Map<String, Object> caseData) {
         final Set<String> keysToRemove = Set.of(HEARING_DATE_LIST.getKey(), SCHEDULE.getKey(), RECITALS.getKey());
@@ -52,12 +62,22 @@ public class CaseManagementOrderService {
         keysToRemove.forEach(caseData::remove);
     }
 
+    /**
+     * Method for old CMO flow.
+     *
+     * @deprecated remove once FPLA-1915 goes live
+     */
     @Deprecated(since = "FPLA-1915")
     public void prepareCustomDirections(CaseDetails caseDetails, CaseManagementOrder caseManagementOrder) {
         ofNullable(caseManagementOrder).ifPresentOrElse(
             order -> addDirections(caseDetails, order.getDirections()), () -> removeDirections(caseDetails));
     }
 
+    /**
+     * Method for old CMO flow.
+     *
+     * @deprecated remove once FPLA-1915 goes live
+     */
     @Deprecated(since = "FPLA-1915")
     public DynamicList getHearingDateDynamicList(CaseData caseData, CaseManagementOrder order) {
         List<DynamicListElement> values = getDateElements(caseData, false);
@@ -72,6 +92,11 @@ public class CaseManagementOrderService {
             .build();
     }
 
+    /**
+     * Method for old CMO flow.
+     *
+     * @deprecated remove once FPLA-1915 goes live
+     */
     @Deprecated(since = "FPLA-1915")
     public DynamicList getNextHearingDateDynamicList(CaseData caseData) {
         return DynamicList.builder()
@@ -80,17 +105,32 @@ public class CaseManagementOrderService {
             .build();
     }
 
+    /**
+     * Method for old CMO flow.
+     *
+     * @deprecated remove once FPLA-1915 goes live
+     */
     @Deprecated(since = "FPLA-1915")
     private void addDirections(CaseDetails caseDetails, List<Element<Direction>> directions) {
         getAssigneeToDirectionMapping(directions)
             .forEach((key, value) -> caseDetails.getData().put(key.toCaseManagementOrderDirectionField(), value));
     }
 
+    /**
+     * Method for old CMO flow.
+     *
+     * @deprecated remove once FPLA-1915 goes live
+     */
     @Deprecated(since = "FPLA-1915")
     private void removeDirections(CaseDetails caseDetails) {
         Stream.of(Directions.class.getDeclaredFields()).forEach(field -> caseDetails.getData().remove(field.getName()));
     }
 
+    /**
+     * Method for old CMO flow.
+     *
+     * @deprecated remove once FPLA-1915 goes live
+     */
     @Deprecated(since = "FPLA-1915")
     private List<DynamicListElement> getDateElements(CaseData caseData, boolean excludePastDates) {
         var sealedCmoHearingDateIds = getSealedCmoHearingDateIds(caseData);
@@ -105,6 +145,11 @@ public class CaseManagementOrderService {
         return hearingDetailsStream.map(this::buildDynamicListElement).collect(toList());
     }
 
+    /**
+     * Method for old CMO flow.
+     *
+     * @deprecated remove once FPLA-1915 goes live
+     */
     @Deprecated(since = "FPLA-1915")
     private Set<UUID> getSealedCmoHearingDateIds(CaseData caseData) {
         return caseData.getServedCaseManagementOrders()
@@ -113,6 +158,11 @@ public class CaseManagementOrderService {
             .collect(toSet());
     }
 
+    /**
+     * Method for old CMO flow.
+     *
+     * @deprecated remove once FPLA-1915 goes live
+     */
     @Deprecated(since = "FPLA-1915")
     private DynamicListElement buildDynamicListElement(Element<HearingBooking> element) {
         return DynamicListElement.builder()
@@ -121,6 +171,11 @@ public class CaseManagementOrderService {
             .build();
     }
 
+    /**
+     * Method for old CMO flow.
+     *
+     * @deprecated remove once FPLA-1915 goes live
+     */
     @Deprecated(since = "FPLA-1915")
     private DynamicListElement getPreselectedDate(List<DynamicListElement> list, UUID id) {
         return list.stream()

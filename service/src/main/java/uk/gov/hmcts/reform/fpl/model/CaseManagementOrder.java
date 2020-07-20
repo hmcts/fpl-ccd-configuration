@@ -25,8 +25,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
 /**
  * Old model of case management order.
  *
- * @deprecated replaced with temporary solution of
- * {@link uk.gov.hmcts.reform.fpl.model.order.UploadedCaseManagementOrder UploadedCaseManagementOrder}.
+ * @deprecated replaced with temporary solution of FPLA-1915
  */
 @Getter
 @Deprecated(since = "FPLA-1915")

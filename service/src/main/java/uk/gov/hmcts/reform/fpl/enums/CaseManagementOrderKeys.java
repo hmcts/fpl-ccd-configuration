@@ -2,6 +2,11 @@ package uk.gov.hmcts.reform.fpl.enums;
 
 import lombok.Getter;
 
+/**
+ * CCD field names for CMO.
+ *
+ * @deprecated remove once FPLA-1915 goes live
+ */
 @Deprecated(since = "FPLA-1915")
 public enum CaseManagementOrderKeys {
     SERVED_CASE_MANAGEMENT_ORDERS("servedCaseManagementOrders"),

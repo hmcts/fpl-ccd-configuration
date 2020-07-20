@@ -2,6 +2,11 @@ package uk.gov.hmcts.reform.fpl.enums;
 
 import lombok.Getter;
 
+/**
+ * Errors for the Action CMO event.
+ *
+ * @deprecated remove once FPLA-1915 goes live
+ */
 @Getter
 @Deprecated(since = "FPLA-1915")
 public enum CaseManagementOrderErrorMessages {

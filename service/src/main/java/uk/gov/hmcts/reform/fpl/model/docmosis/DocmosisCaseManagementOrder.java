@@ -7,6 +7,11 @@ import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 
 import java.util.List;
 
+/**
+ * Docmosis model for the CMO order.
+ *
+ * @deprecated remove once FPLA-1915 goes live
+ */
 @Getter
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
