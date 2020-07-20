@@ -487,4 +487,6 @@ public class CaseData {
 
     private final DocumentReference submittedForm;
 
+    private final List<Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder>> draftUploadedCMOs;
+    private final DynamicList cmoToReviewList;
 }

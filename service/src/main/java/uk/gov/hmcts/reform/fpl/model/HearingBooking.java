@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.HasEndDateAfterStartDate;
@@ -14,12 +15,16 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import javax.validation.constraints.Future;
 
+import static java.lang.String.format;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+
 @Data
 @Builder
 @AllArgsConstructor
 @HasEndDateAfterStartDate(groups = HearingBookingDetailsGroup.class)
 public class HearingBooking {
-    private final String type;
+    private final HearingType type;
     private final String typeDetails;
     private final String venue;
     private final Address venueCustomAddress;
@@ -39,5 +44,10 @@ public class HearingBooking {
 
     public boolean startsAfterToday() {
         return startDate.isAfter(ZonedDateTime.now(ZoneId.of("Europe/London")).toLocalDateTime());
+    }
+
+    public String toLabel(String dateFormat) {
+        String label = OTHER == type ? typeDetails : type.getLabel();
+        return format("%s hearing, %s", label, formatLocalDateTimeBaseUsingFormat(startDate, dateFormat));
     }
 }

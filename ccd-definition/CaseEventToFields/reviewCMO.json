@@ -3,12 +3,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "reviewCMO",
-    "CaseFieldID": "reviewCMODecision",
+    "CaseFieldID": "cmoToReviewList",
     "DisplayContext": "MANDATORY",
     "PageID": "SelectCMO",
     "PageLabel": " ",
     "PageDisplayOrder": 1,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "PageShowCondition": "cmoToReviewList!=\"\""
   },
   {
     "LiveFrom": "01/01/2017",

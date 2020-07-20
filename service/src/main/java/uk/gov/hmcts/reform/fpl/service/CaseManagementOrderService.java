@@ -32,12 +32,21 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.CMO;
 import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMapping;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseManagementOrderService {
     private final CaseManagementOrderGenerationService templateDataGenerationService;
     private final DocumentService documentService;
+
+    public DynamicList buildDynamicList(List<Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder>> cmos) {
+        return buildDynamicList(cmos, null);
+    }
+
+    public DynamicList buildDynamicList(List<Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder>> cmos, UUID selected) {
+        return asDynamicList(cmos, selected, uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder::getHearing);
+    }
 
     public Document getOrderDocument(CaseData caseData) {
         DocmosisCaseManagementOrder templateData = templateDataGenerationService.getTemplateData(caseData);
