@@ -883,7 +883,21 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "additionalInformationSubHeadingLabel",
+    "CaseFieldID": "additionalInformationGroundsSubHeadingLabel",
+    "UserRole": "[LASOLICITOR]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "additionalInformationPartiesSubHeadingLabel",
+    "UserRole": "[LASOLICITOR]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "additionalInformationCourtRequirementsSubHeadingLabel",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "R"
   },

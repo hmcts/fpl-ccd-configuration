@@ -1671,7 +1671,25 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "additionalInformationSubHeadingLabel",
+    "ID": "additionalInformationGroundsSubHeadingLabel",
+    "FieldType": "Label",
+    "Label": "### Additional information",
+    "SecurityClassification": "Public",
+    "Comment": "Sub heading in view applications tab"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "additionalInformationPartiesSubHeadingLabel",
+    "FieldType": "Label",
+    "Label": "### Additional information",
+    "SecurityClassification": "Public",
+    "Comment": "Sub heading in view applications tab"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "additionalInformationCourtRequirementsSubHeadingLabel",
     "FieldType": "Label",
     "Label": "### Additional information",
     "SecurityClassification": "Public",
