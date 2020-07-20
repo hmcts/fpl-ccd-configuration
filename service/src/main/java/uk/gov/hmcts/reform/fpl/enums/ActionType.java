@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
  * @deprecated to be removed, will be using {@link CMOStatus} hopefully in rework
  */
 @Deprecated(since = "FPLA-1915")
+@SuppressWarnings("java:S1133") // Remove once deprecations dealt with
 public enum ActionType {
     SEND_TO_ALL_PARTIES,
     JUDGE_REQUESTED_CHANGE,

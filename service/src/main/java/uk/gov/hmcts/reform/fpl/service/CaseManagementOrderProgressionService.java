@@ -33,6 +33,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.DRAFT_CASE_MANAGEMENT_ORDER;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Deprecated(since = "FPLA-1915")
+@SuppressWarnings("java:S1133") // Remove once deprecations dealt with
 public class CaseManagementOrderProgressionService {
     //TODO: better CCD ids for the below:
     // sharedDraftCMODocument -> sharedCaseManagementOrderDocument

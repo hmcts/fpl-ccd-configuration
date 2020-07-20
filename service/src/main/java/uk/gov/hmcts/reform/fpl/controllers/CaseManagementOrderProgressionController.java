@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderProgressionService;
 @RequestMapping("/callback/cmo-progression")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Deprecated(since = "FPLA-1915")
+@SuppressWarnings("java:S1133") // Remove once deprecations dealt with
 public class CaseManagementOrderProgressionController {
     private final CaseManagementOrderProgressionService progressionService;
 

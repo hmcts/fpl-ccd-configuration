@@ -15,6 +15,7 @@ import java.util.UUID;
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Deprecated(since = "FPLA-1915")
+@SuppressWarnings("java:S1133") // Remove once deprecations dealt with
 public class NextHearing {
     private final UUID id;
     private final String date;

@@ -9,6 +9,7 @@ import lombok.Getter;
  */
 @Getter
 @Deprecated(since = "FPLA-1915")
+@SuppressWarnings("java:S1133") // Remove once deprecations dealt with
 public enum CaseManagementOrderErrorMessages {
     HEARING_NOT_COMPLETED("You can only send this order to parties after the hearing. If the hearing date "
         + "has changed, it needs to be updated.");

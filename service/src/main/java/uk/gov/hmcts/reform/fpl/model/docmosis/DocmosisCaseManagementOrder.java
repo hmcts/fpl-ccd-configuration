@@ -16,6 +16,7 @@ import java.util.List;
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @Deprecated(since = "FPLA-1915")
+@SuppressWarnings("java:S1133") // Remove once deprecations dealt with
 public class DocmosisCaseManagementOrder extends DocmosisOrder {
     private final List<DocmosisRepresentative> representatives;
     private final boolean scheduleProvided;

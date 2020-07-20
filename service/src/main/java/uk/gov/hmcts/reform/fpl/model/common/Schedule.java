@@ -11,6 +11,7 @@ import lombok.Data;
 @Data
 @Builder(toBuilder = true)
 @Deprecated(since = "FPLA-1915")
+@SuppressWarnings("java:S1133") // Remove once deprecations dealt with
 public class Schedule {
     private final String includeSchedule;
     private final String allocation;

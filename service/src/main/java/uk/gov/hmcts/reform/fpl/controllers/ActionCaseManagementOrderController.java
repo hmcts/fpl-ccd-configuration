@@ -48,6 +48,7 @@ import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDo
 @RequestMapping("/callback/action-cmo")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Deprecated(since = "FPLA-1915")
+@SuppressWarnings("java:S1133") // Remove once deprecations dealt with
 public class ActionCaseManagementOrderController {
     private final CaseManagementOrderService caseManagementOrderService;
     private final ObjectMapper mapper;

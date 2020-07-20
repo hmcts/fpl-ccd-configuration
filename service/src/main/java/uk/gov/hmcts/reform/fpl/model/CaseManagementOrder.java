@@ -29,6 +29,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
  */
 @Getter
 @Deprecated(since = "FPLA-1915")
+@SuppressWarnings("java:S1133") // Remove once deprecations dealt with
 public class CaseManagementOrder extends OrderForHearing implements IssuableOrder {
     private final UUID id;
     private final Schedule schedule;
