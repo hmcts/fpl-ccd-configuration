@@ -64,7 +64,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "multiHearingsWithCMOs",
     "Label": "Hearings with CMOs already being reviewed",
-    "FieldType": "Text",
+    "FieldType": "TextArea",
     "SecurityClassification": "Public"
   },
   {
@@ -72,7 +72,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "singleHearingsWithCMOs",
     "Label": "Hearings with CMOs already being reviewed",
-    "FieldType": "Text",
+    "FieldType": "TextArea",
     "SecurityClassification": "Public"
   },
   {
