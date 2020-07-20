@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.enums;
 
 import lombok.Getter;
 
+@Deprecated
 public enum CaseManagementOrderKeys {
     SERVED_CASE_MANAGEMENT_ORDERS("servedCaseManagementOrders"),
     CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY("caseManagementOrder"),

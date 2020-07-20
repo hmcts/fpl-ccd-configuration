@@ -39,11 +39,13 @@ public class CaseManagementOrderService {
     private final CaseManagementOrderGenerationService templateDataGenerationService;
     private final DocumentService documentService;
 
+    @Deprecated
     public Document getOrderDocument(CaseData caseData) {
         DocmosisCaseManagementOrder templateData = templateDataGenerationService.getTemplateData(caseData);
         return documentService.getDocumentFromDocmosisOrderTemplate(templateData, CMO);
     }
 
+    @Deprecated
     public void removeTransientObjectsFromCaseData(Map<String, Object> caseData) {
         final Set<String> keysToRemove = Set.of(HEARING_DATE_LIST.getKey(), SCHEDULE.getKey(), RECITALS.getKey());
 

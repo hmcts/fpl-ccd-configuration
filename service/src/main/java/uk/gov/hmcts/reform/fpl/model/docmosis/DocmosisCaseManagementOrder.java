@@ -10,6 +10,7 @@ import java.util.List;
 @Getter
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
+@Deprecated
 public class DocmosisCaseManagementOrder extends DocmosisOrder {
     private final List<DocmosisRepresentative> representatives;
     private final boolean scheduleProvided;
