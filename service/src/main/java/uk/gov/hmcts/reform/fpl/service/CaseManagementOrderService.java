@@ -53,7 +53,7 @@ public class CaseManagementOrderService {
     private static final String MULTI = "MULTI";
     private static final String NONE = "NONE";
     public static final String[] TRANSIENT_FIELDS = {
-        "uploadedCaseManagementOrder", "pastHearingSelector", "cmoJudgeInfo", "cmoHearingInfo", "numHearings",
+        "uploadedCaseManagementOrder", "pastHearingList", "cmoJudgeInfo", "cmoHearingInfo", "numHearings",
         "singleHearingsWithCMOs", "multiHearingsWithCMOs", "showHearingsTextArea"
     };
 
@@ -82,7 +82,7 @@ public class CaseManagementOrderService {
                 numHearings = MULTI;
                 textAreaKey = "multiHearingsWithCMOs";
                 showTextArea = MULTI;
-                data.put("pastHearingSelector", buildDynamicList(pastHearings));
+                data.put("pastHearingList", buildDynamicList(pastHearings));
         }
 
         String textAreaContent = buildHearingsWithCMOsText(unsealedOrders, hearings);

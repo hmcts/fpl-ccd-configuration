@@ -55,14 +55,14 @@ public class UploadCMOController {
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         // update judge and hearing labels
-        Object dynamicList = caseData.getPastHearingSelector();
+        Object dynamicList = caseData.getPastHearingList();
         List<Element<HearingBooking>> hearings = cmoService.getHearingsWithoutCMO(caseData.getPastHearings());
         UUID selectedHearing = cmoService.getSelectedHearingId(dynamicList, hearings);
         data.putAll(cmoService.getJudgeAndHearingDetails(selectedHearing, hearings));
 
         if (!(dynamicList instanceof DynamicList)) {
             // reconstruct dynamic list
-            data.put("pastHearingSelector", cmoService.buildDynamicList(hearings, selectedHearing));
+            data.put("pastHearingList", cmoService.buildDynamicList(hearings, selectedHearing));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -79,7 +79,7 @@ public class UploadCMOController {
         List<Element<HearingBooking>> hearingsWithoutCMO = cmoService.getHearingsWithoutCMO(caseData.getPastHearings());
         if (hearingsWithoutCMO.size() != 0) {
             List<Element<HearingBooking>> hearings = caseData.getHearingDetails();
-            UUID selectedHearingId = cmoService.getSelectedHearingId(caseData.getPastHearingSelector(),
+            UUID selectedHearingId = cmoService.getSelectedHearingId(caseData.getPastHearingList(),
                 hearingsWithoutCMO);
             HearingBooking hearing = cmoService.getSelectedHearing(selectedHearingId, hearingsWithoutCMO);
 

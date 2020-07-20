@@ -496,7 +496,7 @@ public class CaseData {
 
     private final DocumentReference uploadedCaseManagementOrder;
     private final List<Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder>> draftUploadedCMOs;
-    private final Object pastHearingSelector; // Could be dynamic list or string
+    private final Object pastHearingList; // Could be dynamic list or string
 
     public List<Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder>> getDraftUploadedCMOs() {
         return defaultIfNull(draftUploadedCMOs, new ArrayList<>());

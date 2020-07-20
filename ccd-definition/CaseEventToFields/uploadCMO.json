@@ -18,7 +18,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadCMO",
-    "CaseFieldID": "pastHearingSelector",
+    "CaseFieldID": "pastHearingList",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
     "PageID": 1,
@@ -37,7 +37,7 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "FieldShowCondition": "pastHearingSelector=\"DO_NOT_SHOW\"",
+    "FieldShowCondition": "pastHearingList=\"DO_NOT_SHOW\"",
     "PageShowCondition": "numHearings!=\"NONE\""
   },
   {
@@ -51,7 +51,7 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "FieldShowCondition": "pastHearingSelector=\"DO NOT SHOW\""
+    "FieldShowCondition": "pastHearingList=\"DO NOT SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
