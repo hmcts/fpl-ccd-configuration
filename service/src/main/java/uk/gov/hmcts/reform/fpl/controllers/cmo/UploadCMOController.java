@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
@@ -24,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.from;
+import static uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService.TRANSIENT_FIELDS;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -41,23 +42,23 @@ public class UploadCMOController {
         Map<String, Object> data = request.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        data.putAll(cmoService.getInitialPageData(caseData.getPastHearings()));
+        data.putAll(cmoService.getInitialPageData(caseData.getPastHearings(), caseData.getDraftUploadedCMOs()));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
             .build();
     }
 
-    @PostMapping("/update-labels/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleLabelUpdateMidEvent(@RequestBody CallbackRequest request) {
+    @PostMapping("/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleLabelMidEvent(@RequestBody CallbackRequest request) {
         Map<String, Object> data = request.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         // update judge and hearing labels
         Object dynamicList = caseData.getPastHearingSelector();
-        List<Element<HearingBooking>> hearings = cmoService.getHearingsWithoutCMO(caseData.getHearingDetails());
-        UUID selectedHearing = cmoService.getSelectedHearingId(dynamicList);
-        data.putAll(cmoService.getJudgeAndHearingLabels(selectedHearing, hearings));
+        List<Element<HearingBooking>> hearings = cmoService.getHearingsWithoutCMO(caseData.getPastHearings());
+        UUID selectedHearing = cmoService.getSelectedHearingId(dynamicList, hearings);
+        data.putAll(cmoService.getJudgeAndHearingDetails(selectedHearing, hearings));
 
         if (!(dynamicList instanceof DynamicList)) {
             // reconstruct dynamic list
@@ -75,29 +76,27 @@ public class UploadCMOController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        List<Element<HearingBooking>> hearings = cmoService.getHearingsWithoutCMO(caseData.getHearingDetails());
-        if (hearings.size() != 0) {
-            Object pastHearingSelector = caseData.getPastHearingSelector();
-            DocumentReference uploadedCMO = caseData.getUploadedCaseManagementOrder();
-            List<Element<CaseManagementOrder>> draftCMOs = caseData.getDraftUploadedCMOs();
+        List<Element<HearingBooking>> hearingsWithoutCMO = cmoService.getHearingsWithoutCMO(caseData.getPastHearings());
+        if (hearingsWithoutCMO.size() != 0) {
+            List<Element<HearingBooking>> hearings = caseData.getHearingDetails();
+            UUID selectedHearingId = cmoService.getSelectedHearingId(caseData.getPastHearingSelector(),
+                hearingsWithoutCMO);
+            HearingBooking hearing = cmoService.getSelectedHearing(selectedHearingId, hearingsWithoutCMO);
 
-            // QUESTION: 10/07/2020 Should these statements all be part of the one method in the service
-            UUID selectedHearingId = cmoService.getSelectedHearingId(pastHearingSelector);
-            HearingBooking hearing = cmoService.getSelectedHearing(selectedHearingId, hearings);
-            CaseManagementOrder draftCMO = CaseManagementOrder.createDraft(uploadedCMO,
-                hearing,
-                time.now().toLocalDate());
-            Element<CaseManagementOrder> element = element(draftCMO);
+            Element<CaseManagementOrder> element = element(from(caseData.getUploadedCaseManagementOrder(),
+                hearing, time.now().toLocalDate()));
+
             cmoService.mapToHearing(selectedHearingId, hearings, element);
-            draftCMOs.add(element);
 
+            List<Element<CaseManagementOrder>> draftCMOs = caseData.getDraftUploadedCMOs();
+            draftCMOs.add(element);
 
             // update case data
             data.put("draftUploadedCMOs", draftCMOs);
             data.put("hearingDetails", hearings);
         }
         // remove transient fields
-        removeTemporaryFields(caseDetails, CaseManagementOrderService.TRANSIENT_FIELDS);
+        removeTemporaryFields(caseDetails, TRANSIENT_FIELDS);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -106,12 +105,12 @@ public class UploadCMOController {
 
     @PostMapping("/submitted")
     public void handelSubmitted(@RequestBody CallbackRequest request) {
-        CaseDetails caseDetailsBefore = request.getCaseDetailsBefore();
-        Map<String, Object> dataBefore = caseDetailsBefore.getData();
-        CaseData caseDataBefore = mapper.convertValue(dataBefore, CaseData.class);
+        CaseData caseDataBefore = mapper.convertValue(request.getCaseDetailsBefore().getData(), CaseData.class);
+        CaseData caseData = mapper.convertValue(request.getCaseDetails().getData(), CaseData.class);
 
-        if (cmoService.getHearingsWithoutCMO(caseDataBefore.getPastHearings()).size() != 0) {
+        if (caseData.getDraftUploadedCMOs().size() > caseDataBefore.getDraftUploadedCMOs().size()) {
             // send notification
+            System.out.println("SEND NOTIFICATION");
         }
     }
 

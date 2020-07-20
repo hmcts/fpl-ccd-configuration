@@ -3,15 +3,16 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadCMO",
-    "CaseFieldID": "numHearings",
+    "CaseFieldID": "multiHearingsWithCMOs",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-cmo/update-labels/mid-event",
-    "PageShowCondition": "numHearings=\"MULTI\""
+    "FieldShowCondition": "showHearingsTextArea=\"MULTI\"",
+    "PageShowCondition": "numHearings=\"MULTI\"",
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-cmo/mid-event"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -29,22 +30,48 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadCMO",
-    "CaseFieldID": "cmoHearingInfo",
+    "CaseFieldID": "numHearings",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": 2,
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "FieldShowCondition": "pastHearingSelector=\"DO NOT SHOW\"",
-    "PageShowCondition": "numHearings!=\"\""
+    "FieldShowCondition": "pastHearingSelector=\"DO_NOT_SHOW\"",
+    "PageShowCondition": "numHearings!=\"NONE\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadCMO",
-    "CaseFieldID": "cmoHearingInfoLabel",
+    "CaseFieldID": "showHearingsSingleTextArea",
     "PageFieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "PageID": 2,
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "N",
+    "FieldShowCondition": "pastHearingSelector=\"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "uploadCMO",
+    "CaseFieldID": "singleHearingsWithCMOs",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "READONLY",
+    "PageID": 2,
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "N",
+    "FieldShowCondition": "showHearingsTextArea=\"SINGLE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "uploadCMO",
+    "CaseFieldID": "cmoHearingInfo",
+    "PageFieldDisplayOrder": 4,
     "DisplayContext": "READONLY",
     "PageID": 2,
     "PageDisplayOrder": 2,
@@ -56,7 +83,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadCMO",
     "CaseFieldID": "uploadedCaseManagementOrder",
-    "PageFieldDisplayOrder": 3,
+    "PageFieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY",
     "PageID": 2,
     "PageDisplayOrder": 2,
@@ -68,7 +95,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadCMO",
     "CaseFieldID": "cmoJudgeInfo",
-    "PageFieldDisplayOrder": 4,
+    "PageFieldDisplayOrder": 6,
     "DisplayContext": "READONLY",
     "PageID": 2,
     "PageDisplayOrder": 2,
@@ -86,6 +113,6 @@
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "PageShowCondition": "numHearings=\"\""
+    "PageShowCondition": "numHearings=\"NONE\""
   }
 ]
