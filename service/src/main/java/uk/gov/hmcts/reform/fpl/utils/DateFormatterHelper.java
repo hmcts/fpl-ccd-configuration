@@ -13,6 +13,7 @@ public class DateFormatterHelper {
     public static final String DATE = "d MMMM yyyy";
     public static final String DATE_SHORT_MONTH = "d MMM yyyy";
     public static final String DATE_WITH_ORDINAL_SUFFIX = "h:mma 'on the' d'%s' MMMM y";
+    public static final String DATE_MONTH = "ddMMMM";
 
     private DateFormatterHelper() {
         // NO-OP

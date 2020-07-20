@@ -18,7 +18,12 @@ import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.NEW_HEARING_LABEL;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.NEW_HEARING_SELECTOR;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -93,6 +98,47 @@ class HearingBookingDetailsControllerMidEventTest extends AbstractControllerTest
         assertThat(callbackResponse.getErrors()).containsOnlyOnce(ERROR_MESSAGE);
     }
 
+    @Test
+    void shouldSetNewHearingsLabelAndSelectorWhenNewHearingsHaveBeenAdded() {
+        LocalDateTime date = now();
+        UUID id = UUID.randomUUID();
+
+        List<Element<HearingBooking>> oldHearingList = List.of(
+            createHearingBookingElement(id, createHearing(date, date.plusDays(1))));
+
+        List<Element<HearingBooking>> newHearingList = List.of(
+            createHearingBookingElement(id, createHearing(date, date.plusDays(1))),
+            createHearingBookingElement(UUID.randomUUID(), createHearing(date, date.plusDays(1))),
+            createHearingBookingElement(UUID.randomUUID(), createHearing(date.plusDays(1), date.plusDays(2))));
+
+        CallbackRequest callbackRequest = callbackRequestWithEditedBooking(newHearingList, oldHearingList);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(callbackRequest);
+
+        assertThat(callbackResponse.getData().get(NEW_HEARING_LABEL.getKey()))
+            .isEqualTo(String.format("Hearing 2: Final hearing %s\nHearing 3: Final hearing %s\n",
+                formatLocalDateTimeBaseUsingFormat(date, DATE),
+                formatLocalDateTimeBaseUsingFormat(date.plusDays(1), DATE)));
+
+        Map<String, Object> expectedSerializedSelector = Map.of(
+            "optionCount", "123", "option0Hidden", "Yes");
+
+        assertThat(callbackResponse.getData().get(NEW_HEARING_SELECTOR.getKey())).isEqualTo(expectedSerializedSelector);
+    }
+
+    @Test
+    void shouldResetNewHearingsLabelAndSelectorWhenNoNewHearingsHaveBeenAdded() {
+        LocalDateTime date = now().plusDays(5);
+        UUID hearingId = randomUUID();
+
+        List<Element<HearingBooking>> newHearingBooking = listBookingWithStartDate(hearingId, date.plusDays(3));
+        List<Element<HearingBooking>> oldHearingBooking = listBookingWithStartDate(hearingId, date);
+
+        CallbackRequest request = callbackRequestWithEditedBooking(newHearingBooking, oldHearingBooking);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(request);
+
+        assertThat(callbackResponse.getData().get(NEW_HEARING_LABEL.getKey())).isEqualTo("");
+    }
+
     private CallbackRequest callbackRequestWithEditedBooking(List<Element<HearingBooking>> newHearings,
                                                              List<Element<HearingBooking>> oldHearings) {
         return CallbackRequest.builder()
@@ -109,6 +155,8 @@ class HearingBookingDetailsControllerMidEventTest extends AbstractControllerTest
         return HearingBooking.builder()
             .startDate(startDate)
             .endDate(endDate)
+            .venue("Test venue")
+            .type(FINAL)
             .build();
     }
 
@@ -129,5 +177,9 @@ class HearingBookingDetailsControllerMidEventTest extends AbstractControllerTest
 
     private List<Element<HearingBooking>> listBookingWithStartDate(UUID id, LocalDateTime date) {
         return Lists.newArrayList(element(id, createHearing(date, date.plusDays(1))));
+    }
+
+    private Element<HearingBooking> createHearingBookingElement(UUID id, HearingBooking hearingBooking) {
+        return element(id, hearingBooking);
     }
 }
