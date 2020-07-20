@@ -18,7 +18,7 @@ import java.util.Optional;
 @Api
 @RestController
 @RequestMapping("/callback/orders-needed")
-public class OrdersNeededController {
+public class OrdersNeededAboutToSubmitCallbackController {
 
     @PostMapping("/about-to-submit")
     @SuppressWarnings("unchecked")
