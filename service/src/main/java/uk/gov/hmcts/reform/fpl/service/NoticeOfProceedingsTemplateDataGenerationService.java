@@ -30,6 +30,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 public class NoticeOfProceedingsTemplateDataGenerationService
     extends DocmosisTemplateDataGeneration<DocmosisNoticeOfProceeding> {
 
+    private final HearingBookingService hearingBookingService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final HearingVenueLookUpService hearingVenueLookUpService;
     private final CaseDataExtractionService caseDataExtractionService;
@@ -38,7 +39,8 @@ public class NoticeOfProceedingsTemplateDataGenerationService
     @Override
     public DocmosisNoticeOfProceeding getTemplateData(CaseData caseData) {
 
-        HearingBooking prioritisedHearingBooking = caseData.getMostUrgentHearingBookingAfter(time.now());
+        HearingBooking prioritisedHearingBooking = hearingBookingService
+            .getMostUrgentHearingBooking(caseData.getHearingDetails());
         HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(prioritisedHearingBooking);
 
         return DocmosisNoticeOfProceeding.builder()

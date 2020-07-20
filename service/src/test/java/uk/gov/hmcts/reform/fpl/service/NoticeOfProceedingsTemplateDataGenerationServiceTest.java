@@ -40,7 +40,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, LookupTestConfig.class,
+    JacksonAutoConfiguration.class, LookupTestConfig.class, HearingBookingService.class,
     HearingVenueLookUpService.class, CaseDataExtractionService.class, FixedTimeConfiguration.class,
     NoticeOfProceedingsTemplateDataGenerationService.class
 })

@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplat
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
@@ -57,7 +58,7 @@ import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {GeneratedOrderEventHandler.class, InboxLookupService.class,
     JacksonAutoConfiguration.class, LookupTestConfig.class, IssuedOrderAdminNotificationHandler.class,
-    RepresentativeNotificationService.class, HmctsAdminNotificationHandler.class,
+    RepresentativeNotificationService.class, HmctsAdminNotificationHandler.class, HearingBookingService.class,
     FixedTimeConfiguration.class})
 class GeneratedOrderEventHandlerTest {
 
