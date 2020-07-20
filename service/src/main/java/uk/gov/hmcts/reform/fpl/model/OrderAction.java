@@ -19,7 +19,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Deprecated
+@Deprecated(since = "FPLA-1915")
 public class OrderAction {
     //document needs to be here due to CCD UI not allowing for complex types to be split over multiple screens.
     private final DocumentReference document;

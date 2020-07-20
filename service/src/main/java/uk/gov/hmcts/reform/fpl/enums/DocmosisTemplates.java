@@ -8,7 +8,7 @@ public enum DocmosisTemplates {
     //fallback title 'order.pdf' - file name is generated in GeneratedOrderService based on type of order
     ORDER("FL-PLW-GOR-ENG-00218.doc", "order.pdf"),
     EPO("FL-PLW-GOR-ENG-00228.doc", "emergency_protection_order.pdf"),
-    @Deprecated
+    @Deprecated(since = "FPLA-1915")
     CMO("FL-PLW-GOR-ENG-00225.doc", "case_management_order.pdf"),
     COVER_DOCS("FL-PLW-LET-ENG-00232.doc", "cover_documents.pdf");
 

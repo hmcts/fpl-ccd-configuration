@@ -51,7 +51,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
  */
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-@Deprecated
+@Deprecated(since = "FPLA-1915")
 public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGeneration<DocmosisCaseManagementOrder> {
     private static final String HEARING_EMPTY_PLACEHOLDER = "This will appear on the issued CMO";
     private static final String DEFAULT = EMPTY;

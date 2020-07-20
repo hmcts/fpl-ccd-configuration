@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderProgressionService;
 @RestController
 @RequestMapping("/callback/cmo-progression")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-@Deprecated
+@Deprecated(since = "FPLA-1915")
 public class CaseManagementOrderProgressionController {
     private final CaseManagementOrderProgressionService progressionService;
 

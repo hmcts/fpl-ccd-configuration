@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
-@Deprecated
+@Deprecated(since = "FPLA-1915")
 public class DocmosisCaseManagementOrder extends DocmosisOrder {
     private final List<DocmosisRepresentative> representatives;
     private final boolean scheduleProvided;

@@ -39,7 +39,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.DRAFT_CASE_MANAGEMENT_ORDER;
 @RestController
 @RequestMapping("/callback/draft-cmo")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-@Deprecated
+@Deprecated(since = "FPLA-1915")
 public class DraftCMOController {
     private final ObjectMapper mapper;
     private final CaseManagementOrderService caseManagementOrderService;

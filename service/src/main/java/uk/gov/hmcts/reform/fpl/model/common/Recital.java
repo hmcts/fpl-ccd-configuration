@@ -10,7 +10,7 @@ import lombok.Data;
  */
 @Data
 @Builder(toBuilder = true)
-@Deprecated
+@Deprecated(since = "FPLA-1915")
 public class Recital {
     private final String title;
     private final String description;

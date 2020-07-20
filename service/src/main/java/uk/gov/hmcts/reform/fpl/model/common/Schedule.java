@@ -10,7 +10,7 @@ import lombok.Data;
  */
 @Data
 @Builder(toBuilder = true)
-@Deprecated
+@Deprecated(since = "FPLA-1915")
 public class Schedule {
     private final String includeSchedule;
     private final String allocation;
