@@ -61,5 +61,13 @@
     "Description": "Returned case state - LA to make changes to previously submitted application",
     "DisplayOrder": 7,
     "TitleDisplay": "# ${caseName}\n## **FamilyMan ID: ${familyManCaseNumber}**\n## **CCD ID: #${[CASE_REFERENCE]}**"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "1_Initiation",
+    "Name": "Open draft storage case",
+    "Description": "Initial case state – create title as a minimum; add documents, etc.",
+    "DisplayOrder": 1
   }
 ]
