@@ -12,7 +12,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -46,7 +45,7 @@ class PopulateStandardDirectionsOrderDatesHandlerTest {
     private static final String CASE_EVENT = "populateSDO";
     private static final Long CASE_ID = 12345L;
     private static final List<Element<HearingBooking>> HEARING_DETAILS = wrapElements(HearingBooking.builder()
-        .type(HearingType.CASE_MANAGEMENT)
+        .type("testHearing")
         .build());
     private static final HearingBooking FIRST_HEARING = HearingBooking.builder()
         .startDate(LocalDateTime.of(2050, 10, 6, 13, 0))

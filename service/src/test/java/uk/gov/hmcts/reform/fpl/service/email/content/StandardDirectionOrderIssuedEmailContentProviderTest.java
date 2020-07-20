@@ -4,11 +4,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForSDO;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
+import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
-@ContextConfiguration(classes = {StandardDirectionOrderIssuedEmailContentProvider.class})
+@ContextConfiguration(classes = {StandardDirectionOrderIssuedEmailContentProvider.class, LookupTestConfig.class,
+    HearingBookingService.class, FixedTimeConfiguration.class
+})
 class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     @Autowired

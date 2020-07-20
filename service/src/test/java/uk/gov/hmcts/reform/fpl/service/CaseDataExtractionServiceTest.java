@@ -53,7 +53,7 @@ class CaseDataExtractionServiceTest {
     private CaseDataExtractionService service;
 
     @Test
-    void shouldReturnTheFormattedDateWhenStartAndEndDateAreNotTheSame() {
+    void shouldReturnAnEmptyStringWhenStartAndEndDateAreNotTheSame() {
         hearingBooking = createHearingBookingWithTimesOnDifferentDays();
 
         Optional<String> hearingDate = service.getHearingDateIfHearingsOnSameDay(hearingBooking);
@@ -62,7 +62,7 @@ class CaseDataExtractionServiceTest {
     }
 
     @Test
-    void shouldReturnAnEmptyStringWhenStartAndEndDateAreTheSame() {
+    void shouldReturnTheFormattedDateWhenStartAndEndDateAreTheSame() {
         hearingBooking = createHearingBookingWithTimesOnSameDay();
 
         Optional<String> hearingDate = service.getHearingDateIfHearingsOnSameDay(hearingBooking);
