@@ -1,0 +1,528 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "applicationDetailsHeadingLabel",
+    "TabFieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "ordersAndDirectionsSubHeadingLabel",
+    "TabFieldDisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "orders",
+    "TabFieldDisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "ordersAndDirectionsLink",
+    "TabFieldDisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "hearingUrgencySubHeadingLabel",
+    "TabFieldDisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "hearing",
+    "TabFieldDisplayOrder": 6
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "hearingUrgencyLink",
+    "TabFieldDisplayOrder": 7
+  },
+
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "groundsForTheApplicationHeadingLabel",
+    "TabFieldDisplayOrder": 8
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "thresholdCriteriaSubHeadingLabel",
+    "TabFieldDisplayOrder": 9
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "grounds",
+    "TabFieldDisplayOrder": 10
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "thresholdCriteriaLink",
+    "TabFieldDisplayOrder": 11
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "riskAndHarmToTheChildrenSubHeadingLabel",
+    "TabFieldDisplayOrder": 12
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "risks",
+    "TabFieldDisplayOrder": 13
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "riskAndHarmToChildrenLink",
+    "TabFieldDisplayOrder": 14
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "factorsAffectingParentingSubHeadingLabel",
+    "TabFieldDisplayOrder": 15
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "factorsParenting",
+    "TabFieldDisplayOrder": 16
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "factorsAffectingParentingLink",
+    "TabFieldDisplayOrder": 17
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "additionalInformationSubHeadingLabel",
+    "TabFieldDisplayOrder": 18
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "otherProceedingsSubHeadingLabel",
+    "TabFieldDisplayOrder": 19
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "proceeding",
+    "TabFieldDisplayOrder": 20
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "otherProceedingsLink",
+    "TabFieldDisplayOrder": 21
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "internationalElementSubHeadingLabel",
+    "TabFieldDisplayOrder": 22
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "internationalElement",
+    "TabFieldDisplayOrder": 23
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "internationalElementLink",
+    "TabFieldDisplayOrder": 24
+  },
+
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "supportingDocumentsHeadingLabel",
+    "TabFieldDisplayOrder": 25
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "documents_socialWorkChronology_document",
+    "TabFieldDisplayOrder": 26
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "documents_socialWorkStatement_document",
+    "TabFieldDisplayOrder": 27
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "documents_socialWorkAssessment_document",
+    "TabFieldDisplayOrder": 28
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "documents_socialWorkCarePlan_document",
+    "TabFieldDisplayOrder": 29
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "documents_socialWorkEvidenceTemplate_document",
+    "TabFieldDisplayOrder": 30
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "documents_threshold_document",
+    "TabFieldDisplayOrder": 31
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "documents_checklist_document",
+    "TabFieldDisplayOrder": 32
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "documents_socialWorkOther",
+    "TabFieldDisplayOrder": 33
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "documentsLink",
+    "TabFieldDisplayOrder": 34
+  },
+
+
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "informationAboutThePartiesHeadingLabel",
+    "TabFieldDisplayOrder": 35
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "organisationDetailsSubHeadingLabel",
+    "TabFieldDisplayOrder": 36
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "organisationDetailsLink",
+    "TabFieldDisplayOrder": 37
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "childDetailsSubHeadingLabel",
+    "TabFieldDisplayOrder": 38
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "children1",
+    "TabFieldDisplayOrder": 39
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "childrenLink",
+    "TabFieldDisplayOrder": 40
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "respondentsSubHeadingLabel",
+    "TabFieldDisplayOrder": 41
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "respondents1",
+    "TabFieldDisplayOrder": 42
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "respondentsLink",
+    "TabFieldDisplayOrder": 43
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "othersSubHeadingLabel",
+    "TabFieldDisplayOrder": 44
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "others",
+    "TabFieldDisplayOrder": 45
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "othersLink",
+    "TabFieldDisplayOrder": 46
+  },
+
+
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "courtRequirementsHeadingLabel",
+    "TabFieldDisplayOrder": 47
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "allocationProposalSubHeadingLabel",
+    "TabFieldDisplayOrder": 48
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "allocationProposal",
+    "TabFieldDisplayOrder": 49
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "allocationProposalLink",
+    "TabFieldDisplayOrder": 50
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "facilitiesOrServiceNeededSubHeadingLabel",
+    "TabFieldDisplayOrder": 51
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "facilitiesOrServicesNeededLink",
+    "TabFieldDisplayOrder": 52
+  }
+]
