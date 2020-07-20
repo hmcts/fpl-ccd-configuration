@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CMOStatus",
+    "ListElementCode": "SEND_TO_JUDGE",
+    "ListElement": "Yes, send this to the judge",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CMOStatus",
+    "ListElementCode": "PARTIES_REVIEW",
+    "ListElement": "No, parties need to review it",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CMOStatus",
+    "ListElementCode": "SELF_REVIEW",
+    "ListElement": "No, I need to make changes",
+    "DisplayOrder": 3
+  }
+]
