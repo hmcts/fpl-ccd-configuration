@@ -2,28 +2,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "caseStateAdmin",
+    "CaseFieldID": "taskList",
     "UserRole": "caseworker-publiclaw-systemupdate",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "caseStateAdminLabel",
-    "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "caseStateLA",
-    "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "caseStateLALabel",
+    "CaseFieldID": "taskListLabel",
     "UserRole": "caseworker-publiclaw-systemupdate",
     "CRUD": "CRU"
   },

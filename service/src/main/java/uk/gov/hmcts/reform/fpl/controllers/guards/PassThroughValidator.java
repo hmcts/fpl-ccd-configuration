@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Service
-public class PassThroughGuard implements EventValidator {
+public class PassThroughValidator implements EventValidator {
 
     @Override
     public List<String> validate(CaseData caseData) {

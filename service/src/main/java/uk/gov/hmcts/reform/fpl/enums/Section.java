@@ -14,7 +14,7 @@ public enum Section {
     GROUNDS("grounds", "grounds for the application", FplEvent.GROUNDS),
     HEARING("hearing", "hearing needed", FplEvent.HEARING_NEEDED),
     DOCUMENTS("document", "documents", FplEvent.DOCUMENTS),
-    CASENAME("casename", "case name", FplEvent.CASENAME),
+    CASENAME("casename", "case name", FplEvent.CASE_NAME),
     ALLOCATION_PROPOSAL("allocationproposal", "allocation proposal", FplEvent.ALLOCATION_PROPOSAL);
 
     private final String[] errorKeys;

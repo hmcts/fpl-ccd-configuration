@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -69,25 +67,8 @@ public class ChildController {
 
         confidentialDetailsService.addConfidentialDetailsToCase(caseDetails, caseData.getAllChildren(), CHILD);
 
-
-        List<String> warnings = new ArrayList<>();
-
-        caseData.getAllChildren().forEach(c->{
-            if(StringUtils.isBlank(c.getValue().getParty().getFirstName())){
-                warnings.add("First name is required");
-            }
-            if(StringUtils.isBlank(c.getValue().getParty().getLastName())){
-                warnings.add("Last name is required");
-            }
-            if(c.getValue().getParty().getDateOfBirth()==null){
-                warnings.add("Date of birth is required");
-            }
-        });
-
-
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
-            .warnings(warnings)
             .build();
     }
 

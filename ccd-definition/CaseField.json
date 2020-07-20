@@ -2,34 +2,16 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "caseStateLA",
+    "ID": "taskList",
     "Label": "Case name",
-    "HintText": "Include the Local Authority name and respondent's last name. For example, Endley Council v Smith/Tate/Jones",
     "FieldType": "Text",
     "SecurityClassification": "PUBLIC"
   },
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "caseStateLALabel",
-    "Label": "${caseStateLA}",
-    "FieldType": "Label",
-    "SecurityClassification": "PUBLIC"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "caseStateAdmin",
-    "Label": "Case name",
-    "HintText": "Include the Local Authority name and respondent's last name. For example, Endley Council v Smith/Tate/Jones",
-    "FieldType": "Text",
-    "SecurityClassification": "PUBLIC"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "caseStateAdminLabel",
-    "Label": "${caseStateAdmin}",
+    "ID": "taskListLabel",
+    "Label": "${taskList}",
     "FieldType": "Label",
     "SecurityClassification": "PUBLIC"
   },

@@ -18,7 +18,7 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.RestrictionsConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.controllers.guards.EventValidatorProvider;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.AmendedReturnedCaseEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
@@ -26,14 +26,12 @@ import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.markdown.MarkdownData;
-import uk.gov.hmcts.reform.fpl.service.CaseValidatorService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
 import uk.gov.hmcts.reform.fpl.service.markdown.CaseSubmissionMarkdownService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
-import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -41,8 +39,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.validation.groups.Default;
 
+import static uk.gov.hmcts.reform.fpl.FplEvent.SUBMIT_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
@@ -59,13 +57,13 @@ public class CaseSubmissionController {
     private final UserDetailsService userDetailsService;
     private final CaseSubmissionService caseSubmissionService;
     private final ApplicationEventPublisher applicationEventPublisher;
-    private final CaseValidatorService caseValidatorService;
     private final ObjectMapper mapper;
     private final RestrictionsConfiguration restrictionsConfiguration;
     private final FeeService feeService;
     private final FeatureToggleService featureToggleService;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final CaseSubmissionMarkdownService markdownService;
+    private final EventValidatorProvider eventValidator;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
@@ -118,18 +116,11 @@ public class CaseSubmissionController {
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
-        if (caseData != null && caseData.getOrders() != null && caseData.getOrders().getOrderType() != null
-            && caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER)) {
-            return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(caseDetails.getData())
-                .errors(caseValidatorService.validateCaseDetails(caseData, Default.class, EPOGroup.class))
-                .build();
-        }
+        final List<String> errors = eventValidator.validate(SUBMIT_APPLICATION, caseData);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
-            .errors(caseValidatorService.validateCaseDetails(caseData))
+            .errors(errors)
             .build();
     }
 

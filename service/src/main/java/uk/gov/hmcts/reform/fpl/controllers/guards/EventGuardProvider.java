@@ -11,27 +11,19 @@ import java.util.EnumMap;
 public class EventGuardProvider {
 
     @Autowired
-    GeneratedOrderGuard generatedOrderGuard;
-
-    @Autowired
-    HearingDetailsGuard hearingDetailsGuard;
-
-    @Autowired
-    NotifyGatekeeperGuard notifyGatekeeperGuard;
+    CaseSubmissionValidator caseSubmissionGuard;
 
     @Autowired
     PassThroughGuard passThroughGuard;
 
-    EnumMap<FplEvent, EventGuard> guards = new EnumMap<>(FplEvent.class);
+    EnumMap<FplEvent, EventValidator> guards = new EnumMap<>(FplEvent.class);
 
     @PostConstruct
     public void init() {
-        guards.put(FplEvent.CREATE_ORDER, generatedOrderGuard);
-        guards.put(FplEvent.HEARING_DETAILS, hearingDetailsGuard);
-        guards.put(FplEvent.NOTIFY_GATEKEEPER, notifyGatekeeperGuard);
+        guards.put(FplEvent.SUBMIT_APPLICATION, caseSubmissionGuard);
     }
 
-    public EventGuard getEventGuard(FplEvent event) {
+    public EventValidator getEventGuard(FplEvent event) {
         return guards.getOrDefault(event, passThroughGuard);
     }
 }

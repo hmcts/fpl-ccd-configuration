@@ -143,6 +143,9 @@ survey:
   url:
     caseSubmission: 'https://www.smartsurvey.co.uk/s/preview/FamilyPublicLaw/44945E4F1F8CBEE3E10D79A4CED903'
 
+resources:
+  images:
+    baseUrl: 'https://raw.githubusercontent.com/tomaszpowroznik/proxypac/master/'
 ---
 
 spring:

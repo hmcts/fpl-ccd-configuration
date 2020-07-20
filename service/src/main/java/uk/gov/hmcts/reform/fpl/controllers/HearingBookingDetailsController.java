@@ -12,9 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.FplEvent;
-import uk.gov.hmcts.reform.fpl.controllers.guards.EventGuardProvider;
-import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -41,14 +38,13 @@ public class HearingBookingDetailsController {
     private final ObjectMapper mapper;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final StandardDirectionsService standardDirectionsService;
-    private final EventGuardProvider eventGuardProvider;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<String> errors = eventGuardProvider.getEventGuard(FplEvent.HEARING_DETAILS).validate(caseDetails);
+        List<String> errors = validationService.validateHasAllocatedJudge(caseData);
 
         Judge allocatedJudge = caseData.getAllocatedJudge();
 
@@ -111,8 +107,6 @@ public class HearingBookingDetailsController {
         if (isInGatekeepingState(callbackRequest.getCaseDetails())
             && standardDirectionsService.hasEmptyDates(caseData)) {
             applicationEventPublisher.publishEvent(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
-            applicationEventPublisher.publishEvent(new CaseDataChanged(callbackRequest));
-
         }
     }
 }
