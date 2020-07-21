@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.UUID;
 import javax.validation.constraints.Future;
 
 import static java.lang.String.format;
@@ -37,6 +38,7 @@ public class HearingBooking {
     private final List<String> hearingNeedsBooked;
     private final String hearingNeedsDetails;
     private JudgeAndLegalAdvisor judgeAndLegalAdvisor;
+    private UUID caseManagementOrderId;
 
     public boolean hasDatesOnSameDay() {
         return this.startDate.toLocalDate().isEqual(this.endDate.toLocalDate());
@@ -44,6 +46,10 @@ public class HearingBooking {
 
     public boolean startsAfterToday() {
         return startDate.isAfter(ZonedDateTime.now(ZoneId.of("Europe/London")).toLocalDateTime());
+    }
+
+    public boolean hasCMOAssociation() {
+        return caseManagementOrderId != null;
     }
 
     public String toLabel(String dateFormat) {

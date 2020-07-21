@@ -3,9 +3,92 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "draftUploadedCMOs",
-    "Label": "Draft Case Management Orders",
+    "Label": "Draft Case Management Order",
     "FieldType": "Collection",
     "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "pastHearingList",
+    "Label": "Which CMO do you want to send to the judge to review?",
+    "HintText": "All CMOs must have been discussed by all parties at the hearing.",
+    "FieldType": "DynamicList",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "cmoJudgeInfo",
+    "Label": "CMO agreed and to be sealed by:",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "cmoHearingInfo",
+    "Label": " ",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "uploadedCaseManagementOrder",
+    "Label": "Attach agreed draft CMO",
+    "HintText": "Files must be converted to PDF",
+    "FieldType": "Document",
+    "SecurityClassification": "Public",
+    "RegularExpression": ".pdf"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "numHearings",
+    "Label": "Number of past hearings without a cmo",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "noHearingsForCMOs",
+    "Label": "You cannot upload an agreed CMO.\n\nThis is because the judge is considering, or has sealed, the CMOs from all past hearings.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "multiHearingsWithCMOs",
+    "Label": "Hearings with CMOs already being reviewed",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "singleHearingsWithCMOs",
+    "Label": "Hearings with CMOs already being reviewed",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "showHearingsMultiTextArea",
+    "Label": "Field to store conditional result for showing multiHearingsWithCMOs",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "showHearingsSingleTextArea",
+    "Label": "Field to store conditional result for showing singleHearingsWithCMOs",
+    "FieldType": "Text",
     "SecurityClassification": "Public"
   },
   {

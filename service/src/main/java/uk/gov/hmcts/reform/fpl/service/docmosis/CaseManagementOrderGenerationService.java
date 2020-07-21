@@ -66,7 +66,7 @@ public class CaseManagementOrderGenerationService extends DocmosisTemplateDataGe
         HearingBooking hearingBooking = hearingService
             .getHearingBookingByUUID(hearingDetails, caseManagementOrder.getId());
 
-        DocmosisCaseManagementOrder.DocmosisCaseManagementOrderBuilder<?,?> order
+        DocmosisCaseManagementOrder.DocmosisCaseManagementOrderBuilder<?, ?> order
             = DocmosisCaseManagementOrder.builder()
             .judgeAndLegalAdvisor(getJudgeAndLegalAdvisor(hearingBooking))
             .allocatedJudge(getAllocatedJudge(caseData.getAllocatedJudge()))

@@ -128,6 +128,8 @@ public class CaseData {
     private final List<Element<Direction>> respondentDirections;
     private final List<Element<Direction>> respondentDirectionsCustom;
 
+    // How do we want to deal with compliance for CMO now, can we just remove the fields and just have the sdo
+    // directions.
     @JsonIgnore
     public List<Element<Direction>> getDirectionsToComplyWith() {
         if (getServedCaseManagementOrders().isEmpty() && standardDirectionOrder == null) {
@@ -344,9 +346,13 @@ public class CaseData {
     }
 
     private final OrderAction orderAction;
+
     private final DynamicList cmoHearingDateList;
+
     private final Schedule schedule;
+
     private final List<Element<Recital>> recitals;
+
     private final DocumentReference sharedDraftCMODocument;
 
     private final List<Element<CaseManagementOrder>> servedCaseManagementOrders;
@@ -355,8 +361,9 @@ public class CaseData {
         return defaultIfNull(servedCaseManagementOrders, new ArrayList<>());
     }
 
-    private final Others others;
     private final DynamicList nextHearingDateList;
+
+    private final Others others;
 
     private final List<Element<Representative>> representatives;
 
@@ -487,7 +494,21 @@ public class CaseData {
 
     private final DocumentReference submittedForm;
 
+    private final DocumentReference uploadedCaseManagementOrder;
     private final List<Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder>> draftUploadedCMOs;
+    private final Object pastHearingList; // Could be dynamic list or string
+
+    public List<Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder>> getDraftUploadedCMOs() {
+        return defaultIfNull(draftUploadedCMOs, new ArrayList<>());
+    }
+
+    @JsonIgnore
+    public List<Element<HearingBooking>> getPastHearings() {
+        return defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()).stream()
+            .filter(hearing -> !hearing.getValue().startsAfterToday())
+            .collect(toList());
+    }
+
     private final Object cmoToReviewList;
     private final ReviewDecision reviewCMODecision;
     private final String numDraftCMOs;

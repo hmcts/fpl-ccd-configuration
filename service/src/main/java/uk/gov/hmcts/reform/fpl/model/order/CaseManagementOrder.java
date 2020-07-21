@@ -19,7 +19,7 @@ public class CaseManagementOrder {
     private LocalDate dateSent;
     private CMOStatus status;
 
-    public static CaseManagementOrder createDraft(DocumentReference order, HearingBooking hearing, LocalDate date) {
+    public static CaseManagementOrder from(DocumentReference order, HearingBooking hearing, LocalDate date) {
         return CaseManagementOrder.builder()
             .order(order)
             .hearing(hearing.toLabel(DATE))
