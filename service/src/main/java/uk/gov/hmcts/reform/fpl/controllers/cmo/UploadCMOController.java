@@ -18,7 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService;
+import uk.gov.hmcts.reform.fpl.service.cmo.UploadCMOService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.List;
@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.from;
-import static uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService.TRANSIENT_FIELDS;
+import static uk.gov.hmcts.reform.fpl.service.cmo.UploadCMOService.TRANSIENT_FIELDS;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -36,7 +36,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class UploadCMOController {
     private final Time time;
-    private final CaseManagementOrderService cmoService;
+    private final UploadCMOService cmoService;
     private final ObjectMapper mapper;
     private final ApplicationEventPublisher publisher;
 
