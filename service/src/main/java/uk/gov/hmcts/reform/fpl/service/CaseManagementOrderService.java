@@ -54,7 +54,7 @@ public class CaseManagementOrderService {
     private static final String NONE = "NONE";
     public static final String[] TRANSIENT_FIELDS = {
         "uploadedCaseManagementOrder", "pastHearingList", "cmoJudgeInfo", "cmoHearingInfo", "numHearings",
-        "singleHearingsWithCMOs", "multiHearingsWithCMOs", "showHearingsTextArea"
+        "singleHearingsWithCMOs", "multiHearingsWithCMOs", "showHearingsSingleTextArea", "showHearingsMultiTextArea"
     };
 
     public Map<String, Object> getInitialPageData(
@@ -66,7 +66,7 @@ public class CaseManagementOrderService {
         Map<String, Object> data = new HashMap<>();
         String textAreaKey = null;
         String numHearings;
-        String showTextArea = null;
+        String showTextAreaKey = null;
 
         switch (pastHearings.size()) {
             case 0:
@@ -75,13 +75,13 @@ public class CaseManagementOrderService {
             case 1:
                 numHearings = SINGLE;
                 textAreaKey = "singleHearingsWithCMOs";
-                showTextArea = SINGLE;
+                showTextAreaKey = "showHearingsSingleTextArea";
                 data.putAll(getJudgeAndHearingDetailsSingle(pastHearings.get(0).getId(), pastHearings));
                 break;
             default:
                 numHearings = MULTI;
                 textAreaKey = "multiHearingsWithCMOs";
-                showTextArea = MULTI;
+                showTextAreaKey = "showHearingsMultiTextArea";
                 data.put("pastHearingList", buildDynamicList(pastHearings));
         }
 
@@ -89,7 +89,7 @@ public class CaseManagementOrderService {
 
         if (textAreaContent.length() != 0 && textAreaKey != null) {
             data.put(textAreaKey, textAreaContent);
-            data.put("showHearingsTextArea", showTextArea);
+            data.put(showTextAreaKey, "YES");
         }
 
         data.put("numHearings", numHearings);

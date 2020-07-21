@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.cmo.CMOReadyToSealEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -36,6 +38,7 @@ public class UploadCMOController {
     private final Time time;
     private final CaseManagementOrderService cmoService;
     private final ObjectMapper mapper;
+    private final ApplicationEventPublisher publisher;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
@@ -107,10 +110,15 @@ public class UploadCMOController {
     public void handelSubmitted(@RequestBody CallbackRequest request) {
         CaseData caseDataBefore = mapper.convertValue(request.getCaseDetailsBefore().getData(), CaseData.class);
         CaseData caseData = mapper.convertValue(request.getCaseDetails().getData(), CaseData.class);
+        List<Element<CaseManagementOrder>> draftUploadedCMOs = caseData.getDraftUploadedCMOs();
 
-        if (caseData.getDraftUploadedCMOs().size() > caseDataBefore.getDraftUploadedCMOs().size()) {
-            // send notification
-            System.out.println("SEND NOTIFICATION");
+        if (draftUploadedCMOs.size() > caseDataBefore.getDraftUploadedCMOs().size()) {
+            Element<CaseManagementOrder> newCMO = draftUploadedCMOs.get(draftUploadedCMOs.size() - 1);
+            caseData.getHearingDetails()
+                .stream()
+                .filter(hearing -> newCMO.getId().equals(hearing.getValue().getCaseManagementOrderId()))
+                .findFirst()
+                .ifPresent(hearing -> publisher.publishEvent(new CMOReadyToSealEvent(request, hearing.getValue())));
         }
     }
 
