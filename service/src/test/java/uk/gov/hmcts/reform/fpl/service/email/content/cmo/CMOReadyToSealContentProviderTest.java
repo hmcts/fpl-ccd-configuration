@@ -52,15 +52,17 @@ class CMOReadyToSealContentProviderTest extends AbstractEmailContentProviderTest
                     .build()))
             .build();
 
-        HearingBooking hearing = HearingBooking.builder()
-            .startDate(LocalDateTime.of(SOME_DATE, LocalTime.of(0, 0)))
-            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
-                .judgeLastName("Simmons")
-                .build())
+        JudgeAndLegalAdvisor judge = JudgeAndLegalAdvisor.builder()
+            .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
+            .judgeLastName("Simmons")
             .build();
 
-        CMOReadyToSealTemplate template = contentProvider.buildTemplate(hearing, data, CASE_NUMBER);
+        HearingBooking hearing = HearingBooking.builder()
+            .startDate(LocalDateTime.of(SOME_DATE, LocalTime.of(0, 0)))
+            .judgeAndLegalAdvisor(judge)
+            .build();
+
+        CMOReadyToSealTemplate template = contentProvider.buildTemplate(hearing, data, CASE_NUMBER, judge);
 
         CMOReadyToSealTemplate expected = new CMOReadyToSealTemplate()
             .setJudgeName("Simmons")
