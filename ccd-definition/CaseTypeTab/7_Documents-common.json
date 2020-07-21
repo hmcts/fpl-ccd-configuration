@@ -7,7 +7,6 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
     "CaseFieldID": "documents_socialWorkChronology_document",
-    "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\"",
     "TabFieldDisplayOrder": 1
   },
   {
