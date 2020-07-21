@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.HasEndDateAfterStartDate;
@@ -15,11 +17,11 @@ import java.util.List;
 import javax.validation.constraints.Future;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 @HasEndDateAfterStartDate(groups = HearingBookingDetailsGroup.class)
 public class HearingBooking {
-    private final String type;
+    private final HearingType type;
     private final String typeDetails;
     private final String venue;
     private final Address venueCustomAddress;
@@ -32,6 +34,7 @@ public class HearingBooking {
     private final List<String> hearingNeedsBooked;
     private final String hearingNeedsDetails;
     private JudgeAndLegalAdvisor judgeAndLegalAdvisor;
+    private DocumentReference noticeOfHearing;
 
     public boolean hasDatesOnSameDay() {
         return this.startDate.toLocalDate().isEqual(this.endDate.toLocalDate());
