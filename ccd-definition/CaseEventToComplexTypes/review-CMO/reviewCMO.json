@@ -1,0 +1,29 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReviewCaseManagementOrder",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "reviewCMODecision",
+    "ListElementCode": "document",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReviewCaseManagementOrder",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "reviewCMODecision",
+    "ListElementCode": "decision",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReviewCaseManagementOrder",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "reviewCMODecision",
+    "ListElementCode": "changeRequestedByJudge",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY"
+  }
+]

@@ -13,7 +13,7 @@
     "ListElementCode": "decision",
     "FieldType": "FixedRadioList",
     "ElementLabel": "Does the CMO reflect all decisions made at the hearing?",
-    "FieldTypeParameter": "CMOReviewList",
+    "FieldTypeParameter": "CMOReviewOutcome",
     "SecurityClassification": "Public"
   },
   {
