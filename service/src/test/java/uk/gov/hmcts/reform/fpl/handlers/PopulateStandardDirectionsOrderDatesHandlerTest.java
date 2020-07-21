@@ -37,6 +37,7 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
@@ -45,7 +46,7 @@ class PopulateStandardDirectionsOrderDatesHandlerTest {
     private static final String CASE_EVENT = "populateSDO";
     private static final Long CASE_ID = 12345L;
     private static final List<Element<HearingBooking>> HEARING_DETAILS = wrapElements(HearingBooking.builder()
-        .type("testHearing")
+        .type(CASE_MANAGEMENT)
         .build());
     private static final HearingBooking FIRST_HEARING = HearingBooking.builder()
         .startDate(LocalDateTime.of(2050, 10, 6, 13, 0))
