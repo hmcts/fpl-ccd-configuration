@@ -39,8 +39,6 @@ class EmailNotificationHelperTest {
     @Test
     void subjectLineShouldBeEmptyWhenNoRespondentOrCaseNumberEmpty() {
         CaseData data = CaseData.builder()
-            .familyManCaseNumber("124")
-            .respondents1(createRespondents())
             .build();
         String subjectLine = helper.buildSubjectLine(data.getFamilyManCaseNumber(), data.getRespondents1());
         assertThat(subjectLine).isEmpty();
