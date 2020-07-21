@@ -4,17 +4,13 @@ import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
-import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.util.List;
 import java.util.UUID;
@@ -26,10 +22,6 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6A;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {NoticeOfProceedingsService.class})
-@ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, LookupTestConfig.class, HearingBookingService.class,
-    HearingVenueLookUpService.class, CaseDataExtractionService.class, FixedTimeConfiguration.class
-})
 class NoticeOfProceedingsServiceTest {
 
     @Autowired

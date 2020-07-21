@@ -57,7 +57,7 @@ public class HearingVenueLookUpService {
             .orElse(HearingVenue.builder().build());
     }
 
-    String buildHearingVenue(final HearingVenue hearingVenue) {
+    public String buildHearingVenue(final HearingVenue hearingVenue) {
         if (hearingVenue == null || hearingVenue.getAddress() == null) {
             return "";
         } else {
