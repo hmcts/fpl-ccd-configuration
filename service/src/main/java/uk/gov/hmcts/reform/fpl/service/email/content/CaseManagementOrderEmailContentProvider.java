@@ -76,10 +76,12 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
 
     private String buildCallout(CaseData caseData) {
         if (hearingBookingService.hasFutureHearing(caseData.getHearingDetails())) {
-            return buildSubjectLineWithHearingBookingDateSuffix(caseData,
-                hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails()));
+            return buildSubjectLineWithHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
+                caseData.getRespondents1(), hearingBookingService.getMostUrgentHearingBooking(
+                    caseData.getHearingDetails()));
         }
-        return buildSubjectLineWithoutHearingBookingDateSuffix(caseData);
+        return buildSubjectLineWithoutHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
+            caseData.getRespondents1());
     }
 
     public AllocatedJudgeTemplateForCMO buildCMOReadyForJudgeReviewNotificationParameters(

@@ -38,7 +38,11 @@ class EmailNotificationHelperTest {
 
     @Test
     void subjectLineShouldBeEmptyWhenNoRespondentOrCaseNumberEmpty() {
-        String subjectLine = helper.buildSubjectLine(CaseData.builder().build());
+        CaseData data = CaseData.builder()
+            .familyManCaseNumber("124")
+            .respondents1(createRespondents())
+            .build();
+        String subjectLine = helper.buildSubjectLine(data.getFamilyManCaseNumber(), data.getRespondents1());
         assertThat(subjectLine).isEmpty();
     }
 
@@ -50,18 +54,19 @@ class EmailNotificationHelperTest {
             .build();
 
         String expectedSubjectLine = "Jones, FamilyManCaseNumber";
-        String subjectLine = helper.buildSubjectLine(caseData);
+        String subjectLine = helper.buildSubjectLine(caseData.getFamilyManCaseNumber(), caseData.getRespondents1());
         assertThat(subjectLine).isEqualTo(expectedSubjectLine);
     }
 
     @Test
     void subjectLineShouldNotBeEmptyWhenOnlyRespondentGiven() {
         CaseData caseData = CaseData.builder()
+            .familyManCaseNumber("123")
             .respondents1(createRespondents())
             .build();
 
         String expectedSubjectLine = "Jones";
-        String subjectLine = helper.buildSubjectLine(caseData);
+        String subjectLine = helper.buildSubjectLine(caseData.getFamilyManCaseNumber(), caseData.getRespondents1());
         assertThat(subjectLine).isEqualTo(expectedSubjectLine);
     }
 
@@ -106,7 +111,7 @@ class EmailNotificationHelperTest {
             .build();
 
         String expectedSubjectLine = "FamilyManCaseNumber-With-Empty-Lastname";
-        String subjectLine = helper.buildSubjectLine(caseData);
+        String subjectLine = helper.buildSubjectLine(caseData.getFamilyManCaseNumber(), caseData.getRespondents1());
         assertThat(subjectLine).isEqualTo(expectedSubjectLine);
     }
 
@@ -125,8 +130,8 @@ class EmailNotificationHelperTest {
 
         String expectedSubjectLine = "Jones, FamilyManCaseNumber, hearing "
             + formatLocalDateTimeBaseUsingFormat(dateInTenMonths, "d MMM yyyy");
-        String returnedSubjectLine = helper.buildSubjectLineWithHearingBookingDateSuffix(caseData,
-            hearingBooking);
+        String returnedSubjectLine = helper.buildSubjectLineWithHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
+            caseData.getRespondents1(), hearingBooking);
         assertThat(returnedSubjectLine).isEqualTo(expectedSubjectLine);
     }
 
@@ -139,7 +144,7 @@ class EmailNotificationHelperTest {
             .build();
 
         String expectedSubjectLine = "Jones, FamilyManCaseNumber";
-        String returnedSubjectLine = helper.buildSubjectLineWithoutHearingBookingDateSuffix(caseData);
+        String returnedSubjectLine = helper.buildSubjectLineWithoutHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(), caseData.getRespondents1());
         assertThat(returnedSubjectLine).isEqualTo(expectedSubjectLine);
     }
 
@@ -154,7 +159,7 @@ class EmailNotificationHelperTest {
             .build();
 
         String expected = "Jones, FamilyManCaseNumber";
-        String actual = helper.buildSubjectLineWithoutHearingBookingDateSuffix(caseData);
+        String actual = helper.buildSubjectLineWithoutHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(), caseData.getRespondents1());
 
         assertThat(actual).isEqualTo(expected);
     }

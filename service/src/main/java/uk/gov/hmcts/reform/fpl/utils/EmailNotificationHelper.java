@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
 import org.apache.commons.lang3.StringUtils;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.time.format.FormatStyle;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
@@ -19,25 +21,28 @@ public class EmailNotificationHelper {
     private EmailNotificationHelper() {
     }
 
-    public static String buildSubjectLine(final CaseData caseData) {
-        final String respondentlastName = getFirstRespondentLastName(caseData.getRespondents1());
-        final String familyManCaseNumber = defaultIfNull(caseData.getFamilyManCaseNumber(), "");
+    public static String buildSubjectLine(final String familyManCaseNumber,
+                                          final List<Element<Respondent>> respondents) {
+        final String respondentlastName = getFirstRespondentLastName(respondents);
+        final String familyMan = defaultIfNull(familyManCaseNumber, "");
 
-        return Stream.of(respondentlastName, familyManCaseNumber)
+        return Stream.of(respondentlastName, familyMan)
             .filter(StringUtils::isNotBlank)
             .collect(joining(", "));
     }
 
-    public static String buildSubjectLineWithHearingBookingDateSuffix(final CaseData caseData,
-                                                               HearingBooking hearingBooking) {
-        String subjectLine = buildSubjectLine(caseData);
+    public static String buildSubjectLineWithHearingBookingDateSuffix(final String familyManCaseNumber,
+                                                               final List<Element<Respondent>> respondents,
+                                                               final HearingBooking hearingBooking) {
+        String subjectLine = buildSubjectLine(familyManCaseNumber, respondents);
         String hearingDateText = buildHearingDateText(hearingBooking);
 
         return buildCommonSubjectLine(subjectLine, hearingDateText);
     }
 
-    public static String buildSubjectLineWithoutHearingBookingDateSuffix(final CaseData caseData) {
-        String subjectLine = buildSubjectLine(caseData);
+    public static String buildSubjectLineWithoutHearingBookingDateSuffix(final String familyManCaseNumber,
+                                                                         final List<Element<Respondent>> respondents) {
+        String subjectLine = buildSubjectLine(familyManCaseNumber, respondents);
 
         return buildCommonSubjectLine(subjectLine, EMPTY);
     }

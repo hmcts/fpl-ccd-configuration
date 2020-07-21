@@ -27,7 +27,7 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
 
     public Map<String, Object> buildC2UploadNotification(final CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        final String subjectLine = buildSubjectLine(caseData);
+        final String subjectLine = buildSubjectLine(caseData.getFamilyManCaseNumber(), caseData.getRespondents1());
 
         return ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters(caseDetails))
@@ -52,10 +52,12 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
 
     private String buildCallout(CaseData caseData) {
         if (hearingBookingService.hasFutureHearing(caseData.getHearingDetails())) {
-            return buildSubjectLineWithHearingBookingDateSuffix(caseData,
-                hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails()));
+            return buildSubjectLineWithHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
+                caseData.getRespondents1(), hearingBookingService.getMostUrgentHearingBooking(caseData
+                    .getHearingDetails()));
         }
-        return buildSubjectLineWithoutHearingBookingDateSuffix(caseData);
+        return buildSubjectLineWithoutHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(), caseData
+            .getRespondents1());
     }
 
     public Map<String, Object> buildC2UploadPbaPaymentNotTakenNotification(final CaseDetails caseDetails) {
