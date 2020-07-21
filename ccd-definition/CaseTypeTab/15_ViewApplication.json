@@ -8,6 +8,7 @@
     "TabDisplayOrder": 15,
     "CaseFieldID": "applicationDetailsHeadingLabel",
     "FieldShowCondition": "orders!=\"\" OR hearing!=\"\"",
+    "TabShowCondition": "[STATE]=\"Open\" OR [STATE]=\"RETURNED\"",
     "TabFieldDisplayOrder": 1
   },
   {
@@ -370,7 +371,7 @@
     "TabLabel": "View Application",
     "TabDisplayOrder": 15,
     "CaseFieldID": "informationAboutThePartiesHeadingLabel",
-    "FieldShowCondition": "children1!=\"\" OR respondents1!=\"\" OR others!=\"\" OR applicants!=\"\"",
+    "FieldShowCondition": "children1!=\"\" OR respondents1!=\"\" OR others!=\"\" OR applicants!=\"\" OR solicitor!=\"\"",
     "TabFieldDisplayOrder": 35
   },
   {
@@ -381,7 +382,7 @@
     "TabLabel": "View Application",
     "TabDisplayOrder": 15,
     "CaseFieldID": "organisationDetailsSubHeadingLabel",
-    "FieldShowCondition": "applicants!=\"\"",
+    "FieldShowCondition": "applicants!=\"\" OR solicitor!=\"\"",
     "TabFieldDisplayOrder": 36
   },
   {
@@ -401,9 +402,19 @@
     "TabID": "ViewApplicationTab",
     "TabLabel": "View Application",
     "TabDisplayOrder": 15,
-    "CaseFieldID": "organisationDetailsLink",
-    "FieldShowCondition": "applicants!=\"\"",
+    "CaseFieldID": "solicitor",
     "TabFieldDisplayOrder": 38
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View Application",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "organisationDetailsLink",
+    "FieldShowCondition": "applicants!=\"\" OR solicitor!=\"\"",
+    "TabFieldDisplayOrder": 39
   },
   {
     "LiveFrom": "01/01/2017",
@@ -414,7 +425,7 @@
     "TabDisplayOrder": 15,
     "CaseFieldID": "childDetailsSubHeadingLabel",
     "FieldShowCondition": "children1!=\"\"",
-    "TabFieldDisplayOrder": 39
+    "TabFieldDisplayOrder": 40
   },
   {
     "LiveFrom": "01/01/2017",
@@ -424,7 +435,7 @@
     "TabLabel": "View Application",
     "TabDisplayOrder": 15,
     "CaseFieldID": "children1",
-    "TabFieldDisplayOrder": 40
+    "TabFieldDisplayOrder": 41
   },
   {
     "LiveFrom": "01/01/2017",
@@ -435,7 +446,7 @@
     "TabDisplayOrder": 15,
     "CaseFieldID": "childrenLink",
     "FieldShowCondition": "children1!=\"\"",
-    "TabFieldDisplayOrder": 41
+    "TabFieldDisplayOrder": 42
   },
   {
     "LiveFrom": "01/01/2017",
@@ -446,7 +457,7 @@
     "TabDisplayOrder": 15,
     "CaseFieldID": "respondentsSubHeadingLabel",
     "FieldShowCondition": "respondents1!=\"\"",
-    "TabFieldDisplayOrder": 42
+    "TabFieldDisplayOrder": 43
   },
   {
     "LiveFrom": "01/01/2017",
@@ -456,7 +467,7 @@
     "TabLabel": "View Application",
     "TabDisplayOrder": 15,
     "CaseFieldID": "respondents1",
-    "TabFieldDisplayOrder": 43
+    "TabFieldDisplayOrder": 44
   },
   {
     "LiveFrom": "01/01/2017",
@@ -467,7 +478,7 @@
     "TabDisplayOrder": 15,
     "CaseFieldID": "respondentsLink",
     "FieldShowCondition": "respondents1!=\"\"",
-    "TabFieldDisplayOrder": 44
+    "TabFieldDisplayOrder": 45
   },
   {
     "LiveFrom": "01/01/2017",
@@ -478,7 +489,7 @@
     "TabDisplayOrder": 15,
     "CaseFieldID": "additionalInformationPartiesSubHeadingLabel",
     "FieldShowCondition": "others!=\"\"",
-    "TabFieldDisplayOrder": 45
+    "TabFieldDisplayOrder": 46
   },
   {
     "LiveFrom": "01/01/2017",
@@ -489,7 +500,7 @@
     "TabDisplayOrder": 15,
     "CaseFieldID": "othersSubHeadingLabel",
     "FieldShowCondition": "others!=\"\"",
-    "TabFieldDisplayOrder": 46
+    "TabFieldDisplayOrder": 47
   },
   {
     "LiveFrom": "01/01/2017",
@@ -499,7 +510,7 @@
     "TabLabel": "View Application",
     "TabDisplayOrder": 15,
     "CaseFieldID": "others",
-    "TabFieldDisplayOrder": 47
+    "TabFieldDisplayOrder": 48
   },
   {
     "LiveFrom": "01/01/2017",
@@ -510,7 +521,7 @@
     "TabDisplayOrder": 15,
     "CaseFieldID": "othersLink",
     "FieldShowCondition": "others!=\"\"",
-    "TabFieldDisplayOrder": 48
+    "TabFieldDisplayOrder": 49
   },
 
 
@@ -523,7 +534,7 @@
     "TabDisplayOrder": 15,
     "CaseFieldID": "courtRequirementsHeadingLabel",
     "FieldShowCondition": "allocationProposal!=\"\"",
-    "TabFieldDisplayOrder": 49
+    "TabFieldDisplayOrder": 50
   },
   {
     "LiveFrom": "01/01/2017",
@@ -534,7 +545,7 @@
     "TabDisplayOrder": 15,
     "CaseFieldID": "allocationProposalSubHeadingLabel",
     "FieldShowCondition": "allocationProposal!=\"\" OR hearingPreferences!=\"\"",
-    "TabFieldDisplayOrder": 50
+    "TabFieldDisplayOrder": 51
   },
   {
     "LiveFrom": "01/01/2017",
@@ -544,7 +555,7 @@
     "TabLabel": "View Application",
     "TabDisplayOrder": 15,
     "CaseFieldID": "allocationProposal",
-    "TabFieldDisplayOrder": 51
+    "TabFieldDisplayOrder": 52
   },
   {
     "LiveFrom": "01/01/2017",
@@ -555,7 +566,7 @@
     "TabDisplayOrder": 15,
     "CaseFieldID": "allocationProposalLink",
     "FieldShowCondition": "allocationProposal!=\"\"",
-    "TabFieldDisplayOrder": 52
+    "TabFieldDisplayOrder": 53
   },
   {
     "LiveFrom": "01/01/2017",
@@ -566,7 +577,7 @@
     "TabDisplayOrder": 15,
     "CaseFieldID": "additionalInformationCourtRequirementsSubHeadingLabel",
     "FieldShowCondition": "hearingPreferences!=\"\"",
-    "TabFieldDisplayOrder": 53
+    "TabFieldDisplayOrder": 54
   },
   {
     "LiveFrom": "01/01/2017",
@@ -577,7 +588,7 @@
     "TabDisplayOrder": 15,
     "CaseFieldID": "facilitiesOrServiceNeededSubHeadingLabel",
     "FieldShowCondition": "hearingPreferences!=\"\"",
-    "TabFieldDisplayOrder": 54
+    "TabFieldDisplayOrder": 55
   },
   {
     "LiveFrom": "01/01/2017",
@@ -587,7 +598,7 @@
     "TabLabel": "View Application",
     "TabDisplayOrder": 15,
     "CaseFieldID": "hearingPreferences",
-    "TabFieldDisplayOrder": 55
+    "TabFieldDisplayOrder": 56
   },
   {
     "LiveFrom": "01/01/2017",
@@ -598,6 +609,6 @@
     "TabDisplayOrder": 15,
     "CaseFieldID": "facilitiesOrServicesNeededLink",
     "FieldShowCondition": "hearingPreferences!=\"\"",
-    "TabFieldDisplayOrder": 56
+    "TabFieldDisplayOrder": 57
   }
 ]

@@ -17,6 +17,7 @@
     "TabLabel": "Hearings",
     "TabDisplayOrder": 2,
     "CaseFieldID": "hearing",
+    "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\"",
     "TabFieldDisplayOrder": 2
   }
 ]

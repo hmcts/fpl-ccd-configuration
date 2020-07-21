@@ -28,7 +28,8 @@
     "TabLabel": "Orders",
     "TabDisplayOrder": 4,
     "CaseFieldID": "orders",
-    "TabFieldDisplayOrder": 3
+    "TabFieldDisplayOrder": 3,
+    "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\""
   },
   {
     "LiveFrom": "01/01/2017",

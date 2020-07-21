@@ -1836,7 +1836,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "organisationDetailsLink",
     "FieldType": "Label",
-    "Label": "[Make changes to local authority details](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/ordersNeeded)",
+    "Label": "[Make changes to local authority details](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/enterApplicant)",
     "SecurityClassification": "Public"
   },
   {
@@ -1876,7 +1876,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "facilitiesOrServicesNeededLink",
     "FieldType": "Label",
-    "Label": "[Make changes to facilities or services needed in court](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/ordersNeeded)",
+    "Label": "[Make changes to facilities or services needed in court](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/attendingHearing)",
     "SecurityClassification": "Public"
   }
 ]

@@ -27,6 +27,7 @@
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 6,
     "CaseFieldID": "grounds",
+    "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\"",
     "TabFieldDisplayOrder": 3
   },
   {

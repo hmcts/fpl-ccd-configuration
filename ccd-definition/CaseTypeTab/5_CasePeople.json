@@ -17,6 +17,7 @@
     "TabLabel": "People in the case",
     "TabDisplayOrder": 5,
     "CaseFieldID": "children1",
+    "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\"",
     "TabFieldDisplayOrder": 2
   },
   {
