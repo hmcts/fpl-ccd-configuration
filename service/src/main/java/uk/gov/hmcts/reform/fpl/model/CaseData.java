@@ -512,4 +512,6 @@ public class CaseData {
     private final Object cmoToReviewList;
     private final ReviewDecision reviewCMODecision;
     private final String numDraftCMOs;
+    private final List<Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder>> sealedCMOs;
+
 }

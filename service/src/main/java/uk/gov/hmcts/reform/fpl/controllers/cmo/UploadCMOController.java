@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.from;
+import static uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.draftFrom;
 import static uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService.TRANSIENT_FIELDS;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -86,7 +86,7 @@ public class UploadCMOController {
                 hearingsWithoutCMO);
             HearingBooking hearing = cmoService.getSelectedHearing(selectedHearingId, hearingsWithoutCMO);
 
-            Element<CaseManagementOrder> element = element(from(caseData.getUploadedCaseManagementOrder(),
+            Element<CaseManagementOrder> element = element(draftFrom(caseData.getUploadedCaseManagementOrder(),
                 hearing, time.now().toLocalDate()));
 
             cmoService.mapToHearing(selectedHearingId, hearings, element);

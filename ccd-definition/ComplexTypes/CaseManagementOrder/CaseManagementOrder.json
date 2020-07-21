@@ -21,6 +21,15 @@
     "ListElementCode": "dateSent",
     "FieldType": "Date",
     "ElementLabel": "Date sent",
+    "SecurityClassification": "Public",
+    "FieldShowCondition:": "judgeTitleAndName=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadedCaseManagementOrder",
+    "ListElementCode": "dateIssued",
+    "FieldType": "Date",
+    "ElementLabel": "Date issued",
     "SecurityClassification": "Public"
   },
   {
@@ -30,6 +39,15 @@
     "FieldType": "FixedList",
     "FieldTypeParameter": "CaseManagementOrderStatus",
     "ElementLabel": "Status",
+    "SecurityClassification": "Public",
+    "FieldShowCondition:": "judgeTitleAndName=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadedCaseManagementOrder",
+    "ListElementCode": "judgeTitleAndName",
+    "FieldType": "Text",
+    "ElementLabel": "Judge",
     "SecurityClassification": "Public"
   }
 ]
