@@ -112,7 +112,7 @@ class UploadCMOServiceTest {
     }
 
     @Test
-    void shouldGetHearingWithSameUUIDAsPassed() {
+    void shouldGetHearingWithSameIdAsPassed() {
         List<Element<HearingBooking>> hearings = List.of(element(hearing()), element(hearing()), element(hearing()));
         UUID selected = hearings.get(2).getId();
 
@@ -132,7 +132,7 @@ class UploadCMOServiceTest {
     }
 
     @Test
-    void shouldExtractUUIDWhenStringIsPassedAsDynamicList() {
+    void shouldExtractIdWhenStringIsPassedAsDynamicList() {
         UUID uuid = randomUUID();
         String id = uuid.toString();
 
@@ -142,7 +142,7 @@ class UploadCMOServiceTest {
     }
 
     @Test
-    void shouldExtractSelectedUUIDWhenDynamicListMapIsPassed() {
+    void shouldExtractSelectedIdWhenDynamicListMapIsPassed() {
         UUID uuid = randomUUID();
         Map<String, Object> dynamicList = Map.of(
             "value", Map.of(
