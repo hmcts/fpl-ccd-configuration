@@ -458,6 +458,6 @@ Scenario('local authority submits after giving consent @create-case-with-mandato
   submitApplicationEventPage.giveConsent();
   await I.completeEvent('Submit', null, true);
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
-  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
+  caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.see('New_case_name.pdf');
 });
