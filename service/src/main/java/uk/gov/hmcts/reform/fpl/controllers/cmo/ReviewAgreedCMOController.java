@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForPartyReviewEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.exceptions.CMOCodeNotFound;
@@ -36,6 +35,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.sealFrom;
@@ -66,9 +66,21 @@ public class ReviewAgreedCMOController {
         List<Element<CaseManagementOrder>> cmosReadyForApproval = draftCMOs.stream().filter(
             cmo -> cmo.getValue().getStatus().equals(SEND_TO_JUDGE)).collect(Collectors.toList());
 
-        if (cmosReadyForApproval.size() > 1) {
-            data.put("numDraftCMOs", "MULTI");
-            data.put("cmoToReviewList", cmoService.buildDynamicListCMO(cmosReadyForApproval));
+        data.remove("reviewCMODecision");
+
+        switch (cmosReadyForApproval.size()) {
+            case 0:
+                data.put("numDraftCMOs", "NONE");
+                break;
+            case 1:
+                data.put("numDraftCMOs", "SINGLE");
+                data.put("reviewCMODecision",
+                    ReviewDecision.builder().document(cmosReadyForApproval.get(0).getValue().getOrder()).build());
+                break;
+            default:
+                data.put("numDraftCMOs", "MULTI");
+                data.put("cmoToReviewList", cmoService.buildDynamicListCMO(cmosReadyForApproval));
+                break;
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -114,42 +126,50 @@ public class ReviewAgreedCMOController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Object dynamicList = caseData.getCmoToReviewList();
+        if (caseData.getReviewCMODecision() != null) {
+            Object dynamicList = caseData.getCmoToReviewList();
 
-        UUID selectedCMOCode = dynamicList instanceof String ? UUID.fromString(dynamicList.toString()) :
-            mapper.convertValue(dynamicList, DynamicList.class).getValueCode();
+            Element<CaseManagementOrder> cmo;
 
-        Element<CaseManagementOrder> cmo = caseData.getDraftUploadedCMOs().stream()
-            .filter(element -> element.getId().equals(selectedCMOCode))
-            .findFirst()
-            .orElseThrow(() -> new CMOCodeNotFound("Could not find draft cmo with id " + selectedCMOCode));
+            if (("MULTI").equals(caseData.getNumDraftCMOs())) {
+                UUID selectedCMOCode = dynamicList instanceof String ? UUID.fromString(dynamicList.toString()) :
+                    mapper.convertValue(dynamicList, DynamicList.class).getValueCode();
 
-        if (CMOReviewOutcome.SEND_TO_ALL_PARTIES.equals(caseData.getReviewCMODecision().getDecision())) {
-            caseData.getDraftUploadedCMOs().remove(cmo);
+                cmo = caseData.getDraftUploadedCMOs().stream()
+                    .filter(element -> element.getId().equals(selectedCMOCode))
+                    .findFirst()
+                    .orElseThrow(() -> new CMOCodeNotFound("Could not find draft cmo with id " + selectedCMOCode));
+            } else {
+                cmo = caseData.getDraftUploadedCMOs().get(caseData.getDraftUploadedCMOs().size() - 1);
+            }
 
-            Element<HearingBooking> cmoHearing = caseData.getHearingDetails()
-                .stream()
-                .filter(hearing -> cmo.getId().equals(hearing.getValue().getCaseManagementOrderId()))
-                .findFirst()
-                .orElseThrow(NoHearingBookingException::new);
+            if (SEND_TO_ALL_PARTIES.equals(caseData.getReviewCMODecision().getDecision())) {
+                caseData.getDraftUploadedCMOs().remove(cmo);
 
-            Element<CaseManagementOrder> cmoToSeal = element(sealFrom(cmo.getValue().getOrder(),
-                cmoHearing.getValue(), time.now().toLocalDate()));
+                Element<HearingBooking> cmoHearing = caseData.getHearingDetails()
+                    .stream()
+                    .filter(hearing -> cmo.getId().equals(hearing.getValue().getCaseManagementOrderId()))
+                    .findFirst()
+                    .orElseThrow(NoHearingBookingException::new);
 
-            DocumentReference sealedDocument = documentSealingService.sealDocument(cmoToSeal.getValue().getOrder());
-            cmoToSeal.getValue().setOrder(sealedDocument);
+                Element<CaseManagementOrder> cmoToSeal = element(sealFrom(cmo.getValue().getOrder(),
+                    cmoHearing.getValue(), time.now().toLocalDate()));
 
-            List<Element<CaseManagementOrder>> sealedCMOs = caseData.getSealedCMOs();
-            sealedCMOs.add(cmoToSeal);
+                DocumentReference sealedDocument = documentSealingService.sealDocument(cmoToSeal.getValue().getOrder());
+                cmoToSeal.getValue().setOrder(sealedDocument);
 
-            data.put("sealedCMOs", sealedCMOs);
-        } else {
-            cmo.getValue().setStatus(RETURNED);
+                List<Element<CaseManagementOrder>> sealedCMOs = caseData.getSealedCMOs();
+                sealedCMOs.add(cmoToSeal);
+
+                data.put("sealedCMOs", sealedCMOs);
+            } else {
+                cmo.getValue().setStatus(RETURNED);
+            }
+
+            data.put("draftUploadedCMOs", caseData.getDraftUploadedCMOs());
+            data.remove("numDraftCMOs");
+            data.remove("cmoToReviewList");
         }
-
-        data.put("draftUploadedCMOs", caseData.getDraftUploadedCMOs());
-        data.remove("numDraftCMOs");
-        data.remove("cmoToReviewList");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -161,16 +181,19 @@ public class ReviewAgreedCMOController {
         CaseData caseDataBefore = mapper.convertValue(callbackRequest.getCaseDetailsBefore().getData(), CaseData.class);
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
 
-        if (CMOReviewOutcome.SEND_TO_ALL_PARTIES.equals(caseData.getReviewCMODecision().getDecision())) {
-            CaseManagementOrder sealed = caseData.getSealedCMOs().get(caseData.getSealedCMOs().size() - 1).getValue();
-            sendSealedCMO(callbackRequest, sealed);
-        } else {
-            List<Element<CaseManagementOrder>> draftCMOsBefore = caseDataBefore.getDraftUploadedCMOs();
-            List<Element<CaseManagementOrder>> draftCMOs = caseData.getDraftUploadedCMOs();
+        if (caseData.getReviewCMODecision() != null) {
+            if (SEND_TO_ALL_PARTIES.equals(caseData.getReviewCMODecision().getDecision())) {
+                CaseManagementOrder sealed = caseData.getSealedCMOs().get(
+                    caseData.getSealedCMOs().size() - 1).getValue();
+                sendSealedCMO(callbackRequest, sealed);
+            } else {
+                List<Element<CaseManagementOrder>> draftCMOsBefore = caseDataBefore.getDraftUploadedCMOs();
+                List<Element<CaseManagementOrder>> draftCMOs = caseData.getDraftUploadedCMOs();
 
-            draftCMOs.removeAll(draftCMOsBefore);
-            CaseManagementOrder returned = draftCMOs.get(0).getValue();
-            sendReturnedCMO(callbackRequest, returned);
+                //Get the CMO that was modified (status changed from READY -> RETURNED)
+                draftCMOs.removeAll(draftCMOsBefore);
+                sendReturnedCMO(callbackRequest, draftCMOs.get(0).getValue());
+            }
         }
     }
 

@@ -22,7 +22,7 @@
     "ListElementCode": "changeRequestedByJudge",
     "FieldType": "TextArea",
     "ElementLabel": "What do they need to change?",
-    "FieldShowCondition": "decision=\"JUDGE_REQUESTED_CHANGE\"",
+    "FieldShowCondition": "decision=\"JUDGE_REQUESTED_CHANGES\"",
     "SecurityClassification": "Public"
   }
 ]

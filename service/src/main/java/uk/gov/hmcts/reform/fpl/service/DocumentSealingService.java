@@ -48,7 +48,7 @@ public class DocumentSealingService {
         byte[] image = getSealImage();
 
         try (PDDocument doc = loadDocument(inputDocInBytes, password)) {
-            final PDPage page = doc.getPage(1);
+            final PDPage page = doc.getPage(0);
             final PDRectangle pageSize = page.getTrimBox();
             try (PDPageContentStream psdStream = new PDPageContentStream(doc, page, APPEND, true, true)) {
                 final PDImageXObject courtSealImage = createFromByteArray(doc, image, null);

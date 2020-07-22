@@ -9,7 +9,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CMOReviewOutcome",
-    "ListElementCode": "JUDGE_REQUESTED_CHANGE",
+    "ListElementCode": "JUDGE_REQUESTED_CHANGES",
     "ListElement": "No, the local authority needs to make changes",
     "DisplayOrder": 2
   }

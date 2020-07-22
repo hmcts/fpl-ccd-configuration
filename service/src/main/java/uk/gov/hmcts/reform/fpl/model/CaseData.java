@@ -516,5 +516,5 @@ public class CaseData {
 
     public List<Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder>> getSealedCMOs() {
         return defaultIfNull(sealedCMOs, new ArrayList<>());
-
     }
+}
