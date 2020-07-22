@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -26,6 +27,7 @@ import java.util.UUID;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FURTHER_CASE_MANAGEMENT;
@@ -48,7 +50,7 @@ class UploadCMOServiceTest {
             hearing(randomUUID())
         );
 
-        List<Element<HearingBooking>> filtered = service.getHearingsWithoutCMO(hearings);
+        List<Element<HearingBooking>> filtered = service.getHearingsWithoutCMO(hearings, List.of());
 
         assertThat(filtered).isEmpty();
     }
@@ -57,7 +59,7 @@ class UploadCMOServiceTest {
     void shouldReturnPopulatedListWhenHearingsHaveNoCMORelationship() {
         List<Element<HearingBooking>> hearings = wrapElements(hearing(randomUUID()), hearing(), hearing(randomUUID()));
 
-        List<Element<HearingBooking>> filtered = service.getHearingsWithoutCMO(hearings);
+        List<Element<HearingBooking>> filtered = service.getHearingsWithoutCMO(hearings, List.of());
 
         Element<HearingBooking> expected = hearings.get(1);
 
@@ -65,8 +67,24 @@ class UploadCMOServiceTest {
     }
 
     @Test
+    void shouldIncludeHearingsAssociatedToReturnedCMOsInReturnedList() {
+        UUID cmoId = randomUUID();
+        List<Element<HearingBooking>> hearings = wrapElements(
+            hearing(randomUUID()),
+            hearing(cmoId),
+            hearing()
+        );
+
+        Element<CaseManagementOrder> cmo = element(cmoId, CaseManagementOrder.builder().status(RETURNED).build());
+
+        List<Element<HearingBooking>> filtered = service.getHearingsWithoutCMO(hearings, List.of(cmo));
+
+        assertThat(filtered).containsExactly(hearings.get(1), hearings.get(2));
+    }
+
+    @Test
     void shouldReturnEmptyListWhenEmptyListPassed() {
-        assertThat(service.getHearingsWithoutCMO(List.of())).isEmpty();
+        assertThat(service.getHearingsWithoutCMO(List.of(), List.of())).isEmpty();
     }
 
     @Test
@@ -75,9 +93,22 @@ class UploadCMOServiceTest {
         UUID selectedId = hearings.get(0).getId();
         Element<CaseManagementOrder> cmo = element(CaseManagementOrder.builder().build());
 
-        service.mapToHearing(selectedId, hearings, cmo);
+        UUID uuid = service.mapToHearing(selectedId, hearings, cmo);
 
+        assertThat(uuid).isNull();
         assertThat(hearings.get(0).getValue().getCaseManagementOrderId()).isEqualTo(cmo.getId());
+    }
+
+    @Test
+    void shouldReturnOldIdWhenNewCMOIsMapped() {
+        UUID oldId = randomUUID();
+        List<Element<HearingBooking>> hearings = List.of(element(hearing(oldId)));
+        UUID selectedId = hearings.get(0).getId();
+        Element<CaseManagementOrder> cmo = element(CaseManagementOrder.builder().build());
+
+        UUID uuid = service.mapToHearing(selectedId, hearings, cmo);
+
+        assertThat(uuid).isEqualTo(oldId);
     }
 
     @Test
@@ -190,7 +221,7 @@ class UploadCMOServiceTest {
         Map<String, Object> expected = Map.of(
             "pastHearingList", dynamicList(hearings.get(0).getId(), hearings.get(1).getId(), hearings.get(2).getId()),
             "numHearings", "MULTI",
-            "multiHearingsWithCMOs", "Case management hearing, 15 January 2020\n",
+            "multiHearingsWithCMOs", "Case management hearing, 15 January 2020",
             "showHearingsMultiTextArea", "YES"
         );
 
@@ -230,7 +261,7 @@ class UploadCMOServiceTest {
             "cmoHearingInfo", "Send agreed CMO for Case management hearing, 1 February 2020."
                 + "\nThis must have been discussed by all hearings at the party.",
             "cmoJudgeInfo", "His Honour Judge Dredd",
-            "singleHearingsWithCMOs", "Case management hearing, 2 February 2020\n",
+            "singleHearingsWithCMOs", "Case management hearing, 2 February 2020",
             "showHearingsSingleTextArea", "YES"
         );
 
@@ -267,16 +298,58 @@ class UploadCMOServiceTest {
     }
 
     @Test
+    void shouldNotIncludeReturnedHearingsInCMOTextArea() {
+        List<Element<HearingBooking>> hearings = new ArrayList<>(hearings());
+
+        Element<CaseManagementOrder> cmo = element(CaseManagementOrder.builder().build());
+        Element<CaseManagementOrder> returnedCMO = element(CaseManagementOrder.builder().status(RETURNED).build());
+        List<Element<HearingBooking>> additionalHearings = List.of(
+            element(hearing(
+                CASE_MANAGEMENT, LocalDateTime.of(2020, 1, 15, 0, 0), cmo.getId())
+            ),
+            element(hearing(
+                CASE_MANAGEMENT, LocalDateTime.of(2020, 1, 16, 0, 0), returnedCMO.getId())
+            )
+        );
+
+        hearings.addAll(additionalHearings);
+
+        Map<String, Object> initialPageData = service.getInitialPageData(hearings, List.of(cmo, returnedCMO));
+
+        DynamicListElement listElement = DynamicListElement.builder()
+            .code(additionalHearings.get(1).getId())
+            .label("Case management hearing, 16 January 2020")
+            .build();
+
+        DynamicList dynamicList = dynamicList(
+            hearings.get(0).getId(),
+            hearings.get(1).getId(),
+            hearings.get(2).getId(),
+            listElement
+        );
+
+        Map<String, Object> expected = Map.of(
+            "pastHearingList", dynamicList,
+            "numHearings", "MULTI",
+            "multiHearingsWithCMOs", "Case management hearing, 15 January 2020",
+            "showHearingsMultiTextArea", "YES"
+        );
+
+        assertThat(initialPageData).isEqualTo(expected);
+    }
+
+    @Test
     void shouldReturnJudgeNameAndTitleAndHearingInfo() {
         List<Element<HearingBooking>> hearings = hearings();
         service.getJudgeAndHearingDetails(hearings.get(0).getId(), hearings);
     }
 
-    private DynamicList dynamicList(UUID uuid1, UUID uuid2, UUID uuid3) {
-        return dynamicList(uuid1, uuid2, uuid3, false);
+    private DynamicList dynamicList(UUID uuid1, UUID uuid2, UUID uuid3, DynamicListElement... additional) {
+        return dynamicList(uuid1, uuid2, uuid3, false, additional);
     }
 
-    private DynamicList dynamicList(UUID uuid1, UUID uuid2, UUID uuid3, boolean withValue) {
+    private DynamicList dynamicList(UUID uuid1, UUID uuid2, UUID uuid3, boolean withValue,
+                                    DynamicListElement... additional) {
         DynamicListElement value;
         if (withValue) {
             value = DynamicListElement.builder()
@@ -287,22 +360,26 @@ class UploadCMOServiceTest {
             value = DynamicListElement.EMPTY;
         }
 
+        List<DynamicListElement> listItems = new ArrayList<>(List.of(
+            DynamicListElement.builder()
+                .code(uuid1)
+                .label("Case management hearing, 2 March 2020")
+                .build(),
+            DynamicListElement.builder()
+                .code(uuid2)
+                .label("Further case management hearing, 7 March 2020")
+                .build(),
+            DynamicListElement.builder()
+                .code(uuid3)
+                .label("Final hearing, 12 March 2020")
+                .build()
+        ));
+
+        listItems.addAll(Arrays.asList(additional));
+
         return DynamicList.builder()
             .value(value)
-            .listItems(List.of(
-                DynamicListElement.builder()
-                    .code(uuid1)
-                    .label("Case management hearing, 2 March 2020")
-                    .build(),
-                DynamicListElement.builder()
-                    .code(uuid2)
-                    .label("Further case management hearing, 7 March 2020")
-                    .build(),
-                DynamicListElement.builder()
-                    .code(uuid3)
-                    .label("Final hearing, 12 March 2020")
-                    .build()
-            ))
+            .listItems(listItems)
             .build();
     }
 

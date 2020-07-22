@@ -10,14 +10,17 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
@@ -39,14 +42,14 @@ public class UploadCMOService {
     public Map<String, Object> getInitialPageData(List<Element<HearingBooking>> hearings,
                                                   List<Element<CaseManagementOrder>> unsealedOrders) {
 
-        List<Element<HearingBooking>> pastHearings = getHearingsWithoutCMO(hearings);
+        List<Element<HearingBooking>> hearingsWithoutCMOs = getHearingsWithoutCMO(hearings, unsealedOrders);
 
         Map<String, Object> data = new HashMap<>();
         String textAreaKey = null;
         String numHearings;
         String showTextAreaKey = null;
 
-        switch (pastHearings.size()) {
+        switch (hearingsWithoutCMOs.size()) {
             case 0:
                 numHearings = NONE;
                 break;
@@ -54,13 +57,13 @@ public class UploadCMOService {
                 numHearings = SINGLE;
                 textAreaKey = "singleHearingsWithCMOs";
                 showTextAreaKey = "showHearingsSingleTextArea";
-                data.putAll(getJudgeAndHearingDetailsSingle(pastHearings.get(0).getId(), pastHearings));
+                data.putAll(getJudgeAndHearingDetailsSingle(hearingsWithoutCMOs.get(0).getId(), hearingsWithoutCMOs));
                 break;
             default:
                 numHearings = MULTI;
                 textAreaKey = "multiHearingsWithCMOs";
                 showTextAreaKey = "showHearingsMultiTextArea";
-                data.put("pastHearingList", buildDynamicList(pastHearings));
+                data.put("pastHearingList", buildDynamicList(hearingsWithoutCMOs));
         }
 
         String textAreaContent = buildHearingsWithCMOsText(unsealedOrders, hearings);
@@ -75,9 +78,11 @@ public class UploadCMOService {
         return data;
     }
 
-    public List<Element<HearingBooking>> getHearingsWithoutCMO(List<Element<HearingBooking>> hearings) {
+    public List<Element<HearingBooking>> getHearingsWithoutCMO(List<Element<HearingBooking>> hearings,
+                                                               List<Element<CaseManagementOrder>> unsealedOrders) {
         return hearings.stream()
-            .filter(hearing -> !hearing.getValue().hasCMOAssociation())
+            .filter(hearing -> associatedToReturnedCMO(hearing, unsealedOrders)
+                || !hearing.getValue().hasCMOAssociation())
             .collect(toList());
     }
 
@@ -90,9 +95,12 @@ public class UploadCMOService {
         );
     }
 
-    public void mapToHearing(UUID selectedHearing, List<Element<HearingBooking>> hearings,
+    public UUID mapToHearing(UUID selectedHearing, List<Element<HearingBooking>> hearings,
                              Element<CaseManagementOrder> cmo) {
-        getSelectedHearing(selectedHearing, hearings).setCaseManagementOrderId(cmo.getId());
+        HearingBooking hearing = getSelectedHearing(selectedHearing, hearings);
+        UUID previousCMOId = hearing.getCaseManagementOrderId();
+        hearing.setCaseManagementOrderId(cmo.getId());
+        return previousCMOId;
     }
 
     public UUID getSelectedHearingId(Object dynamicList, List<Element<HearingBooking>> hearings) {
@@ -121,6 +129,13 @@ public class UploadCMOService {
         return asDynamicList(hearings, selected, (hearing) -> hearing.toLabel(DATE));
     }
 
+    private boolean associatedToReturnedCMO(Element<HearingBooking> hearing,
+                                            List<Element<CaseManagementOrder>> unsealedCMOs) {
+        return unsealedCMOs.stream()
+            .filter(cmo -> cmo.getValue().getStatus() == RETURNED)
+            .anyMatch(cmo -> cmo.getId().equals(hearing.getValue().getCaseManagementOrderId()));
+    }
+
     private Map<String, Object> getJudgeAndHearingDetailsSingle(UUID selectedHearing,
                                                                 List<Element<HearingBooking>> hearings) {
         Map<String, Object> details = new HashMap<>(getJudgeAndHearingDetails(selectedHearing, hearings));
@@ -133,15 +148,16 @@ public class UploadCMOService {
     private String buildHearingsWithCMOsText(List<Element<CaseManagementOrder>> unsealedOrders,
                                              List<Element<HearingBooking>> hearings) {
 
-        StringBuilder builder = new StringBuilder();
+        List<HearingBooking> filtered = new ArrayList<>();
+        hearings.forEach(hearing -> unsealedOrders.stream()
+            .filter(order -> RETURNED != order.getValue().getStatus()
+                && order.getId().equals(hearing.getValue().getCaseManagementOrderId()))
+            .map(order -> hearing.getValue())
+            .findFirst()
+            .ifPresent(filtered::add)
+        );
 
-        hearings.stream()
-            .filter(hearing -> unsealedOrders.stream()
-                .anyMatch(order -> order.getId().equals(hearing.getValue().getCaseManagementOrderId())))
-            .map(Element::getValue)
-            .sorted(Comparator.comparing(HearingBooking::getStartDate))
-            .forEach(hearing -> builder.append(hearing.toLabel(DATE)).append("\n"));
-
-        return builder.toString();
+        filtered.sort(Comparator.comparing(HearingBooking::getStartDate));
+        return filtered.stream().map(value -> value.toLabel(DATE)).collect(Collectors.joining("\n"));
     }
 }
