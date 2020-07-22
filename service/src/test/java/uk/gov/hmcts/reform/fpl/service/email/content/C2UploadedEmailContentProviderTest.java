@@ -3,9 +3,11 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForC2;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -21,6 +23,9 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
 
     @Autowired
     private C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
+
+    @MockBean
+    private HearingBookingService hearingBookingService;
 
     @Test
     void shouldReturnExpectedMapWithGivenCaseDetails() {
