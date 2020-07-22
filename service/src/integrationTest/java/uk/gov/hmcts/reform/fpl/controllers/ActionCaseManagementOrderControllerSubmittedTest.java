@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.commons.codec.binary.Base64;
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -21,15 +19,14 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
 
 import java.time.LocalDateTime;
-import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -38,8 +35,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.JUDGE_REQUESTED_CHANGE;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
@@ -54,7 +50,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRecitals;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedule;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedCaseUrlParameters;
@@ -65,7 +60,6 @@ import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 @OverrideAutoConfiguration(enabled = true)
 class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControllerTest {
     private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
-    private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
     private static final String DIGITAL_SERVED_REPRESENTATIVE_ADDRESS = "abc@digitalrep.com";
@@ -116,27 +110,27 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
             Map.of("documentToBeSent", CMO_DOCUMENT));
 
         verify(notificationClient).sendEmail(
-            CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE,
-            LOCAL_AUTHORITY_EMAIL_ADDRESS,
-            getExpectedCMOIssuedCaseUrlParameters(LOCAL_AUTHORITY_NAME),
-            CASE_ID);
-
-        verify(notificationClient).sendEmail(
-            CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE,
-            DIGITAL_SERVED_REPRESENTATIVE_ADDRESS,
-            getExpectedCMOIssuedCaseUrlParameters("Jon Snow"),
-            CASE_ID);
-
-        verify(notificationClient).sendEmail(
-            eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE),
-            eq(CAFCASS_EMAIL_ADDRESS),
-            eqJson(getExpectedCMOIssuedDocumentLinkParameters("cafcass")),
+            eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
+            eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            anyMap(),
             eq(CASE_ID));
 
         verify(notificationClient).sendEmail(
-            eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE),
+            eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
+            eq(DIGITAL_SERVED_REPRESENTATIVE_ADDRESS),
+            anyMap(),
+            eq(CASE_ID));
+
+        verify(notificationClient).sendEmail(
+            eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
+            eq(CAFCASS_EMAIL_ADDRESS),
+            anyMap(),
+            eq(CASE_ID));
+
+        verify(notificationClient).sendEmail(
+            eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
             eq(EMAIL_SERVED_REPRESENTATIVE_ADDRESS),
-            eqJson(getExpectedCMOIssuedDocumentLinkParameters("Jamie Lannister")),
+            anyMap(),
             eq(CASE_ID));
 
         verify(notificationClient).sendEmail(
@@ -162,7 +156,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
         verify(notificationClient, never()).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
             eq(ADMIN_EMAIL_ADDRESS),
-            any(),
+            anyMap(),
             any());
 
         verify(notificationClient).sendEmail(
@@ -234,34 +228,6 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
             .recitals(createRecitals())
             .directions(createCmoDirections())
             .orderDoc(CMO_DOCUMENT)
-            .build();
-    }
-
-    private Map<String, Object> getExpectedCMOIssuedCaseUrlParameters(String recipientName) {
-        final String subjectLine = String.format("Jones, SACCCCCCCC5676576567, hearing %s",
-            formatLocalDateToString(dateIn3Months.toLocalDate(), FormatStyle.MEDIUM));
-
-        return ImmutableMap.<String, Object>builder()
-            .put("localAuthorityNameOrRepresentativeFullName", recipientName)
-            .put("subjectLineWithHearingDate", subjectLine)
-            .put("reference", CASE_ID)
-            .put("caseUrl", "http://fake-url/cases/case-details/12345")
-            .build();
-    }
-
-    private Map<String, Object> getExpectedCMOIssuedDocumentLinkParameters(String recipientName) {
-        final String subjectLine = String.format("Jones, SACCCCCCCC5676576567, hearing %s",
-            formatLocalDateToString(dateIn3Months.toLocalDate(), FormatStyle.MEDIUM));
-
-        String fileContent = new String(Base64.encodeBase64(PDF), ISO_8859_1);
-        JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
-
-        return ImmutableMap.<String, Object>builder()
-            .put("cafcassOrRespondentName", recipientName)
-            .put("subjectLineWithHearingDate", subjectLine)
-            .put("reference", CASE_ID)
-            .put("caseUrl", "http://fake-url/cases/case-details/12345")
-            .put("link_to_document", jsonFileObject)
             .build();
     }
 

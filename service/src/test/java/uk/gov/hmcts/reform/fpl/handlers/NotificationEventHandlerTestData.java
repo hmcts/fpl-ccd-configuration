@@ -131,13 +131,6 @@ public class NotificationEventHandlerTestData {
             .build());
     }
 
-    public static Map<String, Object> getExpectedCMOIssuedCaseLinkNotificationParametersForRepresentative() {
-        return ImmutableMap.<String, Object>builder()
-            .put("localAuthorityNameOrRepresentativeFullName", "Jon Snow")
-            .putAll(expectedCommonCMONotificationParameters())
-            .build();
-    }
-
     public static List<Representative> getExpectedEmailRepresentativesForAddingPartiesToCase() {
         return ImmutableList.of(
             Representative.builder()

@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,23 +13,27 @@ import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForCMO;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
-import uk.gov.hmcts.reform.fpl.utils.AssertionHelper;
+import uk.gov.hmcts.reform.fpl.model.notify.draftcmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
+import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.nio.charset.StandardCharsets.ISO_8859_1;
-import static org.apache.commons.lang3.RandomUtils.nextBytes;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
 
 @ContextConfiguration(classes = {CaseManagementOrderEmailContentProvider.class, EmailNotificationHelper.class,
-    HearingBookingService.class, FixedTimeConfiguration.class})
+    FixedTimeConfiguration.class})
 class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     @Autowired
@@ -51,41 +54,43 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
     }
 
     @Test
-    void shouldBuildCMOIssuedWithoutDocumentLinkNotificationExpectedParameters() {
+    void shouldBuildCMOIssuedExpectedParametersWithEmptyCaseUrl() {
+        given(documentDownloadService.downloadDocument(anyString())).willReturn(TestDataHelper.DOCUMENT_CONTENT);
 
-        Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
-            .put("cafcassOrRespondentName", "testName")
-            .put("caseUrl", caseUrl(CASE_REFERENCE))
-            .put("subjectLineWithHearingDate", "lastName, 11")
-            .put("reference", CASE_REFERENCE)
-            .build();
+        IssuedCMOTemplate expectedTemplate = new IssuedCMOTemplate();
 
-        assertThat(caseManagementOrderEmailContentProvider.buildCMOIssuedDocumentLinkNotificationParameters(
-            createCase(), "testName", new byte[]{}))
-            .isEqualTo(expectedParameters);
+        expectedTemplate.setRespondentLastName("lastName");
+        expectedTemplate.setFamilyManCaseNumber("11");
+        expectedTemplate.setDigitalPreference("No");
+        expectedTemplate.setHearingDate("Test");
+        expectedTemplate.setCaseUrl("");
+        expectedTemplate.setDocumentLink(generateAttachedDocumentLink(TestDataHelper.DOCUMENT_CONTENT)
+            .map(JSONObject::toMap)
+            .orElse(null));
+
+        assertThat(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(
+            createCase(), EMAIL))
+            .isEqualToComparingFieldByField(expectedTemplate);
     }
 
     @Test
-    void shouldBuildCMOIssuedWithDocumentLinkNotificationExpectedParameters() {
+    void shouldBuildCMOIssuedExpectedParametersWithPopulatedCaseUrl() {
+        given(documentDownloadService.downloadDocument(anyString())).willReturn(TestDataHelper.DOCUMENT_CONTENT);
 
-        byte[] documentContentAsByte = nextBytes(20);
-        String documentContent = new String(Base64.encodeBase64(documentContentAsByte), ISO_8859_1);
+        IssuedCMOTemplate expectedTemplate = new IssuedCMOTemplate();
 
-        JSONObject expectedDocumentLink = new JSONObject().put("file", documentContent);
+        expectedTemplate.setRespondentLastName("lastName");
+        expectedTemplate.setFamilyManCaseNumber("11");
+        expectedTemplate.setDigitalPreference("Yes");
+        expectedTemplate.setCaseUrl("http://fake-url/cases/case-details/" + CASE_REFERENCE);
+        expectedTemplate.setHearingDate("Test");
+        expectedTemplate.setDocumentLink(generateAttachedDocumentLink(TestDataHelper.DOCUMENT_CONTENT)
+            .map(JSONObject::toMap)
+            .orElse(null));
 
-        Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
-            .put("cafcassOrRespondentName", "testName")
-            .put("caseUrl", caseUrl(CASE_REFERENCE))
-            .put("subjectLineWithHearingDate", "lastName, 11")
-            .put("link_to_document", expectedDocumentLink)
-            .put("reference", CASE_REFERENCE)
-            .build();
-
-        Map<String, Object> actualParameters =
-            caseManagementOrderEmailContentProvider.buildCMOIssuedDocumentLinkNotificationParameters(
-                createCase(), "testName", documentContentAsByte);
-
-        AssertionHelper.assertEquals(actualParameters, expectedParameters);
+        assertThat(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(
+            createCase(), DIGITAL_SERVICE))
+            .isEqualToComparingFieldByField(expectedTemplate);
     }
 
     @Test
@@ -134,7 +139,6 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
         allocatedJudgeTemplate.setJudgeName("JudgeLastName");
 
         return allocatedJudgeTemplate;
-
     }
 
     private CaseDetails createCase() {
@@ -142,6 +146,8 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
         data.put("familyManCaseNumber", "11");
         data.put("caseName", "case1");
         data.put("cmoToAction", CaseManagementOrder.builder()
+            .orderDoc(DocumentReference.builder().binaryUrl("http://test.org").build())
+            .hearingDate("Test")
             .action(OrderAction.builder()
                 .changeRequestedByJudge("change it")
                 .build())
