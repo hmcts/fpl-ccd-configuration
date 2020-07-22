@@ -139,7 +139,7 @@ public class UploadCMOService {
     private Map<String, Object> getJudgeAndHearingDetailsSingle(UUID selectedHearing,
                                                                 List<Element<HearingBooking>> hearings) {
         Map<String, Object> details = new HashMap<>(getJudgeAndHearingDetails(selectedHearing, hearings));
-        String updated = format("Send agreed CMO for %s.\nThis must have been discussed by all hearings at the party.",
+        String updated = format("Send agreed CMO for %s.\nThis must have been discussed by all parties at the hearing.",
             details.get("cmoHearingInfo"));
         details.put("cmoHearingInfo", updated);
         return details;
