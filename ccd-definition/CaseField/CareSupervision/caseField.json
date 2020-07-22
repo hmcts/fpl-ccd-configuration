@@ -480,6 +480,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "selectedHearingIds",
+    "Label": " ",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "allPartiesHearingDate",
     "Label": "Hearing date",
     "FieldType": "Text",
@@ -1252,6 +1261,22 @@
     "ID": "careOrderSelector",
     "Label": "Which orders are being discharged?",
     "FieldType": "CareOrderSelector",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "newHearing_label",
+    "Label": "New hearing added",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "newHearingSelector",
+    "Label": "Send notice of hearing",
+    "FieldType": "HearingSelector",
     "SecurityClassification": "Public"
   },
   {

@@ -7,7 +7,9 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import com.fasterxml.jackson.databind.node.ValueNode;
 import org.springframework.boot.jackson.JsonComponent;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.io.IOException;
@@ -57,11 +59,14 @@ public class SelectorDeserializer extends JsonDeserializer<Selector> {
     }
 
     private boolean isSelected(TreeNode node) {
-        return !isNodeNull(node) && node.isArray() && containsSelected((ArrayNode) node);
+        return !isNodeNull(node) && (
+            (node.isArray() && containsSelected((ArrayNode) node))
+                || node.isValueNode() && YesNo.YES.getValue().equals(((ValueNode) node).asText()));
     }
 
     private boolean containsSelected(ArrayNode node) {
-        return node.size() == 1 && SELECTED.name().equals(node.get(0).asText());
+        return node.size() == 1 && (SELECTED.name().equals(node.get(0).asText())
+            || YesNo.YES.getValue().equals(node.get(0).asText()));
     }
 
     private boolean isNodeNull(TreeNode node) {
