@@ -8,6 +8,7 @@
     "TabDisplayOrder": 2,
     "CaseFieldID": "applicationDetailsHeadingLabel",
     "FieldShowCondition": "orders!=\"\" OR hearing!=\"\"",
+    "TabShowCondition": "[STATE]=\"Open\" OR [STATE]=\"RETURNED\"",
     "TabFieldDisplayOrder": 1
   },
   {
@@ -39,7 +40,6 @@
     "TabLabel": "View application",
     "TabDisplayOrder": 2,
     "CaseFieldID": "orders",
-    "TabShowCondition": "[STATE]=\"Open\" OR [STATE]=\"RETURNED\"",
     "TabFieldDisplayOrder": 4
   },
   {
