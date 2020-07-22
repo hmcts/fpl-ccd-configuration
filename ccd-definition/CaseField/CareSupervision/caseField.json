@@ -1609,7 +1609,7 @@
     "ID": "applicationDetailsHeadingLabel",
     "FieldType": "Label",
     "Label": "## Application details",
-    "SecurityClassification": "Public",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1617,7 +1617,7 @@
     "ID": "groundsForTheApplicationHeadingLabel",
     "FieldType": "Label",
     "Label": "## Grounds for the application",
-    "SecurityClassification": "Public",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1625,7 +1625,7 @@
     "ID": "supportingDocumentsHeadingLabel",
     "FieldType": "Label",
     "Label": "## Supporting documents",
-    "SecurityClassification": "Public",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1633,7 +1633,7 @@
     "ID": "informationAboutThePartiesHeadingLabel",
     "FieldType": "Label",
     "Label": "## Information about the parties",
-    "SecurityClassification": "Public",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1641,7 +1641,7 @@
     "ID": "courtRequirementsHeadingLabel",
     "FieldType": "Label",
     "Label": "## Court requirements",
-    "SecurityClassification": "Public",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1649,7 +1649,7 @@
     "ID": "ordersAndDirectionsSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### Orders and directions sought",
-    "SecurityClassification": "Public",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1657,7 +1657,7 @@
     "ID": "hearingUrgencySubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### Hearing urgency",
-    "SecurityClassification": "Public",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1665,7 +1665,7 @@
     "ID": "thresholdCriteriaSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### Threshold criteria",
-    "SecurityClassification": "Public",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1673,7 +1673,7 @@
     "ID": "riskAndHarmToTheChildrenSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### Risk and harm to the children",
-    "SecurityClassification": "Public",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1681,7 +1681,7 @@
     "ID": "factorsAffectingParentingSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### Factors Affecting parenting",
-    "SecurityClassification": "Public",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1689,7 +1689,7 @@
     "ID": "additionalInformationGroundsSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### Additional information",
-    "SecurityClassification": "Public",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1697,7 +1697,7 @@
     "ID": "additionalInformationPartiesSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### Additional information",
-    "SecurityClassification": "Public",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1705,7 +1705,7 @@
     "ID": "additionalInformationCourtRequirementsSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### Additional information",
-    "SecurityClassification": "Public",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1713,7 +1713,7 @@
     "ID": "otherProceedingsSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### Other proceedings for the child",
-    "SecurityClassification": "Public",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1721,7 +1721,7 @@
     "ID": "internationalElementSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### International element",
-    "SecurityClassification": "Public",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1729,7 +1729,7 @@
     "ID": "organisationDetailsSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### Your organisation details",
-    "SecurityClassification": "Public",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1737,7 +1737,7 @@
     "ID": "childDetailsSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### The child's details",
-    "SecurityClassification": "Public",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1745,7 +1745,7 @@
     "ID": "respondentsSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### Respondents' details",
-    "SecurityClassification": "Public",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1753,7 +1753,7 @@
     "ID": "othersSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### Other people in the case",
-    "SecurityClassification": "Public",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1761,7 +1761,7 @@
     "ID": "allocationProposalSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### Allocation proposal",
-    "SecurityClassification": "Public",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1769,7 +1769,7 @@
     "ID": "facilitiesOrServiceNeededSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### Facilities or service needed in court",
-    "SecurityClassification": "Public",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
