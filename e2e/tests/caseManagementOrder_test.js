@@ -24,11 +24,3 @@ Scenario('local sends agreed CMO to judge', async (I, caseViewPage, sendAgreedCa
   I.seeInTab(['Draft Case Management Order 1', 'Date sent'], dateFormat(new Date(), 'dd mmm yyyy'));
   I.seeInTab(['Draft Case Management Order 1', 'Status'], 'With judge for approval');
 });
-
-Scenario('Judge sees Action CMO placeholder when CMO is not in Judge Review', async (I, caseViewPage) => {
-  await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
-
-  await caseViewPage.goToNewActions(config.applicationActions.actionCaseManagementOrder);
-  await I.see('You cannot edit this order');
-  await I.see('You can only review the draft order after it has been submitted');
-});
