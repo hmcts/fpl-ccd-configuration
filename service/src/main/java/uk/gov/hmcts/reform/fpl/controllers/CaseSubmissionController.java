@@ -151,11 +151,10 @@ public class CaseSubmissionController {
     public SubmittedCallbackResponse handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         if (isInOpenState(callbackRequest.getCaseDetailsBefore())) {
             applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest));
+            applicationEventPublisher.publishEvent(new CaseDataChanged(callbackRequest));
         } else if (isInReturnedState(callbackRequest.getCaseDetailsBefore())) {
             applicationEventPublisher.publishEvent(new AmendedReturnedCaseEvent(callbackRequest));
         }
-
-        applicationEventPublisher.publishEvent(new CaseDataChanged(callbackRequest));
 
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);

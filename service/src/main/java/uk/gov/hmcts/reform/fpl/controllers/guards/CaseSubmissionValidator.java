@@ -28,7 +28,6 @@ public class CaseSubmissionValidator extends CompoundEventValidator {
         APPLICANT,
         ENTER_CHILDREN,
         RESPONDENTS,
-        APPLICANT,
         ALLOCATION_PROPOSAL
     );
 

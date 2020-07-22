@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import uk.gov.hmcts.reform.fpl.FplEvent;
 
+
+//TODO remove class
 @RequiredArgsConstructor
 @Getter
 public enum Section {

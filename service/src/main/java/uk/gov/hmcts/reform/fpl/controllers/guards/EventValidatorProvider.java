@@ -12,7 +12,6 @@ import javax.validation.Validator;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
@@ -22,12 +21,10 @@ import static uk.gov.hmcts.reform.fpl.FplEvent.APPLICANT;
 import static uk.gov.hmcts.reform.fpl.FplEvent.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.FplEvent.DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.FplEvent.ENTER_CHILDREN;
-import static uk.gov.hmcts.reform.fpl.FplEvent.FACTORS_AFFECTING_PARENTING;
 import static uk.gov.hmcts.reform.fpl.FplEvent.GROUNDS;
 import static uk.gov.hmcts.reform.fpl.FplEvent.HEARING_NEEDED;
 import static uk.gov.hmcts.reform.fpl.FplEvent.ORDERS_NEEDED;
 import static uk.gov.hmcts.reform.fpl.FplEvent.RESPONDENTS;
-import static uk.gov.hmcts.reform.fpl.FplEvent.RISK_AND_HARM;
 import static uk.gov.hmcts.reform.fpl.FplEvent.SUBMIT_APPLICATION;
 
 @Service
@@ -50,7 +47,7 @@ public class EventValidatorProvider {
         validators.put(HEARING_NEEDED, propertyValidator("hearing"));
         validators.put(ORDERS_NEEDED, propertyValidator("orders"));
         validators.put(GROUNDS, propertyValidator("grounds"));
-        validators.put(APPLICANT, propertyValidator("applicants"));
+        validators.put(APPLICANT, propertyValidator("applicants", "solicitor"));
         validators.put(ALLOCATION_PROPOSAL, propertyValidator("allocationProposal"));
         validators.put(DOCUMENTS, propertyValidator("documents_socialWorkOther",
             "documents_socialWorkCarePlan_document",
@@ -61,7 +58,7 @@ public class EventValidatorProvider {
             "thresholdDocument",
             "socialWorkEvidenceTemplateDocument"
         ));
-
+        validators.put(SUBMIT_APPLICATION, submissionValidator);
         guards.put(SUBMIT_APPLICATION, submissionValidator);
     }
 
