@@ -344,7 +344,7 @@ class UploadCMOServiceTest {
         Map<String, Object> details = service.getJudgeAndHearingDetails(hearings.get(0).getId(), hearings);
 
         assertThat(details).isEqualTo(Map.of(
-           "cmoHearingInfo", "Case management hearing, 2 March 2020",
+            "cmoHearingInfo", "Case management hearing, 2 March 2020",
             "cmoJudgeInfo", "His Honour Judge Dredd"
         ));
     }
