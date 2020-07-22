@@ -25,14 +25,16 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.NEXT_HEARING
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SERVED_CASE_MANAGEMENT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.DRAFT_CASE_MANAGEMENT_ORDER;
 
+/**
+ * Service manging the flow of CMO objects between judge and LA.
+ *
+ * @deprecated to be removed with {@link CaseManagementOrder}
+ */
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@Deprecated(since = "FPLA-1915")
+@SuppressWarnings("java:S1133") // Remove once deprecations dealt with
 public class CaseManagementOrderProgressionService {
-    //TODO: better CCD ids for the below:
-    // sharedDraftCMODocument -> sharedCaseManagementOrderDocument
-    // caseManagementOrder -> draftCaseManagementOrder_LOCAL_AUTHORITY
-    // cmoToAction -> draftCaseManagementOrder_JUDICIARY
-    // requires changes in CCD definition. Decided not in scope of 24. FPLA-1478
 
     private final ObjectMapper mapper;
     private final ApplicationEventPublisher applicationEventPublisher;
