@@ -1610,7 +1610,6 @@
     "FieldType": "Label",
     "Label": "## Application details",
     "SecurityClassification": "Public",
-    "Comment": "Main heading in view applications tab"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1619,7 +1618,6 @@
     "FieldType": "Label",
     "Label": "## Grounds for the application",
     "SecurityClassification": "Public",
-    "Comment": "Main heading in view applications tab"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1628,7 +1626,6 @@
     "FieldType": "Label",
     "Label": "## Supporting documents",
     "SecurityClassification": "Public",
-    "Comment": "Main heading in view applications tab"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1637,7 +1634,6 @@
     "FieldType": "Label",
     "Label": "## Information about the parties",
     "SecurityClassification": "Public",
-    "Comment": "Main heading in view applications tab"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1646,7 +1642,6 @@
     "FieldType": "Label",
     "Label": "## Court requirements",
     "SecurityClassification": "Public",
-    "Comment": "Main heading in view applications tab"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1655,7 +1650,6 @@
     "FieldType": "Label",
     "Label": "#### Orders and directions sought",
     "SecurityClassification": "Public",
-    "Comment": "Sub heading in view applications tab"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1664,7 +1658,6 @@
     "FieldType": "Label",
     "Label": "#### Hearing urgency",
     "SecurityClassification": "Public",
-    "Comment": "Sub heading in view applications tab"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1673,7 +1666,6 @@
     "FieldType": "Label",
     "Label": "#### Threshold criteria",
     "SecurityClassification": "Public",
-    "Comment": "Sub heading in view applications tab"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1682,7 +1674,6 @@
     "FieldType": "Label",
     "Label": "#### Risk and harm to the children",
     "SecurityClassification": "Public",
-    "Comment": "Sub heading in view applications tab"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1691,7 +1682,6 @@
     "FieldType": "Label",
     "Label": "#### Factors Affecting parenting",
     "SecurityClassification": "Public",
-    "Comment": "Sub heading in view applications tab"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1700,7 +1690,6 @@
     "FieldType": "Label",
     "Label": "#### Additional information",
     "SecurityClassification": "Public",
-    "Comment": "Sub heading in view applications tab"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1709,7 +1698,6 @@
     "FieldType": "Label",
     "Label": "#### Additional information",
     "SecurityClassification": "Public",
-    "Comment": "Sub heading in view applications tab"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1718,7 +1706,6 @@
     "FieldType": "Label",
     "Label": "#### Additional information",
     "SecurityClassification": "Public",
-    "Comment": "Sub heading in view applications tab"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1727,7 +1714,6 @@
     "FieldType": "Label",
     "Label": "#### Other proceedings for the child",
     "SecurityClassification": "Public",
-    "Comment": "Sub heading in view applications tab"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1736,7 +1722,6 @@
     "FieldType": "Label",
     "Label": "#### International element",
     "SecurityClassification": "Public",
-    "Comment": "Sub heading in view applications tab"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1745,7 +1730,6 @@
     "FieldType": "Label",
     "Label": "#### Your organisation details",
     "SecurityClassification": "Public",
-    "Comment": "Sub heading in view applications tab"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1754,7 +1738,6 @@
     "FieldType": "Label",
     "Label": "#### The child's details",
     "SecurityClassification": "Public",
-    "Comment": "Sub heading in view applications tab"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1763,7 +1746,6 @@
     "FieldType": "Label",
     "Label": "#### Respondents' details",
     "SecurityClassification": "Public",
-    "Comment": "Sub heading in view applications tab"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1772,7 +1754,6 @@
     "FieldType": "Label",
     "Label": "#### Other people in the case",
     "SecurityClassification": "Public",
-    "Comment": "Sub heading in view applications tab"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1781,7 +1762,6 @@
     "FieldType": "Label",
     "Label": "#### Allocation proposal",
     "SecurityClassification": "Public",
-    "Comment": "Sub heading in view applications tab"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1790,7 +1770,6 @@
     "FieldType": "Label",
     "Label": "#### Facilities or service needed in court",
     "SecurityClassification": "Public",
-    "Comment": "Sub heading in view applications tab"
   },
   {
     "LiveFrom": "01/01/2017",
