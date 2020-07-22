@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
@@ -34,6 +35,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
+import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -69,8 +71,13 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {CaseManagementOrderGenerationService.class})
 @ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, CaseDataExtractionService.class, HearingVenueLookUpService.class,
-    LookupTestConfig.class, HearingBookingService.class, FixedTimeConfiguration.class
+    JacksonAutoConfiguration.class,
+    CaseDataExtractionService.class,
+    HearingVenueLookUpService.class,
+    LookupTestConfig.class,
+    HearingBookingService.class,
+    FixedTimeConfiguration.class,
+    NoticeOfHearingGenerationService.class,
 })
 class CaseManagementOrderGenerationServiceTest {
     private static final LocalDateTime NOW = LocalDateTime.now();
@@ -79,6 +86,12 @@ class CaseManagementOrderGenerationServiceTest {
 
     @Autowired
     private CaseManagementOrderGenerationService service;
+
+    @MockBean
+    private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
+
+    @MockBean
+    private UploadDocumentService uploadDocumentService;
 
     @Test
     void shouldBuildCaseManagementOrderWithMinimumViableDataWhenCaseManagementOrderIdIsPopulated() {

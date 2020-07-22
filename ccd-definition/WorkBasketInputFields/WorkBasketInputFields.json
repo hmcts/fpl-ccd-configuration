@@ -8,6 +8,13 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "caseLocalAuthority",
+    "Label": "Local authority",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "caseName",
     "Label": "Case name",

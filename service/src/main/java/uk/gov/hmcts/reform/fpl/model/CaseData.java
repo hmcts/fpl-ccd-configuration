@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
@@ -65,6 +66,7 @@ import javax.validation.constraints.PastOrPresent;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.Collections.emptyList;
+import static java.util.Comparator.comparing;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
@@ -75,6 +77,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Data
 @Builder(toBuilder = true)
@@ -220,6 +223,7 @@ public class CaseData {
     @NotNull(message = "Enter hearing details", groups = NoticeOfProceedingsGroup.class)
     @NotEmpty(message = "You need to enter a hearing date.", groups = SealedSDOGroup.class)
     private final List<Element<HearingBooking>> hearingDetails;
+    private final List<Element<UUID>> selectedHearingIds;
 
     private LocalDate dateSubmitted;
     private final List<Element<DocumentBundle>> noticeOfProceedingsBundle;
@@ -247,6 +251,8 @@ public class CaseData {
     private final InterimEndDate interimEndDate;
     private final Selector childSelector;
     private final Selector careOrderSelector;
+    private final Selector newHearingSelector;
+
     private final String orderAppliesToAllChildren;
 
     public String getOrderAppliesToAllChildren() {
@@ -490,6 +496,18 @@ public class CaseData {
 
     public boolean hasAllocatedJudgeEmail() {
         return allocatedJudgeExists() && isNotEmpty(allocatedJudge.getJudgeEmailAddress());
+    }
+
+    public Optional<HearingBooking> getFirstHearing() {
+        return unwrapElements(hearingDetails).stream()
+            .min(comparing(HearingBooking::getStartDate));
+    }
+
+    public HearingBooking getMostUrgentHearingBookingAfter(LocalDateTime time) {
+        return unwrapElements(hearingDetails).stream()
+            .filter(hearing -> hearing.getStartDate().isAfter(time))
+            .min(comparing(HearingBooking::getStartDate))
+            .orElseThrow(NoHearingBookingException::new);
     }
 
     private final DocumentReference submittedForm;
