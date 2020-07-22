@@ -12,5 +12,5 @@ public enum HearingType {
     FINAL("Final"),
     OTHER("Other");
 
-    private final String label;
+    final String label;
 }

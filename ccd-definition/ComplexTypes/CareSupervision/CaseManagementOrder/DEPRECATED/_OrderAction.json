@@ -1,0 +1,38 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderAction",
+    "ListElementCode": "document",
+    "FieldType": "Document",
+    "ElementLabel": "File",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderAction",
+    "ListElementCode": "type",
+    "FieldType": "FixedRadioList",
+    "ElementLabel": "Is this ready to be sent to parties?",
+    "FieldTypeParameter": "CMOActionType",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderAction",
+    "ListElementCode": "nextHearingType",
+    "FieldType": "FixedRadioList",
+    "ElementLabel": "What is the next hearing?",
+    "FieldShowCondition": "type=\"SEND_TO_ALL_PARTIES\"",
+    "FieldTypeParameter": "CMONextHearingType",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderAction",
+    "ListElementCode": "changeRequestedByJudge",
+    "FieldType": "TextArea",
+    "ElementLabel": "What do they need to change?",
+    "FieldShowCondition": "type=\"JUDGE_REQUESTED_CHANGE\"",
+    "SecurityClassification": "Public"
+  }
+]
