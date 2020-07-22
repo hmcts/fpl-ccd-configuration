@@ -1,0 +1,100 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Schedule",
+    "ListElementCode": "includeSchedule",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Do you want to include a schedule?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Schedule",
+    "ListElementCode": "allocation",
+    "FieldType": "TextArea",
+    "ElementLabel": "Allocation",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "includeSchedule=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Schedule",
+    "ListElementCode": "application",
+    "FieldType": "TextArea",
+    "ElementLabel": "Application",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "includeSchedule=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Schedule",
+    "ListElementCode": "todaysHearing",
+    "FieldType": "TextArea",
+    "ElementLabel": "Today's hearing",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "includeSchedule=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Schedule",
+    "ListElementCode": "childrensCurrentArrangement",
+    "FieldType": "TextArea",
+    "ElementLabel": "Children's current arrangements",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "includeSchedule=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Schedule",
+    "ListElementCode": "timetableForProceedings",
+    "FieldType": "TextArea",
+    "ElementLabel": "Timetable for proceedings (26 weeks)",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "includeSchedule=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Schedule",
+    "ListElementCode": "timetableForChildren",
+    "FieldType": "TextArea",
+    "ElementLabel": "Timetable for the children",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "includeSchedule=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Schedule",
+    "ListElementCode": "alternativeCarers",
+    "FieldType": "TextArea",
+    "ElementLabel": "Alternative carers",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "includeSchedule=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Schedule",
+    "ListElementCode": "threshold",
+    "FieldType": "TextArea",
+    "ElementLabel": "Threshold",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "includeSchedule=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Schedule",
+    "ListElementCode": "keyIssues",
+    "FieldType": "TextArea",
+    "ElementLabel": "Key issues",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "includeSchedule=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Schedule",
+    "ListElementCode": "partiesPositions",
+    "FieldType": "TextArea",
+    "ElementLabel": "Parties' positions",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "includeSchedule=\"Yes\""
+  }
+]
