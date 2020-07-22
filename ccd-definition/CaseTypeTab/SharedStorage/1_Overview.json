@@ -1,0 +1,131 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "CaseOverview",
+    "TabLabel": "Case Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "caseIDReference",
+    "TabFieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker", "TabID": "CaseOverview",
+    "TabLabel": "Case Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "caseTitle",
+    "TabFieldDisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "CaseOverview",
+    "TabLabel": "Case Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "[CREATED_DATE]",
+    "TabFieldDisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "CaseOverview",
+    "TabLabel": "Case Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "caseLocalAuthority",
+    "TabFieldDisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "CaseOverview",
+    "TabLabel": "Case Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "uploadedApplication",
+    "TabFieldDisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "CaseOverview",
+    "TabLabel": "Case Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "uploadedAnnexA",
+    "TabFieldDisplayOrder": 6
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "CaseOverview",
+    "TabLabel": "Case Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "uploadedAnnexB",
+    "TabFieldDisplayOrder": 7
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "CaseOverview",
+    "TabLabel": "Case Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "uploadedAnnexC",
+    "TabFieldDisplayOrder": 8
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "CaseOverview",
+    "TabLabel": "Case Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "uploadedAnnexD",
+    "TabFieldDisplayOrder": 9
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "CaseOverview",
+    "TabLabel": "Case Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "uploadedAnnexE",
+    "TabFieldDisplayOrder": 10
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "CaseOverview",
+    "TabLabel": "Case Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "bundleTitle",
+    "TabFieldDisplayOrder": 11
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "CaseOverview",
+    "TabLabel": "Case Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "uploadedBundle",
+    "TabFieldDisplayOrder": 12
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "CaseOverview",
+    "TabLabel": "Case Overview",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "shortBundleDescription",
+    "TabFieldDisplayOrder": 13
+  }
+]

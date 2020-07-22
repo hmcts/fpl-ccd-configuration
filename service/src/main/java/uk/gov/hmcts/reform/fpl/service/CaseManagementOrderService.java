@@ -33,8 +33,15 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.CMO;
 import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMapping;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
+/**
+ * Service for old cmo flows.
+ *
+ * @deprecated remove once FPLA-1915 goes live
+ */
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@SuppressWarnings({"java:S1874", "java:S1133"}) // Remove once deprecations dealt with
+@Deprecated(since = "FPLA-1915")
 public class CaseManagementOrderService {
     private final CaseManagementOrderGenerationService templateDataGenerationService;
     private final DocumentService documentService;

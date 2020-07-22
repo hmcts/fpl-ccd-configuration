@@ -29,10 +29,18 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEM
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.enums.Event.DRAFT_CASE_MANAGEMENT_ORDER;
 
+/**
+ * Manages the endpoints for the old draft-cmo event. To be removed once we have fully migrated away from the old CMO
+ * stuff.
+ *
+ * @deprecated to be replaced in FPLA-1915
+ */
 @Api
 @RestController
 @RequestMapping("/callback/draft-cmo")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@Deprecated(since = "FPLA-1915")
+@SuppressWarnings("java:S1133") // Remove once deprecations dealt with
 public class DraftCMOController {
     private final ObjectMapper mapper;
     private final CaseManagementOrderService caseManagementOrderService;

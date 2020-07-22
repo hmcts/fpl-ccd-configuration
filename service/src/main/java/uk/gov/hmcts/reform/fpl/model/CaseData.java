@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
@@ -65,6 +66,7 @@ import javax.validation.constraints.PastOrPresent;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.Collections.emptyList;
+import static java.util.Comparator.comparing;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
@@ -75,11 +77,13 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Data
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @HasDocumentsIncludedInSwet(groups = UploadDocumentsGroup.class)
+@SuppressWarnings({"java:S1874", "java:S1133"}) // Remove once deprecations dealt with
 public class CaseData {
     private final State state;
     @NotBlank(message = "Enter a case name")
@@ -220,6 +224,7 @@ public class CaseData {
     @NotNull(message = "Enter hearing details", groups = NoticeOfProceedingsGroup.class)
     @NotEmpty(message = "You need to enter a hearing date.", groups = SealedSDOGroup.class)
     private final List<Element<HearingBooking>> hearingDetails;
+    private final List<Element<UUID>> selectedHearingIds;
 
     private LocalDate dateSubmitted;
     private final List<Element<DocumentBundle>> noticeOfProceedingsBundle;
@@ -247,6 +252,8 @@ public class CaseData {
     private final InterimEndDate interimEndDate;
     private final Selector childSelector;
     private final Selector careOrderSelector;
+    private final Selector newHearingSelector;
+
     private final String orderAppliesToAllChildren;
 
     public String getOrderAppliesToAllChildren() {
@@ -263,13 +270,34 @@ public class CaseData {
         return orderCollection != null ? orderCollection : new ArrayList<>();
     }
 
+    /**
+     * General object for CMO. Can be either in a draft state or action state. Ignored by jackson so that custom
+     * getters and setters can be used.
+     *
+     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
+     */
     @JsonIgnore
+    @Deprecated(since = "FPLA-1915")
     private CaseManagementOrder caseManagementOrder;
 
+    /**
+     * Gets a merged cmo.
+     *
+     * @see #prepareCaseManagementOrder()
+     *
+     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
+     */
+    @Deprecated(since = "FPLA-1915")
     public CaseManagementOrder getCaseManagementOrder() {
         return prepareCaseManagementOrder();
     }
 
+    /**
+     * Merges the current populated CMO with the individual components of the CMO.
+     *
+     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
+     */
+    @Deprecated(since = "FPLA-1915")
     private CaseManagementOrder prepareCaseManagementOrder() {
         //existing order
         Optional<CaseManagementOrder> oldOrder = ofNullable(caseManagementOrder);
@@ -315,6 +343,12 @@ public class CaseData {
         return preparedOrder;
     }
 
+    /**
+     * Populates the CCD field caseManagementOrder when the CMO is for the LA.
+     *
+     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
+     */
+    @Deprecated(since = "FPLA-1915")
     @JsonGetter("caseManagementOrder")
     private CaseManagementOrder getCaseManagementOrderForLocalAuthority() {
         if (caseManagementOrder != null && caseManagementOrder.getStatus() != SEND_TO_JUDGE) {
@@ -323,6 +357,12 @@ public class CaseData {
         return null;
     }
 
+    /**
+     * Populates {@link #caseManagementOrder} with the CMO for the LA.
+     *
+     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
+     */
+    @Deprecated(since = "FPLA-1915")
     @JsonSetter("caseManagementOrder")
     private void setCaseManagementOrderForLocalAuthority(CaseManagementOrder order) {
         if (order != null) {
@@ -330,6 +370,12 @@ public class CaseData {
         }
     }
 
+    /**
+     * Populates the CCD field cmoToAction when the CMO is to be sent to judge.
+     *
+     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
+     */
+    @Deprecated(since = "FPLA-1915")
     @JsonGetter("cmoToAction")
     private CaseManagementOrder getCaseManagementOrderForJudiciary() {
         if (caseManagementOrder != null && caseManagementOrder.getStatus() == SEND_TO_JUDGE) {
@@ -338,6 +384,12 @@ public class CaseData {
         return null;
     }
 
+    /**
+     * Populates {@link #caseManagementOrder} with the CMO for the judge.
+     *
+     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
+     */
+    @Deprecated(since = "FPLA-1915")
     @JsonSetter("cmoToAction")
     private void setCaseManagementOrderForJudiciary(CaseManagementOrder order) {
         if (order != null) {
@@ -345,22 +397,66 @@ public class CaseData {
         }
     }
 
+    /**
+     * Action decided by judge for CMO.
+     *
+     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
+     */
+    @Deprecated(since = "FPLA-1915")
     private final OrderAction orderAction;
-
+    /**
+     * Date list for CMO.
+     *
+     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
+     */
+    @Deprecated(since = "FPLA-1915")
     private final DynamicList cmoHearingDateList;
-
+    /**
+     * Schedule for CMO.
+     *
+     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
+     */
+    @Deprecated(since = "FPLA-1915")
     private final Schedule schedule;
-
+    /**
+     * Recitals for CMO.
+     *
+     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
+     */
+    @Deprecated(since = "FPLA-1915")
     private final List<Element<Recital>> recitals;
-
+    /**
+     * Document object for other other parties to view.
+     *
+     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
+     */
+    @Deprecated(since = "FPLA-1915")
     private final DocumentReference sharedDraftCMODocument;
 
+    /**
+     * All CMOs that have been served.
+     *
+     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
+     */
+    @Deprecated(since = "FPLA-1915")
     private final List<Element<CaseManagementOrder>> servedCaseManagementOrders;
 
+    /**
+     * Get all served CMOs returning an empty list if null.
+     *
+     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
+     */
+    @Deprecated(since = "FPLA-1915")
     public List<Element<CaseManagementOrder>> getServedCaseManagementOrders() {
         return defaultIfNull(servedCaseManagementOrders, new ArrayList<>());
     }
 
+    /**
+     * List of dates for the next hearing after the CMO.
+     *
+     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
+     */
+    @Deprecated(since = "FPLA-1915")
     private final DynamicList nextHearingDateList;
 
     private final Others others;
@@ -490,6 +586,18 @@ public class CaseData {
 
     public boolean hasAllocatedJudgeEmail() {
         return allocatedJudgeExists() && isNotEmpty(allocatedJudge.getJudgeEmailAddress());
+    }
+
+    public Optional<HearingBooking> getFirstHearing() {
+        return unwrapElements(hearingDetails).stream()
+            .min(comparing(HearingBooking::getStartDate));
+    }
+
+    public HearingBooking getMostUrgentHearingBookingAfter(LocalDateTime time) {
+        return unwrapElements(hearingDetails).stream()
+            .filter(hearing -> hearing.getStartDate().isAfter(time))
+            .min(comparing(HearingBooking::getStartDate))
+            .orElseThrow(NoHearingBookingException::new);
     }
 
     private final DocumentReference submittedForm;

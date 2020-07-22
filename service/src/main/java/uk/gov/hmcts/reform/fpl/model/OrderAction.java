@@ -10,9 +10,17 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 
+
+/**
+ * Action decided by the Judge for the CMO.
+ *
+ * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
+ */
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Deprecated(since = "FPLA-1915")
+@SuppressWarnings("java:S1133") // Remove once deprecations dealt with
 public class OrderAction {
     //document needs to be here due to CCD UI not allowing for complex types to be split over multiple screens.
     private final DocumentReference document;
