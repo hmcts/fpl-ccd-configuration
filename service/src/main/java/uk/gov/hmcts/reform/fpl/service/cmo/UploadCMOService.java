@@ -130,9 +130,8 @@ public class UploadCMOService {
         return details;
     }
 
-    private String buildHearingsWithCMOsText(
-        List<Element<CaseManagementOrder>> unsealedOrders,
-        List<Element<HearingBooking>> hearings) {
+    private String buildHearingsWithCMOsText(List<Element<CaseManagementOrder>> unsealedOrders,
+                                             List<Element<HearingBooking>> hearings) {
 
         StringBuilder builder = new StringBuilder();
 
