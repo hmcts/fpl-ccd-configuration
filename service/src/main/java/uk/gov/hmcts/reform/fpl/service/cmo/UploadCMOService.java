@@ -34,10 +34,6 @@ public class UploadCMOService {
     private static final String SINGLE = "SINGLE";
     private static final String MULTI = "MULTI";
     private static final String NONE = "NONE";
-    public static final String[] TRANSIENT_FIELDS = {
-        "uploadedCaseManagementOrder", "pastHearingList", "cmoJudgeInfo", "cmoHearingInfo", "numHearings",
-        "singleHearingsWithCMOs", "multiHearingsWithCMOs", "showHearingsSingleTextArea", "showHearingsMultiTextArea"
-    };
 
     public Map<String, Object> getInitialPageData(List<Element<HearingBooking>> hearings,
                                                   List<Element<CaseManagementOrder>> unsealedOrders) {

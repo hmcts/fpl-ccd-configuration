@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.from;
-import static uk.gov.hmcts.reform.fpl.service.cmo.UploadCMOService.TRANSIENT_FIELDS;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -35,6 +34,11 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @RequestMapping("/callback/upload-cmo")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class UploadCMOController {
+    private static final String[] TRANSIENT_FIELDS = {
+        "uploadedCaseManagementOrder", "pastHearingList", "cmoJudgeInfo", "cmoHearingInfo", "numHearings",
+        "singleHearingsWithCMOs", "multiHearingsWithCMOs", "showHearingsSingleTextArea", "showHearingsMultiTextArea"
+    };
+
     private final Time time;
     private final UploadCMOService cmoService;
     private final ObjectMapper mapper;
