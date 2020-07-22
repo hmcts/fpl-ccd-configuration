@@ -294,10 +294,7 @@ public class GeneratedOrderController {
             "internal-change-SEND_DOCUMENT",
             Map.of("documentToBeSent", mostRecentUploadedDocument)
         );
-        applicationEventPublisher.publishEvent(new GeneratedOrderEvent(callbackRequest,
-            concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(
-                mostRecentUploadedDocument.getBinaryUrl()),
-            documentDownloadService.downloadDocument(mostRecentUploadedDocument.getBinaryUrl())));
+        applicationEventPublisher.publishEvent(new GeneratedOrderEvent(callbackRequest, mostRecentUploadedDocument));
     }
 
     private JudgeAndLegalAdvisor setAllocatedJudgeLabel(Judge allocatedJudge) {
@@ -319,7 +316,6 @@ public class GeneratedOrderController {
         DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(
             orderTemplateData, typeAndDoc.getDocmosisTemplate());
 
-
         Document document = uploadDocumentService.uploadPDF(docmosisDocument.getBytes(),
             service.generateOrderDocumentFileName(typeAndDoc.getType(), typeAndDoc.getSubtype()));
 
@@ -328,19 +324,6 @@ public class GeneratedOrderController {
         }
 
         return document;
-    }
-
-    private String concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(
-        final String mostRecentUploadedOrderDocumentUrl) {
-        final String gatewayUrl = gatewayConfiguration.getUrl();
-
-        try {
-            URI uri = new URI(mostRecentUploadedOrderDocumentUrl);
-            return gatewayUrl + uri.getPath();
-        } catch (URISyntaxException e) {
-            log.error(mostRecentUploadedOrderDocumentUrl + " url incorrect.", e);
-        }
-        return "";
     }
 
     private List<Element<Child>> getUpdatedChildren(CaseData caseData) {

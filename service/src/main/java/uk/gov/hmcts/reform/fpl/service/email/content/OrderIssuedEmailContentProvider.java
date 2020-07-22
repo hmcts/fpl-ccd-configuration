@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
@@ -21,7 +22,6 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
-import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 @Slf4j
@@ -35,7 +35,7 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
 
     public Map<String, Object> buildParametersWithoutCaseUrl(final CaseDetails caseDetails,
                                                              final String localAuthorityCode,
-                                                             final byte[] documentContents,
+                                                             final DocumentReference documentReference,
                                                              final IssuedOrderType issuedOrderType) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -43,17 +43,17 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
             .put("orderType", getTypeOfOrder(caseData, issuedOrderType))
             .put("callout", (issuedOrderType != NOTICE_OF_PLACEMENT_ORDER) ? buildCallout(caseData) : "")
             .put("courtName", config.getCourt(localAuthorityCode).getName())
-            .putAll(linkToAttachedDocument(documentContents))
+            .putAll(linkToAttachedDocument(documentReference))
             .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
             .build();
     }
 
     public Map<String, Object> buildParametersWithCaseUrl(final CaseDetails caseDetails,
                                                           final String localAuthorityCode,
-                                                          final byte[] documentContents,
+                                                          final DocumentReference documentReference,
                                                           final IssuedOrderType issuedOrderType) {
         return ImmutableMap.<String, Object>builder()
-            .putAll(buildParametersWithoutCaseUrl(caseDetails, localAuthorityCode, documentContents,
+            .putAll(buildParametersWithoutCaseUrl(caseDetails, localAuthorityCode, documentReference,
                 issuedOrderType))
             .put("caseUrl", getCaseUrl(caseDetails.getId()))
             .build();
@@ -94,14 +94,5 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
         }
 
         return orderType.toLowerCase();
-    }
-
-    private Map<String, Object> linkToAttachedDocument(final byte[] documentContents) {
-        ImmutableMap.Builder<String, Object> url = ImmutableMap.builder();
-
-        generateAttachedDocumentLink(documentContents).ifPresent(
-            attachedDocumentLink -> url.put("documentLink", attachedDocumentLink));
-
-        return url.build();
     }
 }

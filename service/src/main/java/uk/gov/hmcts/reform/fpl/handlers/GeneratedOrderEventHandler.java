@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
@@ -49,13 +50,13 @@ public class GeneratedOrderEventHandler {
 
         final String localAuthorityCode = eventData.getLocalAuthorityCode();
         final CaseDetails caseDetails = eventData.getCaseDetails();
-        final byte[] documentContents = orderEvent.getDocumentContents();
 
+        DocumentReference orderDoc = orderEvent.getDocumentReference();
         issuedOrderAdminNotificationHandler.sendToAdmin(
-            eventData, orderEvent.getDocumentContents(), GENERATED_ORDER);
+            eventData, orderDoc, GENERATED_ORDER);
 
-        sendNotificationToEmailServedRepresentatives(eventData, documentContents);
-        sendNotificationToLocalAuthorityAndDigitalServedRepresentatives(eventData, documentContents, localAuthorityCode,
+        sendNotificationToEmailServedRepresentatives(eventData, orderDoc);
+        sendNotificationToLocalAuthorityAndDigitalServedRepresentatives(eventData, orderDoc, localAuthorityCode,
             caseDetails);
     }
 
@@ -80,10 +81,10 @@ public class GeneratedOrderEventHandler {
     }
 
     private void sendNotificationToEmailServedRepresentatives(final EventData eventData,
-                                                              final byte[] documentContents) {
+                                                              DocumentReference documentReference) {
         final Map<String, Object> templateParameters =
             orderIssuedEmailContentProvider.buildParametersWithoutCaseUrl(
-                eventData.getCaseDetails(), eventData.getLocalAuthorityCode(), documentContents,
+                eventData.getCaseDetails(), eventData.getLocalAuthorityCode(), documentReference,
                 GENERATED_ORDER);
 
         representativeNotificationService.sendToRepresentativesByServedPreference(EMAIL,
@@ -91,12 +92,12 @@ public class GeneratedOrderEventHandler {
     }
 
     private void sendNotificationToLocalAuthorityAndDigitalServedRepresentatives(final EventData eventData,
-                                                                               final byte[] documentContents,
-                                                                               final String localAuthorityCode,
-                                                                               final CaseDetails caseDetails) {
+                                                                                 DocumentReference documentReference,
+                                                                                 final String localAuthorityCode,
+                                                                                 final CaseDetails caseDetails) {
         final Map<String, Object> templateParameters =
             orderIssuedEmailContentProvider.buildParametersWithCaseUrl(
-                caseDetails, eventData.getLocalAuthorityCode(), documentContents, GENERATED_ORDER);
+                caseDetails, eventData.getLocalAuthorityCode(), documentReference, GENERATED_ORDER);
 
         sendToLocalAuthority(caseDetails, localAuthorityCode, templateParameters);
         representativeNotificationService.sendToRepresentativesByServedPreference(DIGITAL_SERVICE,

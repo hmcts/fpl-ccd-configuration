@@ -45,7 +45,7 @@ public class NoticeOfPlacementOrderUploadedEventHandler {
             eventData.getReference());
 
         issuedOrderAdminNotificationHandler.sendToAdmin(eventData,
-            noticeOfPlacementEvent.getDocumentContents(), NOTICE_OF_PLACEMENT_ORDER);
+            noticeOfPlacementEvent.getDocumentReference(), NOTICE_OF_PLACEMENT_ORDER);
 
         representativeNotificationService.sendToRepresentativesByServedPreference(DIGITAL_SERVICE,
             NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE, parameters, eventData);
@@ -53,7 +53,7 @@ public class NoticeOfPlacementOrderUploadedEventHandler {
         Map<String, Object> representativesTemplateParameters =
             orderIssuedEmailContentProvider.buildParametersWithoutCaseUrl(
                 eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
-                noticeOfPlacementEvent.getDocumentContents(), NOTICE_OF_PLACEMENT_ORDER);
+                noticeOfPlacementEvent.getDocumentReference(), NOTICE_OF_PLACEMENT_ORDER);
 
         representativeNotificationService.sendToRepresentativesByServedPreference(EMAIL,
             ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES, representativesTemplateParameters, eventData);
