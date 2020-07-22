@@ -88,7 +88,7 @@ public class RespondentController {
     }
 
     @PostMapping("/submitted")
-    public void handleSubmitted(@RequestBody CallbackRequest callbackrequest){
+    public void handleSubmitted(@RequestBody CallbackRequest callbackrequest) {
         applicationEventPublisher.publishEvent(new CaseDataChanged(callbackrequest));
     }
 

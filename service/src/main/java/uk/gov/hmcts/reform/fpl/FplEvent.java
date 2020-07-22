@@ -6,7 +6,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static uk.gov.hmcts.reform.fpl.enums.State.*;
+import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
+import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
+import static uk.gov.hmcts.reform.fpl.enums.State.PREPARE_FOR_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
+import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 
 public enum FplEvent {
 

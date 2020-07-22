@@ -1,5 +1,5 @@
 package uk.gov.hmcts.reform.fpl;
 
-public enum EventState {
+public enum TaskState {
     NOT_AVAILABLE, UNKNOWN, COMPLETED
 }

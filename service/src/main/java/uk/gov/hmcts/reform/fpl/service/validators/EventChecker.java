@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.controllers.guards;
+package uk.gov.hmcts.reform.fpl.service.validators;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import javax.annotation.PostConstruct;
 import javax.validation.ConstraintViolation;
 import javax.validation.Path;
-import javax.validation.Validator;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
@@ -21,23 +20,28 @@ import static uk.gov.hmcts.reform.fpl.FplEvent.APPLICANT;
 import static uk.gov.hmcts.reform.fpl.FplEvent.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.FplEvent.DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.FplEvent.ENTER_CHILDREN;
+import static uk.gov.hmcts.reform.fpl.FplEvent.FACTORS_AFFECTING_PARENTING;
 import static uk.gov.hmcts.reform.fpl.FplEvent.GROUNDS;
 import static uk.gov.hmcts.reform.fpl.FplEvent.HEARING_NEEDED;
 import static uk.gov.hmcts.reform.fpl.FplEvent.ORDERS_NEEDED;
 import static uk.gov.hmcts.reform.fpl.FplEvent.RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.FplEvent.RISK_AND_HARM;
 import static uk.gov.hmcts.reform.fpl.FplEvent.SUBMIT_APPLICATION;
 
 @Service
-public class EventValidatorProvider {
+public class EventChecker {
 
     @Autowired
-    private Validator validator;
-
+    private javax.validation.Validator validator;
     @Autowired
     private CaseSubmissionValidator submissionValidator;
+    @Autowired
+    private RiskAndHarmValidator riskAndHarmValidator;
+    @Autowired
+    private FactorsAffectingParentingValidator factorsAffectingParentingValidator;
 
-    private final EnumMap<FplEvent, EventValidator> validators = new EnumMap<>(FplEvent.class);
-    private final EnumMap<FplEvent, EventValidator> guards = new EnumMap<>(FplEvent.class);
+    private final EnumMap<FplEvent, Validator> validators = new EnumMap<>(FplEvent.class);
+    private final EnumMap<FplEvent, Validator> guards = new EnumMap<>(FplEvent.class);
 
     @PostConstruct
     public void init() {
@@ -58,6 +62,9 @@ public class EventValidatorProvider {
             "thresholdDocument",
             "socialWorkEvidenceTemplateDocument"
         ));
+        validators.put(RISK_AND_HARM, riskAndHarmValidator);
+        validators.put(FACTORS_AFFECTING_PARENTING, factorsAffectingParentingValidator);
+
         validators.put(SUBMIT_APPLICATION, submissionValidator);
         guards.put(SUBMIT_APPLICATION, submissionValidator);
     }
@@ -80,7 +87,7 @@ public class EventValidatorProvider {
             .orElse(true);
     }
 
-    private EventValidator propertyValidator(String... propertiesToBeValidated) {
+    private Validator propertyValidator(String... propertiesToBeValidated) {
         return caseData -> validateProperty(caseData, List.of(propertiesToBeValidated));
     }
 
@@ -98,5 +105,4 @@ public class EventValidatorProvider {
         }
         return null;
     }
-
 }

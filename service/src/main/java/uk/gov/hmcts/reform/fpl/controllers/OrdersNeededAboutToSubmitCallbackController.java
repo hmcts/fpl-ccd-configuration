@@ -60,8 +60,7 @@ public class OrdersNeededAboutToSubmitCallbackController {
     }
 
     @PostMapping("/submitted")
-    @SuppressWarnings("unchecked")
-    public void handleAboutToSubmit(@RequestBody CallbackRequest callbackrequest){
+    public void handleAboutToSubmit(@RequestBody CallbackRequest callbackrequest) {
         applicationEventPublisher.publishEvent(new CaseDataChanged(callbackrequest));
     }
 }

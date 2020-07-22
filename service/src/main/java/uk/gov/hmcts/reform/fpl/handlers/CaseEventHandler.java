@@ -6,13 +6,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.EventState;
+import uk.gov.hmcts.reform.fpl.Task;
+import uk.gov.hmcts.reform.fpl.TaskState;
 import uk.gov.hmcts.reform.fpl.FplEvent;
-import uk.gov.hmcts.reform.fpl.TaskListService;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
+import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
+import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
@@ -36,7 +39,7 @@ public class CaseEventHandler {
 
         if (isInOpenState(caseDetails)) {
             final CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-            final Map<FplEvent, EventState> tasks = taskListService.calculateState(caseData, eventsInState(OPEN));
+            final List<Task> tasks = taskListService.getTasks(caseData, eventsInState(OPEN));
             final String taskList = taskListRenderer.render(tasks);
 
             coreCaseDataService.triggerEvent(

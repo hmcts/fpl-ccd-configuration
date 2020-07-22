@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.controllers.guards;
+package uk.gov.hmcts.reform.fpl.service.validators;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.fpl.FplEvent;
@@ -12,10 +12,10 @@ import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
-public abstract class CompoundEventValidator implements EventValidator {
+public abstract class CompoundEventValidator implements Validator {
 
     @Autowired
-    EventValidatorProvider eventValidatorProvider;
+    private EventChecker eventValidatorProvider;
 
     public List<String> validate(CaseData caseData, List<FplEvent> events) {
 

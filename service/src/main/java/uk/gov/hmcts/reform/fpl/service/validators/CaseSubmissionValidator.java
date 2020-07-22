@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.controllers.guards;
+package uk.gov.hmcts.reform.fpl.service.validators;
 
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.FplEvent;
