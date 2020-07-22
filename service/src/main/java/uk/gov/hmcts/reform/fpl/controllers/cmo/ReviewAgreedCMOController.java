@@ -23,9 +23,9 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
+import uk.gov.hmcts.reform.fpl.service.cmo.ReviewCMOService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.Collections;
@@ -49,7 +49,7 @@ public class ReviewAgreedCMOController {
 
     private final Time time;
     private final ObjectMapper mapper;
-    private final CaseManagementOrderService cmoService;
+    private final ReviewCMOService reviewCMOService;
     private final DocumentSealingService documentSealingService;
     private final ApplicationEventPublisher eventPublisher;
     private final DocumentDownloadService documentDownloadService;
@@ -79,7 +79,7 @@ public class ReviewAgreedCMOController {
                 break;
             default:
                 data.put("numDraftCMOs", "MULTI");
-                data.put("cmoToReviewList", cmoService.buildDynamicListCMO(cmosReadyForApproval));
+                data.put("cmoToReviewList", reviewCMOService.buildDynamicList(cmosReadyForApproval));
                 break;
         }
 
@@ -111,7 +111,7 @@ public class ReviewAgreedCMOController {
 
         if (!(dynamicList instanceof DynamicList)) {
             // reconstruct dynamic list
-            data.put("cmoToReviewList", cmoService.buildDynamicListCMO(cmosReadyForApproval, selectedCMOCode));
+            data.put("cmoToReviewList", reviewCMOService.buildDynamicList(cmosReadyForApproval, selectedCMOCode));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -185,14 +185,14 @@ public class ReviewAgreedCMOController {
             if (SEND_TO_ALL_PARTIES.equals(caseData.getReviewCMODecision().getDecision())) {
                 CaseManagementOrder sealed = caseData.getSealedCMOs().get(
                     caseData.getSealedCMOs().size() - 1).getValue();
-                sendSealedCMO(callbackRequest, sealed);
+                //sendSealedCMO(callbackRequest, sealed);
             } else {
                 List<Element<CaseManagementOrder>> draftCMOsBefore = caseDataBefore.getDraftUploadedCMOs();
                 List<Element<CaseManagementOrder>> draftCMOs = caseData.getDraftUploadedCMOs();
 
                 //Get the CMO that was modified (status changed from READY -> RETURNED)
                 draftCMOs.removeAll(draftCMOsBefore);
-                sendReturnedCMO(callbackRequest, draftCMOs.get(0).getValue());
+                //sendReturnedCMO(callbackRequest, draftCMOs.get(0).getValue());
             }
         }
     }

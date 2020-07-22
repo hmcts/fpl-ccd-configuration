@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.common.AbstractJudge;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.CMOReadyToSealTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
@@ -20,12 +20,12 @@ public class CMOReadyToSealContentProvider extends AbstractEmailContentProvider 
 
     private final EmailNotificationHelper emailHelper;
 
-    public CMOReadyToSealTemplate buildTemplate(HearingBooking hearing, CaseData caseData, Long caseId) {
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = hearing.getJudgeAndLegalAdvisor();
+    public CMOReadyToSealTemplate buildTemplate(HearingBooking hearing, CaseData caseData, Long caseId,
+                                                AbstractJudge judge) {
         return new CMOReadyToSealTemplate()
             .setCaseUrl(getCaseUrl(caseId))
-            .setJudgeName(judgeAndLegalAdvisor.getJudgeName())
-            .setJudgeTitle(judgeAndLegalAdvisor.getJudgeOrMagistrateTitle())
+            .setJudgeName(judge.getJudgeName())
+            .setJudgeTitle(judge.getJudgeOrMagistrateTitle())
             .setRespondentLastName(getFirstRespondentLastName(caseData.getAllRespondents()))
             .setSubjectLineWithHearingDate(buildSubjectLine(caseData, hearing));
     }
