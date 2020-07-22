@@ -239,7 +239,7 @@ class UploadCMOServiceTest {
         Map<String, Object> expected = Map.of(
             "numHearings", "SINGLE",
             "cmoHearingInfo", "Send agreed CMO for Case management hearing, 1 February 2020."
-                + "\nThis must have been discussed by all hearings at the party.",
+                + "\nThis must have been discussed by all parties at the hearing.",
             "cmoJudgeInfo", "His Honour Judge Dredd"
         );
 
@@ -259,7 +259,7 @@ class UploadCMOServiceTest {
         Map<String, Object> expected = Map.of(
             "numHearings", "SINGLE",
             "cmoHearingInfo", "Send agreed CMO for Case management hearing, 1 February 2020."
-                + "\nThis must have been discussed by all hearings at the party.",
+                + "\nThis must have been discussed by all parties at the hearing.",
             "cmoJudgeInfo", "His Honour Judge Dredd",
             "singleHearingsWithCMOs", "Case management hearing, 2 February 2020",
             "showHearingsSingleTextArea", "YES"
