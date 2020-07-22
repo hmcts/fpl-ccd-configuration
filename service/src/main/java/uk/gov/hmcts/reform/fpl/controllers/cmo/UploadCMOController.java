@@ -88,7 +88,7 @@ public class UploadCMOController {
             caseData.getPastHearings(), draftCMOs
         );
 
-        if (hearingsWithoutCMO.size() != 0) {
+        if (!hearingsWithoutCMO.isEmpty()) {
             List<Element<HearingBooking>> hearings = caseData.getHearingDetails();
             UUID selectedHearingId = cmoService.getSelectedHearingId(caseData.getPastHearingList(),
                 hearingsWithoutCMO);
@@ -108,9 +108,8 @@ public class UploadCMOController {
                         break;
                     }
                 }
-                if (index != -1) {
-                    draftCMOs.set(index, element);
-                }
+
+                draftCMOs.set(index, element);
             } else {
                 draftCMOs.add(element);
             }

@@ -341,7 +341,12 @@ class UploadCMOServiceTest {
     @Test
     void shouldReturnJudgeNameAndTitleAndHearingInfo() {
         List<Element<HearingBooking>> hearings = hearings();
-        service.getJudgeAndHearingDetails(hearings.get(0).getId(), hearings);
+        Map<String, Object> details = service.getJudgeAndHearingDetails(hearings.get(0).getId(), hearings);
+
+        assertThat(details).isEqualTo(Map.of(
+           "cmoHearingInfo", "Case management hearing, 2 March 2020",
+            "cmoJudgeInfo", "His Honour Judge Dredd"
+        ));
     }
 
     private DynamicList dynamicList(UUID uuid1, UUID uuid2, UUID uuid3, DynamicListElement... additional) {
