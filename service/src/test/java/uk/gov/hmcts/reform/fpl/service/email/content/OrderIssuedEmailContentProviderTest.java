@@ -38,7 +38,7 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.ge
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
 
 @ContextConfiguration(classes = {OrderIssuedEmailContentProvider.class, LookupTestConfig.class,
-    EmailNotificationHelper.class, HearingBookingService.class, FixedTimeConfiguration.class,
+    EmailNotificationHelper.class, FixedTimeConfiguration.class
 })
 class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
@@ -46,6 +46,9 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
 
     @MockBean
     private GeneratedOrderService generatedOrderService;
+
+    @MockBean
+    private HearingBookingService hearingBookingService;
 
     @Autowired
     private OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
