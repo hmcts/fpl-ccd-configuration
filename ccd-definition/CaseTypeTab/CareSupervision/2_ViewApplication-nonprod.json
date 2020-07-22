@@ -19,7 +19,7 @@
     "TabLabel": "View application",
     "TabDisplayOrder": 7,
     "CaseFieldID": "submittedForm",
-    "FieldShowCondition": "[STATE]=\"Open\" AND submittedForm!=\"\"",
+    "FieldShowCondition": "[STATE]=\"Open\"",
     "TabFieldDisplayOrder": 2
   },
   {
