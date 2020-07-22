@@ -7,6 +7,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -14,10 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
-import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
-import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
-import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -41,26 +39,17 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.ge
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
 
 @ContextConfiguration(classes = {OrderIssuedEmailContentProvider.class, LookupTestConfig.class,
-    EmailNotificationHelper.class, FixedTimeConfiguration.class, HearingBookingService.class
-})
+    EmailNotificationHelper.class, FixedTimeConfiguration.class})
 class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     private static final byte[] documentContents = {1, 2, 3, 4, 5};
+    private static final CaseDetails caseDetails = createCase();
 
     @MockBean
     private GeneratedOrderService generatedOrderService;
 
-    @Autowired
+    @MockBean
     private HearingBookingService hearingBookingService;
-
-    @MockBean
-    private NoticeOfHearingGenerationService noticeOfHearingGenerationService;
-
-    @MockBean
-    private UploadDocumentService uploadDocumentService;
-
-    @MockBean
-    private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
 
     @Autowired
     private OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
@@ -68,10 +57,22 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
     @Autowired
     private ObjectMapper mapper;
 
+//    @BeforeEach
+////    void setup() {
+////        CaseData caseData = mapper.convertValue(caseDetails, CaseData.class);
+////
+////        given(hearingBookingService.hasFutureHearing(caseData.getHearingDetails())).willReturn(true);
+////
+////        LocalDateTime time =  LocalDateTime.of(2020, 10, 22, 10, 0, 0);
+////        HearingBooking hearingBooking = HearingBooking.builder().startDate(time).build();
+////
+////        given(hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails())).willReturn(hearingBooking);
+////    }
+
     @Test
     void shouldBuildGeneratedOrderParametersWithCaseUrl() {
         Map<String, Object> actualParameters = orderIssuedEmailContentProvider.buildParametersWithCaseUrl(
-            createCase(), LOCAL_AUTHORITY_CODE, documentContents, GENERATED_ORDER);
+            caseDetails, LOCAL_AUTHORITY_CODE, documentContents, GENERATED_ORDER);
         Map<String, Object> expectedParameters = getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true);
 
         assertEquals(actualParameters, expectedParameters);
@@ -80,7 +81,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
     @Test
     void shouldBuildGeneratedOrderParametersWithoutCaseUrl() {
         Map<String, Object> actualParameters = orderIssuedEmailContentProvider.buildParametersWithoutCaseUrl(
-            createCase(), LOCAL_AUTHORITY_CODE, documentContents, GENERATED_ORDER);
+            caseDetails, LOCAL_AUTHORITY_CODE, documentContents, GENERATED_ORDER);
         Map<String, Object> expectedParameters = getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true);
 
         assertEquals(actualParameters, expectedParameters);
@@ -89,7 +90,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
     @Test
     void shouldBuildNoticeOfPlacementOrderParameters() {
         Map<String, Object> actualParameters = orderIssuedEmailContentProvider.buildParametersWithCaseUrl(
-            createCase(), LOCAL_AUTHORITY_CODE, documentContents, NOTICE_OF_PLACEMENT_ORDER);
+            caseDetails, LOCAL_AUTHORITY_CODE, documentContents, NOTICE_OF_PLACEMENT_ORDER);
         Map<String, Object> expectedParameters = getExpectedCaseUrlParameters(NOTICE_OF_PLACEMENT_ORDER.getLabel(),
             false);
 
@@ -98,10 +99,23 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
 
     @Test
     void shouldBuildCaseManagementOrderParameters() {
+        CaseDetails caseDetails = createCase();
+        CaseData data = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        given(hearingBookingService.hasFutureHearing(data.getHearingDetails())).willReturn(true);
+
+        LocalDateTime time =  LocalDateTime.of(2020, 10, 22, 10, 0, 0);
+        HearingBooking hearingBooking = HearingBooking.builder().startDate(time).build();
+
+        given(hearingBookingService.getMostUrgentHearingBooking(data.getHearingDetails())).willReturn(hearingBooking);
+
         Map<String, Object> actualParameters = orderIssuedEmailContentProvider.buildParametersWithCaseUrl(
-            createCase(), LOCAL_AUTHORITY_CODE, documentContents, CMO);
+            caseDetails, LOCAL_AUTHORITY_CODE, documentContents, CMO);
         Map<String, Object> expectedParameters = getExpectedCaseUrlParameters(CMO.getLabel(), true);
 
+
+        System.out.println("Actual" + actualParameters);
+        System.out.println("EXPE" + expectedParameters);
         assertEquals(actualParameters, expectedParameters);
     }
 
@@ -116,6 +130,13 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
 
         given(generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData))
             .willReturn(expectedJudgeAndLegalAdvisor);
+
+        given(hearingBookingService.hasFutureHearing(caseData.getHearingDetails())).willReturn(true);
+
+        LocalDateTime time =  LocalDateTime.of(2020, 10, 22, 10, 0, 0);
+        HearingBooking hearingBooking = HearingBooking.builder().startDate(time).build();
+
+        given(hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails())).willReturn(hearingBooking);
 
         AllocatedJudgeTemplateForGeneratedOrder actualParameters = orderIssuedEmailContentProvider
             .buildAllocatedJudgeOrderIssuedNotification(caseDetails);
