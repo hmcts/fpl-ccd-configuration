@@ -34,6 +34,8 @@ import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMap
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 /**
+ * Service for old cmo flows.
+ *
  * @deprecated remove once FPLA-1915 goes live
  */
 @Service
