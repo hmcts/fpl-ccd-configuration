@@ -43,7 +43,7 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
             .put("orderType", getTypeOfOrder(caseData, issuedOrderType))
             .put("callout", (issuedOrderType != NOTICE_OF_PLACEMENT_ORDER) ? buildCallout(caseData) : "")
             .put("courtName", config.getCourt(localAuthorityCode).getName())
-            .putAll(linkToAttachedDocument(documentReference))
+            .put("documentLink", linkToAttachedDocument(documentReference))
             .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
             .build();
     }

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -22,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
@@ -35,13 +37,15 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedAllocatedJudgeParameters;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedCaseUrlParameters;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ContextConfiguration(classes = {OrderIssuedEmailContentProvider.class, LookupTestConfig.class,
     EmailNotificationHelper.class, FixedTimeConfiguration.class,
 })
 class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
-    private static final byte[] documentContents = {1, 2, 3, 4, 5};
+    private static final DocumentReference documentReference = testDocumentReference();
 
     @MockBean
     private GeneratedOrderService generatedOrderService;
@@ -52,10 +56,15 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
     @Autowired
     private ObjectMapper mapper;
 
+    @BeforeEach
+    void init() {
+        given(documentDownloadService.downloadDocument(anyString())).willReturn(DOCUMENT_CONTENT);
+    }
+
     @Test
     void shouldBuildGeneratedOrderParametersWithCaseUrl() {
         Map<String, Object> actualParameters = orderIssuedEmailContentProvider.buildParametersWithCaseUrl(
-            createCase(), LOCAL_AUTHORITY_CODE, documentContents, GENERATED_ORDER);
+            createCase(), LOCAL_AUTHORITY_CODE, documentReference, GENERATED_ORDER);
         Map<String, Object> expectedParameters = getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true);
 
         assertEquals(actualParameters, expectedParameters);
@@ -64,7 +73,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
     @Test
     void shouldBuildGeneratedOrderParametersWithoutCaseUrl() {
         Map<String, Object> actualParameters = orderIssuedEmailContentProvider.buildParametersWithoutCaseUrl(
-            createCase(), LOCAL_AUTHORITY_CODE, documentContents, GENERATED_ORDER);
+            createCase(), LOCAL_AUTHORITY_CODE, documentReference, GENERATED_ORDER);
         Map<String, Object> expectedParameters = getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true);
 
         assertEquals(actualParameters, expectedParameters);
@@ -73,7 +82,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
     @Test
     void shouldBuildNoticeOfPlacementOrderParameters() {
         Map<String, Object> actualParameters = orderIssuedEmailContentProvider.buildParametersWithCaseUrl(
-            createCase(), LOCAL_AUTHORITY_CODE, documentContents, NOTICE_OF_PLACEMENT_ORDER);
+            createCase(), LOCAL_AUTHORITY_CODE, documentReference, NOTICE_OF_PLACEMENT_ORDER);
         Map<String, Object> expectedParameters = getExpectedCaseUrlParameters(NOTICE_OF_PLACEMENT_ORDER.getLabel(),
             false);
 
@@ -83,7 +92,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
     @Test
     void shouldBuildCaseManagementOrderParameters() {
         Map<String, Object> actualParameters = orderIssuedEmailContentProvider.buildParametersWithCaseUrl(
-            createCase(), LOCAL_AUTHORITY_CODE, documentContents, CMO);
+            createCase(), LOCAL_AUTHORITY_CODE, documentReference, CMO);
         Map<String, Object> expectedParameters = getExpectedCaseUrlParameters(CMO.getLabel(), true);
 
         assertEquals(actualParameters, expectedParameters);

@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
@@ -25,16 +24,13 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.DOCUMENT_CONTENTS;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.DOCUMENT_REFERENCE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @ExtendWith(SpringExtension.class)
 public class NoticeOfPlacementOrderUploadedEventHandlerTest {
-
-    @Mock
-    private RequestData requestData;
 
     @Mock
     private InboxLookupService inboxLookupService;
@@ -65,8 +61,8 @@ public class NoticeOfPlacementOrderUploadedEventHandlerTest {
 
         final CallbackRequest caseData = callbackRequest();
         final CaseDetails caseDetails = caseData.getCaseDetails();
-        final NoticeOfPlacementOrderUploadedEvent event = new NoticeOfPlacementOrderUploadedEvent(
-            caseData, DOCUMENT_CONTENTS);
+        final NoticeOfPlacementOrderUploadedEvent event = new NoticeOfPlacementOrderUploadedEvent(caseData,
+            DOCUMENT_REFERENCE);
         final EventData eventData = new EventData(event);
 
         given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
@@ -76,7 +72,7 @@ public class NoticeOfPlacementOrderUploadedEventHandlerTest {
             .willReturn(localAuthorityParameters);
 
         given(orderIssuedEmailContentProvider.buildParametersWithoutCaseUrl(
-            caseDetails, LOCAL_AUTHORITY_CODE, DOCUMENT_CONTENTS, NOTICE_OF_PLACEMENT_ORDER))
+            caseDetails, LOCAL_AUTHORITY_CODE, DOCUMENT_REFERENCE, NOTICE_OF_PLACEMENT_ORDER))
             .willReturn(representativesParameters);
 
         noticeOfPlacementOrderUploadedEventHandler.sendEmailForNoticeOfPlacementOrderUploaded(event);
@@ -89,7 +85,7 @@ public class NoticeOfPlacementOrderUploadedEventHandlerTest {
 
         verify(issuedOrderAdminNotificationHandler).sendToAdmin(
             eventData,
-            event.getDocumentContents(),
+            event.getDocumentReference(),
             NOTICE_OF_PLACEMENT_ORDER);
 
         verify(representativeNotificationService).sendToRepresentativesByServedPreference(

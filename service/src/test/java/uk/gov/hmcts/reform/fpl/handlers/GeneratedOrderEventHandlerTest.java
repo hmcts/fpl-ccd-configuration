@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
@@ -46,7 +45,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIG
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.ALLOCATED_JUDGE_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.DOCUMENT_CONTENTS;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.DOCUMENT_REFERENCE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
@@ -79,9 +78,6 @@ class GeneratedOrderEventHandlerTest {
     @MockBean
     private NotificationService notificationService;
 
-    @MockBean
-    private CaseUrlService caseUrlService;
-
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -102,11 +98,11 @@ class GeneratedOrderEventHandlerTest {
             .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
 
         given(orderIssuedEmailContentProvider.buildParametersWithCaseUrl(
-            callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, DOCUMENT_CONTENTS, GENERATED_ORDER))
+            callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, DOCUMENT_REFERENCE, GENERATED_ORDER))
             .willReturn(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true));
 
         given(orderIssuedEmailContentProvider.buildParametersWithoutCaseUrl(
-            callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, DOCUMENT_CONTENTS, GENERATED_ORDER))
+            callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, DOCUMENT_REFERENCE, GENERATED_ORDER))
             .willReturn(getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true));
     }
 
@@ -119,8 +115,7 @@ class GeneratedOrderEventHandlerTest {
             DIGITAL_SERVICE))
             .willReturn(getExpectedDigitalServedRepresentativesForAddingPartiesToCase());
 
-        generatedOrderEventHandler.sendEmailsForOrder(new GeneratedOrderEvent(callbackRequest(),
-            mostRecentUploadedDocumentUrl, DOCUMENT_CONTENTS));
+        generatedOrderEventHandler.sendEmailsForOrder(new GeneratedOrderEvent(callbackRequest(), DOCUMENT_REFERENCE));
 
         verify(notificationService).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
@@ -166,8 +161,8 @@ class GeneratedOrderEventHandlerTest {
         given(orderIssuedEmailContentProvider.buildAllocatedJudgeOrderIssuedNotification(
             caseDetails)).willReturn(expectedParameters);
 
-        generatedOrderEventHandler.sendNotificationToAllocatedJudgeForOrder(new GeneratedOrderEvent(callbackRequest(),
-            mostRecentUploadedDocumentUrl, DOCUMENT_CONTENTS));
+        generatedOrderEventHandler.sendNotificationToAllocatedJudgeForOrder(
+            new GeneratedOrderEvent(callbackRequest(), DOCUMENT_REFERENCE));
 
         verify(notificationService).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_JUDGE),
@@ -195,8 +190,8 @@ class GeneratedOrderEventHandlerTest {
         given(orderIssuedEmailContentProvider.buildAllocatedJudgeOrderIssuedNotification(
             caseDetails)).willReturn(expectedParameters);
 
-        generatedOrderEventHandler.sendNotificationToAllocatedJudgeForOrder(new GeneratedOrderEvent(callbackRequest(),
-            mostRecentUploadedDocumentUrl, DOCUMENT_CONTENTS));
+        generatedOrderEventHandler.sendNotificationToAllocatedJudgeForOrder(
+            new GeneratedOrderEvent(callbackRequest(), DOCUMENT_REFERENCE));
 
         verify(notificationService, never()).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_JUDGE),
@@ -222,8 +217,8 @@ class GeneratedOrderEventHandlerTest {
         given(orderIssuedEmailContentProvider.buildAllocatedJudgeOrderIssuedNotification(
             caseDetails)).willReturn(expectedParameters);
 
-        generatedOrderEventHandler.sendNotificationToAllocatedJudgeForOrder(new GeneratedOrderEvent(callbackRequest(),
-            mostRecentUploadedDocumentUrl, DOCUMENT_CONTENTS));
+        generatedOrderEventHandler.sendNotificationToAllocatedJudgeForOrder(
+            new GeneratedOrderEvent(callbackRequest(), DOCUMENT_REFERENCE));
 
         verify(notificationService, never()).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_JUDGE),

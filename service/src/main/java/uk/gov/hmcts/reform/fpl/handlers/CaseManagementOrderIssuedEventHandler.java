@@ -44,7 +44,7 @@ public class CaseManagementOrderIssuedEventHandler {
         sendToCafcass(eventData);
         sendToRepresentatives(eventData, DIGITAL_SERVICE);
         sendToRepresentatives(eventData, EMAIL);
-        issuedOrderAdminNotificationHandler.sendToAdmin(eventData, event.getDocumentContents(), CMO);
+        issuedOrderAdminNotificationHandler.sendToAdmin(eventData, event.getDocumentReference(), CMO);
     }
 
     private void sendToLocalAuthority(final EventData eventData) {
