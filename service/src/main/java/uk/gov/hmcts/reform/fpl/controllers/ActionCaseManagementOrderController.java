@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService;
-import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
@@ -54,7 +53,6 @@ public class ActionCaseManagementOrderController {
     private final ObjectMapper mapper;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final CoreCaseDataService coreCaseDataService;
-    private final DocumentDownloadService documentDownloadService;
     private final HearingBookingService hearingBookingService;
 
     @PostMapping("/about-to-start")
