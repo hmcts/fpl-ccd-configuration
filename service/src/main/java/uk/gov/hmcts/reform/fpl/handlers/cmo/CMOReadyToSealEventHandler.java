@@ -31,9 +31,12 @@ public class CMOReadyToSealEventHandler {
         EventData eventData = new EventData(event);
         CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
 
-        CMOReadyToSealTemplate template = contentProvider.buildTemplate(event.getHearing(),
+        CMOReadyToSealTemplate template = contentProvider.buildTemplate(
+            event.getHearing(),
             caseData,
-            eventData.getCaseDetails().getId(), event.getHearing().getJudgeAndLegalAdvisor());
+            eventData.getCaseDetails().getId(),
+            event.getHearing().getJudgeAndLegalAdvisor()
+        );
 
         String email = adminNotificationHandler.getHmctsAdminEmail(eventData);
 
@@ -50,10 +53,12 @@ public class CMOReadyToSealEventHandler {
         CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
 
         if (caseData.hasAllocatedJudgeEmail()) {
-            CMOReadyToSealTemplate template = contentProvider.buildTemplate(event.getHearing(),
+            CMOReadyToSealTemplate template = contentProvider.buildTemplate(
+                event.getHearing(),
                 caseData,
                 eventData.getCaseDetails().getId(),
-                caseData.getAllocatedJudge());
+                caseData.getAllocatedJudge()
+            );
 
             String email = caseData.getAllocatedJudge().getJudgeEmailAddress();
 

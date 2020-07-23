@@ -22,6 +22,7 @@ import java.time.LocalTime;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ContextConfiguration(classes = {CMOReadyToSealContentProvider.class})
@@ -58,6 +59,7 @@ class CMOReadyToSealContentProviderTest extends AbstractEmailContentProviderTest
             .build();
 
         HearingBooking hearing = HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
             .startDate(LocalDateTime.of(SOME_DATE, LocalTime.of(0, 0)))
             .judgeAndLegalAdvisor(judge)
             .build();
@@ -68,7 +70,7 @@ class CMOReadyToSealContentProviderTest extends AbstractEmailContentProviderTest
             .setJudgeName("Simmons")
             .setJudgeTitle("Her Honour Judge")
             .setRespondentLastName("Vlad")
-            .setSubjectLineWithHearingDate("Vlad, 123456 hearing 20 February 2020")
+            .setSubjectLineWithHearingDate("Vlad, 123456, Case management hearing, 20 February 2020")
             .setCaseUrl(caseUrl(CASE_NUMBER.toString()));
 
         assertThat(template).isEqualToComparingFieldByField(expected);
