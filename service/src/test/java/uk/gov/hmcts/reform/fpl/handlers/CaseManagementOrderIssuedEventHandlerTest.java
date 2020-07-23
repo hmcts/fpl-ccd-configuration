@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
+import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
@@ -21,7 +22,9 @@ import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
+import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -42,6 +45,7 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.getCMOIssuedCaseLinkNotificationParameters;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedCaseUrlParameters;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
 @ExtendWith(SpringExtension.class)
@@ -66,18 +70,23 @@ public class CaseManagementOrderIssuedEventHandlerTest {
     private CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
 
     @MockBean
-    private CaseUrlService caseUrlService;
+    private DocumentDownloadService documentDownloadService;
 
     @Autowired
     private CaseManagementOrderIssuedEventHandler caseManagementOrderIssuedEventHandler;
 
     private final IssuedCMOTemplate issuedCMOTemplate = new IssuedCMOTemplate();
 
+    @BeforeEach
+    void init() {
+        given(documentDownloadService.downloadDocument(anyString())).willReturn(DOCUMENT_CONTENT);
+    }
+
     @Test
     void shouldNotifyHmctsAdminAndLocalAuthorityOfCMOIssued() {
         CallbackRequest callbackRequest = callbackRequest();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseManagementOrder cmo = CaseManagementOrder.builder().build();
+        CaseManagementOrder cmo = buildCmo();
 
         given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
             .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
@@ -110,7 +119,7 @@ public class CaseManagementOrderIssuedEventHandlerTest {
     void shouldNotifyCtscAdminOfCMOIssued() {
         CallbackRequest callbackRequest = appendSendToCtscOnCallback();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseManagementOrder cmo = CaseManagementOrder.builder().build();
+        CaseManagementOrder cmo = buildCmo();
 
         given(caseManagementOrderEmailContentProvider.buildCMOIssuedCaseLinkNotificationParameters(caseDetails,
             LOCAL_AUTHORITY_NAME))
@@ -135,7 +144,7 @@ public class CaseManagementOrderIssuedEventHandlerTest {
         CallbackRequest callbackRequest = buildCallbackRequest();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = buildCaseDataWithRepresentatives();
-        CaseManagementOrder cmo = CaseManagementOrder.builder().build();
+        CaseManagementOrder cmo = buildCmo();
 
         given(representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(),
             DIGITAL_SERVICE))
@@ -153,5 +162,9 @@ public class CaseManagementOrderIssuedEventHandlerTest {
             "abc@example.com",
             issuedCMOTemplate,
             "12345");
+    }
+
+    private CaseManagementOrder buildCmo() {
+        return CaseManagementOrder.builder().order(TestDataHelper.testDocumentReference()).build();
     }
 }

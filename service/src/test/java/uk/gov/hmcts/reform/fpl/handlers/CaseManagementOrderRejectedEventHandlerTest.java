@@ -19,7 +19,6 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.getCMORejectedCaseLinkNotificationParameters;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @ExtendWith(SpringExtension.class)
@@ -43,11 +42,13 @@ public class CaseManagementOrderRejectedEventHandlerTest {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseManagementOrder cmo = CaseManagementOrder.builder().build();
 
+        RejectedCMOTemplate expectedTemplate = new RejectedCMOTemplate();
+
         given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
             .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
 
         given(caseManagementOrderEmailContentProvider.buildCMORejectedByJudgeNotificationParameters(caseDetails, cmo))
-            .willReturn(new RejectedCMOTemplate());
+            .willReturn(expectedTemplate);
 
         caseManagementOrderRejectedEventHandler.notifyLocalAuthorityOfRejectedCaseManagementOrder(
             new CaseManagementOrderRejectedEvent(callbackRequest, cmo));
@@ -55,7 +56,7 @@ public class CaseManagementOrderRejectedEventHandlerTest {
         verify(notificationService).sendEmail(
             CMO_REJECTED_BY_JUDGE_TEMPLATE,
             LOCAL_AUTHORITY_EMAIL_ADDRESS,
-            getCMORejectedCaseLinkNotificationParameters(),
+            expectedTemplate,
             caseDetails.getId().toString());
     }
 }

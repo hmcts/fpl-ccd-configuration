@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentPr
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 @Service
@@ -31,8 +30,6 @@ public class CMOReadyToSealContentProvider extends AbstractEmailContentProvider 
     }
 
     private String buildSubjectLine(CaseData caseData, HearingBooking hearing) {
-        return String.format("%s hearing %s",
-            emailHelper.buildSubjectLine(caseData),
-            formatLocalDateToString(hearing.getStartDate().toLocalDate(), DATE));
+        return String.format("%s, %s", emailHelper.buildSubjectLine(caseData), hearing.toLabel(DATE));
     }
 }

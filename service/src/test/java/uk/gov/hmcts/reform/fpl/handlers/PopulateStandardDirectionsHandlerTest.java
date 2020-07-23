@@ -13,7 +13,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
-import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -42,6 +41,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
@@ -50,10 +50,9 @@ class PopulateStandardDirectionsHandlerTest {
     private static final String CASE_EVENT = "populateSDO";
     private static final Long CASE_ID = 12345L;
     private static final List<Element<HearingBooking>> HEARING_DETAILS = List.of(element(HearingBooking.builder()
-        .type(HearingType.ISSUE_RESOLUTION)
+        .type(CASE_MANAGEMENT)
         .build()));
-    private static final HearingBooking FIRST_HEARING = HearingBooking.builder()
-        .type(HearingType.CASE_MANAGEMENT).build();
+    private static final HearingBooking FIRST_HEARING = HearingBooking.builder().type(CASE_MANAGEMENT).build();
     private static final Element<Direction> ALL_PARTIES_DIRECTION =
         element(Direction.builder().assignee(ALL_PARTIES).build());
     private static final Element<Direction> LOCAL_AUTHORITY_DIRECTION =

@@ -13,13 +13,13 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService;
-import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
@@ -53,7 +53,6 @@ public class ActionCaseManagementOrderController {
     private final ObjectMapper mapper;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final CoreCaseDataService coreCaseDataService;
-    private final DocumentDownloadService documentDownloadService;
     private final HearingBookingService hearingBookingService;
 
     @PostMapping("/about-to-start")
@@ -166,11 +165,13 @@ public class ActionCaseManagementOrderController {
         CaseManagementOrder actionedCmo = caseData.getCaseManagementOrder();
 
         if (!actionedCmo.isDraft()) {
-            final String actionCmoDocumentUrl = actionedCmo.getOrderDoc().getBinaryUrl();
-            byte[] documentContents = documentDownloadService.downloadDocument(actionCmoDocumentUrl);
+            uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder cmo =
+                uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.builder()
+                .hearing(actionedCmo.getHearingDate())
+                .order(actionedCmo.getOrderDoc()).build();
 
-            //applicationEventPublisher.publishEvent(
-            //new CaseManagementOrderIssuedEvent(callbackRequest, documentContents));
+            applicationEventPublisher.publishEvent(
+                new CaseManagementOrderIssuedEvent(callbackRequest, cmo));
         }
     }
 }

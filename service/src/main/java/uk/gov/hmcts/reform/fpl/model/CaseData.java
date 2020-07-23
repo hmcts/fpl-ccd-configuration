@@ -612,7 +612,7 @@ public class CaseData {
     @JsonIgnore
     public List<Element<HearingBooking>> getPastHearings() {
         return defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()).stream()
-            .filter(hearing -> !hearing.getValue().startsAfterToday())
+            .filter(hearingBooking -> !hearingBooking.getValue().startsAfterToday())
             .collect(toList());
     }
 

@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -22,6 +23,7 @@ import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 
@@ -35,6 +37,7 @@ public class CaseManagementOrderIssuedEventHandler {
     private final CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final IssuedOrderAdminNotificationHandler issuedOrderAdminNotificationHandler;
+    private final DocumentDownloadService documentDownloadService;
 
     @EventListener
     public void sendEmailsForIssuedCaseManagementOrder(final CaseManagementOrderIssuedEvent event) {
@@ -45,7 +48,8 @@ public class CaseManagementOrderIssuedEventHandler {
         sendToCafcass(eventData, issuedCmo);
         sendToRepresentatives(eventData, issuedCmo, DIGITAL_SERVICE);
         sendToRepresentatives(eventData, issuedCmo, EMAIL);
-        //issuedOrderAdminNotificationHandler.sendToAdmin(eventData, issuedCmo.getOrder(), CMO);
+        issuedOrderAdminNotificationHandler.sendToAdmin(eventData,
+            documentDownloadService.downloadDocument(issuedCmo.getOrder().getBinaryUrl()), CMO);
     }
 
     private void sendToLocalAuthority(final EventData eventData, CaseManagementOrder cmo) {

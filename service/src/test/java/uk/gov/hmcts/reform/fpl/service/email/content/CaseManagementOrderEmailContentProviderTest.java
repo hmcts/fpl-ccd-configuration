@@ -59,7 +59,7 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
         given(documentDownloadService.downloadDocument(anyString())).willReturn(TestDataHelper.DOCUMENT_CONTENT);
 
         IssuedCMOTemplate expectedTemplate = new IssuedCMOTemplate();
-        uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder cmo = buildCmo();
+        final uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder cmo = buildCmo();
 
         expectedTemplate.setRespondentLastName("lastName");
         expectedTemplate.setFamilyManCaseNumber("11");
@@ -79,7 +79,7 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
     void shouldBuildCMOIssuedExpectedParametersWithPopulatedCaseUrl() {
         given(documentDownloadService.downloadDocument(anyString())).willReturn(TestDataHelper.DOCUMENT_CONTENT);
 
-        uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder cmo = buildCmo();
+        final uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder cmo = buildCmo();
 
         IssuedCMOTemplate expectedTemplate = new IssuedCMOTemplate();
 
@@ -113,7 +113,7 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
 
     @Test
     void shouldBuildCMORejectedByJudgeNotificationExpectedParameters() {
-        uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder cmo = buildCmo();
+        final uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder cmo = buildCmo();
         cmo.setRequestedChanges("change it");
 
         RejectedCMOTemplate expectedTemplate = new RejectedCMOTemplate();

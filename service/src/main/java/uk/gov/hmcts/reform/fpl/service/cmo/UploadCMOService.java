@@ -29,15 +29,16 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJud
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UploadCMOService {
-    private final ObjectMapper mapper;
+    private static final String CMO_HEARING_INFO_FIELD = "cmoHearingInfo";
+    private static final String CMO_JUDGE_INFO_FIELD = "cmoJudgeInfo";
+    private static final String PAST_HEARING_LIST_FIELD = "pastHearingList";
 
     private static final String SINGLE = "SINGLE";
     private static final String MULTI = "MULTI";
     private static final String NONE = "NONE";
-    public static final String[] TRANSIENT_FIELDS = {
-        "uploadedCaseManagementOrder", "pastHearingList", "cmoJudgeInfo", "cmoHearingInfo", "numHearings",
-        "singleHearingsWithCMOs", "multiHearingsWithCMOs", "showHearingsSingleTextArea", "showHearingsMultiTextArea"
-    };
+    private static final String NUM_HEARINGS_FIELD = "numHearings";
+
+    private final ObjectMapper mapper;
 
     public Map<String, Object> getInitialPageData(List<Element<HearingBooking>> hearings,
                                                   List<Element<CaseManagementOrder>> unsealedOrders) {
@@ -63,7 +64,7 @@ public class UploadCMOService {
                 numHearings = MULTI;
                 textAreaKey = "multiHearingsWithCMOs";
                 showTextAreaKey = "showHearingsMultiTextArea";
-                data.put("pastHearingList", buildDynamicList(hearingsWithoutCMOs));
+                data.put(PAST_HEARING_LIST_FIELD, buildDynamicList(hearingsWithoutCMOs));
         }
 
         String textAreaContent = buildHearingsWithCMOsText(unsealedOrders, hearings);
@@ -73,7 +74,7 @@ public class UploadCMOService {
             data.put(showTextAreaKey, "YES");
         }
 
-        data.put("numHearings", numHearings);
+        data.put(NUM_HEARINGS_FIELD, numHearings);
 
         return data;
     }
@@ -90,8 +91,8 @@ public class UploadCMOService {
                                                          List<Element<HearingBooking>> hearings) {
         HearingBooking selected = getSelectedHearing(selectedHearing, hearings);
         return Map.of(
-            "cmoJudgeInfo", formatJudgeTitleAndName(selected.getJudgeAndLegalAdvisor()),
-            "cmoHearingInfo", selected.toLabel(DATE)
+            CMO_JUDGE_INFO_FIELD, formatJudgeTitleAndName(selected.getJudgeAndLegalAdvisor()),
+            CMO_HEARING_INFO_FIELD, selected.toLabel(DATE)
         );
     }
 
@@ -126,7 +127,7 @@ public class UploadCMOService {
     }
 
     public DynamicList buildDynamicList(List<Element<HearingBooking>> hearings, UUID selected) {
-        return asDynamicList(hearings, selected, (hearing) -> hearing.toLabel(DATE));
+        return asDynamicList(hearings, selected, hearing -> hearing.toLabel(DATE));
     }
 
     private boolean associatedToReturnedCMO(Element<HearingBooking> hearing,
@@ -139,9 +140,9 @@ public class UploadCMOService {
     private Map<String, Object> getJudgeAndHearingDetailsSingle(UUID selectedHearing,
                                                                 List<Element<HearingBooking>> hearings) {
         Map<String, Object> details = new HashMap<>(getJudgeAndHearingDetails(selectedHearing, hearings));
-        String updated = format("Send agreed CMO for %s.\nThis must have been discussed by all hearings at the party.",
-            details.get("cmoHearingInfo"));
-        details.put("cmoHearingInfo", updated);
+        String updated = format("Send agreed CMO for %s.%nThis must have been discussed by all parties at the hearing.",
+            details.get(CMO_HEARING_INFO_FIELD));
+        details.put(CMO_HEARING_INFO_FIELD, updated);
         return details;
     }
 

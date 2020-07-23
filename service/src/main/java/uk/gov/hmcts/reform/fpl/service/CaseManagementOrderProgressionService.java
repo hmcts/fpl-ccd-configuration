@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForPartyReviewEvent;
+import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -83,7 +84,12 @@ public class CaseManagementOrderProgressionService {
                 caseDetails.getData().put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), updatedOrder);
                 caseDetails.getData().remove(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey());
 
-                sendChangesRequestedNotificationToLocalAuthority(caseDetails);
+                uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder cmo =
+                    uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.builder()
+                        .order(updatedOrder.getOrderDoc())
+                        .hearing(updatedOrder.getHearingDate())
+                        .requestedChanges(updatedOrder.getAction().getChangeRequestedByJudge()).build();
+                sendChangesRequestedNotificationToLocalAuthority(caseDetails, cmo);
                 break;
             case SELF_REVIEW:
                 break;
@@ -115,8 +121,10 @@ public class CaseManagementOrderProgressionService {
     }
 
     @Deprecated
-    private void sendChangesRequestedNotificationToLocalAuthority(CaseDetails caseDetails) {
-        //applicationEventPublisher.publishEvent(
-        //new CaseManagementOrderRejectedEvent(CallbackRequest.builder().caseDetails(caseDetails).build()));
+    private void sendChangesRequestedNotificationToLocalAuthority(
+        CaseDetails caseDetails,
+        uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder cmo) {
+        applicationEventPublisher.publishEvent(
+            new CaseManagementOrderRejectedEvent(CallbackRequest.builder().caseDetails(caseDetails).build(), cmo));
     }
 }

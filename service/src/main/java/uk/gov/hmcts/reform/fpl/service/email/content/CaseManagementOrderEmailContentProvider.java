@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
+import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 @Slf4j
@@ -84,7 +85,7 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
             .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
             .put("digitalPreference", servingPreference == DIGITAL_SERVICE ? "Yes" : "No")
             .put(CASE_URL, servingPreference == DIGITAL_SERVICE ? getCaseUrl(caseDetails.getId()) : "")
-            //.putAll(linkToAttachedDocument(documentContents)) - this method will be deleted with deprecated
+            .putAll(linkToAttachedDocument(documentContents))
             .build();
     }
 
@@ -117,6 +118,15 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
             "reference", String.valueOf(caseDetails.getId()),
             CASE_URL, getCaseUrl(caseDetails.getId())
         );
+    }
+
+    private Map<String, Object> linkToAttachedDocument(final byte[] documentContents) {
+        ImmutableMap.Builder<String, Object> url = ImmutableMap.builder();
+
+        generateAttachedDocumentLink(documentContents).ifPresent(
+            attachedDocumentLink -> url.put("link_to_document", attachedDocumentLink));
+
+        return url.build();
     }
 
     private boolean hasDigitalServingPreference(RepresentativeServingPreferences servingPreference) {

@@ -112,7 +112,7 @@ class UploadCMOServiceTest {
     }
 
     @Test
-    void shouldGetHearingWithSameUUIDAsPassed() {
+    void shouldGetHearingWithSameIdAsPassed() {
         List<Element<HearingBooking>> hearings = List.of(element(hearing()), element(hearing()), element(hearing()));
         UUID selected = hearings.get(2).getId();
 
@@ -132,7 +132,7 @@ class UploadCMOServiceTest {
     }
 
     @Test
-    void shouldExtractUUIDWhenStringIsPassedAsDynamicList() {
+    void shouldExtractIdWhenStringIsPassedAsDynamicList() {
         UUID uuid = randomUUID();
         String id = uuid.toString();
 
@@ -142,7 +142,7 @@ class UploadCMOServiceTest {
     }
 
     @Test
-    void shouldExtractSelectedUUIDWhenDynamicListMapIsPassed() {
+    void shouldExtractSelectedIdWhenDynamicListMapIsPassed() {
         UUID uuid = randomUUID();
         Map<String, Object> dynamicList = Map.of(
             "value", Map.of(
@@ -239,7 +239,7 @@ class UploadCMOServiceTest {
         Map<String, Object> expected = Map.of(
             "numHearings", "SINGLE",
             "cmoHearingInfo", "Send agreed CMO for Case management hearing, 1 February 2020."
-                + "\nThis must have been discussed by all hearings at the party.",
+                + "\nThis must have been discussed by all parties at the hearing.",
             "cmoJudgeInfo", "His Honour Judge Dredd"
         );
 
@@ -259,7 +259,7 @@ class UploadCMOServiceTest {
         Map<String, Object> expected = Map.of(
             "numHearings", "SINGLE",
             "cmoHearingInfo", "Send agreed CMO for Case management hearing, 1 February 2020."
-                + "\nThis must have been discussed by all hearings at the party.",
+                + "\nThis must have been discussed by all parties at the hearing.",
             "cmoJudgeInfo", "His Honour Judge Dredd",
             "singleHearingsWithCMOs", "Case management hearing, 2 February 2020",
             "showHearingsSingleTextArea", "YES"
@@ -341,7 +341,12 @@ class UploadCMOServiceTest {
     @Test
     void shouldReturnJudgeNameAndTitleAndHearingInfo() {
         List<Element<HearingBooking>> hearings = hearings();
-        service.getJudgeAndHearingDetails(hearings.get(0).getId(), hearings);
+        Map<String, Object> details = service.getJudgeAndHearingDetails(hearings.get(0).getId(), hearings);
+
+        assertThat(details).isEqualTo(Map.of(
+            "cmoHearingInfo", "Case management hearing, 2 March 2020",
+            "cmoJudgeInfo", "His Honour Judge Dredd"
+        ));
     }
 
     private DynamicList dynamicList(UUID uuid1, UUID uuid2, UUID uuid3, DynamicListElement... additional) {

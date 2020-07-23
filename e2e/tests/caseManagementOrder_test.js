@@ -1,8 +1,6 @@
 const config = require('../config.js');
-const directions = require('../fixtures/directions.js');
-const schedule = require('../fixtures/schedule.js');
-const cmoHelper = require('../helpers/case_management_order_helper.js');
 const standardDirectionOrder = require('../fixtures/standardDirectionOrder.json');
+const dateFormat = require('dateformat');
 
 let caseId;
 
@@ -12,106 +10,17 @@ BeforeSuite(async (I) => {
   caseId = await I.submitNewCaseWithData(standardDirectionOrder);
 });
 
-Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
+Scenario('local authority sends agreed CMO to judge', async (I, caseViewPage, sendAgreedCaseManagementOrderEventPage) => {
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
-  await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
-  await draftCaseManagementOrderEventPage.associateHearingDate('1 Jan 2020');
-  await I.retryUntilExists(() => I.click('Continue'), '#allPartiesLabelCMO');
-  await draftCaseManagementOrderEventPage.enterDirection(directions[0]);
-  await I.retryUntilExists(() => I.click('Continue'), '#orderBasisLabel');
-  await I.addAnotherElementToCollection();
-  await draftCaseManagementOrderEventPage.enterRecital('Recital 1', 'Recital 1 description');
-  await I.retryUntilExists(() => I.click('Continue'), '#schedule_schedule');
-  await draftCaseManagementOrderEventPage.enterSchedule(schedule);
-  await I.retryUntilExists(() => I.click('Continue'), '#caseManagementOrder_status');
-  await draftCaseManagementOrderEventPage.markToReviewedBySelf();
+  await caseViewPage.goToNewActions(config.applicationActions.sendAgreedCmoToJudge);
+  await sendAgreedCaseManagementOrderEventPage.associateHearing('1 January 2020');
+  await I.retryUntilExists(() => I.click('Continue'), '#uploadedCaseManagementOrder');
+  await sendAgreedCaseManagementOrderEventPage.uploadCaseManagementOrder(config.testNonEmptyPdfFile);
   await I.completeEvent('Submit');
-  cmoHelper.assertCanSeeDraftCMO(I, caseViewPage, {status: draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.selfReview});
-});
-
-// This scenario relies on running after 'local authority creates CMO'
-Scenario('Other parties cannot see the draft CMO document when it is marked for self review', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
-  // Ensure the selection is self review
-  await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
-  await cmoHelper.sendDraftForSelfReview(I, draftCaseManagementOrderEventPage);
-
-  cmoHelper.assertCanSeeDraftCMO(I, caseViewPage, {status: draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.selfReview});
-
-  for (let userDetails of cmoHelper.allOtherPartyDetails) {
-    await cmoHelper.assertUserCannotSeeDraftOrdersTab(I, userDetails, caseId);
-  }
-});
-
-// This scenario relies on running after 'local authority creates CMO'
-Scenario('Other parties can see the draft CMO document when it is marked for party review', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
-  // Ensure the selection is party review
-  await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
-
-  await cmoHelper.sendDraftForPartyReview(I, draftCaseManagementOrderEventPage);
-
-  cmoHelper.assertCanSeeDraftCMO(I, caseViewPage, {status: draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.partiesReview});
-
-  for (let otherPartyDetails of cmoHelper.allOtherPartyDetails) {
-    await cmoHelper.assertUserCanSeeDraftCMODocument(I, otherPartyDetails, caseViewPage, caseId);
-  }
-});
-
-Scenario('Judge sees Action CMO placeholder when CMO is not in Judge Review', async (I, caseViewPage) => {
-  await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
-
-  await caseViewPage.goToNewActions(config.applicationActions.actionCaseManagementOrder);
-  await I.see('You cannot edit this order');
-  await I.see('You can only review the draft order after it has been submitted');
-});
-
-Scenario('Local Authority sends draft to Judge who requests corrections', async (I, caseViewPage, draftCaseManagementOrderEventPage, actionCaseManagementOrderEventPage) => {
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
-  await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
-  await cmoHelper.sendDraftForJudgeReview(I, draftCaseManagementOrderEventPage);
-
-  await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
-  I.see('You can no longer edit this order');
-  await I.completeEvent('Submit');
-
-  await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
-
-  await caseViewPage.goToNewActions(config.applicationActions.actionCaseManagementOrder);
-  await cmoHelper.actionDraft(I, actionCaseManagementOrderEventPage);
-
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
-
-  const details = {
-    status: draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.selfReview,
-    hasIssuedDate: true,
-    orderActions: {
-      type: actionCaseManagementOrderEventPage.staticFields.statusRadioGroup.options.judgeRequestedChanges,
-      reason: 'Mock reason',
-    },
-  };
-
-  cmoHelper.assertCanSeeDraftCMO(I, caseViewPage, details);
-});
-
-Scenario('Local Authority sends draft to Judge who approves CMO', async (I, caseViewPage, draftCaseManagementOrderEventPage, actionCaseManagementOrderEventPage) => {
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
-  await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
-  await cmoHelper.sendDraftForJudgeReview(I, draftCaseManagementOrderEventPage);
-
-  await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
-  cmoHelper.assertCanSeeDraftCMO(I, caseViewPage, {status: draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.sendToJudge});
-
-  // Approve CMO
-  await caseViewPage.goToNewActions(config.applicationActions.actionCaseManagementOrder);
-  await cmoHelper.skipToSchedule(I);
-  await I.retryUntilExists(() => I.click('Continue'), actionCaseManagementOrderEventPage.staticFields.statusRadioGroup.groupName);
-  actionCaseManagementOrderEventPage.markToBeSentToAllParties();
-  actionCaseManagementOrderEventPage.markNextHearingToBeFinalHearing();
-  await I.retryUntilExists(() => I.click('Continue'), actionCaseManagementOrderEventPage.fields.nextHearingDateList);
-  actionCaseManagementOrderEventPage.selectNextHearingDate('1 Jan 2050');
-  await I.completeEvent('Save and continue');
-  cmoHelper.assertCanSeeActionCMO(I, caseViewPage, actionCaseManagementOrderEventPage.labels.files.sealedCaseManagementOrder);
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
-  I.dontSee('Draft orders', '.tabs .tabs-list');
+  I.seeEventSubmissionConfirmation(config.applicationActions.sendAgreedCmoToJudge);
+  caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
+  I.seeInTab(['Draft Case Management Order 1', 'Order'], 'mockFile.pdf');
+  I.seeInTab(['Draft Case Management Order 1', 'Hearing'], 'Case management hearing, 1 January 2020');
+  I.seeInTab(['Draft Case Management Order 1', 'Date sent'], dateFormat(new Date(), 'dd mmm yyyy'));
+  I.seeInTab(['Draft Case Management Order 1', 'Status'], 'With judge for approval');
 });
