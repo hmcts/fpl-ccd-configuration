@@ -1453,6 +1453,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documentsSubHeadingLabel",
+    "FieldType": "Label",
+    "Label": "#### Documents",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "organisationDetailsSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### Your organisation details",
