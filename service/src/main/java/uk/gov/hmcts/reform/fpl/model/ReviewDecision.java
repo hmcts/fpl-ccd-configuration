@@ -10,5 +10,5 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 public class ReviewDecision {
     private final DocumentReference document;
     private final CMOReviewOutcome decision;
-    private final String changeRequestedByJudge;
+    private final String changesRequestedByJudge;
 }

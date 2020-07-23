@@ -19,7 +19,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ReviewDecision",
-    "ListElementCode": "changeRequestedByJudge",
+    "ListElementCode": "changesRequestedByJudge",
     "FieldType": "TextArea",
     "ElementLabel": "What do they need to change?",
     "FieldShowCondition": "decision=\"JUDGE_REQUESTED_CHANGES\"",

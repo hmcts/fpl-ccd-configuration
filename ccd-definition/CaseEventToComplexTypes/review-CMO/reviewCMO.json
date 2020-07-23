@@ -22,7 +22,7 @@
     "ID": "ReviewCaseManagementOrder",
     "CaseEventID": "reviewCMO",
     "CaseFieldID": "reviewCMODecision",
-    "ListElementCode": "changeRequestedByJudge",
+    "ListElementCode": "changesRequestedByJudge",
     "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY"
   }

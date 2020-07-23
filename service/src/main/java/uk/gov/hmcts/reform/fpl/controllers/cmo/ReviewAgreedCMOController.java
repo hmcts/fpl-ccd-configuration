@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForPartyReviewEvent;
+import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.exceptions.CMOCodeNotFound;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ReviewCMOService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -52,7 +51,6 @@ public class ReviewAgreedCMOController {
     private final ReviewCMOService reviewCMOService;
     private final DocumentSealingService documentSealingService;
     private final ApplicationEventPublisher eventPublisher;
-    private final DocumentDownloadService documentDownloadService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -164,6 +162,7 @@ public class ReviewAgreedCMOController {
                 data.put("sealedCMOs", sealedCMOs);
             } else {
                 cmo.getValue().setStatus(RETURNED);
+                cmo.getValue().setRequestedChanges(caseData.getReviewCMODecision().getChangesRequestedByJudge());
             }
 
             data.put("draftUploadedCMOs", caseData.getDraftUploadedCMOs());
@@ -185,24 +184,23 @@ public class ReviewAgreedCMOController {
             if (SEND_TO_ALL_PARTIES.equals(caseData.getReviewCMODecision().getDecision())) {
                 CaseManagementOrder sealed = caseData.getSealedCMOs().get(
                     caseData.getSealedCMOs().size() - 1).getValue();
-                //sendSealedCMO(callbackRequest, sealed);
+                sendSealedCMO(callbackRequest, sealed);
             } else {
                 List<Element<CaseManagementOrder>> draftCMOsBefore = caseDataBefore.getDraftUploadedCMOs();
                 List<Element<CaseManagementOrder>> draftCMOs = caseData.getDraftUploadedCMOs();
 
                 //Get the CMO that was modified (status changed from READY -> RETURNED)
                 draftCMOs.removeAll(draftCMOsBefore);
-                //sendReturnedCMO(callbackRequest, draftCMOs.get(0).getValue());
+                sendReturnedCMO(callbackRequest, draftCMOs.get(0).getValue());
             }
         }
     }
 
     private void sendSealedCMO(CallbackRequest callbackRequest, CaseManagementOrder cmo) {
-        eventPublisher.publishEvent(new CaseManagementOrderReadyForPartyReviewEvent(callbackRequest,
-            documentDownloadService.downloadDocument(cmo.getOrder().getBinaryUrl())));
+        eventPublisher.publishEvent(new CaseManagementOrderIssuedEvent(callbackRequest, cmo));
     }
 
     private void sendReturnedCMO(CallbackRequest callbackRequest, CaseManagementOrder cmo) {
-        eventPublisher.publishEvent(new CaseManagementOrderRejectedEvent(callbackRequest));
+        eventPublisher.publishEvent(new CaseManagementOrderRejectedEvent(callbackRequest, cmo));
     }
 }

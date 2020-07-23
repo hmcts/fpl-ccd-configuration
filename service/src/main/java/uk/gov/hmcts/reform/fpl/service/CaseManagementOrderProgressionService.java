@@ -115,8 +115,9 @@ public class CaseManagementOrderProgressionService {
             documentDownloadService.downloadDocument(caseData.getSharedDraftCMODocument().getBinaryUrl())));
     }
 
+    @Deprecated
     private void sendChangesRequestedNotificationToLocalAuthority(CaseDetails caseDetails) {
-        applicationEventPublisher.publishEvent(
-            new CaseManagementOrderRejectedEvent(CallbackRequest.builder().caseDetails(caseDetails).build()));
+//        applicationEventPublisher.publishEvent(
+//            new CaseManagementOrderRejectedEvent(CallbackRequest.builder().caseDetails(caseDetails).build()));
     }
 }

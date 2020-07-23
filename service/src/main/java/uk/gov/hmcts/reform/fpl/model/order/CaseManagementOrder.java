@@ -21,6 +21,7 @@ public class CaseManagementOrder {
     private LocalDate dateIssued;
     private CMOStatus status;
     private String judgeTitleAndName;
+    private String requestedChanges;
 
     public static CaseManagementOrder draftFrom(DocumentReference order, HearingBooking hearing, LocalDate date) {
         return CaseManagementOrder.builder()

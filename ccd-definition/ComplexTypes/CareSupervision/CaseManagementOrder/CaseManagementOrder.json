@@ -49,5 +49,13 @@
     "FieldType": "Text",
     "ElementLabel": "Judge",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadedCaseManagementOrder",
+    "ListElementCode": "requestedChanges",
+    "FieldType": "Text",
+    "ElementLabel": "Changes requested by judge",
+    "SecurityClassification": "Public"
   }
 ]

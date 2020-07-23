@@ -10,14 +10,15 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForCMO;
-import uk.gov.hmcts.reform.fpl.model.notify.draftcmo.IssuedCMOTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.cmo.RejectedCMOTemplate;
+import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
-import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 @Slf4j
@@ -41,6 +42,7 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
 
     public IssuedCMOTemplate buildCMOIssuedNotificationParameters(
         final CaseDetails caseDetails,
+        CaseManagementOrder cmo,
         RepresentativeServingPreferences servingPreference) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -48,21 +50,26 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
 
         template.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
         template.setFamilyManCaseNumber(caseData.getFamilyManCaseNumber());
-        template.setHearingDate(caseData.getCaseManagementOrder().getHearingDate());
+        template.setHearing(cmo.getHearing());
         template.setDigitalPreference(hasDigitalServingPreference(servingPreference) ? "Yes" : "No");
-        template.setDocumentLink(linkToAttachedDocument(caseData.getCaseManagementOrder().getOrderDoc()));
+        template.setDocumentLink(linkToAttachedDocument(cmo.getOrder()));
         template.setCaseUrl((hasDigitalServingPreference(servingPreference) ? getCaseUrl(caseDetails.getId()) : ""));
 
         return template;
     }
 
-    public Map<String, Object> buildCMORejectedByJudgeNotificationParameters(final CaseDetails caseDetails) {
+    public RejectedCMOTemplate buildCMORejectedByJudgeNotificationParameters(final CaseDetails caseDetails,
+                                                                             CaseManagementOrder cmo) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        RejectedCMOTemplate template = new RejectedCMOTemplate();
 
-        return ImmutableMap.<String, Object>builder()
-            .putAll(buildCommonCMONotificationParameters(caseDetails))
-            .put("requestedChanges", caseData.getCaseManagementOrder().getAction().getChangeRequestedByJudge())
-            .build();
+        template.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
+        template.setFamilyManCaseNumber(caseData.getFamilyManCaseNumber());
+        template.setHearing(cmo.getHearing());
+        template.setDocumentLink(linkToAttachedDocument(cmo.getOrder()));
+        template.setCaseUrl(getCaseUrl(caseDetails.getId()));
+
+        return template;
     }
 
     public Map<String, Object> buildCMOPartyReviewParameters(final CaseDetails caseDetails,
@@ -77,7 +84,7 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
             .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
             .put("digitalPreference", servingPreference == DIGITAL_SERVICE ? "Yes" : "No")
             .put(CASE_URL, servingPreference == DIGITAL_SERVICE ? getCaseUrl(caseDetails.getId()) : "")
-            .putAll(linkToAttachedDocument(documentContents))
+            //.putAll(linkToAttachedDocument(documentContents)) - this method will be deleted with deprecated
             .build();
     }
 
@@ -110,15 +117,6 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
             "reference", String.valueOf(caseDetails.getId()),
             CASE_URL, getCaseUrl(caseDetails.getId())
         );
-    }
-
-    private Map<String, Object> linkToAttachedDocument(final byte[] documentContents) {
-        ImmutableMap.Builder<String, Object> url = ImmutableMap.builder();
-
-        generateAttachedDocumentLink(documentContents).ifPresent(
-            attachedDocumentLink -> url.put("link_to_document", attachedDocumentLink));
-
-        return url.build();
     }
 
     private boolean hasDigitalServingPreference(RepresentativeServingPreferences servingPreference) {
