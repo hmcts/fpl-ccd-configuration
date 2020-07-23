@@ -163,7 +163,8 @@ withPipeline(type, product, component) {
   }
 
   after('functionalTest:preview') {
-    env.SKIP_FUNCTIONAL_TESTS = 'true'
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+    publishToCosmosDb(this, params, 'dbs/jenkins/colls/fpl-test-metrics', "${WORKSPACE}/output", 'metrics')
   }
 
   before('buildinfra:demo') {

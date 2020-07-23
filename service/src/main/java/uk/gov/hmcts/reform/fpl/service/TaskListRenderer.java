@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
+import static java.util.List.of;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
@@ -51,13 +52,13 @@ public class TaskListRenderer {
 
         final Map<FplEvent, Task> tasks = allTasks.stream().collect(toMap(event -> event.getEvent(), identity()));
 
-        final TaskSection applicationDetails = newSection("Add application details", List.of(
+        final TaskSection applicationDetails = newSection("Add application details", of(
             tasks.get(CASE_NAME),
             tasks.get(ORDERS_NEEDED),
             tasks.get(HEARING_NEEDED)
         ));
 
-        final TaskSection applicationGrounds = newSection("Add grounds for the application", List.of(
+        final TaskSection applicationGrounds = newSection("Add grounds for the application", of(
             tasks.get(GROUNDS),
             tasks.get(RISK_AND_HARM)
                 .withHint("In emergency cases, you can send your application without this information"),
@@ -65,7 +66,7 @@ public class TaskListRenderer {
                 .withHint("In emergency cases, you can send your application without this information")
         ));
 
-        final TaskSection documents = newSection("Add supporting documents", List.of(tasks.get(DOCUMENTS)))
+        final TaskSection documents = newSection("Add supporting documents", of(tasks.get(DOCUMENTS)))
             .withHint("For example, the social work chronology and care plan");
 
         final TaskSection parties = newSection("Add information about the parties",
@@ -75,18 +76,18 @@ public class TaskListRenderer {
                 tasks.get(RESPONDENTS)
             ));
 
-        final TaskSection courtRequirements = newSection("Add court requirements", List.of(
+        final TaskSection courtRequirements = newSection("Add court requirements", of(
             tasks.get(ALLOCATION_PROPOSAL)
         ));
 
-        final TaskSection additionalInformation = newSection("Add additional information", List.of(
+        final TaskSection additionalInformation = newSection("Add additional information", of(
             tasks.get(OTHER_PROCEEDINGS),
             tasks.get(INTERNATIONAL_ELEMENT),
             tasks.get(ENTER_OTHERS),
             tasks.get(ATTENDING_THE_HEARING)
         )).withInfo("Only complete if relevant");
 
-        final TaskSection sentApplication = newSection("Send application", List.of(tasks.get(SUBMIT_APPLICATION)));
+        final TaskSection sentApplication = newSection("Send application", of(tasks.get(SUBMIT_APPLICATION)));
 
         lines.add("<div class='width-50'>");
 

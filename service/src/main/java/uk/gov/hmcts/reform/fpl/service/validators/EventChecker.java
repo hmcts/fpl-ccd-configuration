@@ -6,12 +6,8 @@ import uk.gov.hmcts.reform.fpl.FplEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import javax.annotation.PostConstruct;
-import javax.validation.ConstraintViolation;
-import javax.validation.Path;
 import java.util.EnumMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
@@ -32,40 +28,60 @@ import static uk.gov.hmcts.reform.fpl.FplEvent.SUBMIT_APPLICATION;
 public class EventChecker {
 
     @Autowired
-    private javax.validation.Validator validator;
+    private CaseNameValidator caseNameValidator;
+
+    @Autowired
+    private ChildrenValidator childrenValidator;
+
+    @Autowired
+    private RespondentsValidator respondentsValidator;
+
+    @Autowired
+    private HearingNeededValidator hearingNeededValidator;
+
+    @Autowired
+    private OrdersNeededValidator ordersNeededValidator;
+
+    @Autowired
+    private GroundsValidator groundsValidator;
+
+    @Autowired
+    private ApplicantValidator applicantValidator;
+
+    @Autowired
+    AllocationProposalValidator allocationProposalValidator;
+
+    @Autowired
+    private DocumentsValidator documentsValidator;
+
     @Autowired
     private CaseSubmissionValidator submissionValidator;
+
     @Autowired
     private RiskAndHarmValidator riskAndHarmValidator;
+
     @Autowired
     private FactorsAffectingParentingValidator factorsAffectingParentingValidator;
 
     private final EnumMap<FplEvent, Validator> validators = new EnumMap<>(FplEvent.class);
+
     private final EnumMap<FplEvent, Validator> guards = new EnumMap<>(FplEvent.class);
 
     @PostConstruct
     public void init() {
-        validators.put(CASE_NAME, propertyValidator("caseName"));
-        validators.put(ENTER_CHILDREN, propertyValidator("children1"));
-        validators.put(RESPONDENTS, propertyValidator("respondents1"));
-        validators.put(HEARING_NEEDED, propertyValidator("hearing"));
-        validators.put(ORDERS_NEEDED, propertyValidator("orders"));
-        validators.put(GROUNDS, propertyValidator("grounds"));
-        validators.put(APPLICANT, propertyValidator("applicants", "solicitor"));
-        validators.put(ALLOCATION_PROPOSAL, propertyValidator("allocationProposal"));
-        validators.put(DOCUMENTS, propertyValidator("documents_socialWorkOther",
-            "documents_socialWorkCarePlan_document",
-            "socialWorkStatementDocument",
-            "socialWorkAssessmentDocument",
-            "socialWorkChronologyDocument",
-            "checklistDocument",
-            "thresholdDocument",
-            "socialWorkEvidenceTemplateDocument"
-        ));
+        validators.put(CASE_NAME, caseNameValidator);
+        validators.put(ENTER_CHILDREN, childrenValidator);
+        validators.put(RESPONDENTS, respondentsValidator);
+        validators.put(HEARING_NEEDED, hearingNeededValidator);
+        validators.put(ORDERS_NEEDED, ordersNeededValidator);
+        validators.put(GROUNDS, groundsValidator);
+        validators.put(APPLICANT, applicantValidator);
+        validators.put(ALLOCATION_PROPOSAL, allocationProposalValidator);
+        validators.put(DOCUMENTS, documentsValidator);
         validators.put(RISK_AND_HARM, riskAndHarmValidator);
         validators.put(FACTORS_AFFECTING_PARENTING, factorsAffectingParentingValidator);
-
         validators.put(SUBMIT_APPLICATION, submissionValidator);
+
         guards.put(SUBMIT_APPLICATION, submissionValidator);
     }
 
@@ -85,24 +101,5 @@ public class EventChecker {
         return ofNullable(guards.get(event))
             .map(validator -> validator.validate(caseData).isEmpty())
             .orElse(true);
-    }
-
-    private Validator propertyValidator(String... propertiesToBeValidated) {
-        return caseData -> validateProperty(caseData, List.of(propertiesToBeValidated));
-    }
-
-    private List<String> validateProperty(CaseData caseData, List<String> propertiesToBeValidated) {
-        return validator.validate(caseData).stream()
-            .filter(violation -> propertiesToBeValidated.contains(getViolatedProperty(violation)))
-            .map(ConstraintViolation::getMessage)
-            .collect(Collectors.toList());
-    }
-
-    private String getViolatedProperty(ConstraintViolation violation) {
-        final Iterator<Path.Node> paths = violation.getPropertyPath().iterator();
-        if (paths.hasNext()) {
-            return paths.next().getName();
-        }
-        return null;
     }
 }
