@@ -112,8 +112,6 @@ class EmailNotificationHelperTest {
         HearingBooking hearingBooking = unwrapElements(caseData.getHearingDetails()).get(2);
 
         String expectedSubjectLine = "Jones, FamilyManCaseNumber, hearing 23 May 2021";
-
-        System.out.println(expectedSubjectLine);
         String returnedSubjectLine = buildSubjectLineWithHearingBookingDateSuffix(caseData
                 .getFamilyManCaseNumber(),
             caseData.getRespondents1(), hearingBooking);
