@@ -37,10 +37,18 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION
 import static uk.gov.hmcts.reform.fpl.enums.Event.ACTION_CASE_MANAGEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 
+/**
+ * Manages the endpoints for the old action-cmo event. To be removed once we have fully migrated away from the old CMO
+ * stuff.
+ *
+ * @deprecated to be replaced
+ */
 @Api
 @RestController
 @RequestMapping("/callback/action-cmo")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@Deprecated(since = "FPLA-1915")
+@SuppressWarnings("java:S1133") // Remove once deprecations dealt with
 public class ActionCaseManagementOrderController {
     private final CaseManagementOrderService caseManagementOrderService;
     private final ObjectMapper mapper;

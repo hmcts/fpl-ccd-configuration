@@ -7,9 +7,16 @@ import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 
 import java.util.List;
 
+/**
+ * Docmosis model for the CMO order.
+ *
+ * @deprecated remove once FPLA-1915 goes live
+ */
 @Getter
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
+@Deprecated(since = "FPLA-1915")
+@SuppressWarnings("java:S1133") // Remove once deprecations dealt with
 public class DocmosisCaseManagementOrder extends DocmosisOrder {
     private final List<DocmosisRepresentative> representatives;
     private final boolean scheduleProvided;
