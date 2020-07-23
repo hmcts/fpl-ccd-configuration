@@ -47,8 +47,7 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
         return ImmutableMap.<String, Object>builder()
             .put("orderType", getTypeOfOrder(caseData, issuedOrderType))
             .put("callout", (issuedOrderType != NOTICE_OF_PLACEMENT_ORDER) ? buildCallout(caseData
-                    .getFamilyManCaseNumber(),
-                caseData.getRespondents1(), caseData.getHearingDetails()) : "")
+                    .getFamilyManCaseNumber(), caseData.getRespondents1(), caseData.getHearingDetails()) : "")
             .put("courtName", config.getCourt(localAuthorityCode).getName())
             .putAll(linkToAttachedDocument(documentContents))
             .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
