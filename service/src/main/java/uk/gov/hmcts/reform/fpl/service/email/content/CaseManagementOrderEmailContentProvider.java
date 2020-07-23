@@ -34,7 +34,7 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
     private static final String SUBJECT_LINE = "subjectLineWithHearingDate";
     private static final String REFERENCE = "reference";
     private static final String RESPONDENT_LAST_NAME = "respondentLastName";
-    private static final String DIGITAL_PREFERENCE = "digitalPreferenc";
+    private static final String DIGITAL_PREFERENCE = "digitalPreference";
 
 
     public Map<String, Object> buildCMOIssuedCaseLinkNotificationParameters(final CaseDetails caseDetails,
