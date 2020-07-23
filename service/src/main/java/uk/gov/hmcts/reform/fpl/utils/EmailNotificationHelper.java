@@ -11,7 +11,6 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
@@ -32,22 +31,15 @@ public class EmailNotificationHelper {
     }
 
     public static String buildSubjectLineWithHearingBookingDateSuffix(final String familyManCaseNumber,
-                                                               final List<Element<Respondent>> respondents,
-                                                               final HearingBooking hearingBooking) {
+                                                                      final List<Element<Respondent>> respondents,
+                                                                      final HearingBooking hearingBooking) {
         String subjectLine = buildSubjectLine(familyManCaseNumber, respondents);
-        String hearingDateText = buildHearingDateText(hearingBooking);
+        String hearingDateText = "";
 
-        return buildCommonSubjectLine(subjectLine, hearingDateText);
-    }
+        if (hearingBooking != null) {
+            hearingDateText = buildHearingDateText(hearingBooking);
+        }
 
-    public static String buildSubjectLineWithoutHearingBookingDateSuffix(final String familyManCaseNumber,
-                                                                         final List<Element<Respondent>> respondents) {
-        String subjectLine = buildSubjectLine(familyManCaseNumber, respondents);
-
-        return buildCommonSubjectLine(subjectLine, EMPTY);
-    }
-
-    private static String buildCommonSubjectLine(String subjectLine, String hearingDateText) {
         return Stream.of(subjectLine, hearingDateText)
             .filter(StringUtils::isNotBlank)
             .collect(joining(","));

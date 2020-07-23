@@ -64,7 +64,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
 
         given(hearingBookingService.hasFutureHearing(data.getHearingDetails())).willReturn(true);
 
-        LocalDateTime time =  LocalDateTime.of(2020, 10, 22, 10, 0, 0);
+        LocalDateTime time =  LocalDateTime.now().plusMonths(3);
         HearingBooking hearingBooking = HearingBooking.builder().startDate(time).build();
 
         given(hearingBookingService.getMostUrgentHearingBooking(data.getHearingDetails())).willReturn(hearingBooking);

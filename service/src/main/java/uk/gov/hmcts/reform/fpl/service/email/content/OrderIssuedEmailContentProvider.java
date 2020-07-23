@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
@@ -22,7 +23,6 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
-import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithoutHearingBookingDateSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
@@ -82,13 +82,14 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
     }
 
     private String buildCallout(CaseData caseData) {
+        HearingBooking hearing = null;
         if (hearingBookingService.hasFutureHearing(caseData.getHearingDetails())) {
-            return "^" + buildSubjectLineWithHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
-                caseData.getRespondents1(), hearingBookingService.getMostUrgentHearingBooking(caseData
-                    .getHearingDetails()));
+            hearing = hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails());
         }
-        return "^" + buildSubjectLineWithoutHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(), caseData
-            .getRespondents1());
+
+        return "^" + buildSubjectLineWithHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
+            caseData.getRespondents1(),
+            hearing);
     }
 
     private String getTypeOfOrder(CaseData caseData, IssuedOrderType issuedOrderType) {

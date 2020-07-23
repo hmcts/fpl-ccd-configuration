@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForCMO;
 import uk.gov.hmcts.reform.fpl.model.notify.draftcmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
@@ -18,7 +19,6 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
-import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithoutHearingBookingDateSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
@@ -82,13 +82,13 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
     }
 
     private String buildCallout(CaseData caseData) {
+        HearingBooking hearing = null;
         if (hearingBookingService.hasFutureHearing(caseData.getHearingDetails())) {
-            return buildSubjectLineWithHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
-                caseData.getRespondents1(), hearingBookingService.getMostUrgentHearingBooking(
-                    caseData.getHearingDetails()));
+            hearing = hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails());
         }
-        return buildSubjectLineWithoutHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
-            caseData.getRespondents1());
+        return buildSubjectLineWithHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
+            caseData.getRespondents1(),
+            hearing);
     }
 
     public AllocatedJudgeTemplateForCMO buildCMOReadyForJudgeReviewNotificationParameters(

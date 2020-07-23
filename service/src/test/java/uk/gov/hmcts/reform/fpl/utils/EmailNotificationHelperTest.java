@@ -19,7 +19,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
-import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithoutHearingBookingDateSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 
 class EmailNotificationHelperTest {
@@ -130,8 +129,8 @@ class EmailNotificationHelperTest {
             .build();
 
         String expectedSubjectLine = "Jones, FamilyManCaseNumber";
-        String returnedSubjectLine = buildSubjectLineWithoutHearingBookingDateSuffix(caseData
-            .getFamilyManCaseNumber(), caseData.getRespondents1());
+        String returnedSubjectLine = buildSubjectLineWithHearingBookingDateSuffix(caseData
+            .getFamilyManCaseNumber(), caseData.getRespondents1(), null);
         assertThat(returnedSubjectLine).isEqualTo(expectedSubjectLine);
     }
 
@@ -146,8 +145,8 @@ class EmailNotificationHelperTest {
             .build();
 
         String expected = "Jones, FamilyManCaseNumber";
-        String actual = buildSubjectLineWithoutHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
-            caseData.getRespondents1());
+        String actual = buildSubjectLineWithHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
+            caseData.getRespondents1(), null);
 
         assertThat(actual).isEqualTo(expected);
     }
