@@ -31,7 +31,6 @@ import static java.util.Comparator.comparing;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.capitalize;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.NEW_HEARING_LABEL;
@@ -147,11 +146,6 @@ public class HearingBookingService {
 
                 return element;
             }).collect(toList());
-    }
-
-    public boolean hasFutureHearing(List<Element<HearingBooking>> hearingBookings) {
-        return isNotEmpty(hearingBookings) && hearingBookings.stream()
-            .anyMatch(hearing -> hearing.getValue().startsAfterToday());
     }
 
     public List<Element<HearingBooking>> getNewHearings(

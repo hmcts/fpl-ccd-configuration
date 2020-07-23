@@ -60,14 +60,13 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
 
     @BeforeEach
     void setup() {
-        CaseData data = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
-        given(hearingBookingService.hasFutureHearing(data.getHearingDetails())).willReturn(true);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         LocalDateTime time =  LocalDateTime.now().plusMonths(3);
         HearingBooking hearingBooking = HearingBooking.builder().startDate(time).build();
 
-        given(hearingBookingService.getMostUrgentHearingBooking(data.getHearingDetails())).willReturn(hearingBooking);
+        given(hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails()))
+            .willReturn(hearingBooking);
     }
 
     @Test

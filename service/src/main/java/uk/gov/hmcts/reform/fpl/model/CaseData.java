@@ -600,6 +600,11 @@ public class CaseData {
             .orElseThrow(NoHearingBookingException::new);
     }
 
+    public boolean hasFutureHearing(List<Element<HearingBooking>> hearingBookings) {
+        return isNotEmpty(hearingBookings) && hearingBookings.stream()
+            .anyMatch(hearing -> hearing.getValue().startsAfterToday());
+    }
+
     private final DocumentReference submittedForm;
 
 }

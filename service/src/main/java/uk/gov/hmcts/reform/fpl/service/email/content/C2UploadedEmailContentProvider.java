@@ -8,13 +8,10 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForC2;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
-import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
@@ -45,8 +42,7 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
 
         AllocatedJudgeTemplateForC2 allocatedJudgeTemplateForC2 = new AllocatedJudgeTemplateForC2();
         allocatedJudgeTemplateForC2.setCaseUrl(getCaseUrl(caseDetails.getId()));
-        allocatedJudgeTemplateForC2.setCallout(buildCallout(caseData.getFamilyManCaseNumber(),
-            caseData.getRespondents1(), caseData.getHearingDetails()));
+        allocatedJudgeTemplateForC2.setCallout(buildCallout(caseData));
         allocatedJudgeTemplateForC2.setJudgeTitle(caseData.getAllocatedJudge().getJudgeOrMagistrateTitle());
         allocatedJudgeTemplateForC2.setJudgeName(caseData.getAllocatedJudge().getJudgeName());
         allocatedJudgeTemplateForC2.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
@@ -54,14 +50,13 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
         return  allocatedJudgeTemplateForC2;
     }
 
-    private String buildCallout(final String familyManCaseNumber, final List<Element<Respondent>> respondents,
-                                final List<Element<HearingBooking>> hearingBookings) {
+    private String buildCallout(final CaseData caseData) {
         HearingBooking hearing = null;
-        if (hearingBookingService.hasFutureHearing(hearingBookings)) {
-            hearing = hearingBookingService.getMostUrgentHearingBooking(hearingBookings);
+        if (caseData.hasFutureHearing(caseData.getHearingDetails())) {
+            hearing = hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails());
         }
-        return buildSubjectLineWithHearingBookingDateSuffix(familyManCaseNumber,
-            respondents,
+        return buildSubjectLineWithHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
+            caseData.getRespondents1(),
             hearing);
     }
 

@@ -305,28 +305,6 @@ class HearingBookingServiceTest {
         assertThat(judgeAndLegalAdvisor.getLegalAdvisorName()).isEqualTo("Joe Bloggs");
     }
 
-    @Test
-    void shouldReturnTrueWhenFutureHearingExists() {
-        List<Element<HearingBooking>> hearingBooking =
-            newArrayList(element(HEARING_IDS[0], createHearingBooking(time.now().plusDays(6),
-                time.now().plusDays(6))));
-
-        Boolean hearingBookingInFuture = service.hasFutureHearing(hearingBooking);
-
-        assertThat(hearingBookingInFuture).isTrue();
-    }
-
-    @Test
-    void shouldReturnFalseWhenNoFutureHearingExists() {
-        List<Element<HearingBooking>> hearingBooking =
-            newArrayList(element(HEARING_IDS[0], createHearingBooking(time.now().minusDays(6),
-                time.now().plusDays(6))));
-
-        Boolean hearingBookingInFuture = service.hasFutureHearing(hearingBooking);
-
-        assertThat(hearingBookingInFuture).isFalse();
-    }
-
     @Nested
     class GetNewHearings {
         private List<Element<HearingBooking>> oldHearingBookings;

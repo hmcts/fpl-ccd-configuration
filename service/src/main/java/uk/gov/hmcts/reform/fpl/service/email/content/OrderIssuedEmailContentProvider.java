@@ -12,15 +12,12 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
-import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
@@ -46,8 +43,7 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
 
         return ImmutableMap.<String, Object>builder()
             .put("orderType", getTypeOfOrder(caseData, issuedOrderType))
-            .put("callout", (issuedOrderType != NOTICE_OF_PLACEMENT_ORDER) ? buildCallout(caseData
-                    .getFamilyManCaseNumber(), caseData.getRespondents1(), caseData.getHearingDetails()) : "")
+            .put("callout", (issuedOrderType != NOTICE_OF_PLACEMENT_ORDER) ? buildCallout(caseData) : "")
             .put("courtName", config.getCourt(localAuthorityCode).getName())
             .putAll(linkToAttachedDocument(documentContents))
             .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
@@ -72,8 +68,7 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
 
         AllocatedJudgeTemplateForGeneratedOrder judgeTemplate = new AllocatedJudgeTemplateForGeneratedOrder();
         judgeTemplate.setOrderType(getTypeOfOrder(caseData, GENERATED_ORDER));
-        judgeTemplate.setCallout(buildCallout(caseData.getFamilyManCaseNumber(), caseData.getRespondents1(),
-            caseData.getHearingDetails()));
+        judgeTemplate.setCallout(buildCallout(caseData));
         judgeTemplate.setCaseUrl(getCaseUrl(caseDetails.getId()));
         judgeTemplate.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
         judgeTemplate.setJudgeTitle(judge.getJudgeOrMagistrateTitle());
@@ -86,14 +81,13 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
         return generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData);
     }
 
-    private String buildCallout(final String familyManCaseNumber, final List<Element<Respondent>> respondents,
-                                final List<Element<HearingBooking>> hearingBookings) {
+    private String buildCallout(final CaseData caseData) {
         HearingBooking hearing = null;
-        if (hearingBookingService.hasFutureHearing(hearingBookings)) {
-            hearing = hearingBookingService.getMostUrgentHearingBooking(hearingBookings);
+        if (caseData.hasFutureHearing(caseData.getHearingDetails())) {
+            hearing = hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails());
         }
-        return "^" + buildSubjectLineWithHearingBookingDateSuffix(familyManCaseNumber,
-            respondents,
+        return "^" + buildSubjectLineWithHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
+            caseData.getRespondents1(),
             hearing);
     }
 
