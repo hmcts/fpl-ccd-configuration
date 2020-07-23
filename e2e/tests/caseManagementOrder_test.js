@@ -10,7 +10,7 @@ BeforeSuite(async (I) => {
   caseId = await I.submitNewCaseWithData(standardDirectionOrder);
 });
 
-Scenario('local sends agreed CMO to judge', async (I, caseViewPage, sendAgreedCaseManagementOrderEventPage) => {
+Scenario('local authority sends agreed CMO to judge', async (I, caseViewPage, sendAgreedCaseManagementOrderEventPage) => {
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.sendAgreedCmoToJudge);
   await sendAgreedCaseManagementOrderEventPage.associateHearing('1 January 2020');
