@@ -13,18 +13,22 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.email.EmailData;
 import uk.gov.hmcts.reform.fpl.service.EmailService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(AddCaseNumberController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class AddCaseNumberControllerSubmittedTest extends AbstractControllerTest {
+class AddCaseNumberControllerSubmittedTest extends AbstractControllerTest {
 
     AddCaseNumberControllerSubmittedTest() {
         super("add-case-number");
@@ -35,6 +39,9 @@ public class AddCaseNumberControllerSubmittedTest extends AbstractControllerTest
 
     @MockBean
     private EmailService emailService;
+
+    @MockBean
+    private CoreCaseDataService coreCaseDataService;
 
     @Spy
     private ApplicationEventPublisher applicationEventPublisher;
@@ -49,6 +56,7 @@ public class AddCaseNumberControllerSubmittedTest extends AbstractControllerTest
 
         verify(emailService).sendEmail(eq("sender@example.com"), email.capture());
         assertThat(email.getValue().getRecipient()).isEqualTo("FamilyPublicLaw+robotics-test@gmail.com");
+        verifyTaskListUpdated(caseDetails);
     }
 
     @Test
@@ -61,6 +69,16 @@ public class AddCaseNumberControllerSubmittedTest extends AbstractControllerTest
 
         verify(applicationEventPublisher, never()).publishEvent(any());
         verify(emailService, never()).sendEmail(any(), any());
+        verifyTaskListUpdated(caseDetails);
+    }
+
+    private void verifyTaskListUpdated(CaseDetails caseDetails) {
+        verify(coreCaseDataService).triggerEvent(
+            eq(JURISDICTION),
+            eq(CASE_TYPE),
+            eq(caseDetails.getId()),
+            eq("internal-update-case-info"),
+            anyMap());
     }
 
     private static CaseDetails buildCaseWithNumber(String caseNumber) {

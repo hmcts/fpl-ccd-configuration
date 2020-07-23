@@ -94,7 +94,7 @@ class DocumentsValidatorTest {
     }
 
     @Test
-    void shouldReturnErrorWhenAtLeastOneDocumentHasIncludedInSWETStatusButSWETIsNotAttached() {
+    void shouldReturnErrorWhenAtLeastOneDocumentHasIncludedInSwetStatusButSwetIsNotAttached() {
         final CaseData caseData = CaseData.builder()
             .socialWorkEvidenceTemplateDocument(documentWithBinary(TO_FOLLOW))
             .socialWorkCarePlanDocument(documentWithBinary(INCLUDED_IN_SWET))

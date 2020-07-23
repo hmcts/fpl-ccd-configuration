@@ -50,7 +50,7 @@ sourceSets {
 }
 
 tasks.withType(JavaCompile) {
-  options.compilerArgs << "-Xlint:unchecked" << "-Werror"
+  options.compilerArgs << "-Xlint:unchecked"
 }
 
 task integration(type: Test, description: 'Runs the integration tests.', group: 'Verification') {

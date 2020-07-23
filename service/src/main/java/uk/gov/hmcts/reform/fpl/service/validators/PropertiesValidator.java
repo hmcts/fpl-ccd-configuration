@@ -4,14 +4,14 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Path;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.validation.ConstraintViolation;
+import javax.validation.Path;
 
 import static java.util.stream.Collectors.toList;
 
@@ -38,7 +38,8 @@ public abstract class PropertiesValidator implements Validator {
             .filter(prop -> !PROPERTIES.contains(prop))
             .collect(Collectors.toList());
         if (ObjectUtils.isNotEmpty(invalidProperties)) {
-            throw new IllegalArgumentException(String.format("Properties %s not found in %s", invalidProperties, CaseData.class.getSimpleName()));
+            throw new IllegalArgumentException(
+                String.format("Properties %s not found in %s", invalidProperties, CaseData.class.getSimpleName()));
         }
     }
 
@@ -48,7 +49,6 @@ public abstract class PropertiesValidator implements Validator {
     }
 
     private List<String> validateProperty(CaseData caseData, List<String> propertiesToBeValidated, Class... groups) {
-        System.out.println("s");
         return validator.validate(caseData, groups).stream()
             .filter(violation -> propertiesToBeValidated.contains(getViolatedProperty(violation)))
             .map(ConstraintViolation::getMessage)

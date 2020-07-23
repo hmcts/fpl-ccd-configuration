@@ -5,9 +5,9 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.FplEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
-import javax.annotation.PostConstruct;
 import java.util.EnumMap;
 import java.util.List;
+import javax.annotation.PostConstruct;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;

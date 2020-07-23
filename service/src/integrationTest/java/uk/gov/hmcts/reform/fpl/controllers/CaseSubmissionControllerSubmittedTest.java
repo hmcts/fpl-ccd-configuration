@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.SharedNotifyTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.service.notify.NotificationClient;
@@ -42,6 +43,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_CAFCASS_COURT;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.AMENDED_APPLICATION_RETURNED_ADMIN_TEMPLATE;
@@ -85,6 +88,9 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     @MockBean
     private DocumentDownloadService documentDownloadService;
 
+    @MockBean
+    private CoreCaseDataService coreCaseDataService;
+
     CaseSubmissionControllerSubmittedTest() {
         super("case-submission");
     }
@@ -116,6 +122,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         });
 
         checkThat(() -> verifyNoMoreInteractions(notificationClient));
+        verifyTaskListUpdated(caseId);
     }
 
     @Test
@@ -431,5 +438,14 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
                 .state(stateBefore.getValue())
                 .build())
             .build();
+    }
+
+    private void verifyTaskListUpdated(Long caseId) {
+        verify(coreCaseDataService).triggerEvent(
+            eq(JURISDICTION),
+            eq(CASE_TYPE),
+            eq(caseId),
+            eq("internal-update-case-info"),
+            anyMap());
     }
 }
