@@ -10,7 +10,7 @@ const eventSummaryPage = require('./pages/eventSummary.page');
 const openApplicationEventPage = require('./pages/events/openApplicationEvent.page');
 const mandatorySubmissionFields = require('./fixtures/mandatorySubmissionFields.json');
 
-const normalizeCaseId = caseId => caseId.replace(/\D/g, '');
+const normalizeCaseId = caseId => caseId.toString().replace(/\D/g, '');
 
 const baseUrl = process.env.URL || 'http://localhost:3333';
 const signedInSelector = 'exui-header';
