@@ -27,13 +27,11 @@ import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ReviewCMOService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
@@ -58,10 +56,7 @@ public class ReviewAgreedCMOController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<CaseManagementOrder>> draftCMOs = defaultIfNull(caseData.getDraftUploadedCMOs(),
-            Collections.emptyList());
-
-        List<Element<CaseManagementOrder>> cmosReadyForApproval = draftCMOs.stream().filter(
+        List<Element<CaseManagementOrder>> cmosReadyForApproval = caseData.getDraftUploadedCMOs().stream().filter(
             cmo -> cmo.getValue().getStatus().equals(SEND_TO_JUDGE)).collect(Collectors.toList());
 
         data.remove("reviewCMODecision");
@@ -71,9 +66,10 @@ public class ReviewAgreedCMOController {
                 data.put("numDraftCMOs", "NONE");
                 break;
             case 1:
+                CaseManagementOrder cmo = cmosReadyForApproval.get(0).getValue();
                 data.put("numDraftCMOs", "SINGLE");
                 data.put("reviewCMODecision",
-                    ReviewDecision.builder().document(cmosReadyForApproval.get(0).getValue().getOrder()).build());
+                    ReviewDecision.builder().hearing(cmo.getHearing()).document(cmo.getOrder()).build());
                 break;
             default:
                 data.put("numDraftCMOs", "MULTI");
@@ -100,7 +96,10 @@ public class ReviewAgreedCMOController {
             .findFirst()
             .orElseThrow(() -> new CMOCodeNotFound("Could not find draft cmo with id " + selectedCMOCode));
 
-        data.put("reviewCMODecision", ReviewDecision.builder().document(selectedCMO.getValue().getOrder()).build());
+        data.put("reviewCMODecision", ReviewDecision.builder()
+            .hearing(selectedCMO.getValue().getHearing())
+            .document(selectedCMO.getValue().getOrder())
+            .build());
 
         List<Element<CaseManagementOrder>> draftCMOs = caseData.getDraftUploadedCMOs();
 
@@ -124,7 +123,10 @@ public class ReviewAgreedCMOController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (caseData.getReviewCMODecision() != null) {
+        List<Element<CaseManagementOrder>> cmosReadyForApproval = caseData.getDraftUploadedCMOs().stream().filter(
+            cmo -> cmo.getValue().getStatus().equals(SEND_TO_JUDGE)).collect(Collectors.toList());
+
+        if (!cmosReadyForApproval.isEmpty()) {
             Object dynamicList = caseData.getCmoToReviewList();
 
             Element<CaseManagementOrder> cmo;
@@ -180,7 +182,10 @@ public class ReviewAgreedCMOController {
         CaseData caseDataBefore = mapper.convertValue(callbackRequest.getCaseDetailsBefore().getData(), CaseData.class);
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
 
-        if (caseData.getReviewCMODecision() != null) {
+        List<Element<CaseManagementOrder>> cmosReadyForApproval = caseData.getDraftUploadedCMOs().stream().filter(
+            cmo -> cmo.getValue().getStatus().equals(SEND_TO_JUDGE)).collect(Collectors.toList());
+
+        if (!cmosReadyForApproval.isEmpty()) {
             if (SEND_TO_ALL_PARTIES.equals(caseData.getReviewCMODecision().getDecision())) {
                 CaseManagementOrder sealed = caseData.getSealedCMOs().get(
                     caseData.getSealedCMOs().size() - 1).getValue();
