@@ -18,6 +18,7 @@ import java.util.UUID;
 import javax.validation.constraints.Future;
 
 import static java.lang.String.format;
+import static org.apache.commons.lang3.StringUtils.capitalize;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
@@ -55,7 +56,7 @@ public class HearingBooking {
     }
 
     public String toLabel(String dateFormat) {
-        String label = OTHER == type ? typeDetails : type.getLabel();
+        String label = OTHER == type ? capitalize(typeDetails) : type.getLabel();
         return format("%s hearing, %s", label, formatLocalDateTimeBaseUsingFormat(startDate, dateFormat));
     }
 }
