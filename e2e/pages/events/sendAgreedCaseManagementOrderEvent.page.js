@@ -15,4 +15,3 @@ module.exports = {
     I.attachFile(this.fields.uploadCmo, file);
   },
 };
-

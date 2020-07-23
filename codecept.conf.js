@@ -81,7 +81,8 @@ exports.config = {
     addExtend26WeekTimelineEventPage: './e2e/pages/events/addExtend26WeekTimelineEvent.page.js',
     closeTheCaseEventPage: './e2e/pages/events/closeTheCase.page.js',
     returnApplicationEventPage: './e2e/pages/events/returnApplicationEvent.page.js',
-    sendAgreedCaseManagementOrderEventPage: './e2e/pages/events/sendAgreedCaseManagementOrderEvent.page.js'
+    sendAgreedCaseManagementOrderEventPage: './e2e/pages/events/sendAgreedCaseManagementOrderEvent.page.js',
+    reviewAgreedCaseManagementOrderEventPage: './e2e/pages/events/reviewAgreedCaseManagementOrderEvent.page.js'
   },
   plugins: {
     autoDelay: {
