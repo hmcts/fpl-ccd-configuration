@@ -32,6 +32,10 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
 
     private static final String CASE_URL = "caseUrl";
     private static final String SUBJECT_LINE = "subjectLineWithHearingDate";
+    private static final String REFERENCE = "reference";
+    private static final String RESPONDENT_LAST_NAME = "respondentLastName";
+    private static final String DIGITAL_PREFERENCE = "digitalPreferenc";
+
 
     public Map<String, Object> buildCMOIssuedCaseLinkNotificationParameters(final CaseDetails caseDetails,
                                                                             final String recipientName) {
@@ -74,8 +78,8 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
 
         return ImmutableMap.<String, Object>builder()
             .put(SUBJECT_LINE, buildCallout(caseData))
-            .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
-            .put("digitalPreference", servingPreference == DIGITAL_SERVICE ? "Yes" : "No")
+            .put(RESPONDENT_LAST_NAME, getFirstRespondentLastName(caseData.getRespondents1()))
+            .put(DIGITAL_PREFERENCE, servingPreference == DIGITAL_SERVICE ? "Yes" : "No")
             .put(CASE_URL, servingPreference == DIGITAL_SERVICE ? getCaseUrl(caseDetails.getId()) : "")
             .putAll(linkToAttachedDocument(documentContents))
             .build();
@@ -115,7 +119,7 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
 
         return ImmutableMap.of(
             SUBJECT_LINE, buildCallout(caseData),
-            "reference", String.valueOf(caseDetails.getId()),
+            REFERENCE, String.valueOf(caseDetails.getId()),
             CASE_URL, getCaseUrl(caseDetails.getId())
         );
     }
