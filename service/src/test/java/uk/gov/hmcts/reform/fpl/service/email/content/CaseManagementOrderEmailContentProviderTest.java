@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForCMO;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.cmo.RejectedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
@@ -58,18 +59,19 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
         given(documentDownloadService.downloadDocument(anyString())).willReturn(TestDataHelper.DOCUMENT_CONTENT);
 
         IssuedCMOTemplate expectedTemplate = new IssuedCMOTemplate();
+        uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder cmo = buildCmo();
 
         expectedTemplate.setRespondentLastName("lastName");
         expectedTemplate.setFamilyManCaseNumber("11");
         expectedTemplate.setDigitalPreference("No");
-        expectedTemplate.setHearingDate("Test");
+        expectedTemplate.setHearing("Test hearing, 20th June");
         expectedTemplate.setCaseUrl("");
         expectedTemplate.setDocumentLink(generateAttachedDocumentLink(TestDataHelper.DOCUMENT_CONTENT)
             .map(JSONObject::toMap)
             .orElse(null));
 
         assertThat(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(
-            createCase(), EMAIL))
+            createCase(), cmo, EMAIL))
             .isEqualToComparingFieldByField(expectedTemplate);
     }
 
@@ -77,19 +79,21 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
     void shouldBuildCMOIssuedExpectedParametersWithPopulatedCaseUrl() {
         given(documentDownloadService.downloadDocument(anyString())).willReturn(TestDataHelper.DOCUMENT_CONTENT);
 
+        uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder cmo = buildCmo();
+
         IssuedCMOTemplate expectedTemplate = new IssuedCMOTemplate();
 
         expectedTemplate.setRespondentLastName("lastName");
         expectedTemplate.setFamilyManCaseNumber("11");
         expectedTemplate.setDigitalPreference("Yes");
         expectedTemplate.setCaseUrl("http://fake-url/cases/case-details/" + CASE_REFERENCE);
-        expectedTemplate.setHearingDate("Test");
+        expectedTemplate.setHearing("Test hearing, 20th June");
         expectedTemplate.setDocumentLink(generateAttachedDocumentLink(TestDataHelper.DOCUMENT_CONTENT)
             .map(JSONObject::toMap)
             .orElse(null));
 
         assertThat(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(
-            createCase(), DIGITAL_SERVICE))
+            createCase(), cmo, DIGITAL_SERVICE))
             .isEqualToComparingFieldByField(expectedTemplate);
     }
 
@@ -103,21 +107,26 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
             .build();
 
         assertThat(caseManagementOrderEmailContentProvider
-            .buildCMOPartyReviewParameters(createCase(), new byte[]{}, RepresentativeServingPreferences.POST))
+            .buildCMOPartyReviewParameters(createCase(), new byte[] {}, RepresentativeServingPreferences.POST))
             .isEqualTo(expectedParameters);
     }
 
     @Test
     void shouldBuildCMORejectedByJudgeNotificationExpectedParameters() {
-        Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
-            .put("requestedChanges", "change it")
-            .put("caseUrl", caseUrl(CASE_REFERENCE))
-            .put("subjectLineWithHearingDate", "lastName, 11")
-            .put("reference", CASE_REFERENCE)
-            .build();
+        uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder cmo = buildCmo();
+        cmo.setRequestedChanges("change it");
+
+        RejectedCMOTemplate expectedTemplate = new RejectedCMOTemplate();
+
+        expectedTemplate.setRequestedChanges("change it");
+        expectedTemplate.setHearing("Test hearing, 20th June");
+        expectedTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
+        expectedTemplate.setRespondentLastName("lastName");
+        expectedTemplate.setFamilyManCaseNumber("11");
 
         assertThat(caseManagementOrderEmailContentProvider
-            .buildCMORejectedByJudgeNotificationParameters(createCase())).isEqualTo(expectedParameters);
+            .buildCMORejectedByJudgeNotificationParameters(createCase(), cmo)).isEqualToComparingFieldByField(
+            expectedTemplate);
     }
 
     @Test
@@ -127,6 +136,12 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
         assertThat(caseManagementOrderEmailContentProvider
             .buildCMOReadyForJudgeReviewNotificationParameters(createCase()))
             .isEqualToComparingFieldByField(expectedParameters);
+    }
+
+    private uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder buildCmo() {
+        return uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.builder()
+            .order(TestDataHelper.testDocumentReference())
+            .hearing("Test hearing, 20th June").build();
     }
 
     private AllocatedJudgeTemplateForCMO getCMOReadyForJudgeReviewParameters() {

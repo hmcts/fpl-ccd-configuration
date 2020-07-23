@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForPartyReviewEvent;
-import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -117,7 +116,7 @@ public class CaseManagementOrderProgressionService {
 
     @Deprecated
     private void sendChangesRequestedNotificationToLocalAuthority(CaseDetails caseDetails) {
-//        applicationEventPublisher.publishEvent(
-//            new CaseManagementOrderRejectedEvent(CallbackRequest.builder().caseDetails(caseDetails).build()));
+        //applicationEventPublisher.publishEvent(
+        //new CaseManagementOrderRejectedEvent(CallbackRequest.builder().caseDetails(caseDetails).build()));
     }
 }

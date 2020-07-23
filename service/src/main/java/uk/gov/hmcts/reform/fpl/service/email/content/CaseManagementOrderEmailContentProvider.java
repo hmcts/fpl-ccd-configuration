@@ -66,8 +66,8 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
         template.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
         template.setFamilyManCaseNumber(caseData.getFamilyManCaseNumber());
         template.setHearing(cmo.getHearing());
-        template.setDocumentLink(linkToAttachedDocument(cmo.getOrder()));
         template.setCaseUrl(getCaseUrl(caseDetails.getId()));
+        template.setRequestedChanges(cmo.getRequestedChanges());
 
         return template;
     }
