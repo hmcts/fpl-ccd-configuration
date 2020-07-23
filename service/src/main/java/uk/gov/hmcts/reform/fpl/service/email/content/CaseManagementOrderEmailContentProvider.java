@@ -10,11 +10,14 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForCMO;
 import uk.gov.hmcts.reform.fpl.model.notify.draftcmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
+import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
@@ -77,7 +80,8 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         return ImmutableMap.<String, Object>builder()
-            .put(SUBJECT_LINE, buildCallout(caseData))
+            .put(SUBJECT_LINE, buildCallout(caseData.getFamilyManCaseNumber(), caseData.getRespondents1(),
+                caseData.getHearingDetails()))
             .put(RESPONDENT_LAST_NAME, getFirstRespondentLastName(caseData.getRespondents1()))
             .put(DIGITAL_PREFERENCE, servingPreference == DIGITAL_SERVICE ? "Yes" : "No")
             .put(CASE_URL, servingPreference == DIGITAL_SERVICE ? getCaseUrl(caseDetails.getId()) : "")
@@ -85,13 +89,14 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
             .build();
     }
 
-    private String buildCallout(CaseData caseData) {
+    private String buildCallout(final String familyManCaseNumber, final List<Element<Respondent>> respondents,
+                                final List<Element<HearingBooking>> hearingBookings) {
         HearingBooking hearing = null;
-        if (hearingBookingService.hasFutureHearing(caseData.getHearingDetails())) {
-            hearing = hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails());
+        if (hearingBookingService.hasFutureHearing(hearingBookings)) {
+            hearing = hearingBookingService.getMostUrgentHearingBooking(hearingBookings);
         }
-        return buildSubjectLineWithHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
-            caseData.getRespondents1(),
+        return buildSubjectLineWithHearingBookingDateSuffix(familyManCaseNumber,
+            respondents,
             hearing);
     }
 
@@ -118,7 +123,8 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         return ImmutableMap.of(
-            SUBJECT_LINE, buildCallout(caseData),
+            SUBJECT_LINE, buildCallout(caseData.getFamilyManCaseNumber(), caseData.getRespondents1(),
+                caseData.getHearingDetails()),
             REFERENCE, String.valueOf(caseDetails.getId()),
             CASE_URL, getCaseUrl(caseDetails.getId())
         );
