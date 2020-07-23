@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -170,8 +169,8 @@ public class ActionCaseManagementOrderController {
             final String actionCmoDocumentUrl = actionedCmo.getOrderDoc().getBinaryUrl();
             byte[] documentContents = documentDownloadService.downloadDocument(actionCmoDocumentUrl);
 
-//            applicationEventPublisher.publishEvent(
-//                new CaseManagementOrderIssuedEvent(callbackRequest, documentContents));
+            //applicationEventPublisher.publishEvent(
+            //new CaseManagementOrderIssuedEvent(callbackRequest, documentContents));
         }
     }
 }

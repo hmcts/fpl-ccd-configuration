@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
+import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
@@ -46,7 +47,7 @@ import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {CaseManagementOrderIssuedEventHandler.class, JacksonAutoConfiguration.class,
     LookupTestConfig.class, IssuedOrderAdminNotificationHandler.class, HmctsAdminNotificationHandler.class,
-    RepresentativeService.class,  FixedTimeConfiguration.class})
+    RepresentativeService.class, FixedTimeConfiguration.class})
 public class CaseManagementOrderIssuedEventHandlerTest {
 
     @MockBean
@@ -76,11 +77,12 @@ public class CaseManagementOrderIssuedEventHandlerTest {
     void shouldNotifyHmctsAdminAndLocalAuthorityOfCMOIssued() {
         CallbackRequest callbackRequest = callbackRequest();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseManagementOrder cmo = CaseManagementOrder.builder().build();
 
         given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
             .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
 
-        given(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(caseDetails,
+        given(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(caseDetails, cmo,
             DIGITAL_SERVICE))
             .willReturn(issuedCMOTemplate);
 
@@ -89,7 +91,7 @@ public class CaseManagementOrderIssuedEventHandlerTest {
             .willReturn(getExpectedCaseUrlParameters(CMO.getLabel(), true));
 
         caseManagementOrderIssuedEventHandler.sendEmailsForIssuedCaseManagementOrder(
-            new CaseManagementOrderIssuedEvent(callbackRequest, DOCUMENT_CONTENTS));
+            new CaseManagementOrderIssuedEvent(callbackRequest, cmo));
 
         verify(notificationService).sendEmail(
             CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE,
@@ -108,6 +110,7 @@ public class CaseManagementOrderIssuedEventHandlerTest {
     void shouldNotifyCtscAdminOfCMOIssued() {
         CallbackRequest callbackRequest = appendSendToCtscOnCallback();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseManagementOrder cmo = CaseManagementOrder.builder().build();
 
         given(caseManagementOrderEmailContentProvider.buildCMOIssuedCaseLinkNotificationParameters(caseDetails,
             LOCAL_AUTHORITY_NAME))
@@ -118,7 +121,7 @@ public class CaseManagementOrderIssuedEventHandlerTest {
             .willReturn(getExpectedCaseUrlParameters(CMO.getLabel(), true));
 
         caseManagementOrderIssuedEventHandler.sendEmailsForIssuedCaseManagementOrder(
-            new CaseManagementOrderIssuedEvent(callbackRequest, DOCUMENT_CONTENTS));
+            new CaseManagementOrderIssuedEvent(callbackRequest, cmo));
 
         verify(notificationService).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
@@ -131,19 +134,19 @@ public class CaseManagementOrderIssuedEventHandlerTest {
     void shouldNotifyRepresentativesOfCMOIssued() {
         CallbackRequest callbackRequest = buildCallbackRequest();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-
         CaseData caseData = buildCaseDataWithRepresentatives();
+        CaseManagementOrder cmo = CaseManagementOrder.builder().build();
 
         given(representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(),
             DIGITAL_SERVICE))
             .willReturn(expectedRepresentatives());
 
-        given(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(caseDetails,
+        given(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(caseDetails, cmo,
             DIGITAL_SERVICE))
             .willReturn(issuedCMOTemplate);
 
         caseManagementOrderIssuedEventHandler.sendEmailsForIssuedCaseManagementOrder(
-            new CaseManagementOrderIssuedEvent(callbackRequest, DOCUMENT_CONTENTS));
+            new CaseManagementOrderIssuedEvent(callbackRequest, cmo));
 
         verify(notificationService).sendEmail(
             CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE,
