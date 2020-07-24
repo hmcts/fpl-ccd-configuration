@@ -92,7 +92,7 @@ public class ReviewCMOService {
         }
     }
 
-    public UUID getSelectedCMOId(Object dynamicList) {
+    private UUID getSelectedCMOId(Object dynamicList) {
         //see RDM-5696 and RDM-6651
         if (dynamicList instanceof String) {
             return UUID.fromString(dynamicList.toString());
