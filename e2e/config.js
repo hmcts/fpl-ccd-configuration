@@ -75,7 +75,7 @@ module.exports = {
     changeCaseName: 'Change case name',
     submitCase: 'Submit application',
     deleteApplication: 'Delete an application',
-    sendAgreedCmoToJudge: 'Send agreed CMO to judge',
+    uploadCMO: 'Send agreed CMO to judge',
     actionCaseManagementOrder: 'Action CMO',
     complyWithDirections: 'Comply with directions',
     complyOnBehalfOf: 'Comply on behalf of others',

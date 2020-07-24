@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.events.cmo.CMOReadyToSealEvent;
+import uk.gov.hmcts.reform.fpl.events.cmo.NewCMOUploaded;
 import uk.gov.hmcts.reform.fpl.handlers.HmctsAdminNotificationHandler;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -35,7 +35,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(MockitoExtension.class)
-class CMOReadyToSealEventHandlerTest {
+class NewCMOUploadedEventHandlerTest {
 
     private static final String HMCTS_ADMIN_EMAIL = "admin@hmcts.gov.uk";
     private static final String HMCTS_JUDGE_EMAIL = "judge@hmcts.gov.uk";
@@ -53,7 +53,7 @@ class CMOReadyToSealEventHandlerTest {
     private ObjectMapper mapper;
 
     @InjectMocks
-    private CMOReadyToSealEventHandler eventHandler;
+    private NewCMOUploadedEventHandler eventHandler;
 
     @Test
     void shouldSendNotificationForAdmin() {
@@ -73,7 +73,7 @@ class CMOReadyToSealEventHandlerTest {
 
         CallbackRequest request = callbackRequest();
 
-        CMOReadyToSealEvent event = new CMOReadyToSealEvent(request, hearing);
+        NewCMOUploaded event = new NewCMOUploaded(request, hearing);
 
         eventHandler.sendNotificationForAdmin(event);
 
@@ -100,7 +100,7 @@ class CMOReadyToSealEventHandlerTest {
         ).thenReturn(template);
 
         CallbackRequest request = callbackRequest();
-        CMOReadyToSealEvent event = new CMOReadyToSealEvent(request, hearing);
+        NewCMOUploaded event = new NewCMOUploaded(request, hearing);
 
         eventHandler.sendNotificationForJudge(event);
 

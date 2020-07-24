@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.events.cmo.CMOReadyToSealEvent;
+import uk.gov.hmcts.reform.fpl.events.cmo.NewCMOUploaded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -35,8 +35,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class UploadCMOController {
     private static final String[] TRANSIENT_FIELDS = {
-        "uploadedCaseManagementOrder", "pastHearingList", "cmoJudgeInfo", "cmoHearingInfo", "numHearings",
-        "singleHearingsWithCMOs", "multiHearingsWithCMOs", "showHearingsSingleTextArea", "showHearingsMultiTextArea"
+        "uploadedCaseManagementOrder", "hearingsWithoutApprovedCMO", "cmoJudgeInfo", "cmoHearingInfo",
+        "numHearingsWithoutCMO", "singleHearingWithCMO", "multiHearingsWithCMOs", "showHearingsSingleTextArea",
+        "showHearingsMultiTextArea"
     };
 
     private final Time time;
@@ -62,7 +63,7 @@ public class UploadCMOController {
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         // update judge and hearing labels
-        Object dynamicList = caseData.getPastHearingList();
+        Object dynamicList = caseData.getHearingsWithoutApprovedCMO();
         List<Element<HearingBooking>> hearings = cmoService.getHearingsWithoutCMO(caseData.getPastHearings(),
             caseData.getDraftUploadedCMOs());
         UUID selectedHearing = cmoService.getSelectedHearingId(dynamicList, hearings);
@@ -70,7 +71,7 @@ public class UploadCMOController {
 
         if (!(dynamicList instanceof DynamicList)) {
             // reconstruct dynamic list
-            data.put("pastHearingList", cmoService.buildDynamicList(hearings, selectedHearing));
+            data.put("hearingsWithoutApprovedCMO", cmoService.buildDynamicList(hearings, selectedHearing));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -90,7 +91,7 @@ public class UploadCMOController {
 
         if (!hearingsWithoutCMO.isEmpty()) {
             List<Element<HearingBooking>> hearings = caseData.getHearingDetails();
-            UUID selectedHearingId = cmoService.getSelectedHearingId(caseData.getPastHearingList(),
+            UUID selectedHearingId = cmoService.getSelectedHearingId(caseData.getHearingsWithoutApprovedCMO(),
                 hearingsWithoutCMO);
             HearingBooking hearing = cmoService.getSelectedHearing(selectedHearingId, hearingsWithoutCMO);
 
@@ -140,7 +141,7 @@ public class UploadCMOController {
             List<Element<HearingBooking>> hearingsBefore = caseDataBefore.getHearingDetails();
             hearings.removeAll(hearingsBefore);
 
-            publisher.publishEvent(new CMOReadyToSealEvent(request, hearings.get(0).getValue()));
+            publisher.publishEvent(new NewCMOUploaded(request, hearings.get(0).getValue()));
         }
     }
 

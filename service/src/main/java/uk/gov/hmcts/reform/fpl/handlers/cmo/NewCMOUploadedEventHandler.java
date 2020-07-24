@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.events.cmo.CMOReadyToSealEvent;
+import uk.gov.hmcts.reform.fpl.events.cmo.NewCMOUploaded;
 import uk.gov.hmcts.reform.fpl.handlers.HmctsAdminNotificationHandler;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
@@ -19,7 +19,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
-public class CMOReadyToSealEventHandler {
+public class NewCMOUploadedEventHandler {
     private final NotificationService notificationService;
     private final HmctsAdminNotificationHandler adminNotificationHandler;
     private final CMOReadyToSealContentProvider contentProvider;
@@ -27,7 +27,7 @@ public class CMOReadyToSealEventHandler {
 
     @Async
     @EventListener
-    public void sendNotificationForAdmin(final CMOReadyToSealEvent event) {
+    public void sendNotificationForAdmin(final NewCMOUploaded event) {
         EventData eventData = new EventData(event);
         CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
 
@@ -48,7 +48,7 @@ public class CMOReadyToSealEventHandler {
 
     @Async
     @EventListener
-    public void sendNotificationForJudge(final CMOReadyToSealEvent event) {
+    public void sendNotificationForJudge(final NewCMOUploaded event) {
         EventData eventData = new EventData(event);
         CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
 

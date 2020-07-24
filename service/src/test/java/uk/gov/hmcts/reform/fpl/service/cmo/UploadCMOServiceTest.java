@@ -198,8 +198,8 @@ class UploadCMOServiceTest {
         Map<String, Object> initialPageData = service.getInitialPageData(hearings, List.of());
 
         Map<String, Object> expected = Map.of(
-            "pastHearingList", dynamicList(hearings.get(0).getId(), hearings.get(1).getId(), hearings.get(2).getId()),
-            "numHearings", "MULTI"
+            "hearingsWithoutApprovedCMO", dynamicList(hearings.get(0).getId(), hearings.get(1).getId(), hearings.get(2).getId()),
+            "numHearingsWithoutCMO", "MULTI"
         );
 
         assertThat(initialPageData).isEqualTo(expected);
@@ -219,8 +219,8 @@ class UploadCMOServiceTest {
         Map<String, Object> initialPageData = service.getInitialPageData(hearings, List.of(cmo));
 
         Map<String, Object> expected = Map.of(
-            "pastHearingList", dynamicList(hearings.get(0).getId(), hearings.get(1).getId(), hearings.get(2).getId()),
-            "numHearings", "MULTI",
+            "hearingsWithoutApprovedCMO", dynamicList(hearings.get(0).getId(), hearings.get(1).getId(), hearings.get(2).getId()),
+            "numHearingsWithoutCMO", "MULTI",
             "multiHearingsWithCMOs", "Case management hearing, 15 January 2020",
             "showHearingsMultiTextArea", "YES"
         );
@@ -237,7 +237,7 @@ class UploadCMOServiceTest {
         Map<String, Object> initialPageData = service.getInitialPageData(hearings, List.of());
 
         Map<String, Object> expected = Map.of(
-            "numHearings", "SINGLE",
+            "numHearingsWithoutCMO", "SINGLE",
             "cmoHearingInfo", "Send agreed CMO for Case management hearing, 1 February 2020."
                 + "\nThis must have been discussed by all parties at the hearing.",
             "cmoJudgeInfo", "His Honour Judge Dredd"
@@ -257,11 +257,11 @@ class UploadCMOServiceTest {
         Map<String, Object> initialPageData = service.getInitialPageData(hearings, List.of(cmo));
 
         Map<String, Object> expected = Map.of(
-            "numHearings", "SINGLE",
+            "numHearingsWithoutCMO", "SINGLE",
             "cmoHearingInfo", "Send agreed CMO for Case management hearing, 1 February 2020."
                 + "\nThis must have been discussed by all parties at the hearing.",
             "cmoJudgeInfo", "His Honour Judge Dredd",
-            "singleHearingsWithCMOs", "Case management hearing, 2 February 2020",
+            "singleHearingWithCMO", "Case management hearing, 2 February 2020",
             "showHearingsSingleTextArea", "YES"
         );
 
@@ -273,7 +273,7 @@ class UploadCMOServiceTest {
         Map<String, Object> initialPageData = service.getInitialPageData(List.of(), List.of());
 
         Map<String, String> expected = Map.of(
-            "numHearings", "NONE"
+            "numHearingsWithoutCMO", "NONE"
         );
 
         assertThat(initialPageData).isEqualTo(expected);
@@ -291,7 +291,7 @@ class UploadCMOServiceTest {
         Map<String, Object> initialPageData = service.getInitialPageData(List.of(hearing), List.of(cmo));
 
         Map<String, String> expected = Map.of(
-            "numHearings", "NONE"
+            "numHearingsWithoutCMO", "NONE"
         );
 
         assertThat(initialPageData).isEqualTo(expected);
@@ -329,8 +329,8 @@ class UploadCMOServiceTest {
         );
 
         Map<String, Object> expected = Map.of(
-            "pastHearingList", dynamicList,
-            "numHearings", "MULTI",
+            "hearingsWithoutApprovedCMO", dynamicList,
+            "numHearingsWithoutCMO", "MULTI",
             "multiHearingsWithCMOs", "Case management hearing, 15 January 2020",
             "showHearingsMultiTextArea", "YES"
         );

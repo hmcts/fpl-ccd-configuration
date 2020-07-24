@@ -39,7 +39,7 @@ public class UploadCMOMidEventControllerTest extends AbstractControllerTest {
         DynamicList dynamicList = dynamicList(hearings);
 
         CaseData caseData = CaseData.builder()
-            .pastHearingList(dynamicList)
+            .hearingsWithoutApprovedCMO(dynamicList)
             .hearingDetails(hearings)
             .build();
 
@@ -77,14 +77,14 @@ public class UploadCMOMidEventControllerTest extends AbstractControllerTest {
         List<Element<HearingBooking>> hearings = hearings();
 
         CaseData caseData = CaseData.builder()
-            .pastHearingList(hearings.get(0).getId())
+            .hearingsWithoutApprovedCMO(hearings.get(0).getId())
             .hearingDetails(hearings)
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
 
         assertThat(response.getData())
-            .extracting("pastHearingList")
+            .extracting("hearingsWithoutApprovedCMO")
             .isEqualTo(mapper.convertValue(dynamicList(hearings), new TypeReference<Map<String, Object>>() {}));
     }
 

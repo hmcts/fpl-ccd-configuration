@@ -8,10 +8,10 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 
 @Getter
 @EqualsAndHashCode(callSuper = true)
-public class CMOReadyToSealEvent extends CallbackEvent {
+public class NewCMOUploaded extends CallbackEvent {
     private final HearingBooking hearing;
 
-    public CMOReadyToSealEvent(CallbackRequest request, HearingBooking hearing) {
+    public NewCMOUploaded(CallbackRequest request, HearingBooking hearing) {
         super(request);
         this.hearing = hearing;
     }

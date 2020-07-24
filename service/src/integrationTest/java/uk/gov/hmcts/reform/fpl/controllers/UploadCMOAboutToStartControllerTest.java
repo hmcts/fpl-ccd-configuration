@@ -59,7 +59,7 @@ public class UploadCMOAboutToStartControllerTest extends AbstractControllerTest 
             ))
             .build();
 
-        assertThat(response.getData()).extracting("numHearings", "pastHearingList").containsOnly(
+        assertThat(response.getData()).extracting("numHearingsWithoutCMO", "hearingsWithoutApprovedCMO").containsOnly(
             "MULTI",
             mapper.convertValue(dynamicList, new TypeReference<Map<String, Object>>() {})
         );
@@ -74,7 +74,7 @@ public class UploadCMOAboutToStartControllerTest extends AbstractControllerTest 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(asCaseDetails(caseData));
 
         assertThat(response.getData())
-            .extracting("numHearings", "cmoJudgeInfo", "cmoHearingInfo")
+            .extracting("numHearingsWithoutCMO", "cmoJudgeInfo", "cmoHearingInfo")
             .containsOnly(
                 "SINGLE",
                 "Her Honour Judge Judy",
@@ -91,7 +91,7 @@ public class UploadCMOAboutToStartControllerTest extends AbstractControllerTest 
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(asCaseDetails(caseData));
 
-        assertThat(response.getData()).extracting("numHearings").isEqualTo("NONE");
+        assertThat(response.getData()).extracting("numHearingsWithoutCMO").isEqualTo("NONE");
     }
 
     private HearingBooking hearing(LocalDateTime startDate) {

@@ -11,7 +11,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "pastHearingList",
+    "ID": "hearingsWithoutApprovedCMO",
     "Label": "Which CMO do you want to send to the judge to review?",
     "HintText": "All CMOs must have been discussed by all parties at the hearing.",
     "FieldType": "DynamicList",
@@ -46,7 +46,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "numHearings",
+    "ID": "numHearingsWithoutCMO",
     "Label": "Number of past hearings without a cmo",
     "FieldType": "Text",
     "SecurityClassification": "Public"
@@ -70,7 +70,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "singleHearingsWithCMOs",
+    "ID": "singleHearingWithCMO",
     "Label": "Hearings with CMOs already being reviewed",
     "FieldType": "TextArea",
     "SecurityClassification": "Public"
@@ -87,7 +87,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "showHearingsSingleTextArea",
-    "Label": "Field to store conditional result for showing singleHearingsWithCMOs",
+    "Label": "Field to store conditional result for showing singleHearingWithCMO",
     "FieldType": "Text",
     "SecurityClassification": "Public"
   }

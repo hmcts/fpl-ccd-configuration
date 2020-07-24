@@ -51,7 +51,7 @@ public class UploadCMOAboutToSubmitControllerTest extends AbstractControllerTest
 
         CaseData caseData = CaseData.builder()
             .hearingDetails(hearings)
-            .pastHearingList(dynamicList(hearings))
+            .hearingsWithoutApprovedCMO(dynamicList(hearings))
             .uploadedCaseManagementOrder(DOCUMENT_REFERENCE)
             .build();
 
@@ -85,7 +85,7 @@ public class UploadCMOAboutToSubmitControllerTest extends AbstractControllerTest
         CaseData caseData = CaseData.builder()
             .hearingDetails(hearings)
             .draftUploadedCMOs(orders)
-            .pastHearingList(dynamicList(hearings))
+            .hearingsWithoutApprovedCMO(dynamicList(hearings))
             .uploadedCaseManagementOrder(DOCUMENT_REFERENCE)
             .build();
 
@@ -111,7 +111,7 @@ public class UploadCMOAboutToSubmitControllerTest extends AbstractControllerTest
         List<Element<CaseManagementOrder>> draftCMOs = List.of(element(CaseManagementOrder.builder().build()));
 
         CaseData caseData = CaseData.builder()
-            .pastHearingList(dynamicList(hearings))
+            .hearingsWithoutApprovedCMO(dynamicList(hearings))
             .hearingDetails(hearings)
             .draftUploadedCMOs(draftCMOs)
             .build();
@@ -130,7 +130,7 @@ public class UploadCMOAboutToSubmitControllerTest extends AbstractControllerTest
         List<Element<CaseManagementOrder>> draftCMOs = List.of();
 
         CaseData caseData = CaseData.builder()
-            .pastHearingList(dynamicList(hearings))
+            .hearingsWithoutApprovedCMO(dynamicList(hearings))
             .hearingDetails(hearings)
             .draftUploadedCMOs(draftCMOs)
             .build();
@@ -141,8 +141,8 @@ public class UploadCMOAboutToSubmitControllerTest extends AbstractControllerTest
             "uploadedCaseManagementOrder", DocumentReference.builder().build(),
             "cmoJudgeInfo", "DUMMY DATA",
             "cmoHearingInfo", "DUMMY DATA",
-            "numHearings", "DUMMY DATA",
-            "singleHearingsWithCMOs", "DUMMY DATA",
+            "numHearingsWithoutCMO", "DUMMY DATA",
+            "singleHearingWithCMO", "DUMMY DATA",
             "multiHearingsWithCMOs", "DUMMY DATA",
             "showHearingsSingleTextArea", "DUMMY DATA",
             "showHearingsMultiTextArea", "DUMMY DATA"
@@ -155,8 +155,8 @@ public class UploadCMOAboutToSubmitControllerTest extends AbstractControllerTest
             "uploadedCaseManagementOrder",
             "cmoJudgeInfo",
             "cmoHearingInfo",
-            "numHearings",
-            "singleHearingsWithCMOs",
+            "numHearingsWithoutCMO",
+            "singleHearingWithCMO",
             "multiHearingsWithCMOs",
             "showHearingsSingleTextArea",
             "showHearingsMultiTextArea"

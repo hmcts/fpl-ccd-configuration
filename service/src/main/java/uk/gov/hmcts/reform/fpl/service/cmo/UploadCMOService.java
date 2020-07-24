@@ -31,12 +31,12 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJud
 public class UploadCMOService {
     private static final String CMO_HEARING_INFO_FIELD = "cmoHearingInfo";
     private static final String CMO_JUDGE_INFO_FIELD = "cmoJudgeInfo";
-    private static final String PAST_HEARING_LIST_FIELD = "pastHearingList";
+    private static final String PAST_HEARING_LIST_FIELD = "hearingsWithoutApprovedCMO";
+    private static final String NUM_HEARINGS_FIELD = "numHearingsWithoutCMO";
 
     private static final String SINGLE = "SINGLE";
     private static final String MULTI = "MULTI";
     private static final String NONE = "NONE";
-    private static final String NUM_HEARINGS_FIELD = "numHearings";
 
     private final ObjectMapper mapper;
 
@@ -47,21 +47,21 @@ public class UploadCMOService {
 
         Map<String, Object> data = new HashMap<>();
         String textAreaKey = null;
-        String numHearings;
+        String numHearingsWithoutCMO;
         String showTextAreaKey = null;
 
         switch (hearingsWithoutCMOs.size()) {
             case 0:
-                numHearings = NONE;
+                numHearingsWithoutCMO = NONE;
                 break;
             case 1:
-                numHearings = SINGLE;
-                textAreaKey = "singleHearingsWithCMOs";
+                numHearingsWithoutCMO = SINGLE;
+                textAreaKey = "singleHearingWithCMO";
                 showTextAreaKey = "showHearingsSingleTextArea";
                 data.putAll(getJudgeAndHearingDetailsSingle(hearingsWithoutCMOs.get(0).getId(), hearingsWithoutCMOs));
                 break;
             default:
-                numHearings = MULTI;
+                numHearingsWithoutCMO = MULTI;
                 textAreaKey = "multiHearingsWithCMOs";
                 showTextAreaKey = "showHearingsMultiTextArea";
                 data.put(PAST_HEARING_LIST_FIELD, buildDynamicList(hearingsWithoutCMOs));
@@ -74,7 +74,7 @@ public class UploadCMOService {
             data.put(showTextAreaKey, "YES");
         }
 
-        data.put(NUM_HEARINGS_FIELD, numHearings);
+        data.put(NUM_HEARINGS_FIELD, numHearingsWithoutCMO);
 
         return data;
     }
