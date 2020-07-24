@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.CMOReadyToSealTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
-import uk.gov.hmcts.reform.fpl.service.email.content.cmo.CMOReadyToSealContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.cmo.NewCMOUploadedContentProvider;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE;
@@ -22,7 +22,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW
 public class NewCMOUploadedEventHandler {
     private final NotificationService notificationService;
     private final HmctsAdminNotificationHandler adminNotificationHandler;
-    private final CMOReadyToSealContentProvider contentProvider;
+    private final NewCMOUploadedContentProvider contentProvider;
     private final ObjectMapper mapper;
 
     @Async

@@ -25,10 +25,13 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ContextConfiguration(classes = {CMOReadyToSealContentProvider.class})
-class CMOReadyToSealContentProviderTest extends AbstractEmailContentProviderTest {
+@ContextConfiguration(classes = {
+    NewCMOUploadedContentProvider.class
+})
+class NewCMOUploadedContentProviderTest extends AbstractEmailContentProviderTest {
+
     @Autowired
-    private CMOReadyToSealContentProvider contentProvider;
+    private NewCMOUploadedContentProvider contentProvider;
 
     @MockBean
     private EmailNotificationHelper notificationHelper;
@@ -38,7 +41,7 @@ class CMOReadyToSealContentProviderTest extends AbstractEmailContentProviderTest
 
     @BeforeEach
     void setUp() {
-        when(notificationHelper.buildSubjectLine(any(CaseData.class))).thenReturn("Vlad, 123456");
+        when(notificationHelper.buildSubjectLine(any(CaseData.class))).thenCallRealMethod();
     }
 
     @Test

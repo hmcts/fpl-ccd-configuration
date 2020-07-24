@@ -15,7 +15,7 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
-public class CMOReadyToSealContentProvider extends AbstractEmailContentProvider {
+public class NewCMOUploadedContentProvider extends AbstractEmailContentProvider {
 
     private final EmailNotificationHelper emailHelper;
 

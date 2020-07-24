@@ -27,7 +27,6 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE;
@@ -79,7 +78,7 @@ public class UploadCMOSubmittedControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldSendNotificationsIfNewCMOUploaded() {
-        CallbackRequest callbackRequest = callbackRequest(true);
+        CallbackRequest callbackRequest = callbackRequest();
 
         postSubmittedEvent(callbackRequest);
 
@@ -100,25 +99,7 @@ public class UploadCMOSubmittedControllerTest extends AbstractControllerTest {
         });
     }
 
-    @Test
-    void shouldNotSendToJudgeIfAllocatedJudgeEmailNotProvided() {
-        CallbackRequest callbackRequest = callbackRequest(false);
-
-        postSubmittedEvent(callbackRequest);
-
-        checkUntil(() -> {
-            verify(notificationClient).sendEmail(
-                eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE),
-                eq(ADMIN_EMAIL),
-                anyMap(),
-                eq(String.valueOf(CASE_ID))
-            );
-
-            verifyNoMoreInteractions(notificationClient);
-        });
-    }
-
-    private CallbackRequest callbackRequest(boolean withAllocatedJudge) {
+    private CallbackRequest callbackRequest() {
         List<Element<HearingBooking>> hearingsBefore = hearings(LocalDateTime.of(2020, 11, 3, 12, 0));
         List<Element<HearingBooking>> hearings = hearings(
             LocalDateTime.of(2020, 11, 3, 12, 0),
@@ -138,7 +119,7 @@ public class UploadCMOSubmittedControllerTest extends AbstractControllerTest {
         Judge judy = Judge.builder()
             .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
             .judgeLastName("Judy")
-            .judgeEmailAddress(withAllocatedJudge ? JUDGE_EMAIL : null)
+            .judgeEmailAddress(JUDGE_EMAIL)
             .build();
 
         CaseData caseData = CaseData.builder()
