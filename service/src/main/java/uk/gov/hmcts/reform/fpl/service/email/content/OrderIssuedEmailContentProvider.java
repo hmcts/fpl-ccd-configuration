@@ -11,16 +11,18 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
@@ -29,9 +31,9 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvider {
     private final HmctsCourtLookupConfiguration config;
-    private final EmailNotificationHelper emailNotificationHelper;
     private final ObjectMapper mapper;
     private final GeneratedOrderService generatedOrderService;
+    private final Time time;
 
     public Map<String, Object> buildParametersWithoutCaseUrl(final CaseDetails caseDetails,
                                                              final String localAuthorityCode,
@@ -79,10 +81,14 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
         return generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData);
     }
 
-    private String buildCallout(CaseData caseData) {
-        return "^" + emailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix(
-            caseData,
-            caseData.getHearingDetails());
+    private String buildCallout(final CaseData caseData) {
+        HearingBooking hearing = null;
+        if (caseData.hasFutureHearing(caseData.getHearingDetails())) {
+            hearing = caseData.getMostUrgentHearingBookingAfter(time.now());
+        }
+        return "^" + buildSubjectLineWithHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
+            caseData.getRespondents1(),
+            hearing);
     }
 
     private String getTypeOfOrder(CaseData caseData, IssuedOrderType issuedOrderType) {
