@@ -15,8 +15,8 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.Map;
 
@@ -33,7 +33,7 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
     private final HmctsCourtLookupConfiguration config;
     private final ObjectMapper mapper;
     private final GeneratedOrderService generatedOrderService;
-    private final HearingBookingService hearingBookingService;
+    private final Time time;
 
     public Map<String, Object> buildParametersWithoutCaseUrl(final CaseDetails caseDetails,
                                                              final String localAuthorityCode,
@@ -84,7 +84,7 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
     private String buildCallout(final CaseData caseData) {
         HearingBooking hearing = null;
         if (caseData.hasFutureHearing(caseData.getHearingDetails())) {
-            hearing = hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails());
+            hearing = caseData.getMostUrgentHearingBookingAfter(time.now());
         }
         return "^" + buildSubjectLineWithHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
             caseData.getRespondents1(),

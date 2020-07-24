@@ -100,7 +100,7 @@ class EmailNotificationHelperTest {
 
     @Test
     void subjectLineShouldBeSuffixedWithHearingDate() {
-        final LocalDateTime dateInTenMonths = LocalDateTime.now().plusMonths(10);
+        final LocalDateTime dateInTenMonths = LocalDateTime.of(2022, 05, 23, 0, 0, 0);
         List<Element<HearingBooking>> hearingBookingsFromInitialDate =
             createHearingBookingsFromInitialDate(dateInTenMonths);
         CaseData caseData = CaseData.builder()
@@ -111,7 +111,7 @@ class EmailNotificationHelperTest {
 
         HearingBooking hearingBooking = unwrapElements(caseData.getHearingDetails()).get(2);
 
-        String expectedSubjectLine = "Jones, FamilyManCaseNumber, hearing 23 May 2021";
+        String expectedSubjectLine = "Jones, FamilyManCaseNumber, hearing 23 May 2022";
         String returnedSubjectLine = buildSubjectLineWithHearingBookingDateSuffix(caseData
                 .getFamilyManCaseNumber(),
             caseData.getRespondents1(), hearingBooking);

@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
@@ -17,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForCMO;
 import uk.gov.hmcts.reform.fpl.model.notify.draftcmo.IssuedCMOTemplate;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
@@ -40,9 +38,6 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
 
     @Autowired
     private CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
-
-    @MockBean
-    private HearingBookingService hearingBookingService;
 
     @Test
     void shouldBuildCMOIssuedCaseLinkNotificationExpectedParameters() {

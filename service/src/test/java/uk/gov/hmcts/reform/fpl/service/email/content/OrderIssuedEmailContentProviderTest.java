@@ -1,21 +1,18 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -49,25 +46,11 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
     @MockBean
     private GeneratedOrderService generatedOrderService;
 
-    @MockBean
-    private HearingBookingService hearingBookingService;
-
     @Autowired
     private OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
 
     @Autowired
     private ObjectMapper mapper;
-
-    @BeforeEach
-    void setup() {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
-        LocalDateTime time =  LocalDateTime.now().plusMonths(3);
-        HearingBooking hearingBooking = HearingBooking.builder().startDate(time).build();
-
-        given(hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails()))
-            .willReturn(hearingBooking);
-    }
 
     @Test
     void shouldBuildGeneratedOrderParametersWithCaseUrl() {
