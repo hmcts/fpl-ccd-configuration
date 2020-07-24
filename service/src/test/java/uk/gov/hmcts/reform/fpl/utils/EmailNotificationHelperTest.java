@@ -100,9 +100,9 @@ class EmailNotificationHelperTest {
 
     @Test
     void subjectLineShouldBeSuffixedWithHearingDate() {
-        final LocalDateTime dateInTenMonths = LocalDateTime.of(2022, 05, 23, 0, 0, 0);
+        final LocalDateTime futureDate = LocalDateTime.of(2022, 05, 23, 0, 0, 0);
         List<Element<HearingBooking>> hearingBookingsFromInitialDate =
-            createHearingBookingsFromInitialDate(dateInTenMonths);
+            createHearingBookingsFromInitialDate(futureDate);
         CaseData caseData = CaseData.builder()
             .respondents1(createRespondents())
             .hearingDetails(hearingBookingsFromInitialDate)

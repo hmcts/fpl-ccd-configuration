@@ -536,14 +536,14 @@ class CaseDataTest {
     @Test
     void shouldReturnTrueWhenFutureHearingExists() {
         List<Element<HearingBooking>> hearingBooking =
-            newArrayList(element(createHearingBooking(time.now().plusDays(6),
+            List.of(element(createHearingBooking(time.now().plusDays(6),
                 time.now().plusDays(6))));
 
         CaseData caseData = CaseData.builder()
             .hearingDetails(hearingBooking)
             .build();
 
-        Boolean hearingBookingInFuture = caseData.hasFutureHearing(hearingBooking);
+        boolean hearingBookingInFuture = caseData.hasFutureHearing(hearingBooking);
 
         assertThat(hearingBookingInFuture).isTrue();
     }
@@ -558,7 +558,7 @@ class CaseDataTest {
             .hearingDetails(hearingBooking)
             .build();
 
-        Boolean hearingBookingInFuture = caseData.hasFutureHearing(hearingBooking);
+        boolean hearingBookingInFuture = caseData.hasFutureHearing(hearingBooking);
 
         assertThat(hearingBookingInFuture).isFalse();
     }
