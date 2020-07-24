@@ -145,7 +145,7 @@ survey:
 
 resources:
   images:
-    baseUrl: 'https://raw.githubusercontent.com/tomaszpowroznik/proxypac/master/'
+    baseUrl: 'https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/'
 ---
 
 spring:
