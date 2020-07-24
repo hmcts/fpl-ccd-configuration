@@ -13,9 +13,9 @@ import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 
 @Api
 @RestController
-@RequestMapping("/callback/update-case-info")
+@RequestMapping("/callback/update-task-list")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class CommonController {
+public class TaskListController {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 

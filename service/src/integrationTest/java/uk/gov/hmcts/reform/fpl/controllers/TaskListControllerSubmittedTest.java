@@ -18,17 +18,17 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 @ActiveProfiles("integration-test")
 @WebMvcTest(AddCaseNumberController.class)
 @OverrideAutoConfiguration(enabled = true)
-class CommonControllerSubmittedTest extends AbstractControllerTest {
+class TaskListControllerSubmittedTest extends AbstractControllerTest {
 
-    CommonControllerSubmittedTest() {
-        super("add-case-number");
+    TaskListControllerSubmittedTest() {
+        super("update-task-list");
     }
 
     @MockBean
     private CoreCaseDataService coreCaseDataService;
 
     @Test
-    void shouldNotSendNotificationToRoboticsWhenCaseNumberUpdated() {
+    void shouldUpdateTaskList() {
         final CallbackRequest callbackRequest = callbackRequest();
 
         postSubmittedEvent(callbackRequest);

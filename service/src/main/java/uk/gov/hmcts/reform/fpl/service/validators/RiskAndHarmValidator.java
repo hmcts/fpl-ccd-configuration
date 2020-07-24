@@ -25,6 +25,5 @@ public class RiskAndHarmValidator implements Validator {
         } else {
             return emptyList();
         }
-
     }
 }

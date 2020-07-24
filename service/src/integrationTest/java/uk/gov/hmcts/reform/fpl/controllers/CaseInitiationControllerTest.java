@@ -192,15 +192,6 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
         verifyCaseRoleGrantedToEachUser(LA_1_USER_IDS);
     }
 
-    private void verifyTaskListUpdated(CaseDetails caseDetails) {
-        verify(coreCaseDataService).triggerEvent(
-            eq(JURISDICTION),
-            eq(CASE_TYPE),
-            eq(caseDetails.getId()),
-            eq("internal-update-task-list"),
-            anyMap());
-    }
-
     private void verifyCaseRoleGrantedToEachUser(List<String> users) {
         verify(caseUserApi).updateCaseRolesForUser(
             USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, CASE_ID, CALLER_ID,
@@ -228,4 +219,12 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
         return callbackRequest(Map.of("localAuthority", localAuthority));
     }
 
+    private void verifyTaskListUpdated(CaseDetails caseDetails) {
+        verify(coreCaseDataService).triggerEvent(
+            eq(JURISDICTION),
+            eq(CASE_TYPE),
+            eq(caseDetails.getId()),
+            eq("internal-update-task-list"),
+            anyMap());
+    }
 }
