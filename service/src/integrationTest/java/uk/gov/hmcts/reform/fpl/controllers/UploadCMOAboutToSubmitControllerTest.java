@@ -72,25 +72,21 @@ public class UploadCMOAboutToSubmitControllerTest extends AbstractControllerTest
     @Test
     void shouldNotAlterHearingAndDraftCMOListsIfThereWereNoValidHearings() {
         List<Element<HearingBooking>> hearings = hearingsOnDateAndDayAfter(LocalDateTime.now().plusDays(3));
-        List<Element<CaseManagementOrder>> draftCMOs = List.of(element(CaseManagementOrder.builder().build()));
 
         CaseData caseData = CaseData.builder()
-            .hearingsWithoutApprovedCMO(dynamicList(hearings))
             .hearingDetails(hearings)
-            .draftUploadedCMOs(draftCMOs)
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(asCaseDetails(caseData));
 
         CaseData responseData = mapper.convertValue(response.getData(), CaseData.class);
 
-        assertThat(responseData.getDraftUploadedCMOs()).isEqualTo(draftCMOs);
         assertThat(responseData.getHearingDetails()).isEqualTo(hearings);
     }
 
     @Test
     void shouldRemoveTemporaryFields() {
-        List<Element<HearingBooking>> hearings = hearingsOnDateAndDayAfter(LocalDateTime.now().plusDays(3));
+        List<Element<HearingBooking>> hearings = hearingsOnDateAndDayAfter(LocalDateTime.of(2020, 3, 15, 10, 7));
         List<Element<CaseManagementOrder>> draftCMOs = List.of();
 
         CaseData caseData = CaseData.builder()
