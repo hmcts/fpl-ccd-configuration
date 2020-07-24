@@ -21,6 +21,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.Task.task;
 import static uk.gov.hmcts.reform.fpl.TaskState.COMPLETED;
 import static uk.gov.hmcts.reform.fpl.TaskState.IN_PROGRESS;
 import static uk.gov.hmcts.reform.fpl.TaskState.NOT_AVAILABLE;
@@ -86,24 +87,23 @@ class TaskListServiceTest {
 
     private List<Task> getTasks(TaskState state) {
         return Stream.of(
-            ORDERS_NEEDED,
-            HEARING_NEEDED,
-            GROUNDS,
-            RISK_AND_HARM,
-            FACTORS_AFFECTING_PARENTING,
-            APPLICANT,
-            ENTER_CHILDREN,
-            RESPONDENTS,
-            ALLOCATION_PROPOSAL,
-            OTHER_PROCEEDINGS,
-            INTERNATIONAL_ELEMENT,
-            ENTER_OTHERS,
-            ATTENDING_THE_HEARING,
-            DOCUMENTS,
-            CASE_NAME,
-            SUBMIT_APPLICATION)
-            .map(event -> Task.builder().event(event).state(state).build())
-            .collect(Collectors.toList());
-
+                ORDERS_NEEDED,
+                HEARING_NEEDED,
+                GROUNDS,
+                RISK_AND_HARM,
+                FACTORS_AFFECTING_PARENTING,
+                APPLICANT,
+                ENTER_CHILDREN,
+                RESPONDENTS,
+                ALLOCATION_PROPOSAL,
+                OTHER_PROCEEDINGS,
+                INTERNATIONAL_ELEMENT,
+                ENTER_OTHERS,
+                ATTENDING_THE_HEARING,
+                DOCUMENTS,
+                CASE_NAME,
+                SUBMIT_APPLICATION)
+                .map(event -> task(event, state))
+                .collect(Collectors.toList());
     }
 }

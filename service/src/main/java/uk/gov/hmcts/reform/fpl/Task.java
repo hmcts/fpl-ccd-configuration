@@ -22,4 +22,11 @@ public class Task {
     public Optional<String> getHint() {
         return Optional.ofNullable(hint);
     }
+
+    public static Task task(Event event, TaskState state) {
+        return Task.builder()
+                .event(event)
+                .state(state)
+                .build();
+    }
 }
