@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl;
 
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.fpl.enums.Event;
 
 import java.util.Optional;
 
@@ -9,7 +10,7 @@ import java.util.Optional;
 @Builder
 public class Task {
 
-    private final FplEvent event;
+    private final Event event;
     private final TaskState state;
     private String hint;
 

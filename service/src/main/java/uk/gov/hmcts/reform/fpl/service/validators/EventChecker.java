@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.validators;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.FplEvent;
+import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import java.util.EnumMap;
@@ -11,18 +11,18 @@ import javax.annotation.PostConstruct;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
-import static uk.gov.hmcts.reform.fpl.FplEvent.ALLOCATION_PROPOSAL;
-import static uk.gov.hmcts.reform.fpl.FplEvent.APPLICANT;
-import static uk.gov.hmcts.reform.fpl.FplEvent.CASE_NAME;
-import static uk.gov.hmcts.reform.fpl.FplEvent.DOCUMENTS;
-import static uk.gov.hmcts.reform.fpl.FplEvent.ENTER_CHILDREN;
-import static uk.gov.hmcts.reform.fpl.FplEvent.FACTORS_AFFECTING_PARENTING;
-import static uk.gov.hmcts.reform.fpl.FplEvent.GROUNDS;
-import static uk.gov.hmcts.reform.fpl.FplEvent.HEARING_NEEDED;
-import static uk.gov.hmcts.reform.fpl.FplEvent.ORDERS_NEEDED;
-import static uk.gov.hmcts.reform.fpl.FplEvent.RESPONDENTS;
-import static uk.gov.hmcts.reform.fpl.FplEvent.RISK_AND_HARM;
-import static uk.gov.hmcts.reform.fpl.FplEvent.SUBMIT_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
+import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT;
+import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
+import static uk.gov.hmcts.reform.fpl.enums.Event.DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.ENTER_CHILDREN;
+import static uk.gov.hmcts.reform.fpl.enums.Event.FACTORS_AFFECTING_PARENTING;
+import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_NEEDED;
+import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_NEEDED;
+import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.RISK_AND_HARM;
+import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
 
 @Service
 public class EventChecker {
@@ -63,9 +63,9 @@ public class EventChecker {
     @Autowired
     private FactorsAffectingParentingValidator factorsAffectingParentingValidator;
 
-    private final EnumMap<FplEvent, Validator> validators = new EnumMap<>(FplEvent.class);
+    private final EnumMap<Event, Validator> validators = new EnumMap<>(Event.class);
 
-    private final EnumMap<FplEvent, Validator> guards = new EnumMap<>(FplEvent.class);
+    private final EnumMap<Event, Validator> guards = new EnumMap<>(Event.class);
 
     @PostConstruct
     public void init() {
@@ -85,19 +85,19 @@ public class EventChecker {
         guards.put(SUBMIT_APPLICATION, submissionValidator);
     }
 
-    public List<String> validate(FplEvent event, CaseData caseData) {
+    public List<String> validate(Event event, CaseData caseData) {
         return ofNullable(validators.get(event))
             .map(validator -> validator.validate(caseData))
             .orElse(emptyList());
     }
 
-    public boolean isCompleted(FplEvent event, CaseData caseData) {
+    public boolean isCompleted(Event event, CaseData caseData) {
         return ofNullable(validators.get(event))
             .map(validator -> validator.validate(caseData).isEmpty())
             .orElse(false);
     }
 
-    public boolean isAvailable(FplEvent event, CaseData caseData) {
+    public boolean isAvailable(Event event, CaseData caseData) {
         return ofNullable(guards.get(event))
             .map(validator -> validator.validate(caseData).isEmpty())
             .orElse(true);

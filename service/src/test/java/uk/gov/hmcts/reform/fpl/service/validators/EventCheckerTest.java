@@ -11,7 +11,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-import uk.gov.hmcts.reform.fpl.FplEvent;
+import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import java.util.List;
@@ -23,18 +23,18 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.FplEvent.ALLOCATION_PROPOSAL;
-import static uk.gov.hmcts.reform.fpl.FplEvent.APPLICANT;
-import static uk.gov.hmcts.reform.fpl.FplEvent.CASE_NAME;
-import static uk.gov.hmcts.reform.fpl.FplEvent.DOCUMENTS;
-import static uk.gov.hmcts.reform.fpl.FplEvent.ENTER_CHILDREN;
-import static uk.gov.hmcts.reform.fpl.FplEvent.FACTORS_AFFECTING_PARENTING;
-import static uk.gov.hmcts.reform.fpl.FplEvent.GROUNDS;
-import static uk.gov.hmcts.reform.fpl.FplEvent.HEARING_NEEDED;
-import static uk.gov.hmcts.reform.fpl.FplEvent.ORDERS_NEEDED;
-import static uk.gov.hmcts.reform.fpl.FplEvent.RESPONDENTS;
-import static uk.gov.hmcts.reform.fpl.FplEvent.RISK_AND_HARM;
-import static uk.gov.hmcts.reform.fpl.FplEvent.SUBMIT_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
+import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT;
+import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
+import static uk.gov.hmcts.reform.fpl.enums.Event.DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.ENTER_CHILDREN;
+import static uk.gov.hmcts.reform.fpl.enums.Event.FACTORS_AFFECTING_PARENTING;
+import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_NEEDED;
+import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_NEEDED;
+import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.RISK_AND_HARM;
+import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {EventChecker.class, LocalValidatorFactoryBean.class})
@@ -73,7 +73,7 @@ class EventCheckerTest {
 
     @ParameterizedTest
     @MethodSource("getUnguardedEvents")
-    void shouldVerifyUnguardedEventWithError(FplEvent event, Validator validator) {
+    void shouldVerifyUnguardedEventWithError(Event event, Validator validator) {
         List<String> expectedErrors = List.of("Case name error");
         when(validator.validate(caseData)).thenReturn(expectedErrors);
 
@@ -86,7 +86,7 @@ class EventCheckerTest {
 
     @ParameterizedTest
     @MethodSource("getUnguardedEvents")
-    void shouldVerifyUnguardedEventWithoutError(FplEvent event, Validator validator) {
+    void shouldVerifyUnguardedEventWithoutError(Event event, Validator validator) {
         List<String> expectedErrors = List.of();
         when(validator.validate(caseData)).thenReturn(expectedErrors);
 
@@ -99,7 +99,7 @@ class EventCheckerTest {
 
     @ParameterizedTest
     @MethodSource("getGuardedEvents")
-    void shouldVerifyGuarderEventWithError(FplEvent event, Validator validator) {
+    void shouldVerifyGuarderEventWithError(Event event, Validator validator) {
         List<String> expectedErrors = List.of("Case name error");
         when(validator.validate(caseData)).thenReturn(expectedErrors);
 
@@ -112,7 +112,7 @@ class EventCheckerTest {
 
     @ParameterizedTest
     @MethodSource("getGuardedEvents")
-    void shouldVerifyGuardedEventWithoutError(FplEvent event, Validator validator) {
+    void shouldVerifyGuardedEventWithoutError(Event event, Validator validator) {
         List<String> expectedErrors = List.of();
         when(validator.validate(caseData)).thenReturn(expectedErrors);
 

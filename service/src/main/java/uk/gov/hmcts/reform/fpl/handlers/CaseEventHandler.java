@@ -18,8 +18,6 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.FplEvent.eventsInState;
-import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInOpenState;
 
 @Component
@@ -32,19 +30,19 @@ public class CaseEventHandler {
     private final TaskListRenderer taskListRenderer;
 
     @EventListener
-    public void onNewEvent(final CaseDataChanged event) {
+    public void handleCaseDataChange(final CaseDataChanged event) {
         final CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
 
         if (isInOpenState(caseDetails)) {
             final CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-            final List<Task> tasks = taskListService.getTasks(caseData, eventsInState(OPEN));
+            final List<Task> tasks = taskListService.getTasksForOpenCase(caseData);
             final String taskList = taskListRenderer.render(tasks);
 
             coreCaseDataService.triggerEvent(
                 JURISDICTION,
                 CASE_TYPE,
                 caseDetails.getId(),
-                "internal-update-case-info",
+                "internal-update-task-list",
                 Map.of("taskList", taskList));
         }
     }

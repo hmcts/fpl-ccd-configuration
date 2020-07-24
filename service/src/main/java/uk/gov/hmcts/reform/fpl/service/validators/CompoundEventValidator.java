@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.validators;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import uk.gov.hmcts.reform.fpl.FplEvent;
+import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ public abstract class CompoundEventValidator implements Validator {
     @Autowired
     private EventChecker eventChecker;
 
-    public List<String> validate(CaseData caseData, List<FplEvent> events) {
+    public List<String> validate(CaseData caseData, List<Event> events) {
         return events.stream()
             .flatMap(event -> {
                 List<String> groupErrors = new ArrayList<>();
