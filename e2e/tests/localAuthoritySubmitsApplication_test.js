@@ -51,8 +51,8 @@ Scenario('local authority enters orders and directions @create-case-with-mandato
   enterOrdersAndDirectionsNeededEventPage.enterDirections('Test');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterOrdersAndDirectionsNeeded);
-  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   await caseViewPage.checkTaskList(config.applicationActions.enterOrdersAndDirectionsNeeded);
+  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   I.seeInTab(['Orders and directions needed', 'Which orders do you need?'], ['Care order', 'Interim care order', 'Supervision order', 'Interim supervision order', 'Education supervision order', 'Emergency protection order', 'Variation or discharge of care or supervision order']);
   I.seeInTab(['Orders and directions needed', 'Do you need any of these related orders?'], ['Information on the whereabouts of the child', 'Authorisation for entry of premises', 'Authorisation to search for another child on the premises', 'Other order under section 48 of the Children Act 1989']);
   I.seeInTab(['Orders and directions needed', 'Give details'], 'Test');
@@ -72,8 +72,8 @@ Scenario('local authority enters hearing @create-case-with-mandatory-sections-on
   enterHearingNeededEventPage.enterRespondentsAware();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterHearingNeeded);
-  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   await caseViewPage.checkTaskList(config.applicationActions.enterHearingNeeded);
+  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   I.seeInTab(['Hearing needed', 'When do you need a hearing?'], enterHearingNeededEventPage.fields.timeFrame.sameDay);
   I.seeInTab(['Hearing needed', 'Give reason'], 'test reason');
   I.seeInTab(['Hearing needed', 'What type of hearing do you need?'], enterHearingNeededEventPage.fields.hearingType.contestedICO);
@@ -109,8 +109,8 @@ Scenario('local authority enters children @create-case-with-mandatory-sections-o
   await enterChildrenEventPage.enterLitigationIssues('No');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterChildren);
-  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   await caseViewPage.checkTaskList(config.applicationActions.enterChildren);
+  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   I.seeInTab(['Child 1', 'Party', 'First name'], 'Bran');
   I.seeInTab(['Child 1', 'Party', 'Last name'], 'Stark');
   I.seeInTab(['Child 1', 'Party', 'Date of birth'], '1 Aug 2015');
@@ -178,8 +178,8 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
   await enterRespondentsEventPage.enterLitigationIssues('No');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRespondents);
-  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   await caseViewPage.checkTaskList(config.applicationActions.enterRespondents);
+  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   I.seeInTab(['Respondents 1', 'Party', 'First name'], respondents[0].firstName);
   I.seeInTab(['Respondents 1', 'Party', 'Last name'], respondents[0].lastName);
   I.seeInTab(['Respondents 1', 'Party', 'Date of birth'], '1 Jan 1980');
@@ -224,8 +224,8 @@ Scenario('local authority enters applicant @create-case-with-mandatory-sections-
   enterApplicantEventPage.enterSolicitorDetails(solicitor);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterApplicant);
-  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   await caseViewPage.checkTaskList(config.applicationActions.enterApplicant);
+  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   I.seeInTab(['Applicants 1', 'Party', 'Name of applicant'], applicant.name);
   I.seeInTab(['Applicants 1', 'Party', 'Payment by account (PBA) number'], applicant.pbaNumber);
   I.seeInTab(['Applicants 1', 'Party', 'Client code'], applicant.clientCode);
@@ -261,8 +261,8 @@ Scenario('local authority enters others to be given notice', async (I, caseViewP
   await enterOthersEventPage.enterLitigationIssues('Yes', 'mock reason');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterOthers);
-  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   await caseViewPage.checkTaskList(config.applicationActions.enterOthers);
+  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   I.seeInTab(['Others to be given notice', 'Person 1', 'Full name'], 'John Smith');
   I.seeInTab(['Others to be given notice', 'Person 1', 'Date of birth'], '1 Jan 1985');
   I.seeInTab(['Others to be given notice', 'Person 1', 'Gender'], 'Male');
@@ -304,8 +304,8 @@ Scenario('local authority enters grounds for non EPO application @create-case-wi
   enterGroundsForApplicationEventPage.enterThresholdCriteriaDetails();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterGrounds);
-  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   await caseViewPage.checkTaskList(config.applicationActions.enterGrounds);
+  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   I.seeInTab(['How does this case meet the threshold criteria?', 'The child concerned is suffering or is likely to suffer significant harm because they are:'], 'Not receiving care that would be reasonably expected from a parent');
 });
 
@@ -318,8 +318,8 @@ Scenario('local authority enters grounds for EPO application @create-case-with-m
   enterGroundsForApplicationEventPage.enterGroundsForEmergencyProtectionOrder();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterGrounds);
-  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   await caseViewPage.checkTaskList(config.applicationActions.enterOrdersAndDirectionsNeeded);
+  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   I.seeInTab(['How are there grounds for an emergency protection order?', ''], [enterGroundsForApplicationEventPage.fields.groundsForApplication.harmIfNotMoved, enterGroundsForApplicationEventPage.fields.groundsForApplication.harmIfMoved, enterGroundsForApplicationEventPage.fields.groundsForApplication.urgentAccessRequired]);
 });
 
@@ -331,8 +331,8 @@ Scenario('local authority enters risk and harm to children', async (I, caseViewP
   enterRiskAndHarmToChildrenEventPage.completeNeglect();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRiskAndHarmToChildren);
-  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   await caseViewPage.checkTaskList(config.applicationActions.enterRiskAndHarmToChildren);
+  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   I.seeInTab(['Risks and harm to children', 'Physical harm including non-accidental injury'], 'Yes');
   I.seeInTab(['Risks and harm to children', 'Select all that apply'], 'Past harm');
   I.seeInTab(['Risks and harm to children', 'Emotional harm'], 'No');
@@ -348,8 +348,8 @@ Scenario('local authority enters factors affecting parenting', async (I, caseVie
   enterFactorsAffectingParentingEventPage.completeAnythingElse();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterFactorsAffectingParenting);
-  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   await caseViewPage.checkTaskList(config.applicationActions.enterFactorsAffectingParenting);
+  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   I.seeInTab(['Factors affecting parenting', 'Alcohol or drug abuse'], 'Yes');
   I.seeInTab(['Factors affecting parenting', 'Give details'], 'mock reason');
   I.seeInTab(['Factors affecting parenting', 'Domestic violence'], 'Yes');
@@ -364,8 +364,8 @@ Scenario('local authority enters international element', async (I, caseViewPage,
   I.see('Give reason');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterInternationalElement);
-  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   await caseViewPage.checkTaskList(config.applicationActions.enterInternationalElement);
+  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   I.seeInTab(['International element', 'Are there any suitable carers outside of the UK?'], 'Yes');
   I.seeInTab(['International element', 'Give reason'], 'test');
   I.seeInTab(['International element', 'Are you aware of any significant events that have happened outside the UK?'], 'Yes');
@@ -386,8 +386,8 @@ Scenario('local authority enters other proceedings', async (I, caseViewPage, ent
   await enterOtherProceedingsEventPage.enterProceedingInformation(otherProceedings[1]);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterOtherProceedings);
-  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   await caseViewPage.checkTaskList(config.applicationActions.enterOtherProceedings);
+  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   I.seeInTab(['Other proceedings', 'Are there any past or ongoing proceedings relevant to this case?'], 'Yes');
   I.seeInTab(['Other proceedings', 'Are these previous or ongoing proceedings?'], 'Ongoing');
   I.seeInTab(['Other proceedings', 'Case number'], '000000');
@@ -428,8 +428,8 @@ Scenario('local authority enters attending hearing', async (I, caseViewPage, ent
   enterAttendingHearingEventPage.enterSomethingElse();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAttendingHearing);
-  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   await caseViewPage.checkTaskList(config.applicationActions.enterAttendingHearing);
+  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   I.seeInTab(['Attending the hearing', 'Interpreter'], 'Yes');
   I.seeInTab(['Attending the hearing', 'Give details including person, language and dialect'], 'French translator');
   I.seeInTab(['Attending the hearing', 'Spoken or written Welsh'], 'No');
