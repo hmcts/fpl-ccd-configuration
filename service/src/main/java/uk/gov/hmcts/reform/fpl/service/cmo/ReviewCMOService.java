@@ -8,12 +8,15 @@ import uk.gov.hmcts.reform.fpl.exceptions.CMOCodeNotFound;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -35,6 +38,27 @@ public class ReviewCMOService {
 
     public DynamicList buildDynamicList(List<Element<CaseManagementOrder>> cmos, UUID selected) {
         return asDynamicList(cmos, selected, uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder::getHearing);
+    }
+
+    public Map<String, Object> handlePageDisplayLogic(List<Element<CaseManagementOrder>> cmos) {
+        Map<String, Object> data = new HashMap<>();
+        switch (cmos.size()) {
+            case 0:
+                data.put("numDraftCMOs", "NONE");
+                break;
+            case 1:
+                CaseManagementOrder cmo = cmos.get(0).getValue();
+                data.put("numDraftCMOs", "SINGLE");
+                data.put("reviewCMODecision",
+                    ReviewDecision.builder().hearing(cmo.getHearing()).document(cmo.getOrder()).build());
+                break;
+            default:
+                data.put("numDraftCMOs", "MULTI");
+                data.put("cmoToReviewList", buildDynamicList(cmos));
+                break;
+        }
+
+        return data;
     }
 
     public Element<CaseManagementOrder> getCMOToSeal(CaseData caseData, Element<CaseManagementOrder> cmo) {

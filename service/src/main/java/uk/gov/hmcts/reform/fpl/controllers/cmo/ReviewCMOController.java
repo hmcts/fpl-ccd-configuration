@@ -33,7 +33,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 @RestController
 @RequestMapping("/callback/review-cmo")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class ReviewAgreedCMOController {
+public class ReviewCMOController {
 
     private final ObjectMapper mapper;
     private final ReviewCMOService reviewCMOService;
@@ -51,21 +51,7 @@ public class ReviewAgreedCMOController {
 
         data.remove("reviewCMODecision");
 
-        switch (cmosReadyForApproval.size()) {
-            case 0:
-                data.put("numDraftCMOs", "NONE");
-                break;
-            case 1:
-                CaseManagementOrder cmo = cmosReadyForApproval.get(0).getValue();
-                data.put("numDraftCMOs", "SINGLE");
-                data.put("reviewCMODecision",
-                    ReviewDecision.builder().hearing(cmo.getHearing()).document(cmo.getOrder()).build());
-                break;
-            default:
-                data.put("numDraftCMOs", "MULTI");
-                data.put("cmoToReviewList", reviewCMOService.buildDynamicList(cmosReadyForApproval));
-                break;
-        }
+        data.putAll(reviewCMOService.handlePageDisplayLogic(cmosReadyForApproval));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
