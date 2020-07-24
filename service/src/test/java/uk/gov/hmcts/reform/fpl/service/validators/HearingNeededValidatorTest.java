@@ -21,7 +21,7 @@ class HearingNeededValidatorTest {
     private HearingNeededValidator hearingNeededValidator;
 
     @Test
-    void shouldReturnErrorWhenNoAllocationProposal() {
+    void shouldReturnErrorWhenNoHearingNeedsProvided() {
         final CaseData caseData = CaseData.builder().build();
 
         final List<String> errors = hearingNeededValidator.validate(caseData);

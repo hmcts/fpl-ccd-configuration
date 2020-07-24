@@ -21,7 +21,8 @@ class RiskAndHarmValidatorTest {
 
     @Test
     void shouldReturnErrorWhenRiskNorHarmNotProvided() {
-        final CaseData caseData = CaseData.builder().risks(null).build();
+        final CaseData caseData = CaseData.builder()
+            .build();
 
         final List<String> errors = riskAndHarmValidator.validate(caseData);
 

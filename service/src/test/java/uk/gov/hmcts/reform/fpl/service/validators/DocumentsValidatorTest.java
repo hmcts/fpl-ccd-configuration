@@ -116,12 +116,12 @@ class DocumentsValidatorTest {
 
         final CaseData caseData = CaseData.builder()
             .otherSocialWorkDocuments(wrapElements(DocumentSocialWorkOther.builder().build()))
-            .socialWorkCarePlanDocument(documentWithBinary(TO_FOLLOW))
-            .socialWorkStatementDocument(documentWithBinary(TO_FOLLOW))
-            .socialWorkAssessmentDocument(documentWithBinary(TO_FOLLOW))
-            .socialWorkChronologyDocument(documentWithBinary(TO_FOLLOW))
-            .checklistDocument(documentWithBinary(TO_FOLLOW))
-            .thresholdDocument(documentWithBinary(TO_FOLLOW))
+            .socialWorkCarePlanDocument(documentWithoutBinary(TO_FOLLOW))
+            .socialWorkStatementDocument(documentWithoutBinary(TO_FOLLOW))
+            .socialWorkAssessmentDocument(documentWithoutBinary(TO_FOLLOW))
+            .socialWorkChronologyDocument(documentWithoutBinary(TO_FOLLOW))
+            .checklistDocument(documentWithoutBinary(TO_FOLLOW))
+            .thresholdDocument(documentWithoutBinary(TO_FOLLOW))
             .socialWorkEvidenceTemplateDocument(documentWithBinary(ATTACHED))
             .build();
 

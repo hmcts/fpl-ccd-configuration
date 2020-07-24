@@ -21,7 +21,7 @@ class FactorsAffectingParentingValidatorTest {
 
     @Test
     void shouldReturnErrorWhenFactorsAffectingParentingNotProvided() {
-        final CaseData caseData = CaseData.builder().factorsParenting(null).build();
+        final CaseData caseData = CaseData.builder().build();
 
         final List<String> errors = factorsAffectingParentingValidator.validate(caseData);
 

@@ -11,12 +11,13 @@ module.exports = {
     legalBasis: 'Legal basis',
     documents: 'Documents',
     documentsSentToParties: 'Documents sent to parties',
-    confidential: 'Confidential',
+    confidential: 'Confidential information',
     placement: 'Placement',
     paymentHistory: 'Payment History',
     notes: 'Notes',
     expertReports: 'Expert Reports',
     overview: 'Overview',
+    viewApplication: 'View application',
   },
   actionsDropdown: '.ccd-dropdown',
   goButton: 'Go',
@@ -32,9 +33,7 @@ module.exports = {
 
   async checkTaskList(actionSelected) {
     this.selectTab('Start application');
-    // I.dontSeeElementInDOM(`//a[@href = '#'][contains(., 'Submit application')]`);
     I.dontSeeElementInDOM('//a[text()="Submit application"]');
-
     I.click(`${actionSelected}`);
     await I.completeEvent('Save and continue');
   },
