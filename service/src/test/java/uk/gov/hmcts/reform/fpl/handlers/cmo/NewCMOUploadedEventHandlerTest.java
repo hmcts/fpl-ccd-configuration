@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.AbstractJudge;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.CMOReadyToSealTemplate;
@@ -28,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.NewCMOUploadedContentProvider;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -78,7 +80,13 @@ class NewCMOUploadedEventHandlerTest {
         HearingBooking hearing = buildHearing();
         CMOReadyToSealTemplate template = expectedTemplate("Dave");
 
-        mockContentProvider(caseData, hearing, hearing.getJudgeAndLegalAdvisor(), template);
+        mockContentProvider(
+            caseData.getAllRespondents(),
+            caseData.getFamilyManCaseNumber(),
+            hearing,
+            hearing.getJudgeAndLegalAdvisor(),
+            template
+        );
 
         NewCMOUploaded event = new NewCMOUploaded(request, hearing);
         eventHandler.sendNotificationForAdmin(event);
@@ -99,7 +107,13 @@ class NewCMOUploadedEventHandlerTest {
         HearingBooking hearing = buildHearing();
         CMOReadyToSealTemplate template = expectedTemplate("Not Dave");
 
-        mockContentProvider(caseData, hearing, caseData.getAllocatedJudge(), template);
+        mockContentProvider(
+            caseData.getAllRespondents(),
+            caseData.getFamilyManCaseNumber(),
+            hearing,
+            caseData.getAllocatedJudge(),
+            template
+        );
 
         NewCMOUploaded event = new NewCMOUploaded(request, hearing);
         eventHandler.sendNotificationForJudge(event);
@@ -130,13 +144,15 @@ class NewCMOUploadedEventHandlerTest {
         );
     }
 
-    private void mockContentProvider(CaseData caseData, HearingBooking hearing, AbstractJudge judge,
+    private void mockContentProvider(List<Element<Respondent>> respondents, String familyManNumber,
+                                     HearingBooking hearing, AbstractJudge judge,
                                      CMOReadyToSealTemplate template) {
         when(contentProvider.buildTemplate(
             eq(hearing),
-            eq(caseData),
             eq(12345L),
-            eq(judge)
+            eq(judge),
+            eq(respondents),
+            eq(familyManNumber)
         )).thenReturn(template);
     }
 

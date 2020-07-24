@@ -33,9 +33,10 @@ public class NewCMOUploadedEventHandler {
 
         CMOReadyToSealTemplate template = contentProvider.buildTemplate(
             event.getHearing(),
-            caseData,
             eventData.getCaseDetails().getId(),
-            event.getHearing().getJudgeAndLegalAdvisor()
+            event.getHearing().getJudgeAndLegalAdvisor(),
+            caseData.getAllRespondents(),
+            caseData.getFamilyManCaseNumber()
         );
 
         String email = adminNotificationHandler.getHmctsAdminEmail(eventData);
@@ -55,9 +56,10 @@ public class NewCMOUploadedEventHandler {
         if (caseData.hasAllocatedJudgeEmail()) {
             CMOReadyToSealTemplate template = contentProvider.buildTemplate(
                 event.getHearing(),
-                caseData,
                 eventData.getCaseDetails().getId(),
-                caseData.getAllocatedJudge()
+                caseData.getAllocatedJudge(),
+                caseData.getAllRespondents(),
+                caseData.getFamilyManCaseNumber()
             );
 
             String email = caseData.getAllocatedJudge().getJudgeEmailAddress();
