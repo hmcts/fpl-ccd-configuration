@@ -71,6 +71,7 @@ public class UploadCMOController {
 
         if (!(dynamicList instanceof DynamicList)) {
             // reconstruct dynamic list
+            //see RDM-5696 and RDM-6651
             data.put("hearingsWithoutApprovedCMO", cmoService.buildDynamicList(hearings, selectedHearing));
         }
 
