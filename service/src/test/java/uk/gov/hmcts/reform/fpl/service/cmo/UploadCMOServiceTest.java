@@ -272,12 +272,6 @@ class UploadCMOServiceTest {
     @Test
     void shouldUpdateExistingCMOWithNewOrderAndChangeStatus() {
         List<Element<HearingBooking>> hearings = hearings();
-        DynamicList dynamicList = dynamicList(
-            hearings.get(0).getId(),
-            hearings.get(1).getId(),
-            hearings.get(2).getId(),
-            true
-        );
         List<Element<CaseManagementOrder>> unsealedOrders = new ArrayList<>();
         Element<CaseManagementOrder> oldOrder = element(CaseManagementOrder.builder().status(RETURNED).build());
 
@@ -285,6 +279,13 @@ class UploadCMOServiceTest {
         unsealedOrders.add(element(CaseManagementOrder.builder().build()));
 
         hearings.get(0).getValue().setCaseManagementOrderId(unsealedOrders.get(0).getId());
+
+        DynamicList dynamicList = dynamicList(
+            hearings.get(0).getId(),
+            hearings.get(1).getId(),
+            hearings.get(2).getId(),
+            true
+        );
 
         DocumentReference order = DocumentReference.builder().build();
 
