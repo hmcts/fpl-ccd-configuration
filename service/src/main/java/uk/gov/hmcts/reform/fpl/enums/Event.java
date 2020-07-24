@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
+import lombok.Getter;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -10,10 +12,11 @@ import static uk.gov.hmcts.reform.fpl.enums.State.PREPARE_FOR_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 
+@Getter
 public enum Event {
 
-    DRAFT_CASE_MANAGEMENT_ORDER("draftCMO","Draft CMO", List.of(PREPARE_FOR_HEARING)),
-    ACTION_CASE_MANAGEMENT_ORDER("actionCMO","Action CMO", List.of(PREPARE_FOR_HEARING)),
+    DRAFT_CASE_MANAGEMENT_ORDER("draftCMO", "Draft CMO", List.of(PREPARE_FOR_HEARING)),
+    ACTION_CASE_MANAGEMENT_ORDER("actionCMO", "Action CMO", List.of(PREPARE_FOR_HEARING)),
 
     ORDERS_NEEDED("ordersNeeded", "Orders and directions needed", List.of(OPEN)),
     HEARING_NEEDED("hearingNeeded", "Hearing needed", List.of(OPEN, RETURNED)),
@@ -32,26 +35,14 @@ public enum Event {
     SUBMIT_APPLICATION("submitApplication", "Submit application", List.of(OPEN, RETURNED)),
     CASE_NAME("changeCaseName", "Change case name", List.of(OPEN, RETURNED));
 
-    String id;
-    String name;
-    List<State> states;
+    private final String id;
+    private String name;
+    private List<State> states;
 
     Event(String id, String name, List<State> states) {
         this.id = id;
         this.name = name;
         this.states = states;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public List<State> getStates() {
-        return states;
     }
 
     public static List<Event> eventsInState(State state) {

@@ -17,7 +17,7 @@ import static java.util.stream.Collectors.toList;
 
 public abstract class PropertiesValidator implements Validator {
 
-    private static List<String> PROPERTIES = Stream.of(CaseData.class.getDeclaredFields())
+    private static List<String> AVAILABLE_PROPERTIES = Stream.of(CaseData.class.getDeclaredFields())
         .map(Field::getName)
         .collect(toList());
 
@@ -35,7 +35,7 @@ public abstract class PropertiesValidator implements Validator {
         this.groups = groups;
         this.properties = Arrays.asList(properties);
         List<String> invalidProperties = this.properties.stream()
-            .filter(prop -> !PROPERTIES.contains(prop))
+            .filter(prop -> !AVAILABLE_PROPERTIES.contains(prop))
             .collect(Collectors.toList());
         if (ObjectUtils.isNotEmpty(invalidProperties)) {
             throw new IllegalArgumentException(
