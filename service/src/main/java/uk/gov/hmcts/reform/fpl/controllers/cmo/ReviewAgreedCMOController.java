@@ -14,10 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
-import uk.gov.hmcts.reform.fpl.exceptions.CMOCodeNotFound;
-import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -25,18 +22,12 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ReviewCMOService;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
-import static uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.sealFrom;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Api
 @RestController
@@ -44,7 +35,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ReviewAgreedCMOController {
 
-    private final Time time;
     private final ObjectMapper mapper;
     private final ReviewCMOService reviewCMOService;
     private final DocumentSealingService documentSealingService;
@@ -56,8 +46,8 @@ public class ReviewAgreedCMOController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<CaseManagementOrder>> cmosReadyForApproval = caseData.getDraftUploadedCMOs().stream().filter(
-            cmo -> cmo.getValue().getStatus().equals(SEND_TO_JUDGE)).collect(Collectors.toList());
+        List<Element<CaseManagementOrder>> cmosReadyForApproval = reviewCMOService.getCMOsReadyForApproval(
+            caseData.getDraftUploadedCMOs());
 
         data.remove("reviewCMODecision");
 
@@ -88,27 +78,19 @@ public class ReviewAgreedCMOController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        Object dynamicList = caseData.getCmoToReviewList();
-        UUID selectedCMOCode = dynamicList instanceof String ? UUID.fromString(dynamicList.toString()) :
-            mapper.convertValue(dynamicList, DynamicList.class).getValueCode();
-        Element<CaseManagementOrder> selectedCMO = caseData.getDraftUploadedCMOs().stream()
-            .filter(element -> element.getId().equals(selectedCMOCode))
-            .findFirst()
-            .orElseThrow(() -> new CMOCodeNotFound("Could not find draft cmo with id " + selectedCMOCode));
+        Element<CaseManagementOrder> selectedCMO = reviewCMOService.getSelectedCMO(caseData);
 
         data.put("reviewCMODecision", ReviewDecision.builder()
             .hearing(selectedCMO.getValue().getHearing())
             .document(selectedCMO.getValue().getOrder())
             .build());
 
-        List<Element<CaseManagementOrder>> draftCMOs = caseData.getDraftUploadedCMOs();
+        List<Element<CaseManagementOrder>> cmosReadyForApproval = reviewCMOService.getCMOsReadyForApproval(
+            caseData.getDraftUploadedCMOs());
 
-        List<Element<CaseManagementOrder>> cmosReadyForApproval = draftCMOs.stream().filter(
-            cmo -> cmo.getValue().getStatus().equals(SEND_TO_JUDGE)).collect(Collectors.toList());
-
-        if (!(dynamicList instanceof DynamicList)) {
+        if (!(caseData.getCmoToReviewList() instanceof DynamicList)) {
             // reconstruct dynamic list
-            data.put("cmoToReviewList", reviewCMOService.buildDynamicList(cmosReadyForApproval, selectedCMOCode));
+            data.put("cmoToReviewList", reviewCMOService.buildDynamicList(cmosReadyForApproval, selectedCMO.getId()));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -123,37 +105,16 @@ public class ReviewAgreedCMOController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<CaseManagementOrder>> cmosReadyForApproval = caseData.getDraftUploadedCMOs().stream().filter(
-            cmo -> cmo.getValue().getStatus().equals(SEND_TO_JUDGE)).collect(Collectors.toList());
+        List<Element<CaseManagementOrder>> cmosReadyForApproval = reviewCMOService.getCMOsReadyForApproval(
+            caseData.getDraftUploadedCMOs());
 
         if (!cmosReadyForApproval.isEmpty()) {
-            Object dynamicList = caseData.getCmoToReviewList();
-
-            Element<CaseManagementOrder> cmo;
-
-            if (("MULTI").equals(caseData.getNumDraftCMOs())) {
-                UUID selectedCMOCode = dynamicList instanceof String ? UUID.fromString(dynamicList.toString()) :
-                    mapper.convertValue(dynamicList, DynamicList.class).getValueCode();
-
-                cmo = caseData.getDraftUploadedCMOs().stream()
-                    .filter(element -> element.getId().equals(selectedCMOCode))
-                    .findFirst()
-                    .orElseThrow(() -> new CMOCodeNotFound("Could not find draft cmo with id " + selectedCMOCode));
-            } else {
-                cmo = caseData.getDraftUploadedCMOs().get(caseData.getDraftUploadedCMOs().size() - 1);
-            }
+            Element<CaseManagementOrder> cmo = reviewCMOService.getSelectedCMO(caseData);
 
             if (SEND_TO_ALL_PARTIES.equals(caseData.getReviewCMODecision().getDecision())) {
                 caseData.getDraftUploadedCMOs().remove(cmo);
 
-                Element<HearingBooking> cmoHearing = caseData.getHearingDetails()
-                    .stream()
-                    .filter(hearing -> cmo.getId().equals(hearing.getValue().getCaseManagementOrderId()))
-                    .findFirst()
-                    .orElseThrow(NoHearingBookingException::new);
-
-                Element<CaseManagementOrder> cmoToSeal = element(sealFrom(cmo.getValue().getOrder(),
-                    cmoHearing.getValue(), time.now().toLocalDate()));
+                Element<CaseManagementOrder> cmoToSeal = reviewCMOService.getCMOToSeal(caseData, cmo);
 
                 DocumentReference sealedDocument = documentSealingService.sealDocument(cmoToSeal.getValue().getOrder());
                 cmoToSeal.getValue().setOrder(sealedDocument);
@@ -182,30 +143,24 @@ public class ReviewAgreedCMOController {
         CaseData caseDataBefore = mapper.convertValue(callbackRequest.getCaseDetailsBefore().getData(), CaseData.class);
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
 
-        List<Element<CaseManagementOrder>> cmosReadyForApproval = caseData.getDraftUploadedCMOs().stream().filter(
-            cmo -> cmo.getValue().getStatus().equals(SEND_TO_JUDGE)).collect(Collectors.toList());
+        List<Element<CaseManagementOrder>> cmosReadyForApproval = reviewCMOService.getCMOsReadyForApproval(
+            caseData.getDraftUploadedCMOs());
 
         if (!cmosReadyForApproval.isEmpty()) {
             if (SEND_TO_ALL_PARTIES.equals(caseData.getReviewCMODecision().getDecision())) {
-                CaseManagementOrder sealed = caseData.getSealedCMOs().get(
-                    caseData.getSealedCMOs().size() - 1).getValue();
-                sendSealedCMO(callbackRequest, sealed);
+                CaseManagementOrder sealed = reviewCMOService.getLatestSealedCMO(caseData.getSealedCMOs());
+
+                eventPublisher.publishEvent(new CaseManagementOrderIssuedEvent(callbackRequest, sealed));
             } else {
                 List<Element<CaseManagementOrder>> draftCMOsBefore = caseDataBefore.getDraftUploadedCMOs();
                 List<Element<CaseManagementOrder>> draftCMOs = caseData.getDraftUploadedCMOs();
 
                 //Get the CMO that was modified (status changed from READY -> RETURNED)
                 draftCMOs.removeAll(draftCMOsBefore);
-                sendReturnedCMO(callbackRequest, draftCMOs.get(0).getValue());
+                CaseManagementOrder cmoToReturn = draftCMOs.get(0).getValue();
+
+                eventPublisher.publishEvent(new CaseManagementOrderRejectedEvent(callbackRequest, cmoToReturn));
             }
         }
-    }
-
-    private void sendSealedCMO(CallbackRequest callbackRequest, CaseManagementOrder cmo) {
-        eventPublisher.publishEvent(new CaseManagementOrderIssuedEvent(callbackRequest, cmo));
-    }
-
-    private void sendReturnedCMO(CallbackRequest callbackRequest, CaseManagementOrder cmo) {
-        eventPublisher.publishEvent(new CaseManagementOrderRejectedEvent(callbackRequest, cmo));
     }
 }
