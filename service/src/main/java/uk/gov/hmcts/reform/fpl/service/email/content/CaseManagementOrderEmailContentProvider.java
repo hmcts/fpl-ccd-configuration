@@ -106,7 +106,7 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
             .get(SUBJECT_LINE)
             .toString());
         allocatedJudgeTemplate.setCaseUrl(commonCMONotificationParameters.get(CASE_URL).toString());
-        allocatedJudgeTemplate.setReference(commonCMONotificationParameters.get("reference").toString());
+        allocatedJudgeTemplate.setReference(commonCMONotificationParameters.get(REFERENCE).toString());
         allocatedJudgeTemplate.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
         allocatedJudgeTemplate.setJudgeTitle(caseData.getAllocatedJudge().getJudgeOrMagistrateTitle());
         allocatedJudgeTemplate.setJudgeName(caseData.getAllocatedJudge().getJudgeName());

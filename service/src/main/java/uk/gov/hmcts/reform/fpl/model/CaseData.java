@@ -602,7 +602,7 @@ public class CaseData {
 
     public boolean hasFutureHearing(List<Element<HearingBooking>> hearingBookings) {
         return isNotEmpty(hearingBookings) && hearingBookings.stream()
-            .anyMatch(hearing -> hearing.getValue().startsAfterToday());
+            .anyMatch(futureHearing -> futureHearing.getValue().startsAfterToday());
     }
 
     private final DocumentReference submittedForm;
