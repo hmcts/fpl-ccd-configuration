@@ -1,11 +1,15 @@
 package uk.gov.hmcts.reform.fpl.service.validators;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+
+import java.util.List;
 
 @Component
 public class HearingNeededValidator extends PropertiesValidator {
 
-    public HearingNeededValidator() {
-        super("hearing");
+    @Override
+    public List<String> validate(CaseData caseData) {
+        return super.validate(caseData, List.of("hearing"));
     }
 }
