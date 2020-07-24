@@ -32,9 +32,7 @@ module.exports = {
 
   async checkTaskList(actionSelected) {
     this.selectTab('Start application');
-    // I.dontSeeElementInDOM(`//a[@href = '#'][contains(., 'Submit application')]`);
     I.dontSeeElementInDOM('//a[text()="Submit application"]');
-
     I.click(`${actionSelected}`);
     await I.completeEvent('Save and continue');
   },
