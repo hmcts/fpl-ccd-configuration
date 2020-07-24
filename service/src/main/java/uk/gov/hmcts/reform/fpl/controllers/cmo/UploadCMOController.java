@@ -15,19 +15,15 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.cmo.NewCMOUploaded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.cmo.UploadCMOService;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
-import static uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.from;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Api
 @RestController
@@ -40,7 +36,6 @@ public class UploadCMOController {
         "showHearingsMultiTextArea"
     };
 
-    private final Time time;
     private final UploadCMOService cmoService;
     private final ObjectMapper mapper;
     private final ApplicationEventPublisher publisher;
@@ -63,17 +58,11 @@ public class UploadCMOController {
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         // update judge and hearing labels
-        Object dynamicList = caseData.getHearingsWithoutApprovedCMO();
-        List<Element<HearingBooking>> hearings = cmoService.getHearingsWithoutCMO(caseData.getPastHearings(),
-            caseData.getDraftUploadedCMOs());
-        UUID selectedHearing = cmoService.getSelectedHearingId(dynamicList, hearings);
-        data.putAll(cmoService.getJudgeAndHearingDetails(selectedHearing, hearings));
-
-        if (!(dynamicList instanceof DynamicList)) {
-            // reconstruct dynamic list
-            //see RDM-5696 and RDM-6651
-            data.put("hearingsWithoutApprovedCMO", cmoService.buildDynamicList(hearings, selectedHearing));
-        }
+        data.putAll(cmoService.prepareJudgeAndHearingDetails(
+            caseData.getHearingsWithoutApprovedCMO(),
+            caseData.getPastHearings(),
+            caseData.getDraftUploadedCMOs()
+        ));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -86,36 +75,16 @@ public class UploadCMOController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
         List<Element<CaseManagementOrder>> draftCMOs = caseData.getDraftUploadedCMOs();
-        List<Element<HearingBooking>> hearingsWithoutCMO = cmoService.getHearingsWithoutCMO(
-            caseData.getPastHearings(), draftCMOs
-        );
+        DocumentReference uploadedCaseManagementOrder = caseData.getUploadedCaseManagementOrder();
 
-        if (!hearingsWithoutCMO.isEmpty()) {
-            List<Element<HearingBooking>> hearings = caseData.getHearingDetails();
-            UUID selectedHearingId = cmoService.getSelectedHearingId(caseData.getHearingsWithoutApprovedCMO(),
-                hearingsWithoutCMO);
-            HearingBooking hearing = cmoService.getSelectedHearing(selectedHearingId, hearingsWithoutCMO);
-
-            Element<CaseManagementOrder> element = element(from(caseData.getUploadedCaseManagementOrder(),
-                hearing, time.now().toLocalDate()));
-
-            UUID uuid = cmoService.mapToHearing(selectedHearingId, hearings, element);
-
-            if (uuid != null) {
-                // overwrite old draft CMO
-                int index = -1;
-                for (int i = 0; i < draftCMOs.size(); i++) {
-                    if (draftCMOs.get(i).getId().equals(uuid)) {
-                        index = i;
-                        break;
-                    }
-                }
-
-                draftCMOs.set(index, element);
-            } else {
-                draftCMOs.add(element);
-            }
-
+        if (uploadedCaseManagementOrder != null) {
+            List<Element<HearingBooking>> hearings = caseData.getPastHearings();
+            cmoService.updateHearingsAndUnsealedCMOs(
+                hearings,
+                draftCMOs,
+                uploadedCaseManagementOrder,
+                caseData.getHearingsWithoutApprovedCMO()
+            );
             // update case data
             data.put("draftUploadedCMOs", draftCMOs);
             data.put("hearingDetails", hearings);
@@ -133,11 +102,7 @@ public class UploadCMOController {
         CaseData caseDataBefore = mapper.convertValue(request.getCaseDetailsBefore().getData(), CaseData.class);
         CaseData caseData = mapper.convertValue(request.getCaseDetails().getData(), CaseData.class);
 
-        List<Element<CaseManagementOrder>> draftCMOs = caseData.getDraftUploadedCMOs();
-        List<Element<CaseManagementOrder>> draftCMOsBefore = caseDataBefore.getDraftUploadedCMOs();
-        draftCMOs.removeAll(draftCMOsBefore);
-
-        if (draftCMOs.size() == 1) {
+        if (cmoService.isNewCmoUploaded(caseData.getDraftUploadedCMOs(), caseDataBefore.getDraftUploadedCMOs())) {
             List<Element<HearingBooking>> hearings = caseData.getHearingDetails();
             List<Element<HearingBooking>> hearingsBefore = caseDataBefore.getHearingDetails();
             hearings.removeAll(hearingsBefore);
@@ -145,5 +110,4 @@ public class UploadCMOController {
             publisher.publishEvent(new NewCMOUploaded(request, hearings.get(0).getValue()));
         }
     }
-
 }
