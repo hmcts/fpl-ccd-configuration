@@ -13,8 +13,8 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.TaskState.COMPLETED;
+import static uk.gov.hmcts.reform.fpl.TaskState.IN_PROGRESS;
 import static uk.gov.hmcts.reform.fpl.TaskState.NOT_AVAILABLE;
-import static uk.gov.hmcts.reform.fpl.TaskState.UNKNOWN;
 import static uk.gov.hmcts.reform.fpl.enums.Event.eventsInState;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 
@@ -42,6 +42,6 @@ public class TaskListService {
             return NOT_AVAILABLE;
         }
 
-        return UNKNOWN;
+        return IN_PROGRESS;
     }
 }

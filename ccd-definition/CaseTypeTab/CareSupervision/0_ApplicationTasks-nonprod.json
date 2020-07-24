@@ -5,7 +5,7 @@
     "Channel": "CaseWorker",
     "TabID": "Tasks",
     "TabLabel": "Start application",
-    "TabDisplayOrder": 1,
+    "TabDisplayOrder": 0,
     "CaseFieldID": "taskListLabel",
     "TabFieldDisplayOrder": 1
   },
@@ -15,10 +15,11 @@
     "Channel": "CaseWorker",
     "TabID": "Tasks",
     "TabLabel": "Start application",
-    "TabDisplayOrder": 1,
+    "TabDisplayOrder": 0,
     "CaseFieldID": "taskList",
     "TabFieldDisplayOrder": 2,
     "FieldShowCondition": "taskList = \"DO_NOT_SHOW\"",
-    "TabShowCondition": "[STATE] = \"Open\""
+    "TabShowCondition": "[STATE] = \"Open\"",
+    "Comment": "taskListLabel is defined as '${taskList}' thus taskList must be present on tab"
   }
 ]

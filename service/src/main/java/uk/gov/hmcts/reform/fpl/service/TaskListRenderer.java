@@ -6,7 +6,6 @@ import uk.gov.hmcts.reform.fpl.Task;
 import uk.gov.hmcts.reform.fpl.TaskSection;
 import uk.gov.hmcts.reform.fpl.enums.Event;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -47,10 +46,11 @@ public class TaskListRenderer {
         this.imagesBaseUrl = imagesBaseUrl;
     }
 
+    //TODO consider templating solution like mustache
     public String render(List<Task> allTasks) {
         final List<String> lines = new LinkedList<>();
 
-        final Map<Event, Task> tasks = allTasks.stream().collect(toMap(event -> event.getEvent(), identity()));
+        final Map<Event, Task> tasks = allTasks.stream().collect(toMap(Task::getEvent, identity()));
 
         final TaskSection applicationDetails = newSection("Add application details", of(
             tasks.get(CASE_NAME),
@@ -108,7 +108,7 @@ public class TaskListRenderer {
     private List<String> renderSection(TaskSection sec) {
         final List<String> section = new LinkedList<>();
 
-        section.add("<br/>");
+        section.add(renderNewLine());
         section.add(renderHeader(sec.getName()));
 
         sec.getHint().map(this::renderHint).ifPresent(section::add);
@@ -124,7 +124,7 @@ public class TaskListRenderer {
     }
 
     private List<String> renderTask(Task task) {
-        final List<String> lines = new ArrayList<>();
+        final List<String> lines = new LinkedList<>();
         if (task.getState() == NOT_AVAILABLE) {
             lines.add(task.getEvent().getName() + renderImage("cannot-send-yet.png"));
         } else if (task.getState() == COMPLETED) {
@@ -161,5 +161,9 @@ public class TaskListRenderer {
 
     private String renderHorizontalLine() {
         return "<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>";
+    }
+
+    private String renderNewLine() {
+        return "<br/>";
     }
 }
