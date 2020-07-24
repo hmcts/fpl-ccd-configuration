@@ -261,7 +261,6 @@ Scenario('local authority enters others to be given notice', async (I, caseViewP
   await enterOthersEventPage.enterLitigationIssues('Yes', 'mock reason');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterOthers);
-  await caseViewPage.checkTaskList(config.applicationActions.enterOthers);
   caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   I.seeInTab(['Others to be given notice', 'Person 1', 'Full name'], 'John Smith');
   I.seeInTab(['Others to be given notice', 'Person 1', 'Date of birth'], '1 Jan 1985');
@@ -297,6 +296,8 @@ Scenario('local authority enters others to be given notice', async (I, caseViewP
   I.seeInTab(['Others 1', 'Current address', 'Postcode/Zipcode'], 'TS9 5DQ');
   I.seeInTab(['Others 1', 'Current address', 'Country'], 'United Kingdom');
   I.seeInTab(['Others 1', 'Telephone number'], '07888288288');
+  //TODO:FPLA-2035 move below line to the line after 'I.seeEventSubmissionConfirmation(config.applicationActions.enterOthers)';
+  await caseViewPage.checkTaskList(config.applicationActions.enterOthers);
 });
 
 Scenario('local authority enters grounds for non EPO application @create-case-with-mandatory-sections-only', async (I, caseViewPage, enterGroundsForApplicationEventPage) => {
