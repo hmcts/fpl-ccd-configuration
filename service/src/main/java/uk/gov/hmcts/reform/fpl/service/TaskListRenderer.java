@@ -2,9 +2,9 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.FplEvent;
 import uk.gov.hmcts.reform.fpl.Task;
 import uk.gov.hmcts.reform.fpl.TaskSection;
+import uk.gov.hmcts.reform.fpl.enums.Event;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -18,25 +18,25 @@ import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.FplEvent.ALLOCATION_PROPOSAL;
-import static uk.gov.hmcts.reform.fpl.FplEvent.APPLICANT;
-import static uk.gov.hmcts.reform.fpl.FplEvent.ATTENDING_THE_HEARING;
-import static uk.gov.hmcts.reform.fpl.FplEvent.CASE_NAME;
-import static uk.gov.hmcts.reform.fpl.FplEvent.DOCUMENTS;
-import static uk.gov.hmcts.reform.fpl.FplEvent.ENTER_CHILDREN;
-import static uk.gov.hmcts.reform.fpl.FplEvent.ENTER_OTHERS;
-import static uk.gov.hmcts.reform.fpl.FplEvent.FACTORS_AFFECTING_PARENTING;
-import static uk.gov.hmcts.reform.fpl.FplEvent.GROUNDS;
-import static uk.gov.hmcts.reform.fpl.FplEvent.HEARING_NEEDED;
-import static uk.gov.hmcts.reform.fpl.FplEvent.INTERNATIONAL_ELEMENT;
-import static uk.gov.hmcts.reform.fpl.FplEvent.ORDERS_NEEDED;
-import static uk.gov.hmcts.reform.fpl.FplEvent.OTHER_PROCEEDINGS;
-import static uk.gov.hmcts.reform.fpl.FplEvent.RESPONDENTS;
-import static uk.gov.hmcts.reform.fpl.FplEvent.RISK_AND_HARM;
-import static uk.gov.hmcts.reform.fpl.FplEvent.SUBMIT_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.TaskSection.newSection;
 import static uk.gov.hmcts.reform.fpl.TaskState.COMPLETED;
 import static uk.gov.hmcts.reform.fpl.TaskState.NOT_AVAILABLE;
+import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
+import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT;
+import static uk.gov.hmcts.reform.fpl.enums.Event.ATTENDING_THE_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
+import static uk.gov.hmcts.reform.fpl.enums.Event.DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.ENTER_CHILDREN;
+import static uk.gov.hmcts.reform.fpl.enums.Event.ENTER_OTHERS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.FACTORS_AFFECTING_PARENTING;
+import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_NEEDED;
+import static uk.gov.hmcts.reform.fpl.enums.Event.INTERNATIONAL_ELEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_NEEDED;
+import static uk.gov.hmcts.reform.fpl.enums.Event.OTHER_PROCEEDINGS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.RISK_AND_HARM;
+import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
 
 @Service
 public class TaskListRenderer {
@@ -50,7 +50,7 @@ public class TaskListRenderer {
     public String render(List<Task> allTasks) {
         final List<String> lines = new LinkedList<>();
 
-        final Map<FplEvent, Task> tasks = allTasks.stream().collect(toMap(event -> event.getEvent(), identity()));
+        final Map<Event, Task> tasks = allTasks.stream().collect(toMap(event -> event.getEvent(), identity()));
 
         final TaskSection applicationDetails = newSection("Add application details", of(
             tasks.get(CASE_NAME),

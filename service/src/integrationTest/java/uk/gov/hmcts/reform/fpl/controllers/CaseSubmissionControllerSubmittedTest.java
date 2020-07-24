@@ -445,7 +445,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
             eq(JURISDICTION),
             eq(CASE_TYPE),
             eq(caseId),
-            eq("internal-update-case-info"),
+            eq("internal-update-task-list"),
             anyMap());
     }
 }

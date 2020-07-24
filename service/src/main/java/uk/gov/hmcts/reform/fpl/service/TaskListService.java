@@ -3,9 +3,9 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.FplEvent;
 import uk.gov.hmcts.reform.fpl.Task;
 import uk.gov.hmcts.reform.fpl.TaskState;
+import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.validators.EventChecker;
 
@@ -15,6 +15,8 @@ import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.TaskState.COMPLETED;
 import static uk.gov.hmcts.reform.fpl.TaskState.NOT_AVAILABLE;
 import static uk.gov.hmcts.reform.fpl.TaskState.UNKNOWN;
+import static uk.gov.hmcts.reform.fpl.enums.Event.eventsInState;
+import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -22,8 +24,8 @@ public class TaskListService {
 
     private final EventChecker eventChecker;
 
-    public List<Task> getTasks(CaseData caseData, List<FplEvent> events) {
-        return events.stream()
+    public List<Task> getTasksForOpenCase(CaseData caseData) {
+        return eventsInState(OPEN).stream()
             .map(event -> Task.builder()
                 .event(event)
                 .state(getTaskState(caseData, event))
@@ -31,7 +33,7 @@ public class TaskListService {
             .collect(toList());
     }
 
-    private TaskState getTaskState(CaseData caseData, FplEvent event) {
+    private TaskState getTaskState(CaseData caseData, Event event) {
         if (eventChecker.isCompleted(event, caseData)) {
             return COMPLETED;
         }

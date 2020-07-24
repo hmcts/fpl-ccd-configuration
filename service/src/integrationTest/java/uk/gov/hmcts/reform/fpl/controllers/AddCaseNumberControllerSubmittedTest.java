@@ -77,7 +77,7 @@ class AddCaseNumberControllerSubmittedTest extends AbstractControllerTest {
             eq(JURISDICTION),
             eq(CASE_TYPE),
             eq(caseDetails.getId()),
-            eq("internal-update-case-info"),
+            eq("internal-update-task-list"),
             anyMap());
     }
 

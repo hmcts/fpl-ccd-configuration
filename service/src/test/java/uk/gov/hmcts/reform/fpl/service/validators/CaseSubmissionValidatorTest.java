@@ -16,15 +16,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.FplEvent.ALLOCATION_PROPOSAL;
-import static uk.gov.hmcts.reform.fpl.FplEvent.APPLICANT;
-import static uk.gov.hmcts.reform.fpl.FplEvent.CASE_NAME;
-import static uk.gov.hmcts.reform.fpl.FplEvent.DOCUMENTS;
-import static uk.gov.hmcts.reform.fpl.FplEvent.ENTER_CHILDREN;
-import static uk.gov.hmcts.reform.fpl.FplEvent.GROUNDS;
-import static uk.gov.hmcts.reform.fpl.FplEvent.HEARING_NEEDED;
-import static uk.gov.hmcts.reform.fpl.FplEvent.ORDERS_NEEDED;
-import static uk.gov.hmcts.reform.fpl.FplEvent.RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
+import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT;
+import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
+import static uk.gov.hmcts.reform.fpl.enums.Event.DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.ENTER_CHILDREN;
+import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_NEEDED;
+import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_NEEDED;
+import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
 
 @ExtendWith(SpringExtension.class)
 class CaseSubmissionValidatorTest {
