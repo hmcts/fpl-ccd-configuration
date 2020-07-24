@@ -23,7 +23,7 @@ Scenario('LA makes corrections to the application', async (I, caseViewPage, ente
   const now = new Date();
   const formattedDate = dateFormat(now, 'd mmmm yyyy');
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
-  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   I.dontSee('mockSubmittedForm.pdf');
   caseViewPage.selectTab(caseViewPage.tabs.overview);
   I.seeInTab(['Return details', 'Date submitted'], formattedDate);
@@ -35,7 +35,7 @@ Scenario('LA makes corrections to the application', async (I, caseViewPage, ente
   enterApplicantEventPage.enterPbaNumber();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterApplicant);
-  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   I.seeInTab(['Applicants 1', 'Party', 'Payment by account (PBA) number'], 'PBA1234567');
   await caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationEventPage.seeDraftApplicationFile();
