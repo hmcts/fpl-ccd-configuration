@@ -160,6 +160,8 @@ public class ActionCaseManagementOrderController {
         return action.isSendToAllPartiesType() && hearingBooking.startsAfterToday();
     }
 
+    //Changes made so that updated CaseManagementOrderIssuedEvent can be reused in new controller.
+    //This controller is deprecated and will be deleted once new interim CMO is toggled on
     private void publishEventOnApprovedCMO(CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
         CaseManagementOrder actionedCmo = caseData.getCaseManagementOrder();
