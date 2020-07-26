@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -11,18 +9,20 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import static org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode.APPEND;
 import static org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject.createFromByteArray;
+import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
+import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-@Slf4j
 public class DocumentSealingService {
+
+    private static final String SEAL = "static_data/familycourtseal.png";
     private static final float POINTS_PER_INCH = 72;
     private static final float POINTS_PER_MM = 1 / (10 * 2.54f) * POINTS_PER_INCH;
     private static final int SEAL_HEIGHT = mm2pt(25);
@@ -34,57 +34,41 @@ public class DocumentSealingService {
     private final UploadDocumentService uploadDocumentService;
 
     public DocumentReference sealDocument(DocumentReference document) throws Exception {
-        return sealDocument(document, null);
-    }
-
-    public DocumentReference sealDocument(DocumentReference document, String password) throws Exception {
         byte[] documentContent = documentDownloadService.downloadDocument(document.getBinaryUrl());
-        byte[] sealedDocument = stampDocument(documentContent, password);
+        byte[] sealedDocument = sealDocument(documentContent);
 
-        return DocumentReference.buildFromDocument(
-            uploadDocumentService.uploadPDF(sealedDocument, document.getFilename()));
+        return buildFromDocument(uploadDocumentService.uploadPDF(sealedDocument, document.getFilename()));
     }
 
-    private byte[] stampDocument(byte[] inputDocInBytes, String password) throws Exception {
-        byte[] image = getSealImage();
+    private static byte[] sealDocument(byte[] binaries) throws Exception {
+        byte[] seal = readBytes(SEAL);
 
-        try (PDDocument doc = loadDocument(inputDocInBytes, password)) {
-            final PDPage page = doc.getPage(0);
-            final PDRectangle pageSize = page.getTrimBox();
-            try (PDPageContentStream psdStream = new PDPageContentStream(doc, page, APPEND, true, true)) {
-                final PDImageXObject courtSealImage = createFromByteArray(doc, image, null);
-                psdStream.drawImage(courtSealImage,
-                    pageSize.getUpperRightX() - (SEAL_WIDTH + MARGIN_RIGHT),
-                    pageSize.getUpperRightY() - (SEAL_HEIGHT + MARGIN_TOP),
-                    SEAL_WIDTH,
-                    SEAL_HEIGHT);
+        try (final PDDocument document = PDDocument.load(binaries)) {
+            final PDPage firstPage = document.getPage(0);
+            final PDRectangle pageSize = firstPage.getTrimBox();
+
+            try (PDPageContentStream pdfStream = new PDPageContentStream(document, firstPage, APPEND, true, true)) {
+                final PDImageXObject courtSealImage = createFromByteArray(document, seal, null);
+                pdfStream.drawImage(courtSealImage,
+                        pageSize.getUpperRightX() - (SEAL_WIDTH + MARGIN_RIGHT),
+                        pageSize.getUpperRightY() - (SEAL_HEIGHT + MARGIN_TOP),
+                        SEAL_WIDTH,
+                        SEAL_HEIGHT);
             }
 
-            return saveDocument(doc, password);
+            return getBinary(document);
         }
     }
 
-    private static PDDocument loadDocument(byte[] content, String password) throws IOException {
-        return ObjectUtils.isEmpty(password) ? PDDocument.load(content) : PDDocument.load(content, password);
-
-    }
-
-    private static byte[] getSealImage() {
-        return ResourceReader.readBytes("static_data/familycourtseal.png");
+    private static byte[] getBinary(PDDocument document) throws IOException {
+        try (final ByteArrayOutputStream outputBytes = new ByteArrayOutputStream()) {
+            document.save(outputBytes);
+            return outputBytes.toByteArray();
+        }
     }
 
     private static int mm2pt(int mm) {
         return Math.round(POINTS_PER_MM * mm);
-    }
-
-    private byte[] saveDocument(PDDocument document, String password) throws IOException {
-        try (ByteArrayOutputStream outputBytes = new ByteArrayOutputStream()) {
-            document.setAllSecurityToBeRemoved(true);
-            //document.protect(new StandardProtectionPolicy(password, password, document.getCurrentAccessPermission()
-            // ));
-            document.save(outputBytes);
-            return outputBytes.toByteArray();
-        }
     }
 
 }
