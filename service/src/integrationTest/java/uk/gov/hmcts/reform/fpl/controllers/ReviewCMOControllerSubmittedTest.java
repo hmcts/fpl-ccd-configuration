@@ -189,11 +189,9 @@ public class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
 
     private CaseData buildCaseDataForRejectedCMO(UUID cmoId) {
         return CaseData.builder()
-            .representatives(createRepresentatives())
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .draftUploadedCMOs(List.of(element(cmoId, buildCMO(RETURNED))))
             .reviewCMODecision(buildReviewDecision(JUDGE_REQUESTED_CHANGES))
-            .hearingDetails(List.of(element(hearing(cmoId))))
             .build();
     }
 
