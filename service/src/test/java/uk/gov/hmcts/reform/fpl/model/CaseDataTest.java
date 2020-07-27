@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.fromString;
@@ -50,6 +51,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
@@ -529,6 +531,36 @@ class CaseDataTest {
             .build();
 
         assertThat(caseData.hasAllocatedJudgeEmail()).isEqualTo(false);
+    }
+
+    @Test
+    void shouldReturnTrueWhenFutureHearingExists() {
+        List<Element<HearingBooking>> hearingBooking =
+            List.of(element(createHearingBooking(time.now().plusDays(6),
+                time.now().plusDays(6))));
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(hearingBooking)
+            .build();
+
+        boolean hearingBookingInFuture = caseData.hasFutureHearing(hearingBooking);
+
+        assertThat(hearingBookingInFuture).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenNoFutureHearingExists() {
+        List<Element<HearingBooking>> hearingBooking =
+            newArrayList(element(createHearingBooking(time.now().minusDays(6),
+                time.now().plusDays(6))));
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(hearingBooking)
+            .build();
+
+        boolean hearingBookingInFuture = caseData.hasFutureHearing(hearingBooking);
+
+        assertThat(hearingBookingInFuture).isFalse();
     }
 
     private String buildJsonDirections(UUID id) throws JsonProcessingException {

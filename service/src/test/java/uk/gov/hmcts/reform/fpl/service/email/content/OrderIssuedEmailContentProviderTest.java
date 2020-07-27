@@ -37,11 +37,11 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.ge
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
 
 @ContextConfiguration(classes = {OrderIssuedEmailContentProvider.class, LookupTestConfig.class,
-    EmailNotificationHelper.class, FixedTimeConfiguration.class,
-})
+    EmailNotificationHelper.class, FixedTimeConfiguration.class})
 class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     private static final byte[] documentContents = {1, 2, 3, 4, 5};
+    private static final CaseDetails caseDetails = createCase();
 
     @MockBean
     private GeneratedOrderService generatedOrderService;
@@ -55,7 +55,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
     @Test
     void shouldBuildGeneratedOrderParametersWithCaseUrl() {
         Map<String, Object> actualParameters = orderIssuedEmailContentProvider.buildParametersWithCaseUrl(
-            createCase(), LOCAL_AUTHORITY_CODE, documentContents, GENERATED_ORDER);
+            caseDetails, LOCAL_AUTHORITY_CODE, documentContents, GENERATED_ORDER);
         Map<String, Object> expectedParameters = getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true);
 
         assertEquals(actualParameters, expectedParameters);
@@ -64,7 +64,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
     @Test
     void shouldBuildGeneratedOrderParametersWithoutCaseUrl() {
         Map<String, Object> actualParameters = orderIssuedEmailContentProvider.buildParametersWithoutCaseUrl(
-            createCase(), LOCAL_AUTHORITY_CODE, documentContents, GENERATED_ORDER);
+            caseDetails, LOCAL_AUTHORITY_CODE, documentContents, GENERATED_ORDER);
         Map<String, Object> expectedParameters = getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true);
 
         assertEquals(actualParameters, expectedParameters);
@@ -73,7 +73,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
     @Test
     void shouldBuildNoticeOfPlacementOrderParameters() {
         Map<String, Object> actualParameters = orderIssuedEmailContentProvider.buildParametersWithCaseUrl(
-            createCase(), LOCAL_AUTHORITY_CODE, documentContents, NOTICE_OF_PLACEMENT_ORDER);
+            caseDetails, LOCAL_AUTHORITY_CODE, documentContents, NOTICE_OF_PLACEMENT_ORDER);
         Map<String, Object> expectedParameters = getExpectedCaseUrlParameters(NOTICE_OF_PLACEMENT_ORDER.getLabel(),
             false);
 
@@ -83,7 +83,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
     @Test
     void shouldBuildCaseManagementOrderParameters() {
         Map<String, Object> actualParameters = orderIssuedEmailContentProvider.buildParametersWithCaseUrl(
-            createCase(), LOCAL_AUTHORITY_CODE, documentContents, CMO);
+            caseDetails, LOCAL_AUTHORITY_CODE, documentContents, CMO);
         Map<String, Object> expectedParameters = getExpectedCaseUrlParameters(CMO.getLabel(), true);
 
         assertEquals(actualParameters, expectedParameters);
@@ -91,7 +91,6 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
 
     @Test
     void shouldBuildGeneratedOrderParametersForAllocatedJudge() {
-        CaseDetails caseDetails = createCase();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .judgeLastName("Scott")
