@@ -12,10 +12,10 @@ BeforeSuite(async (I) => {
   today = new Date();
 });
 
-Scenario('local authority sends agreed CMO to judge', async (I, caseViewPage, sendAgreedCaseManagementOrderEventPage) => {
+Scenario('local authority sends agreed CMO to judge', async (I, caseViewPage, uploadCaseManagementOrderEventPage) => {
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
-  await localAuthoritySendsAgreedCmo(I, caseViewPage, sendAgreedCaseManagementOrderEventPage);
-  I.seeEventSubmissionConfirmation(config.applicationActions.sendAgreedCmoToJudge);
+  await localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage);
+  I.seeEventSubmissionConfirmation(config.applicationActions.uploadCMO);
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   assertDraftCaseManagementOrder(I);
 });
@@ -51,7 +51,7 @@ Scenario('Judge seals and sends the agreed CMO to parties', async(I, caseViewPag
 });
 
 const localAuthoritySendsAgreedCmo = async function(I, caseViewPage, sendAgreedCaseManagementOrderEventPage) {
-  await caseViewPage.goToNewActions(config.applicationActions.sendAgreedCmoToJudge);
+  await caseViewPage.goToNewActions(config.applicationActions.uploadCMO);
   await sendAgreedCaseManagementOrderEventPage.associateHearing('1 January 2020');
   await I.retryUntilExists(() => I.click('Continue'), '#uploadedCaseManagementOrder');
   await sendAgreedCaseManagementOrderEventPage.uploadCaseManagementOrder(config.testNonEmptyPdfFile);

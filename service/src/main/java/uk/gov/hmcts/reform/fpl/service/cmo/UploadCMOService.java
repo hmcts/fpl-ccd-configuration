@@ -6,23 +6,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
+import static uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.from;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
@@ -31,14 +36,15 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJud
 public class UploadCMOService {
     private static final String CMO_HEARING_INFO_FIELD = "cmoHearingInfo";
     private static final String CMO_JUDGE_INFO_FIELD = "cmoJudgeInfo";
-    private static final String PAST_HEARING_LIST_FIELD = "pastHearingList";
+    private static final String PAST_HEARING_LIST_FIELD = "hearingsWithoutApprovedCMO";
+    private static final String NUM_HEARINGS_FIELD = "numHearingsWithoutCMO";
 
     private static final String SINGLE = "SINGLE";
     private static final String MULTI = "MULTI";
     private static final String NONE = "NONE";
-    private static final String NUM_HEARINGS_FIELD = "numHearings";
 
     private final ObjectMapper mapper;
+    private final Time time;
 
     public Map<String, Object> getInitialPageData(List<Element<HearingBooking>> hearings,
                                                   List<Element<CaseManagementOrder>> unsealedOrders) {
@@ -47,21 +53,30 @@ public class UploadCMOService {
 
         Map<String, Object> data = new HashMap<>();
         String textAreaKey = null;
-        String numHearings;
+        String numHearingsWithoutCMO;
         String showTextAreaKey = null;
 
         switch (hearingsWithoutCMOs.size()) {
             case 0:
-                numHearings = NONE;
+                numHearingsWithoutCMO = NONE;
                 break;
             case 1:
-                numHearings = SINGLE;
-                textAreaKey = "singleHearingsWithCMOs";
+                numHearingsWithoutCMO = SINGLE;
+                textAreaKey = "singleHearingWithCMO";
                 showTextAreaKey = "showHearingsSingleTextArea";
-                data.putAll(getJudgeAndHearingDetailsSingle(hearingsWithoutCMOs.get(0).getId(), hearingsWithoutCMOs));
+
+                Map<String, Object> details = new HashMap<>(getJudgeAndHearingDetails(
+                    hearingsWithoutCMOs.get(0).getValue()));
+                String updated = format(
+                    "Send agreed CMO for %s.%nThis must have been discussed by all parties at the hearing.",
+                    details.get(CMO_HEARING_INFO_FIELD)
+                );
+
+                details.put(CMO_HEARING_INFO_FIELD, updated);
+                data.putAll(details);
                 break;
             default:
-                numHearings = MULTI;
+                numHearingsWithoutCMO = MULTI;
                 textAreaKey = "multiHearingsWithCMOs";
                 showTextAreaKey = "showHearingsMultiTextArea";
                 data.put(PAST_HEARING_LIST_FIELD, buildDynamicList(hearingsWithoutCMOs));
@@ -74,37 +89,86 @@ public class UploadCMOService {
             data.put(showTextAreaKey, "YES");
         }
 
-        data.put(NUM_HEARINGS_FIELD, numHearings);
+        data.put(NUM_HEARINGS_FIELD, numHearingsWithoutCMO);
 
         return data;
     }
 
-    public List<Element<HearingBooking>> getHearingsWithoutCMO(List<Element<HearingBooking>> hearings,
-                                                               List<Element<CaseManagementOrder>> unsealedOrders) {
+    public Map<String, Object> prepareJudgeAndHearingDetails(Object dynamicList,
+                                                             List<Element<HearingBooking>> hearings,
+                                                             List<Element<CaseManagementOrder>> unsealedOrders) {
+        // When dynamic lists are fixed unsealedOrders shouldn't need passing, we can just remove the statement below
+        // as hearings is just a superset of hearingsWithoutCMO.
+        // Currently it is used to get the hearings to rebuild the dynamic list and as a byproduct the filtered list of
+        // hearings has a reduced search space for get getSelectedHearing.
+        List<Element<HearingBooking>> hearingsWithoutCMO = getHearingsWithoutCMO(hearings, unsealedOrders);
+        UUID selectedHearingId = getSelectedHearingId(dynamicList, hearingsWithoutCMO);
+        HearingBooking selectedHearing = getSelectedHearing(selectedHearingId, hearingsWithoutCMO);
+        Map<String, Object> data = new HashMap<>(getJudgeAndHearingDetails(selectedHearing));
+
+        if (!(dynamicList instanceof DynamicList)) {
+            // reconstruct dynamic list
+            //see RDM-5696 and RDM-6651
+            data.put(PAST_HEARING_LIST_FIELD, buildDynamicList(hearingsWithoutCMO, selectedHearingId));
+        }
+
+        return data;
+    }
+
+    public void updateHearingsAndUnsealedCMOs(List<Element<HearingBooking>> hearings,
+                                              List<Element<CaseManagementOrder>> unsealedOrders,
+                                              DocumentReference uploadedOrder,
+                                              Object dynamicList) {
+        List<Element<HearingBooking>> filteredHearings = getHearingsWithoutCMO(hearings, unsealedOrders);
+        UUID selectedHearingId = getSelectedHearingId(dynamicList, filteredHearings);
+        HearingBooking hearing = getSelectedHearing(selectedHearingId, filteredHearings);
+
+        Element<CaseManagementOrder> element = element(from(uploadedOrder, hearing, time.now().toLocalDate()));
+
+        Optional<UUID> uuid = updateHearingWithCmoId(selectedHearingId, hearings, element);
+
+        if (uuid.isPresent()) {
+            // overwrite old draft CMO
+            int index = -1;
+            for (int i = 0; i < unsealedOrders.size(); i++) {
+                if (unsealedOrders.get(i).getId().equals(uuid.get())) {
+                    index = i;
+                    break;
+                }
+            }
+            unsealedOrders.set(index, element);
+        } else {
+            unsealedOrders.add(element);
+        }
+    }
+
+    public boolean isNewCmoUploaded(List<Element<CaseManagementOrder>> cmosCurrent,
+                                    List<Element<CaseManagementOrder>> cmosBefore) {
+        // Duplicate to not effect passed list
+        List<Element<CaseManagementOrder>> current = new ArrayList<>(cmosCurrent);
+
+        current.removeAll(cmosBefore);
+
+        return !current.isEmpty();
+    }
+
+    private List<Element<HearingBooking>> getHearingsWithoutCMO(List<Element<HearingBooking>> hearings,
+                                                                List<Element<CaseManagementOrder>> unsealedOrders) {
         return hearings.stream()
             .filter(hearing -> associatedToReturnedCMO(hearing, unsealedOrders)
                 || !hearing.getValue().hasCMOAssociation())
             .collect(toList());
     }
 
-    public Map<String, Object> getJudgeAndHearingDetails(UUID selectedHearing,
-                                                         List<Element<HearingBooking>> hearings) {
-        HearingBooking selected = getSelectedHearing(selectedHearing, hearings);
-        return Map.of(
-            CMO_JUDGE_INFO_FIELD, formatJudgeTitleAndName(selected.getJudgeAndLegalAdvisor()),
-            CMO_HEARING_INFO_FIELD, selected.toLabel(DATE)
-        );
-    }
-
-    public UUID mapToHearing(UUID selectedHearing, List<Element<HearingBooking>> hearings,
-                             Element<CaseManagementOrder> cmo) {
+    private Optional<UUID> updateHearingWithCmoId(UUID selectedHearing, List<Element<HearingBooking>> hearings,
+                                                  Element<CaseManagementOrder> cmo) {
         HearingBooking hearing = getSelectedHearing(selectedHearing, hearings);
         UUID previousCMOId = hearing.getCaseManagementOrderId();
         hearing.setCaseManagementOrderId(cmo.getId());
-        return previousCMOId;
+        return Optional.ofNullable(previousCMOId);
     }
 
-    public UUID getSelectedHearingId(Object dynamicList, List<Element<HearingBooking>> hearings) {
+    private UUID getSelectedHearingId(Object dynamicList, List<Element<HearingBooking>> hearings) {
         if (hearings.size() == 1) {
             return hearings.get(0).getId();
         }
@@ -116,18 +180,25 @@ public class UploadCMOService {
         return mapper.convertValue(dynamicList, DynamicList.class).getValueCode();
     }
 
-    public HearingBooking getSelectedHearing(UUID id, List<Element<HearingBooking>> hearings) {
+    private HearingBooking getSelectedHearing(UUID id, List<Element<HearingBooking>> hearings) {
         return findElement(id, hearings)
             .orElseThrow(() -> new HearingNotFoundException("No hearing found with id: " + id))
             .getValue();
     }
 
-    public DynamicList buildDynamicList(List<Element<HearingBooking>> hearings) {
+    private DynamicList buildDynamicList(List<Element<HearingBooking>> hearings) {
         return buildDynamicList(hearings, null);
     }
 
-    public DynamicList buildDynamicList(List<Element<HearingBooking>> hearings, UUID selected) {
+    private DynamicList buildDynamicList(List<Element<HearingBooking>> hearings, UUID selected) {
         return asDynamicList(hearings, selected, hearing -> hearing.toLabel(DATE));
+    }
+
+    private Map<String, Object> getJudgeAndHearingDetails(HearingBooking hearing) {
+        return Map.of(
+            CMO_JUDGE_INFO_FIELD, formatJudgeTitleAndName(hearing.getJudgeAndLegalAdvisor()),
+            CMO_HEARING_INFO_FIELD, hearing.toLabel(DATE)
+        );
     }
 
     private boolean associatedToReturnedCMO(Element<HearingBooking> hearing,
@@ -135,15 +206,6 @@ public class UploadCMOService {
         return unsealedCMOs.stream()
             .filter(cmo -> cmo.getValue().getStatus() == RETURNED)
             .anyMatch(cmo -> cmo.getId().equals(hearing.getValue().getCaseManagementOrderId()));
-    }
-
-    private Map<String, Object> getJudgeAndHearingDetailsSingle(UUID selectedHearing,
-                                                                List<Element<HearingBooking>> hearings) {
-        Map<String, Object> details = new HashMap<>(getJudgeAndHearingDetails(selectedHearing, hearings));
-        String updated = format("Send agreed CMO for %s.%nThis must have been discussed by all parties at the hearing.",
-            details.get(CMO_HEARING_INFO_FIELD));
-        details.put(CMO_HEARING_INFO_FIELD, updated);
-        return details;
     }
 
     private String buildHearingsWithCMOsText(List<Element<CaseManagementOrder>> unsealedOrders,

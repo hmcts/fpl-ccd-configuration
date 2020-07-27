@@ -7,13 +7,15 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
-import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,10 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FURTHER_CASE_MANAGEMENT;
@@ -36,177 +37,35 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, UploadCMOService.class})
+@ContextConfiguration(classes = {
+    JacksonAutoConfiguration.class, FixedTimeConfiguration.class, UploadCMOService.class
+})
 class UploadCMOServiceTest {
 
     @Autowired
     private UploadCMOService service;
 
-    @Test
-    void shouldReturnEmptyListWhenThereAreNoHearingsWithoutCMOs() {
-        List<Element<HearingBooking>> hearings = wrapElements(
-            hearing(randomUUID()),
-            hearing(randomUUID()),
-            hearing(randomUUID())
-        );
-
-        List<Element<HearingBooking>> filtered = service.getHearingsWithoutCMO(hearings, List.of());
-
-        assertThat(filtered).isEmpty();
-    }
+    @Autowired
+    private Time time;
 
     @Test
-    void shouldReturnPopulatedListWhenHearingsHaveNoCMORelationship() {
-        List<Element<HearingBooking>> hearings = wrapElements(hearing(randomUUID()), hearing(), hearing(randomUUID()));
-
-        List<Element<HearingBooking>> filtered = service.getHearingsWithoutCMO(hearings, List.of());
-
-        Element<HearingBooking> expected = hearings.get(1);
-
-        assertThat(filtered).containsExactly(expected);
-    }
-
-    @Test
-    void shouldIncludeHearingsAssociatedToReturnedCMOsInReturnedList() {
-        UUID cmoId = randomUUID();
-        List<Element<HearingBooking>> hearings = wrapElements(
-            hearing(randomUUID()),
-            hearing(cmoId),
-            hearing()
-        );
-
-        Element<CaseManagementOrder> cmo = element(cmoId, CaseManagementOrder.builder().status(RETURNED).build());
-
-        List<Element<HearingBooking>> filtered = service.getHearingsWithoutCMO(hearings, List.of(cmo));
-
-        assertThat(filtered).containsExactly(hearings.get(1), hearings.get(2));
-    }
-
-    @Test
-    void shouldReturnEmptyListWhenEmptyListPassed() {
-        assertThat(service.getHearingsWithoutCMO(List.of(), List.of())).isEmpty();
-    }
-
-    @Test
-    void shouldUpdateHearingWithCMOId() {
-        List<Element<HearingBooking>> hearings = List.of(element(hearing()));
-        UUID selectedId = hearings.get(0).getId();
-        Element<CaseManagementOrder> cmo = element(CaseManagementOrder.builder().build());
-
-        UUID uuid = service.mapToHearing(selectedId, hearings, cmo);
-
-        assertThat(uuid).isNull();
-        assertThat(hearings.get(0).getValue().getCaseManagementOrderId()).isEqualTo(cmo.getId());
-    }
-
-    @Test
-    void shouldReturnOldIdWhenNewCMOIsMapped() {
-        UUID oldId = randomUUID();
-        List<Element<HearingBooking>> hearings = List.of(element(hearing(oldId)));
-        UUID selectedId = hearings.get(0).getId();
-        Element<CaseManagementOrder> cmo = element(CaseManagementOrder.builder().build());
-
-        UUID uuid = service.mapToHearing(selectedId, hearings, cmo);
-
-        assertThat(uuid).isEqualTo(oldId);
-    }
-
-    @Test
-    void shouldGetHearingWithSameIdAsPassed() {
-        List<Element<HearingBooking>> hearings = List.of(element(hearing()), element(hearing()), element(hearing()));
-        UUID selected = hearings.get(2).getId();
-
-        HearingBooking selectedHearing = service.getSelectedHearing(selected, hearings);
-
-        assertThat(selectedHearing).isEqualTo(hearings.get(2).getValue());
-    }
-
-    @Test
-    void shouldThrowErrorWhenNoHearingMatchesTheIdPassed() {
-        List<Element<HearingBooking>> hearings = List.of(element(hearing()), element(hearing()), element(hearing()));
-        UUID selected = randomUUID();
-
-        assertThatThrownBy(() -> service.getSelectedHearing(selected, hearings))
-            .isInstanceOf(HearingNotFoundException.class)
-            .hasMessage("No hearing found with id: %s", selected);
-    }
-
-    @Test
-    void shouldExtractIdWhenStringIsPassedAsDynamicList() {
-        UUID uuid = randomUUID();
-        String id = uuid.toString();
-
-        UUID selectedId = service.getSelectedHearingId(id, List.of());
-
-        assertThat(selectedId).isEqualTo(uuid);
-    }
-
-    @Test
-    void shouldExtractSelectedIdWhenDynamicListMapIsPassed() {
-        UUID uuid = randomUUID();
-        Map<String, Object> dynamicList = Map.of(
-            "value", Map.of(
-                "code", uuid,
-                "label", "random uuid above"
-            ),
-            "list_items", List.of()
-        );
-
-        UUID selected = service.getSelectedHearingId(dynamicList, List.of());
-
-        assertThat(selected).isEqualTo(uuid);
-    }
-
-    @Test
-    void shouldReturnIdOfFirstValueInListWhenOnlyOneElementInList() {
-        List<Element<HearingBooking>> hearings = wrapElements(hearing());
-
-        UUID selected = service.getSelectedHearingId(null, hearings);
-
-        assertThat(selected).isEqualTo(hearings.get(0).getId());
-    }
-
-    @Test
-    void shouldBuildADynamicListWithNoSelectedValue() {
-        List<Element<HearingBooking>> hearings = hearings();
-
-        DynamicList dynamicList = service.buildDynamicList(hearings);
-
-        DynamicList expected = dynamicList(hearings.get(0).getId(), hearings.get(1).getId(), hearings.get(2).getId());
-
-        assertThat(dynamicList).isEqualTo(expected);
-    }
-
-    @Test
-    void shouldBuildADynamicListWithASelectedValue() {
-        List<Element<HearingBooking>> hearings = hearings();
-
-        DynamicList dynamicList = service.buildDynamicList(hearings, hearings.get(0).getId());
-
-        DynamicList expected = dynamicList(hearings.get(0).getId(),
-            hearings.get(1).getId(),
-            hearings.get(2).getId(),
-            true);
-
-        assertThat(dynamicList).isEqualTo(expected);
-    }
-
-    @Test
-    void shouldReturnCorrectPageDataWhenThereAreMultipleHearings() {
+    void shouldReturnMultiPageDataWhenThereAreMultipleHearings() {
         List<Element<HearingBooking>> hearings = hearings();
 
         Map<String, Object> initialPageData = service.getInitialPageData(hearings, List.of());
 
         Map<String, Object> expected = Map.of(
-            "pastHearingList", dynamicList(hearings.get(0).getId(), hearings.get(1).getId(), hearings.get(2).getId()),
-            "numHearings", "MULTI"
+            "hearingsWithoutApprovedCMO",
+            dynamicList(hearings.get(0).getId(), hearings.get(1).getId(), hearings.get(2).getId()),
+            "numHearingsWithoutCMO",
+            "MULTI"
         );
 
         assertThat(initialPageData).isEqualTo(expected);
     }
 
     @Test
-    void shouldReturnCorrectPageDataWhenThereAreMultipleHearingsWithSomeAlreadyAssigned() {
+    void shouldReturnMultiPageDataWhenThereAreMultipleHearingsWithSomeHearingsAlreadyMappedToCMOs() {
         List<Element<HearingBooking>> hearings = new ArrayList<>(hearings());
 
         Element<CaseManagementOrder> cmo = element(CaseManagementOrder.builder().build());
@@ -219,17 +78,21 @@ class UploadCMOServiceTest {
         Map<String, Object> initialPageData = service.getInitialPageData(hearings, List.of(cmo));
 
         Map<String, Object> expected = Map.of(
-            "pastHearingList", dynamicList(hearings.get(0).getId(), hearings.get(1).getId(), hearings.get(2).getId()),
-            "numHearings", "MULTI",
-            "multiHearingsWithCMOs", "Case management hearing, 15 January 2020",
-            "showHearingsMultiTextArea", "YES"
+            "hearingsWithoutApprovedCMO",
+            dynamicList(hearings.get(0).getId(), hearings.get(1).getId(), hearings.get(2).getId()),
+            "numHearingsWithoutCMO",
+            "MULTI",
+            "multiHearingsWithCMOs",
+            "Case management hearing, 15 January 2020",
+            "showHearingsMultiTextArea",
+            "YES"
         );
 
         assertThat(initialPageData).isEqualTo(expected);
     }
 
     @Test
-    void shouldReturnCorrectPageDataWhenThereIsOneRemainingHearing() {
+    void shouldReturnSinglePageDataWhenThereIsOneRemainingHearing() {
         List<Element<HearingBooking>> hearings = List.of(element(
             hearing(CASE_MANAGEMENT, LocalDateTime.of(2020, 2, 1, 0, 0))
         ));
@@ -237,7 +100,7 @@ class UploadCMOServiceTest {
         Map<String, Object> initialPageData = service.getInitialPageData(hearings, List.of());
 
         Map<String, Object> expected = Map.of(
-            "numHearings", "SINGLE",
+            "numHearingsWithoutCMO", "SINGLE",
             "cmoHearingInfo", "Send agreed CMO for Case management hearing, 1 February 2020."
                 + "\nThis must have been discussed by all parties at the hearing.",
             "cmoJudgeInfo", "His Honour Judge Dredd"
@@ -247,7 +110,7 @@ class UploadCMOServiceTest {
     }
 
     @Test
-    void shouldReturnCorrectPageDataWhenThereIsOneRemainingHearingWithSomeAlreadyAssigned() {
+    void shouldReturnSinglePageDataWhenThereIsOneRemainingHearingWithSomeHearingsAlreadyMappedToCMOs() {
         Element<CaseManagementOrder> cmo = element(CaseManagementOrder.builder().build());
         List<Element<HearingBooking>> hearings = List.of(
             element(hearing(CASE_MANAGEMENT, LocalDateTime.of(2020, 2, 1, 0, 0))),
@@ -257,11 +120,11 @@ class UploadCMOServiceTest {
         Map<String, Object> initialPageData = service.getInitialPageData(hearings, List.of(cmo));
 
         Map<String, Object> expected = Map.of(
-            "numHearings", "SINGLE",
+            "numHearingsWithoutCMO", "SINGLE",
             "cmoHearingInfo", "Send agreed CMO for Case management hearing, 1 February 2020."
                 + "\nThis must have been discussed by all parties at the hearing.",
             "cmoJudgeInfo", "His Honour Judge Dredd",
-            "singleHearingsWithCMOs", "Case management hearing, 2 February 2020",
+            "singleHearingWithCMO", "Case management hearing, 2 February 2020",
             "showHearingsSingleTextArea", "YES"
         );
 
@@ -269,29 +132,11 @@ class UploadCMOServiceTest {
     }
 
     @Test
-    void shouldReturnCorrectPageDataWhenThereAreNoRemainingHearings() {
+    void shouldReturnPageShowHideFieldOnlyWhenThereAreNoRemainingHearingsWithoutCmoMappings() {
         Map<String, Object> initialPageData = service.getInitialPageData(List.of(), List.of());
 
         Map<String, String> expected = Map.of(
-            "numHearings", "NONE"
-        );
-
-        assertThat(initialPageData).isEqualTo(expected);
-    }
-
-    @Test
-    void shouldReturnCorrectPageDataWhenThereAreNoRemainingHearingsWithoutCMOsAssigned() {
-        Element<CaseManagementOrder> cmo = element(CaseManagementOrder.builder().build());
-        Element<HearingBooking> hearing = element(hearing(
-            CASE_MANAGEMENT,
-            LocalDateTime.of(2020, 2, 2, 0, 0),
-            cmo.getId())
-        );
-
-        Map<String, Object> initialPageData = service.getInitialPageData(List.of(hearing), List.of(cmo));
-
-        Map<String, String> expected = Map.of(
-            "numHearings", "NONE"
+            "numHearingsWithoutCMO", "NONE"
         );
 
         assertThat(initialPageData).isEqualTo(expected);
@@ -329,8 +174,8 @@ class UploadCMOServiceTest {
         );
 
         Map<String, Object> expected = Map.of(
-            "pastHearingList", dynamicList,
-            "numHearings", "MULTI",
+            "hearingsWithoutApprovedCMO", dynamicList,
+            "numHearingsWithoutCMO", "MULTI",
             "multiHearingsWithCMOs", "Case management hearing, 15 January 2020",
             "showHearingsMultiTextArea", "YES"
         );
@@ -339,14 +184,163 @@ class UploadCMOServiceTest {
     }
 
     @Test
-    void shouldReturnJudgeNameAndTitleAndHearingInfo() {
+    void shouldGenerateHearingAndJudgeLabelForSelectedHearing() {
         List<Element<HearingBooking>> hearings = hearings();
-        Map<String, Object> details = service.getJudgeAndHearingDetails(hearings.get(0).getId(), hearings);
 
-        assertThat(details).isEqualTo(Map.of(
+        DynamicList dynamicList = dynamicList(
+            hearings.get(0).getId(),
+            hearings.get(1).getId(),
+            hearings.get(2).getId(),
+            true
+        );
+
+        Map<String, Object> preparedData = service.prepareJudgeAndHearingDetails(dynamicList, hearings, List.of());
+
+        assertThat(preparedData).isEqualTo(Map.of(
             "cmoHearingInfo", "Case management hearing, 2 March 2020",
             "cmoJudgeInfo", "His Honour Judge Dredd"
         ));
+    }
+
+    @Test
+    void shouldReconstructDynamicListFromMalformedData() {
+        List<Element<HearingBooking>> hearings = hearings();
+        String malformedData = hearings.get(0).getId().toString();
+
+        Map<String, Object> preparedData = service.prepareJudgeAndHearingDetails(malformedData, hearings, List.of());
+
+        DynamicList dynamicList = dynamicList(
+            hearings.get(0).getId(),
+            hearings.get(1).getId(),
+            hearings.get(2).getId(),
+            true
+        );
+
+        assertThat(preparedData).extracting("hearingsWithoutApprovedCMO")
+            .isEqualTo(dynamicList);
+    }
+
+    @Test
+    void shouldNotReconstructDynamicListIfNotMalformed() {
+        List<Element<HearingBooking>> hearings = hearings();
+
+        DynamicList dynamicList = dynamicList(
+            hearings.get(0).getId(),
+            hearings.get(1).getId(),
+            hearings.get(2).getId(),
+            true
+        );
+
+        Map<String, Object> preparedData = service.prepareJudgeAndHearingDetails(dynamicList, hearings, List.of());
+
+        assertThat(preparedData).isNotEmpty().doesNotContainKey("hearingsWithoutApprovedCMO");
+    }
+
+    @Test
+    void shouldAddNewCMOToListAndUpdateHearingIfCMOWasNotAlreadyInList() {
+        List<Element<HearingBooking>> hearings = hearings();
+        DynamicList dynamicList = dynamicList(
+            hearings.get(0).getId(),
+            hearings.get(1).getId(),
+            hearings.get(2).getId(),
+            true
+        );
+        List<Element<CaseManagementOrder>> unsealedOrders = new ArrayList<>();
+        DocumentReference order = DocumentReference.builder().build();
+
+        service.updateHearingsAndUnsealedCMOs(hearings, unsealedOrders, order, dynamicList);
+
+        CaseManagementOrder expectedOrder = CaseManagementOrder.builder()
+            .status(SEND_TO_JUDGE)
+            .dateSent(time.now().toLocalDate())
+            .order(order)
+            .hearing("Case management hearing, 2 March 2020")
+            .build();
+
+        assertThat(unsealedOrders).isNotEmpty()
+            .first()
+            .extracting("value")
+            .isEqualTo(expectedOrder);
+
+        assertThat(hearings).hasSize(3)
+            .first()
+            .extracting("value")
+            .extracting("caseManagementOrderId")
+            .isEqualTo(unsealedOrders.get(0).getId());
+    }
+
+    @Test
+    void shouldUpdateExistingCMOWithNewOrderAndChangeStatus() {
+        List<Element<HearingBooking>> hearings = hearings();
+        List<Element<CaseManagementOrder>> unsealedOrders = new ArrayList<>();
+        Element<CaseManagementOrder> oldOrder = element(CaseManagementOrder.builder().status(RETURNED).build());
+
+        unsealedOrders.add(oldOrder);
+        unsealedOrders.add(element(CaseManagementOrder.builder().build()));
+
+        hearings.get(0).getValue().setCaseManagementOrderId(unsealedOrders.get(0).getId());
+
+        DynamicList dynamicList = dynamicList(
+            hearings.get(0).getId(),
+            hearings.get(1).getId(),
+            hearings.get(2).getId(),
+            true
+        );
+
+        DocumentReference order = DocumentReference.builder().build();
+
+        service.updateHearingsAndUnsealedCMOs(hearings, unsealedOrders, order, dynamicList);
+
+        CaseManagementOrder expectedOrder = CaseManagementOrder.builder()
+            .status(SEND_TO_JUDGE)
+            .dateSent(time.now().toLocalDate())
+            .order(order)
+            .hearing("Case management hearing, 2 March 2020")
+            .build();
+
+        assertThat(unsealedOrders).hasSize(2)
+            .first()
+            .extracting("value")
+            .isNotEqualTo(oldOrder.getValue())
+            .isEqualTo(expectedOrder);
+
+        assertThat(hearings).hasSize(3)
+            .first()
+            .extracting("value")
+            .extracting("caseManagementOrderId")
+            .isNotEqualTo(oldOrder.getId())
+            .isEqualTo(unsealedOrders.get(0).getId());
+    }
+
+    @Test
+    void shouldReturnTrueIfThereIsADifferenceBetweenTheCmoLists() {
+        List<Element<CaseManagementOrder>> current = wrapElements(CaseManagementOrder.builder().build());
+        List<Element<CaseManagementOrder>> before = List.of();
+
+        assertThat(service.isNewCmoUploaded(current, before)).isTrue();
+    }
+
+    @Test
+    void shouldReturnTrueIfTheCMOListsAreBothPopulatedButWithDifferentElements() {
+        List<Element<CaseManagementOrder>> current = wrapElements(
+            CaseManagementOrder.builder()
+                .status(SEND_TO_JUDGE)
+                .build()
+        );
+        List<Element<CaseManagementOrder>> before = wrapElements(
+            CaseManagementOrder.builder()
+                .status(RETURNED)
+                .build()
+        );
+
+        assertThat(service.isNewCmoUploaded(current, before)).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseIfCmoListsAreTheSame() {
+        List<Element<CaseManagementOrder>> current = wrapElements(CaseManagementOrder.builder().build());
+
+        assertThat(service.isNewCmoUploaded(current, current)).isFalse();
     }
 
     private DynamicList dynamicList(UUID uuid1, UUID uuid2, UUID uuid3, DynamicListElement... additional) {
@@ -399,14 +393,6 @@ class UploadCMOServiceTest {
 
     private HearingBooking hearing(HearingType type, LocalDateTime startDate) {
         return hearing(type, startDate, null);
-    }
-
-    private HearingBooking hearing() {
-        return hearing(null);
-    }
-
-    private HearingBooking hearing(UUID cmoId) {
-        return hearing(null, null, cmoId);
     }
 
     private HearingBooking hearing(HearingType type, LocalDateTime startDate, UUID cmoId) {

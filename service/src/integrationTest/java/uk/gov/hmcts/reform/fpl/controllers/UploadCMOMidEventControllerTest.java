@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -17,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
@@ -39,7 +37,7 @@ public class UploadCMOMidEventControllerTest extends AbstractControllerTest {
         DynamicList dynamicList = dynamicList(hearings);
 
         CaseData caseData = CaseData.builder()
-            .pastHearingList(dynamicList)
+            .hearingsWithoutApprovedCMO(dynamicList)
             .hearingDetails(hearings)
             .build();
 
@@ -70,22 +68,6 @@ public class UploadCMOMidEventControllerTest extends AbstractControllerTest {
                         .build()
                 ))
                 .build();
-    }
-
-    @Test
-    void shouldRegenerateDynamicListIfCCDSendsMalformedData() {
-        List<Element<HearingBooking>> hearings = hearings();
-
-        CaseData caseData = CaseData.builder()
-            .pastHearingList(hearings.get(0).getId())
-            .hearingDetails(hearings)
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
-
-        assertThat(response.getData())
-            .extracting("pastHearingList")
-            .isEqualTo(mapper.convertValue(dynamicList(hearings), new TypeReference<Map<String, Object>>() {}));
     }
 
     private List<Element<HearingBooking>> hearings() {
