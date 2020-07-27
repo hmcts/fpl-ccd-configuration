@@ -1,8 +1,11 @@
 package uk.gov.hmcts.reform.fpl.model.tasklist;
 
+import lombok.Getter;
+
 import java.util.List;
 import java.util.Optional;
 
+@Getter
 public class TaskSection {
 
     private final String name;
@@ -27,14 +30,6 @@ public class TaskSection {
     public TaskSection withInfo(String info) {
         this.info = info;
         return this;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public List<Task> getTasks() {
-        return tasks;
     }
 
     public Optional<String> getHint() {

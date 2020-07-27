@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.model.tasklist.TaskSection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static java.util.List.of;
@@ -34,8 +33,6 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RISK_AND_HARM;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskSection.newSection;
-import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED;
-import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_AVAILABLE;
 
 @Service
 public class TaskListRenderer {
@@ -46,10 +43,7 @@ public class TaskListRenderer {
         this.imagesBaseUrl = imagesBaseUrl;
     }
 
-    //TODO consider templating solution like mustache
-    public String render(List<Task> allTasks) {
-        final List<String> lines = new LinkedList<>();
-
+    private List<TaskSection> groupInSections(List<Task> allTasks) {
         final Map<Event, Task> tasks = allTasks.stream().collect(toMap(Task::getEvent, identity()));
 
         final TaskSection applicationDetails = newSection("Add application details", of(
@@ -89,16 +83,23 @@ public class TaskListRenderer {
 
         final TaskSection sentApplication = newSection("Send application", of(tasks.get(SUBMIT_APPLICATION)));
 
-        lines.add("<div class='width-50'>");
-
-        Stream.of(
-                applicationDetails,
+        return List.of(applicationDetails,
                 applicationGrounds,
                 documents,
                 parties,
                 courtRequirements,
                 additionalInformation,
-                sentApplication).forEach(section -> lines.addAll(renderSection(section)));
+                sentApplication);
+    }
+
+    //TODO consider templating solution like mustache
+    public String render(List<Task> allTasks) {
+        final List<String> lines = new LinkedList<>();
+
+        lines.add("<div class='width-50'>");
+
+        groupInSections(allTasks)
+                .forEach(section -> lines.addAll(renderSection(section)));
 
         lines.add("</div>");
 
@@ -125,12 +126,16 @@ public class TaskListRenderer {
 
     private List<String> renderTask(Task task) {
         final List<String> lines = new LinkedList<>();
-        if (task.getState() == NOT_AVAILABLE) {
-            lines.add(renderDisabledLink(task) + renderImage("cannot-send-yet.png", "Cannot send yet"));
-        } else if (task.getState() == COMPLETED) {
-            lines.add(renderLink(task) + renderImage("information-added.png", "Information added"));
-        } else {
-            lines.add(renderLink(task));
+
+        switch (task.getState()) {
+            case NOT_AVAILABLE:
+                lines.add(renderDisabledLink(task) + renderImage("cannot-send-yet.png", "Cannot send yet"));
+                break;
+            case COMPLETED:
+                lines.add(renderLink(task) + renderImage("information-added.png", "Information added"));
+                break;
+            default:
+                lines.add(renderLink(task));
         }
 
         task.getHint().map(this::renderHint).ifPresent(lines::add);

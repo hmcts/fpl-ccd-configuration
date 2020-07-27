@@ -39,15 +39,15 @@ class CaseSubmissionGuardTest {
 
     @Test
     void shouldReportGroupedErrorsForAllRelevantEvents() {
-        final List<String> caseNameErrors = List.of("Case name error1");
+        final List<String> caseNameErrors = List.of("Case name error");
         final List<String> ordersNeededErrors = List.of("Orders needed error 1", "Orders needed error 2");
-        final List<String> hearingNeededErrors = List.of("Hearing needed error 1");
-        final List<String> groundsErrors = List.of("Grounds for application error 1");
+        final List<String> hearingNeededErrors = List.of("Hearing needed error");
+        final List<String> groundsErrors = List.of("Grounds for application error");
         final List<String> documentsErrors = List.of("Documents error 1", "Documents error 2", "Documents error 3");
         final List<String> applicantErrors = List.of("Applicant error 1", "Applicant error 2");
-        final List<String> childrenErrors = List.of("Children error 1");
+        final List<String> childrenErrors = List.of("Children error");
         final List<String> respondentsErrors = List.of("Respondent error 1", "Respondent error 2");
-        final List<String> allocationProposalErrors = List.of("Allocation proposal error 1");
+        final List<String> allocationProposalErrors = List.of("Allocation proposal error");
 
         when(eventChecker.validate(any(), any())).thenReturn(List.of("Error not included"));
         when(eventChecker.validate(CASE_NAME, caseData)).thenReturn(caseNameErrors);
@@ -64,14 +64,14 @@ class CaseSubmissionGuardTest {
 
         assertThat(errors).containsExactly(
                 "In the change case name section:",
-                "• Case name error1",
+                "• Case name error",
                 "In the orders and directions needed section:",
                 "• Orders needed error 1",
                 "• Orders needed error 2",
                 "In the hearing needed section:",
-                "• Hearing needed error 1",
+                "• Hearing needed error",
                 "In the grounds for the application section:",
-                "• Grounds for application error 1",
+                "• Grounds for application error",
                 "In the documents section:",
                 "• Documents error 1",
                 "• Documents error 2",
@@ -80,12 +80,12 @@ class CaseSubmissionGuardTest {
                 "• Applicant error 1",
                 "• Applicant error 2",
                 "In the children section:",
-                "• Children error 1",
+                "• Children error",
                 "In the respondents section:",
                 "• Respondent error 1",
                 "• Respondent error 2",
                 "In the allocation proposal section:",
-                "• Allocation proposal error 1"
+                "• Allocation proposal error"
         );
     }
 

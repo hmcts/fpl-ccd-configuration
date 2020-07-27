@@ -22,7 +22,7 @@ public abstract class PropertiesValidator implements Validator {
     @Autowired
     private javax.validation.Validator validator;
 
-    public List<String> validate(CaseData caseData, List<String> propertiesToBeValidated, Class... groups) {
+    public List<String> validate(CaseData caseData, List<String> propertiesToBeValidated, Class<?>... groups) {
         checkProperties(propertiesToBeValidated);
         return validator.validate(caseData, groups).stream()
             .filter(violation -> propertiesToBeValidated.contains(getViolatedProperty(violation)))

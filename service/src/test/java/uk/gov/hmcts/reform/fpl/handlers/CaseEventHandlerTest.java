@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
@@ -32,7 +32,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_AVAILABLE;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 class CaseEventHandlerTest {
 
     @Mock
@@ -51,7 +51,7 @@ class CaseEventHandlerTest {
     private CaseEventHandler caseEventHandler;
 
     @Test
-    void shouldUpdateTaskListForCasesInOpen() {
+    void shouldUpdateTaskListForCasesInOpenState() {
         final CaseDetails caseDetails = CaseDetails.builder()
                 .id(nextLong())
                 .jurisdiction(JURISDICTION)
