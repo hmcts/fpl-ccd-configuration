@@ -366,7 +366,7 @@
     "PreConditionState(s)": "Open;Submitted;Gatekeeping;PREPARE_FOR_HEARING;RETURNED",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
+    "ShowSummary": "Y",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue"
   },
@@ -380,7 +380,7 @@
     "PreConditionState(s)": "Open;RETURNED",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
+    "ShowSummary": "Y",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue"
   },
