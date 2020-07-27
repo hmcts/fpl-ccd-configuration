@@ -17,16 +17,16 @@ public abstract class CompoundEventValidator implements Validator {
 
     public List<String> validate(CaseData caseData, List<Event> events) {
         return events.stream()
-            .flatMap(event -> {
-                List<String> groupErrors = new ArrayList<>();
-                List<String> errors = eventChecker.validate(event, caseData);
+                .flatMap(event -> {
+                    List<String> groupErrors = new ArrayList<>();
+                    List<String> errors = eventChecker.validate(event, caseData);
 
-                if (isNotEmpty(errors)) {
-                    groupErrors.add(String.format("In the %s section:", event.getName().toLowerCase()));
-                    errors.stream().distinct().forEach(error -> groupErrors.add(String.format("• %s", error)));
-                }
-                return groupErrors.stream();
-            })
-            .collect(Collectors.toList());
+                    if (isNotEmpty(errors)) {
+                        groupErrors.add(String.format("In the %s section:", event.getName().toLowerCase()));
+                        errors.stream().distinct().forEach(error -> groupErrors.add(String.format("• %s", error)));
+                    }
+                    return groupErrors.stream();
+                })
+                .collect(Collectors.toList());
     }
 }

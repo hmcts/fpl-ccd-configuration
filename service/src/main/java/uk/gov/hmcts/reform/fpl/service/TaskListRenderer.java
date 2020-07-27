@@ -2,9 +2,9 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.Task;
-import uk.gov.hmcts.reform.fpl.TaskSection;
 import uk.gov.hmcts.reform.fpl.enums.Event;
+import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
+import uk.gov.hmcts.reform.fpl.model.tasklist.TaskSection;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -17,25 +17,25 @@ import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.TaskSection.newSection;
-import static uk.gov.hmcts.reform.fpl.TaskState.COMPLETED;
-import static uk.gov.hmcts.reform.fpl.TaskState.NOT_AVAILABLE;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
 import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ATTENDING_THE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
+import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
 import static uk.gov.hmcts.reform.fpl.enums.Event.DOCUMENTS;
-import static uk.gov.hmcts.reform.fpl.enums.Event.ENTER_CHILDREN;
-import static uk.gov.hmcts.reform.fpl.enums.Event.ENTER_OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.FACTORS_AFFECTING_PARENTING;
 import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_NEEDED;
 import static uk.gov.hmcts.reform.fpl.enums.Event.INTERNATIONAL_ELEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_NEEDED;
+import static uk.gov.hmcts.reform.fpl.enums.Event.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHER_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RISK_AND_HARM;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskSection.newSection;
+import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED;
+import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_AVAILABLE;
 
 @Service
 public class TaskListRenderer {
@@ -53,38 +53,38 @@ public class TaskListRenderer {
         final Map<Event, Task> tasks = allTasks.stream().collect(toMap(Task::getEvent, identity()));
 
         final TaskSection applicationDetails = newSection("Add application details", of(
-            tasks.get(CASE_NAME),
-            tasks.get(ORDERS_NEEDED),
-            tasks.get(HEARING_NEEDED)
+                tasks.get(CASE_NAME),
+                tasks.get(ORDERS_NEEDED),
+                tasks.get(HEARING_NEEDED)
         ));
 
         final TaskSection applicationGrounds = newSection("Add grounds for the application", of(
-            tasks.get(GROUNDS),
-            tasks.get(RISK_AND_HARM)
-                .withHint("In emergency cases, you can send your application without this information"),
-            tasks.get(FACTORS_AFFECTING_PARENTING)
-                .withHint("In emergency cases, you can send your application without this information")
+                tasks.get(GROUNDS),
+                tasks.get(RISK_AND_HARM)
+                        .withHint("In emergency cases, you can send your application without this information"),
+                tasks.get(FACTORS_AFFECTING_PARENTING)
+                        .withHint("In emergency cases, you can send your application without this information")
         ));
 
         final TaskSection documents = newSection("Add supporting documents", of(tasks.get(DOCUMENTS)))
-            .withHint("For example, the social work chronology and care plan");
+                .withHint("For example, the social work chronology and care plan");
 
         final TaskSection parties = newSection("Add information about the parties",
-            List.of(
-                tasks.get(APPLICANT),
-                tasks.get(ENTER_CHILDREN),
-                tasks.get(RESPONDENTS)
-            ));
+                List.of(
+                        tasks.get(APPLICANT),
+                        tasks.get(CHILDREN),
+                        tasks.get(RESPONDENTS)
+                ));
 
         final TaskSection courtRequirements = newSection("Add court requirements", of(
-            tasks.get(ALLOCATION_PROPOSAL)
+                tasks.get(ALLOCATION_PROPOSAL)
         ));
 
         final TaskSection additionalInformation = newSection("Add additional information", of(
-            tasks.get(OTHER_PROCEEDINGS),
-            tasks.get(INTERNATIONAL_ELEMENT),
-            tasks.get(ENTER_OTHERS),
-            tasks.get(ATTENDING_THE_HEARING)
+                tasks.get(OTHER_PROCEEDINGS),
+                tasks.get(INTERNATIONAL_ELEMENT),
+                tasks.get(OTHERS),
+                tasks.get(ATTENDING_THE_HEARING)
         )).withInfo("Only complete if relevant");
 
         final TaskSection sentApplication = newSection("Send application", of(tasks.get(SUBMIT_APPLICATION)));
@@ -92,13 +92,13 @@ public class TaskListRenderer {
         lines.add("<div class='width-50'>");
 
         Stream.of(
-            applicationDetails,
-            applicationGrounds,
-            documents,
-            parties,
-            courtRequirements,
-            additionalInformation,
-            sentApplication).forEach(section -> lines.addAll(renderSection(section)));
+                applicationDetails,
+                applicationGrounds,
+                documents,
+                parties,
+                courtRequirements,
+                additionalInformation,
+                sentApplication).forEach(section -> lines.addAll(renderSection(section)));
 
         lines.add("</div>");
 
@@ -126,25 +126,28 @@ public class TaskListRenderer {
     private List<String> renderTask(Task task) {
         final List<String> lines = new LinkedList<>();
         if (task.getState() == NOT_AVAILABLE) {
-            lines.add(task.getEvent().getName() + renderImage("cannot-send-yet.png"));
+            lines.add(renderDisabledLink(task) + renderImage("cannot-send-yet.png", "Cannot send yet"));
         } else if (task.getState() == COMPLETED) {
-            lines.add(renderLink(task) + renderImage("information-added.png"));
+            lines.add(renderLink(task) + renderImage("information-added.png", "Information added"));
         } else {
             lines.add(renderLink(task));
         }
 
         task.getHint().map(this::renderHint).ifPresent(lines::add);
-
         return lines;
     }
 
     private String renderLink(Task event) {
-        return format("[%s](/case/%s/%s/${[CASE_REFERENCE]}/trigger/%s)", event.getEvent().getName(),
-            JURISDICTION, CASE_TYPE, event.getEvent().getId());
+        return format("<a href='/case/%s/%s/${[CASE_REFERENCE]}/trigger/%s'>%s</a>",
+                JURISDICTION, CASE_TYPE, event.getEvent().getId(), event.getEvent().getName());
     }
 
-    private String renderImage(String image) {
-        return format("<img align='right' height='25px' src='%s%s'>", imagesBaseUrl, image);
+    private String renderDisabledLink(Task event) {
+        return format("<a>%s</a>", event.getEvent().getName());
+    }
+
+    private String renderImage(String imageName, String title) {
+        return format("<img align='right' height='25px' src='%s%s' title='%s'/>", imagesBaseUrl, imageName, title);
     }
 
     private String renderHint(String text) {

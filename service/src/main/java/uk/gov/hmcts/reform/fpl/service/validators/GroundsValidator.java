@@ -22,6 +22,6 @@ public class GroundsValidator extends PropertiesValidator {
 
     private boolean hasEmergencyProtectionOrder(CaseData caseData) {
         return caseData.getOrders() != null && caseData.getOrders().getOrderType() != null
-            && caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER);
+                && caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER);
     }
 }

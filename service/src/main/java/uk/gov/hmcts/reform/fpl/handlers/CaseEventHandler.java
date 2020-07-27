@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.Task;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -39,11 +39,11 @@ public class CaseEventHandler {
             final String taskList = taskListRenderer.render(tasks);
 
             coreCaseDataService.triggerEvent(
-                JURISDICTION,
-                CASE_TYPE,
-                caseDetails.getId(),
-                "internal-update-task-list",
-                Map.of("taskList", taskList));
+                    JURISDICTION,
+                    CASE_TYPE,
+                    caseDetails.getId(),
+                    "internal-update-task-list",
+                    Map.of("taskList", taskList));
         }
     }
 }

@@ -5,10 +5,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.fpl.Task;
-import uk.gov.hmcts.reform.fpl.TaskState;
 import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
+import uk.gov.hmcts.reform.fpl.model.tasklist.TaskState;
 import uk.gov.hmcts.reform.fpl.service.validators.EventChecker;
 
 import java.util.List;
@@ -21,26 +21,26 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.Task.task;
-import static uk.gov.hmcts.reform.fpl.TaskState.COMPLETED;
-import static uk.gov.hmcts.reform.fpl.TaskState.IN_PROGRESS;
-import static uk.gov.hmcts.reform.fpl.TaskState.NOT_AVAILABLE;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
 import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ATTENDING_THE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
+import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
 import static uk.gov.hmcts.reform.fpl.enums.Event.DOCUMENTS;
-import static uk.gov.hmcts.reform.fpl.enums.Event.ENTER_CHILDREN;
-import static uk.gov.hmcts.reform.fpl.enums.Event.ENTER_OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.FACTORS_AFFECTING_PARENTING;
 import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_NEEDED;
 import static uk.gov.hmcts.reform.fpl.enums.Event.INTERNATIONAL_ELEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_NEEDED;
+import static uk.gov.hmcts.reform.fpl.enums.Event.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHER_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RISK_AND_HARM;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.model.tasklist.Task.task;
+import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED;
+import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.IN_PROGRESS;
+import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_AVAILABLE;
 
 
 @ExtendWith(SpringExtension.class)
@@ -93,12 +93,12 @@ class TaskListServiceTest {
                 RISK_AND_HARM,
                 FACTORS_AFFECTING_PARENTING,
                 APPLICANT,
-                ENTER_CHILDREN,
+                CHILDREN,
                 RESPONDENTS,
                 ALLOCATION_PROPOSAL,
                 OTHER_PROCEEDINGS,
                 INTERNATIONAL_ELEMENT,
-                ENTER_OTHERS,
+                OTHERS,
                 ATTENDING_THE_HEARING,
                 DOCUMENTS,
                 CASE_NAME,

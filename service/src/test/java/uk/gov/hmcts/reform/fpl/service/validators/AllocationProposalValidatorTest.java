@@ -58,7 +58,7 @@ class AllocationProposalValidatorTest {
     }
 
     @Test
-    void shouldReturnEmptyErrorsWhenAllocationPrposalIsPresent() {
+    void shouldReturnEmptyErrorsWhenAllocationProposalIsPresent() {
         final Allocation allocation = Allocation.builder()
             .proposal("Circuit Judge")
             .build();

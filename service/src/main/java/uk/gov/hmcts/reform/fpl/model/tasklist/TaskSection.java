@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl;
+package uk.gov.hmcts.reform.fpl.model.tasklist;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,7 +10,7 @@ public class TaskSection {
     private String hint;
     private String info;
 
-    public TaskSection(String name, List<Task> tasks) {
+    private TaskSection(String name, List<Task> tasks) {
         this.name = name;
         this.tasks = tasks;
     }

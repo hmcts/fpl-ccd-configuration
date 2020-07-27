@@ -14,6 +14,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -26,8 +27,8 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
 import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
+import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
 import static uk.gov.hmcts.reform.fpl.enums.Event.DOCUMENTS;
-import static uk.gov.hmcts.reform.fpl.enums.Event.ENTER_CHILDREN;
 import static uk.gov.hmcts.reform.fpl.enums.Event.FACTORS_AFFECTING_PARENTING;
 import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_NEEDED;
@@ -60,7 +61,7 @@ class EventCheckerTest {
     @MockBean
     private DocumentsValidator documentsValidator;
     @MockBean
-    private CaseSubmissionValidator submissionValidator;
+    private CaseSubmissionGuard submissionValidator;
     @MockBean
     private RiskAndHarmValidator riskAndHarmValidator;
     @MockBean
@@ -99,67 +100,66 @@ class EventCheckerTest {
 
     @ParameterizedTest
     @MethodSource("getGuardedEvents")
-    void shouldVerifyGuarderEventWithError(Event event, Validator validator) {
+    void shouldRejectEventWhenGuardReturnsErrors(Event event, Validator guards) {
         List<String> expectedErrors = List.of("Case name error");
-        when(validator.validate(caseData)).thenReturn(expectedErrors);
+        when(guards.validate(caseData)).thenReturn(expectedErrors);
 
-        assertThat(eventChecker.validate(event, caseData)).isEqualTo(expectedErrors);
+        assertThat(eventChecker.validate(event, caseData)).isEmpty();
         assertThat(eventChecker.isCompleted(event, caseData)).isFalse();
         assertThat(eventChecker.isAvailable(event, caseData)).isFalse();
 
-        verify(validator, times(3)).validate(caseData);
+        verify(guards).validate(caseData);
     }
 
     @ParameterizedTest
     @MethodSource("getGuardedEvents")
-    void shouldVerifyGuardedEventWithoutError(Event event, Validator validator) {
-        List<String> expectedErrors = List.of();
-        when(validator.validate(caseData)).thenReturn(expectedErrors);
+    void shouldAllowEventWhenGuardReturnsEmptyErrors(Event event, Validator guard) {
+        when(guard.validate(caseData)).thenReturn(Collections.emptyList());
 
-        assertThat(eventChecker.validate(event, caseData)).isEqualTo(expectedErrors);
-        assertThat(eventChecker.isCompleted(event, caseData)).isTrue();
+        assertThat(eventChecker.validate(event, caseData)).isEmpty();
+        assertThat(eventChecker.isCompleted(event, caseData)).isFalse();
         assertThat(eventChecker.isAvailable(event, caseData)).isTrue();
 
-        verify(validator, times(3)).validate(caseData);
+        verify(guard).validate(caseData);
     }
 
     @AfterEach
     void verifyNoMoreInteractionsWithValidators() {
         verifyNoMoreInteractions(
-            allocationProposalValidator,
-            caseNameValidator,
-            childrenValidator,
-            respondentsValidator,
-            hearingNeededValidator,
-            ordersNeededValidator,
-            groundsValidator,
-            applicantValidator,
-            documentsValidator,
-            submissionValidator,
-            riskAndHarmValidator,
-            factorsAffectingParentingValidator
+                allocationProposalValidator,
+                caseNameValidator,
+                childrenValidator,
+                respondentsValidator,
+                hearingNeededValidator,
+                ordersNeededValidator,
+                groundsValidator,
+                applicantValidator,
+                documentsValidator,
+                submissionValidator,
+                riskAndHarmValidator,
+                factorsAffectingParentingValidator
         );
     }
 
     private Stream<Arguments> getUnguardedEvents() {
         return Stream.of(
-            Arguments.of(CASE_NAME, caseNameValidator),
-            Arguments.of(ALLOCATION_PROPOSAL, allocationProposalValidator),
-            Arguments.of(ENTER_CHILDREN, childrenValidator),
-            Arguments.of(RESPONDENTS, respondentsValidator),
-            Arguments.of(HEARING_NEEDED, hearingNeededValidator),
-            Arguments.of(ORDERS_NEEDED, ordersNeededValidator),
-            Arguments.of(GROUNDS, groundsValidator),
-            Arguments.of(APPLICANT, applicantValidator),
-            Arguments.of(DOCUMENTS, documentsValidator),
-            Arguments.of(RISK_AND_HARM, riskAndHarmValidator),
-            Arguments.of(FACTORS_AFFECTING_PARENTING, factorsAffectingParentingValidator)
+                Arguments.of(CASE_NAME, caseNameValidator),
+                Arguments.of(ALLOCATION_PROPOSAL, allocationProposalValidator),
+                Arguments.of(CHILDREN, childrenValidator),
+                Arguments.of(RESPONDENTS, respondentsValidator),
+                Arguments.of(HEARING_NEEDED, hearingNeededValidator),
+                Arguments.of(ORDERS_NEEDED, ordersNeededValidator),
+                Arguments.of(GROUNDS, groundsValidator),
+                Arguments.of(APPLICANT, applicantValidator),
+                Arguments.of(DOCUMENTS, documentsValidator),
+                Arguments.of(RISK_AND_HARM, riskAndHarmValidator),
+                Arguments.of(FACTORS_AFFECTING_PARENTING, factorsAffectingParentingValidator)
         );
     }
 
     private Stream<Arguments> getGuardedEvents() {
         return Stream.of(
-            Arguments.of(SUBMIT_APPLICATION, submissionValidator)
+                Arguments.of(SUBMIT_APPLICATION, submissionValidator)
         );
     }
 }

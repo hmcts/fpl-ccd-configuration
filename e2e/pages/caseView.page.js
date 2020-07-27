@@ -1,9 +1,11 @@
 const { I } = inject();
+const assert = require('assert');
 
 module.exports = {
 
   file: 'mockFile.txt',
   tabs: {
+    history: 'History',
     orders: 'Orders',
     draftOrders: 'Draft orders',
     hearings: 'Hearings',
@@ -18,6 +20,7 @@ module.exports = {
     expertReports: 'Expert Reports',
     overview: 'Overview',
     viewApplication: 'View application',
+    startApplication: 'Start application',
   },
   actionsDropdown: '.ccd-dropdown',
   goButton: 'Go',
@@ -29,13 +32,6 @@ module.exports = {
       I.selectOption(this.actionsDropdown, actionSelected);
       I.click(this.goButton);
     }, 'ccd-case-event-trigger');
-  },
-
-  async checkTaskList(actionSelected) {
-    this.selectTab('Start application');
-    I.dontSeeElementInDOM('//a[text()="Submit application"]');
-    I.click(`${actionSelected}`);
-    await I.completeEvent('Save and continue');
   },
 
   checkActionsAreAvailable(actions) {
@@ -54,6 +50,45 @@ module.exports = {
         I.dontSeeElementInDOM(`//option[text()="${action}"]`);
       }
     });
+  },
+
+  checkTaskStatus(task, status) {
+    if(status) {
+      I.seeElement(locate(`//p/a[text()="${task}"]/../img`).withAttr({title: status}));
+    } else {
+      I.seeElement(locate(`//p/a[text()="${task}"]`));
+      I.dontSeeElement(locate(`//p/a[text()="${task}"]/../img`));
+    }
+  },
+
+  checkTaskIsCompleted(task) {
+    this.checkTaskStatus(task, 'Information added');
+  },
+
+  checkTaskIsNotCompleted(task) {
+    this.checkTaskStatus(task, undefined);
+  },
+
+  checkTaskIsAvailable(task) {
+    I.click(`${task}`);
+    I.seeElement(`//ccd-case-event-trigger//h1[text()="${task}"]`);
+    I.click('Cancel');
+  },
+
+  async checkTaskIsUnavailable(task) {
+    this.checkTaskStatus(task, 'Cannot send yet');
+    const taskTarget = await I.grabAttributeFrom(`//p/a[text()="${task}"]`,'href');
+    assert.strictEqual(taskTarget, null);
+  },
+
+  async startTask(task) {
+    await I.retryUntilExists(() => {
+      I.click(task);
+    }, 'ccd-case-event-trigger');
+  },
+
+  checkTabIsNotPresent(tab) {
+    I.dontSee(tab, '.tabs .tabs-list');
   },
 
   selectTab(tab) {

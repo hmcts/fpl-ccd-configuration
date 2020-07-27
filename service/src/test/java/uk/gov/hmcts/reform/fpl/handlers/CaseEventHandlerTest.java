@@ -8,9 +8,9 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.Task;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -25,12 +25,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.TaskState.COMPLETED;
-import static uk.gov.hmcts.reform.fpl.TaskState.NOT_AVAILABLE;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
+import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED;
+import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_AVAILABLE;
 
 @ExtendWith(SpringExtension.class)
 class CaseEventHandlerTest {
@@ -53,17 +53,17 @@ class CaseEventHandlerTest {
     @Test
     void shouldUpdateTaskListForCasesInOpen() {
         final CaseDetails caseDetails = CaseDetails.builder()
-            .id(nextLong())
-            .jurisdiction(JURISDICTION)
-            .caseTypeId(CASE_TYPE)
-            .state(OPEN.getValue())
-            .build();
+                .id(nextLong())
+                .jurisdiction(JURISDICTION)
+                .caseTypeId(CASE_TYPE)
+                .state(OPEN.getValue())
+                .build();
         final CaseData caseData = CaseData.builder().build();
         final CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
         final CaseDataChanged caseDataChanged = new CaseDataChanged(callbackRequest);
         final List<Task> tasks = List.of(
-            Task.builder().event(CASE_NAME).state(COMPLETED).build(),
-            Task.builder().event(SUBMIT_APPLICATION).state(NOT_AVAILABLE).build()
+                Task.builder().event(CASE_NAME).state(COMPLETED).build(),
+                Task.builder().event(SUBMIT_APPLICATION).state(NOT_AVAILABLE).build()
         );
         final String renderedTaskLists = "<h1>Task 1</h1><h2>Task 2</h2>";
 
@@ -76,22 +76,22 @@ class CaseEventHandlerTest {
         verify(taskListService).getTasksForOpenCase(caseData);
         verify(taskListRenderer).render(tasks);
         verify(coreCaseDataService).triggerEvent(
-            JURISDICTION,
-            CASE_TYPE,
-            caseDetails.getId(),
-            "internal-update-task-list",
-            Map.of("taskList", renderedTaskLists)
+                JURISDICTION,
+                CASE_TYPE,
+                caseDetails.getId(),
+                "internal-update-task-list",
+                Map.of("taskList", renderedTaskLists)
         );
     }
 
     @Test
     void shouldNotUpdateTaskListForCasesInStateDifferentThanOpen() {
         final CaseDetails caseDetails = CaseDetails.builder()
-            .id(nextLong())
-            .jurisdiction(JURISDICTION)
-            .caseTypeId(CASE_TYPE)
-            .state(SUBMITTED.getValue())
-            .build();
+                .id(nextLong())
+                .jurisdiction(JURISDICTION)
+                .caseTypeId(CASE_TYPE)
+                .state(SUBMITTED.getValue())
+                .build();
         final CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
         final CaseDataChanged caseDataChanged = new CaseDataChanged(callbackRequest);
 

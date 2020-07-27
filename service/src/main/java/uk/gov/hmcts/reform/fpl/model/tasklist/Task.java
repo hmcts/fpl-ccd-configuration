@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl;
+package uk.gov.hmcts.reform.fpl.model.tasklist;
 
 import lombok.Builder;
 import lombok.Data;

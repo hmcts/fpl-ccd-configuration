@@ -30,7 +30,7 @@ import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
 import uk.gov.hmcts.reform.fpl.service.markdown.CaseSubmissionMarkdownService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
-import uk.gov.hmcts.reform.fpl.service.validators.EventChecker;
+import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionGuard;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
 
 import java.time.ZoneId;
@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
@@ -63,11 +62,11 @@ public class CaseSubmissionController {
     private final FeatureToggleService featureToggleService;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final CaseSubmissionMarkdownService markdownService;
-    private final EventChecker eventValidator;
+    private final CaseSubmissionGuard caseSubmissionGuard;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
-        @RequestBody CallbackRequest callbackRequest) {
+            @RequestBody CallbackRequest callbackRequest) {
 
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
@@ -96,16 +95,16 @@ public class CaseSubmissionController {
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .errors(errors)
-            .build();
+                .data(data)
+                .errors(errors)
+                .build();
     }
 
     private List<String> validate(CaseData caseData) {
         List<String> errors = new ArrayList<>();
 
         if (restrictionsConfiguration.getLocalAuthorityCodesForbiddenCaseSubmission()
-            .contains(caseData.getCaseLocalAuthority())) {
+                .contains(caseData.getCaseLocalAuthority())) {
             errors.add("Test local authority cannot submit cases");
         }
 
@@ -116,12 +115,12 @@ public class CaseSubmissionController {
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        final List<String> errors = eventValidator.validate(SUBMIT_APPLICATION, caseData);
+        final List<String> errors = caseSubmissionGuard.validate(caseData);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .errors(errors)
-            .build();
+                .data(caseDetails.getData())
+                .errors(errors)
+                .build();
     }
 
     @PostMapping("/about-to-submit")
@@ -137,14 +136,14 @@ public class CaseSubmissionController {
         data.put("dateSubmitted", DateTimeFormatter.ISO_LOCAL_DATE.format(zonedDateTime));
         data.put("sendToCtsc", setSendToCtsc(data.get("caseLocalAuthority").toString()).getValue());
         data.put("submittedForm", ImmutableMap.<String, String>builder()
-            .put("document_url", document.links.self.href)
-            .put("document_binary_url", document.links.binary.href)
-            .put("document_filename", document.originalDocumentName)
-            .build());
+                .put("document_url", document.links.self.href)
+                .put("document_binary_url", document.links.binary.href)
+                .put("document_filename", document.originalDocumentName)
+                .build());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .build();
+                .data(data)
+                .build();
     }
 
     @PostMapping("/submitted")
@@ -161,9 +160,9 @@ public class CaseSubmissionController {
         MarkdownData markdownData = markdownService.getMarkdownData(caseData.getCaseName());
 
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(markdownData.getHeader())
-            .confirmationBody(markdownData.getBody())
-            .build();
+                .confirmationHeader(markdownData.getHeader())
+                .confirmationBody(markdownData.getBody())
+                .build();
     }
 
     private YesNo setSendToCtsc(String caseLocalAuthority) {
