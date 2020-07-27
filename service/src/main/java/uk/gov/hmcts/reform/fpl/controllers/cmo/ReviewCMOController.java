@@ -130,7 +130,7 @@ public class ReviewCMOController {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
 
         List<Element<CaseManagementOrder>> cmosReadyForApproval = reviewCMOService.getCMOsReadyForApproval(
-            caseData.getDraftUploadedCMOs());
+            caseDataBefore.getDraftUploadedCMOs());
 
         if (!cmosReadyForApproval.isEmpty()) {
             if (SEND_TO_ALL_PARTIES.equals(caseData.getReviewCMODecision().getDecision())) {
