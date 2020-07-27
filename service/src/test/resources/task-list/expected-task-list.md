@@ -44,7 +44,7 @@
 
 ## Add supporting documents
 
-<span class='govuk-hint govuk-!-font-size-14'>For example, the social work chronology and care plan</span>
+<span class='govuk-hint govuk-!-font-size-14'>For example, SWET, social work chronology and care plan</span>
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
