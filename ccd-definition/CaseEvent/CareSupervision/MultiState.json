@@ -252,8 +252,8 @@
     "PreConditionState(s)": "Open;RETURNED",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
-    "ShowEventNotes": "N",
+    "ShowSummary": "Y",
+    "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-others/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-others/about-to-submit"
@@ -268,7 +268,7 @@
     "PreConditionState(s)": "Open;RETURNED",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
+    "ShowSummary": "Y",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue"
   },
@@ -282,7 +282,7 @@
     "PreConditionState(s)": "Open;RETURNED",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
+    "ShowSummary": "Y",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue"
   },
@@ -296,7 +296,7 @@
     "PreConditionState(s)": "Open;RETURNED",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
+    "ShowSummary": "Y",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue"
   },
@@ -310,7 +310,7 @@
     "PreConditionState(s)": "Open;RETURNED",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
+    "ShowSummary": "Y",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue"
   },
@@ -324,7 +324,7 @@
     "PreConditionState(s)": "Open;RETURNED",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
+    "ShowSummary": "Y",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue"
   },
@@ -338,7 +338,7 @@
     "PreConditionState(s)": "Open;RETURNED",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
+    "ShowSummary": "Y",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue"
   },
@@ -352,7 +352,7 @@
     "PreConditionState(s)": "Open;RETURNED",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
+    "ShowSummary": "Y",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue"
   },
