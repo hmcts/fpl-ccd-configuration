@@ -28,6 +28,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(UploadCMOController.class)
@@ -129,6 +130,7 @@ public class UploadCMOAboutToSubmitControllerTest extends AbstractControllerTest
             .hearing(hearings.get(0).getValue().toLabel(DATE))
             .order(DOCUMENT_REFERENCE)
             .dateSent(dateNow())
+            .judgeTitleAndName(formatJudgeTitleAndName(hearings.get(0).getValue().getJudgeAndLegalAdvisor()))
             .build();
     }
 

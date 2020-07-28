@@ -23,4 +23,5 @@ Scenario('local authority sends agreed CMO to judge', async (I, caseViewPage, up
   I.seeInTab(['Draft Case Management Order 1', 'Hearing'], 'Case management hearing, 1 January 2020');
   I.seeInTab(['Draft Case Management Order 1', 'Date sent'], dateFormat(new Date(), 'dd mmm yyyy'));
   I.seeInTab(['Draft Case Management Order 1', 'Status'], 'With judge for approval');
+  I.seeInTab(['Draft Case Management Order 1', 'Judge'], 'Her Honour Judge Reed');
 });

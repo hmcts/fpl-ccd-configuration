@@ -255,6 +255,7 @@ class UploadCMOServiceTest {
             .dateSent(time.now().toLocalDate())
             .order(order)
             .hearing("Case management hearing, 2 March 2020")
+            .judgeTitleAndName("His Honour Judge Dredd")
             .build();
 
         assertThat(unsealedOrders).isNotEmpty()
@@ -296,6 +297,7 @@ class UploadCMOServiceTest {
             .dateSent(time.now().toLocalDate())
             .order(order)
             .hearing("Case management hearing, 2 March 2020")
+            .judgeTitleAndName("His Honour Judge Dredd")
             .build();
 
         assertThat(unsealedOrders).hasSize(2)
