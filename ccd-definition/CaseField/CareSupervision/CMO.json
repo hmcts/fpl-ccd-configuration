@@ -129,7 +129,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "noDraftCMOs",
-    "Label": "There are no CMOs ready for approval.\n\nThe local authority is still drafting the CMO, or making requested changes.",
+    "Label": "There are no CMOs to review.",
     "FieldType": "Label",
     "SecurityClassification": "Public"
   }
