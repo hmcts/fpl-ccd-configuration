@@ -12,7 +12,7 @@ fi
 if [ ${environment} == "prod" ]; then
   excludedFilenamePatterns="-e UserProfile.json,*-nonprod.json"
 else
-  excludedFilenamePatterns="-e UserProfile.json,*-prod.json"
+  excludedFilenamePatterns="-e UserProfile.json,*-nonprod.json"
 fi
 
 root_dir=$(realpath $(dirname ${0})/..)
