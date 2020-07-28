@@ -33,7 +33,7 @@ class OthersControllerAboutToStartTest extends AbstractControllerTest {
     private static final UUID ADDITIONAL_OTHER_ID = randomUUID();
 
     @Test
-    void shouldReturnOthersWhenTheyAreMarkedAsConfidential() {
+    void shouldReturnOthersWithoutConfidentialDataWhenTheyAreMarkedAsConfidential() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of(
                 "others", Others.builder()
@@ -46,7 +46,7 @@ class OthersControllerAboutToStartTest extends AbstractControllerTest {
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
-        assertThat(caseData.getOthers().getFirstOther()).isEqualTo(other());
+        assertThat(caseData.getOthers().getFirstOther()).isEqualTo(otherWithDetailsRemoved());
         assertThat(caseData.getOthers().getAdditionalOthers()).isEqualTo(additionalOthers());
     }
 
