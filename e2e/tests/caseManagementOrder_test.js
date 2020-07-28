@@ -20,7 +20,7 @@ Scenario('local authority sends agreed CMO to judge', async (I, caseViewPage, up
   assertDraftCaseManagementOrder(I);
 });
 
-Scenario('Judge sends agreed CMO back to the local authority', async(I, caseViewPage, reviewAgreedCaseManagementOrderEventPage) => {
+Scenario('Judge sends agreed CMO back to the local authority', async (I, caseViewPage, reviewAgreedCaseManagementOrderEventPage) => {
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.reviewAgreedCmo);
   I.see('mockFile.pdf');
@@ -35,9 +35,9 @@ Scenario('Judge sends agreed CMO back to the local authority', async(I, caseView
   assertDraftCaseManagementOrder(I, 'Returned', 'PBA number is incorrect');
 });
 
-Scenario('Judge seals and sends the agreed CMO to parties', async(I, caseViewPage, sendAgreedCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage) => {
+Scenario('Judge seals and sends the agreed CMO to parties', async (I, caseViewPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage) => {
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
-  await localAuthoritySendsAgreedCmo(I, caseViewPage, sendAgreedCaseManagementOrderEventPage);
+  await localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage);
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.reviewAgreedCmo);
   reviewAgreedCaseManagementOrderEventPage.selectSealCmo();
@@ -50,15 +50,15 @@ Scenario('Judge seals and sends the agreed CMO to parties', async(I, caseViewPag
   I.seeInTab(['Sealed Case Management Orders 1', 'Judge'], 'Her Honour Judge Reed');
 });
 
-const localAuthoritySendsAgreedCmo = async function(I, caseViewPage, sendAgreedCaseManagementOrderEventPage) {
+const localAuthoritySendsAgreedCmo = async function (I, caseViewPage, uploadCaseManagementOrderEventPage) {
   await caseViewPage.goToNewActions(config.applicationActions.uploadCMO);
-  await sendAgreedCaseManagementOrderEventPage.associateHearing('1 January 2020');
+  await uploadCaseManagementOrderEventPage.associateHearing('1 January 2020');
   await I.retryUntilExists(() => I.click('Continue'), '#uploadedCaseManagementOrder');
-  await sendAgreedCaseManagementOrderEventPage.uploadCaseManagementOrder(config.testNonEmptyPdfFile);
+  await uploadCaseManagementOrderEventPage.uploadCaseManagementOrder(config.testNonEmptyPdfFile);
   await I.completeEvent('Submit');
 };
 
-const assertDraftCaseManagementOrder = function(I, status='With judge for approval', changesRequested) {
+const assertDraftCaseManagementOrder = function (I, status = 'With judge for approval', changesRequested) {
   I.seeInTab(['Draft Case Management Order 1', 'Order'], 'mockFile.pdf');
   I.seeInTab(['Draft Case Management Order 1', 'Hearing'], 'Case management hearing, 1 January 2020');
   I.seeInTab(['Draft Case Management Order 1', 'Date sent'], dateFormat(today, 'dd mmm yyyy'));
