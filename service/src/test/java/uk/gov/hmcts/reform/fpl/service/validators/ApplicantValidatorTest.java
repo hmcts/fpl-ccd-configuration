@@ -34,8 +34,8 @@ class ApplicantValidatorTest {
         final List<String> errors = applicantValidator.validate(caseData);
 
         assertThat(errors).containsExactlyInAnyOrder(
-            "You need to add details to applicant",
-            "You need to add details to solicitor"
+            "Add your organisation's details",
+            "Add the applicant's solicitor's details"
         );
     }
 

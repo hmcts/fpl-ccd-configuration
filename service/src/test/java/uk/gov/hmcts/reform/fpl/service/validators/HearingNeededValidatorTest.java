@@ -26,7 +26,7 @@ class HearingNeededValidatorTest {
 
         final List<String> errors = hearingNeededValidator.validate(caseData);
 
-        assertThat(errors).containsExactly("You need to add details to hearing needed");
+        assertThat(errors).containsExactly("Add the hearing urgency details");
     }
 
     @Test

@@ -27,7 +27,7 @@ class OrdersNeededValidatorTest {
 
         final List<String> errors = ordersNeededValidator.validate(caseData);
 
-        assertThat(errors).containsExactly("You need to add details to orders and directions needed");
+        assertThat(errors).containsExactly("Add the orders and directions sought");
     }
 
     @Test

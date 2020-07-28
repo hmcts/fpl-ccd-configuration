@@ -17,12 +17,15 @@ Scenario('local authority tries to submit incomplete case', async (I, caseViewPa
   submitApplicationEventPage.giveConsent();
   I.click('Continue');
   I.waitForElement('.error-summary-list');
-  I.see('Tell us the status of all documents including those that you haven\'t uploaded');
-  I.see('You need to add details to orders and directions needed');
-  I.see('You need to add details to children');
-  I.see('You need to add details to applicant');
-  I.see('You need to add details to hearing needed');
-  I.see('You need to add details to grounds for the application');
+  I.see('Add the orders and directions sought');
+  I.see('Add the hearing urgency details');
+  I.see('Add the grounds for the application');
+  I.see('Add social work documents, or details of when you\'ll send them');
+  I.see('Add your organisation\'s details');
+  I.see('Add the applicant\'s solicitor\'s details');
+  I.see('Add the child\'s details');
+  I.see('Add the respondent\'s details');
+  I.see('Add the allocation proposal');
 });
 
 Scenario('local authority deletes application', async (I, caseViewPage, deleteApplicationEventPage, caseListPage) => {
