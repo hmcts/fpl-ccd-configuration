@@ -65,7 +65,7 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
         expectedTemplate.setRespondentLastName("lastName");
         expectedTemplate.setFamilyManCaseNumber("11");
         expectedTemplate.setDigitalPreference("No");
-        expectedTemplate.setHearing("Test hearing, 20th June");
+        expectedTemplate.setHearing("test hearing, 20th June");
         expectedTemplate.setCaseUrl("");
         expectedTemplate.setDocumentLink(generateAttachedDocumentLink(TestDataHelper.DOCUMENT_CONTENT)
             .map(JSONObject::toMap)
@@ -88,7 +88,7 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
         expectedTemplate.setFamilyManCaseNumber("11");
         expectedTemplate.setDigitalPreference("Yes");
         expectedTemplate.setCaseUrl("http://fake-url/cases/case-details/" + CASE_REFERENCE);
-        expectedTemplate.setHearing("Test hearing, 20th June");
+        expectedTemplate.setHearing("test hearing, 20th June");
         expectedTemplate.setDocumentLink(generateAttachedDocumentLink(TestDataHelper.DOCUMENT_CONTENT)
             .map(JSONObject::toMap)
             .orElse(null));
@@ -120,7 +120,7 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
         RejectedCMOTemplate expectedTemplate = new RejectedCMOTemplate();
 
         expectedTemplate.setRequestedChanges("change it");
-        expectedTemplate.setHearing("Test hearing, 20th June");
+        expectedTemplate.setHearing("test hearing, 20th June");
         expectedTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
         expectedTemplate.setRespondentLastName("lastName");
         expectedTemplate.setFamilyManCaseNumber("11");
