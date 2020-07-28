@@ -473,7 +473,8 @@ class ConfidentialDetailsServiceTest {
             List<Element<Other>> others = service.combineOtherDetails(caseData.getAllOthers(),
                 caseData.getConfidentialOthers());
 
-            assertThat(others.get(0).getValue()).isEqualTo(otherWithConfidentialFields(ID, NOT_CONFIDENTIAL).getValue());
+            assertThat(others.get(0).getValue())
+                .isEqualTo(otherWithConfidentialFields(ID, NOT_CONFIDENTIAL).getValue());
             assertThat(others.get(1).getValue()).isEqualTo(otherWithConfidentialFields(ID, CONFIDENTIAL).getValue());
         }
 
