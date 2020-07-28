@@ -193,7 +193,7 @@ dependencies {
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: versions.log4j
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: versions.log4j
 
-  implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.20'
+  implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
 
   implementation group: 'org.apache.commons', name: 'commons-text', version: '1.9'
 
@@ -227,8 +227,8 @@ dependencies {
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
-  testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.20'
-  integrationTestImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.20'
+  testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
+  integrationTestImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
 
   testCompile (group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
