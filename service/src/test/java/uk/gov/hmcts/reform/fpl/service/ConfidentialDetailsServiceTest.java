@@ -461,11 +461,11 @@ class ConfidentialDetailsServiceTest {
         }
 
         @Test
-        void shouldPrepareOtherWithConfidentialValuesRemoved() {
+        void shouldPrepareOtherWithConfidentialValuesFromConfidentialOthers() {
             CaseData caseData = CaseData.builder()
                 .others(Others.builder()
                     .firstOther(otherWithConfidentialFields(ID, NOT_CONFIDENTIAL).getValue())
-                    .additionalOthers(List.of(otherWithConfidentialFields(ID, CONFIDENTIAL)))
+                    .additionalOthers(List.of(otherWithRemovedConfidentialFields(ID)))
                     .build())
                 .confidentialOthers(List.of(otherWithConfidentialFields(ID, CONFIDENTIAL)))
                 .build();
