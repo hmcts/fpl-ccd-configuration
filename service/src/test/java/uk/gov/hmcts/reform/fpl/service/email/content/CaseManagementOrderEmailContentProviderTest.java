@@ -32,6 +32,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIG
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ContextConfiguration(classes = {CaseManagementOrderEmailContentProvider.class, EmailNotificationHelper.class,
     FixedTimeConfiguration.class})
@@ -140,7 +141,7 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
 
     private uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder buildCmo() {
         return uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.builder()
-            .order(TestDataHelper.testDocumentReference())
+            .order(testDocumentReference())
             .hearing("Test hearing, 20th June").build();
     }
 
