@@ -517,7 +517,7 @@ class ConfidentialDetailsServiceTest {
             List<Element<Other>> updatedOthers = service.combineOtherDetails(caseData.getAllOthers(),
                 caseData.getConfidentialOthers());
 
-            assertThat(updatedOthers.get(0).getValue()).isEqualTo(confidentialOthers.get(0).getValue());
+            assertThat(updatedOthers.get(0).getValue()).isEqualTo(otherWithRemovedConfidentialFields(ID).getValue());
             assertThat(updatedOthers.get(1)).isEqualTo(others.get(0));
             assertThat(updatedOthers.get(2)).isEqualTo(confidentialOthers.get(1));
         }

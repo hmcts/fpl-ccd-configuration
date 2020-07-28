@@ -79,7 +79,7 @@ public class ConfidentialDetailsService {
 
                     // code due to others following a different data structure.
                     if (defaultValue == null) {
-                        confidentialParty = handleOthers(all, confidential, party);
+                        confidentialParty = handleOthers(element.getId(), confidential, party);
                     }
 
                     collection.add(element(element.getId(), confidentialParty));
@@ -91,18 +91,12 @@ public class ConfidentialDetailsService {
         return collection;
     }
 
-    private <T extends ConfidentialParty<T>> T handleOthers(List<Element<T>> all,
-                                                            List<Element<T>> confidential,
-                                                            T party) {
-        T confidentialParty;
-        List<UUID> ids = all.stream().map(Element::getId).collect(toList());
-
-        confidentialParty = confidential.stream()
-            .filter(other -> ids.contains(other.getId()))
+    private <T extends ConfidentialParty<T>> T handleOthers(UUID id, List<Element<T>> confidential, T party) {
+        return confidential.stream()
+            .filter(other -> id.equals(other.getId()))
             .map(other -> party.addConfidentialDetails(other.getValue().toParty()))
             .findFirst()
             .orElse(party);
-        return confidentialParty;
     }
 
     private <T> T getItemToAdd(List<Element<T>> confidential, Element<T> element) {
