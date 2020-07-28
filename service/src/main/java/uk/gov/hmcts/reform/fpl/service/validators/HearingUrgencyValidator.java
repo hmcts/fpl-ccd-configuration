@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import java.util.List;
 
 @Component
-public class HearingNeededValidator extends PropertiesValidator {
+public class HearingUrgencyValidator extends PropertiesValidator {
 
     @Override
     public List<String> validate(CaseData caseData) {

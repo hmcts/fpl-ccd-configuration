@@ -14,17 +14,17 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {HearingNeededValidator.class, LocalValidatorFactoryBean.class})
-class HearingNeededValidatorTest {
+@ContextConfiguration(classes = {HearingUrgencyValidator.class, LocalValidatorFactoryBean.class})
+class HearingUrgencyValidatorTest {
 
     @Autowired
-    private HearingNeededValidator hearingNeededValidator;
+    private HearingUrgencyValidator hearingUrgencyValidator;
 
     @Test
     void shouldReturnErrorWhenNoHearingNeedsProvided() {
         final CaseData caseData = CaseData.builder().build();
 
-        final List<String> errors = hearingNeededValidator.validate(caseData);
+        final List<String> errors = hearingUrgencyValidator.validate(caseData);
 
         assertThat(errors).containsExactly("Add the hearing urgency details");
     }
@@ -37,7 +37,7 @@ class HearingNeededValidatorTest {
             .hearing(hearing)
             .build();
 
-        final List<String> errors = hearingNeededValidator.validate(caseData);
+        final List<String> errors = hearingUrgencyValidator.validate(caseData);
 
         assertThat(errors).containsExactly("Select an option for when you need a hearing");
     }
@@ -52,7 +52,7 @@ class HearingNeededValidatorTest {
             .hearing(hearing)
             .build();
 
-        final List<String> errors = hearingNeededValidator.validate(caseData);
+        final List<String> errors = hearingUrgencyValidator.validate(caseData);
 
         assertThat(errors).isEmpty();
     }

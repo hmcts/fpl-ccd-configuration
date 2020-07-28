@@ -15,17 +15,17 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {OrdersNeededValidator.class, LocalValidatorFactoryBean.class})
-class OrdersNeededValidatorTest {
+@ContextConfiguration(classes = {OrdersSoughtValidator.class, LocalValidatorFactoryBean.class})
+class OrdersSoughtValidatorTest {
 
     @Autowired
-    private OrdersNeededValidator ordersNeededValidator;
+    private OrdersSoughtValidator ordersSoughtValidator;
 
     @Test
     void shouldReturnErrorWhenNoNeededOrders() {
         final CaseData caseData = CaseData.builder().build();
 
-        final List<String> errors = ordersNeededValidator.validate(caseData);
+        final List<String> errors = ordersSoughtValidator.validate(caseData);
 
         assertThat(errors).containsExactly("Add the orders and directions sought");
     }
@@ -38,7 +38,7 @@ class OrdersNeededValidatorTest {
             .orders(orders)
             .build();
 
-        final List<String> errors = ordersNeededValidator.validate(caseData);
+        final List<String> errors = ordersSoughtValidator.validate(caseData);
 
         assertThat(errors).containsExactly("Select at least one type of order");
     }
@@ -53,7 +53,7 @@ class OrdersNeededValidatorTest {
             .orders(orders)
             .build();
 
-        final List<String> errors = ordersNeededValidator.validate(caseData);
+        final List<String> errors = ordersSoughtValidator.validate(caseData);
 
         assertThat(errors).isEmpty();
     }

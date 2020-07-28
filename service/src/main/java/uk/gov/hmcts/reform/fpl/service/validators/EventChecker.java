@@ -12,14 +12,14 @@ import javax.annotation.PostConstruct;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
-import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
 import static uk.gov.hmcts.reform.fpl.enums.Event.DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.FACTORS_AFFECTING_PARENTING;
 import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
-import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_NEEDED;
-import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_NEEDED;
+import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_URGENCY;
+import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_SOUGHT;
+import static uk.gov.hmcts.reform.fpl.enums.Event.ORGANISATION_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RISK_AND_HARM;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
@@ -37,16 +37,16 @@ public class EventChecker {
     private RespondentsValidator respondentsValidator;
 
     @Autowired
-    private HearingNeededValidator hearingNeededValidator;
+    private HearingUrgencyValidator hearingUrgencyValidator;
 
     @Autowired
-    private OrdersNeededValidator ordersNeededValidator;
+    private OrdersSoughtValidator ordersSoughtValidator;
 
     @Autowired
     private GroundsValidator groundsValidator;
 
     @Autowired
-    private ApplicantValidator applicantValidator;
+    private OrganisationDetailsValidator organisationValidator;
 
     @Autowired
     private AllocationProposalValidator allocationProposalValidator;
@@ -72,10 +72,10 @@ public class EventChecker {
         validators.put(CASE_NAME, caseNameValidator);
         validators.put(CHILDREN, childrenValidator);
         validators.put(RESPONDENTS, respondentsValidator);
-        validators.put(HEARING_NEEDED, hearingNeededValidator);
-        validators.put(ORDERS_NEEDED, ordersNeededValidator);
+        validators.put(HEARING_URGENCY, hearingUrgencyValidator);
+        validators.put(ORDERS_SOUGHT, ordersSoughtValidator);
         validators.put(GROUNDS, groundsValidator);
-        validators.put(APPLICANT, applicantValidator);
+        validators.put(ORGANISATION_DETAILS, organisationValidator);
         validators.put(ALLOCATION_PROPOSAL, allocationProposalValidator);
         validators.put(DOCUMENTS, documentsValidator);
         validators.put(RISK_AND_HARM, riskAndHarmValidator);

@@ -20,18 +20,18 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {ApplicantValidator.class, LocalValidatorFactoryBean.class})
-class ApplicantValidatorTest {
+@ContextConfiguration(classes = {OrganisationDetailsValidator.class, LocalValidatorFactoryBean.class})
+class OrganisationDetailsValidatorTest {
 
     @Autowired
-    private ApplicantValidator applicantValidator;
+    private OrganisationDetailsValidator organisationValidator;
 
     @Test
     void shouldReturnErrorWhenNoRespondentsSpecified() {
 
         final CaseData caseData = CaseData.builder().build();
 
-        final List<String> errors = applicantValidator.validate(caseData);
+        final List<String> errors = organisationValidator.validate(caseData);
 
         assertThat(errors).containsExactlyInAnyOrder(
             "Add your organisation's details",
@@ -40,7 +40,7 @@ class ApplicantValidatorTest {
     }
 
     @Test
-    void shouldReturnErrorsWhenNoApplicantDetailsSpecified() {
+    void shouldReturnErrorsWhenNoOrganisationDetailsSpecified() {
 
         final Applicant applicant = Applicant.builder()
             .party(ApplicantParty.builder().build())
@@ -54,7 +54,7 @@ class ApplicantValidatorTest {
             .solicitor(solicitor)
             .build();
 
-        final List<String> errors = applicantValidator.validate(caseData);
+        final List<String> errors = organisationValidator.validate(caseData);
 
         assertThat(errors).containsExactlyInAnyOrder(
             "Enter the applicant's full name",
@@ -70,7 +70,7 @@ class ApplicantValidatorTest {
     }
 
     @Test
-    void shouldReturnEmptyErrorsWhenRequiredApplicantDetailsArePresentAndValid() {
+    void shouldReturnEmptyErrorsWhenRequiredOrganisationDetailsArePresentAndValid() {
 
         final Applicant applicant = Applicant.builder()
             .party(ApplicantParty.builder()
@@ -99,7 +99,7 @@ class ApplicantValidatorTest {
             .solicitor(solicitor)
             .build();
 
-        final List<String> errors = applicantValidator.validate(caseData);
+        final List<String> errors = organisationValidator.validate(caseData);
 
         assertThat(errors).isEmpty();
     }
