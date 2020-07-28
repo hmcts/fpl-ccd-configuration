@@ -3,10 +3,10 @@ package uk.gov.hmcts.reform.fpl.service;
 import feign.FeignException;
 import feign.Request;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -32,6 +32,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -46,9 +48,11 @@ class OrganisationServiceTest {
     @MockBean
     private RequestData requestData;
 
+    private LocalAuthorityUserLookupConfiguration lookupSpy;
+
     private OrganisationService organisationService;
 
-    private static final Request REQUEST = Request.create(GET, EMPTY, Map.of(), new byte[]{}, UTF_8);
+    private static final Request REQUEST = Request.create(GET, EMPTY, Map.of(), new byte[] {}, UTF_8, null);
     private static final String AUTH_TOKEN_ID = "Bearer authorisedBearer";
     private static final String SERVICE_AUTH_TOKEN_ID = "Bearer authorised service";
     private static final String USER_EMAIL = "test@test.com";
@@ -57,21 +61,20 @@ class OrganisationServiceTest {
 
     @BeforeEach
     void setup() {
-        LocalAuthorityUserLookupConfiguration laUserLookupConfig =
-            new LocalAuthorityUserLookupConfiguration("SA=>1,2,3");
-        organisationService = new OrganisationService(laUserLookupConfig, organisationApi,
-            authTokenGenerator, requestData);
+        lookupSpy = Mockito.spy(new LocalAuthorityUserLookupConfiguration("SA=>1,2,3"));
+        organisationService = new OrganisationService(lookupSpy, organisationApi, authTokenGenerator, requestData);
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTH_TOKEN_ID);
         when(requestData.authorisation()).thenReturn(AUTH_TOKEN_ID);
     }
 
     @Test
-    void shouldReturnUsersFromLocalAuthorityMappingWhenTheyExist() {
-        Set<String> usersIdsWithinSaLa = organisationService
-            .findUserIdsInSameOrganisation("SA");
+    void shouldReturnUsersFromLocalAuthorityMappingWhenTheyDoNotExistInRefData() {
+        when(organisationApi.findUsersByOrganisation(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, Status.ACTIVE, false))
+            .thenThrow(new FeignException.NotFound(EMPTY, REQUEST, new byte[] {}));
 
-        assertThat(usersIdsWithinSaLa)
-            .containsExactlyInAnyOrder("1", "2", "3");
+        Set<String> usersIdsWithinSaLa = organisationService.findUserIdsInSameOrganisation("SA");
+
+        assertThat(usersIdsWithinSaLa).containsExactlyInAnyOrder("1", "2", "3");
     }
 
     @Test
@@ -80,21 +83,28 @@ class OrganisationServiceTest {
         when(organisationApi.findUsersByOrganisation(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, Status.ACTIVE, false))
             .thenReturn(usersInAnOrganisation);
 
-        Set<String> userIds = organisationService
-            .findUserIdsInSameOrganisation("AN");
+        Set<String> userIds = organisationService.findUserIdsInSameOrganisation("AN");
 
-        assertThat(userIds)
-            .containsExactlyInAnyOrder("40", "41");
+        assertThat(userIds).containsExactlyInAnyOrder("40", "41");
+    }
+
+    @Test
+    void shouldNotCheckLocalMappingWhenOrganisationExistsInRefData() {
+        OrganisationUsers usersInAnOrganisation = prepareUsersForAnOrganisation();
+        when(organisationApi.findUsersByOrganisation(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, Status.ACTIVE, false))
+            .thenReturn(usersInAnOrganisation);
+
+        organisationService.findUserIdsInSameOrganisation("AN");
+
+        verify(lookupSpy, never()).getUserIds(any());
     }
 
     @Test
     void shouldReturnEmptyListWhenTheLAIsNotKnownAndTheApiReturnsNotFound() {
         when(organisationApi.findUsersByOrganisation(any(), any(), any(), any()))
-            .thenThrow(new FeignException.NotFound("No organisation", REQUEST, new byte[]{}));
+            .thenThrow(new FeignException.NotFound("No organisation", REQUEST, new byte[] {}));
 
-        AssertionsForClassTypes.assertThatThrownBy(() ->
-            organisationService
-                .findUserIdsInSameOrganisation("AN"))
+        assertThatThrownBy(() -> organisationService.findUserIdsInSameOrganisation("AN"))
             .isInstanceOf(UserOrganisationLookupException.class)
             .hasMessage("Can't find users for AN local authority");
     }
@@ -125,7 +135,7 @@ class OrganisationServiceTest {
 
     @Test
     void shouldNotReturnUserIdIfUserNotPresent() {
-        Exception exception = new FeignException.NotFound(EMPTY, REQUEST, new byte[]{});
+        Exception exception = new FeignException.NotFound(EMPTY, REQUEST, new byte[] {});
 
         when(organisationApi.findUserByEmail(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, USER_EMAIL)).thenThrow(exception);
 
@@ -136,7 +146,7 @@ class OrganisationServiceTest {
 
     @Test
     void shouldRethrowExceptionOtherThanNotFound() {
-        Exception exception = new FeignException.InternalServerError(EMPTY, REQUEST, new byte[]{});
+        Exception exception = new FeignException.InternalServerError(EMPTY, REQUEST, new byte[] {});
 
         when(organisationApi.findUserByEmail(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, USER_EMAIL)).thenThrow(exception);
 
@@ -158,7 +168,7 @@ class OrganisationServiceTest {
     @Test
     void shouldReturnEmptyOrganisationBuilderWhenOrganisationNotFound() {
         when(organisationApi.findOrganisationById(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID))
-            .thenThrow(new FeignException.NotFound("Organisation not found", REQUEST, new byte[]{}));
+            .thenThrow(new FeignException.NotFound("Organisation not found", REQUEST, new byte[] {}));
 
         Organisation organisation = organisationService.findOrganisation();
 
@@ -168,7 +178,7 @@ class OrganisationServiceTest {
     @Test
     void shouldThrowFeignExceptionWhenOrganisationIsNotFound() {
         when(organisationApi.findOrganisationById(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID))
-            .thenThrow(new FeignException.NotFound("Organisation not found", REQUEST, new byte[]{}));
+            .thenThrow(new FeignException.NotFound("Organisation not found", REQUEST, new byte[] {}));
 
         assertThatThrownBy(() -> organisationApi.findOrganisationById(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID))
             .isInstanceOf(FeignException.NotFound.class);

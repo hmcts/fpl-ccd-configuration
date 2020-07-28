@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import feign.FeignException;
+import feign.Request;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static feign.Request.HttpMethod.GET;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -99,20 +103,17 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
 
-        given(serviceAuthorisationApi.serviceToken(anyMap()))
-            .willReturn(SERVICE_AUTH_TOKEN);
+        given(serviceAuthorisationApi.serviceToken(anyMap())).willReturn(SERVICE_AUTH_TOKEN);
 
         given(idamApi.retrieveUserInfo(USER_AUTH_TOKEN)).willReturn(
             UserInfo.builder().sub("user@example.gov.uk").build());
 
-        given(localAuthorityUserLookupConfiguration.getUserIds(LA_1_CODE))
-            .willReturn(LA_1_USER_IDS);
+        given(localAuthorityUserLookupConfiguration.getUserIds(LA_1_CODE)).willReturn(LA_1_USER_IDS);
 
         given(localAuthorityUserLookupConfiguration.getUserIds(LA_2_CODE))
             .willThrow(new UnknownLocalAuthorityCodeException(LA_2_CODE));
 
-        given(organisationApi.findUsersByOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, Status.ACTIVE, false))
-            .willReturn(organisation(LA_2_USER_IDS));
+        givenPRDWillReturn(LA_2_USER_IDS);
     }
 
     @Test
@@ -151,7 +152,9 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void updateCaseRolesShouldBeCalledOnceForEachUser() {
+    void updateCaseRolesShouldBeCalledOnceForEachUserFetchedFromLocalMapping() {
+        givenPRDWillFail();
+
         postSubmittedEvent(getCase(LA_1_CODE));
 
         verifyCaseRoleGrantedToEachUser(LA_1_USER_IDS);
@@ -161,6 +164,8 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
     void shouldGrantCaseAccessToOtherUsersAndThrowExceptionWhenCallerAccessNotGranted() {
         doThrow(RuntimeException.class)
             .when(caseUserApi).updateCaseRolesForUser(any(), any(), any(), eq(CALLER_ID), any());
+
+        givenPRDWillReturn(LA_1_USER_IDS);
 
         final Exception exception = assertThrows(Exception.class, () -> postSubmittedEvent(getCase(LA_1_CODE)));
 
@@ -175,6 +180,8 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
         doThrow(RuntimeException.class)
             .when(caseUserApi).updateCaseRolesForUser(any(), any(), any(), eq(LA_1_USER_1_ID), any());
 
+        givenPRDWillReturn(LA_1_USER_IDS);
+
         postSubmittedEvent(getCase(LA_1_CODE));
 
         verifyCaseRoleGrantedToEachUser(LA_1_USER_IDS);
@@ -185,14 +192,12 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
             USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, CASE_ID, CALLER_ID,
             new CaseUser(CALLER_ID, CASE_ROLES));
 
-        checkUntil(() -> {
-            users.stream()
-                .filter(userId -> !CALLER_ID.equals(userId))
-                .forEach(userId ->
-                    verify(caseUserApi).updateCaseRolesForUser(
-                        USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, CASE_ID, userId,
-                        new CaseUser(userId, CASE_ROLES)));
-        });
+        checkUntil(() -> users.stream()
+            .filter(userId -> !CALLER_ID.equals(userId))
+            .forEach(userId ->
+                verify(caseUserApi).updateCaseRolesForUser(
+                    USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, CASE_ID, userId,
+                    new CaseUser(userId, CASE_ROLES))));
     }
 
     private static OrganisationUsers organisation(List<String> userIds) {
@@ -207,4 +212,14 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
         return callbackRequest(Map.of("localAuthority", localAuthority));
     }
 
+    private void givenPRDWillFail() {
+        Request request = Request.create(GET, "", Map.of(), new byte[] {}, UTF_8, null);
+        given(organisationApi.findUsersByOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, Status.ACTIVE, false))
+            .willThrow(new FeignException.NotFound("", request, new byte[] {}));
+    }
+
+    private void givenPRDWillReturn(List<String> userIds) {
+        given(organisationApi.findUsersByOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, Status.ACTIVE, false))
+            .willReturn(organisation(userIds));
+    }
 }
