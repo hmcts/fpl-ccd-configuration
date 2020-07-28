@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.exceptions.CMOCodeNotFound;
+import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -86,7 +86,7 @@ public class ReviewCMOService {
             return caseData.getDraftUploadedCMOs().stream()
                 .filter(element -> element.getId().equals(selectedCMOCode))
                 .findFirst()
-                .orElseThrow(() -> new CMOCodeNotFound("Could not find draft cmo with id " + selectedCMOCode));
+                .orElseThrow(() -> new CMONotFoundException("Could not find draft cmo with id " + selectedCMOCode));
         } else {
             return caseData.getDraftUploadedCMOs().get(caseData.getDraftUploadedCMOs().size() - 1);
         }
@@ -101,6 +101,10 @@ public class ReviewCMOService {
     }
 
     public CaseManagementOrder getLatestSealedCMO(List<Element<CaseManagementOrder>> cmos) {
-        return cmos.get(cmos.size() - 1).getValue();
+        if (!cmos.isEmpty()) {
+            return cmos.get(cmos.size() - 1).getValue();
+        } else {
+            throw new CMONotFoundException("No sealed CMOS found");
+        }
     }
 }
