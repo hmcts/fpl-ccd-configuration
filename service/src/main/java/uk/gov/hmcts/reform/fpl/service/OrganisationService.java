@@ -34,7 +34,7 @@ public class OrganisationService {
     public Set<String> findUserIdsInSameOrganisation(String localAuthorityCode) {
         try {
             return Set.copyOf(getUsersFromSameOrganisationBasedOnReferenceData(requestData.authorisation()));
-        } catch (FeignException.NotFound e) {
+        } catch (FeignException e) {
             try {
                 return Set.copyOf(getUsersFromSameOrganisationBasedOnAppConfig(localAuthorityCode));
             } catch (UnknownLocalAuthorityCodeException exception) {
