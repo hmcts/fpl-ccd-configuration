@@ -39,7 +39,7 @@ public class OrganisationService {
                 return Set.copyOf(getUsersFromSameOrganisationBasedOnAppConfig(localAuthorityCode));
             } catch (UnknownLocalAuthorityCodeException exception) {
                 throw new UserOrganisationLookupException(
-                    format("Can't find users for %s local authority", localAuthorityCode), e
+                    format("Can't find users for %s local authority", localAuthorityCode), exception
                 );
             }
         }
