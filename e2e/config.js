@@ -60,7 +60,7 @@ module.exports = {
     enterOrdersAndDirectionsNeeded: 'Orders and directions sought',
     enterHearingNeeded: 'Hearing urgency',
     enterChildren: 'Child\'s details',
-    enterRespondents: 'Respondent\'s details',
+    enterRespondents: 'Respondents\' details',
     enterApplicant: 'Your organisation\'s details',
     enterOthers: 'Other people in the case',
     enterGrounds: 'Grounds for the application',

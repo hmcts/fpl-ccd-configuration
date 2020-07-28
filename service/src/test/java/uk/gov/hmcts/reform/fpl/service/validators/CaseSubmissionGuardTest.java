@@ -81,7 +81,7 @@ class CaseSubmissionGuardTest {
             "• Applicant error 2",
             "In the child's details section:",
             "• Children error",
-            "In the respondent's details section:",
+            "In the respondents' details section:",
             "• Respondent error 1",
             "• Respondent error 2",
             "In the allocation proposal section:",

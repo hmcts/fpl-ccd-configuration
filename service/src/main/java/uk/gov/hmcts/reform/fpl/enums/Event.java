@@ -27,7 +27,7 @@ public enum Event {
         List.of(OPEN, SUBMITTED, GATEKEEPING, PREPARE_FOR_HEARING, RETURNED)),
     ORGANISATION_DETAILS("enterApplicant", "Your organisation's details", List.of(OPEN, RETURNED)),
     CHILDREN("enterChildren", "Child's details", List.of(OPEN, RETURNED)),
-    RESPONDENTS("enterRespondents", "Respondent's details", List.of(OPEN, RETURNED)),
+    RESPONDENTS("enterRespondents", "Respondents' details", List.of(OPEN, RETURNED)),
     ALLOCATION_PROPOSAL("otherProposal", "Allocation proposal", List.of(OPEN, RETURNED)),
     OTHER_PROCEEDINGS("otherProceedings", "Other proceedings", List.of(OPEN, RETURNED)),
     INTERNATIONAL_ELEMENT("enterInternationalElement", "International element", List.of(OPEN, RETURNED)),

@@ -24,7 +24,7 @@ Scenario('local authority tries to submit incomplete case', async (I, caseViewPa
   I.see('Add your organisation\'s details');
   I.see('Add the applicant\'s solicitor\'s details');
   I.see('Add the child\'s details');
-  I.see('Add the respondent\'s details');
+  I.see('Add the respondents\' details');
   I.see('Add the allocation proposal');
 });
 

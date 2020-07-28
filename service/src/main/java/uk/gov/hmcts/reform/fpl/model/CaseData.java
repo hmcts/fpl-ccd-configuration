@@ -104,8 +104,8 @@ public class CaseData {
     private final List<@NotNull(message = "Add your organisation's details") Element<Applicant>> applicants;
 
     @Valid
-    @NotNull(message = "Add the respondent's details")
-    private final List<@NotNull(message = "Add the respondent's details") Element<Respondent>> respondents1;
+    @NotNull(message = "Add the respondents' details")
+    private final List<@NotNull(message = "Add the respondents' details") Element<Respondent>> respondents1;
 
     private final Proceeding proceeding;
 
