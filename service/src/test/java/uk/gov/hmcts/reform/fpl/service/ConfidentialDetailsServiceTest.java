@@ -463,14 +463,18 @@ class ConfidentialDetailsServiceTest {
         @Test
         void shouldPrepareOtherWithConfidentialValuesRemoved() {
             CaseData caseData = CaseData.builder()
-                .others(Others.builder().firstOther(otherWithRemovedConfidentialFields(ID).getValue()).build())
+                .others(Others.builder()
+                    .firstOther(otherWithConfidentialFields(ID, NOT_CONFIDENTIAL).getValue())
+                    .additionalOthers(List.of(otherWithConfidentialFields(ID, CONFIDENTIAL)))
+                    .build())
                 .confidentialOthers(List.of(otherWithConfidentialFields(ID, CONFIDENTIAL)))
                 .build();
 
             List<Element<Other>> others = service.combineOtherDetails(caseData.getAllOthers(),
                 caseData.getConfidentialOthers());
 
-            assertThat(others.get(0).getValue()).isEqualTo(otherWithRemovedConfidentialFields(ID).getValue());
+            assertThat(others.get(0).getValue()).isEqualTo(otherWithConfidentialFields(ID, NOT_CONFIDENTIAL).getValue());
+            assertThat(others.get(1).getValue()).isEqualTo(otherWithConfidentialFields(ID, CONFIDENTIAL).getValue());
         }
 
         @Test
