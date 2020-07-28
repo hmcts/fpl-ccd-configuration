@@ -32,14 +32,12 @@ public class OrganisationService {
     private final RequestData requestData;
 
     public Set<String> findUserIdsInSameOrganisation(String localAuthorityCode) {
-
         try {
-            return Set.copyOf(getUsersFromSameOrganisationBasedOnAppConfig(localAuthorityCode));
-        } catch (UnknownLocalAuthorityCodeException ex) {
+            return Set.copyOf(getUsersFromSameOrganisationBasedOnReferenceData(requestData.authorisation()));
+        } catch (FeignException.NotFound e) {
             try {
-                return
-                    Set.copyOf(getUsersFromSameOrganisationBasedOnReferenceData(requestData.authorisation()));
-            } catch (Exception e) {
+                return Set.copyOf(getUsersFromSameOrganisationBasedOnAppConfig(localAuthorityCode));
+            } catch (UnknownLocalAuthorityCodeException exception) {
                 throw new UserOrganisationLookupException(
                     format("Can't find users for %s local authority", localAuthorityCode), e
                 );
