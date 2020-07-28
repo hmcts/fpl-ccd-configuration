@@ -37,16 +37,16 @@ class OthersControllerAboutToStartTest extends AbstractControllerTest {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of(
                 "others", Others.builder()
-                    .firstOther(otherWithDetailsRemoved())
+                    .firstOther(other())
                     .additionalOthers(additionalOthers())
                     .build(),
-                "confidentialOthers", List.of(element(other()))))
+                "confidentialOthers", List.of(element(otherWithDetailsRemoved()))))
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
-        assertThat(caseData.getOthers().getFirstOther()).isEqualTo(otherWithDetailsRemoved());
+        assertThat(caseData.getOthers().getFirstOther()).isEqualTo(other());
         assertThat(caseData.getOthers().getAdditionalOthers()).isEqualTo(additionalOthers());
     }
 
