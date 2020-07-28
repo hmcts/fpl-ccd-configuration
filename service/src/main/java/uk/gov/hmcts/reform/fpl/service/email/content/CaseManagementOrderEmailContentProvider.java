@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.Map;
 
+import static org.apache.commons.lang3.StringUtils.uncapitalize;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
@@ -38,7 +39,6 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
     private static final String RESPONDENT_LAST_NAME = "respondentLastName";
     private static final String DIGITAL_PREFERENCE = "digitalPreference";
 
-
     public Map<String, Object> buildCMOIssuedCaseLinkNotificationParameters(final CaseDetails caseDetails,
                                                                             final String recipientName) {
         return ImmutableMap.<String, Object>builder()
@@ -57,7 +57,7 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
 
         template.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
         template.setFamilyManCaseNumber(caseData.getFamilyManCaseNumber());
-        template.setHearing(cmo.getHearing());
+        template.setHearing(uncapitalize(cmo.getHearing()));
         template.setDigitalPreference(hasDigitalServingPreference(servingPreference) ? "Yes" : "No");
         template.setDocumentLink(linkToAttachedDocument(cmo.getOrder()));
         template.setCaseUrl((hasDigitalServingPreference(servingPreference) ? getCaseUrl(caseDetails.getId()) : ""));
@@ -72,7 +72,7 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
 
         template.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
         template.setFamilyManCaseNumber(caseData.getFamilyManCaseNumber());
-        template.setHearing(cmo.getHearing());
+        template.setHearing(uncapitalize(cmo.getHearing()));
         template.setCaseUrl(getCaseUrl(caseDetails.getId()));
         template.setRequestedChanges(cmo.getRequestedChanges());
 
