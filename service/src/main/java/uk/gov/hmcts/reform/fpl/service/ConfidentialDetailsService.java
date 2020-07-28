@@ -98,7 +98,7 @@ public class ConfidentialDetailsService {
         List<UUID> ids = all.stream().map(Element::getId).collect(toList());
 
         confidentialParty = confidential.stream()
-            .filter(other -> !ids.contains(other.getId()))
+            .filter(other -> ids.contains(other.getId()))
             .map(other -> party.addConfidentialDetails(other.getValue().toParty()))
             .findFirst()
             .orElse(party);
