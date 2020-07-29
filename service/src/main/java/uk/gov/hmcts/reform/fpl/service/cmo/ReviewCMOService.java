@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
@@ -20,6 +21,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.sealFrom;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
@@ -63,7 +65,14 @@ public class ReviewCMOService {
 
     public Element<CaseManagementOrder> getCMOToSeal(CaseData caseData, Element<CaseManagementOrder> cmo) {
         Element<HearingBooking> cmoHearing = getCmoHearingFromId(caseData.getHearingDetails(), cmo.getId());
-        return element(sealFrom(cmo.getValue().getOrder(), cmoHearing.getValue(), time.now().toLocalDate()));
+        DocumentReference order;
+
+        if (JUDGE_AMENDS_DRAFT.equals(caseData.getReviewCMODecision().getDecision())) {
+            order = caseData.getReviewCMODecision().getJudgeAmendedDocument();
+        } else {
+            order = cmo.getValue().getOrder();
+        }
+        return element(sealFrom(order, cmoHearing.getValue(), time.now().toLocalDate()));
     }
 
     private Element<HearingBooking> getCmoHearingFromId(List<Element<HearingBooking>> hearings, UUID cmoId) {

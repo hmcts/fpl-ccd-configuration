@@ -22,10 +22,12 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ReviewCMOService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 
@@ -37,6 +39,7 @@ public class ReviewCMOController {
 
     private final ObjectMapper mapper;
     private final ReviewCMOService reviewCMOService;
+    private final DocumentConversionService documentConversionService;
     private final DocumentSealingService documentSealingService;
     private final ApplicationEventPublisher eventPublisher;
 
@@ -97,12 +100,14 @@ public class ReviewCMOController {
         if (!cmosReadyForApproval.isEmpty()) {
             Element<CaseManagementOrder> cmo = reviewCMOService.getSelectedCMO(caseData);
 
-            if (SEND_TO_ALL_PARTIES.equals(caseData.getReviewCMODecision().getDecision())) {
+            if (!JUDGE_REQUESTED_CHANGES.equals(caseData.getReviewCMODecision().getDecision())) {
                 caseData.getDraftUploadedCMOs().remove(cmo);
 
                 Element<CaseManagementOrder> cmoToSeal = reviewCMOService.getCMOToSeal(caseData, cmo);
 
-                DocumentReference sealedDocument = documentSealingService.sealDocument(cmoToSeal.getValue().getOrder());
+                DocumentReference convertedDocument = documentConversionService.convertDocument(
+                    cmoToSeal.getValue().getOrder());
+                DocumentReference sealedDocument = documentSealingService.sealDocument(convertedDocument);
                 cmoToSeal.getValue().setOrder(sealedDocument);
 
                 List<Element<CaseManagementOrder>> sealedCMOs = caseData.getSealedCMOs();
