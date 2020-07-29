@@ -5,7 +5,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "applicationDetailsHeadingLabel",
     "FieldShowCondition": "orders!=\"\" OR hearing!=\"\"",
     "TabShowCondition": "[STATE]=\"Open\" OR [STATE]=\"RETURNED\"",
@@ -17,7 +17,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "ordersAndDirectionsSubHeadingLabel",
     "FieldShowCondition": "orders!=\"\"",
     "TabFieldDisplayOrder": 2
@@ -28,7 +28,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "orders",
     "TabFieldDisplayOrder": 3
   },
@@ -38,7 +38,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "ordersAndDirectionsLink",
     "FieldShowCondition": "orders!=\"\"",
     "TabFieldDisplayOrder": 4
@@ -49,7 +49,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "hearingUrgencySubHeadingLabel",
     "FieldShowCondition": "hearing!=\"\"",
     "TabFieldDisplayOrder": 5
@@ -60,7 +60,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "hearing",
     "TabFieldDisplayOrder": 6
   },
@@ -70,7 +70,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "hearingUrgencyLink",
     "FieldShowCondition": "hearing!=\"\"",
     "TabFieldDisplayOrder": 7
@@ -81,7 +81,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "groundsForTheApplicationHeadingLabel",
     "FieldShowCondition": "grounds!=\"\" OR groundsForEPO!=\"\" OR risks!=\"\" OR factorsParenting!=\"\" OR proceeding!=\"\" OR internationalElement!=\"\"",
     "TabFieldDisplayOrder": 8
@@ -92,7 +92,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "thresholdCriteriaSubHeadingLabel",
     "FieldShowCondition": "grounds!=\"\" OR groundsForEPO!=\"\"",
     "TabFieldDisplayOrder": 9
@@ -103,7 +103,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "grounds",
     "TabFieldDisplayOrder": 10
   },
@@ -113,7 +113,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "groundsForEPO",
     "TabFieldDisplayOrder": 11
   },
@@ -123,7 +123,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "thresholdCriteriaLink",
     "FieldShowCondition": "grounds!=\"\"",
     "TabFieldDisplayOrder": 12
@@ -134,7 +134,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "riskAndHarmToTheChildrenSubHeadingLabel",
     "FieldShowCondition": "risks!=\"\"",
     "TabFieldDisplayOrder": 13
@@ -145,7 +145,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "risks",
     "TabFieldDisplayOrder": 14
   },
@@ -155,7 +155,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "riskAndHarmToChildrenLink",
     "FieldShowCondition": "risks!=\"\"",
     "TabFieldDisplayOrder": 15
@@ -166,7 +166,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "factorsAffectingParentingSubHeadingLabel",
     "FieldShowCondition": "factorsParenting!=\"\"",
     "TabFieldDisplayOrder": 16
@@ -177,7 +177,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "factorsParenting",
     "TabFieldDisplayOrder": 17
   },
@@ -187,7 +187,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "factorsAffectingParentingLink",
     "FieldShowCondition": "factorsParenting!=\"\"",
     "TabFieldDisplayOrder": 18
@@ -198,7 +198,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "additionalInformationGroundsSubHeadingLabel",
     "FieldShowCondition": "proceeding!=\"\" OR internationalElement!=\"\"",
     "TabFieldDisplayOrder": 19
@@ -209,7 +209,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "otherProceedingsSubHeadingLabel",
     "FieldShowCondition": "proceeding!=\"\"",
     "TabFieldDisplayOrder": 20
@@ -220,7 +220,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "proceeding",
     "TabFieldDisplayOrder": 21
   },
@@ -230,7 +230,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "otherProceedingsLink",
     "FieldShowCondition": "proceeding!=\"\"",
     "TabFieldDisplayOrder": 22
@@ -241,7 +241,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "internationalElementSubHeadingLabel",
     "FieldShowCondition": "internationalElement!=\"\"",
     "TabFieldDisplayOrder": 23
@@ -252,7 +252,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "internationalElement",
     "TabFieldDisplayOrder": 24
   },
@@ -262,7 +262,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "internationalElementLink",
     "FieldShowCondition": "internationalElement!=\"\"",
     "TabFieldDisplayOrder": 25
@@ -273,7 +273,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "supportingDocumentsHeadingLabel",
     "FieldShowCondition": "documents_socialWorkChronology_document!=\"\" OR documents_socialWorkStatement_document!=\"\" OR documents_socialWorkAssessment_document!=\"\" OR documents_socialWorkCarePlan_document!=\"\" OR documents_socialWorkEvidenceTemplate_document!=\"\" OR documents_threshold_document!=\"\" OR documents_checklist_document!=\"\" OR documents_socialWorkOther!=\"\"",
     "TabFieldDisplayOrder": 26
@@ -284,7 +284,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "documentsSubHeadingLabel",
     "FieldShowCondition": "documents_socialWorkChronology_document!=\"\" OR documents_socialWorkStatement_document!=\"\" OR documents_socialWorkAssessment_document!=\"\" OR documents_socialWorkCarePlan_document!=\"\" OR documents_socialWorkEvidenceTemplate_document!=\"\" OR documents_threshold_document!=\"\" OR documents_checklist_document!=\"\" OR documents_socialWorkOther!=\"\"",
     "TabFieldDisplayOrder": 27
@@ -295,7 +295,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "documents_socialWorkChronology_document",
     "TabFieldDisplayOrder": 28
   },
@@ -305,7 +305,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "documents_socialWorkStatement_document",
     "TabFieldDisplayOrder": 29
   },
@@ -315,7 +315,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "documents_socialWorkAssessment_document",
     "TabFieldDisplayOrder": 30
   },
@@ -325,7 +325,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "documents_socialWorkCarePlan_document",
     "TabFieldDisplayOrder": 31
   },
@@ -335,7 +335,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "documents_socialWorkEvidenceTemplate_document",
     "TabFieldDisplayOrder": 32
   },
@@ -345,7 +345,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "documents_threshold_document",
     "TabFieldDisplayOrder": 33
   },
@@ -355,7 +355,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "documents_checklist_document",
     "TabFieldDisplayOrder": 34
   },
@@ -365,7 +365,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "documents_socialWorkOther",
     "TabFieldDisplayOrder": 35
   },
@@ -375,7 +375,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "documentsLink",
     "FieldShowCondition": "documents_socialWorkChronology_document!=\"\" OR documents_socialWorkStatement_document!=\"\" OR documents_socialWorkAssessment_document!=\"\" OR documents_socialWorkCarePlan_document!=\"\" OR documents_socialWorkEvidenceTemplate_document!=\"\" OR documents_threshold_document!=\"\" OR documents_checklist_document!=\"\" OR documents_socialWorkOther!=\"\"",
     "TabFieldDisplayOrder": 36
@@ -386,7 +386,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "informationAboutThePartiesHeadingLabel",
     "FieldShowCondition": "children1!=\"\" OR respondents1!=\"\" OR others!=\"\" OR applicants!=\"\" OR solicitor!=\"\"",
     "TabFieldDisplayOrder": 37
@@ -397,7 +397,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "organisationDetailsSubHeadingLabel",
     "FieldShowCondition": "applicants!=\"\" OR solicitor!=\"\"",
     "TabFieldDisplayOrder": 38
@@ -408,7 +408,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "applicants",
     "TabFieldDisplayOrder": 39
   },
@@ -418,7 +418,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "solicitor",
     "TabFieldDisplayOrder": 40
   },
@@ -428,7 +428,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "organisationDetailsLink",
     "FieldShowCondition": "applicants!=\"\" OR solicitor!=\"\"",
     "TabFieldDisplayOrder": 41
@@ -439,7 +439,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "childDetailsSubHeadingLabel",
     "FieldShowCondition": "children1!=\"\"",
     "TabFieldDisplayOrder": 42
@@ -450,7 +450,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "children1",
     "TabFieldDisplayOrder": 43
   },
@@ -460,7 +460,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "childrenLink",
     "FieldShowCondition": "children1!=\"\"",
     "TabFieldDisplayOrder": 44
@@ -471,7 +471,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "respondentsSubHeadingLabel",
     "FieldShowCondition": "respondents1!=\"\"",
     "TabFieldDisplayOrder": 45
@@ -482,7 +482,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "respondents1",
     "TabFieldDisplayOrder": 46
   },
@@ -492,7 +492,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "respondentsLink",
     "FieldShowCondition": "respondents1!=\"\"",
     "TabFieldDisplayOrder": 47
@@ -503,7 +503,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "additionalInformationPartiesSubHeadingLabel",
     "FieldShowCondition": "others!=\"\"",
     "TabFieldDisplayOrder": 48
@@ -514,7 +514,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "othersSubHeadingLabel",
     "FieldShowCondition": "others!=\"\"",
     "TabFieldDisplayOrder": 49
@@ -525,7 +525,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "others",
     "TabFieldDisplayOrder": 50
   },
@@ -535,7 +535,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "othersLink",
     "FieldShowCondition": "others!=\"\"",
     "TabFieldDisplayOrder": 51
@@ -546,7 +546,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "courtRequirementsHeadingLabel",
     "FieldShowCondition": "allocationProposal!=\"\"",
     "TabFieldDisplayOrder": 52
@@ -557,7 +557,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "allocationProposalSubHeadingLabel",
     "FieldShowCondition": "allocationProposal!=\"\" OR hearingPreferences!=\"\"",
     "TabFieldDisplayOrder": 53
@@ -568,7 +568,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "allocationProposal",
     "TabFieldDisplayOrder": 54
   },
@@ -578,7 +578,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "allocationProposalLink",
     "FieldShowCondition": "allocationProposal!=\"\"",
     "TabFieldDisplayOrder": 55
@@ -589,7 +589,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "additionalInformationCourtRequirementsSubHeadingLabel",
     "FieldShowCondition": "hearingPreferences!=\"\"",
     "TabFieldDisplayOrder": 56
@@ -600,7 +600,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "facilitiesOrServiceNeededSubHeadingLabel",
     "FieldShowCondition": "hearingPreferences!=\"\"",
     "TabFieldDisplayOrder": 57
@@ -611,7 +611,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "hearingPreferences",
     "TabFieldDisplayOrder": 58
   },
@@ -621,7 +621,7 @@
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 1,
     "CaseFieldID": "facilitiesOrServicesNeededLink",
     "FieldShowCondition": "hearingPreferences!=\"\"",
     "TabFieldDisplayOrder": 59
