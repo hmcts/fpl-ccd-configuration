@@ -105,6 +105,15 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
             .containsExactly(expectedSealedCmo);
     }
 
+    @Test
+    void shouldNotModifyDataIfNoDraftCMOsReadyForApproval() {
+        CaseData caseData = CaseData.builder().draftUploadedCMOs(List.of()).build();
+
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
+
+        assertThat(responseData).isEqualTo(caseData);
+    }
+
     private CaseManagementOrder buildCMO() {
         return CaseManagementOrder.builder()
             .hearing("Test hearing 25th December 2020")

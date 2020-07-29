@@ -44,19 +44,20 @@ public class ReviewCMOService {
         List<Element<CaseManagementOrder>> cmosReadyForApproval = getCMOsReadyForApproval(
             caseData.getDraftUploadedCMOs());
         Map<String, Object> data = new HashMap<>();
-
+        String numDraftCMOs = "numDraftCMOs";
+        
         switch (cmosReadyForApproval.size()) {
             case 0:
-                data.put("numDraftCMOs", "NONE");
+                data.put(numDraftCMOs, "NONE");
                 break;
             case 1:
                 CaseManagementOrder cmo = cmosReadyForApproval.get(0).getValue();
-                data.put("numDraftCMOs", "SINGLE");
+                data.put(numDraftCMOs, "SINGLE");
                 data.put("reviewCMODecision",
                     ReviewDecision.builder().hearing(cmo.getHearing()).document(cmo.getOrder()).build());
                 break;
             default:
-                data.put("numDraftCMOs", "MULTI");
+                data.put(numDraftCMOs, "MULTI");
                 data.put("cmoToReviewList", buildDynamicList(cmosReadyForApproval));
                 break;
         }
