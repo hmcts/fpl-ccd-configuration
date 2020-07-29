@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityUserService;
 
@@ -22,6 +24,7 @@ import java.util.Map;
 public class CaseInitiationController {
     private final LocalAuthorityService localAuthorityNameService;
     private final LocalAuthorityUserService localAuthorityUserService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(
@@ -45,5 +48,6 @@ public class CaseInitiationController {
             .get("caseLocalAuthority");
 
         localAuthorityUserService.grantUserAccessWithCaseRole(caseId, caseLocalAuthority);
+        applicationEventPublisher.publishEvent(new CaseDataChanged(callbackRequest));
     }
 }
