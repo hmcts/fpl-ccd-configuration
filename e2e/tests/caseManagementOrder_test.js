@@ -15,11 +15,11 @@ Scenario('local authority sends agreed CMO to judge', async (I, caseViewPage, up
   await caseViewPage.goToNewActions(config.applicationActions.uploadCMO);
   await uploadCaseManagementOrderEventPage.associateHearing('1 January 2020');
   await I.retryUntilExists(() => I.click('Continue'), '#uploadedCaseManagementOrder');
-  await uploadCaseManagementOrderEventPage.uploadCaseManagementOrder(config.testNonEmptyPdfFile);
+  await uploadCaseManagementOrderEventPage.uploadCaseManagementOrder(config.testNonEmptyWordFile);
   await I.completeEvent('Submit');
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadCMO);
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
-  I.seeInTab(['Draft Case Management Order 1', 'Order'], 'mockFile.pdf');
+  I.seeInTab(['Draft Case Management Order 1', 'Order'], 'mockFile.docx');
   I.seeInTab(['Draft Case Management Order 1', 'Hearing'], 'Case management hearing, 1 January 2020');
   I.seeInTab(['Draft Case Management Order 1', 'Date sent'], dateFormat(new Date(), 'dd mmm yyyy'));
   I.seeInTab(['Draft Case Management Order 1', 'Status'], 'With judge for approval');
