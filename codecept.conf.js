@@ -69,7 +69,6 @@ exports.config = {
     uploadC2DocumentsEventPage: './e2e/pages/events/uploadC2DocumentsEvent.page.js',
     draftStandardDirectionsEventPage: './e2e/pages/events/draftStandardDirectionsEvent.page.js',
     createOrderEventPage: './e2e/pages/events/createOrderEvent.page.js',
-    draftCaseManagementOrderEventPage: './e2e/pages/events/draftCaseManagementOrderEvent.page.js',
     complyWithDirectionsEventPage: './e2e/pages/events/complyWithDirectionsEvent.page.js',
     complyOnBehalfOfOthersEventPage: './e2e/pages/events/complyOnBehalfOfOthersEvent.page.js',
     actionCaseManagementOrderEventPage: './e2e/pages/events/actionCaseManagementOrderEvent.page.js',
@@ -81,7 +80,8 @@ exports.config = {
     addExpertReportEventPage: './e2e/pages/events/addExpertReportEvent.page.js',
     addExtend26WeekTimelineEventPage: './e2e/pages/events/addExtend26WeekTimelineEvent.page.js',
     closeTheCaseEventPage: './e2e/pages/events/closeTheCase.page.js',
-    returnApplicationEventPage: './e2e/pages/events/returnApplicationEvent.page.js'
+    returnApplicationEventPage: './e2e/pages/events/returnApplicationEvent.page.js',
+    uploadCaseManagementOrderEventPage: './e2e/pages/events/uploadCaseManagementOrderEvent.page.js'
   },
   plugins: {
     autoDelay: {

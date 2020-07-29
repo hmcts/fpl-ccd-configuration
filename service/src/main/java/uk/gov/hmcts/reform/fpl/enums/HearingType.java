@@ -1,5 +1,10 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
 public enum HearingType {
     CASE_MANAGEMENT("Case management"),
     FURTHER_CASE_MANAGEMENT("Further case management"),
@@ -8,12 +13,4 @@ public enum HearingType {
     OTHER("Other");
 
     final String label;
-
-    HearingType(String label) {
-        this.label = label;
-    }
-
-    public String getLabel() {
-        return label;
-    }
 }
