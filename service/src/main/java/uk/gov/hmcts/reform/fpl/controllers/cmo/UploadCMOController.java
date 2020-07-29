@@ -57,6 +57,12 @@ public class UploadCMOController {
         Map<String, Object> data = request.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
+        // handle document fields being set to null when clicking previous button
+        DocumentReference uploadedCMO = caseData.getUploadedCaseManagementOrder();
+        if (uploadedCMO != null && uploadedCMO.isEmpty()) {
+            data.remove("uploadedCaseManagementOrder");
+        }
+
         // update judge and hearing labels
         data.putAll(cmoService.prepareJudgeAndHearingDetails(
             caseData.getHearingsWithoutApprovedCMO(),
