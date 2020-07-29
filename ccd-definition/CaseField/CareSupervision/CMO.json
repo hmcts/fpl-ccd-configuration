@@ -38,10 +38,9 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "uploadedCaseManagementOrder",
     "Label": "Attach agreed draft CMO",
-    "HintText": "Files must be converted to PDF",
     "FieldType": "Document",
     "SecurityClassification": "Public",
-    "RegularExpression": ".pdf"
+    "RegularExpression": ".doc,.docx"
   },
   {
     "LiveFrom": "01/01/2017",

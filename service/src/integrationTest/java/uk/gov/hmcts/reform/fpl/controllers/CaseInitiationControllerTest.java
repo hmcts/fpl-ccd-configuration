@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.GrantCaseAccessException;
 import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityCodeException;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
@@ -39,6 +40,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.CREATOR;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
@@ -85,6 +88,9 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
     @MockBean
     private AuthTokenGenerator authTokenGenerator;
+
+    @MockBean
+    private CoreCaseDataService coreCaseDataService;
 
     @Autowired
     private SystemUpdateUserConfiguration userConfig;
@@ -145,16 +151,22 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
     @Test
     void updateCaseRolesShouldBeCalledOnceForEachUserFetchedFromPRD() {
-        postSubmittedEvent(getCase(LA_2_CODE));
+        final CallbackRequest request = getCase(LA_2_CODE);
+
+        postSubmittedEvent(request);
 
         verifyCaseRoleGrantedToEachUser(LA_2_USER_IDS);
+        verifyTaskListUpdated(request.getCaseDetails());
     }
 
     @Test
     void updateCaseRolesShouldBeCalledOnceForEachUser() {
-        postSubmittedEvent(getCase(LA_1_CODE));
+        final CallbackRequest request = getCase(LA_1_CODE);
+
+        postSubmittedEvent(request);
 
         verifyCaseRoleGrantedToEachUser(LA_1_USER_IDS);
+        verifyTaskListUpdated(request.getCaseDetails());
     }
 
     @Test
@@ -207,4 +219,12 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
         return callbackRequest(Map.of("localAuthority", localAuthority));
     }
 
+    private void verifyTaskListUpdated(CaseDetails caseDetails) {
+        verify(coreCaseDataService).triggerEvent(
+            eq(JURISDICTION),
+            eq(CASE_TYPE),
+            eq(caseDetails.getId()),
+            eq("internal-update-task-list"),
+            anyMap());
+    }
 }

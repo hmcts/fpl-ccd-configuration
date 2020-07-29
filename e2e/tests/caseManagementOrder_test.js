@@ -54,7 +54,7 @@ const localAuthoritySendsAgreedCmo = async function (I, caseViewPage, uploadCase
   await caseViewPage.goToNewActions(config.applicationActions.uploadCMO);
   await uploadCaseManagementOrderEventPage.associateHearing('1 January 2020');
   await I.retryUntilExists(() => I.click('Continue'), '#uploadedCaseManagementOrder');
-  await uploadCaseManagementOrderEventPage.uploadCaseManagementOrder(config.testNonEmptyPdfFile);
+  await uploadCaseManagementOrderEventPage.uploadCaseManagementOrder(config.testNonEmptyWordFile);
   await I.completeEvent('Submit');
 };
 
