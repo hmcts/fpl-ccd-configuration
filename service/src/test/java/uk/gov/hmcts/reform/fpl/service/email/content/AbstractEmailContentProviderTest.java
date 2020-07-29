@@ -24,7 +24,7 @@ public abstract class AbstractEmailContentProviderTest {
     static final String UI_URL = "http://fake-url";
     static final String COURT_NAME = "Family Court";
 
-    String caseUrl(String caseId) {
+    protected String caseUrl(String caseId) {
         return formatCaseUrl(UI_URL, Long.valueOf(caseId));
     }
 

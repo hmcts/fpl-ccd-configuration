@@ -85,5 +85,14 @@
     "FieldType": "Document",
     "ElementLabel": "Notice of hearing",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "caseManagementOrderId",
+    "FieldType": "Text",
+    "ElementLabel": "Id of the Case Management Order for this hearing",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "judgeAndLegalAdvisor=\"DO NOT SHOW\""
   }
 ]

@@ -5,9 +5,8 @@
     "Channel": "CaseWorker",
     "TabID": "HearingTab",
     "TabLabel": "Hearings",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 3,
     "CaseFieldID": "hearing",
-    "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\"",
     "TabFieldDisplayOrder": 2
   }
 ]

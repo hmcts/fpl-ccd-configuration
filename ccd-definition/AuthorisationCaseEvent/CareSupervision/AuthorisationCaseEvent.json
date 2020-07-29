@@ -2,6 +2,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "internal-update-task-list",
+    "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "openCase",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "CRU"
@@ -571,20 +578,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "COMPLY_ON_BEHALF_COURT",
     "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "draftCMO",
-    "UserRole": "caseworker-publiclaw-solicitor",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "draftCMO",
-    "UserRole": "[LASOLICITOR]",
     "CRUD": "CRU"
   },
   {
