@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model.common;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
@@ -23,6 +24,7 @@ public class DocumentReference {
             .build();
     }
 
+    @JsonIgnore
     public boolean isEmpty() {
         return url == null && filename == null && binaryUrl == null;
     }
