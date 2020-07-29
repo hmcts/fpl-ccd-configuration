@@ -32,5 +32,14 @@
     "ElementLabel": "What do they need to change?",
     "FieldShowCondition": "decision=\"JUDGE_REQUESTED_CHANGES\"",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReviewDecision",
+    "ListElementCode": "judgeAmendedDocument",
+    "FieldType": "Document",
+    "ElementLabel": "Download the draft by using the link above and make any amendments. When you’re finished, upload it here to seal and send",
+    "FieldShowCondition": "decision=\"JUDGE_AMENDS_DRAFT\"",
+    "SecurityClassification": "Public"
   }
 ]

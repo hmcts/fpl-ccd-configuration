@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 @Builder(toBuilder = true)
 public class ReviewDecision {
     private final DocumentReference document;
+    private final DocumentReference judgeAmendedDocument;
     private final String hearing;
     private final CMOReviewOutcome decision;
     private final String changesRequestedByJudge;

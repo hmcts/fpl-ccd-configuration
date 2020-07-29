@@ -34,5 +34,14 @@
     "ListElementCode": "changesRequestedByJudge",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReviewCaseManagementOrder",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "reviewCMODecision",
+    "ListElementCode": "judgeAmendedDocument",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY"
   }
 ]
