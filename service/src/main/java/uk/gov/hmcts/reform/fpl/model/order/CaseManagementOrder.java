@@ -29,6 +29,7 @@ public class CaseManagementOrder {
             .hearing(hearing.toLabel(DATE))
             .dateSent(date)
             .status(SEND_TO_JUDGE)
+            .judgeTitleAndName(formatJudgeTitleAndName(hearing.getJudgeAndLegalAdvisor()))
             .build();
     }
 

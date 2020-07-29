@@ -63,6 +63,7 @@ const assertDraftCaseManagementOrder = function (I, status = 'With judge for app
   I.seeInTab(['Draft Case Management Order 1', 'Hearing'], 'Case management hearing, 1 January 2020');
   I.seeInTab(['Draft Case Management Order 1', 'Date sent'], dateFormat(today, 'dd mmm yyyy'));
   I.seeInTab(['Draft Case Management Order 1', 'Status'], status);
+  I.seeInTab(['Draft Case Management Order 1', 'Judge'], 'Her Honour Judge Reed');
 
   if (changesRequested) {
     I.seeInTab(['Draft Case Management Order 1', 'Changes requested by judge'], changesRequested);
