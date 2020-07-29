@@ -44,7 +44,7 @@ Scenario('Judge seals and sends the agreed CMO to parties', async (I, caseViewPa
   await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
   I.seeEventSubmissionConfirmation(config.applicationActions.reviewAgreedCmo);
   caseViewPage.selectTab(caseViewPage.tabs.orders);
-  I.seeInTab(['Sealed Case Management Orders 1', 'Order'], 'mockFile.pdf');
+  I.seeInTab(['Sealed Case Management Orders 1', 'Order'], 'mockFile.docx');
   I.seeInTab(['Sealed Case Management Orders 1', 'Hearing'], 'Case management hearing, 1 January 2020');
   I.seeInTab(['Sealed Case Management Orders 1', 'Date issued'], dateFormat(today, 'dd mmm yyyy'));
   I.seeInTab(['Sealed Case Management Orders 1', 'Judge'], 'Her Honour Judge Reed');

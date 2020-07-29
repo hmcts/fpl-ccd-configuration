@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -41,6 +42,9 @@ public class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest
 
     @MockBean
     private DocumentSealingService documentSealingService;
+
+    @MockBean
+    private DocumentConversionService documentConversionService;
 
     protected ReviewCMOControllerAboutToSubmitTest() {
         super("review-cmo");
@@ -73,6 +77,7 @@ public class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest
     void shouldSealPDFAndAddToSealedCMOsListWhenJudgeApprovesOrder() throws Exception {
         DocumentReference sealedCMODocument = testDocumentReference();
         given(documentSealingService.sealDocument(any(DocumentReference.class))).willReturn(sealedCMODocument);
+        given(documentConversionService.convertDocument(any(DocumentReference.class))).willReturn(sealedCMODocument);
 
         UUID cmoId = UUID.fromString("51d02c7f-2a51-424b-b299-a90b98bb1774");
         CaseManagementOrder cmo = buildCMO();

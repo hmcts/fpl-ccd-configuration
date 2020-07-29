@@ -29,6 +29,8 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
@@ -104,14 +106,37 @@ class ReviewCMOServiceTest {
     }
 
     @Test
-    void shouldReturnCMOToAddToSealedCMOsList() {
+    void shouldReturnCMOToSealWithOriginalDocumentWhenJudgeSelectsSealAndSend() {
         Element<CaseManagementOrder> draftCMO = draftCMO(hearing1);
 
         CaseData caseData = CaseData.builder()
+            .reviewCMODecision(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build())
             .hearingDetails(List.of(element(hearing(draftCMO.getId())))).build();
 
         CaseManagementOrder expectedCmo = CaseManagementOrder.builder()
             .order(order)
+            .hearing(hearing1)
+            .dateIssued(time.now().toLocalDate())
+            .judgeTitleAndName("Her Honour Judge Judy")
+            .build();
+
+        assertThat(service.getCMOToSeal(caseData, draftCMO).getValue()).isEqualTo(expectedCmo);
+    }
+
+    @Test
+    void shouldReturnCMOToSealWithJudgeAmendedDocumentWhenJudgeSelectsMakeChanges() {
+        Element<CaseManagementOrder> draftCMO = draftCMO(hearing1);
+        DocumentReference judgeAmendedOrder = testDocumentReference();
+
+        CaseData caseData = CaseData.builder()
+            .reviewCMODecision(ReviewDecision.builder()
+                .decision(JUDGE_AMENDS_DRAFT)
+                .judgeAmendedDocument(judgeAmendedOrder)
+                .build())
+            .hearingDetails(List.of(element(hearing(draftCMO.getId())))).build();
+
+        CaseManagementOrder expectedCmo = CaseManagementOrder.builder()
+            .order(judgeAmendedOrder)
             .hearing(hearing1)
             .dateIssued(time.now().toLocalDate())
             .judgeTitleAndName("Her Honour Judge Judy")

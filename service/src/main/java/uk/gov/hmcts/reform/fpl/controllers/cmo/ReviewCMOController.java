@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
-import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 
 @Api
@@ -138,7 +137,7 @@ public class ReviewCMOController {
             caseDataBefore.getDraftUploadedCMOs());
 
         if (!cmosReadyForApproval.isEmpty()) {
-            if (SEND_TO_ALL_PARTIES.equals(caseData.getReviewCMODecision().getDecision())) {
+            if (!JUDGE_REQUESTED_CHANGES.equals(caseData.getReviewCMODecision().getDecision())) {
                 CaseManagementOrder sealed = reviewCMOService.getLatestSealedCMO(caseData.getSealedCMOs());
 
                 eventPublisher.publishEvent(new CaseManagementOrderIssuedEvent(callbackRequest, sealed));
