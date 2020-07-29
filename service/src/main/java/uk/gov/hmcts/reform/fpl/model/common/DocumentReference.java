@@ -22,4 +22,8 @@ public class DocumentReference {
             .filename(document.originalDocumentName)
             .build();
     }
+
+    public boolean isEmpty() {
+        return url == null && filename == null && binaryUrl == null;
+    }
 }
