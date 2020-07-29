@@ -5,7 +5,7 @@
     "Channel": "CaseWorker",
     "TabID": "HearingTab",
     "TabLabel": "Hearings",
-    "TabDisplayOrder": 2,
+    "TabDisplayOrder": 3,
     "CaseFieldID": "hearingDetails",
     "TabFieldDisplayOrder": 1
   }
