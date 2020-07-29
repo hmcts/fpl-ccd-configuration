@@ -34,29 +34,29 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 class TaskListRendererTest {
 
     private static final String IMAGES_BASE_URL
-            = "https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/";
+        = "https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/";
 
     private TaskListRenderer taskListRenderer = new TaskListRenderer(IMAGES_BASE_URL);
 
     @Test
     void shouldRenderTaskList() {
         final List<Task> tasks = List.of(
-                task(CASE_NAME, COMPLETED),
-                task(ORDERS_SOUGHT, IN_PROGRESS),
-                task(HEARING_URGENCY, COMPLETED),
-                task(GROUNDS, COMPLETED),
-                task(RISK_AND_HARM, IN_PROGRESS),
-                task(FACTORS_AFFECTING_PARENTING, COMPLETED),
-                task(DOCUMENTS, COMPLETED),
-                task(ORGANISATION_DETAILS, COMPLETED),
-                task(CHILDREN, COMPLETED),
-                task(RESPONDENTS, IN_PROGRESS),
-                task(ALLOCATION_PROPOSAL, COMPLETED),
-                task(OTHER_PROCEEDINGS, IN_PROGRESS),
-                task(INTERNATIONAL_ELEMENT, IN_PROGRESS),
-                task(OTHERS, IN_PROGRESS),
-                task(COURT_SERVICES, IN_PROGRESS),
-                task(SUBMIT_APPLICATION, NOT_AVAILABLE));
+            task(CASE_NAME, COMPLETED),
+            task(ORDERS_SOUGHT, IN_PROGRESS),
+            task(HEARING_URGENCY, COMPLETED),
+            task(GROUNDS, COMPLETED),
+            task(RISK_AND_HARM, IN_PROGRESS),
+            task(FACTORS_AFFECTING_PARENTING, COMPLETED),
+            task(DOCUMENTS, COMPLETED),
+            task(ORGANISATION_DETAILS, COMPLETED),
+            task(CHILDREN, COMPLETED),
+            task(RESPONDENTS, IN_PROGRESS),
+            task(ALLOCATION_PROPOSAL, COMPLETED),
+            task(OTHER_PROCEEDINGS, IN_PROGRESS),
+            task(INTERNATIONAL_ELEMENT, IN_PROGRESS),
+            task(OTHERS, IN_PROGRESS),
+            task(COURT_SERVICES, IN_PROGRESS),
+            task(SUBMIT_APPLICATION, NOT_AVAILABLE));
 
         final String actualTaskList = taskListRenderer.render(tasks);
         final String expectedTaskList = readString("task-list/expected-task-list.md").trim();

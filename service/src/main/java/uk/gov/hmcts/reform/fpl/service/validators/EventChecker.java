@@ -86,19 +86,19 @@ public class EventChecker {
 
     public List<String> validate(Event event, CaseData caseData) {
         return ofNullable(validators.get(event))
-                .map(validator -> validator.validate(caseData))
-                .orElse(emptyList());
+            .map(validator -> validator.validate(caseData))
+            .orElse(emptyList());
     }
 
     public boolean isCompleted(Event event, CaseData caseData) {
         return ofNullable(validators.get(event))
-                .map(validator -> validator.validate(caseData).isEmpty())
-                .orElse(false);
+            .map(validator -> validator.validate(caseData).isEmpty())
+            .orElse(false);
     }
 
     public boolean isAvailable(Event event, CaseData caseData) {
         return ofNullable(guards.get(event))
-                .map(validator -> validator.validate(caseData).isEmpty())
-                .orElse(true);
+            .map(validator -> validator.validate(caseData).isEmpty())
+            .orElse(true);
     }
 }

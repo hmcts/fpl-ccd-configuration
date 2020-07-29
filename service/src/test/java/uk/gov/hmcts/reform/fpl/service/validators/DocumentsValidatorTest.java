@@ -35,8 +35,7 @@ class DocumentsValidatorTest {
 
         final List<String> errors = documentsValidator.validate(caseData);
 
-        assertThat(errors)
-            .containsExactly("Add social work documents, or details of when you'll send them");
+        assertThat(errors).containsExactly("Add social work documents, or details of when you'll send them");
     }
 
     @Test
@@ -52,8 +51,7 @@ class DocumentsValidatorTest {
 
         final List<String> errors = documentsValidator.validate(caseData);
 
-        assertThat(errors)
-            .containsExactly("Add social work documents, or details of when you'll send them");
+        assertThat(errors).containsExactly("Add social work documents, or details of when you'll send them");
     }
 
     @Test

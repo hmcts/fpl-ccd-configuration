@@ -15,7 +15,7 @@ import static java.util.stream.Collectors.toList;
 
 public abstract class PropertiesValidator implements Validator {
 
-    private static List<String> AVAILABLE_PROPERTIES = Stream.of(CaseData.class.getDeclaredFields())
+    private static final List<String> AVAILABLE_PROPERTIES = Stream.of(CaseData.class.getDeclaredFields())
         .map(Field::getName)
         .collect(toList());
 
@@ -31,7 +31,7 @@ public abstract class PropertiesValidator implements Validator {
             .collect(toList());
     }
 
-    private String getViolatedProperty(ConstraintViolation violation) {
+    private String getViolatedProperty(ConstraintViolation<CaseData> violation) {
         final Iterator<Path.Node> paths = violation.getPropertyPath().iterator();
         if (paths.hasNext()) {
             return paths.next().getName();

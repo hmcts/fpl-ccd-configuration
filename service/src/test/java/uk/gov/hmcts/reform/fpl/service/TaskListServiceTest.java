@@ -87,23 +87,23 @@ class TaskListServiceTest {
 
     private List<Task> getTasks(TaskState state) {
         return Stream.of(
-                ORDERS_SOUGHT,
-                HEARING_URGENCY,
-                GROUNDS,
-                RISK_AND_HARM,
-                FACTORS_AFFECTING_PARENTING,
-                ORGANISATION_DETAILS,
-                CHILDREN,
-                RESPONDENTS,
-                ALLOCATION_PROPOSAL,
-                OTHER_PROCEEDINGS,
-                INTERNATIONAL_ELEMENT,
-                OTHERS,
-                COURT_SERVICES,
-                DOCUMENTS,
-                CASE_NAME,
-                SUBMIT_APPLICATION)
-                .map(event -> task(event, state))
-                .collect(Collectors.toList());
+            ORDERS_SOUGHT,
+            HEARING_URGENCY,
+            GROUNDS,
+            RISK_AND_HARM,
+            FACTORS_AFFECTING_PARENTING,
+            ORGANISATION_DETAILS,
+            CHILDREN,
+            RESPONDENTS,
+            ALLOCATION_PROPOSAL,
+            OTHER_PROCEEDINGS,
+            INTERNATIONAL_ELEMENT,
+            OTHERS,
+            COURT_SERVICES,
+            DOCUMENTS,
+            CASE_NAME,
+            SUBMIT_APPLICATION)
+            .map(event -> task(event, state))
+            .collect(Collectors.toList());
     }
 }
