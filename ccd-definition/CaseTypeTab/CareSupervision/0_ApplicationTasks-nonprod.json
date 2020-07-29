@@ -19,7 +19,7 @@
     "CaseFieldID": "taskList",
     "TabFieldDisplayOrder": 2,
     "FieldShowCondition": "taskList = \"DO_NOT_SHOW\"",
-    "TabShowCondition": "[STATE] = \"Open\"",
+    "TabShowCondition": "[STATE] = \"Open\" AND taskList !=\"\"",
     "Comment": "taskListLabel is defined as '${taskList}' thus taskList must be present on tab"
   }
 ]
