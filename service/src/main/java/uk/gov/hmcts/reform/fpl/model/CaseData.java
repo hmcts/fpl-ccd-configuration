@@ -607,4 +607,18 @@ public class CaseData {
 
     private final DocumentReference submittedForm;
 
+    private final DocumentReference uploadedCaseManagementOrder;
+    private final List<Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder>> draftUploadedCMOs;
+    private final Object hearingsWithoutApprovedCMO; // Could be dynamic list or string
+
+    public List<Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder>> getDraftUploadedCMOs() {
+        return defaultIfNull(draftUploadedCMOs, new ArrayList<>());
+    }
+
+    @JsonIgnore
+    public List<Element<HearingBooking>> getPastHearings() {
+        return defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()).stream()
+            .filter(hearingBooking -> !hearingBooking.getValue().startsAfterToday())
+            .collect(toList());
+    }
 }

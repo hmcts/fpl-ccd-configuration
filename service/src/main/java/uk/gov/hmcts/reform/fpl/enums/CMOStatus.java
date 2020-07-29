@@ -15,5 +15,7 @@ public enum CMOStatus {
      * @deprecated no longer used in the new CMO status model but preserved for old cases.
      */
     @Deprecated(since = "FPLA-1915")
-    SELF_REVIEW
+    SELF_REVIEW,
+    APPROVED,
+    RETURNED
 }
