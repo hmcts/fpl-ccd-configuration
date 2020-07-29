@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.controllers.cmo.UploadCMOController;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -51,23 +52,40 @@ public class UploadCMOMidEventControllerTest extends AbstractControllerTest {
             );
     }
 
+    @Test
+    void shouldRemoveDocumentFromDataWhenDocumentFieldsAreNull() {
+        List<Element<HearingBooking>> hearings = hearings();
+
+        DynamicList dynamicList = dynamicList(hearings);
+
+        CaseData caseData = CaseData.builder()
+            .uploadedCaseManagementOrder(DocumentReference.builder().binaryUrl(null).filename(null).url(null).build())
+            .hearingsWithoutApprovedCMO(dynamicList)
+            .hearingDetails(hearings)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
+
+        assertThat(response.getData()).doesNotContainKey("uploadedCaseManagementOrder");
+    }
+
     private DynamicList dynamicList(List<Element<HearingBooking>> hearings) {
         return DynamicList.builder()
-                .value(DynamicListElement.builder()
+            .value(DynamicListElement.builder()
+                .code(hearings.get(0).getId())
+                .label("Case management hearing, 15 March 2020")
+                .build()
+            ).listItems(List.of(
+                DynamicListElement.builder()
                     .code(hearings.get(0).getId())
                     .label("Case management hearing, 15 March 2020")
+                    .build(),
+                DynamicListElement.builder()
+                    .code(hearings.get(1).getId())
+                    .label("Case management hearing, 16 March 2020")
                     .build()
-                ).listItems(List.of(
-                    DynamicListElement.builder()
-                        .code(hearings.get(0).getId())
-                        .label("Case management hearing, 15 March 2020")
-                        .build(),
-                    DynamicListElement.builder()
-                        .code(hearings.get(1).getId())
-                        .label("Case management hearing, 16 March 2020")
-                        .build()
-                ))
-                .build();
+            ))
+            .build();
     }
 
     private List<Element<HearingBooking>> hearings() {
