@@ -13,7 +13,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 public class CaseManagementOrder {
     private DocumentReference order;
     private String hearing;
@@ -23,21 +23,12 @@ public class CaseManagementOrder {
     private String judgeTitleAndName;
     private String requestedChanges;
 
-    public static CaseManagementOrder draftFrom(DocumentReference order, HearingBooking hearing, LocalDate date) {
+    public static CaseManagementOrder from(DocumentReference order, HearingBooking hearing, LocalDate date) {
         return CaseManagementOrder.builder()
             .order(order)
             .hearing(hearing.toLabel(DATE))
             .dateSent(date)
             .status(SEND_TO_JUDGE)
-            .judgeTitleAndName(formatJudgeTitleAndName(hearing.getJudgeAndLegalAdvisor()))
-            .build();
-    }
-
-    public static CaseManagementOrder sealFrom(DocumentReference order, HearingBooking hearing, LocalDate date) {
-        return CaseManagementOrder.builder()
-            .order(order)
-            .hearing(hearing.toLabel(DATE))
-            .dateIssued(date)
             .judgeTitleAndName(formatJudgeTitleAndName(hearing.getJudgeAndLegalAdvisor()))
             .build();
     }

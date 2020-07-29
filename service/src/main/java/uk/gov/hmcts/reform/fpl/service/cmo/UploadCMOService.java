@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
-import static uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.draftFrom;
+import static uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.from;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -123,7 +123,7 @@ public class UploadCMOService {
         UUID selectedHearingId = getSelectedHearingId(dynamicList, filteredHearings);
         HearingBooking hearing = getSelectedHearing(selectedHearingId, filteredHearings);
 
-        Element<CaseManagementOrder> element = element(draftFrom(uploadedOrder, hearing, time.now().toLocalDate()));
+        Element<CaseManagementOrder> element = element(from(uploadedOrder, hearing, time.now().toLocalDate()));
 
         Optional<UUID> uuid = updateHearingWithCmoId(selectedHearingId, hearings, element);
 

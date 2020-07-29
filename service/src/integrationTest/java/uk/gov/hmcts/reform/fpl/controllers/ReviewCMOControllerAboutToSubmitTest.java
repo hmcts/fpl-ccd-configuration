@@ -5,14 +5,13 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.controllers.cmo.ReviewCMOController;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
@@ -24,21 +23,20 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
-import static uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.sealFrom;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ReviewCMOController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
+class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @MockBean
     private DocumentSealingService documentSealingService;
@@ -46,7 +44,7 @@ public class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest
     @MockBean
     private DocumentConversionService documentConversionService;
 
-    protected ReviewCMOControllerAboutToSubmitTest() {
+    ReviewCMOControllerAboutToSubmitTest() {
         super("review-cmo");
     }
 
@@ -54,55 +52,64 @@ public class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest
     void shouldSetReturnStatusAndRequestedChangesWhenJudgeRejectsOrder() {
         CaseManagementOrder cmo = buildCMO();
 
-        CaseData caseData = CaseData.builder()
-            .draftUploadedCMOs(List.of(element(cmo)))
-            .reviewCMODecision(ReviewDecision.builder()
-                .changesRequestedByJudge("Please change XYZ")
-                .decision(JUDGE_REQUESTED_CHANGES).build())
+        ReviewDecision reviewDecision = ReviewDecision.builder()
+            .changesRequestedByJudge("Please change XYZ")
+            .decision(JUDGE_REQUESTED_CHANGES)
             .build();
 
-        CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(asCaseDetails(caseData)).build();
+        CaseData caseData = CaseData.builder()
+            .draftUploadedCMOs(List.of(element(cmo)))
+            .reviewCMODecision(reviewDecision)
+            .build();
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(callbackRequest);
-
-        CaseData responseData = mapper.convertValue(response.getData(), CaseData.class);
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
         CaseManagementOrder returnedCMO = responseData.getDraftUploadedCMOs().get(0).getValue();
-        assertThat(returnedCMO.getStatus()).isEqualTo(RETURNED);
-        assertThat(returnedCMO.getRequestedChanges()).isEqualTo("Please change XYZ");
+
+        CaseManagementOrder expectedCMO = cmo.toBuilder()
+            .requestedChanges(reviewDecision.getChangesRequestedByJudge())
+            .status(RETURNED)
+            .build();
+
+        assertThat(returnedCMO).isEqualTo(expectedCMO);
 
     }
 
     @Test
     void shouldSealPDFAndAddToSealedCMOsListWhenJudgeApprovesOrder() throws Exception {
-        DocumentReference sealedCMODocument = testDocumentReference();
-        given(documentSealingService.sealDocument(any(DocumentReference.class))).willReturn(sealedCMODocument);
-        given(documentConversionService.convertDocument(any(DocumentReference.class))).willReturn(sealedCMODocument);
-
-        UUID cmoId = UUID.fromString("51d02c7f-2a51-424b-b299-a90b98bb1774");
         CaseManagementOrder cmo = buildCMO();
+        DocumentReference convertedDocument = testDocumentReference();
+        DocumentReference sealedDocument = testDocumentReference();
+
+        given(documentConversionService.convertToPdf(cmo.getOrder())).willReturn(convertedDocument);
+        given(documentSealingService.sealDocument(convertedDocument)).willReturn(sealedDocument);
+
+        UUID cmoId = UUID.randomUUID();
 
         CaseData caseData = CaseData.builder()
             .draftUploadedCMOs(List.of(element(cmoId, cmo)))
             .hearingDetails(List.of(element(hearing(cmoId))))
             .reviewCMODecision(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build()).build();
 
-        CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(asCaseDetails(caseData)).build();
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(callbackRequest);
-
-        CaseData responseData = mapper.convertValue(response.getData(), CaseData.class);
+        CaseManagementOrder expectedSealedCmo = cmo.toBuilder()
+            .order(sealedDocument)
+            .dateIssued(LocalDate.now())
+            .status(APPROVED)
+            .build();
 
         assertThat(responseData.getDraftUploadedCMOs()).isEmpty();
-        assertThat(responseData.getSealedCMOs()).isNotEmpty();
-        assertThat(responseData.getSealedCMOs().get(0).getValue()).isEqualTo(
-            sealFrom(sealedCMODocument, hearing(cmoId), LocalDate.now()));
+        assertThat(responseData.getSealedCMOs())
+            .extracting(Element::getValue)
+            .containsExactly(expectedSealedCmo);
     }
 
     private CaseManagementOrder buildCMO() {
         return CaseManagementOrder.builder()
             .hearing("Test hearing 25th December 2020")
             .order(testDocumentReference())
+            .judgeTitleAndName("Her Honour Judge Judy")
             .status(SEND_TO_JUDGE).build();
     }
 

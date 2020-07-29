@@ -40,7 +40,7 @@
     "FieldTypeParameter": "CaseManagementOrderStatus",
     "ElementLabel": "Status",
     "SecurityClassification": "Public",
-    "FieldShowCondition:": "judgeTitleAndName=\"\""
+    "FieldShowCondition:": "status!=\"APPROVED\""
   },
   {
     "LiveFrom": "01/01/2017",

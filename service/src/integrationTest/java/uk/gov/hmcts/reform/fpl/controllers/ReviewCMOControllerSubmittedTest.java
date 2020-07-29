@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
@@ -28,7 +29,6 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
@@ -55,13 +55,14 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 @ActiveProfiles("integration-test")
 @WebMvcTest(ReviewCMOController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
+class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
 
     private static final long CASE_ID = 12345L;
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
     private static final String ADMIN_EMAIL = "admin@family-court.com";
     private static final String CAFCASS_EMAIL = "cafcass@cafcass.com";
+    private static final DocumentReference order = testDocumentReference();
 
     @MockBean
     private NotificationClient notificationClient;
@@ -69,7 +70,7 @@ public class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
     @MockBean
     private DocumentDownloadService documentDownloadService;
 
-    protected ReviewCMOControllerSubmittedTest() {
+    ReviewCMOControllerSubmittedTest() {
         super("review-cmo");
     }
 
@@ -77,12 +78,10 @@ public class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
     void shouldNotSendNotificationsIfNoCMOsReadyForApproval() {
         CaseDetails caseDetails = CaseDetails.builder().data(
             Map.of("draftUploadedCMOs", List.of(element(buildCMO(RETURNED))))).build();
-        CaseDetails caseDetailsBefore = CaseDetails.builder().data(
-            Map.of("draftUploadedCMOs", List.of(element(buildCMO(RETURNED))))).build();
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(caseDetails)
-            .caseDetailsBefore(caseDetailsBefore).build();
+            .caseDetailsBefore(caseDetails).build();
 
         postSubmittedEvent(callbackRequest);
 
@@ -91,7 +90,7 @@ public class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
 
     @Test
     void shouldSendCMOIssuedNotificationsIfJudgeApproves() {
-        given(documentDownloadService.downloadDocument(anyString())).willReturn(DOCUMENT_CONTENT);
+        given(documentDownloadService.downloadDocument(order.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
 
         CaseData caseData = buildCaseDataForApprovedCMO();
 
@@ -174,7 +173,7 @@ public class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
         verifyNoMoreInteractions(notificationClient);
     }
 
-    private CaseData buildCaseDataForApprovedCMO() {
+    private static CaseData buildCaseDataForApprovedCMO() {
         UUID cmoId = UUID.fromString("51d02c7f-2a51-424b-b299-a90b98bb1774");
 
         return CaseData.builder()
@@ -187,7 +186,7 @@ public class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
             .build();
     }
 
-    private CaseData buildCaseDataForRejectedCMO(UUID cmoId) {
+    private static CaseData buildCaseDataForRejectedCMO(UUID cmoId) {
         return CaseData.builder()
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .draftUploadedCMOs(List.of(element(cmoId, buildCMO(RETURNED))))
@@ -195,20 +194,20 @@ public class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
             .build();
     }
 
-    private CaseManagementOrder buildCMO(CMOStatus status) {
+    private static CaseManagementOrder buildCMO(CMOStatus status) {
         return CaseManagementOrder.builder()
             .hearing("Test hearing 25th December 2020")
-            .order(testDocumentReference())
+            .order(order)
             .status(status).build();
     }
 
-    private ReviewDecision buildReviewDecision(CMOReviewOutcome judgeDecision) {
+    private static ReviewDecision buildReviewDecision(CMOReviewOutcome judgeDecision) {
         return ReviewDecision.builder()
             .decision(judgeDecision)
             .build();
     }
 
-    private HearingBooking hearing(UUID cmoId) {
+    private static HearingBooking hearing(UUID cmoId) {
         return HearingBooking.builder()
             .type(CASE_MANAGEMENT)
             .startDate(LocalDateTime.now())
@@ -220,7 +219,7 @@ public class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
             .build();
     }
 
-    private List<Element<Representative>> createRepresentatives() {
+    private static List<Element<Representative>> createRepresentatives() {
         return wrapElements(Representative.builder()
             .email("robert@example.com")
             .fullName("Robert Robin")

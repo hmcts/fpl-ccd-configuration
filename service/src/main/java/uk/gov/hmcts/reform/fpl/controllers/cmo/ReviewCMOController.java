@@ -48,12 +48,9 @@ public class ReviewCMOController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<CaseManagementOrder>> cmosReadyForApproval = reviewCMOService.getCMOsReadyForApproval(
-            caseData.getDraftUploadedCMOs());
-
         data.remove("reviewCMODecision");
 
-        data.putAll(reviewCMOService.handlePageDisplayLogic(cmosReadyForApproval));
+        data.putAll(reviewCMOService.handlePageDisplayLogic(caseData));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -100,11 +97,12 @@ public class ReviewCMOController {
             Element<CaseManagementOrder> cmo = reviewCMOService.getSelectedCMO(caseData);
 
             if (!JUDGE_REQUESTED_CHANGES.equals(caseData.getReviewCMODecision().getDecision())) {
+                Element<CaseManagementOrder> cmoToSeal = reviewCMOService.getCMOToSeal(caseData);
+
                 caseData.getDraftUploadedCMOs().remove(cmo);
 
-                Element<CaseManagementOrder> cmoToSeal = reviewCMOService.getCMOToSeal(caseData, cmo);
-
-                DocumentReference convertedDocument = documentConversionService.convertDocument(
+                //TODO merge these actions together to improve performance
+                DocumentReference convertedDocument = documentConversionService.convertToPdf(
                     cmoToSeal.getValue().getOrder());
                 DocumentReference sealedDocument = documentSealingService.sealDocument(convertedDocument);
                 cmoToSeal.getValue().setOrder(sealedDocument);
@@ -138,7 +136,7 @@ public class ReviewCMOController {
 
         if (!cmosReadyForApproval.isEmpty()) {
             if (!JUDGE_REQUESTED_CHANGES.equals(caseData.getReviewCMODecision().getDecision())) {
-                CaseManagementOrder sealed = reviewCMOService.getLatestSealedCMO(caseData.getSealedCMOs());
+                CaseManagementOrder sealed = reviewCMOService.getLatestSealedCMO(caseData);
 
                 eventPublisher.publishEvent(new CaseManagementOrderIssuedEvent(callbackRequest, sealed));
             } else {

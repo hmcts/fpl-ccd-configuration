@@ -4,10 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
-import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -23,7 +22,6 @@ import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
-import static uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.sealFrom;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -34,7 +32,7 @@ public class ReviewCMOService {
     private final ObjectMapper mapper;
     private final Time time;
 
-    public DynamicList buildDynamicList(List<Element<CaseManagementOrder>> cmos) {
+    private DynamicList buildDynamicList(List<Element<CaseManagementOrder>> cmos) {
         return buildDynamicList(cmos, null);
     }
 
@@ -42,29 +40,32 @@ public class ReviewCMOService {
         return asDynamicList(cmos, selected, uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder::getHearing);
     }
 
-    public Map<String, Object> handlePageDisplayLogic(List<Element<CaseManagementOrder>> cmos) {
+    public Map<String, Object> handlePageDisplayLogic(CaseData caseData) {
+        List<Element<CaseManagementOrder>> cmosReadyForApproval = getCMOsReadyForApproval(
+            caseData.getDraftUploadedCMOs());
         Map<String, Object> data = new HashMap<>();
-        switch (cmos.size()) {
+
+        switch (cmosReadyForApproval.size()) {
             case 0:
                 data.put("numDraftCMOs", "NONE");
                 break;
             case 1:
-                CaseManagementOrder cmo = cmos.get(0).getValue();
+                CaseManagementOrder cmo = cmosReadyForApproval.get(0).getValue();
                 data.put("numDraftCMOs", "SINGLE");
                 data.put("reviewCMODecision",
                     ReviewDecision.builder().hearing(cmo.getHearing()).document(cmo.getOrder()).build());
                 break;
             default:
                 data.put("numDraftCMOs", "MULTI");
-                data.put("cmoToReviewList", buildDynamicList(cmos));
+                data.put("cmoToReviewList", buildDynamicList(cmosReadyForApproval));
                 break;
         }
 
         return data;
     }
 
-    public Element<CaseManagementOrder> getCMOToSeal(CaseData caseData, Element<CaseManagementOrder> cmo) {
-        Element<HearingBooking> cmoHearing = getCmoHearingFromId(caseData.getHearingDetails(), cmo.getId());
+    public Element<CaseManagementOrder> getCMOToSeal(CaseData caseData) {
+        Element<CaseManagementOrder> cmo = getSelectedCMO(caseData);
         DocumentReference order;
 
         if (JUDGE_AMENDS_DRAFT.equals(caseData.getReviewCMODecision().getDecision())) {
@@ -72,20 +73,17 @@ public class ReviewCMOService {
         } else {
             order = cmo.getValue().getOrder();
         }
-        return element(sealFrom(order, cmoHearing.getValue(), time.now().toLocalDate()));
-    }
-
-    private Element<HearingBooking> getCmoHearingFromId(List<Element<HearingBooking>> hearings, UUID cmoId) {
-        return hearings
-            .stream()
-            .filter(hearing -> cmoId.equals(hearing.getValue().getCaseManagementOrderId()))
-            .findFirst()
-            .orElseThrow(NoHearingBookingException::new);
+        return element(cmo.getValue().toBuilder()
+            .dateIssued(time.now().toLocalDate())
+            .status(CMOStatus.APPROVED)
+            .order(order)
+            .build());
     }
 
     public List<Element<CaseManagementOrder>> getCMOsReadyForApproval(List<Element<CaseManagementOrder>> draftCMOs) {
-        return draftCMOs.stream().filter(cmo -> cmo.getValue().getStatus().equals(SEND_TO_JUDGE)).collect(
-            Collectors.toList());
+        return draftCMOs.stream()
+            .filter(cmo -> cmo.getValue().getStatus().equals(SEND_TO_JUDGE))
+            .collect(Collectors.toList());
     }
 
     public Element<CaseManagementOrder> getSelectedCMO(CaseData caseData) {
@@ -109,9 +107,10 @@ public class ReviewCMOService {
         return mapper.convertValue(dynamicList, DynamicList.class).getValueCode();
     }
 
-    public CaseManagementOrder getLatestSealedCMO(List<Element<CaseManagementOrder>> cmos) {
-        if (!cmos.isEmpty()) {
-            return cmos.get(cmos.size() - 1).getValue();
+    public CaseManagementOrder getLatestSealedCMO(CaseData caseData) {
+        List<Element<CaseManagementOrder>> sealedCMOs = caseData.getSealedCMOs();
+        if (!sealedCMOs.isEmpty()) {
+            return sealedCMOs.get(sealedCMOs.size() - 1).getValue();
         } else {
             throw new CMONotFoundException("No sealed CMOS found");
         }

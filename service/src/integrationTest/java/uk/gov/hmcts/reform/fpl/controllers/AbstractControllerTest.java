@@ -75,6 +75,10 @@ abstract class AbstractControllerTest {
         return postAboutToStartEvent(filename, SC_OK);
     }
 
+    AboutToStartOrSubmitCallbackResponse postAboutToStartEvent(CaseData caseData) {
+        return postAboutToStartEvent(asCaseDetails(caseData), SC_OK);
+    }
+
     AboutToStartOrSubmitCallbackResponse postMidEvent(byte[] data, int expectedStatus) {
         return postEvent(String.format("/callback/%s/mid-event", eventName), data, expectedStatus);
     }

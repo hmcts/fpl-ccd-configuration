@@ -58,8 +58,8 @@ class ReviewCMOServiceTest {
 
     @Test
     void shouldReturnMultiPageDataWhenThereAreMultipleDraftCMOsReadyForApproval() {
-        List<Element<CaseManagementOrder>> draftCMOs = List.of(
-            draftCMO(hearing1), draftCMO(hearing2));
+        List<Element<CaseManagementOrder>> draftCMOs = List.of(draftCMO(hearing1), draftCMO(hearing2));
+        CaseData caseData = CaseData.builder().draftUploadedCMOs(draftCMOs).build();
 
         Map<String, Object> expectedData = Map.of(
             "numDraftCMOs", MULTI,
@@ -67,12 +67,12 @@ class ReviewCMOServiceTest {
                 .value(EMPTY)
                 .listItems(dynamicListItems(draftCMOs.get(0).getId(), draftCMOs.get(1).getId())).build());
 
-        assertThat(service.handlePageDisplayLogic(draftCMOs)).isEqualTo(expectedData);
+        assertThat(service.handlePageDisplayLogic(caseData)).isEqualTo(expectedData);
     }
 
     @Test
     void shouldReturnSinglePageDataWhenThereIsOneDraftCMOReadyForApproval() {
-        List<Element<CaseManagementOrder>> draftCMOs = List.of(draftCMO(hearing1));
+        CaseData caseData = CaseData.builder().draftUploadedCMOs(List.of(draftCMO(hearing1))).build();
 
         Map<String, Object> expectedData = Map.of(
             "numDraftCMOs", SINGLE,
@@ -80,17 +80,17 @@ class ReviewCMOServiceTest {
                 .hearing(hearing1)
                 .document(order).build());
 
-        assertThat(service.handlePageDisplayLogic(draftCMOs)).isEqualTo(expectedData);
+        assertThat(service.handlePageDisplayLogic(caseData)).isEqualTo(expectedData);
     }
 
     @Test
     void shouldReturnNonePageDataWhenThereAreNoDraftCMOsReadyForApproval() {
-        List<Element<CaseManagementOrder>> draftCMOs = List.of();
+        CaseData caseData = CaseData.builder().draftUploadedCMOs(List.of()).build();
 
         Map<String, Object> expectedData = Map.of(
             "numDraftCMOs", NONE);
 
-        assertThat(service.handlePageDisplayLogic(draftCMOs)).isEqualTo(expectedData);
+        assertThat(service.handlePageDisplayLogic(caseData)).isEqualTo(expectedData);
     }
 
     @Test
@@ -110,6 +110,7 @@ class ReviewCMOServiceTest {
         Element<CaseManagementOrder> draftCMO = draftCMO(hearing1);
 
         CaseData caseData = CaseData.builder()
+            .draftUploadedCMOs(List.of(draftCMO))
             .reviewCMODecision(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build())
             .hearingDetails(List.of(element(hearing(draftCMO.getId())))).build();
 
@@ -118,9 +119,10 @@ class ReviewCMOServiceTest {
             .hearing(hearing1)
             .dateIssued(time.now().toLocalDate())
             .judgeTitleAndName("Her Honour Judge Judy")
+            .status(APPROVED)
             .build();
 
-        assertThat(service.getCMOToSeal(caseData, draftCMO).getValue()).isEqualTo(expectedCmo);
+        assertThat(service.getCMOToSeal(caseData).getValue()).isEqualTo(expectedCmo);
     }
 
     @Test
@@ -129,6 +131,7 @@ class ReviewCMOServiceTest {
         DocumentReference judgeAmendedOrder = testDocumentReference();
 
         CaseData caseData = CaseData.builder()
+            .draftUploadedCMOs(List.of(draftCMO))
             .reviewCMODecision(ReviewDecision.builder()
                 .decision(JUDGE_AMENDS_DRAFT)
                 .judgeAmendedDocument(judgeAmendedOrder)
@@ -140,20 +143,10 @@ class ReviewCMOServiceTest {
             .hearing(hearing1)
             .dateIssued(time.now().toLocalDate())
             .judgeTitleAndName("Her Honour Judge Judy")
+            .status(APPROVED)
             .build();
 
-        assertThat(service.getCMOToSeal(caseData, draftCMO).getValue()).isEqualTo(expectedCmo);
-    }
-
-    @Test
-    void shouldThrowExceptionWhenCMOToSealCannotBeLinkedToHearing() {
-        Element<CaseManagementOrder> draftCMO = draftCMO(hearing1);
-
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(List.of(element(hearing(UUID.randomUUID())))).build();
-
-        assertThatExceptionOfType(NoHearingBookingException.class).isThrownBy(
-            () -> service.getCMOToSeal(caseData, draftCMO));
+        assertThat(service.getCMOToSeal(caseData).getValue()).isEqualTo(expectedCmo);
     }
 
     @Test
@@ -188,22 +181,23 @@ class ReviewCMOServiceTest {
         Element<CaseManagementOrder> cmo1 = draftCMO(hearing1);
         Element<CaseManagementOrder> cmo2 = draftCMO(hearing2);
 
-        List<Element<CaseManagementOrder>> cmos = List.of(cmo1, cmo2);
+        CaseData caseData = CaseData.builder().sealedCMOs(List.of(cmo1, cmo2)).build();
 
-        assertThat(service.getLatestSealedCMO(cmos)).isEqualTo(cmo2.getValue());
+        assertThat(service.getLatestSealedCMO(caseData)).isEqualTo(cmo2.getValue());
     }
 
     @Test
     void shouldThrowExceptionIfSealedCMOListIsEmpty() {
         assertThatExceptionOfType(CMONotFoundException.class).isThrownBy(
-            () -> service.getLatestSealedCMO(List.of()));
+            () -> service.getLatestSealedCMO(CaseData.builder().sealedCMOs(List.of()).build()));
     }
 
     private Element<CaseManagementOrder> draftCMO(String hearing) {
         return element(CaseManagementOrder.builder()
             .hearing(hearing)
             .order(order)
-            .status(SEND_TO_JUDGE).build());
+            .status(SEND_TO_JUDGE)
+            .judgeTitleAndName("Her Honour Judge Judy").build());
     }
 
     private List<DynamicListElement> dynamicListItems(UUID uuid1, UUID uuid2) {

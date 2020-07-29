@@ -31,9 +31,9 @@ public class DocumentConversionService {
     private final DocumentDownloadService documentDownloadService;
     private final UploadDocumentService uploadDocumentService;
 
-    public DocumentReference convertDocument(DocumentReference document) {
+    public DocumentReference convertToPdf(DocumentReference document) {
         //If document is already a pdf, do not convert. Will still 'convert' pdfs that have do not have an extension.
-        if (document.getFilename().contains(".pdf")) {
+        if (FilenameUtils.getExtension(document.getFilename()).equals("pdf")) {
             return document;
         } else {
             final String oldName = document.getFilename();
