@@ -59,9 +59,9 @@ module.exports = function () {
       }
     },
 
-    async seeCheckAnswersAndCompleteEvent(checkAnswerTitle = 'Check the information below carefully.') {
+    async seeCheckAnswersAndCompleteEvent() {
       await this.retryUntilExists(() => this.click('Continue'), '.check-your-answers');
-      this.see(checkAnswerTitle);
+      this.see('Check the information below carefully.');
       await eventSummaryPage.submit('Save and continue');
     },
 

@@ -42,7 +42,7 @@ Scenario('local authority sees task list', async (I, caseViewPage) => {
 Scenario('local authority changes case name @create-case-with-mandatory-sections-only', async (I, caseViewPage, changeCaseNameEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.changeCaseName);
   changeCaseNameEventPage.changeCaseName('New case name');
-  await I.seeCheckAnswers();
+  await I.seeCheckAnswersAndCompleteEvent();
   I.seeEventSubmissionConfirmation(config.applicationActions.changeCaseName);
   caseViewPage.seeInCaseTitle('New case name');
   caseViewPage.seeInCaseTitle(caseId);
@@ -76,7 +76,7 @@ Scenario('local authority enters orders and directions @create-case-with-mandato
   enterOrdersAndDirectionsNeededEventPage.enterOrderDetails('Test');
   enterOrdersAndDirectionsNeededEventPage.checkDirections();
   enterOrdersAndDirectionsNeededEventPage.enterDirections('Test');
-  await I.seeCheckAnswers();
+  await I.seeCheckAnswersAndCompleteEvent();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterOrdersAndDirectionsNeeded);
   caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   I.seeInTab(['Orders and directions needed', 'Which orders do you need?'], ['Care order', 'Interim care order', 'Supervision order', 'Interim supervision order', 'Education supervision order', 'Emergency protection order', 'Variation or discharge of care or supervision order']);
@@ -101,7 +101,7 @@ Scenario('local authority enters hearing @create-case-with-mandatory-sections-on
   enterHearingNeededEventPage.enterWithoutNoticeHearing();
   enterHearingNeededEventPage.enterReducedHearing();
   enterHearingNeededEventPage.enterRespondentsAware();
-  await I.seeCheckAnswers();
+  await I.seeCheckAnswersAndCompleteEvent();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterHearingNeeded);
   caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   I.seeInTab(['Hearing needed', 'When do you need a hearing?'], enterHearingNeededEventPage.fields.timeFrame.sameDay);
@@ -142,7 +142,7 @@ Scenario('local authority enters children @create-case-with-mandatory-sections-o
   await enterChildrenEventPage.defineChildAdditionalNeeds();
   await enterChildrenEventPage.enterContactDetailsHidden('Yes');
   await enterChildrenEventPage.enterLitigationIssues('No');
-  await I.seeCheckAnswers();
+  await I.seeCheckAnswersAndCompleteEvent();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterChildren);
   caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   I.seeInTab(['Child 1', 'Party', 'First name'], 'Bran');
@@ -215,7 +215,7 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
   await enterRespondentsEventPage.enterRelationshipToChild('mock reason');
   await enterRespondentsEventPage.enterContactDetailsHidden('Yes', 'mock reason');
   await enterRespondentsEventPage.enterLitigationIssues('No');
-  await I.seeCheckAnswers();
+  await I.seeCheckAnswersAndCompleteEvent();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRespondents);
   caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   I.seeInTab(['Respondents 1', 'Party', 'First name'], respondents[0].firstName);
@@ -265,7 +265,7 @@ Scenario('local authority enters applicant @create-case-with-mandatory-sections-
   await caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
   enterApplicantEventPage.enterApplicantDetails(applicant);
   enterApplicantEventPage.enterSolicitorDetails(solicitor);
-  await I.seeCheckAnswers();
+  await I.seeCheckAnswersAndCompleteEvent();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterApplicant);
   caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   I.seeInTab(['Applicants 1', 'Party', 'Name of applicant'], applicant.name);
