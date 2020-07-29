@@ -8,11 +8,11 @@ public class CallbackEvent {
 
     private final CallbackRequest callbackRequest;
 
-    CallbackEvent(CallbackRequest callbackRequest) {
+    protected CallbackEvent(CallbackRequest callbackRequest) {
         this.callbackRequest = callbackRequest;
     }
 
-    CallbackEvent(CallbackEvent callbackEvent) {
+    protected CallbackEvent(CallbackEvent callbackEvent) {
         this.callbackRequest = callbackEvent.callbackRequest;
     }
 

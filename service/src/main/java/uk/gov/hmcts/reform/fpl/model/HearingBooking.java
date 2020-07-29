@@ -14,7 +14,13 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.UUID;
 import javax.validation.constraints.Future;
+
+import static java.lang.String.format;
+import static org.apache.commons.lang3.StringUtils.capitalize;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
 @Data
 @Builder(toBuilder = true)
@@ -34,6 +40,7 @@ public class HearingBooking {
     private final List<String> hearingNeedsBooked;
     private final String hearingNeedsDetails;
     private JudgeAndLegalAdvisor judgeAndLegalAdvisor;
+    private UUID caseManagementOrderId;
     private DocumentReference noticeOfHearing;
 
     public boolean hasDatesOnSameDay() {
@@ -42,5 +49,14 @@ public class HearingBooking {
 
     public boolean startsAfterToday() {
         return startDate.isAfter(ZonedDateTime.now(ZoneId.of("Europe/London")).toLocalDateTime());
+    }
+
+    public boolean hasCMOAssociation() {
+        return caseManagementOrderId != null;
+    }
+
+    public String toLabel(String dateFormat) {
+        String label = OTHER == type ? capitalize(typeDetails) : type.getLabel();
+        return format("%s hearing, %s", label, formatLocalDateTimeBaseUsingFormat(startDate, dateFormat));
     }
 }
