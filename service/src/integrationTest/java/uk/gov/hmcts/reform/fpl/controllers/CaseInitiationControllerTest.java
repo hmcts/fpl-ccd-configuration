@@ -232,6 +232,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
             eq("internal-update-task-list"),
             anyMap());
     }
+
     private void givenPRDWillFail() {
         Request request = Request.create(GET, "", Map.of(), new byte[] {}, UTF_8, null);
         given(organisationApi.findUsersByOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, Status.ACTIVE, false))
