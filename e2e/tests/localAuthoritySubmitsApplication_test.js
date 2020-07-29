@@ -10,7 +10,7 @@ const uploadDocumentsHelper = require('../helpers/upload_case_documents_helper.j
 
 let caseId;
 
-Feature('test');
+Feature('Application draft (populated draft)');
 
 BeforeSuite(async I => caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne));
 
