@@ -6,9 +6,11 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.UserOrganisationLookupException;
@@ -35,24 +37,30 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.quality.Strictness.LENIENT;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = LENIENT)
 class OrganisationServiceTest {
 
-    @MockBean
+    @Mock
     private OrganisationApi organisationApi;
 
-    @MockBean
+    @Mock
     private AuthTokenGenerator authTokenGenerator;
 
-    @MockBean
+    @Mock
     private RequestData requestData;
 
-    private LocalAuthorityUserLookupConfiguration lookupSpy;
+    @Spy
+    private final LocalAuthorityUserLookupConfiguration lookupSpy = new LocalAuthorityUserLookupConfiguration(
+        "SA=>1,2,3"
+    );
 
+    @InjectMocks
     private OrganisationService organisationService;
 
-    private static final Request REQUEST = Request.create(GET, EMPTY, Map.of(), new byte[] {}, UTF_8, null);
+    private static final Request REQUEST = Request.create(GET, EMPTY, Map.of(), new byte[]{}, UTF_8, null);
     private static final String AUTH_TOKEN_ID = "Bearer authorisedBearer";
     private static final String SERVICE_AUTH_TOKEN_ID = "Bearer authorised service";
     private static final String USER_EMAIL = "test@test.com";
@@ -61,8 +69,6 @@ class OrganisationServiceTest {
 
     @BeforeEach
     void setup() {
-        lookupSpy = Mockito.spy(new LocalAuthorityUserLookupConfiguration("SA=>1,2,3"));
-        organisationService = new OrganisationService(lookupSpy, organisationApi, authTokenGenerator, requestData);
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTH_TOKEN_ID);
         when(requestData.authorisation()).thenReturn(AUTH_TOKEN_ID);
     }
@@ -86,23 +92,13 @@ class OrganisationServiceTest {
         Set<String> userIds = organisationService.findUserIdsInSameOrganisation("AN");
 
         assertThat(userIds).containsExactlyInAnyOrder("40", "41");
-    }
-
-    @Test
-    void shouldNotCheckLocalMappingWhenOrganisationExistsInRefData() {
-        OrganisationUsers usersInAnOrganisation = prepareUsersForAnOrganisation();
-        when(organisationApi.findUsersByOrganisation(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, Status.ACTIVE, false))
-            .thenReturn(usersInAnOrganisation);
-
-        organisationService.findUserIdsInSameOrganisation("AN");
-
         verify(lookupSpy, never()).getUserIds(any());
     }
 
     @Test
     void shouldReturnEmptyListWhenTheLAIsNotKnownAndTheApiReturnsNotFound() {
         when(organisationApi.findUsersByOrganisation(any(), any(), any(), any()))
-            .thenThrow(new FeignException.NotFound("No organisation", REQUEST, new byte[] {}));
+            .thenThrow(new FeignException.Forbidden("No organisation", REQUEST, new byte[] {}));
 
         assertThatThrownBy(() -> organisationService.findUserIdsInSameOrganisation("AN"))
             .isInstanceOf(UserOrganisationLookupException.class)
