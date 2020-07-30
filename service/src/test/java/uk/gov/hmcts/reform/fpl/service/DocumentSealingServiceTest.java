@@ -37,25 +37,24 @@ class DocumentSealingServiceTest {
 
     @Test
     void shouldSealDocument() throws Exception {
-        byte[] inputDocumentBinaries = readBytes("documents/document.pdf");
-        byte[] expectedSealedDocumentBinaries = readBytes("documents/document-sealed.pdf");
+        final byte[] inputDocumentBinaries = readBytes("documents/document.pdf");
+        final byte[] expectedSealedDocumentBinaries = readBytes("documents/document-sealed.pdf");
         final Document sealedDocument = testDocument();
         final DocumentReference inputDocumentReference = testDocumentReference();
         final DocumentReference sealedDocumentReference = buildFromDocument(sealedDocument);
 
         when(documentDownloadService.downloadDocument(inputDocumentReference.getBinaryUrl()))
-            .thenReturn(inputDocumentBinaries);
+                .thenReturn(inputDocumentBinaries);
 
         when(uploadDocumentService.uploadPDF(any(), any()))
-            .thenReturn(sealedDocument);
+                .thenReturn(sealedDocument);
 
-        DocumentReference actualSealedDocumentReference = documentSealingService.sealDocument(inputDocumentReference);
 
+        final DocumentReference actualSealedDocumentReference = documentSealingService
+                .sealDocument(inputDocumentReference);
         verify(uploadDocumentService)
-            .uploadPDF(actualDocumentBinaries.capture(), eq(inputDocumentReference.getFilename()));
-
+                .uploadPDF(actualDocumentBinaries.capture(), eq(inputDocumentReference.getFilename()));
         assertThat(actualSealedDocumentReference).isEqualTo(sealedDocumentReference);
         assertThat(actualDocumentBinaries.getValue()).isEqualTo(expectedSealedDocumentBinaries);
     }
-
 }
