@@ -25,7 +25,7 @@ Scenario('Local authority sends agreed CMOs to judge', async (I, caseViewPage, u
   assertDraftCMO2(I);
 });
 
-Scenario('Judge makes changes to draft CMO and seals', async (I, caseViewPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage) => {
+Scenario('Judge makes changes to agreed CMO and seals', async (I, caseViewPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage) => {
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.reviewAgreedCmo);
   reviewAgreedCaseManagementOrderEventPage.selectCMOToReview('1 March 2020');
