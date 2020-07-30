@@ -108,15 +108,15 @@ const assertReturnedCMO = function (I) {
 };
 
 const assertSealedCMO1 = function (I) {
-  I.seeInTab(['Sealed Case Management Orders 1', 'Order'], 'mockFile.pdf');
-  I.seeInTab(['Sealed Case Management Orders 1', 'Hearing'], 'Case management hearing, 1 March 2020');
-  I.seeInTab(['Sealed Case Management Orders 1', 'Date issued'], dateFormat(today, 'dd mmm yyyy'));
-  I.seeInTab(['Sealed Case Management Orders 1', 'Judge'], 'Her Honour Judge Reed');
+  I.seeInTab(['Sealed Case Management Order 1', 'Order'], 'mockFile.pdf');
+  I.seeInTab(['Sealed Case Management Order 1', 'Hearing'], 'Case management hearing, 1 March 2020');
+  I.seeInTab(['Sealed Case Management Order 1', 'Date issued'], dateFormat(today, 'dd mmm yyyy'));
+  I.seeInTab(['Sealed Case Management Order 1', 'Judge'], 'Her Honour Judge Reed');
 };
 
 const assertSealedCMO2 = function (I) {
-  I.seeInTab(['Sealed Case Management Orders 2', 'Order'], 'mockFile.pdf');
-  I.seeInTab(['Sealed Case Management Orders 2', 'Hearing'], 'Case management hearing, 1 January 2020');
-  I.seeInTab(['Sealed Case Management Orders 2', 'Date issued'], dateFormat(today, 'dd mmm yyyy'));
-  I.seeInTab(['Sealed Case Management Orders 2', 'Judge'], 'Her Honour Judge Reed');
+  I.seeInTab(['Sealed Case Management Order 2', 'Order'], 'mockFile.pdf');
+  I.seeInTab(['Sealed Case Management Order 2', 'Hearing'], 'Case management hearing, 1 January 2020');
+  I.seeInTab(['Sealed Case Management Order 2', 'Date issued'], dateFormat(today, 'dd mmm yyyy'));
+  I.seeInTab(['Sealed Case Management Order 2', 'Judge'], 'Her Honour Judge Reed');
 };

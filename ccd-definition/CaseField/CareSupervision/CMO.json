@@ -94,7 +94,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "sealedCMOs",
-    "Label": "Sealed Case Management Orders",
+    "Label": "Sealed Case Management Order",
     "FieldType": "Collection",
     "FieldTypeParameter": "UploadedCaseManagementOrder",
     "SecurityClassification": "Public"
