@@ -71,8 +71,8 @@ module.exports = function () {
     },
 
     clickHyperlink(link, urlNavigatedTo) {
-      this.click(link);
-      this.seeCurrentUrlEquals(urlNavigatedTo);
+      this.click(locate(`//p/a[text()="${link}"]`));
+      this.seeInCurrentUrl(urlNavigatedTo);
     },
 
     seeDocument(title, name, status = '', reason = '') {

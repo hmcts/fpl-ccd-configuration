@@ -5,6 +5,7 @@ const dateFormat = require('dateformat');
 const changeRequestReason = 'Timetable for the proceedings is incomplete';
 const returnedStatus = 'Returned';
 const withJudgeStatus = 'With judge for approval';
+const linkName = 'Review agreed CMO';
 
 let caseId;
 let today;
@@ -51,6 +52,7 @@ Scenario('Judge sends agreed CMO back to the local authority', async (I, caseVie
   I.seeEventSubmissionConfirmation(config.applicationActions.reviewAgreedCmo);
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   assertDraftCMO(I, '1', '1 January 2020', returnedStatus);
+  I.clickHyperlink(linkName, 'reviewCMO');
 });
 
 Scenario('Local authority makes changes requested by the judge', async (I, caseViewPage, uploadCaseManagementOrderEventPage) => {
@@ -61,6 +63,7 @@ Scenario('Local authority makes changes requested by the judge', async (I, caseV
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadCMO);
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   assertDraftCMO(I, '1', '1 January 2020', withJudgeStatus);
+  I.dontSeeElement(locate(`//p/a[text()="${linkName}"]`));
 });
 
 Scenario('Judge seals and sends the agreed CMO to parties', async (I, caseViewPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage) => {
