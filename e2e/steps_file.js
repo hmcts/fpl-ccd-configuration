@@ -77,7 +77,7 @@ module.exports = function () {
 
     async startEventViaHyperlink(linkLabel) {
       await this.retryUntilExists(() => {
-          this.click(locate(`//p/a[text()="${linkLabel}"]`));
+        this.click(locate(`//p/a[text()="${linkLabel}"]`));
       }, 'ccd-case-event-trigger');
     },
 
