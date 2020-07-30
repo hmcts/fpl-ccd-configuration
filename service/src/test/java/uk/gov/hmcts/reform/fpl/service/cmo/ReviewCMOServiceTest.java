@@ -187,8 +187,9 @@ class ReviewCMOServiceTest {
 
     @Test
     void shouldThrowExceptionIfSealedCMOListIsEmpty() {
+        CaseData caseData = CaseData.builder().sealedCMOs(List.of()).build();
         assertThatExceptionOfType(CMONotFoundException.class).isThrownBy(
-            () -> service.getLatestSealedCMO(CaseData.builder().sealedCMOs(List.of()).build()));
+            () -> service.getLatestSealedCMO(caseData));
     }
 
     private Element<CaseManagementOrder> draftCMO(String hearing) {
