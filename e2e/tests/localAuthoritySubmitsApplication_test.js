@@ -10,7 +10,7 @@ const uploadDocumentsHelper = require('../helpers/upload_case_documents_helper.j
 
 let caseId;
 
-Feature('Application draft (populated draft)');
+Feature('Application draft');
 
 BeforeSuite(async I => caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne));
 
@@ -561,7 +561,7 @@ Scenario('local authority submits after giving consent @create-case-with-mandato
   // I.see('£2,055.00'); Disabled until Fee Register updated on AAT
   submitApplicationEventPage.seeDraftApplicationFile();
   submitApplicationEventPage.giveConsent();
-  await I.seeCheckAnswersAndCompleteEvent('Submit');
+  await I.seeCheckAnswersAndCompleteEvent('Submit', true);
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.see('New_case_name.pdf');
