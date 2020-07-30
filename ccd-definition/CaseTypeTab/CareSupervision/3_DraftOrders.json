@@ -59,6 +59,7 @@
     "TabLabel": "Draft orders",
     "TabDisplayOrder": 3,
     "CaseFieldID": "reviewCMOLink",
-    "TabFieldDisplayOrder": 4
+    "TabFieldDisplayOrder": 4,
+    "FieldShowCondition": "draftUploadedCMOs!=\"\""
   }
 ]
