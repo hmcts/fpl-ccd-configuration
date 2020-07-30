@@ -71,8 +71,14 @@ module.exports = function () {
     },
 
     clickHyperlink(link, urlNavigatedTo) {
-      this.click(locate(`//p/a[text()="${link}"]`));
-      this.seeInCurrentUrl(urlNavigatedTo);
+      this.click(link);
+      this.seeCurrentUrlEquals(urlNavigatedTo);
+    },
+
+    async startEventViaHyperlink(linkLabel) {
+      await this.retryUntilExists(() => {
+          this.click(locate(`//p/a[text()="${linkLabel}"]`));
+      }, 'ccd-case-event-trigger');
     },
 
     seeDocument(title, name, status = '', reason = '') {

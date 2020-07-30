@@ -5,7 +5,7 @@ const dateFormat = require('dateformat');
 const changeRequestReason = 'Timetable for the proceedings is incomplete';
 const returnedStatus = 'Returned';
 const withJudgeStatus = 'With judge for approval';
-const linkName = 'Review agreed CMO';
+const linkLabel = 'Review agreed CMO';
 
 let caseId;
 let today;
@@ -44,7 +44,8 @@ Scenario('Judge makes changes to agreed CMO and seals', async (I, caseViewPage, 
 
 Scenario('Judge sends agreed CMO back to the local authority', async (I, caseViewPage, reviewAgreedCaseManagementOrderEventPage) => {
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
-  await caseViewPage.goToNewActions(config.applicationActions.reviewAgreedCmo);
+  caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
+  await I.startEventViaHyperlink(linkLabel);
   I.see('mockFile.docx');
   reviewAgreedCaseManagementOrderEventPage.selectReturnCmoForChanges();
   reviewAgreedCaseManagementOrderEventPage.enterChangesRequested(changeRequestReason);
@@ -52,7 +53,6 @@ Scenario('Judge sends agreed CMO back to the local authority', async (I, caseVie
   I.seeEventSubmissionConfirmation(config.applicationActions.reviewAgreedCmo);
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   assertDraftCMO(I, '1', '1 January 2020', returnedStatus);
-  I.clickHyperlink(linkName, 'reviewCMO');
 });
 
 Scenario('Local authority makes changes requested by the judge', async (I, caseViewPage, uploadCaseManagementOrderEventPage) => {
@@ -63,7 +63,7 @@ Scenario('Local authority makes changes requested by the judge', async (I, caseV
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadCMO);
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   assertDraftCMO(I, '1', '1 January 2020', withJudgeStatus);
-  I.dontSeeElement(locate(`//p/a[text()="${linkName}"]`));
+  I.dontSeeElement(locate(`//p/a[text()="${linkLabel}"]`));
 });
 
 Scenario('Judge seals and sends the agreed CMO to parties', async (I, caseViewPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage) => {
