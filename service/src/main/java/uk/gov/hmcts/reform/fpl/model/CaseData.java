@@ -284,7 +284,6 @@ public class CaseData {
      * Gets a merged cmo.
      *
      * @see #prepareCaseManagementOrder()
-     *
      * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
      */
     @Deprecated(since = "FPLA-1915")
@@ -620,5 +619,14 @@ public class CaseData {
         return defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()).stream()
             .filter(hearingBooking -> !hearingBooking.getValue().startsAfterToday())
             .collect(toList());
+    }
+
+    private final Object cmoToReviewList;
+    private final ReviewDecision reviewCMODecision;
+    private final String numDraftCMOs;
+    private final List<Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder>> sealedCMOs;
+
+    public List<Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder>> getSealedCMOs() {
+        return defaultIfNull(sealedCMOs, new ArrayList<>());
     }
 }
