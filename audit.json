@@ -31,6 +31,7 @@
   "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/draft-standard-directions/submitted_POST": "ignore",
   "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/placement/submitted_POST": "ignore",
   "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/create-order/prepare-selected-order/mid-event_POST": "ignore",
+  "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/upload-cmo/mid-event_POST": "ignore",
   "100000_A Client Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/sendRPAEmailByID/caseId_POST": "ignore",
   "10023_Information Disclosure - Debug Error Messages_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/add-note/about-to-submit_POST": "ignore",
   "10023_Information Disclosure - Debug Error Messages_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/close-case/about-to-submit_POST": "ignore",
@@ -181,6 +182,11 @@
   "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/upload-c2/about-to-submit_POST": "ignore",
   "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/cmo-progression/about-to-submit_POST": "ignore",
   "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/draft-cmo/submitted_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/update-task-list/submitted_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/upload-cmo/about-to-start_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/comply-on-behalf/about-to-submit_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/upload-cmo/mid-event_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/upload-cmo/about-to-submit_POST": "ignore",
   "10054_Cookie Without SameSite Attribute_http://fpl-case-service-aat.service.core-compute-aat.internal/sendRPAEmailByID/caseId_POST": "ignore",
   "10054_Cookie Without SameSite Attribute_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/enter-respondents/about-to-submit_POST": "ignore",
   "10054_Cookie Without SameSite Attribute_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/case-extension/about-to-start_POST": "ignore",
@@ -234,5 +240,8 @@
   "10010_Cookie No HttpOnly Flag_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/action-cmo/about-to-submit_POST": "ignore",
   "10010_Cookie No HttpOnly Flag_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/add-hearing-bookings/mid-event_POST": "ignore",
   "10010_Cookie No HttpOnly Flag_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/create-order/prepare-selected-order/mid-event_POST": "ignore",
-  "10010_Cookie No HttpOnly Flag_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/statement-of-service/about-to-start_POST": "ignore"
+  "10010_Cookie No HttpOnly Flag_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/statement-of-service/about-to-start_POST": "ignore",
+  "10010_Cookie No HttpOnly Flag_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/update-task-list/submitted_POST": "ignore",
+  "10010_Cookie No HttpOnly Flag_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/upload-cmo/mid-event_POST": "ignore",
+  "10010_Cookie No HttpOnly Flag_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/upload-cmo/about-to-submit_POST": "ignore"
 }
