@@ -28,7 +28,7 @@ Scenario('Local authority sends agreed CMOs to judge', async (I, caseViewPage, u
   assertDraftCMO(I, '2', '1 March 2020', withJudgeStatus);
 });
 
-Scenario('Judge makes changes to agreed CMO and seals', async (I, caseViewPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage) => {
+Scenario('Judge makes changes to agreed CMO and seals', async (I, caseViewPage, reviewAgreedCaseManagementOrderEventPage) => {
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.reviewAgreedCmo);
   reviewAgreedCaseManagementOrderEventPage.selectCMOToReview('1 March 2020');
@@ -63,10 +63,10 @@ Scenario('Local authority makes changes requested by the judge', async (I, caseV
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadCMO);
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   assertDraftCMO(I, '1', '1 January 2020', withJudgeStatus);
-  I.dontSeeElement(locate(`//p/a[text()="${linkLabel}"]`));
+  I.dontSee(linkLabel);
 });
 
-Scenario('Judge seals and sends the agreed CMO to parties', async (I, caseViewPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage) => {
+Scenario('Judge seals and sends the agreed CMO to parties', async (I, caseViewPage, reviewAgreedCaseManagementOrderEventPage) => {
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.reviewAgreedCmo);
   reviewAgreedCaseManagementOrderEventPage.selectSealCmo();
@@ -90,20 +90,24 @@ const localAuthoritySendsAgreedCmo = async function (I, caseViewPage, uploadCase
 };
 
 const assertDraftCMO = function (I, collectionId, hearingDate, status) {
-  I.seeInTab([`Draft Case Management Order ${collectionId}`, 'Order'], 'mockFile.docx');
-  I.seeInTab([`Draft Case Management Order ${collectionId}`, 'Hearing'], `Case management hearing, ${hearingDate}`);
-  I.seeInTab([`Draft Case Management Order ${collectionId}`, 'Date sent'], dateFormat(today, 'dd mmm yyyy'));
-  I.seeInTab([`Draft Case Management Order ${collectionId}`, 'Judge'], 'Her Honour Judge Reed');
-  I.seeInTab([`Draft Case Management Order ${collectionId}`, 'Status'], status);
+  const draftCMO = `Draft Case Management Order ${collectionId}`;
 
-  if (status == returnedStatus) {
-    I.seeInTab([`Draft Case Management Order ${collectionId}`, 'Changes requested by judge'], changeRequestReason);
+  I.seeInTab([draftCMO, 'Order'], 'mockFile.docx');
+  I.seeInTab([draftCMO, 'Hearing'], `Case management hearing, ${hearingDate}`);
+  I.seeInTab([draftCMO, 'Date sent'], dateFormat(today, 'dd mmm yyyy'));
+  I.seeInTab([draftCMO, 'Judge'], 'Her Honour Judge Reed');
+  I.seeInTab([draftCMO, 'Status'], status);
+
+  if (status === returnedStatus) {
+    I.seeInTab([draftCMO, 'Changes requested by judge'], changeRequestReason);
   }
 };
 
-const assertSealedCMO = function(I, collectionId, hearingDate) {
-  I.seeInTab([`Sealed Case Management Order ${collectionId}`, 'Order'], 'mockFile.pdf');
-  I.seeInTab([`Sealed Case Management Order ${collectionId}`, 'Hearing'], `Case management hearing, ${hearingDate}`);
-  I.seeInTab([`Sealed Case Management Order ${collectionId}`, 'Date issued'], dateFormat(today, 'dd mmm yyyy'));
-  I.seeInTab([`Sealed Case Management Order ${collectionId}`, 'Judge'], 'Her Honour Judge Reed');
+const assertSealedCMO = function (I, collectionId, hearingDate) {
+  const sealedCMO = `Sealed Case Management Order ${collectionId}`;
+
+  I.seeInTab([sealedCMO, 'Order'], 'mockFile.pdf');
+  I.seeInTab([sealedCMO, 'Hearing'], `Case management hearing, ${hearingDate}`);
+  I.seeInTab([sealedCMO, 'Date issued'], dateFormat(today, 'dd mmm yyyy'));
+  I.seeInTab([sealedCMO, 'Judge'], 'Her Honour Judge Reed');
 };
