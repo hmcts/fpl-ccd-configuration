@@ -189,6 +189,7 @@
   "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/upload-cmo/mid-event_POST": "ignore",
   "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/upload-cmo/about-to-submit_POST": "ignore",
   "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/upload-cmo/submitted_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/review-cmo/about-to-start_POST": "ignore",
   "10054_Cookie Without SameSite Attribute_http://fpl-case-service-aat.service.core-compute-aat.internal/sendRPAEmailByID/caseId_POST": "ignore",
   "10054_Cookie Without SameSite Attribute_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/enter-respondents/about-to-submit_POST": "ignore",
   "10054_Cookie Without SameSite Attribute_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/case-extension/about-to-start_POST": "ignore",
