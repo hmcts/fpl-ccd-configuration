@@ -33,10 +33,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -118,8 +120,8 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         assertResponseDataContainsExpectedFields(responseData, caseDataBefore);
 
         verify(notificationClient).sendEmail(
-            CMO_REJECTED_BY_JUDGE_TEMPLATE, LOCAL_AUTHORITY_EMAIL_ADDRESS,
-            expectedJudgeRejectedNotificationParameters(), CASE_ID.toString());
+            eq(CMO_REJECTED_BY_JUDGE_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            anyMap(), eq(CASE_ID.toString()));
     }
 
     @Test
@@ -136,8 +138,8 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         postAboutToSubmitEvent(buildCallbackRequest(caseDetails, ACTION_CASE_MANAGEMENT_ORDER));
 
         verify(notificationClient, never()).sendEmail(
-            CMO_REJECTED_BY_JUDGE_TEMPLATE, LOCAL_AUTHORITY_EMAIL_ADDRESS,
-            expectedJudgeRejectedNotificationParameters(), CASE_ID.toString());
+            eq(CMO_REJECTED_BY_JUDGE_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            anyMap(), eq(CASE_ID.toString()));
     }
 
     @Test
@@ -255,12 +257,6 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
             .build();
     }
 
-    private Map<String, Object> expectedJudgeRejectedNotificationParameters() {
-        return new HashMap<>(commonNotificationParameters()
-            .put("requestedChanges", "Please make this change XYZ")
-            .build());
-    }
-
     private Map<String, Object> expectedCMODraftCompleteNotificationParameters() {
         return new HashMap<>(
             commonNotificationParameters()
@@ -272,7 +268,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
     private ImmutableMap.Builder<String, Object> commonNotificationParameters() {
         String hearingDate = formatLocalDateTimeBaseUsingFormat(futureDate, DATE_SHORT_MONTH);
-        String subjectLine = String.format("Jones, %s, hearing %s", FAMILY_MAN_CASE_NUMBER, hearingDate);
+        String subjectLine = format("Jones, %s, hearing %s", FAMILY_MAN_CASE_NUMBER, hearingDate);
 
         return ImmutableMap.<String, Object>builder()
             .put("subjectLineWithHearingDate", subjectLine)
