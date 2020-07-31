@@ -37,7 +37,7 @@ public class OrganisationService {
         } catch (FeignException.NotFound | FeignException.Forbidden unregisteredException) {
             log.warn("User not registered in any org in MO", unregisteredException);
         } catch (FeignException prdFailureException) {
-            log.error("PRD failed", prdFailureException);
+            log.error("Request for user in same organisation failed", prdFailureException);
         }
         return useLocalMapping(localAuthorityCode);
     }
