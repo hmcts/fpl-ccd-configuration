@@ -44,6 +44,7 @@ public class CaseManagementOrderIssuedEventHandler {
         EventData eventData = new EventData(event);
         CaseManagementOrder issuedCmo = event.getCmo();
 
+        //TODO Document is downloaded 5 times, this could impact performance. Investigate in FPLA-2061
         sendToLocalAuthority(eventData, issuedCmo);
         sendToCafcass(eventData, issuedCmo);
         sendToRepresentatives(eventData, issuedCmo, DIGITAL_SERVICE);

@@ -42,9 +42,9 @@ class ReviewCMOControllerAboutToStartTest extends AbstractControllerTest {
 
         CaseData caseData = CaseData.builder().draftUploadedCMOs(draftCMOs).build();
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(asCaseDetails(caseData));
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseData);
 
-        DynamicList dynamicList = DynamicList.builder()
+        DynamicList cmoList = DynamicList.builder()
             .value(DynamicListElement.EMPTY)
             .listItems(draftCMOs.stream().map(cmo -> DynamicListElement.builder()
                 .code(cmo.getId())
@@ -57,7 +57,7 @@ class ReviewCMOControllerAboutToStartTest extends AbstractControllerTest {
 
         assertThat(responseData.getNumDraftCMOs()).isEqualTo("MULTI");
         assertThat(responseData.getCmoToReviewList()).isEqualTo(
-            mapper.convertValue(dynamicList, new TypeReference<Map<String, Object>>() {}));
+            mapper.convertValue(cmoList, new TypeReference<Map<String, Object>>() {}));
     }
 
     @Test
@@ -72,9 +72,7 @@ class ReviewCMOControllerAboutToStartTest extends AbstractControllerTest {
 
         CaseData caseData = CaseData.builder().draftUploadedCMOs(draftCMOs).build();
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseData);
-
-        CaseData responseData = mapper.convertValue(response.getData(), CaseData.class);
+        CaseData responseData = extractCaseData(postAboutToStartEvent(caseData));
 
         assertThat(responseData.getNumDraftCMOs()).isEqualTo("SINGLE");
         assertThat(responseData.getReviewCMODecision()).isEqualTo(expectedDecision);
@@ -84,7 +82,7 @@ class ReviewCMOControllerAboutToStartTest extends AbstractControllerTest {
     void shouldReturnCorrectDataWhenNoDraftCMOsReadyForApproval() {
         CaseData caseData = CaseData.builder().draftUploadedCMOs(List.of()).build();
 
-        CaseData updatedCaseData = extractCaseData(postAboutToStartEvent(asCaseDetails(caseData)));
+        CaseData updatedCaseData = extractCaseData(postAboutToStartEvent(caseData));
 
         assertThat(updatedCaseData.getNumDraftCMOs()).isEqualTo("NONE");
     }

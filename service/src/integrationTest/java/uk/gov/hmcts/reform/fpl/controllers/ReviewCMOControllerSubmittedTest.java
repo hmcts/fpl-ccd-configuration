@@ -92,9 +92,7 @@ class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
     void shouldSendCMOIssuedNotificationsIfJudgeApproves() {
         given(documentDownloadService.downloadDocument(order.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
 
-        CaseData caseData = buildCaseDataForApprovedCMO();
-
-        CaseDetails caseDetails = asCaseDetails(caseData);
+        CaseDetails caseDetails = buildCaseDetailsForApprovedCMO();
         caseDetails.setId(CASE_ID);
 
         CaseDetails caseDetailsBefore = CaseDetails.builder().data(
@@ -147,11 +145,7 @@ class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
 
     @Test
     void shouldSendCMORejectedNotificationIfJudgeRequestedChanges() {
-        UUID cmoId = UUID.fromString("51d02c7f-2a51-424b-b299-a90b98bb1774");
-
-        CaseData caseData = buildCaseDataForRejectedCMO(cmoId);
-
-        CaseDetails caseDetails = asCaseDetails(caseData);
+        CaseDetails caseDetails = buildCaseDetailsForRejectedCMO();
         caseDetails.setId(CASE_ID);
 
         CaseDetails caseDetailsBefore = CaseDetails.builder().data(
@@ -173,25 +167,27 @@ class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
         verifyNoMoreInteractions(notificationClient);
     }
 
-    private static CaseData buildCaseDataForApprovedCMO() {
-        UUID cmoId = UUID.fromString("51d02c7f-2a51-424b-b299-a90b98bb1774");
+    private CaseDetails buildCaseDetailsForApprovedCMO() {
+        UUID cmoId = UUID.randomUUID();
 
-        return CaseData.builder()
+        return asCaseDetails(CaseData.builder()
             .representatives(createRepresentatives())
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .draftUploadedCMOs(List.of(element(cmoId, buildCMO(SEND_TO_JUDGE))))
             .sealedCMOs(List.of(element(buildCMO(APPROVED))))
             .reviewCMODecision(buildReviewDecision(SEND_TO_ALL_PARTIES))
             .hearingDetails(List.of(element(hearing(cmoId))))
-            .build();
+            .build());
     }
 
-    private static CaseData buildCaseDataForRejectedCMO(UUID cmoId) {
-        return CaseData.builder()
+    private CaseDetails buildCaseDetailsForRejectedCMO() {
+        UUID cmoId = UUID.randomUUID();
+
+        return asCaseDetails(CaseData.builder()
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .draftUploadedCMOs(List.of(element(cmoId, buildCMO(RETURNED))))
             .reviewCMODecision(buildReviewDecision(JUDGE_REQUESTED_CHANGES))
-            .build();
+            .build());
     }
 
     private static CaseManagementOrder buildCMO(CMOStatus status) {

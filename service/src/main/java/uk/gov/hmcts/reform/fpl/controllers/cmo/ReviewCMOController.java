@@ -50,7 +50,7 @@ public class ReviewCMOController {
 
         data.remove("reviewCMODecision");
 
-        data.putAll(reviewCMOService.handlePageDisplayLogic(caseData));
+        data.putAll(reviewCMOService.getPageDisplayControls(caseData));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -70,12 +70,9 @@ public class ReviewCMOController {
             .document(selectedCMO.getValue().getOrder())
             .build());
 
-        List<Element<CaseManagementOrder>> cmosReadyForApproval = reviewCMOService.getCMOsReadyForApproval(
-            caseData.getDraftUploadedCMOs());
-
         if (!(caseData.getCmoToReviewList() instanceof DynamicList)) {
             // reconstruct dynamic list
-            data.put("cmoToReviewList", reviewCMOService.buildDynamicList(cmosReadyForApproval, selectedCMO.getId()));
+            data.put("cmoToReviewList", reviewCMOService.buildDynamicList(caseData));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -90,8 +87,7 @@ public class ReviewCMOController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<CaseManagementOrder>> cmosReadyForApproval = reviewCMOService.getCMOsReadyForApproval(
-            caseData.getDraftUploadedCMOs());
+        List<Element<CaseManagementOrder>> cmosReadyForApproval = reviewCMOService.getCMOsReadyForApproval(caseData);
 
         if (!cmosReadyForApproval.isEmpty()) {
             Element<CaseManagementOrder> cmo = reviewCMOService.getSelectedCMO(caseData);
@@ -131,8 +127,9 @@ public class ReviewCMOController {
         CaseData caseDataBefore = mapper.convertValue(callbackRequest.getCaseDetailsBefore().getData(), CaseData.class);
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
 
+        //Checks caseDataBefore as caseData has been modified by this point
         List<Element<CaseManagementOrder>> cmosReadyForApproval = reviewCMOService.getCMOsReadyForApproval(
-            caseDataBefore.getDraftUploadedCMOs());
+            caseDataBefore);
 
         if (!cmosReadyForApproval.isEmpty()) {
             if (!JUDGE_REQUESTED_CHANGES.equals(caseData.getReviewCMODecision().getDecision())) {

@@ -32,20 +32,26 @@ public class ReviewCMOService {
     private final ObjectMapper mapper;
     private final Time time;
 
-    private DynamicList buildDynamicList(List<Element<CaseManagementOrder>> cmos) {
-        return buildDynamicList(cmos, null);
+    public DynamicList buildDynamicList(CaseData caseData) {
+        List<Element<CaseManagementOrder>> cmosReadyForApproval = getCMOsReadyForApproval(caseData);
+        Element<CaseManagementOrder> selectedCMO = getSelectedCMO(caseData);
+
+        return asDynamicList(cmosReadyForApproval, selectedCMO.getId(),
+            uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder::getHearing);
     }
 
-    public DynamicList buildDynamicList(List<Element<CaseManagementOrder>> cmos, UUID selected) {
-        return asDynamicList(cmos, selected, uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder::getHearing);
+    public DynamicList buildUnselectedDynamicList(CaseData caseData) {
+        List<Element<CaseManagementOrder>> cmosReadyForApproval = getCMOsReadyForApproval(caseData);
+
+        return asDynamicList(cmosReadyForApproval, null,
+            uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder::getHearing);
     }
 
-    public Map<String, Object> handlePageDisplayLogic(CaseData caseData) {
-        List<Element<CaseManagementOrder>> cmosReadyForApproval = getCMOsReadyForApproval(
-            caseData.getDraftUploadedCMOs());
+    public Map<String, Object> getPageDisplayControls(CaseData caseData) {
+        List<Element<CaseManagementOrder>> cmosReadyForApproval = getCMOsReadyForApproval(caseData);
         Map<String, Object> data = new HashMap<>();
         String numDraftCMOs = "numDraftCMOs";
-        
+
         switch (cmosReadyForApproval.size()) {
             case 0:
                 data.put(numDraftCMOs, "NONE");
@@ -58,7 +64,7 @@ public class ReviewCMOService {
                 break;
             default:
                 data.put(numDraftCMOs, "MULTI");
-                data.put("cmoToReviewList", buildDynamicList(cmosReadyForApproval));
+                data.put("cmoToReviewList", buildUnselectedDynamicList(caseData));
                 break;
         }
 
@@ -81,8 +87,8 @@ public class ReviewCMOService {
             .build());
     }
 
-    public List<Element<CaseManagementOrder>> getCMOsReadyForApproval(List<Element<CaseManagementOrder>> draftCMOs) {
-        return draftCMOs.stream()
+    public List<Element<CaseManagementOrder>> getCMOsReadyForApproval(CaseData caseData) {
+        return caseData.getDraftUploadedCMOs().stream()
             .filter(cmo -> cmo.getValue().getStatus().equals(SEND_TO_JUDGE))
             .collect(Collectors.toList());
     }
@@ -100,14 +106,6 @@ public class ReviewCMOService {
         }
     }
 
-    private UUID getSelectedCMOId(Object dynamicList) {
-        //see RDM-5696 and RDM-6651
-        if (dynamicList instanceof String) {
-            return UUID.fromString(dynamicList.toString());
-        }
-        return mapper.convertValue(dynamicList, DynamicList.class).getValueCode();
-    }
-
     public CaseManagementOrder getLatestSealedCMO(CaseData caseData) {
         List<Element<CaseManagementOrder>> sealedCMOs = caseData.getSealedCMOs();
         if (!sealedCMOs.isEmpty()) {
@@ -115,5 +113,13 @@ public class ReviewCMOService {
         } else {
             throw new CMONotFoundException("No sealed CMOS found");
         }
+    }
+
+    private UUID getSelectedCMOId(Object dynamicList) {
+        //see RDM-5696 and RDM-6651
+        if (dynamicList instanceof String) {
+            return UUID.fromString(dynamicList.toString());
+        }
+        return mapper.convertValue(dynamicList, DynamicList.class).getValueCode();
     }
 }

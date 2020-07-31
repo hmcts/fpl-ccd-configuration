@@ -66,7 +66,7 @@ class ReviewCMOServiceTest {
                 .value(EMPTY)
                 .listItems(dynamicListItems(draftCMOs.get(0).getId(), draftCMOs.get(1).getId())).build());
 
-        assertThat(service.handlePageDisplayLogic(caseData)).isEqualTo(expectedData);
+        assertThat(service.getPageDisplayControls(caseData)).isEqualTo(expectedData);
     }
 
     @Test
@@ -79,7 +79,7 @@ class ReviewCMOServiceTest {
                 .hearing(hearing1)
                 .document(order).build());
 
-        assertThat(service.handlePageDisplayLogic(caseData)).isEqualTo(expectedData);
+        assertThat(service.getPageDisplayControls(caseData)).isEqualTo(expectedData);
     }
 
     @Test
@@ -89,19 +89,22 @@ class ReviewCMOServiceTest {
         Map<String, Object> expectedData = Map.of(
             "numDraftCMOs", NONE);
 
-        assertThat(service.handlePageDisplayLogic(caseData)).isEqualTo(expectedData);
+        assertThat(service.getPageDisplayControls(caseData)).isEqualTo(expectedData);
     }
 
     @Test
     void shouldReturnCMOsThatAreReadyForApproval() {
-        Element<CaseManagementOrder> draftCMO1 = draftCMO(hearing1);
-        Element<CaseManagementOrder> draftCMO2 = draftCMO(hearing2);
+        Element<CaseManagementOrder> draftCMO1 = element(CaseManagementOrder.builder().status(SEND_TO_JUDGE).build());
+        Element<CaseManagementOrder> draftCMO2 = element(CaseManagementOrder.builder().status(SEND_TO_JUDGE).build());
         Element<CaseManagementOrder> draftCMO3 = element(CaseManagementOrder.builder().status(RETURNED).build());
         Element<CaseManagementOrder> draftCMO4 = element(CaseManagementOrder.builder().status(APPROVED).build());
+
         List<Element<CaseManagementOrder>> draftCMOs = List.of(draftCMO1, draftCMO2, draftCMO3, draftCMO4);
+        CaseData caseData = CaseData.builder().draftUploadedCMOs(draftCMOs).build();
 
         List<Element<CaseManagementOrder>> expectedCMOs = List.of(draftCMO1, draftCMO2);
-        assertThat(service.getCMOsReadyForApproval(draftCMOs)).isEqualTo(expectedCMOs);
+
+        assertThat(service.getCMOsReadyForApproval(caseData)).isEqualTo(expectedCMOs);
     }
 
     @Test
@@ -192,7 +195,7 @@ class ReviewCMOServiceTest {
             () -> service.getLatestSealedCMO(caseData));
     }
 
-    private Element<CaseManagementOrder> draftCMO(String hearing) {
+    private static Element<CaseManagementOrder> draftCMO(String hearing) {
         return element(CaseManagementOrder.builder()
             .hearing(hearing)
             .order(order)
@@ -200,7 +203,7 @@ class ReviewCMOServiceTest {
             .judgeTitleAndName("Her Honour Judge Judy").build());
     }
 
-    private List<DynamicListElement> dynamicListItems(UUID uuid1, UUID uuid2) {
+    private static List<DynamicListElement> dynamicListItems(UUID uuid1, UUID uuid2) {
         return new ArrayList<>(List.of(
             DynamicListElement.builder()
                 .code(uuid1)
@@ -213,7 +216,7 @@ class ReviewCMOServiceTest {
         ));
     }
 
-    private HearingBooking hearing(UUID cmoId) {
+    private static HearingBooking hearing(UUID cmoId) {
         return HearingBooking.builder()
             .type(CASE_MANAGEMENT)
             .caseManagementOrderId(cmoId)
