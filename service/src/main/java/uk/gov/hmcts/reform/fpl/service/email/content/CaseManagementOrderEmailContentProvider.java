@@ -11,12 +11,15 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForCMO;
-import uk.gov.hmcts.reform.fpl.model.notify.draftcmo.IssuedCMOTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.cmo.RejectedCMOTemplate;
+import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.Map;
 
+import static org.apache.commons.lang3.StringUtils.uncapitalize;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
@@ -36,7 +39,6 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
     private static final String RESPONDENT_LAST_NAME = "respondentLastName";
     private static final String DIGITAL_PREFERENCE = "digitalPreference";
 
-
     public Map<String, Object> buildCMOIssuedCaseLinkNotificationParameters(final CaseDetails caseDetails,
                                                                             final String recipientName) {
         return ImmutableMap.<String, Object>builder()
@@ -47,6 +49,7 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
 
     public IssuedCMOTemplate buildCMOIssuedNotificationParameters(
         final CaseDetails caseDetails,
+        CaseManagementOrder cmo,
         RepresentativeServingPreferences servingPreference) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -54,21 +57,26 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
 
         template.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
         template.setFamilyManCaseNumber(caseData.getFamilyManCaseNumber());
-        template.setHearingDate(caseData.getCaseManagementOrder().getHearingDate());
+        template.setHearing(uncapitalize(cmo.getHearing()));
         template.setDigitalPreference(hasDigitalServingPreference(servingPreference) ? "Yes" : "No");
-        template.setDocumentLink(linkToAttachedDocument(caseData.getCaseManagementOrder().getOrderDoc()));
+        template.setDocumentLink(linkToAttachedDocument(cmo.getOrder()));
         template.setCaseUrl((hasDigitalServingPreference(servingPreference) ? getCaseUrl(caseDetails.getId()) : ""));
 
         return template;
     }
 
-    public Map<String, Object> buildCMORejectedByJudgeNotificationParameters(final CaseDetails caseDetails) {
+    public RejectedCMOTemplate buildCMORejectedByJudgeNotificationParameters(final CaseDetails caseDetails,
+                                                                             CaseManagementOrder cmo) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        RejectedCMOTemplate template = new RejectedCMOTemplate();
 
-        return ImmutableMap.<String, Object>builder()
-            .putAll(buildCommonCMONotificationParameters(caseDetails))
-            .put("requestedChanges", caseData.getCaseManagementOrder().getAction().getChangeRequestedByJudge())
-            .build();
+        template.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
+        template.setFamilyManCaseNumber(caseData.getFamilyManCaseNumber());
+        template.setHearing(uncapitalize(cmo.getHearing()));
+        template.setCaseUrl(getCaseUrl(caseDetails.getId()));
+        template.setRequestedChanges(cmo.getRequestedChanges());
+
+        return template;
     }
 
     public Map<String, Object> buildCMOPartyReviewParameters(final CaseDetails caseDetails,
