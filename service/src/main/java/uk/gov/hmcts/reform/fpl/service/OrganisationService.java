@@ -32,8 +32,6 @@ public class OrganisationService {
     private final RequestData requestData;
 
     public Set<String> findUserIdsInSameOrganisation(String localAuthorityCode) {
-        log.error("This is a test", new RuntimeException("This is the exception message"));
-
         try {
             return Set.copyOf(getUsersFromSameOrganisationBasedOnReferenceData(requestData.authorisation()));
         } catch (FeignException.NotFound | FeignException.Forbidden unregisteredException) {

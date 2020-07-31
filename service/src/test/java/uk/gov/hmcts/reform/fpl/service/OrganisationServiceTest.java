@@ -84,6 +84,16 @@ class OrganisationServiceTest {
     }
 
     @Test
+    void shouldReturnUsersFromLocalAuthorityMappingWhenRefDataFailsForReasonOtherThanUserNotRegistered() {
+        when(organisationApi.findUsersByOrganisation(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, Status.ACTIVE, false))
+            .thenThrow(new FeignException.InternalServerError(EMPTY, REQUEST, new byte[] {}));
+
+        Set<String> usersIdsWithinSaLa = organisationService.findUserIdsInSameOrganisation("SA");
+
+        assertThat(usersIdsWithinSaLa).containsExactlyInAnyOrder("1", "2", "3");
+    }
+
+    @Test
     void shouldReturnUsersFromOrganisationIfExistsInRefData() {
         OrganisationUsers usersInAnOrganisation = prepareUsersForAnOrganisation();
         when(organisationApi.findUsersByOrganisation(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, Status.ACTIVE, false))
