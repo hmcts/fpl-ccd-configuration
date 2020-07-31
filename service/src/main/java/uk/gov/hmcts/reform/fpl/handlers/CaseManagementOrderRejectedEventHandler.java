@@ -6,11 +6,10 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
+import uk.gov.hmcts.reform.fpl.model.notify.cmo.RejectedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
-
-import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
 
@@ -25,9 +24,9 @@ public class CaseManagementOrderRejectedEventHandler {
     public void notifyLocalAuthorityOfRejectedCaseManagementOrder(final CaseManagementOrderRejectedEvent event) {
         EventData eventData = new EventData(event);
 
-        Map<String, Object> parameters =
+        RejectedCMOTemplate parameters =
             caseManagementOrderEmailContentProvider.buildCMORejectedByJudgeNotificationParameters(
-                eventData.getCaseDetails());
+                eventData.getCaseDetails(), event.getCmo());
 
         String recipientEmail = inboxLookupService.getNotificationRecipientEmail(eventData.getCaseDetails(),
             eventData.getLocalAuthorityCode());
