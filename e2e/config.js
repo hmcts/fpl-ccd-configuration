@@ -82,7 +82,7 @@ module.exports = {
     submitCase: 'Submit application',
     deleteApplication: 'Delete an application',
     uploadCMO: 'Send agreed CMO to judge',
-    actionCaseManagementOrder: 'Action CMO',
+    reviewAgreedCmo: 'Review agreed CMO',
     complyWithDirections: 'Comply with directions',
     complyOnBehalfOf: 'Comply on behalf of others',
     allocatedJudge: 'Allocated Judge',

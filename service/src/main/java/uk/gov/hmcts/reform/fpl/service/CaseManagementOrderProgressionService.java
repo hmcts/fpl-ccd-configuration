@@ -84,7 +84,14 @@ public class CaseManagementOrderProgressionService {
                 caseDetails.getData().put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), updatedOrder);
                 caseDetails.getData().remove(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey());
 
-                sendChangesRequestedNotificationToLocalAuthority(caseDetails);
+                //Changes made so that updated CaseManagementOrderRejectedEvent can be reused in new controller
+                //This service is deprecated and will be deleted once new interim CMO is toggled on
+                uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder cmo =
+                    uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.builder()
+                        .order(updatedOrder.getOrderDoc())
+                        .hearing(updatedOrder.getHearingDate())
+                        .requestedChanges(updatedOrder.getAction().getChangeRequestedByJudge()).build();
+                sendChangesRequestedNotificationToLocalAuthority(caseDetails, cmo);
                 break;
             case SELF_REVIEW:
                 break;
@@ -115,8 +122,11 @@ public class CaseManagementOrderProgressionService {
             documentDownloadService.downloadDocument(caseData.getSharedDraftCMODocument().getBinaryUrl())));
     }
 
-    private void sendChangesRequestedNotificationToLocalAuthority(CaseDetails caseDetails) {
+    @Deprecated
+    private void sendChangesRequestedNotificationToLocalAuthority(
+        CaseDetails caseDetails,
+        uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder cmo) {
         applicationEventPublisher.publishEvent(
-            new CaseManagementOrderRejectedEvent(CallbackRequest.builder().caseDetails(caseDetails).build()));
+            new CaseManagementOrderRejectedEvent(CallbackRequest.builder().caseDetails(caseDetails).build(), cmo));
     }
 }

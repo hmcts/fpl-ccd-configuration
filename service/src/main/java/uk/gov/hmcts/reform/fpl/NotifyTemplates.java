@@ -20,14 +20,14 @@ public class NotifyTemplates {
     public static final String ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_JUDGE = "e8a21f19-3e51-4cdd-99cf-a32b4e5fedd4";
     public static final String ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES =
         "1827ae2d-d7c3-4094-8978-c2f77d7713fa";
-    public static final String CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE = "1587187b-7c5a-4665-880c-3d52073124bc";
+    public static final String CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE = "0ec7f651-4f0e-4f95-bff1-6ec232b9baf6";
     public static final String CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE =
         "58aa7e13-e80a-4630-a610-ee7fc1b6f9f9";
     public static final String CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE =
         "c61f59d0-2ece-4b00-acef-3d168943d583";
     public static final String CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE =
         "7a513cfd-cf3c-4778-aca0-4bbd1a37863a";
-    public static final String CMO_REJECTED_BY_JUDGE_TEMPLATE = "44124d30-dce0-4ae4-8e74-27dc43fc282a";
+    public static final String CMO_REJECTED_BY_JUDGE_TEMPLATE = "d1454061-e2bc-4b89-9a66-7add40656bf8";
     public static final String NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE = "ac0a0091-0b2e-44b9-afa1-321590b5d984";
     public static final String NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE = "190af4bf-50e7-44ca-b3df-22c8f3b1899c";
     public static final String PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE = "ac0a0091-0b2e-44b9-afa1-321590b5d984";

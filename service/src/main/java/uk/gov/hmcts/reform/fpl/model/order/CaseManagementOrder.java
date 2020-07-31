@@ -13,13 +13,15 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 public class CaseManagementOrder {
     private DocumentReference order;
     private String hearing;
     private LocalDate dateSent;
+    private LocalDate dateIssued;
     private CMOStatus status;
     private String judgeTitleAndName;
+    private String requestedChanges;
 
     public static CaseManagementOrder from(DocumentReference order, HearingBooking hearing, LocalDate date) {
         return CaseManagementOrder.builder()
