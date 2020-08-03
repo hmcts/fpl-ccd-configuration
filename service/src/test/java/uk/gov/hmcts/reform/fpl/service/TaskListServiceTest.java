@@ -22,16 +22,16 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
-import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT;
-import static uk.gov.hmcts.reform.fpl.enums.Event.ATTENDING_THE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
+import static uk.gov.hmcts.reform.fpl.enums.Event.COURT_SERVICES;
 import static uk.gov.hmcts.reform.fpl.enums.Event.DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.FACTORS_AFFECTING_PARENTING;
 import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
-import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_NEEDED;
+import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_URGENCY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.INTERNATIONAL_ELEMENT;
-import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_NEEDED;
+import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_SOUGHT;
+import static uk.gov.hmcts.reform.fpl.enums.Event.ORGANISATION_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHER_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
@@ -87,23 +87,23 @@ class TaskListServiceTest {
 
     private List<Task> getTasks(TaskState state) {
         return Stream.of(
-                ORDERS_NEEDED,
-                HEARING_NEEDED,
-                GROUNDS,
-                RISK_AND_HARM,
-                FACTORS_AFFECTING_PARENTING,
-                APPLICANT,
-                CHILDREN,
-                RESPONDENTS,
-                ALLOCATION_PROPOSAL,
-                OTHER_PROCEEDINGS,
-                INTERNATIONAL_ELEMENT,
-                OTHERS,
-                ATTENDING_THE_HEARING,
-                DOCUMENTS,
-                CASE_NAME,
-                SUBMIT_APPLICATION)
-                .map(event -> task(event, state))
-                .collect(Collectors.toList());
+            ORDERS_SOUGHT,
+            HEARING_URGENCY,
+            GROUNDS,
+            RISK_AND_HARM,
+            FACTORS_AFFECTING_PARENTING,
+            ORGANISATION_DETAILS,
+            CHILDREN,
+            RESPONDENTS,
+            ALLOCATION_PROPOSAL,
+            OTHER_PROCEEDINGS,
+            INTERNATIONAL_ELEMENT,
+            OTHERS,
+            COURT_SERVICES,
+            DOCUMENTS,
+            CASE_NAME,
+            SUBMIT_APPLICATION)
+            .map(event -> task(event, state))
+            .collect(Collectors.toList());
     }
 }
