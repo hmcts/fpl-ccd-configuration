@@ -1,13 +1,13 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AdminTemplateForC2;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForC2;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -25,16 +25,17 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
     private final ObjectMapper mapper;
     private final Time time;
 
-    public Map<String, Object> buildC2UploadNotification(final CaseDetails caseDetails) {
+    public AdminTemplateForC2 buildC2UploadNotification(final CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         final String subjectLine = buildSubjectLine(caseData.getFamilyManCaseNumber(), caseData.getRespondents1());
 
-        return ImmutableMap.<String, Object>builder()
-            .putAll(buildCommonNotificationParameters(caseDetails))
-            .put("subjectLine", subjectLine)
-            .put("hearingDetailsCallout", subjectLine)
-            .put("reference", String.valueOf(caseDetails.getId()))
-            .build();
+        AdminTemplateForC2 adminTemplateForC2 = new AdminTemplateForC2();
+        adminTemplateForC2.setCallout(subjectLine);
+        adminTemplateForC2.setFirstRespondentName(getFirstRespondentLastName(caseData.getRespondents1()));
+        adminTemplateForC2.setCaseUrl(String.valueOf(caseDetails.getId()));
+        adminTemplateForC2.setDocumentLink(Map.of("t", "t"));
+
+        return adminTemplateForC2;
     }
 
     public AllocatedJudgeTemplateForC2 buildC2UploadNotificationForAllocatedJudge(final CaseDetails caseDetails) {
