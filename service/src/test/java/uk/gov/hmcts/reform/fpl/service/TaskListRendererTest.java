@@ -9,16 +9,16 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
-import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT;
-import static uk.gov.hmcts.reform.fpl.enums.Event.ATTENDING_THE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
+import static uk.gov.hmcts.reform.fpl.enums.Event.COURT_SERVICES;
 import static uk.gov.hmcts.reform.fpl.enums.Event.DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.FACTORS_AFFECTING_PARENTING;
 import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
-import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_NEEDED;
+import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_URGENCY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.INTERNATIONAL_ELEMENT;
-import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_NEEDED;
+import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_SOUGHT;
+import static uk.gov.hmcts.reform.fpl.enums.Event.ORGANISATION_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHER_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
@@ -34,29 +34,29 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 class TaskListRendererTest {
 
     private static final String IMAGES_BASE_URL
-            = "https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/";
+        = "https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/";
 
     private TaskListRenderer taskListRenderer = new TaskListRenderer(IMAGES_BASE_URL);
 
     @Test
     void shouldRenderTaskList() {
         final List<Task> tasks = List.of(
-                task(CASE_NAME, COMPLETED),
-                task(ORDERS_NEEDED, IN_PROGRESS),
-                task(HEARING_NEEDED, COMPLETED),
-                task(GROUNDS, COMPLETED),
-                task(RISK_AND_HARM, IN_PROGRESS),
-                task(FACTORS_AFFECTING_PARENTING, COMPLETED),
-                task(DOCUMENTS, COMPLETED),
-                task(APPLICANT, COMPLETED),
-                task(CHILDREN, COMPLETED),
-                task(RESPONDENTS, IN_PROGRESS),
-                task(ALLOCATION_PROPOSAL, COMPLETED),
-                task(OTHER_PROCEEDINGS, IN_PROGRESS),
-                task(INTERNATIONAL_ELEMENT, IN_PROGRESS),
-                task(OTHERS, IN_PROGRESS),
-                task(ATTENDING_THE_HEARING, IN_PROGRESS),
-                task(SUBMIT_APPLICATION, NOT_AVAILABLE));
+            task(CASE_NAME, COMPLETED),
+            task(ORDERS_SOUGHT, IN_PROGRESS),
+            task(HEARING_URGENCY, COMPLETED),
+            task(GROUNDS, COMPLETED),
+            task(RISK_AND_HARM, IN_PROGRESS),
+            task(FACTORS_AFFECTING_PARENTING, COMPLETED),
+            task(DOCUMENTS, COMPLETED),
+            task(ORGANISATION_DETAILS, COMPLETED),
+            task(CHILDREN, COMPLETED),
+            task(RESPONDENTS, IN_PROGRESS),
+            task(ALLOCATION_PROPOSAL, COMPLETED),
+            task(OTHER_PROCEEDINGS, IN_PROGRESS),
+            task(INTERNATIONAL_ELEMENT, IN_PROGRESS),
+            task(OTHERS, IN_PROGRESS),
+            task(COURT_SERVICES, IN_PROGRESS),
+            task(SUBMIT_APPLICATION, NOT_AVAILABLE));
 
         final String actualTaskList = taskListRenderer.render(tasks);
         final String expectedTaskList = readString("task-list/expected-task-list.md").trim();

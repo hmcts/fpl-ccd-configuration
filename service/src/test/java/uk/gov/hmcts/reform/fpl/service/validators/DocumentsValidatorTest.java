@@ -30,13 +30,12 @@ class DocumentsValidatorTest {
     private DocumentsValidator documentsValidator;
 
     @Test
-    void shouldReturnErrorWhenNoDocuments() {
+    void shouldReturnErrorWhenNoDocumentsHaveBeenAdded() {
         final CaseData caseData = CaseData.builder().build();
 
         final List<String> errors = documentsValidator.validate(caseData);
 
-        assertThat(errors)
-            .containsExactly("Tell us the status of all documents including those that you haven't uploaded");
+        assertThat(errors).containsExactly("Add social work documents, or details of when you'll send them");
     }
 
     @Test
@@ -52,8 +51,7 @@ class DocumentsValidatorTest {
 
         final List<String> errors = documentsValidator.validate(caseData);
 
-        assertThat(errors)
-            .containsExactly("Tell us the status of all documents including those that you haven't uploaded");
+        assertThat(errors).containsExactly("Add social work documents, or details of when you'll send them");
     }
 
     @Test

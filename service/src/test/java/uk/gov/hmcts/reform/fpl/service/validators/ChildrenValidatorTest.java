@@ -30,7 +30,7 @@ class ChildrenValidatorTest {
 
         final List<String> errors = childrenValidator.validate(caseData);
 
-        assertThat(errors).contains("You need to add details to children");
+        assertThat(errors).contains("Add the child's details");
     }
 
     @Test

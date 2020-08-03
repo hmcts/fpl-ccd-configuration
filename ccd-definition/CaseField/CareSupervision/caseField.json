@@ -1455,7 +1455,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "otherProceedingsSubHeadingLabel",
     "FieldType": "Label",
-    "Label": "#### Other proceedings for the child",
+    "Label": "#### Other proceedings",
     "SecurityClassification": "Public"
   },
   {
@@ -1519,7 +1519,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "facilitiesOrServiceNeededSubHeadingLabel",
     "FieldType": "Label",
-    "Label": "#### Facilities or service needed in court",
+    "Label": "#### Court services needed",
     "SecurityClassification": "Public"
   },
   {
@@ -1631,7 +1631,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "facilitiesOrServicesNeededLink",
     "FieldType": "Label",
-    "Label": "[Make changes to facilities or services needed in court](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/attendingHearing)",
+    "Label": "[Make changes to court services needed](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/attendingHearing)",
     "SecurityClassification": "Public"
   }
 ]
