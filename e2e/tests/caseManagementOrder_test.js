@@ -94,7 +94,7 @@ const assertDraftCMO = function (I, collectionId, hearingDate, status) {
 
   I.seeInTab([draftCMO, 'Order'], 'mockFile.docx');
   I.seeInTab([draftCMO, 'Hearing'], `Case management hearing, ${hearingDate}`);
-  I.seeInTab([draftCMO, 'Date sent'], dateFormat(today, 'dd mmm yyyy'));
+  I.seeInTab([draftCMO, 'Date sent'], dateFormat(today, 'd mmm yyyy'));
   I.seeInTab([draftCMO, 'Judge'], 'Her Honour Judge Reed');
   I.seeInTab([draftCMO, 'Status'], status);
 
@@ -108,6 +108,6 @@ const assertSealedCMO = function (I, collectionId, hearingDate) {
 
   I.seeInTab([sealedCMO, 'Order'], 'mockFile.pdf');
   I.seeInTab([sealedCMO, 'Hearing'], `Case management hearing, ${hearingDate}`);
-  I.seeInTab([sealedCMO, 'Date issued'], dateFormat(today, 'dd mmm yyyy'));
+  I.seeInTab([sealedCMO, 'Date issued'], dateFormat(today, 'd mmm yyyy'));
   I.seeInTab([sealedCMO, 'Judge'], 'Her Honour Judge Reed');
 };
