@@ -17,16 +17,16 @@ import static java.util.stream.Collectors.toMap;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
-import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT;
-import static uk.gov.hmcts.reform.fpl.enums.Event.ATTENDING_THE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
+import static uk.gov.hmcts.reform.fpl.enums.Event.COURT_SERVICES;
 import static uk.gov.hmcts.reform.fpl.enums.Event.DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.FACTORS_AFFECTING_PARENTING;
 import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
-import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_NEEDED;
+import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_URGENCY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.INTERNATIONAL_ELEMENT;
-import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_NEEDED;
+import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_SOUGHT;
+import static uk.gov.hmcts.reform.fpl.enums.Event.ORGANISATION_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.OTHER_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
@@ -48,8 +48,8 @@ public class TaskListRenderer {
 
         final TaskSection applicationDetails = newSection("Add application details", of(
                 tasks.get(CASE_NAME),
-                tasks.get(ORDERS_NEEDED),
-                tasks.get(HEARING_NEEDED)
+                tasks.get(ORDERS_SOUGHT),
+                tasks.get(HEARING_URGENCY)
         ));
 
         final TaskSection applicationGrounds = newSection("Add grounds for the application", of(
@@ -65,7 +65,7 @@ public class TaskListRenderer {
 
         final TaskSection parties = newSection("Add information about the parties",
                 List.of(
-                        tasks.get(APPLICANT),
+                        tasks.get(ORGANISATION_DETAILS),
                         tasks.get(CHILDREN),
                         tasks.get(RESPONDENTS)
                 ));
@@ -78,7 +78,7 @@ public class TaskListRenderer {
                 tasks.get(OTHER_PROCEEDINGS),
                 tasks.get(INTERNATIONAL_ELEMENT),
                 tasks.get(OTHERS),
-                tasks.get(ATTENDING_THE_HEARING)
+                tasks.get(COURT_SERVICES)
         )).withInfo("Only complete if relevant");
 
         final TaskSection sentApplication = newSection("Send application", of(tasks.get(SUBMIT_APPLICATION)));

@@ -29,7 +29,7 @@ class GroundsValidatorTest {
 
         final List<String> errors = groundsValidator.validate(caseData);
 
-        assertThat(errors).contains("You need to add details to grounds for the application");
+        assertThat(errors).contains("Add the grounds for the application");
     }
 
     @Test
@@ -80,7 +80,7 @@ class GroundsValidatorTest {
 
         final List<String> errors = groundsValidator.validate(caseData);
 
-        assertThat(errors).containsExactlyInAnyOrder("You need to add details to grounds for the application");
+        assertThat(errors).containsExactlyInAnyOrder("Add the grounds for the application");
     }
 
     @Test

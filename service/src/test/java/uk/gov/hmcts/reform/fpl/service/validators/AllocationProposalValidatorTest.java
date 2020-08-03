@@ -21,12 +21,11 @@ class AllocationProposalValidatorTest {
     private AllocationProposalValidator allocationProposalValidator;
 
     @Test
-    void shouldReturnErrorWhenNoAllocationProposal() {
+    void shouldReturnErrorWhenNoAllocationProposalHasBeenAdded() {
         final CaseData caseData = CaseData.builder().build();
-
         final List<String> errors = allocationProposalValidator.validate(caseData);
 
-        assertThat(errors).contains("You need to add details to allocation proposal");
+        assertThat(errors).contains("Add the allocation proposal");
     }
 
     @Test
