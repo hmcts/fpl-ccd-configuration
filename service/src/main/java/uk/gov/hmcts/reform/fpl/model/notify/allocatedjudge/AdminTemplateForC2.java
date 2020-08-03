@@ -8,4 +8,5 @@ import uk.gov.hmcts.reform.fpl.model.notify.SharedNotifyTemplate;
 @Setter
 public final class AdminTemplateForC2 extends SharedNotifyTemplate {
     private String callout;
+    private String respondentLastName;
 }

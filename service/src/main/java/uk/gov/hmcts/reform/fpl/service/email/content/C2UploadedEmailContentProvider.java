@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
@@ -27,13 +26,12 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
 
     public AdminTemplateForC2 buildC2UploadNotification(final CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        final String subjectLine = buildSubjectLine(caseData.getFamilyManCaseNumber(), caseData.getRespondents1());
 
         AdminTemplateForC2 adminTemplateForC2 = new AdminTemplateForC2();
-        adminTemplateForC2.setCallout(subjectLine);
-        adminTemplateForC2.setFirstRespondentName(getFirstRespondentLastName(caseData.getRespondents1()));
-        adminTemplateForC2.setCaseUrl(String.valueOf(caseDetails.getId()));
-        adminTemplateForC2.setDocumentLink(Map.of("t", "t"));
+        adminTemplateForC2.setCallout(buildCallout(caseData));
+        adminTemplateForC2.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
+        adminTemplateForC2.setCaseUrl(getCaseUrl(caseDetails.getId()));
+        adminTemplateForC2.setDocumentLink(linkToAttachedDocument(caseData.getSubmittedForm()));
 
         return adminTemplateForC2;
     }
