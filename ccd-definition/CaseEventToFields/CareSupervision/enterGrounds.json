@@ -9,7 +9,8 @@
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "groundsForEPO CONTAINS \"Workaround to show groundsForEPO. Needs to be hidden from UI\""
+    "FieldShowCondition": "groundsForEPO CONTAINS \"Workaround to show groundsForEPO. Needs to be hidden from UI\"",
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -21,7 +22,8 @@
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "EPO_REASONING_SHOW CONTAINS \"SHOW_FIELD\""
+    "FieldShowCondition": "EPO_REASONING_SHOW CONTAINS \"SHOW_FIELD\"",
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -32,6 +34,7 @@
     "DisplayContext": "OPTIONAL",
     "PageID": 1,
     "PageDisplayOrder": 1,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
   }
 ]

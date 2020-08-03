@@ -51,19 +51,22 @@ module.exports = function () {
       if (changeDetails != null) {
         eventSummaryPage.provideSummary(changeDetails.summary, changeDetails.description);
       }
+      await this.submitEvent(button, confirmationPage);
+    },
+
+    async seeCheckAnswersAndCompleteEvent(button, confirmationPage = false) {
+      await this.retryUntilExists(() => this.click('Continue'), '.check-your-answers');
+      this.see('Check the information below carefully.');
+      await this.submitEvent(button, confirmationPage);
+    },
+
+    async submitEvent(button, confirmationPage) {
       if (!confirmationPage) {
         await eventSummaryPage.submit(button);
       } else {
         await eventSummaryPage.submit(button, '#confirmation-body');
         await this.retryUntilExists(() => this.click('Close and Return to case details'), '.alert-success');
       }
-    },
-
-    seeCheckAnswers(checkAnswerTitle) {
-      this.click('Continue');
-      this.waitForElement('.check-your-answers');
-      this.see(checkAnswerTitle);
-      eventSummaryPage.submit('Save and continue');
     },
 
     seeEventSubmissionConfirmation(event) {
