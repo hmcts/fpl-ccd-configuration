@@ -29,7 +29,7 @@ class RespondentsValidatorTest {
 
         final List<String> errors = respondentsValidator.validate(caseData);
 
-        assertThat(errors).contains("You need to add details to respondents");
+        assertThat(errors).contains("Add the respondents' details");
     }
 
     @Test
