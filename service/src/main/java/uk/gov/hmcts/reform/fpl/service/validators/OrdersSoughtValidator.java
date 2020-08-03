@@ -6,10 +6,10 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import java.util.List;
 
 @Component
-public class ApplicantValidator extends PropertiesValidator {
+public class OrdersSoughtValidator extends PropertiesValidator {
 
     @Override
     public List<String> validate(CaseData caseData) {
-        return super.validate(caseData, List.of("applicants", "solicitor"));
+        return super.validate(caseData, List.of("orders"));
     }
 }

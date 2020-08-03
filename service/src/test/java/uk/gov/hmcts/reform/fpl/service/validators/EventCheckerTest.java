@@ -25,14 +25,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
-import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICANT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
 import static uk.gov.hmcts.reform.fpl.enums.Event.DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.FACTORS_AFFECTING_PARENTING;
 import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
-import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_NEEDED;
-import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_NEEDED;
+import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_URGENCY;
+import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_SOUGHT;
+import static uk.gov.hmcts.reform.fpl.enums.Event.ORGANISATION_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RISK_AND_HARM;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
@@ -51,13 +51,13 @@ class EventCheckerTest {
     @MockBean
     private RespondentsValidator respondentsValidator;
     @MockBean
-    private HearingNeededValidator hearingNeededValidator;
+    private HearingUrgencyValidator hearingUrgencyValidator;
     @MockBean
-    private OrdersNeededValidator ordersNeededValidator;
+    private OrdersSoughtValidator ordersSoughtValidator;
     @MockBean
     private GroundsValidator groundsValidator;
     @MockBean
-    private ApplicantValidator applicantValidator;
+    private OrganisationDetailsValidator organisationValidator;
     @MockBean
     private DocumentsValidator documentsValidator;
     @MockBean
@@ -130,10 +130,10 @@ class EventCheckerTest {
                 caseNameValidator,
                 childrenValidator,
                 respondentsValidator,
-                hearingNeededValidator,
-                ordersNeededValidator,
+                hearingUrgencyValidator,
+                ordersSoughtValidator,
                 groundsValidator,
-                applicantValidator,
+                organisationValidator,
                 documentsValidator,
                 submissionValidator,
                 riskAndHarmValidator,
@@ -147,10 +147,10 @@ class EventCheckerTest {
                 Arguments.of(ALLOCATION_PROPOSAL, allocationProposalValidator),
                 Arguments.of(CHILDREN, childrenValidator),
                 Arguments.of(RESPONDENTS, respondentsValidator),
-                Arguments.of(HEARING_NEEDED, hearingNeededValidator),
-                Arguments.of(ORDERS_NEEDED, ordersNeededValidator),
+                Arguments.of(HEARING_URGENCY, hearingUrgencyValidator),
+                Arguments.of(ORDERS_SOUGHT, ordersSoughtValidator),
                 Arguments.of(GROUNDS, groundsValidator),
-                Arguments.of(APPLICANT, applicantValidator),
+                Arguments.of(ORGANISATION_DETAILS, organisationValidator),
                 Arguments.of(DOCUMENTS, documentsValidator),
                 Arguments.of(RISK_AND_HARM, riskAndHarmValidator),
                 Arguments.of(FACTORS_AFFECTING_PARENTING, factorsAffectingParentingValidator)
