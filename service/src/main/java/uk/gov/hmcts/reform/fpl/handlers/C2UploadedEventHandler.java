@@ -42,8 +42,7 @@ public class C2UploadedEventHandler {
             AdminTemplateForC2 parameters = c2UploadedEmailContentProvider.buildC2UploadNotification(
                 eventData.getCaseDetails());
 
-//            String email = adminNotificationHandler.getHmctsAdminEmail(eventData);
-            String email = "moleytoireasa@gmail.com";
+            String email = adminNotificationHandler.getHmctsAdminEmail(eventData);
 
             notificationService.sendEmail(C2_UPLOAD_NOTIFICATION_TEMPLATE, email, parameters,
                 eventData.getReference());
