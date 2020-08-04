@@ -133,7 +133,7 @@ class OthersServiceTest {
     }
 
     @Test
-    void shouldAddExpectedRespondentWhenHiddenDetailsMarkedAsNo() {
+    void shouldAddExpectedOtherWhenHiddenDetailsMarkedAsNo() {
         Other firstOther = otherWithDetailsHiddenValue("No");
         List<Element<Other>> confidentialOther = othersWithConfidentialFields(ID);
 
