@@ -85,22 +85,37 @@ public class C2UploadedEventHandlerTest {
     @Nested
     class C2UploadedNotificationChecks {
         final String subjectLine = "Lastname, SACCCCCCCC5676576567";
-        AdminTemplateForC2 c2Parameters = getAdminParametersForC2();
-        CaseDetails caseDetails = callbackRequest().getCaseDetails();
 
         @BeforeEach
         void before() {
+            AdminTemplateForC2 c2Parameters = new AdminTemplateForC2();
+                        String fileContent = new String(Base64.encodeBase64(DOCUMENT_CONTENT), ISO_8859_1);
+            JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
+
+            c2Parameters.setCallout(subjectLine);
+            c2Parameters.setRespondentLastName("Smith");
+            c2Parameters.setCaseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345");
+            c2Parameters.setDocumentLink(jsonFileObject.toMap());
+
+            CaseDetails caseDetails = callbackRequest().getCaseDetails();
+
             given(requestData.authorisation()).willReturn(AUTH_TOKEN);
 
             given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
                 .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
-
-            given(c2UploadedEmailContentProvider.buildC2UploadNotification(caseDetails))
-                .willReturn(c2Parameters);
         }
 
         @Test
         void shouldNotifyNonHmctsAdminOnC2Upload() {
+//            AdminTemplateForC2 c2Parameters = new AdminTemplateForC2();
+//            String fileContent = new String(Base64.encodeBase64(DOCUMENT_CONTENT), ISO_8859_1);
+//            JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
+//
+//            c2Parameters.setCallout(subjectLine);
+//            c2Parameters.setRespondentLastName("Smith");
+//            c2Parameters.setCaseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345");
+//            c2Parameters.setDocumentLink(jsonFileObject.toMap());
+
             given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(
                 UserInfo.builder().sub("hmcts-non-admin@test.com").roles(LOCAL_AUTHORITY.getRoles()).build());
 
@@ -196,7 +211,7 @@ public class C2UploadedEventHandlerTest {
 
         @Test
         void shouldNotNotifyAllocatedJudgeOnC2UploadWhenAllocatedJudgeDoesNotExist() {
-            CaseDetails caseDetails =  CaseDetails.builder().id(1L)
+            CaseDetails caseDetails = CaseDetails.builder().id(1L)
                 .data(Map.of("caseLocalAuthority", "SA"))
                 .build();
 
@@ -222,19 +237,6 @@ public class C2UploadedEventHandlerTest {
             allocatedJudgeTemplateForC2.setRespondentLastName("Smith");
 
             return allocatedJudgeTemplateForC2;
-        }
-
-        private AdminTemplateForC2 getAdminParametersForC2() {
-            AdminTemplateForC2 adminTemplateForC2 = new AdminTemplateForC2();
-            String fileContent = new String(Base64.encodeBase64(DOCUMENT_CONTENT), ISO_8859_1);
-            JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
-
-            c2Parameters.setCallout(subjectLine);
-            c2Parameters.setRespondentLastName("Smith");
-            c2Parameters.setCaseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345");
-            c2Parameters.setDocumentLink(jsonFileObject.toMap());
-
-            return adminTemplateForC2;
         }
     }
 }
