@@ -12,7 +12,7 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.OTHER;
-import static uk.gov.hmcts.reform.fpl.utils.ConfidentialDetailsHelper.getItemToAdd;
+import static uk.gov.hmcts.reform.fpl.utils.ConfidentialDetailsHelper.addConfidentialDetailsForItems;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
@@ -69,7 +69,7 @@ public class ConfidentialDetailsService {
             all.forEach(element -> {
                 T party = element.getValue();
                 if (party.containsConfidentialDetails()) {
-                    T partyToAdd = getItemToAdd(confidential, element);
+                    T partyToAdd = addConfidentialDetailsForItems(confidential, element);
                     T confidentialParty = party.addConfidentialDetails((partyToAdd.toParty()));
 
                     collection.add(element(element.getId(), confidentialParty));

@@ -5,7 +5,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.util.List;
 
 public class ConfidentialDetailsHelper {
-    public static <T> T getItemToAdd(List<Element<T>> confidential, Element<T> element) {
+    public static <T> T addConfidentialDetailsForItems(List<Element<T>> confidential, Element<T> element) {
         return confidential.stream()
             .filter(item -> item.getId().equals(element.getId()))
             .map(Element::getValue)
