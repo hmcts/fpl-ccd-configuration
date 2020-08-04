@@ -12,7 +12,7 @@ Scenario('Different user in the same local authority can see case created', asyn
 });
 
 Scenario('Different user in a different local authority cannot see case created', async I => {
-  await I.navigateToCaseDetailsAs(config.hillingdonLocalAuthorityUserOne, caseId);
+  await I.navigateToCaseDetailsAs(config.hillingdonLocalAuthorityUserTwo, caseId);
   I.see('No cases found.');
 });
 

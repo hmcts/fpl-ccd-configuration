@@ -32,18 +32,23 @@ public class OrganisationService {
     private final RequestData requestData;
 
     public Set<String> findUserIdsInSameOrganisation(String localAuthorityCode) {
+        try {
+            return Set.copyOf(getUsersFromSameOrganisationBasedOnReferenceData(requestData.authorisation()));
+        } catch (FeignException.NotFound | FeignException.Forbidden unregisteredException) {
+            log.warn("User not registered in any org in MO", unregisteredException);
+        } catch (FeignException prdFailureException) {
+            log.error("Request for user in same organisation failed", prdFailureException);
+        }
+        return useLocalMapping(localAuthorityCode);
+    }
 
+    private Set<String> useLocalMapping(String localAuthorityCode) {
         try {
             return Set.copyOf(getUsersFromSameOrganisationBasedOnAppConfig(localAuthorityCode));
-        } catch (UnknownLocalAuthorityCodeException ex) {
-            try {
-                return
-                    Set.copyOf(getUsersFromSameOrganisationBasedOnReferenceData(requestData.authorisation()));
-            } catch (Exception e) {
-                throw new UserOrganisationLookupException(
-                    format("Can't find users for %s local authority", localAuthorityCode), e
-                );
-            }
+        } catch (UnknownLocalAuthorityCodeException exception) {
+            throw new UserOrganisationLookupException(
+                format("Can't find users for %s local authority", localAuthorityCode), exception
+            );
         }
     }
 
