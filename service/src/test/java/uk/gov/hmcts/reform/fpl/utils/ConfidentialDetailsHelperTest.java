@@ -18,7 +18,6 @@ class ConfidentialDetailsHelperTest {
     private static final String CONFIDENTIAL = "Yes";
     private static final UUID ID = randomUUID();
     private static final UUID SECOND_RANDOM_ID = randomUUID();
-    private static final String TELEPHONE_NUMBER = "01227 831393";
 
     @Test
     void shouldFindItemToAddWhenInConfidential() {
@@ -56,7 +55,7 @@ class ConfidentialDetailsHelperTest {
     private Element<Other> otherWithConfidentialFields(UUID id, String detailsHidden) {
         return element(id, baseOtherBuilder(detailsHidden)
             .address(Address.builder().addressLine1("Address Line 1").build())
-            .telephone(TELEPHONE_NUMBER)
+            .telephone("01227 831393")
             .build());
     }
 }
