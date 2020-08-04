@@ -17,11 +17,15 @@ class ConfidentialDetailsHelperTest {
 
     private static final String CONFIDENTIAL = "Yes";
     private static final UUID ID = randomUUID();
+    private static final UUID SECOND_RANDOM_ID = randomUUID();
     private static final String TELEPHONE_NUMBER = "01227 831393";
 
     @Test
     void shouldFindItemToAddWhenInConfidential() {
-        List<Element<Other>> others = List.of(otherWithConfidentialFields(ID, CONFIDENTIAL));
+        List<Element<Other>> others = List.of(
+            otherWithConfidentialFields(ID, CONFIDENTIAL),
+            otherWithConfidentialFields(SECOND_RANDOM_ID, CONFIDENTIAL)
+        );
         Element<Other> othersNotConfidential = otherWithRemovedConfidentialFields(ID);
 
         Other confidentialOthers = getConfidentialItemToAdd(others, othersNotConfidential);
@@ -30,13 +34,13 @@ class ConfidentialDetailsHelperTest {
     }
 
     @Test
-    void shouldReturnItemWithoutConfidentialDetails() {
+    void shouldReturnItemWhenNoMatchFoundInConfidential() {
         List<Element<Other>> others = List.of(otherWithConfidentialFields(ID, CONFIDENTIAL));
-        Element<Other> othersNotConfidential = otherWithRemovedConfidentialFields(randomUUID());
+        Element<Other> othersNotConfidential = otherWithRemovedConfidentialFields(SECOND_RANDOM_ID);
 
         Other confidentialOthers = getConfidentialItemToAdd(others, othersNotConfidential);
 
-        assertThat(confidentialOthers).isEqualTo(otherWithRemovedConfidentialFields(ID).getValue());
+        assertThat(confidentialOthers).isEqualToComparingFieldByField(othersNotConfidential.getValue());
     }
 
     private Other.OtherBuilder baseOtherBuilder(String detailsHidden) {
