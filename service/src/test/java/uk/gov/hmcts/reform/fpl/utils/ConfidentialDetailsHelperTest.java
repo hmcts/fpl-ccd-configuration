@@ -10,7 +10,7 @@ import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.utils.ConfidentialDetailsHelper.addConfidentialDetailsForItems;
+import static uk.gov.hmcts.reform.fpl.utils.ConfidentialDetailsHelper.addConfidentialDetailsForElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 class ConfidentialDetailsHelperTest {
@@ -24,17 +24,17 @@ class ConfidentialDetailsHelperTest {
         List<Element<Other>> others = List.of(otherWithConfidentialFields(ID, CONFIDENTIAL));
         Element<Other> othersNotConfidential = otherWithRemovedConfidentialFields(ID);
 
-        Other confidentialOthers = addConfidentialDetailsForItems(others, othersNotConfidential);
+        Other confidentialOthers = addConfidentialDetailsForElement(others, othersNotConfidential);
 
         assertThat(confidentialOthers.getTelephone()).isEqualTo(TELEPHONE_NUMBER);
     }
 
     @Test
-    void shouldNotAddConfidentialDetailsForNonMatchingItem() {
+    void shouldNotAddConfidentialDetailsForNonMatchingElement() {
         List<Element<Other>> others = List.of(otherWithConfidentialFields(ID, CONFIDENTIAL));
         Element<Other> othersNotConfidential = otherWithRemovedConfidentialFields(randomUUID());
 
-        Other confidentialOthers = addConfidentialDetailsForItems(others, othersNotConfidential);
+        Other confidentialOthers = addConfidentialDetailsForElement(others, othersNotConfidential);
 
         assertThat(confidentialOthers).isEqualTo(otherWithRemovedConfidentialFields(ID).getValue());
     }

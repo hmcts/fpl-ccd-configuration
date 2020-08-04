@@ -13,7 +13,7 @@ import java.util.UUID;
 import static java.util.stream.Collectors.toList;
 import static net.logstash.logback.encoder.org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.utils.ConfidentialDetailsHelper.addConfidentialDetailsForItems;
+import static uk.gov.hmcts.reform.fpl.utils.ConfidentialDetailsHelper.addConfidentialDetailsForElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
@@ -46,7 +46,7 @@ public class OthersService {
 
         caseData.getAllOthers().forEach(element -> {
             if (element.getValue().containsConfidentialDetails()) {
-                Other confidentialOther = addConfidentialDetailsForItems(caseData.getConfidentialOthers(), element);
+                Other confidentialOther = addConfidentialDetailsForElement(caseData.getConfidentialOthers(), element);
 
                 others.add(element(element.getId(), addConfidentialDetails(confidentialOther, element)));
             } else {
