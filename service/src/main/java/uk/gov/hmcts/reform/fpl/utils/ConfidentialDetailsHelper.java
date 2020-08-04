@@ -10,7 +10,7 @@ public class ConfidentialDetailsHelper {
         // NO OP
     }
 
-    public static <T> T addConfidentialDetailsForElement(List<Element<T>> confidential, Element<T> element) {
+    public static <T> T getConfidentialItemToAdd(List<Element<T>> confidential, Element<T> element) {
         return confidential.stream()
             .filter(item -> item.getId().equals(element.getId()))
             .map(Element::getValue)
