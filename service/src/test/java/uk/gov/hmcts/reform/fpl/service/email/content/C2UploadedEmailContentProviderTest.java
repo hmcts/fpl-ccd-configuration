@@ -19,8 +19,6 @@ import java.util.Map;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
@@ -48,14 +46,7 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
         CaseDetails caseDetails = populatedCaseDetails(
             Map.of("applicationBinaryUrl", applicationDocument.getBinaryUrl()));
 
-        AdminTemplateForC2 adminTemplateForC2 = new AdminTemplateForC2();
-
-        adminTemplateForC2.setCallout(format("Smith, %s", CASE_REFERENCE));
-        adminTemplateForC2.setRespondentLastName("Smith");
-        adminTemplateForC2.setCaseUrl("http://fake-url/cases/case-details/12345");
-        adminTemplateForC2.setDocumentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
-            .map(JSONObject::toMap)
-            .orElse(null));
+        AdminTemplateForC2 adminTemplateForC2 = getAdminParametersForC2();
 
         assertThat(c2UploadedEmailContentProvider.buildC2UploadNotification(caseDetails))
             .isEqualToComparingFieldByField(adminTemplateForC2);
@@ -102,7 +93,7 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
 
         adminTemplateForC2.setCallout(format("Smith, %s", CASE_REFERENCE));
         adminTemplateForC2.setRespondentLastName("Smith");
-        adminTemplateForC2.setCaseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345");
+        adminTemplateForC2.setCaseUrl("http://fake-url/cases/case-details/12345");
         adminTemplateForC2.setDocumentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
             .map(JSONObject::toMap)
             .orElse(null));
