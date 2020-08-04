@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AdminTemplateForC2;
+import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.UploadC2Template;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForC2;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -46,7 +46,7 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
         CaseDetails caseDetails = populatedCaseDetails(
             Map.of("applicationBinaryUrl", applicationDocument.getBinaryUrl()));
 
-        AdminTemplateForC2 adminTemplateForC2 = getAdminParametersForC2();
+        UploadC2Template adminTemplateForC2 = getAdminParametersForC2();
 
         assertThat(c2UploadedEmailContentProvider.buildC2UploadNotification(caseDetails))
             .isEqualToComparingFieldByField(adminTemplateForC2);
@@ -88,8 +88,8 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
             .build();
     }
 
-    private AdminTemplateForC2 getAdminParametersForC2() {
-        AdminTemplateForC2 adminTemplateForC2 = new AdminTemplateForC2();
+    private UploadC2Template getAdminParametersForC2() {
+        UploadC2Template adminTemplateForC2 = new UploadC2Template();
 
         adminTemplateForC2.setCallout(format("Smith, %s", CASE_REFERENCE));
         adminTemplateForC2.setRespondentLastName("Smith");

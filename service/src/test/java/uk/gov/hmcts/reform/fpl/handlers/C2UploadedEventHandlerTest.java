@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
-import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AdminTemplateForC2;
+import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.UploadC2Template;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForC2;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -85,18 +85,10 @@ public class C2UploadedEventHandlerTest {
     @Nested
     class C2UploadedNotificationChecks {
         final String subjectLine = "Lastname, SACCCCCCCC5676576567";
+        UploadC2Template c2Parameters = getUploadC2TemplateParameters();
 
         @BeforeEach
         void before() {
-            AdminTemplateForC2 c2Parameters = new AdminTemplateForC2();
-                        String fileContent = new String(Base64.encodeBase64(DOCUMENT_CONTENT), ISO_8859_1);
-            JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
-
-            c2Parameters.setCallout(subjectLine);
-            c2Parameters.setRespondentLastName("Smith");
-            c2Parameters.setCaseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345");
-            c2Parameters.setDocumentLink(jsonFileObject.toMap());
-
             CaseDetails caseDetails = callbackRequest().getCaseDetails();
 
             given(requestData.authorisation()).willReturn(AUTH_TOKEN);
@@ -107,14 +99,17 @@ public class C2UploadedEventHandlerTest {
 
         @Test
         void shouldNotifyNonHmctsAdminOnC2Upload() {
-//            AdminTemplateForC2 c2Parameters = new AdminTemplateForC2();
-//            String fileContent = new String(Base64.encodeBase64(DOCUMENT_CONTENT), ISO_8859_1);
-//            JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
-//
-//            c2Parameters.setCallout(subjectLine);
-//            c2Parameters.setRespondentLastName("Smith");
-//            c2Parameters.setCaseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345");
-//            c2Parameters.setDocumentLink(jsonFileObject.toMap());
+            UploadC2Template c2ParametersTest = new UploadC2Template();
+            String fileContent = new String(Base64.encodeBase64(DOCUMENT_CONTENT), ISO_8859_1);
+            JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
+
+            c2Parameters.setCallout(subjectLine);
+            c2Parameters.setRespondentLastName("Smith");
+            c2Parameters.setCaseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345");
+            c2Parameters.setDocumentLink(jsonFileObject.toMap());
+
+            given(c2UploadedEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails()))
+                .willReturn(c2ParametersTest);
 
             given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(
                 UserInfo.builder().sub("hmcts-non-admin@test.com").roles(LOCAL_AUTHORITY.getRoles()).build());
@@ -127,7 +122,7 @@ public class C2UploadedEventHandlerTest {
                 new C2UploadedEvent(callbackRequest()));
 
             verify(notificationService).sendEmail(
-                C2_UPLOAD_NOTIFICATION_TEMPLATE, "hmcts-non-admin@test.com", c2Parameters, "12345");
+                C2_UPLOAD_NOTIFICATION_TEMPLATE, "hmcts-non-admin@test.com", c2ParametersTest, "12345");
         }
 
         @Test
@@ -237,6 +232,20 @@ public class C2UploadedEventHandlerTest {
             allocatedJudgeTemplateForC2.setRespondentLastName("Smith");
 
             return allocatedJudgeTemplateForC2;
+        }
+
+        private UploadC2Template getUploadC2TemplateParameters() {
+            String fileContent = new String(Base64.encodeBase64(DOCUMENT_CONTENT), ISO_8859_1);
+            JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
+
+            UploadC2Template uploadC2Template = new UploadC2Template();
+
+            uploadC2Template.setCallout(subjectLine);
+            uploadC2Template.setRespondentLastName("Smith");
+            uploadC2Template.setCaseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345");
+            uploadC2Template.setDocumentLink(jsonFileObject.toMap());
+
+            return uploadC2Template;
         }
     }
 }

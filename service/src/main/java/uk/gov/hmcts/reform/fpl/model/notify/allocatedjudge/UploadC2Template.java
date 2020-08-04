@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.SharedNotifyTemplate;
 
 @Getter
 @Setter
-public final class AdminTemplateForC2 extends SharedNotifyTemplate {
+public final class UploadC2Template extends SharedNotifyTemplate {
     private String callout;
     private String respondentLastName;
 }
