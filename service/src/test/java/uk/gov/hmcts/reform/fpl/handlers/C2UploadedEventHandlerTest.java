@@ -85,7 +85,7 @@ public class C2UploadedEventHandlerTest {
     @Nested
     class C2UploadedNotificationChecks {
         final String subjectLine = "Lastname, SACCCCCCCC5676576567";
-        C2UploadedTemplate c2Parameters = getUploadC2TemplateParameters();
+        C2UploadedTemplate c2Parameters = getC2UploadedTemplateParameters();
 
         @BeforeEach
         void before() {
@@ -225,7 +225,7 @@ public class C2UploadedEventHandlerTest {
             return allocatedJudgeTemplateForC2;
         }
 
-        private C2UploadedTemplate getUploadC2TemplateParameters() {
+        private C2UploadedTemplate getC2UploadedTemplateParameters() {
             String fileContent = new String(Base64.encodeBase64(DOCUMENT_CONTENT), ISO_8859_1);
             JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
 

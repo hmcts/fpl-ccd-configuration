@@ -31,7 +31,6 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
     private C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
 
     private static final byte[] APPLICATION_BINARY = TestDataHelper.DOCUMENT_CONTENT;
-
     private static DocumentReference applicationDocument;
 
     @BeforeEach
