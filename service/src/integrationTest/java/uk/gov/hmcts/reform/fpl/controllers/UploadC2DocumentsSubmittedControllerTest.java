@@ -2,6 +2,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.google.common.collect.ImmutableMap;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.notify.c2uploaded.C2UploadedTemplate;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
@@ -44,6 +46,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_PBA_PAYMENT_NOT_
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ActiveProfiles("integration-test")
@@ -90,14 +93,14 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
         verify(notificationClient).sendEmail(
             C2_UPLOAD_NOTIFICATION_TEMPLATE,
             "admin@family-court.com",
-            expectedNotificationParams(),
+            expectedNotificationParams().toMap(mapper),
             CASE_ID.toString()
         );
 
         verify(notificationClient, never()).sendEmail(
             C2_UPLOAD_NOTIFICATION_TEMPLATE,
             "FamilyPublicLaw+ctsc@gmail.com",
-            expectedNotificationParams(),
+            expectedNotificationParams().toMap(mapper),
             CASE_ID.toString()
         );
     }
@@ -109,13 +112,13 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
         verify(notificationClient, never()).sendEmail(
             C2_UPLOAD_NOTIFICATION_TEMPLATE,
             "admin@family-court.com",
-            expectedNotificationParams(),
+            expectedNotificationParams().toMap(mapper),
             CASE_ID.toString()
         );
 
         verify(notificationClient).sendEmail(
             C2_UPLOAD_NOTIFICATION_TEMPLATE,
-            "FamilyPublicLaw+ctsc@gmail.com", expectedNotificationParams(),
+            "FamilyPublicLaw+ctsc@gmail.com", expectedNotificationParams().toMap(mapper),
             CASE_ID.toString()
         );
     }
@@ -306,19 +309,22 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
         );
     }
 
-
     private Map<String, Object> expectedCtscNotificationParameters() {
         return Map.of("applicationType", "C2",
             "caseUrl", "http://fake-url/cases/case-details/12345");
     }
 
-    private Map<String, Object> expectedNotificationParams() {
-        return Map.of(
-            "reference", CASE_ID.toString(),
-            "hearingDetailsCallout", String.format("%s, %s", RESPONDENT_SURNAME, CASE_ID.toString()),
-            "subjectLine", String.format("%s, %s", RESPONDENT_SURNAME, CASE_ID.toString()),
-            "caseUrl", "http://fake-url/cases/case-details/" + CASE_ID
-        );
+    private C2UploadedTemplate expectedNotificationParams() {
+        C2UploadedTemplate c2UploadedTemplate = new C2UploadedTemplate();
+
+        c2UploadedTemplate.setCallout(String.format("%s, %s", RESPONDENT_SURNAME, CASE_ID.toString()));
+        c2UploadedTemplate.setRespondentLastName("Watson");
+        c2UploadedTemplate.setCaseUrl("http://fake-url/cases/case-details/" + CASE_ID);
+        c2UploadedTemplate.setDocumentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
+            .map(JSONObject::toMap)
+            .orElse(null));
+
+        return c2UploadedTemplate;
     }
 
     private Map<String, Object> expectedPbaPaymentNotTakenNotificationParams() {
