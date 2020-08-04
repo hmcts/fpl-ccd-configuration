@@ -10,17 +10,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "useExistingHearingRadio",
+    "ID": "useExistingHearing",
     "Label": "Do you want to edit an existing hearing?",
     "FieldType": "YesOrNo",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "existingHearings_Label",
-    "Label": "Existing hearings",
-    "FieldType": "Text",
     "SecurityClassification": "Public"
   },
   {

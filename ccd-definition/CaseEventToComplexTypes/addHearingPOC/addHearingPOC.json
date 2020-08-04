@@ -1,0 +1,82 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBookingPOC",
+    "CaseEventID": "addHearingPOC",
+    "CaseFieldID": "judgeAndLegalAdvisor",
+    "ListElementCode": "allocatedJudgeLabel",
+    "SecurityClassification": "Public",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBookingPOC",
+    "CaseEventID": "addHearingPOC",
+    "CaseFieldID": "judgeAndLegalAdvisor",
+    "ListElementCode": "useAllocatedJudge",
+    "EventElementLabel": "Is the allocated judge or magistrate sitting this hearing?",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBookingPOC",
+    "CaseEventID": "addHearingPOC",
+    "CaseFieldID": "judgeAndLegalAdvisor",
+    "ListElementCode": "judgeSubHeading",
+    "EventElementLabel": "Who is sitting this hearing?",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBookingPOC",
+    "CaseEventID": "addHearingPOC",
+    "CaseFieldID": "judgeAndLegalAdvisor",
+    "ListElementCode": "judgeTitle",
+    "EventElementLabel": "Judge or magistrate's title",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBookingPOC",
+    "CaseEventID": "addHearingPOC",
+    "CaseFieldID": "judgeAndLegalAdvisor",
+    "ListElementCode": "otherTitle",
+    "EventElementLabel": "Title",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBookingPOC",
+    "CaseEventID": "addHearingPOC",
+    "CaseFieldID": "judgeAndLegalAdvisor",
+    "ListElementCode": "judgeLastName",
+    "EventElementLabel": "Last name",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBookingPOC",
+    "CaseEventID": "addHearingPOC",
+    "CaseFieldID": "judgeAndLegalAdvisor",
+    "ListElementCode": "judgeFullName",
+    "EventElementLabel": "Full name",
+    "FieldDisplayOrder": 6,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBookingPOC",
+    "CaseEventID": "addHearingPOC",
+    "CaseFieldID": "judgeAndLegalAdvisor",
+    "ListElementCode": "legalAdvisorName",
+    "EventElementLabel": "Justices' Legal Adviser's full name",
+    "FieldDisplayOrder": 7,
+    "DisplayContext": "OPTIONAL"
+  }
+]
