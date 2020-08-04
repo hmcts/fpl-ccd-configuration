@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.UploadC2Template;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForC2;
+import uk.gov.hmcts.reform.fpl.model.notify.c2uploaded.C2UploadedTemplate;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
@@ -46,10 +46,10 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
         CaseDetails caseDetails = populatedCaseDetails(
             Map.of("applicationBinaryUrl", applicationDocument.getBinaryUrl()));
 
-        UploadC2Template adminTemplateForC2 = getAdminParametersForC2();
+        C2UploadedTemplate c2UploadedTemplateParameters = getC2UploadedTemplateParameters();
 
         assertThat(c2UploadedEmailContentProvider.buildC2UploadNotification(caseDetails))
-            .isEqualToComparingFieldByField(adminTemplateForC2);
+            .isEqualToComparingFieldByField(c2UploadedTemplateParameters);
     }
 
     @Test
@@ -88,16 +88,17 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
             .build();
     }
 
-    private UploadC2Template getAdminParametersForC2() {
-        UploadC2Template adminTemplateForC2 = new UploadC2Template();
+    private C2UploadedTemplate getC2UploadedTemplateParameters() {
+        C2UploadedTemplate c2UploadedTemplate = new C2UploadedTemplate();
 
-        adminTemplateForC2.setCallout(format("Smith, %s", CASE_REFERENCE));
-        adminTemplateForC2.setRespondentLastName("Smith");
-        adminTemplateForC2.setCaseUrl("http://fake-url/cases/case-details/12345");
-        adminTemplateForC2.setDocumentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
+        c2UploadedTemplate.setCallout(format("Smith, %s", CASE_REFERENCE));
+        c2UploadedTemplate.setRespondentLastName("Smith");
+        c2UploadedTemplate.setCaseUrl("http://fake-url/cases/case-details/12345");
+        c2UploadedTemplate.setDocumentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
             .map(JSONObject::toMap)
             .orElse(null));
 
-        return adminTemplateForC2;
+        return c2UploadedTemplate;
     }
+
 }

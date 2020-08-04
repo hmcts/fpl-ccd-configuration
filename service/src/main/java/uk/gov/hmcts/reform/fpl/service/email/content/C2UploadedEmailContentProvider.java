@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.UploadC2Template;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForC2;
+import uk.gov.hmcts.reform.fpl.model.notify.c2uploaded.C2UploadedTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
@@ -24,10 +24,10 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
     private final ObjectMapper mapper;
     private final Time time;
 
-    public UploadC2Template buildC2UploadNotification(final CaseDetails caseDetails) {
+    public C2UploadedTemplate buildC2UploadNotification(final CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        UploadC2Template adminTemplateForC2 = new UploadC2Template();
+        C2UploadedTemplate adminTemplateForC2 = new C2UploadedTemplate();
         adminTemplateForC2.setCallout(buildCallout(caseData));
         adminTemplateForC2.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
         adminTemplateForC2.setCaseUrl(getCaseUrl(caseDetails.getId()));

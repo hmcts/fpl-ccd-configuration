@@ -15,8 +15,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
-import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.UploadC2Template;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForC2;
+import uk.gov.hmcts.reform.fpl.model.notify.c2uploaded.C2UploadedTemplate;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
@@ -85,11 +85,14 @@ public class C2UploadedEventHandlerTest {
     @Nested
     class C2UploadedNotificationChecks {
         final String subjectLine = "Lastname, SACCCCCCCC5676576567";
-        UploadC2Template c2Parameters = getUploadC2TemplateParameters();
+        C2UploadedTemplate c2Parameters = getUploadC2TemplateParameters();
 
         @BeforeEach
         void before() {
             CaseDetails caseDetails = callbackRequest().getCaseDetails();
+
+            given(c2UploadedEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails()))
+                .willReturn(c2Parameters);
 
             given(requestData.authorisation()).willReturn(AUTH_TOKEN);
 
@@ -99,9 +102,6 @@ public class C2UploadedEventHandlerTest {
 
         @Test
         void shouldNotifyNonHmctsAdminOnC2Upload() {
-            given(c2UploadedEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails()))
-                .willReturn(c2Parameters);
-
             given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(
                 UserInfo.builder().sub("hmcts-non-admin@test.com").roles(LOCAL_AUTHORITY.getRoles()).build());
 
@@ -225,11 +225,11 @@ public class C2UploadedEventHandlerTest {
             return allocatedJudgeTemplateForC2;
         }
 
-        private UploadC2Template getUploadC2TemplateParameters() {
+        private C2UploadedTemplate getUploadC2TemplateParameters() {
             String fileContent = new String(Base64.encodeBase64(DOCUMENT_CONTENT), ISO_8859_1);
             JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
 
-            UploadC2Template uploadC2Template = new UploadC2Template();
+            C2UploadedTemplate uploadC2Template = new C2UploadedTemplate();
 
             uploadC2Template.setCallout(subjectLine);
             uploadC2Template.setRespondentLastName("Smith");
