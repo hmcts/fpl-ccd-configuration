@@ -20,17 +20,17 @@ class ConfidentialDetailsHelperTest {
     private static final String TELEPHONE_NUMBER = "01227 831393";
 
     @Test
-    void shouldAddConfidentialDetailsForOther() {
+    void shouldFindItemToAddWhenInConfidential() {
         List<Element<Other>> others = List.of(otherWithConfidentialFields(ID, CONFIDENTIAL));
         Element<Other> othersNotConfidential = otherWithRemovedConfidentialFields(ID);
 
         Other confidentialOthers = getConfidentialItemToAdd(others, othersNotConfidential);
 
-        assertThat(confidentialOthers.getTelephone()).isEqualTo(TELEPHONE_NUMBER);
+        assertThat(confidentialOthers).isEqualToComparingFieldByField(others.get(0).getValue());
     }
 
     @Test
-    void shouldNotAddConfidentialDetailsForNonMatchingItem() {
+    void shouldReturnItemWithoutConfidentialDetails() {
         List<Element<Other>> others = List.of(otherWithConfidentialFields(ID, CONFIDENTIAL));
         Element<Other> othersNotConfidential = otherWithRemovedConfidentialFields(randomUUID());
 
