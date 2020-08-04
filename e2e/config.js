@@ -21,6 +21,12 @@ module.exports = {
     forename: 'sam@hillingdon.gov.uk',
     surname: '(local-authority)',
   },
+  hillingdonLocalAuthorityUserTwo: {
+    email: 'siva@hillingdon.gov.uk',
+    password: process.env.LA_USER_PASSWORD || defaultPassword,
+    forename: 'siva@hillingdon.gov.uk',
+    surname: '(local-authority)',
+  },
   hmctsAdminUser: {
     email: 'hmcts-admin@example.com',
     password: process.env.CA_USER_PASSWORD || defaultPassword,
