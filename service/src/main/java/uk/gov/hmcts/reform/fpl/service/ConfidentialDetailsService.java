@@ -12,6 +12,7 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.OTHER;
+import static uk.gov.hmcts.reform.fpl.utils.ConfidentialDetailsHelper.getItemToAdd;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
@@ -78,13 +79,5 @@ public class ConfidentialDetailsService {
             });
         }
         return collection;
-    }
-
-    private <T> T getItemToAdd(List<Element<T>> confidential, Element<T> element) {
-        return confidential.stream()
-            .filter(item -> item.getId().equals(element.getId()))
-            .map(Element::getValue)
-            .findFirst()
-            .orElse(element.getValue());
     }
 }

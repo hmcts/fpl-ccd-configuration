@@ -13,6 +13,7 @@ import java.util.UUID;
 import static java.util.stream.Collectors.toList;
 import static net.logstash.logback.encoder.org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.utils.ConfidentialDetailsHelper.getItemToAdd;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
@@ -45,7 +46,7 @@ public class OthersService {
 
         caseData.getAllOthers().forEach(element -> {
             if (element.getValue().containsConfidentialDetails()) {
-                Element<Other> confidentialOther = findConfidentialOther(caseData.getConfidentialOthers(), element);
+                Other confidentialOther = getItemToAdd(caseData.getConfidentialOthers(), element);
 
                 others.add(element(element.getId(), addConfidentialDetails(confidentialOther, element)));
             } else {
@@ -59,17 +60,10 @@ public class OthersService {
             .build();
     }
 
-    private Element<Other> findConfidentialOther(List<Element<Other>> confidentialOthers, Element<Other> element) {
-        return confidentialOthers.stream()
-            .filter(confidentialOther -> confidentialOther.getId().equals(element.getId()))
-            .findFirst()
-            .orElse(element);
-    }
-
-    private Other addConfidentialDetails(Element<Other> confidentialOther, Element<Other> other) {
+    private Other addConfidentialDetails(Other confidentialOther, Element<Other> other) {
         return other.getValue().toBuilder()
-            .telephone(confidentialOther.getValue().getTelephone())
-            .address(confidentialOther.getValue().getAddress())
+            .telephone(confidentialOther.getTelephone())
+            .address(confidentialOther.getAddress())
             .build();
     }
 
@@ -80,7 +74,7 @@ public class OthersService {
         if (!others.isEmpty()) {
             return confidentialOthers.stream()
                 .filter(other -> !ids.contains(other.getId()))
-                .map(other -> addConfidentialDetails(other, others.get(0)))
+                .map(other -> addConfidentialDetails(other.getValue(), others.get(0)))
                 .findFirst()
                 .orElse(others.get(0).getValue());
         }
