@@ -34,7 +34,7 @@ public class NewCMOUploadedEventHandler {
         CMOReadyToSealTemplate template = contentProvider.buildTemplate(
             event.getHearing(),
             eventData.getCaseDetails().getId(),
-            event.getHearing().getJudgeAndLegalAdvisor(),
+            caseData.getAllocatedJudge(),
             caseData.getAllRespondents(),
             caseData.getFamilyManCaseNumber()
         );
