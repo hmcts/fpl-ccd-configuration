@@ -54,6 +54,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.CARE_ORDER_SELECTOR;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.MULTIPLE_CARE_ORDER_LABEL;
@@ -120,6 +121,8 @@ public class GeneratedOrderController {
             data.put("hasExistingHearings", YES.getValue());
             data.put("hearingDateListAdjourn", buildHearingDateList(caseData.getHearingDetails()));
         }
+
+        System.out.println(buildHearingDateList(caseData.getHearingDetails()));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -403,12 +406,16 @@ public class GeneratedOrderController {
         for (int i = 0; i < hearingBookings.size(); i++) {
             HearingBooking hearingBooking = hearingBookings.get(i).getValue();
 
-            DynamicListElement dynamicListElement = DynamicListElement.builder()
-                .label(hearingBooking.toLabel(DATE))
-                .code(hearingBookings.get(i).getId())
-                .build();
+            if(isNull(hearingBooking.getIsAdjourned()) || !hearingBooking.getIsAdjourned().equals("true")) {
 
-            dynamicListElements.add(dynamicListElement);
+                DynamicListElement dynamicListElement = DynamicListElement.builder()
+                    .label(hearingBooking.toLabel(DATE))
+                    .code(hearingBookings.get(i).getId())
+                    .build();
+
+                dynamicListElements.add(dynamicListElement);
+
+            }
         }
 
         return DynamicList.builder()
