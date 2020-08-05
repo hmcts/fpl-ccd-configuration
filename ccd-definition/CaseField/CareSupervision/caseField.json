@@ -1633,5 +1633,13 @@
     "FieldType": "Label",
     "Label": "[Make changes to court services needed](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/attendingHearing)",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hearingsToBeAdjourned",
+    "Label": "Is a hearing being adjourned?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public"
   }
 ]

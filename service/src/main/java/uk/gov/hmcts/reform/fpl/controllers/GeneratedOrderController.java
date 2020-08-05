@@ -234,6 +234,16 @@ public class GeneratedOrderController {
             .build();
     }
 
+    @PostMapping("/populate-existing-hearing/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handlePopulateExistingHearings(@RequestBody CallbackRequest callbackRequest) {
+        Map<String, Object> data = callbackRequest.getCaseDetails().getData();
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(data)
+            .build();
+    }
+
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         Map<String, Object> data = callbackRequest.getCaseDetails().getData();
