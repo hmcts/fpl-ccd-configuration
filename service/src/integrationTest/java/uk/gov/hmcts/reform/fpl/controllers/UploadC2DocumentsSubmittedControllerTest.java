@@ -93,14 +93,14 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
         verify(notificationClient).sendEmail(
             C2_UPLOAD_NOTIFICATION_TEMPLATE,
             "admin@family-court.com",
-            expectedNotificationParams().toMap(mapper),
+            buildExpectedNotificationParams().toMap(mapper),
             CASE_ID.toString()
         );
 
         verify(notificationClient, never()).sendEmail(
             C2_UPLOAD_NOTIFICATION_TEMPLATE,
             "FamilyPublicLaw+ctsc@gmail.com",
-            expectedNotificationParams().toMap(mapper),
+            buildExpectedNotificationParams().toMap(mapper),
             CASE_ID.toString()
         );
     }
@@ -112,13 +112,13 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
         verify(notificationClient, never()).sendEmail(
             C2_UPLOAD_NOTIFICATION_TEMPLATE,
             "admin@family-court.com",
-            expectedNotificationParams().toMap(mapper),
+            buildExpectedNotificationParams().toMap(mapper),
             CASE_ID.toString()
         );
 
         verify(notificationClient).sendEmail(
             C2_UPLOAD_NOTIFICATION_TEMPLATE,
-            "FamilyPublicLaw+ctsc@gmail.com", expectedNotificationParams().toMap(mapper),
+            "FamilyPublicLaw+ctsc@gmail.com", buildExpectedNotificationParams().toMap(mapper),
             CASE_ID.toString()
         );
     }
@@ -314,7 +314,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
             "caseUrl", "http://fake-url/cases/case-details/12345");
     }
 
-    private C2UploadedTemplate expectedNotificationParams() {
+    private C2UploadedTemplate buildExpectedNotificationParams() {
         C2UploadedTemplate c2UploadedTemplate = new C2UploadedTemplate();
 
         c2UploadedTemplate.setCallout(String.format("%s, %s", RESPONDENT_SURNAME, CASE_ID.toString()));
