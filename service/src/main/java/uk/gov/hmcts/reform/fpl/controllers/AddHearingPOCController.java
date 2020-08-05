@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -72,54 +71,9 @@ public class AddHearingPOCController {
             data.put("hearingDateList", buildHearingDateList(caseData.getHearingDetails()));
         }
 
-        if (ObjectUtils.isNotEmpty(caseData.getHearingNeedsBooked())) {
-            data.put("hearingNeedsLabel", buildHearingPreferencesLabel(caseData.getHearingPreferences()));
-        }
-
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
             .build();
-    }
-
-    // TODO
-    // Bad implementation, needs fixed
-    private String buildHearingPreferencesLabel(HearingPreferences hearingPreferences) {
-        StringBuilder stringBuilder = new StringBuilder();
-
-        if (hearingPreferences.getInterpreter() == null && hearingPreferences.getWelsh() == null
-            && hearingPreferences.getIntermediary() == null && hearingPreferences.getDisabilityAssistance() == null
-            && hearingPreferences.getExtraSecurityMeasures() == null) {
-            return stringBuilder.toString();
-        } else {
-            stringBuilder.append("Court services requested: ");
-            stringBuilder.append("/n");
-        }
-
-        if (hearingPreferences.getInterpreter() != null) {
-            stringBuilder.append(String.format("Interpreter: %s", hearingPreferences.getDisabilityAssistance()));
-        }
-
-        if (hearingPreferences.getWelsh() != null) {
-            stringBuilder.append(String.format("Spoken or written welsh: %s",
-                hearingPreferences.getDisabilityAssistance()));
-        }
-
-        if (hearingPreferences.getIntermediary() != null) {
-            stringBuilder.append(String.format("Intermediary: %s",
-                hearingPreferences.getDisabilityAssistance()));
-        }
-
-        if (hearingPreferences.getDisabilityAssistance() != null) {
-            stringBuilder.append(String.format("Facilities or assistance for a disability: %s",
-                hearingPreferences.getDisabilityAssistance()));
-        }
-
-        if (hearingPreferences.getExtraSecurityMeasures() != null) {
-            stringBuilder.append(String.format("Seperate waiting room or other security measures: %s",
-                hearingPreferences.getDisabilityAssistance()));
-        }
-
-        return stringBuilder.toString();
     }
 
     @PostMapping("/populate-existing-hearing/mid-event")
@@ -154,6 +108,10 @@ public class AddHearingPOCController {
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = mapper.convertValue(callbackRequest.getCaseDetails(), CaseDetails.class);
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        if (caseData.getHearingPreferences() != null) {
+            caseDetails.getData().put("hearingNeedsLabel", buildHearingPreferencesLabel(caseData.getHearingPreferences()));
+        }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -292,5 +250,39 @@ public class AddHearingPOCController {
 
     private boolean hasExistingHearingBookings(List<Element<HearingBooking>> hearingBookings) {
         return isNotEmpty(hearingBookings);
+    }
+
+    private String buildHearingPreferencesLabel(HearingPreferences hearingPreferences) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (hearingPreferences.getInterpreter() == null && hearingPreferences.getWelsh() == null
+            && hearingPreferences.getIntermediary() == null && hearingPreferences.getDisabilityAssistance() == null
+            && hearingPreferences.getExtraSecurityMeasures() == null) {
+            return stringBuilder.toString();
+        } else {
+            stringBuilder.append("Court services requested").append("\n").append("\n");
+        }
+
+        if (hearingPreferences.getInterpreter() != null) {
+            stringBuilder.append("• Interpreter").append("\n");
+        }
+
+        if (hearingPreferences.getWelsh() != null) {
+            stringBuilder.append("• Spoken or written welsh").append("\n");
+        }
+
+        if (hearingPreferences.getIntermediary() != null) {
+            stringBuilder.append("• Intermediary").append("\n");
+        }
+
+        if (hearingPreferences.getDisabilityAssistance() != null) {
+            stringBuilder.append("• Facilities or assistance for a disability").append("\n");
+        }
+
+        if (hearingPreferences.getExtraSecurityMeasures() != null) {
+            stringBuilder.append("• Separate waiting room or other security measures").append("\n");
+        }
+
+        return stringBuilder.toString();
     }
 }

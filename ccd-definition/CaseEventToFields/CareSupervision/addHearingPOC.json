@@ -109,7 +109,7 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": "hearingNeeds",
-    "ShowSummaryChangeOption": "Y",
+    "ShowSummaryChangeOption": "N",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1
   },

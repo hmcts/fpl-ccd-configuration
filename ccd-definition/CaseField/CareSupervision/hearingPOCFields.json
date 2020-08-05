@@ -72,8 +72,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearingNeedsLabel",
     "Label": " ",
-    "FieldType": "Text",
-    "FieldTypeParameter": "HearingNeedsBooked",
+    "FieldType": "TextArea",
     "SecurityClassification": "Public"
   },
   {
