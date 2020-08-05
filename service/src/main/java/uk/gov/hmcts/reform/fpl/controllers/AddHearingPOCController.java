@@ -260,7 +260,7 @@ public class AddHearingPOCController {
             && hearingPreferences.getExtraSecurityMeasures() == null) {
             return stringBuilder.toString();
         } else {
-            stringBuilder.append("Court services requested").append("\n").append("\n");
+            stringBuilder.append("Court services already requested").append("\n").append("\n");
         }
 
         if (hearingPreferences.getInterpreter() != null) {
