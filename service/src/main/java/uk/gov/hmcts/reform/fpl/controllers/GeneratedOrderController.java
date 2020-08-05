@@ -43,6 +43,7 @@ import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 
 import java.net.URI;
@@ -51,6 +52,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.CARE_ORDER_SELECTOR;
@@ -244,20 +246,29 @@ public class GeneratedOrderController {
             .build();
     }
 
-    @PostMapping("/populate-existing-hearing/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handlePopulateExistingHearings(@RequestBody CallbackRequest callbackRequest) {
-        Map<String, Object> data = callbackRequest.getCaseDetails().getData();
-        CaseData caseData = mapper.convertValue(data, CaseData.class);
-
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .build();
-    }
-
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         Map<String, Object> data = callbackRequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+
+        DynamicList adjournedHearingList =
+            mapper.convertValue(callbackRequest.getCaseDetails().getData().get("hearingDateListAdjourn"), DynamicList.class);
+
+        System.out.println("adjourned hearing is" + adjournedHearingList.getValueCode() + adjournedHearingList.getValue());
+
+        List<Element<HearingBooking>> hearingBookings = caseData.getHearingDetails();
+
+        for (int i = 0; i < hearingBookings.size(); i++) {
+            UUID id = hearingBookings.get(i).getId();
+
+            if(id.equals(adjournedHearingList.getValueCode()))
+            {
+                hearingBookings.get(i).getValue().setIsAdjourned("true");
+            }
+        }
+
+        caseDetails.getData().put("hearingDetails", hearingBookings);
 
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
             caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge());
@@ -295,6 +306,10 @@ public class GeneratedOrderController {
         }
 
         service.removeOrderProperties(data);
+
+        Object hearingDateListAdjourn = callbackRequest.getCaseDetails().getData().get("hearingDateListAdjourn");
+
+        System.out.println(hearingDateListAdjourn);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -371,6 +386,15 @@ public class GeneratedOrderController {
 
     private boolean hasExistingHearingBookings(List<Element<HearingBooking>> hearingBookings) {
         return isNotEmpty(hearingBookings);
+    }
+
+    private HearingBooking findHearingBooking(UUID id, List<Element<HearingBooking>> hearingBookings) {
+        Optional<Element<HearingBooking>> hearingBookingElement = ElementUtils.findElement(id, hearingBookings);
+        if (hearingBookingElement.isPresent()) {
+            return hearingBookingElement.get().getValue();
+        }
+
+        return HearingBooking.builder().build();
     }
 
     private DynamicList buildHearingDateList(List<Element<HearingBooking>> hearingBookings) {
