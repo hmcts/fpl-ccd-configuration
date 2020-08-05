@@ -206,6 +206,10 @@ public class AddHearingPOCController {
             }
         }
 
+        if(dynamicListElements.isEmpty()) {
+            dynamicListElements.add(DynamicListElement.builder().build());
+        }
+
         return DynamicList.builder()
             .listItems(dynamicListElements)
             .value(dynamicListElements.get(0))
