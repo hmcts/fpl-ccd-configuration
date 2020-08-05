@@ -47,7 +47,7 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
 
         C2UploadedTemplate c2UploadedTemplateParameters = getC2UploadedTemplateParameters();
 
-        assertThat(c2UploadedEmailContentProvider.buildC2UploadNotification(caseDetails))
+        assertThat(c2UploadedEmailContentProvider.buildC2UploadNotificationTemplate(caseDetails))
             .isEqualToComparingFieldByField(c2UploadedTemplateParameters);
     }
 
@@ -99,5 +99,4 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
 
         return c2UploadedTemplate;
     }
-
 }

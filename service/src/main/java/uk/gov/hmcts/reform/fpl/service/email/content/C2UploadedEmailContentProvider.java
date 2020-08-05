@@ -24,7 +24,7 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
     private final ObjectMapper mapper;
     private final Time time;
 
-    public C2UploadedTemplate buildC2UploadNotification(final CaseDetails caseDetails) {
+    public C2UploadedTemplate buildC2UploadNotificationTemplate(final CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         C2UploadedTemplate adminTemplateForC2 = new C2UploadedTemplate();

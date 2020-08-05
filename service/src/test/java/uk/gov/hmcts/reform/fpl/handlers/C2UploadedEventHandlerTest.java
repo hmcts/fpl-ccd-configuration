@@ -91,7 +91,7 @@ public class C2UploadedEventHandlerTest {
         void before() {
             CaseDetails caseDetails = callbackRequest().getCaseDetails();
 
-            given(c2UploadedEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails()))
+            given(c2UploadedEmailContentProvider.buildC2UploadNotificationTemplate(callbackRequest().getCaseDetails()))
                 .willReturn(c2Parameters);
 
             given(requestData.authorisation()).willReturn(AUTH_TOKEN);
@@ -127,7 +127,7 @@ public class C2UploadedEventHandlerTest {
             given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
                 .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
 
-            given(c2UploadedEmailContentProvider.buildC2UploadNotification(caseDetails))
+            given(c2UploadedEmailContentProvider.buildC2UploadNotificationTemplate(caseDetails))
                 .willReturn(c2Parameters);
 
             c2UploadedEventHandler.sendNotifications(

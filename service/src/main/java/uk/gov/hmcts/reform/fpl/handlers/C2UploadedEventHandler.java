@@ -39,7 +39,7 @@ public class C2UploadedEventHandler {
         List<String> roles = idamApi.retrieveUserInfo(requestData.authorisation()).getRoles();
         if (!roles.containsAll(UserRole.HMCTS_ADMIN.getRoles())) {
             EventData eventData = new EventData(event);
-            C2UploadedTemplate parameters = c2UploadedEmailContentProvider.buildC2UploadNotification(
+            C2UploadedTemplate parameters = c2UploadedEmailContentProvider.buildC2UploadNotificationTemplate(
                 eventData.getCaseDetails());
 
             String email = adminNotificationHandler.getHmctsAdminEmail(eventData);
