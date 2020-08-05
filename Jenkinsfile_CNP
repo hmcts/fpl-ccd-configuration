@@ -92,6 +92,7 @@ withPipeline(type, product, component) {
   env.PROXY_SERVER = "proxyout.reform.hmcts.net:8080"
 
   after('checkout') {
+    /*
     onMaster {
       withCredentials([usernamePassword(credentialsId: 'jenkins-github-hmcts-api-token', usernameVariable: 'USERNAME', passwordVariable: 'BEARER_TOKEN')]) {
         try {
@@ -108,6 +109,7 @@ withPipeline(type, product, component) {
         }
       }
     }
+    */
     sh """ git submodule update --init """
   }
 
