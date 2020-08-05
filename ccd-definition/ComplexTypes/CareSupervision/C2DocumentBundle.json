@@ -4,7 +4,16 @@
     "ID": "C2DocumentBundle",
     "ListElementCode": "document",
     "FieldType": "Document",
-    "ElementLabel": "Upload a file",
+    "ElementLabel": "File",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "type",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "C2ApplicationType",
+    "ElementLabel": "Application type",
     "SecurityClassification": "Public"
   },
   {
@@ -28,7 +37,7 @@
     "ID": "C2DocumentBundle",
     "ListElementCode": "description",
     "FieldType": "TextArea",
-    "ElementLabel": "Description",
+    "ElementLabel": "Notes",
     "SecurityClassification": "Public"
   },
   {
@@ -44,7 +53,7 @@
     "ID": "C2DocumentBundle",
     "ListElementCode": "usePbaPayment",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Are you using PBA to pay?",
+    "ElementLabel": "Paid with PBA",
     "SecurityClassification": "Public"
   },
   {
@@ -70,15 +79,6 @@
     "ListElementCode": "fileReference",
     "FieldType": "Text",
     "ElementLabel": "Customer reference",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
-    "ListElementCode": "type",
-    "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "C2ApplicationType",
-    "ElementLabel": "Application type",
     "SecurityClassification": "Public"
   }
 ]

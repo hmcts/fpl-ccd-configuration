@@ -68,7 +68,7 @@
     "CaseEventID": "uploadC2",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "description",
-    "EventElementLabel": "Description",
+    "EventElementLabel": "Notes",
     "FieldDisplayOrder": 7,
     "DisplayContext": "MANDATORY"
   }

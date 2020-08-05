@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
-import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
@@ -39,7 +38,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
 @Api
@@ -51,7 +50,6 @@ public class UploadC2DocumentsController {
     private static final String AMOUNT_TO_PAY = "amountToPay";
     private static final String TEMPORARY_C2_DOCUMENT = "temporaryC2Document";
     private final ObjectMapper mapper;
-    private final UserDetailsService userDetailsService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final FeeService feeService;
     private final PaymentService paymentService;
@@ -114,7 +112,6 @@ public class UploadC2DocumentsController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-
         if (displayAmountToPay(caseDetails)) {
             try {
                 paymentService.makePaymentForC2(caseDetails.getId(), caseData);
@@ -139,7 +136,6 @@ public class UploadC2DocumentsController {
             && caseData.getTemporaryC2Document().getDocument().getUrl() == null;
     }
 
-
     private void removeDocumentFromData(Map<String, Object> data) {
         var updatedC2DocumentMap = mapper.convertValue(data.get(TEMPORARY_C2_DOCUMENT), Map.class);
         updatedC2DocumentMap.remove("document");
@@ -152,8 +148,7 @@ public class UploadC2DocumentsController {
         ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
 
         var c2DocumentBundleBuilder = caseData.getTemporaryC2Document().toBuilder()
-            .author(userDetailsService.getUserName())
-            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(zonedDateTime.toLocalDateTime(), TIME_DATE));
+            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(zonedDateTime.toLocalDateTime(), DATE_TIME));
 
         c2DocumentBundleBuilder.type(caseData.getC2ApplicationType().get("type"));
 

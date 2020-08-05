@@ -1,17 +1,14 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
-import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -21,7 +18,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
@@ -29,22 +25,12 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 @WebMvcTest(UploadC2DocumentsController.class)
 @OverrideAutoConfiguration(enabled = true)
 class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTest {
-    private static final String USER_NAME = "Emma Taylor";
     private static final ZonedDateTime ZONE_DATE_TIME = ZonedDateTime.now(ZoneId.of("Europe/London"));
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("h:mma, d MMMM yyyy", Locale.UK);
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("d MMMM yyyy, h:mma", Locale.UK);
     private static final Long CASE_ID = 12345L;
-
-    @MockBean
-    private UserDetailsService userDetailsService;
 
     UploadC2DocumentsAboutToSubmitControllerTest() {
         super("upload-c2");
-    }
-
-    @BeforeEach
-    void before() {
-        given(userDetailsService.getUserName())
-            .willReturn(USER_NAME);
     }
 
     @Test
@@ -63,7 +49,6 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
         assertThat(caseData.getTemporaryC2Document()).isNull();
         assertThat(caseData.getC2DocumentBundle()).hasSize(1);
         assertC2BundleDocument(uploadedC2DocumentBundle, "Test description");
-        assertThat(uploadedC2DocumentBundle.getAuthor()).isEqualTo(USER_NAME);
     }
 
     @Test
@@ -84,7 +69,6 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
         assertC2BundleDocument(appendedC2Document, "C2 document two");
         assertThat(caseData.getTemporaryC2Document()).isNull();
         assertThat(caseData.getC2DocumentBundle()).hasSize(2);
-        assertThat(appendedC2Document.getAuthor()).isEqualTo(USER_NAME);
     }
 
     private void assertC2BundleDocument(C2DocumentBundle documentBundle, String description) {
@@ -98,8 +82,8 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
 
     private Map<String, Object> createTemporaryC2Document() {
         return Map.of(
-                "c2ApplicationType", Map.of(
-                    "type", "WITH_NOTICE"),
+            "c2ApplicationType", Map.of(
+                "type", "WITH_NOTICE"),
             "temporaryC2Document", Map.of(
                 "document", Map.of(
                     "document_url", "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4",
