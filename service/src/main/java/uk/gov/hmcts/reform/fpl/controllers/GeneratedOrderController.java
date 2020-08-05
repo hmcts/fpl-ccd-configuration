@@ -20,12 +20,15 @@ import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.CloseCase;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
@@ -49,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.CARE_ORDER_SELECTOR;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.MULTIPLE_CARE_ORDER_LABEL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.SINGLE_CARE_ORDER_LABEL;
@@ -61,6 +65,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.CloseCaseReason.FINAL_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
@@ -107,6 +112,11 @@ public class GeneratedOrderController {
             if (CLOSED.getValue().equals(caseDetails.getState())) {
                 data.put("orderTypeAndDocument", OrderTypeAndDocument.builder().type(BLANK_ORDER).build());
             }
+        }
+
+        if (hasExistingHearingBookings(caseData.getHearingDetails())) {
+            data.put("hasExistingHearings", YES.getValue());
+            data.put("hearingDateListAdjourn", buildHearingDateList(caseData.getHearingDetails()));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -357,5 +367,29 @@ public class GeneratedOrderController {
         return childrenService.updateFinalOrderIssued(caseData.getOrderTypeAndDocument().getType(),
             caseData.getAllChildren(), caseData.getOrderAppliesToAllChildren(), caseData.getChildSelector(),
             caseData.getRemainingChildIndex());
+    }
+
+    private boolean hasExistingHearingBookings(List<Element<HearingBooking>> hearingBookings) {
+        return isNotEmpty(hearingBookings);
+    }
+
+    private DynamicList buildHearingDateList(List<Element<HearingBooking>> hearingBookings) {
+        List<DynamicListElement> dynamicListElements = new ArrayList<>();
+
+        for (int i = 0; i < hearingBookings.size(); i++) {
+            HearingBooking hearingBooking = hearingBookings.get(i).getValue();
+
+            DynamicListElement dynamicListElement = DynamicListElement.builder()
+                .label(hearingBooking.toLabel(DATE))
+                .code(hearingBookings.get(i).getId())
+                .build();
+
+            dynamicListElements.add(dynamicListElement);
+        }
+
+        return DynamicList.builder()
+            .listItems(dynamicListElements)
+            .value(dynamicListElements.get(0))
+            .build();
     }
 }
