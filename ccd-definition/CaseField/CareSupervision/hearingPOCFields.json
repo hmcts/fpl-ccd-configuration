@@ -70,6 +70,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hearingNeedsLabel",
+    "Label": " ",
+    "FieldType": "Text",
+    "FieldTypeParameter": "HearingNeedsBooked",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearingNeedsBooked",
     "Label": "Hearing needs booked",
     "FieldType": "MultiSelectList",

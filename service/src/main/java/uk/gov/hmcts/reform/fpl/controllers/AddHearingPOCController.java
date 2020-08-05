@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingPreferences;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -70,9 +72,54 @@ public class AddHearingPOCController {
             data.put("hearingDateList", buildHearingDateList(caseData.getHearingDetails()));
         }
 
+        if (ObjectUtils.isNotEmpty(caseData.getHearingNeedsBooked())) {
+            data.put("hearingNeedsLabel", buildHearingPreferencesLabel(caseData.getHearingPreferences()));
+        }
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
             .build();
+    }
+
+    // TODO
+    // Bad implementation, needs fixed
+    private String buildHearingPreferencesLabel(HearingPreferences hearingPreferences) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (hearingPreferences.getInterpreter() == null && hearingPreferences.getWelsh() == null
+            && hearingPreferences.getIntermediary() == null && hearingPreferences.getDisabilityAssistance() == null
+            && hearingPreferences.getExtraSecurityMeasures() == null) {
+            return stringBuilder.toString();
+        } else {
+            stringBuilder.append("Court services requested: ");
+            stringBuilder.append("/n");
+        }
+
+        if (hearingPreferences.getInterpreter() != null) {
+            stringBuilder.append(String.format("Interpreter: %s", hearingPreferences.getDisabilityAssistance()));
+        }
+
+        if (hearingPreferences.getWelsh() != null) {
+            stringBuilder.append(String.format("Spoken or written welsh: %s",
+                hearingPreferences.getDisabilityAssistance()));
+        }
+
+        if (hearingPreferences.getIntermediary() != null) {
+            stringBuilder.append(String.format("Intermediary: %s",
+                hearingPreferences.getDisabilityAssistance()));
+        }
+
+        if (hearingPreferences.getDisabilityAssistance() != null) {
+            stringBuilder.append(String.format("Facilities or assistance for a disability: %s",
+                hearingPreferences.getDisabilityAssistance()));
+        }
+
+        if (hearingPreferences.getExtraSecurityMeasures() != null) {
+            stringBuilder.append(String.format("Seperate waiting room or other security measures: %s",
+                hearingPreferences.getDisabilityAssistance()));
+        }
+
+        return stringBuilder.toString();
     }
 
     @PostMapping("/populate-existing-hearing/mid-event")
