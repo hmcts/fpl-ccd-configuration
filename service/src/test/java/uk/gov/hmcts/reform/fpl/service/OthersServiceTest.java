@@ -145,6 +145,30 @@ class OthersServiceTest {
         assertThat(others.getAdditionalOthers()).isEmpty();
     }
 
+    @Test
+    void shouldMaintainOrderingOfOthersWhenPreparingOthersWithConfidential() {
+        UUID otherId = randomUUID();
+
+        List<Element<Other>> others = List.of(
+            othersWithRemovedConfidentialFields().get(0),
+            othersWithConfidentialFields(otherId).get(0));
+
+        List<Element<Other>> confidentialOthers = List.of(othersWithConfidentialFields(otherId).get(0));
+
+        CaseData caseData = CaseData.builder()
+            .others(Others.builder()
+                .firstOther(othersWithRemovedConfidentialFields().get(0).getValue())
+                .additionalOthers(others)
+                .build())
+            .confidentialOthers(confidentialOthers)
+            .build();
+
+        Others updatedOthers = service.prepareOthers(caseData);
+
+        assertThat(updatedOthers.getAdditionalOthers().get(0).getValue()).isEqualTo(others.get(0).getValue());
+        assertThat(updatedOthers.getAdditionalOthers().get(1).getValue()).isEqualTo(others.get(1).getValue());
+    }
+
     private CaseData buildCaseDataWithOthers(Other firstOther,
                                              List<Element<Other>> additionalOthers,
                                              List<Element<Other>> confidentialOthers) {
