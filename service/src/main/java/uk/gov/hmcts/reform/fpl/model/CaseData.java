@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
+import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -648,4 +649,5 @@ public class CaseData {
     private final LocalDateTime hearingEndDate;
     private final String sendNoticeOfHearing;
     private final String useExistingHearing;
+    private final List<ProceedingType> proceedingType;
 }

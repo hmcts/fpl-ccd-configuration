@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,17 +13,23 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingPreferences;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
+import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsTemplateDataGenerationService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
@@ -39,6 +46,7 @@ import java.util.stream.Collectors;
 
 import static java.time.LocalDate.now;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
@@ -55,6 +63,8 @@ public class AddHearingPOCController {
     private final NoticeOfHearingGenerationService noticeOfHearingGenerationService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
+    private final NoticeOfProceedingsTemplateDataGenerationService noticeOfProceedingsTemplateDataGenerationService;
+    private final HearingBookingService hearingBookingService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -69,6 +79,10 @@ public class AddHearingPOCController {
         if (hasExistingHearingBookings(caseData.getHearingDetails())) {
             data.put("hasExistingHearings", YES.getValue());
             data.put("hearingDateList", buildHearingDateList(caseData.getHearingDetails()));
+        }
+
+        if (caseData.getHearingDetails() == null) {
+            data.put("isFirstHearing", YES.getValue());
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -88,6 +102,16 @@ public class AddHearingPOCController {
                 hearingBookingId, hearingBooking -> hearingBooking.toLabel(DATE)));
 
         HearingBooking hearingBooking = findHearingBooking(hearingBookingId, caseData.getHearingDetails());
+
+        Optional<Element<HearingBooking>> firstHearingElement =
+            hearingBookingService.getFirstHearingElement(caseData.getHearingDetails());
+
+        if (firstHearingElement.isPresent() && firstHearingElement.get().getId().equals(hearingBookingId)) {
+            caseDetails.getData().put("isFirstHearing", YES.getValue());
+            caseDetails.getData().put("sendNoticeOfHearing", NO.getValue());
+        } else {
+            caseDetails.getData().remove("isFirstHearing");
+        }
 
         caseDetails.getData().put("hearingType", hearingBooking.getType());
         caseDetails.getData().put("hearingVenue", hearingBooking.getVenue());
@@ -110,7 +134,8 @@ public class AddHearingPOCController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (caseData.getHearingPreferences() != null) {
-            caseDetails.getData().put("hearingNeedsLabel", buildHearingPreferencesLabel(caseData.getHearingPreferences()));
+            caseDetails.getData().put("hearingNeedsLabel",
+                buildHearingPreferencesLabel(caseData.getHearingPreferences()));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -126,7 +151,8 @@ public class AddHearingPOCController {
 
         HearingBooking hearingBooking = buildHearingBooking(caseData);
 
-        if (isSendingNoticeOfHearing(caseData.getSendNoticeOfHearing())) {
+        if (caseData.getSendNoticeOfHearing() != null
+            && isSendingNoticeOfHearing(caseData.getSendNoticeOfHearing())) {
             DocmosisNoticeOfHearing dnof = noticeOfHearingGenerationService.getTemplateData(caseData, hearingBooking);
             DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(dnof,
                 NOTICE_OF_HEARING);
@@ -136,7 +162,7 @@ public class AddHearingPOCController {
             hearingBooking.setNoticeOfHearing(DocumentReference.buildFromDocument(document));
         }
 
-        List<Element<HearingBooking>> hearingBookingElements = List.of();
+        List<Element<HearingBooking>> hearingBookingElements;
 
         // Editing previous hearing
         if (caseData.getUseExistingHearing() != null && caseData.getUseExistingHearing().equals(YES.getValue())) {
@@ -161,6 +187,24 @@ public class AddHearingPOCController {
 
         caseDetails.getData().put(HEARING_DETAILS_KEY, hearingBookingElements);
 
+        if (caseData.getProceedingType() != null
+            && isSendingNoticeOfProceeding(caseData.getProceedingType())) {
+
+            CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+            DocmosisNoticeOfProceeding templateData = noticeOfProceedingsTemplateDataGenerationService
+                .getTemplateData(updatedCaseData);
+
+            List<DocmosisTemplates> templateTypes = getProceedingTemplateTypes(caseData.getProceedingType());
+
+            List<Document> uploadedDocuments = generateAndUploadDocuments(templateData, templateTypes);
+
+            List<Element<DocumentBundle>> noticeOfProceedingCaseData =
+                createNoticeOfProceedingsCaseData(uploadedDocuments);
+
+            caseDetails.getData().put("noticeOfProceedingsBundle", noticeOfProceedingCaseData);
+        }
+
         caseDetails.getData().remove("hearingType");
         caseDetails.getData().remove("hearingVenue");
         caseDetails.getData().remove("hearingVenueCustom");
@@ -173,6 +217,9 @@ public class AddHearingPOCController {
         caseDetails.getData().remove("hasExistingHearings");
         caseDetails.getData().remove("hearingDateList");
         caseDetails.getData().remove("useExistingHearing");
+        caseDetails.getData().remove("isFirstHearing");
+        caseDetails.getData().remove("proceedingType");
+        caseDetails.getData().remove("sendNoticeOfProceedings");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -248,6 +295,10 @@ public class AddHearingPOCController {
         return sendNoticeOfHearing.equals(YES.getValue());
     }
 
+    private boolean isSendingNoticeOfProceeding(List<ProceedingType> proceedingTypes) {
+        return !proceedingTypes.isEmpty();
+    }
+
     private boolean hasExistingHearingBookings(List<Element<HearingBooking>> hearingBookings) {
         return isNotEmpty(hearingBookings);
     }
@@ -284,5 +335,47 @@ public class AddHearingPOCController {
         }
 
         return stringBuilder.toString();
+    }
+
+    private List<DocmosisTemplates> getProceedingTemplateTypes(List<ProceedingType> proceedingTypes) {
+        ImmutableList.Builder<DocmosisTemplates> templateTypes = ImmutableList.builder();
+
+        if (proceedingTypes
+            .contains(ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_PARTIES)) {
+            templateTypes.add(DocmosisTemplates.C6);
+        }
+
+        if (proceedingTypes
+            .contains(ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES)) {
+            templateTypes.add(DocmosisTemplates.C6A);
+        }
+
+        return templateTypes.build();
+    }
+
+    private List<Document> generateAndUploadDocuments(DocmosisNoticeOfProceeding templatePlaceholders,
+                                                      List<DocmosisTemplates> templates) {
+        List<DocmosisDocument> docmosisDocuments = templates.stream()
+            .map(template -> docmosisDocumentGeneratorService.generateDocmosisDocument(templatePlaceholders, template))
+            .collect(Collectors.toList());
+
+        return docmosisDocuments.stream()
+            .map(document -> uploadDocumentService.uploadPDF(document.getBytes(), document.getDocumentTitle()))
+            .collect(Collectors.toList());
+    }
+
+    private List<Element<DocumentBundle>> createNoticeOfProceedingsCaseData(List<Document> uploadedDocuments) {
+        return uploadedDocuments.stream()
+            .map(document -> Element.<DocumentBundle>builder()
+                .id(UUID.randomUUID())
+                .value(DocumentBundle.builder()
+                    .document(DocumentReference.builder()
+                        .filename(document.originalDocumentName)
+                        .url(document.links.self.href)
+                        .binaryUrl(document.links.binary.href)
+                        .build())
+                    .build())
+                .build())
+            .collect(Collectors.toList());
     }
 }

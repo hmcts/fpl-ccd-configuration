@@ -100,5 +100,30 @@
     "FieldType": "YesOrNo",
     "Label": "Do you want to send a notice of hearing?",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "isFirstHearing",
+    "FieldType": "YesOrNo",
+    "Label": " ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "sendNoticeOfProceedings",
+    "FieldType": "YesOrNo",
+    "Label": "Do you want to send notice of proceedings?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "proceedingType",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ProceedingType",
+    "Label": "What type of proceeding would you like to create?",
+    "SecurityClassification": "Public"
   }
 ]

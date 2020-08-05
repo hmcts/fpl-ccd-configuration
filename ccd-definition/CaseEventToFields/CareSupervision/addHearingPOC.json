@@ -154,12 +154,52 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addHearingPOC",
+    "CaseFieldID": "isFirstHearing",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY",
+    "PageID": "sendNotices",
+    "ShowSummaryChangeOption": "Y",
+    "PageDisplayOrder": 8,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "useExistingHearing = \"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addHearingPOC",
     "CaseFieldID": "sendNoticeOfHearing",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
-    "PageID": "sendNoticeOfHearing",
+    "PageID": "sendNotices",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 8,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "isFirstHearing != \"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addHearingPOC",
+    "CaseFieldID": "sendNoticeOfProceedings",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY",
+    "PageID": "sendNotices",
+    "ShowSummaryChangeOption": "Y",
+    "PageDisplayOrder": 8,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "isFirstHearing = \"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addHearingPOC",
+    "CaseFieldID": "proceedingType",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY",
+    "PageID": "noticeOfProceedings",
+    "ShowSummaryChangeOption": "Y",
+    "PageDisplayOrder": 9,
+    "PageColumnNumber": 1,
+    "PageShowCondition": "isFirstHearing=\"Yes\" AND sendNoticeOfProceedings=\"Yes\""
   }
 ]
