@@ -97,13 +97,14 @@ public class AddHearingPOCController {
             .build();
     }
 
-    @PostMapping("/populate-existing-draft-hearing/mid-event")
+    @PostMapping("/populate-existing-hearings/mid-event")
     public AboutToStartOrSubmitCallbackResponse populateExistingDraftHearing
         (@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (caseDetails.getData().get("hearingDateList") != null) {
+        // Editing a draft hearing
+        if (caseData.getUseExistingHearing().equals(HearingOptionsPOCType.EDIT_DRAFT)) {
             UUID hearingBookingId = mapper.convertValue(caseDetails.getData().get("hearingDateList"), UUID.class);
 
             caseDetails.getData().put("hearingDateList",
@@ -122,21 +123,12 @@ public class AddHearingPOCController {
                 caseDetails.getData().remove("isFirstHearing");
             }
 
+            caseDetails.getData().remove("adjournedHearingDateList");
+
             populateHearingBooking(caseDetails, hearingBooking);
         }
-
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .build();
-    }
-
-    @PostMapping("/populate-existing-adjourned-hearing/mid-event")
-    public AboutToStartOrSubmitCallbackResponse populateExistingAdjournedHearing
-        (@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
-        if (caseDetails.getData().get("adjournedHearingDateList") != null) {
+        // Editing an adjourned hearing
+        else if (caseData.getUseExistingHearing().equals(HearingOptionsPOCType.EDIT_ADJOURNED)) {
             UUID hearingBookingId = mapper.convertValue(caseDetails.getData().get("adjournedHearingDateList"), UUID.class);
 
             caseDetails.getData().put("adjournedHearingDateList",
@@ -154,6 +146,8 @@ public class AddHearingPOCController {
             } else {
                 caseDetails.getData().remove("isFirstHearing");
             }
+
+            caseDetails.getData().remove("hearingDateList");
 
             populateHearingBooking(caseDetails, hearingBooking);
         }
