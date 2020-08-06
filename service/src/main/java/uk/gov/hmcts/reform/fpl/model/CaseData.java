@@ -461,7 +461,6 @@ public class CaseData {
      */
     @Deprecated(since = "FPLA-1915")
     private final DynamicList nextHearingDateList;
-    private final DynamicList hearingDateList;
 
     private final Others others;
 
