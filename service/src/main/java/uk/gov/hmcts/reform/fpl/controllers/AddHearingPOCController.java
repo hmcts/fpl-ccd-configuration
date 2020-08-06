@@ -294,7 +294,7 @@ public class AddHearingPOCController {
         for (int i = 0; i < hearingBookings.size(); i++) {
             HearingBooking hearingBooking = hearingBookings.get(i).getValue();
 
-            if(hearingBooking.getIsAdjourned().equals(YES.getValue())) {
+            if(YES.getValue().equals(hearingBooking.getIsAdjourned())) {
                 DynamicListElement dynamicListElement = DynamicListElement.builder()
                     .label(hearingBooking.toLabel(DATE))
                     .code(hearingBookings.get(i).getId())
