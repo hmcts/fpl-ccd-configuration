@@ -11,15 +11,16 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "useExistingHearing",
-    "Label": "Do you want to edit an existing hearing?",
-    "FieldType": "YesOrNo",
+    "Label": "What would you like to do?",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "HearingOptions",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearingDateList",
-    "Label": "Which hearing do you want to edit?",
+    "Label": "Which draft hearing do you want to edit?",
     "FieldType": "DynamicList",
     "SecurityClassification": "Public"
   },
