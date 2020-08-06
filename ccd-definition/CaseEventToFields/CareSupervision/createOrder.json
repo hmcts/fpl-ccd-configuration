@@ -417,7 +417,7 @@
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "PageShowCondition": "orderTypeAndDocument.type=\"BLANK_ORDER\"",
+    "PageShowCondition": "orderTypeAndDocument.type=\"BLANK_ORDER\" AND hearingDateListAdjourn!=\"\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/create-order/populate-existing-hearing/mid-event"
   },
   {
@@ -432,6 +432,6 @@
     "PageDisplayOrder": 7,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "PageShowCondition": "hearingsToBeAdjourned=\"Yes\""
+    "PageShowCondition": "hearingDateListAdjourn!=\"\" AND hearingsToBeAdjourned=\"Yes\""
   }
 ]
