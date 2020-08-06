@@ -631,5 +631,14 @@ public class CaseData {
     }
 
     private final List<CourtAdminDocument> otherCourtAdminDocuments;
+
+    public List<CourtAdminDocument> getOtherCourtAdminDocuments() {
+        return defaultIfNull(otherCourtAdminDocuments, new ArrayList<>());
+    }
+
     private final List<CourtAdminDocument> limitedCourtAdminDocuments;
+
+    public List<CourtAdminDocument> getLimitedCourtAdminDocuments() {
+        return defaultIfNull(limitedCourtAdminDocuments, new ArrayList<>());
+    }
 }
