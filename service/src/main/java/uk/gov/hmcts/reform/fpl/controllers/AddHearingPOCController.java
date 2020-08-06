@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
-import uk.gov.hmcts.reform.fpl.enums.HearingOptionsPOCType;
 import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -54,6 +53,8 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptionsPOCType.EDIT_DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptionsPOCType.EDIT_ADJOURNED;
 
 @Api
 @RestController
@@ -84,7 +85,7 @@ public class AddHearingPOCController {
 
             if (!getAdjournedHearings(caseData.getHearingDetails()).isEmpty()) {
                 data.put("hasAdjournedHearings", YES.getValue());
-                data.put("adjournedHearingDateList", buildDraftHearingDateList(caseData.getHearingDetails()));
+                data.put("adjournedHearingDateList", buildAdjournedHearingDateList(caseData.getHearingDetails()));
             }
         }
 
@@ -104,7 +105,7 @@ public class AddHearingPOCController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         // Editing a draft hearing
-        if (caseData.getUseExistingHearing().equals(HearingOptionsPOCType.EDIT_DRAFT)) {
+        if (EDIT_DRAFT.equals(caseData.getUseExistingHearing())) {
             UUID hearingBookingId = mapper.convertValue(caseDetails.getData().get("hearingDateList"), UUID.class);
 
             caseDetails.getData().put("hearingDateList",
@@ -128,7 +129,7 @@ public class AddHearingPOCController {
             populateHearingBooking(caseDetails, hearingBooking);
         }
         // Editing an adjourned hearing
-        else if (caseData.getUseExistingHearing().equals(HearingOptionsPOCType.EDIT_ADJOURNED)) {
+        else if (EDIT_ADJOURNED.equals(caseData.getUseExistingHearing())) {
             UUID hearingBookingId = mapper.convertValue(caseDetails.getData().get("adjournedHearingDateList"), UUID.class);
 
             caseDetails.getData().put("adjournedHearingDateList",
@@ -195,13 +196,12 @@ public class AddHearingPOCController {
         List<Element<HearingBooking>> hearingBookingElements;
 
         // Editing previous hearing
-        if ((caseData.getUseExistingHearing() != null)
-            && (caseData.getUseExistingHearing().equals(HearingOptionsPOCType.EDIT_DRAFT)
-            || caseData.getUseExistingHearing().equals(HearingOptionsPOCType.EDIT_ADJOURNED))) {
+        if ((caseData.getUseExistingHearing() != null) && EDIT_DRAFT.equals(caseData.getUseExistingHearing())
+            || EDIT_ADJOURNED.equals(caseData.getUseExistingHearing())) {
 
             DynamicList hearingList;
 
-            if (caseData.getUseExistingHearing().equals(HearingOptionsPOCType.EDIT_DRAFT)) {
+            if (EDIT_DRAFT.equals(caseData.getUseExistingHearing())) {
                 hearingList = mapper.convertValue(caseDetails.getData().get("hearingDateList"), DynamicList.class);
             } else {
                 hearingList =
