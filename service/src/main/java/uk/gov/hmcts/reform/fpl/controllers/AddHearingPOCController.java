@@ -206,7 +206,7 @@ public class AddHearingPOCController {
             if (caseData.getUseExistingHearing().equals(HearingOptionsPOCType.EDIT_DRAFT)) {
                 hearingList = mapper.convertValue(caseDetails.getData().get("hearingDateList"), DynamicList.class);
             } else {
-                hearingList = 
+                hearingList =
                     mapper.convertValue(caseDetails.getData().get("adjournedHearingDateList"), DynamicList.class);
             }
 
@@ -471,7 +471,7 @@ public class AddHearingPOCController {
 
     private List<Element<HearingBooking>> getAdjournedHearings(List<Element<HearingBooking>> hearingBookings) {
         return hearingBookings.stream()
-            .filter(hearingBookingElement -> hearingBookingElement.getValue().getIsAdjourned().equals(YES.getValue()))
+            .filter(hearingBookingElement -> YES.getValue().equals(hearingBookingElement.getValue().getIsAdjourned()))
             .collect(Collectors.toList());
     }
 }
