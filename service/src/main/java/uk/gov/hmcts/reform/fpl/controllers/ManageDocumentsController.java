@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtAdminDocument;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
 import java.util.Map;
@@ -30,8 +31,8 @@ public class ManageDocumentsController {
 
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        List<CourtAdminDocument> otherCourtAdminDocuments = caseData.getOtherCourtAdminDocuments();
-        List<CourtAdminDocument> limitedCourtAdminDocuments = caseData.getLimitedCourtAdminDocuments();
+        List<Element<CourtAdminDocument>> otherCourtAdminDocuments = caseData.getOtherCourtAdminDocuments();
+        List<Element<CourtAdminDocument>> limitedCourtAdminDocuments = caseData.getLimitedCourtAdminDocuments();
 
         otherCourtAdminDocuments.addAll(limitedCourtAdminDocuments);
 

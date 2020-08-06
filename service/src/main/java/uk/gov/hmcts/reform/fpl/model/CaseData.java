@@ -630,15 +630,15 @@ public class CaseData {
         return defaultIfNull(sealedCMOs, new ArrayList<>());
     }
 
-    private final List<CourtAdminDocument> otherCourtAdminDocuments;
+    private final List<Element<CourtAdminDocument>> otherCourtAdminDocuments;
 
-    public List<CourtAdminDocument> getOtherCourtAdminDocuments() {
+    public List<Element<CourtAdminDocument>> getOtherCourtAdminDocuments() {
         return defaultIfNull(otherCourtAdminDocuments, new ArrayList<>());
     }
 
-    private final List<CourtAdminDocument> limitedCourtAdminDocuments;
+    private final List<Element<CourtAdminDocument>> limitedCourtAdminDocuments;
 
-    public List<CourtAdminDocument> getLimitedCourtAdminDocuments() {
+    public List<Element<CourtAdminDocument>> getLimitedCourtAdminDocuments() {
         return defaultIfNull(limitedCourtAdminDocuments, new ArrayList<>());
     }
 }
