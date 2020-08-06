@@ -273,7 +273,7 @@ public class GeneratedOrderController {
 
             if(id.equals(adjournedHearingList.getValueCode()))
             {
-                hearingBookings.get(i).getValue().setIsAdjourned("true");
+                hearingBookings.get(i).getValue().setIsAdjourned(YES.getValue());
             }
         }
 
@@ -399,7 +399,7 @@ public class GeneratedOrderController {
         for (int i = 0; i < hearingBookings.size(); i++) {
             HearingBooking hearingBooking = hearingBookings.get(i).getValue();
 
-            if(isNull(hearingBooking.getIsAdjourned()) || !hearingBooking.getIsAdjourned().equals("true")) {
+            if(isNull(hearingBooking.getIsAdjourned()) || !hearingBooking.getIsAdjourned().equals(YES.getValue())) {
 
                 DynamicListElement dynamicListElement = DynamicListElement.builder()
                     .label(hearingBooking.toLabel(DATE))
