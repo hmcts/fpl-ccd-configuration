@@ -721,6 +721,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "uploadC2Link",
+    "Label": "[Upload a C2](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/uploadC2)",
+    "FieldType": "C2ApplicationTypeSelection",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "respondents_label",
     "Label": " ",
     "FieldType": "TextArea",
