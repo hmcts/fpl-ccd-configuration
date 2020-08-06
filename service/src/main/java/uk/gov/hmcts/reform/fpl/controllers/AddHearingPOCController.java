@@ -45,6 +45,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.time.LocalDate.now;
+import static java.util.Objects.isNull;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
@@ -241,12 +242,19 @@ public class AddHearingPOCController {
         for (int i = 0; i < hearingBookings.size(); i++) {
             HearingBooking hearingBooking = hearingBookings.get(i).getValue();
 
-            DynamicListElement dynamicListElement = DynamicListElement.builder()
-                .label(hearingBooking.toLabel(DATE))
-                .code(hearingBookings.get(i).getId())
-                .build();
+            if(isNull(hearingBooking.getIsAdjourned())) {
 
-            dynamicListElements.add(dynamicListElement);
+                DynamicListElement dynamicListElement = DynamicListElement.builder()
+                    .label(hearingBooking.toLabel(DATE))
+                    .code(hearingBookings.get(i).getId())
+                    .build();
+
+                dynamicListElements.add(dynamicListElement);
+            }
+        }
+
+        if(dynamicListElements.isEmpty()) {
+            dynamicListElements.add(DynamicListElement.builder().build());
         }
 
         return DynamicList.builder()
