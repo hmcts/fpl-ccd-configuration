@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import com.google.common.collect.ImmutableMap;
+import org.apache.commons.codec.binary.Base64;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForC2;
+import uk.gov.hmcts.reform.fpl.model.notify.c2uploaded.C2UploadedTemplate;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
@@ -26,6 +28,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.util.Map;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -49,6 +52,7 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.appendSendToCtscOnCallback;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {C2UploadedEventHandler.class, JacksonAutoConfiguration.class, LookupTestConfig.class,
@@ -81,24 +85,19 @@ public class C2UploadedEventHandlerTest {
     @Nested
     class C2UploadedNotificationChecks {
         final String subjectLine = "Lastname, SACCCCCCCC5676576567";
-        final Map<String, Object> c2Parameters = ImmutableMap.<String, Object>builder()
-            .put("subjectLine", subjectLine)
-            .put("hearingDetailsCallout", subjectLine)
-            .put("reference", "12345")
-            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
-            .build();
+        C2UploadedTemplate c2Parameters = getC2UploadedTemplateParameters();
 
         @BeforeEach
         void before() {
             CaseDetails caseDetails = callbackRequest().getCaseDetails();
 
+            given(c2UploadedEmailContentProvider.buildC2UploadNotificationTemplate(callbackRequest().getCaseDetails()))
+                .willReturn(c2Parameters);
+
             given(requestData.authorisation()).willReturn(AUTH_TOKEN);
 
             given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
                 .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
-
-            given(c2UploadedEmailContentProvider.buildC2UploadNotification(caseDetails))
-                .willReturn(c2Parameters);
         }
 
         @Test
@@ -128,7 +127,7 @@ public class C2UploadedEventHandlerTest {
             given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
                 .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
 
-            given(c2UploadedEmailContentProvider.buildC2UploadNotification(caseDetails))
+            given(c2UploadedEmailContentProvider.buildC2UploadNotificationTemplate(caseDetails))
                 .willReturn(c2Parameters);
 
             c2UploadedEventHandler.sendNotifications(
@@ -198,7 +197,7 @@ public class C2UploadedEventHandlerTest {
 
         @Test
         void shouldNotNotifyAllocatedJudgeOnC2UploadWhenAllocatedJudgeDoesNotExist() {
-            CaseDetails caseDetails =  CaseDetails.builder().id(1L)
+            CaseDetails caseDetails = CaseDetails.builder().id(1L)
                 .data(Map.of("caseLocalAuthority", "SA"))
                 .build();
 
@@ -224,6 +223,20 @@ public class C2UploadedEventHandlerTest {
             allocatedJudgeTemplateForC2.setRespondentLastName("Smith");
 
             return allocatedJudgeTemplateForC2;
+        }
+
+        private C2UploadedTemplate getC2UploadedTemplateParameters() {
+            String fileContent = new String(Base64.encodeBase64(DOCUMENT_CONTENT), ISO_8859_1);
+            JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
+
+            C2UploadedTemplate uploadC2Template = new C2UploadedTemplate();
+
+            uploadC2Template.setCallout(subjectLine);
+            uploadC2Template.setRespondentLastName("Smith");
+            uploadC2Template.setCaseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345");
+            uploadC2Template.setDocumentLink(jsonFileObject.toMap());
+
+            return uploadC2Template;
         }
     }
 }
