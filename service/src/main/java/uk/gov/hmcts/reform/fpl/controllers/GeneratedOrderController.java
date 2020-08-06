@@ -194,6 +194,11 @@ public class GeneratedOrderController {
                 childrenService.getChildrenLabel(caseData.getAllChildren(), closable));
         }
 
+        if (hasExistingHearingBookings(caseData.getHearingDetails())) {
+            caseDetails.getData().put("hasExistingHearings", YES.getValue());
+            caseDetails.getData().put("hearingDateListAdjourn", buildHearingDateList(caseData.getHearingDetails()));
+        }
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
