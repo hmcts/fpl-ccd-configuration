@@ -60,6 +60,18 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractControllerTest 
             .containsOnly(document1, document2);
     }
 
+    @Test
+    void shouldRemoveIntermediaryCollection() {
+        CourtAdminDocument document1 = buildCourtAdminDocument("Document 1");
+        CaseData caseData = CaseData.builder()
+            .limitedCourtAdminDocuments(wrapElements(document1))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(asCaseDetails(caseData));
+
+        assertThat(response.getData()).doesNotContainKey("limitedCourtAdminDocuments");
+    }
+
     private static CourtAdminDocument buildCourtAdminDocument(String name) {
         return new CourtAdminDocument(name, DOCUMENT);
     }
