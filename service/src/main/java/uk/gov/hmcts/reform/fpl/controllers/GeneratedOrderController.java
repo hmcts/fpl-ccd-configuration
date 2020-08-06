@@ -412,7 +412,7 @@ public class GeneratedOrderController {
         }
 
         if(dynamicListElements.isEmpty()) {
-            dynamicListElements.add(DynamicListElement.builder().build());
+            return null;
         }
 
         return DynamicList.builder()
