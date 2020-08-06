@@ -103,56 +103,60 @@ public class AddHearingPOCController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        UUID hearingBookingId = mapper.convertValue(caseDetails.getData().get("hearingDateList"), UUID.class);
+        if (caseDetails.getData().get("hearingDateList") != null) {
+            UUID hearingBookingId = mapper.convertValue(caseDetails.getData().get("hearingDateList"), UUID.class);
 
-        caseDetails.getData().put("hearingDateList",
-            ElementUtils.asDynamicList(caseData.getHearingDetails(),
-                hearingBookingId, hearingBooking -> hearingBooking.toLabel(DATE)));
+            caseDetails.getData().put("hearingDateList",
+                ElementUtils.asDynamicList(caseData.getHearingDetails(),
+                    hearingBookingId, hearingBooking -> hearingBooking.toLabel(DATE)));
 
-        HearingBooking hearingBooking = findHearingBooking(hearingBookingId, caseData.getHearingDetails());
+            HearingBooking hearingBooking = findHearingBooking(hearingBookingId, caseData.getHearingDetails());
 
-        Optional<Element<HearingBooking>> firstHearingElement =
-            hearingBookingService.getFirstHearingElement(caseData.getHearingDetails());
+            Optional<Element<HearingBooking>> firstHearingElement =
+                hearingBookingService.getFirstHearingElement(caseData.getHearingDetails());
 
-        if (firstHearingElement.isPresent() && firstHearingElement.get().getId().equals(hearingBookingId)) {
-            caseDetails.getData().put("isFirstHearing", YES.getValue());
-            caseDetails.getData().put("sendNoticeOfHearing", NO.getValue());
-        } else {
-            caseDetails.getData().remove("isFirstHearing");
+            if (firstHearingElement.isPresent() && firstHearingElement.get().getId().equals(hearingBookingId)) {
+                caseDetails.getData().put("isFirstHearing", YES.getValue());
+                caseDetails.getData().put("sendNoticeOfHearing", NO.getValue());
+            } else {
+                caseDetails.getData().remove("isFirstHearing");
+            }
+
+            populateHearingBooking(caseDetails, hearingBooking);
         }
-
-        populateHearingBooking(caseDetails, hearingBooking);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
     }
 
-    @PostMapping("/populate-existing-adjourned-draft-hearing/mid-event")
+    @PostMapping("/populate-existing-adjourned-hearing/mid-event")
     public AboutToStartOrSubmitCallbackResponse populateExistingAdjournedHearing
         (@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        UUID hearingBookingId = mapper.convertValue(caseDetails.getData().get("adjournedHearingDateList"), UUID.class);
+        if (caseDetails.getData().get("adjournedHearingDateList") != null) {
+            UUID hearingBookingId = mapper.convertValue(caseDetails.getData().get("adjournedHearingDateList"), UUID.class);
 
-        caseDetails.getData().put("adjournedHearingDateList",
-            ElementUtils.asDynamicList(caseData.getHearingDetails(),
-                hearingBookingId, hearingBooking -> hearingBooking.toLabel(DATE)));
+            caseDetails.getData().put("adjournedHearingDateList",
+                ElementUtils.asDynamicList(caseData.getHearingDetails(),
+                    hearingBookingId, hearingBooking -> hearingBooking.toLabel(DATE)));
 
-        HearingBooking hearingBooking = findHearingBooking(hearingBookingId, caseData.getHearingDetails());
+            HearingBooking hearingBooking = findHearingBooking(hearingBookingId, caseData.getHearingDetails());
 
-        Optional<Element<HearingBooking>> firstHearingElement =
-            hearingBookingService.getFirstHearingElement(caseData.getHearingDetails());
+            Optional<Element<HearingBooking>> firstHearingElement =
+                hearingBookingService.getFirstHearingElement(caseData.getHearingDetails());
 
-        if (firstHearingElement.isPresent() && firstHearingElement.get().getId().equals(hearingBookingId)) {
-            caseDetails.getData().put("isFirstHearing", YES.getValue());
-            caseDetails.getData().put("sendNoticeOfHearing", NO.getValue());
-        } else {
-            caseDetails.getData().remove("isFirstHearing");
+            if (firstHearingElement.isPresent() && firstHearingElement.get().getId().equals(hearingBookingId)) {
+                caseDetails.getData().put("isFirstHearing", YES.getValue());
+                caseDetails.getData().put("sendNoticeOfHearing", NO.getValue());
+            } else {
+                caseDetails.getData().remove("isFirstHearing");
+            }
+
+            populateHearingBooking(caseDetails, hearingBooking);
         }
-
-        populateHearingBooking(caseDetails, hearingBooking);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
