@@ -102,7 +102,6 @@ public class AddHearingPOCController {
     public AboutToStartOrSubmitCallbackResponse populateExistingDraftHearing
         (@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        System.out.println("here");
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         // Editing a draft hearing
@@ -153,9 +152,7 @@ public class AddHearingPOCController {
 
             populateHearingBooking(caseDetails, hearingBooking);
         }
-
-        System.out.println("here");
-
+        
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
