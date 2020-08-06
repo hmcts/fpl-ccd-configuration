@@ -1,7 +1,7 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "hearingOptions",
+    "ID": "HearingOptions",
     "ListElementCode": "NEW_HEARING",
     "ListElement": "Create a new hearing",
     "DisplayOrder": 1
