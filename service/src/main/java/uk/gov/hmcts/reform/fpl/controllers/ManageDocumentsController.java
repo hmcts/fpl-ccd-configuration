@@ -18,14 +18,14 @@ import java.util.Map;
 
 @Api
 @RestController
-@RequestMapping("/callback/court-admin-docs")
+@RequestMapping("/callback/manage-docs")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
-public class CourtAdminDocumentsController {
+public class ManageDocumentsController {
 
     private final ObjectMapper mapper;
 
-    @PostMapping("/append")
-    public AboutToStartOrSubmitCallbackResponse handleMerge(@RequestBody CallbackRequest request) {
+    @PostMapping("/about-to-submit")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest request) {
         Map<String, Object> data = request.getCaseDetails().getData();
 
         CaseData caseData = mapper.convertValue(data, CaseData.class);
