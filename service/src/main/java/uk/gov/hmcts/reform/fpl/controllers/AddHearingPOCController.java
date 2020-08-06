@@ -114,14 +114,7 @@ public class AddHearingPOCController {
             caseDetails.getData().remove("isFirstHearing");
         }
 
-        caseDetails.getData().put("hearingType", hearingBooking.getType());
-        caseDetails.getData().put("hearingVenue", hearingBooking.getVenue());
-        caseDetails.getData().put("hearingVenueCustom", hearingBooking.getVenueCustomAddress());
-        caseDetails.getData().put("hearingNeedsBooked", hearingBooking.getHearingNeedsBooked());
-        caseDetails.getData().put("hearingNeedsDetails", hearingBooking.getHearingNeedsDetails());
-        caseDetails.getData().put("hearingStartDate", hearingBooking.getStartDate());
-        caseDetails.getData().put("hearingEndDate", hearingBooking.getEndDate());
-        caseDetails.getData().put("judgeAndLegalAdvisor", hearingBooking.getJudgeAndLegalAdvisor());
+        populateHearingBooking(caseDetails, hearingBooking);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -206,21 +199,7 @@ public class AddHearingPOCController {
             caseDetails.getData().put("noticeOfProceedingsBundle", noticeOfProceedingCaseData);
         }
 
-        caseDetails.getData().remove("hearingType");
-        caseDetails.getData().remove("hearingVenue");
-        caseDetails.getData().remove("hearingVenueCustom");
-        caseDetails.getData().remove("hearingNeedsBooked");
-        caseDetails.getData().remove("hearingNeedsDetails");
-        caseDetails.getData().remove("hearingStartDate");
-        caseDetails.getData().remove("hearingEndDate");
-        caseDetails.getData().remove("sendNoticeOfHearing");
-        caseDetails.getData().remove("judgeAndLegalAdvisor");
-        caseDetails.getData().remove("hasExistingHearings");
-        caseDetails.getData().remove("hearingDateList");
-        caseDetails.getData().remove("useExistingHearing");
-        caseDetails.getData().remove("isFirstHearing");
-        caseDetails.getData().remove("proceedingType");
-        caseDetails.getData().remove("sendNoticeOfProceedings");
+        removeHearingProperties(caseDetails);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -229,6 +208,7 @@ public class AddHearingPOCController {
 
     private HearingBooking findHearingBooking(UUID id, List<Element<HearingBooking>> hearingBookings) {
         Optional<Element<HearingBooking>> hearingBookingElement = ElementUtils.findElement(id, hearingBookings);
+
         if (hearingBookingElement.isPresent()) {
             return hearingBookingElement.get().getValue();
         }
@@ -242,7 +222,7 @@ public class AddHearingPOCController {
         for (int i = 0; i < hearingBookings.size(); i++) {
             HearingBooking hearingBooking = hearingBookings.get(i).getValue();
 
-            if(isNull(hearingBooking.getIsAdjourned())) {
+            if (isNull(hearingBooking.getIsAdjourned())) {
 
                 DynamicListElement dynamicListElement = DynamicListElement.builder()
                     .label(hearingBooking.toLabel(DATE))
@@ -253,7 +233,7 @@ public class AddHearingPOCController {
             }
         }
 
-        if(dynamicListElements.isEmpty()) {
+        if (dynamicListElements.isEmpty()) {
             dynamicListElements.add(DynamicListElement.builder().build());
         }
 
@@ -385,5 +365,34 @@ public class AddHearingPOCController {
                     .build())
                 .build())
             .collect(Collectors.toList());
+    }
+
+    private void populateHearingBooking(CaseDetails caseDetails, HearingBooking hearingBooking) {
+        caseDetails.getData().put("hearingType", hearingBooking.getType());
+        caseDetails.getData().put("hearingVenue", hearingBooking.getVenue());
+        caseDetails.getData().put("hearingVenueCustom", hearingBooking.getVenueCustomAddress());
+        caseDetails.getData().put("hearingNeedsBooked", hearingBooking.getHearingNeedsBooked());
+        caseDetails.getData().put("hearingNeedsDetails", hearingBooking.getHearingNeedsDetails());
+        caseDetails.getData().put("hearingStartDate", hearingBooking.getStartDate());
+        caseDetails.getData().put("hearingEndDate", hearingBooking.getEndDate());
+        caseDetails.getData().put("judgeAndLegalAdvisor", hearingBooking.getJudgeAndLegalAdvisor());
+    }
+
+    private void removeHearingProperties(CaseDetails caseDetails) {
+        caseDetails.getData().remove("hearingType");
+        caseDetails.getData().remove("hearingVenue");
+        caseDetails.getData().remove("hearingVenueCustom");
+        caseDetails.getData().remove("hearingNeedsBooked");
+        caseDetails.getData().remove("hearingNeedsDetails");
+        caseDetails.getData().remove("hearingStartDate");
+        caseDetails.getData().remove("hearingEndDate");
+        caseDetails.getData().remove("sendNoticeOfHearing");
+        caseDetails.getData().remove("judgeAndLegalAdvisor");
+        caseDetails.getData().remove("hasExistingHearings");
+        caseDetails.getData().remove("hearingDateList");
+        caseDetails.getData().remove("useExistingHearing");
+        caseDetails.getData().remove("isFirstHearing");
+        caseDetails.getData().remove("proceedingType");
+        caseDetails.getData().remove("sendNoticeOfProceedings");
     }
 }

@@ -31,7 +31,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "addHearingPOC",
-    "Name": "POC - Add a hearing",
+    "Name": "Add a hearing",
     "Description": "POC - Add Hearing",
     "DisplayOrder": 1,
     "PreConditionState(s)": "Submitted",
