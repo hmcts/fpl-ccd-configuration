@@ -11,7 +11,7 @@ public class NotifyTemplates {
     public static final String GATEKEEPER_SUBMISSION_TEMPLATE = "1e8f7e14-64aa-44ce-a5c1-83affff5f1a0";
     public static final String STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE = "c06968ea-048b-49d6-a4b5-1f13ee995ba1";
     public static final String STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE = "f9551e87-f646-4e5e-b7be-7a00e498934b";
-    public static final String C2_UPLOAD_NOTIFICATION_TEMPLATE = "6b961e81-c5ff-4f6f-8c56-f90d932a2f9b";
+    public static final String C2_UPLOAD_NOTIFICATION_TEMPLATE = "ddd2a6f2-a074-4e6f-8bd8-2f22854ec22a";
     public static final String C2_UPLOAD_NOTIFICATION_TEMPLATE_JUDGE = "9e4d4365-bc82-4a94-a752-a75a9abe78ad";
     public static final String C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE = "137255d6-69c8-4eab-9971-ec788275c390";
     public static final String ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES =
@@ -22,9 +22,9 @@ public class NotifyTemplates {
         "1827ae2d-d7c3-4094-8978-c2f77d7713fa";
     public static final String CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE = "0ec7f651-4f0e-4f95-bff1-6ec232b9baf6";
     public static final String CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE =
-        "58aa7e13-e80a-4630-a610-ee7fc1b6f9f9";
+        "90c5f4b3-738b-4c8d-b433-c8c90095f815";
     public static final String CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE =
-        "c61f59d0-2ece-4b00-acef-3d168943d583";
+        "5a092766-6a39-4c00-a7a7-a31a72c60b48";
     public static final String CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE =
         "7a513cfd-cf3c-4778-aca0-4bbd1a37863a";
     public static final String CMO_REJECTED_BY_JUDGE_TEMPLATE = "d1454061-e2bc-4b89-9a66-7add40656bf8";

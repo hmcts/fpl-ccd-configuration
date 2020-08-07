@@ -1,19 +1,27 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.google.common.collect.ImmutableMap;
+import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForC2;
+import uk.gov.hmcts.reform.fpl.model.notify.c2uploaded.C2UploadedTemplate;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
+import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.util.Map;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
+import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ContextConfiguration(classes = {C2UploadedEmailContentProvider.class, EmailNotificationHelper.class,
     FixedTimeConfiguration.class})
@@ -22,17 +30,25 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
     @Autowired
     private C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
 
+    private static final byte[] APPLICATION_BINARY = TestDataHelper.DOCUMENT_CONTENT;
+    private static DocumentReference applicationDocument;
+
+    @BeforeEach
+    void init() {
+        applicationDocument = testDocumentReference();
+        when(documentDownloadService.downloadDocument(applicationDocument.getBinaryUrl()))
+            .thenReturn(APPLICATION_BINARY);
+    }
+
     @Test
     void shouldReturnExpectedMapWithGivenCaseDetails() {
-        Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
-            .put("caseUrl", caseUrl(CASE_REFERENCE))
-            .put("subjectLine", format("Smith, %s", CASE_REFERENCE))
-            .put("hearingDetailsCallout", format("Smith, %s", CASE_REFERENCE))
-            .put("reference", CASE_REFERENCE)
-            .build();
+        CaseDetails caseDetails = populatedCaseDetails(
+            Map.of("applicationBinaryUrl", applicationDocument.getBinaryUrl()));
 
-        assertThat(c2UploadedEmailContentProvider.buildC2UploadNotification(populatedCaseDetails()))
-            .isEqualTo(expectedMap);
+        C2UploadedTemplate c2UploadedTemplateParameters = getC2UploadedTemplateParameters();
+
+        assertThat(c2UploadedEmailContentProvider.buildC2UploadNotificationTemplate(caseDetails))
+            .isEqualToComparingFieldByField(c2UploadedTemplateParameters);
     }
 
     @Test
@@ -69,5 +85,18 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
         return CaseDetails.builder()
             .id(Long.valueOf(CASE_REFERENCE))
             .build();
+    }
+
+    private C2UploadedTemplate getC2UploadedTemplateParameters() {
+        C2UploadedTemplate c2UploadedTemplate = new C2UploadedTemplate();
+
+        c2UploadedTemplate.setCallout(format("Smith, %s", CASE_REFERENCE));
+        c2UploadedTemplate.setRespondentLastName("Smith");
+        c2UploadedTemplate.setCaseUrl("http://fake-url/cases/case-details/12345");
+        c2UploadedTemplate.setDocumentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
+            .map(JSONObject::toMap)
+            .orElse(null));
+
+        return c2UploadedTemplate;
     }
 }
