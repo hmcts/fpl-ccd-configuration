@@ -268,18 +268,22 @@ public class GeneratedOrderController {
         CaseData caseData = mapper.convertValue(data, CaseData.class);
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
-        DynamicList adjournedHearingList =
-            mapper.convertValue(callbackRequest.getCaseDetails().getData().get("hearingDateListAdjourn"), DynamicList.class);
+        List<Element<HearingBooking>> hearingBookings;
+        if (caseDetails.getData().get("hearingDateListAdjourn") != null) {
+            DynamicList adjournedHearingList =
+                mapper.convertValue(callbackRequest.getCaseDetails().getData().get("hearingDateListAdjourn"), DynamicList.class);
 
-        List<Element<HearingBooking>> hearingBookings = caseData.getHearingDetails();
+            hearingBookings = caseData.getHearingDetails();
 
-        for (int i = 0; i < hearingBookings.size(); i++) {
-            UUID id = hearingBookings.get(i).getId();
-
-            if(id.equals(adjournedHearingList.getValueCode()))
-            {
-                hearingBookings.get(i).getValue().setIsAdjourned(YES.getValue());
+            for (int i = 0; i < hearingBookings.size(); i++) {
+                UUID id = hearingBookings.get(i).getId();
+                if(id.equals(adjournedHearingList.getValueCode()))
+                {
+                    hearingBookings.get(i).getValue().setIsAdjourned(YES.getValue());
+                }
             }
+        } else {
+            hearingBookings = caseData.getHearingDetails();
         }
 
         caseDetails.getData().put("hearingDetails", hearingBookings);

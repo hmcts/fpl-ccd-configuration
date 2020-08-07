@@ -432,6 +432,6 @@
     "PageDisplayOrder": 9,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "PageShowCondition": "hearingDateListAdjourn!=\"\" AND hearingsToBeAdjourned=\"Yes\""
+    "PageShowCondition": "hearingDateListAdjourn!=\"\" AND hearingsToBeAdjourned=\"Yes\" AND orderTypeAndDocument.type=\"BLANK_ORDER\""
   }
 ]
