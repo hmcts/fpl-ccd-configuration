@@ -30,7 +30,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "editedCourtDocument",
     "FieldType": "CourtAdminDocument",
-    "Label": "Provide new information",
+    "Label": "New document details",
     "SecurityClassification": "Public"
   },
   {
@@ -55,6 +55,38 @@
     "ID": "amendDocumentLabel",
     "FieldType": "Label",
     "Label": "## Find and replace a case document",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "replaceDocumentLabel",
+    "FieldType": "Label",
+    "Label": "## Upload replacement document",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "newDocumentLabel",
+    "FieldType": "Label",
+    "Label": "## Upload a new case document",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "originalCourtDocument",
+    "FieldType": "Document",
+    "Label": "Document you're replacing",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "replacementDocumentInfo",
+    "FieldType": "Label",
+    "Label": "You can download this document and make changes, or just replace it with a newer version.",
     "SecurityClassification": "Public"
   }
 ]

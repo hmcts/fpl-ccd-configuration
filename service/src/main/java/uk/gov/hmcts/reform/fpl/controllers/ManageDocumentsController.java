@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.CourtAdminDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -39,6 +38,18 @@ public class ManageDocumentsController {
 
     private final ObjectMapper mapper;
 
+    @PostMapping("/about-to-start")
+    private AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
+        Map<String, Object> data = request.getCaseDetails().getData();
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
+
+        data.put("pageShow", caseData.getOtherCourtAdminDocuments().size() != 0 ? "Yes" : "No");
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(data)
+            .build();
+    }
+
     @PostMapping("/populate-list/mid-event")
     public AboutToStartOrSubmitCallbackResponse populateList(@RequestBody CallbackRequest request) {
         Map<String, Object> data = request.getCaseDetails().getData();
@@ -46,23 +57,23 @@ public class ManageDocumentsController {
         List<Element<CourtAdminDocument>> courtAdminDocuments = caseData.getOtherCourtAdminDocuments();
         DocumentRouter uploadDocumentsRouter = caseData.getUploadDocumentsRouter();
 
-        List<String> errors = new ArrayList<>();
         if (AMEND == uploadDocumentsRouter || DELETE == uploadDocumentsRouter) {
-            if (courtAdminDocuments.isEmpty()) {
-                errors.add("No additional documents have been added to the case to manage");
-            } else {
-                DynamicList courtDocumentList = asDynamicList(
-                    courtAdminDocuments,
-                    CourtAdminDocument::getDocumentTitle
-                );
+            DynamicList courtDocumentList = asDynamicList(
+                courtAdminDocuments,
+                CourtAdminDocument::getDocumentTitle
+            );
 
-                data.put("courtDocumentList", courtDocumentList);
-            }
+            data.put("courtDocumentList", courtDocumentList);
+        }
+
+        // see RDM-9147
+        CourtAdminDocument editedDocument = caseData.getEditedCourtDocument();
+        if (editedDocument != null && editedDocument.getDocument() != null && editedDocument.getDocument().isEmpty()) {
+            data.put("editedCourtDocument", new CourtAdminDocument(editedDocument.getDocumentTitle(), null));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
-            .errors(errors)
             .build();
     }
 
@@ -71,13 +82,20 @@ public class ManageDocumentsController {
         Map<String, Object> data = request.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
         List<Element<CourtAdminDocument>> otherCourtAdminDocuments = caseData.getOtherCourtAdminDocuments();
+        DocumentRouter router = caseData.getUploadDocumentsRouter();
 
         Object courtDocumentList = caseData.getCourtDocumentList();
 
         UUID selectedId = getSelectedIdFromDynamicList(courtDocumentList, mapper);
 
         findElement(selectedId, otherCourtAdminDocuments).ifPresent(
-            courtAdminDocument -> data.put("editedCourtDocument", courtAdminDocument.getValue())
+            courtAdminDocument -> {
+                if (AMEND == router) {
+                    data.put("originalCourtDocument", courtAdminDocument.getValue().getDocument());
+                } else {
+                    data.put("deletedCourtDocument", courtAdminDocument.getValue());
+                }
+            }
         );
 
         DynamicList regeneratedList = asDynamicList(
@@ -87,6 +105,12 @@ public class ManageDocumentsController {
         );
 
         data.put("courtDocumentList", regeneratedList);
+
+        // see RDM-9147
+        CourtAdminDocument editedDocument = caseData.getEditedCourtDocument();
+        if (editedDocument != null && editedDocument.getDocument() != null && editedDocument.getDocument().isEmpty()) {
+            data.put("editedCourtDocument", new CourtAdminDocument(editedDocument.getDocumentTitle(), null));
+        }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -126,8 +150,11 @@ public class ManageDocumentsController {
             caseDetails,
             "limitedCourtAdminDocuments",
             "editedCourtDocument",
+            "deletedCourtDocument",
             "courtDocumentList",
-            "uploadDocumentsRouter"
+            "uploadDocumentsRouter",
+            "originalCourtDocument",
+            "pageShow"
         );
 
         return AboutToStartOrSubmitCallbackResponse.builder()
