@@ -4,7 +4,7 @@
     "ID": "C2DocumentBundle",
     "ListElementCode": "document",
     "FieldType": "Document",
-    "ElementLabel": "File",
+    "ElementLabel": "Upload a file",
     "SecurityClassification": "Public"
   },
   {
@@ -37,7 +37,7 @@
     "ID": "C2DocumentBundle",
     "ListElementCode": "description",
     "FieldType": "TextArea",
-    "ElementLabel": "Notes",
+    "ElementLabel": "Description",
     "SecurityClassification": "Public"
   },
   {
@@ -53,7 +53,7 @@
     "ID": "C2DocumentBundle",
     "ListElementCode": "usePbaPayment",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Paid with PBA",
+    "ElementLabel": "Are you using PBA to pay?",
     "SecurityClassification": "Public"
   },
   {
