@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
+import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
@@ -50,6 +51,7 @@ public class UploadC2DocumentsController {
     private static final String AMOUNT_TO_PAY = "amountToPay";
     private static final String TEMPORARY_C2_DOCUMENT = "temporaryC2Document";
     private final ObjectMapper mapper;
+    private final UserDetailsService userDetailsService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final FeeService feeService;
     private final PaymentService paymentService;
@@ -148,6 +150,7 @@ public class UploadC2DocumentsController {
         ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
 
         var c2DocumentBundleBuilder = caseData.getTemporaryC2Document().toBuilder()
+            .author(userDetailsService.getUserName())
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(zonedDateTime.toLocalDateTime(), DATE_TIME));
 
         c2DocumentBundleBuilder.type(caseData.getC2ApplicationType().get("type"));
