@@ -36,6 +36,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getSelectedIdFromDynami
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class ManageDocumentsController {
 
+    // TODO: 07/08/2020 Investigate backwards flow issues where pages become locked down
+
     private final ObjectMapper mapper;
 
     @PostMapping("/about-to-start")
