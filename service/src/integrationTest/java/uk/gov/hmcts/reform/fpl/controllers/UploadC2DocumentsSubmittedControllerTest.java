@@ -1,6 +1,8 @@
+
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.google.common.collect.ImmutableMap;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -15,7 +17,11 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.notify.c2uploaded.C2UploadedTemplate;
+import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
+import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.service.notify.NotificationClient;
@@ -32,6 +38,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
@@ -39,6 +46,8 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_PBA_PAYMENT_NOT_
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(UploadC2DocumentsController.class)
@@ -49,6 +58,8 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
     private static final String RESPONDENT_SURNAME = "Watson";
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final Long CASE_ID = 12345L;
+    private static DocumentReference applicationDocument;
+    private static final byte[] APPLICATION_BINARY = TestDataHelper.DOCUMENT_CONTENT;
 
     @MockBean
     private NotificationClient notificationClient;
@@ -59,6 +70,9 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
     @MockBean
     private PaymentService paymentService;
 
+    @MockBean
+    private DocumentDownloadService documentDownloadService;
+
     UploadC2DocumentsSubmittedControllerTest() {
         super("upload-c2");
     }
@@ -66,6 +80,10 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
     @BeforeEach
     void setup() {
         given(idamApi.retrieveUserInfo(any())).willReturn(USER_INFO_CAFCASS);
+
+        applicationDocument = testDocumentReference();
+        when(documentDownloadService.downloadDocument(applicationDocument.getBinaryUrl()))
+            .thenReturn(APPLICATION_BINARY);
     }
 
     @Test
@@ -75,14 +93,14 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
         verify(notificationClient).sendEmail(
             C2_UPLOAD_NOTIFICATION_TEMPLATE,
             "admin@family-court.com",
-            expectedNotificationParams(),
+            buildExpectedNotificationParams(),
             CASE_ID.toString()
         );
 
         verify(notificationClient, never()).sendEmail(
             C2_UPLOAD_NOTIFICATION_TEMPLATE,
             "FamilyPublicLaw+ctsc@gmail.com",
-            expectedNotificationParams(),
+            buildExpectedNotificationParams(),
             CASE_ID.toString()
         );
     }
@@ -94,13 +112,13 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
         verify(notificationClient, never()).sendEmail(
             C2_UPLOAD_NOTIFICATION_TEMPLATE,
             "admin@family-court.com",
-            expectedNotificationParams(),
+            buildExpectedNotificationParams(),
             CASE_ID.toString()
         );
 
         verify(notificationClient).sendEmail(
             C2_UPLOAD_NOTIFICATION_TEMPLATE,
-            "FamilyPublicLaw+ctsc@gmail.com", expectedNotificationParams(),
+            "FamilyPublicLaw+ctsc@gmail.com", buildExpectedNotificationParams(),
             CASE_ID.toString()
         );
     }
@@ -263,6 +281,9 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
         return Map.of(
             "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
             "familyManCaseNumber", String.valueOf(CASE_ID),
+            "submittedForm", Map.of("document_url", "http://dm-store:8080/documents/be17a76e-38ed-4448-8b83-45de1aa93f55",
+                "document_filename", "form.pdf",
+                "document_binary_url", applicationDocument.getBinaryUrl()),
             "respondents1", List.of(
                 Map.of(
                     "value", Respondent.builder()
@@ -288,19 +309,22 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
         );
     }
 
-
     private Map<String, Object> expectedCtscNotificationParameters() {
         return Map.of("applicationType", "C2",
             "caseUrl", "http://fake-url/cases/case-details/12345");
     }
 
-    private Map<String, Object> expectedNotificationParams() {
-        return Map.of(
-            "reference", CASE_ID.toString(),
-            "hearingDetailsCallout", String.format("%s, %s", RESPONDENT_SURNAME, CASE_ID.toString()),
-            "subjectLine", String.format("%s, %s", RESPONDENT_SURNAME, CASE_ID.toString()),
-            "caseUrl", "http://fake-url/cases/case-details/" + CASE_ID
-        );
+    private Map<String, Object> buildExpectedNotificationParams() {
+        C2UploadedTemplate c2UploadedTemplate = new C2UploadedTemplate();
+
+        c2UploadedTemplate.setCallout(String.format("%s, %s", RESPONDENT_SURNAME, CASE_ID.toString()));
+        c2UploadedTemplate.setRespondentLastName("Watson");
+        c2UploadedTemplate.setCaseUrl("http://fake-url/cases/case-details/" + CASE_ID);
+        c2UploadedTemplate.setDocumentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
+            .map(JSONObject::toMap)
+            .orElse(null));
+
+        return c2UploadedTemplate.toMap(mapper);
     }
 
     private Map<String, Object> expectedPbaPaymentNotTakenNotificationParams() {
