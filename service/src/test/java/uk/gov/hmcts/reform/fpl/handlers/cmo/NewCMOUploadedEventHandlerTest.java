@@ -75,22 +75,21 @@ class NewCMOUploadedEventHandlerTest {
 
     @Test
     void shouldSendNotificationForAdmin() {
-        CaseData caseData = caseDataWithoutAllocatedJudgeEmail();
+        CaseData caseData = caseDataWithAllocatedJudgeEmail(HMCTS_JUDGE_EMAIL);
         CallbackRequest request = callbackRequest(caseData);
         HearingBooking hearing = buildHearing();
-        CMOReadyToSealTemplate template = expectedTemplate("Dave");
+        CMOReadyToSealTemplate template = expectedTemplate();
 
         mockContentProvider(
             caseData.getAllRespondents(),
             caseData.getFamilyManCaseNumber(),
             hearing,
-            hearing.getJudgeAndLegalAdvisor(),
+            caseData.getAllocatedJudge(),
             template
         );
 
         NewCMOUploaded event = new NewCMOUploaded(request, hearing);
         eventHandler.sendNotificationForAdmin(event);
-
 
         verify(notificationService).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
@@ -105,7 +104,7 @@ class NewCMOUploadedEventHandlerTest {
         CaseData caseData = caseDataWithAllocatedJudgeEmail(HMCTS_JUDGE_EMAIL);
         CallbackRequest request = callbackRequest(caseData);
         HearingBooking hearing = buildHearing();
-        CMOReadyToSealTemplate template = expectedTemplate("Not Dave");
+        CMOReadyToSealTemplate template = expectedTemplate();
 
         mockContentProvider(
             caseData.getAllRespondents(),
@@ -117,7 +116,6 @@ class NewCMOUploadedEventHandlerTest {
 
         NewCMOUploaded event = new NewCMOUploaded(request, hearing);
         eventHandler.sendNotificationForJudge(event);
-
 
         verify(notificationService).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE,
@@ -165,7 +163,6 @@ class NewCMOUploadedEventHandlerTest {
             .build();
     }
 
-
     private CaseData caseDataWithoutAllocatedJudgeEmail() {
         return caseDataWithAllocatedJudgeEmail("");
     }
@@ -184,18 +181,18 @@ class NewCMOUploadedEventHandlerTest {
             )
             .allocatedJudge(Judge.builder()
                 .judgeTitle(HIS_HONOUR_JUDGE)
-                .judgeLastName("Not Dave")
+                .judgeLastName("Hastings")
                 .judgeEmailAddress(email)
                 .build());
 
         return builder.build();
     }
 
-    private static CMOReadyToSealTemplate expectedTemplate(String judgeName) {
+    private static CMOReadyToSealTemplate expectedTemplate() {
         return new CMOReadyToSealTemplate()
             .setRespondentLastName("Smith")
             .setJudgeTitle("His Honour Judge")
-            .setJudgeName(judgeName)
+            .setJudgeName("Hastings")
             .setCaseUrl(FAKE_URL)
             .setSubjectLineWithHearingDate("Smith, 12345, Case management hearing, 1 February 2020");
     }
