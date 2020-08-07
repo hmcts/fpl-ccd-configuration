@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.DocumentRouter;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
@@ -641,4 +642,8 @@ public class CaseData {
     public List<Element<CourtAdminDocument>> getLimitedCourtAdminDocuments() {
         return defaultIfNull(limitedCourtAdminDocuments, new ArrayList<>());
     }
+
+    private final DocumentRouter uploadDocumentsRouter;
+    private final CourtAdminDocument editedCourtDocument;
+    private final Object courtDocumentList;
 }

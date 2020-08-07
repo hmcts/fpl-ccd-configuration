@@ -10,12 +10,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.DocumentRouter;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtAdminDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.DocumentRouter.AMEND;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.DocumentRouter.DELETE;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.DocumentRouter.UPLOAD;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getSelectedIdFromDynamicList;
 
 @Api
 @RestController
@@ -25,19 +39,96 @@ public class ManageDocumentsController {
 
     private final ObjectMapper mapper;
 
+    @PostMapping("/populate-list/mid-event")
+    public AboutToStartOrSubmitCallbackResponse populateList(@RequestBody CallbackRequest request) {
+        Map<String, Object> data = request.getCaseDetails().getData();
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
+        List<Element<CourtAdminDocument>> courtAdminDocuments = caseData.getOtherCourtAdminDocuments();
+        DocumentRouter uploadDocumentsRouter = caseData.getUploadDocumentsRouter();
+
+        List<String> errors = new ArrayList<>();
+        if (AMEND == uploadDocumentsRouter || DELETE == uploadDocumentsRouter) {
+            if (courtAdminDocuments.isEmpty()) {
+                errors.add("No additional documents have been added to the case to manage");
+            } else {
+                DynamicList courtDocumentList = asDynamicList(
+                    courtAdminDocuments,
+                    CourtAdminDocument::getDocumentTitle
+                );
+
+                data.put("courtDocumentList", courtDocumentList);
+            }
+        }
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(data)
+            .errors(errors)
+            .build();
+    }
+
+    @PostMapping("/get-doc/mid-event")
+    public AboutToStartOrSubmitCallbackResponse getDocument(@RequestBody CallbackRequest request) {
+        Map<String, Object> data = request.getCaseDetails().getData();
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
+        List<Element<CourtAdminDocument>> otherCourtAdminDocuments = caseData.getOtherCourtAdminDocuments();
+
+        Object courtDocumentList = caseData.getCourtDocumentList();
+
+        UUID selectedId = getSelectedIdFromDynamicList(courtDocumentList, mapper);
+
+        findElement(selectedId, otherCourtAdminDocuments).ifPresent(
+            courtAdminDocument -> data.put("editedCourtDocument", courtAdminDocument.getValue())
+        );
+
+        DynamicList regeneratedList = asDynamicList(
+            otherCourtAdminDocuments,
+            selectedId,
+            CourtAdminDocument::getDocumentTitle
+        );
+
+        data.put("courtDocumentList", regeneratedList);
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(data)
+            .build();
+    }
+
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest request) {
-        Map<String, Object> data = request.getCaseDetails().getData();
-
+        CaseDetails caseDetails = request.getCaseDetails();
+        Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
-
         List<Element<CourtAdminDocument>> otherCourtAdminDocuments = caseData.getOtherCourtAdminDocuments();
-        List<Element<CourtAdminDocument>> limitedCourtAdminDocuments = caseData.getLimitedCourtAdminDocuments();
 
-        otherCourtAdminDocuments.addAll(limitedCourtAdminDocuments);
+        if (UPLOAD == caseData.getUploadDocumentsRouter()) {
+            List<Element<CourtAdminDocument>> limitedCourtAdminDocuments = caseData.getLimitedCourtAdminDocuments();
+            otherCourtAdminDocuments.addAll(limitedCourtAdminDocuments);
+        } else {
+            Object courtDocumentList = caseData.getCourtDocumentList();
+            UUID selectedId = getSelectedIdFromDynamicList(courtDocumentList, mapper);
+            int index = -1;
+            for (int i = 0; i < otherCourtAdminDocuments.size(); i++) {
+                Element<?> element = otherCourtAdminDocuments.get(i);
+                if (selectedId.equals(element.getId())) {
+                    index = i;
+                }
+            }
+            if (AMEND == caseData.getUploadDocumentsRouter()) {
+                Element<CourtAdminDocument> editedDocument = element(selectedId, caseData.getEditedCourtDocument());
+                otherCourtAdminDocuments.set(index, editedDocument);
+            } else if (DELETE == caseData.getUploadDocumentsRouter()) {
+                otherCourtAdminDocuments.remove(index);
+            }
+        }
 
         data.put("otherCourtAdminDocuments", otherCourtAdminDocuments);
-        data.remove("limitedCourtAdminDocuments");
+        removeTemporaryFields(
+            caseDetails,
+            "limitedCourtAdminDocuments",
+            "editedCourtDocument",
+            "courtDocumentList",
+            "uploadDocumentsRouter"
+        );
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
