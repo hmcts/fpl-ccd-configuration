@@ -14,7 +14,7 @@
     "ID": "uploadDocumentsRouter",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "DocumentRouter",
-    "Label": "How would you like to manage your documents?",
+    "Label": "What do you want to do?",
     "SecurityClassification": "Public"
   },
   {

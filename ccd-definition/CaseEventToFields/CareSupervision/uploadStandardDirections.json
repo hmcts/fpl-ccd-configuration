@@ -4,7 +4,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadStandardDirections",
     "CaseFieldID": "uploadDocumentsRouter",
-    "CaseEventFieldHint": "To update the uploaded standard directions choose the upload option",
+    "CaseEventFieldHint": "To replace the standard directions, choose 'Upload a new case document'",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
     "PageID": "routing",
@@ -91,7 +91,7 @@
     "PageID": "select",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "PageShowCondition": "uploadDocumentsRouter != \"UPLOAD\"",
+    "PageShowCondition": "uploadDocumentsRouter = \"AMEND\" OR uploadDocumentsRouter = \"DELETE\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-docs/get-doc/mid-event",
     "FieldShowCondition": "uploadDocumentsRouter = \"AMEND\""
   },

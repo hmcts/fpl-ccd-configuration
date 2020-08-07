@@ -125,8 +125,10 @@ public class ManageDocumentsController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
         List<Element<CourtAdminDocument>> otherCourtAdminDocuments = caseData.getOtherCourtAdminDocuments();
+        DocumentRouter router = caseData.getUploadDocumentsRouter();
 
-        if (UPLOAD == caseData.getUploadDocumentsRouter()) {
+        // Will be null if pageShow was NO in which case upload is the only option
+        if (UPLOAD == router || null == router) {
             List<Element<CourtAdminDocument>> limitedCourtAdminDocuments = caseData.getLimitedCourtAdminDocuments();
             otherCourtAdminDocuments.addAll(limitedCourtAdminDocuments);
         } else {
@@ -139,10 +141,10 @@ public class ManageDocumentsController {
                     index = i;
                 }
             }
-            if (AMEND == caseData.getUploadDocumentsRouter()) {
+            if (AMEND == router) {
                 Element<CourtAdminDocument> editedDocument = element(selectedId, caseData.getEditedCourtDocument());
                 otherCourtAdminDocuments.set(index, editedDocument);
-            } else if (DELETE == caseData.getUploadDocumentsRouter()) {
+            } else if (DELETE == router) {
                 otherCourtAdminDocuments.remove(index);
             }
         }
