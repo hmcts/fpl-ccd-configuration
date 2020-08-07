@@ -339,15 +339,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "limitedCourtAdminDocuments",
-    "Label": "Other documents",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "CourtAdminDocument",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "submissionConsentLabel",
     "Label": "Declaration",
     "FieldType": "Text",
@@ -1641,31 +1632,6 @@
     "ID": "facilitiesOrServicesNeededLink",
     "FieldType": "Label",
     "Label": "[Make changes to court services needed](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/attendingHearing)",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "uploadDocumentsRouter",
-    "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "DocumentRouter",
-    "Label": "How would you like to manage your documents?",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "courtDocumentList",
-    "FieldType": "DynamicList",
-    "Label": "Select a court document",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "editedCourtDocument",
-    "FieldType": "CourtAdminDocument",
-    "Label": "Provide new information",
     "SecurityClassification": "Public"
   }
 ]
