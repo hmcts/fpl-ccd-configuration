@@ -61,16 +61,6 @@
     "EventElementLabel": "Upload a file",
     "FieldDisplayOrder": 6,
     "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundleComplexType",
-    "CaseEventID": "uploadC2",
-    "CaseFieldID": "temporaryC2Document",
-    "ListElementCode": "description",
-    "EventElementLabel": "Notes",
-    "FieldDisplayOrder": 7,
-    "DisplayContext": "MANDATORY"
   }
 ]
 
