@@ -10,15 +10,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
-    "ListElementCode": "type",
-    "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "C2ApplicationType",
-    "ElementLabel": "Application type",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
     "ListElementCode": "uploadedDateTime",
     "FieldType": "Text",
     "ElementLabel": "Date and time of upload",
@@ -79,6 +70,15 @@
     "ListElementCode": "fileReference",
     "FieldType": "Text",
     "ElementLabel": "Customer reference",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "type",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "C2ApplicationType",
+    "ElementLabel": "Application type",
     "SecurityClassification": "Public"
   }
 ]
