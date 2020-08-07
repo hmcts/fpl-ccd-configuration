@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DocumentRouter",
+    "ListElementCode": "UPLOAD",
+    "ListElement": "Upload a new case document",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DocumentRouter",
+    "ListElementCode": "AMEND",
+    "ListElement": "Find and replace a case document",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DocumentRouter",
+    "ListElementCode": "DELETE",
+    "ListElement": "Find and remove a case document",
+    "DisplayOrder": 3
+  }
+]
