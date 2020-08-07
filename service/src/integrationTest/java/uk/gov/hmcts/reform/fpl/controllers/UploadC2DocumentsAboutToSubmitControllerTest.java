@@ -13,16 +13,13 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ActiveProfiles("integration-test")
@@ -30,8 +27,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 @OverrideAutoConfiguration(enabled = true)
 class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTest {
     private static final String USER_NAME = "Emma Taylor";
-    private static final ZonedDateTime ZONE_DATE_TIME = ZonedDateTime.now(ZoneId.of("Europe/London"));
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("d MMMM yyyy, h:mma", Locale.UK);
     private static final Long CASE_ID = 12345L;
 
     @MockBean
@@ -56,10 +51,9 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
 
         C2DocumentBundle uploadedC2DocumentBundle = caseData.getC2DocumentBundle().get(0).getValue();
 
-        // updated to use LocalDate to avoid 1-minute issue
-        LocalDateTime uploadedDateTime = LocalDateTime.parse(uploadedC2DocumentBundle.getUploadedDateTime(), FORMATTER);
+        String expectedDateTime = formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME);
 
-        assertThat(uploadedDateTime.toLocalDate()).isEqualTo(ZONE_DATE_TIME.toLocalDate());
+        assertThat(uploadedC2DocumentBundle.getUploadedDateTime()).isEqualTo(expectedDateTime);
         assertThat(caseData.getTemporaryC2Document()).isNull();
         assertThat(caseData.getC2DocumentBundle()).hasSize(1);
         assertC2BundleDocument(uploadedC2DocumentBundle, "Test description");
@@ -76,10 +70,9 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
         C2DocumentBundle existingC2Document = caseData.getC2DocumentBundle().get(0).getValue();
         C2DocumentBundle appendedC2Document = caseData.getC2DocumentBundle().get(1).getValue();
 
-        // updated to use LocalDate to avoid 1-minute issue
-        LocalDateTime uploadedDateTime = LocalDateTime.parse(appendedC2Document.getUploadedDateTime(), FORMATTER);
+        String expectedDateTime = formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME);
 
-        assertThat(uploadedDateTime.toLocalDate()).isEqualTo(ZONE_DATE_TIME.toLocalDate());
+        assertThat(appendedC2Document.getUploadedDateTime()).isEqualTo(expectedDateTime);
         assertC2BundleDocument(existingC2Document, "C2 document one");
         assertC2BundleDocument(appendedC2Document, "C2 document two");
         assertThat(caseData.getTemporaryC2Document()).isNull();

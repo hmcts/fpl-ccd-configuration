@@ -26,10 +26,9 @@ import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -56,6 +55,7 @@ public class UploadC2DocumentsController {
     private final FeeService feeService;
     private final PaymentService paymentService;
     private final PbaNumberService pbaNumberService;
+    private final Time time;
 
     @PostMapping("/get-fee/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
@@ -147,11 +147,10 @@ public class UploadC2DocumentsController {
     private List<Element<C2DocumentBundle>> buildC2DocumentBundle(CaseData caseData) {
         List<Element<C2DocumentBundle>> c2DocumentBundle = defaultIfNull(caseData.getC2DocumentBundle(),
             Lists.newArrayList());
-        ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
 
         var c2DocumentBundleBuilder = caseData.getTemporaryC2Document().toBuilder()
             .author(userDetailsService.getUserName())
-            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(zonedDateTime.toLocalDateTime(), DATE_TIME));
+            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME));
 
         c2DocumentBundleBuilder.type(caseData.getC2ApplicationType().get("type"));
 
