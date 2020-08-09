@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -17,6 +18,7 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
 
 @ExtendWith(SpringExtension.class)
+@TestPropertySource(properties = {"fpl.env=localhost" })
 public class NotificationServiceTest {
     public static final String TEST_RECIPIENT_EMAIL = "test@example.com";
     public static final String REFERENCE = "12345L";

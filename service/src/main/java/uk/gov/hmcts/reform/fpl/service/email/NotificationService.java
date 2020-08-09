@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.service.notify.NotificationClient;
@@ -17,8 +18,11 @@ import java.util.Map;
 public class NotificationService {
     private final NotificationClient notificationClient;
     private final ObjectMapper mapper;
+    @Value("${fpl.env}")
+    private String environment;
 
     public void sendEmail(String templateId, String email, Map<String, Object> parameters, String reference) {
+        System.out.println("environment----->" + environment);
         log.debug("Sending email (with template id: {}) to {}", templateId, email);
         try {
             notificationClient.sendEmail(templateId, email, parameters, reference);
