@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -446,75 +445,6 @@ class ConfidentialDetailsServiceTest {
             List<Element<Other>> others = List.of(otherWithConfidentialFields(ID, NOT_CONFIDENTIAL));
 
             assertThat(service.removeConfidentialDetails(others)).isEqualTo(others);
-        }
-
-        @Test
-        void shouldReturnOthersIfOthersIsPrePopulated() {
-            CaseData caseData = CaseData.builder()
-                .others(Others.builder().firstOther(otherWithRemovedConfidentialFields(ID).getValue()).build())
-                .build();
-
-            List<Element<Other>> others = service.combineOtherDetails(caseData.getAllOthers(),
-                caseData.getConfidentialOthers());
-
-            assertThat(others.get(0).getValue()).isEqualTo(otherWithRemovedConfidentialFields(ID).getValue());
-        }
-
-        @Test
-        void shouldPrepareOtherWithConfidentialValuesWhenConfidentialOthersIsNotEmpty() {
-            CaseData caseData = CaseData.builder()
-                .others(Others.builder().firstOther(otherWithRemovedConfidentialFields(ID).getValue()).build())
-                .confidentialOthers(List.of(otherWithConfidentialFields(ID, CONFIDENTIAL)))
-                .build();
-
-            List<Element<Other>> others = service.combineOtherDetails(caseData.getAllOthers(),
-                caseData.getConfidentialOthers());
-
-            assertThat(others.get(0).getValue()).isEqualTo(otherWithConfidentialFields(ID, CONFIDENTIAL).getValue());
-        }
-
-        @Test
-        void shouldAddExpectedOtherWhenHiddenDetailsMarkedAsNo() {
-            CaseData caseData = CaseData.builder()
-                .others(Others.builder()
-                    .firstOther(otherWithConfidentialFields(ID, NOT_CONFIDENTIAL).getValue())
-                    .build())
-                .confidentialOthers(List.of(otherWithConfidentialFields(ID, CONFIDENTIAL)))
-                .build();
-
-            List<Element<Other>> others = service.combineOtherDetails(caseData.getAllOthers(),
-                caseData.getConfidentialOthers());
-
-            assertThat(others.get(0).getValue())
-                .isEqualTo(otherWithConfidentialFields(ID, NOT_CONFIDENTIAL).getValue());
-        }
-
-        @Test
-        void shouldMaintainOrderingOfOthersWhenComplexScenario() {
-            UUID otherId = randomUUID();
-
-            List<Element<Other>> others = List.of(
-                otherWithConfidentialFields(randomUUID(), NOT_CONFIDENTIAL),
-                otherWithRemovedConfidentialFields(otherId));
-
-            List<Element<Other>> confidentialOthers = List.of(
-                otherWithConfidentialFields(ID, CONFIDENTIAL),
-                otherWithConfidentialFields(otherId, CONFIDENTIAL));
-
-            CaseData caseData = CaseData.builder()
-                .others(Others.builder()
-                    .firstOther(otherWithRemovedConfidentialFields(ID).getValue())
-                    .additionalOthers(others)
-                    .build())
-                .confidentialOthers(confidentialOthers)
-                .build();
-
-            List<Element<Other>> updatedOthers = service.combineOtherDetails(caseData.getAllOthers(),
-                caseData.getConfidentialOthers());
-
-            assertThat(updatedOthers.get(0).getValue()).isEqualTo(confidentialOthers.get(0).getValue());
-            assertThat(updatedOthers.get(1)).isEqualTo(others.get(0));
-            assertThat(updatedOthers.get(2)).isEqualTo(confidentialOthers.get(1));
         }
 
         @Test
