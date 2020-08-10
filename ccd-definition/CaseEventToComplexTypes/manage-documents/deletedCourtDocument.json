@@ -17,5 +17,24 @@
     "ListElementCode": "document",
     "FieldDisplayOrder": 2,
     "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CourtAdminDocument",
+    "CaseEventID": "uploadOtherCourtAdminDocuments",
+    "CaseFieldID": "deletedCourtDocument",
+    "ListElementCode": "documentTitle",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CourtAdminDocument",
+    "CaseEventID": "uploadOtherCourtAdminDocuments",
+    "CaseFieldID": "deletedCourtDocument",
+    "EventElementLabel": "File",
+    "ListElementCode": "document",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "READONLY"
   }
 ]

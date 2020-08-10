@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadOtherCourtAdminDocuments-PREPARE_FOR_HEARING",
+    "CaseEventID": "uploadOtherCourtAdminDocuments",
     "CaseFieldID": "uploadDocumentsRouter",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
@@ -15,7 +15,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadOtherCourtAdminDocuments-PREPARE_FOR_HEARING",
+    "CaseEventID": "uploadOtherCourtAdminDocuments",
     "CaseFieldID": "pageShow",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
@@ -27,7 +27,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadOtherCourtAdminDocuments-PREPARE_FOR_HEARING",
+    "CaseEventID": "uploadOtherCourtAdminDocuments",
     "CaseFieldID": "newDocumentLabel",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
@@ -39,7 +39,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadOtherCourtAdminDocuments-PREPARE_FOR_HEARING",
+    "CaseEventID": "uploadOtherCourtAdminDocuments",
     "CaseFieldID": "limitedCourtAdminDocuments",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "OPTIONAL",
@@ -50,7 +50,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadOtherCourtAdminDocuments-PREPARE_FOR_HEARING",
+    "CaseEventID": "uploadOtherCourtAdminDocuments",
     "CaseFieldID": "amendDocumentLabel",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
@@ -64,7 +64,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadOtherCourtAdminDocuments-PREPARE_FOR_HEARING",
+    "CaseEventID": "uploadOtherCourtAdminDocuments",
     "CaseFieldID": "deleteDocumentLabel",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
@@ -76,7 +76,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadOtherCourtAdminDocuments-PREPARE_FOR_HEARING",
+    "CaseEventID": "uploadOtherCourtAdminDocuments",
     "CaseFieldID": "courtDocumentList",
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
@@ -87,7 +87,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadOtherCourtAdminDocuments-PREPARE_FOR_HEARING",
+    "CaseEventID": "uploadOtherCourtAdminDocuments",
     "CaseFieldID": "replaceDocumentLabel",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
@@ -99,7 +99,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadOtherCourtAdminDocuments-PREPARE_FOR_HEARING",
+    "CaseEventID": "uploadOtherCourtAdminDocuments",
     "CaseFieldID": "originalCourtDocument",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
@@ -110,7 +110,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadOtherCourtAdminDocuments-PREPARE_FOR_HEARING",
+    "CaseEventID": "uploadOtherCourtAdminDocuments",
     "CaseFieldID": "replacementDocumentInfo",
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "READONLY",
@@ -121,7 +121,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadOtherCourtAdminDocuments-PREPARE_FOR_HEARING",
+    "CaseEventID": "uploadOtherCourtAdminDocuments",
     "CaseFieldID": "editedCourtDocument",
     "PageFieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY",
@@ -132,7 +132,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadOtherCourtAdminDocuments-PREPARE_FOR_HEARING",
+    "CaseEventID": "uploadOtherCourtAdminDocuments",
     "CaseFieldID": "deletedCourtDocument",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "COMPLEX",
