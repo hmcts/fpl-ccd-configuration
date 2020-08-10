@@ -131,7 +131,8 @@ public class C2UploadedEventHandlerTest {
             given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
                 .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
 
-            given(c2UploadedEmailContentProvider.buildC2UploadNotificationTemplate(caseDetails, c2DocumentBundle.getDocument()))
+            given(c2UploadedEmailContentProvider
+                .buildC2UploadNotificationTemplate(caseDetails, c2DocumentBundle.getDocument()))
                 .willReturn(c2Parameters);
 
             c2UploadedEventHandler.sendNotifications(
