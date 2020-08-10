@@ -41,7 +41,7 @@ public class ManageDocumentsController {
     private final ObjectMapper mapper;
 
     @PostMapping("/about-to-start")
-    private AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
         Map<String, Object> data = request.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
