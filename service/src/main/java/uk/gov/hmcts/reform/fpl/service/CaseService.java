@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -12,6 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class CaseService {
 
     private final CaseUserApi caseUserApi;
@@ -28,11 +30,13 @@ public class CaseService {
     public void addUser(String caseId, String userId, Set<CaseRole> caseRoles) {
         Set<String> formattedCaseRoles = caseRoles.stream().map(CaseRole::formattedName).collect(Collectors.toSet());
         CaseUser caseUser = new CaseUser(userId, formattedCaseRoles);
+        log.info("Grant case roles {} to case {}", formattedCaseRoles, caseId);
         caseUserApi.updateCaseRolesForUser(
-            requestData.authorisation(),
-            authTokenGenerator.generate(),
-            caseId,
-            userId,
-            caseUser);
+                requestData.authorisation(),
+                authTokenGenerator.generate(),
+                caseId,
+                userId,
+                caseUser);
+        log.info("Roles {} granted to case {}", formattedCaseRoles, caseId);
     }
 }

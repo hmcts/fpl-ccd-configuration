@@ -3,25 +3,20 @@ package uk.gov.hmcts.reform.fpl.service;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType;
-import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.OTHER;
+import static uk.gov.hmcts.reform.fpl.utils.ConfidentialDetailsHelper.getConfidentialItemToAdd;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
 public class ConfidentialDetailsService {
-
-    public List<Element<Other>> combineOtherDetails(List<Element<Other>> all, List<Element<Other>> confidential) {
-        return prepareCollection(all, confidential, null);
-    }
 
     public <T extends ConfidentialParty<T>> List<Element<T>> getConfidentialDetails(List<Element<T>> details) {
         return details.stream()
@@ -74,13 +69,8 @@ public class ConfidentialDetailsService {
             all.forEach(element -> {
                 T party = element.getValue();
                 if (party.containsConfidentialDetails()) {
-                    T partyToAdd = getItemToAdd(confidential, element);
+                    T partyToAdd = getConfidentialItemToAdd(confidential, element);
                     T confidentialParty = party.addConfidentialDetails((partyToAdd.toParty()));
-
-                    // code due to others following a different data structure.
-                    if (defaultValue == null) {
-                        confidentialParty = handleOthers(all, confidential, party);
-                    }
 
                     collection.add(element(element.getId(), confidentialParty));
                 } else {
@@ -89,27 +79,5 @@ public class ConfidentialDetailsService {
             });
         }
         return collection;
-    }
-
-    private <T extends ConfidentialParty<T>> T handleOthers(List<Element<T>> all,
-                                                            List<Element<T>> confidential,
-                                                            T party) {
-        T confidentialParty;
-        List<UUID> ids = all.stream().map(Element::getId).collect(toList());
-
-        confidentialParty = confidential.stream()
-            .filter(other -> !ids.contains(other.getId()))
-            .map(other -> party.addConfidentialDetails(other.getValue().toParty()))
-            .findFirst()
-            .orElse(party);
-        return confidentialParty;
-    }
-
-    private <T> T getItemToAdd(List<Element<T>> confidential, Element<T> element) {
-        return confidential.stream()
-            .filter(item -> item.getId().equals(element.getId()))
-            .map(Element::getValue)
-            .findFirst()
-            .orElse(element.getValue());
     }
 }
