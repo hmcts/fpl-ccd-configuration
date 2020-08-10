@@ -1,9 +1,10 @@
 package uk.gov.hmcts.reform.fpl.events;
 
+import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 
-
+@EqualsAndHashCode(callSuper = true)
 public class C2UploadedEvent extends CallbackEvent {
     private final C2DocumentBundle uploadedBundle;
 
