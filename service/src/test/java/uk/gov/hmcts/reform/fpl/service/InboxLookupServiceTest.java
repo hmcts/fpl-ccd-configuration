@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 
+import java.util.HashMap;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -89,6 +90,20 @@ class InboxLookupServiceTest {
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
             .willReturn(Optional.of(new LocalAuthority("")));
+
+        String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE);
+
+        assertThat(email).isEqualTo(FALLBACK_INBOX);
+    }
+
+    @Test
+    void shouldReturnPublicLawEmailWhenLocalAuthorityEmailIsNorPresentAndSolicitorIsNotPresent() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(new HashMap<>())
+            .build();
+
+        given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
+            .willReturn(Optional.empty());
 
         String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE);
 
