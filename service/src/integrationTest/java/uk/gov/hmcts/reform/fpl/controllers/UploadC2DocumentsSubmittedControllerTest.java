@@ -60,7 +60,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
     private static DocumentReference applicationDocument;
     private static DocumentReference latestC2Document;
     private static final byte[] C2_BINARY = {5, 4, 3, 2, 1};
-    private static final String ENVIRONMENT = "localhost";
+    private static final String CASE_REFERENCE_WITH_ENVIRONMENT = "localhost/" + CASE_ID;
 
     @MockBean
     private NotificationClient notificationClient;
@@ -96,14 +96,14 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
             C2_UPLOAD_NOTIFICATION_TEMPLATE,
             "admin@family-court.com",
             buildExpectedNotificationParams(),
-            ENVIRONMENT + "/" + CASE_ID.toString()
+            CASE_REFERENCE_WITH_ENVIRONMENT
         );
 
         verify(notificationClient, never()).sendEmail(
             C2_UPLOAD_NOTIFICATION_TEMPLATE,
             "FamilyPublicLaw+ctsc@gmail.com",
             buildExpectedNotificationParams(),
-            ENVIRONMENT + "/" + CASE_ID.toString()
+            CASE_REFERENCE_WITH_ENVIRONMENT
         );
     }
 
@@ -115,13 +115,13 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
             C2_UPLOAD_NOTIFICATION_TEMPLATE,
             "admin@family-court.com",
             buildExpectedNotificationParams(),
-            ENVIRONMENT + "/" + CASE_ID.toString()
+            CASE_REFERENCE_WITH_ENVIRONMENT
         );
 
         verify(notificationClient).sendEmail(
             C2_UPLOAD_NOTIFICATION_TEMPLATE,
             "FamilyPublicLaw+ctsc@gmail.com", buildExpectedNotificationParams(),
-            ENVIRONMENT + "/" + CASE_ID.toString()
+            CASE_REFERENCE_WITH_ENVIRONMENT
         );
     }
 
@@ -133,14 +133,14 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
             C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
             "admin@family-court.com",
             expectedPbaPaymentNotTakenNotificationParams(),
-            ENVIRONMENT + "/" + CASE_ID.toString()
+            CASE_REFERENCE_WITH_ENVIRONMENT
         );
 
         verify(notificationClient, never()).sendEmail(
             C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
             "FamilyPublicLaw+ctsc@gmail.com",
             expectedPbaPaymentNotTakenNotificationParams(),
-            ENVIRONMENT + "/" + CASE_ID.toString()
+            CASE_REFERENCE_WITH_ENVIRONMENT
         );
     }
 
@@ -152,14 +152,14 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
             C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
             "admin@family-court.com",
             expectedPbaPaymentNotTakenNotificationParams(),
-            ENVIRONMENT + "/" + CASE_ID.toString()
+            CASE_REFERENCE_WITH_ENVIRONMENT
         );
 
         verify(notificationClient).sendEmail(
             C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
             "FamilyPublicLaw+ctsc@gmail.com",
             expectedPbaPaymentNotTakenNotificationParams(),
-            ENVIRONMENT + "/" + CASE_ID.toString()
+            CASE_REFERENCE_WITH_ENVIRONMENT
         );
     }
 
@@ -217,13 +217,13 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
             APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
             "local-authority@local-authority.com",
             Map.of("applicationType", "C2"),
-            ENVIRONMENT + "/" + "12345");
+            CASE_REFERENCE_WITH_ENVIRONMENT);
 
         verify(notificationClient).sendEmail(
             APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
             "FamilyPublicLaw+ctsc@gmail.com",
             expectedCtscNotificationParameters(),
-            ENVIRONMENT + "/" + "12345");
+            CASE_REFERENCE_WITH_ENVIRONMENT);
     }
 
     @Test
@@ -240,13 +240,13 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
             APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
             "local-authority@local-authority.com",
             Map.of("applicationType", "C2"),
-            ENVIRONMENT + "/" + "12345");
+            CASE_REFERENCE_WITH_ENVIRONMENT);
 
         verify(notificationClient).sendEmail(
             APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
             "FamilyPublicLaw+ctsc@gmail.com",
             expectedCtscNotificationParameters(),
-            ENVIRONMENT + "/" + "12345");
+            CASE_REFERENCE_WITH_ENVIRONMENT);
     }
 
     @Test

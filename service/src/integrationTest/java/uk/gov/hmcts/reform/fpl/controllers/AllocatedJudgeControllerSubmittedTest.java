@@ -18,7 +18,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 @OverrideAutoConfiguration(enabled = true)
 public class AllocatedJudgeControllerSubmittedTest extends AbstractControllerTest {
     private static final String ALLOCATED_JUDGE_EMAIL = "judge@gmail.com";
-    private static final String ENVIRONMENT = "localhost";
+    private static final String CASE_REFERENCE_WITH_ENVIRONMENT = "localhost/12345";
 
     @MockBean
     private NotificationClient notificationClient;
@@ -33,6 +33,6 @@ public class AllocatedJudgeControllerSubmittedTest extends AbstractControllerTes
 
         verify(notificationClient).sendEmail(
             eq(ALLOCATED_JUDGE_TEMPLATE), eq(ALLOCATED_JUDGE_EMAIL),
-            anyMap(), eq(ENVIRONMENT + "/" + "12345"));
+            anyMap(), eq(CASE_REFERENCE_WITH_ENVIRONMENT));
     }
 }

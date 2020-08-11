@@ -18,7 +18,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 @OverrideAutoConfiguration(enabled = true)
 class ReturnApplicationSubmittedTest extends AbstractControllerTest {
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
-    private static final String ENVIRONMENT = "localhost";
+    private static final String CASE_REFERENCE_WITH_ENVIRONMENT = "localhost/" + 12345;
 
     @MockBean
     private NotificationClient notificationClient;
@@ -33,6 +33,6 @@ class ReturnApplicationSubmittedTest extends AbstractControllerTest {
 
         verify(notificationClient).sendEmail(
             eq(APPLICATION_RETURNED_TO_THE_LA), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            anyMap(), eq(ENVIRONMENT + "/" + "12345"));
+            anyMap(), eq(CASE_REFERENCE_WITH_ENVIRONMENT));
     }
 }

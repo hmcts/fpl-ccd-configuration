@@ -79,7 +79,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
     private static final String CTSC_ADMIN_INBOX = "FamilyPublicLaw+ctsc@gmail.com";
     private static final byte[] PDF = {1, 2, 3, 4, 5};
     private static final Long CASE_ID = 12345L;
-    private static final String ENVIRONMENT = "localhost";
+    private static final String CASE_REFERENCE_WITH_ENVIRONMENT = "localhost/" + CASE_ID;
 
     private LocalDateTime futureDate;
 
@@ -122,7 +122,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
         verify(notificationClient).sendEmail(
             eq(CMO_REJECTED_BY_JUDGE_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            anyMap(), eq(ENVIRONMENT + "/" + CASE_ID.toString()));
+            anyMap(), eq(CASE_REFERENCE_WITH_ENVIRONMENT));
     }
 
     @Test
@@ -173,13 +173,13 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
             eq(CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE),
             eq("robert@example.com"),
             eqJson(expectedReviewByRepresentativesNotificationParameters(DIGITAL_SERVICE)),
-            eq(ENVIRONMENT + "/" + CASE_ID.toString()));
+            eq(CASE_REFERENCE_WITH_ENVIRONMENT));
 
         verify(notificationClient).sendEmail(
             eq(CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE),
             eq("charlie@example.com"),
             eqJson(expectedReviewByRepresentativesNotificationParameters(EMAIL)),
-            eq(ENVIRONMENT + "/" + CASE_ID.toString()));
+            eq(CASE_REFERENCE_WITH_ENVIRONMENT));
     }
 
     @Test
@@ -192,11 +192,11 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
         verify(notificationClient).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, HMCTS_ADMIN_INBOX,
-            expectedCMODraftCompleteNotificationParameters(), ENVIRONMENT + "/" + CASE_ID.toString());
+            expectedCMODraftCompleteNotificationParameters(), CASE_REFERENCE_WITH_ENVIRONMENT);
 
         verify(notificationClient, never()).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, CTSC_ADMIN_INBOX,
-            expectedCMODraftCompleteNotificationParameters(), ENVIRONMENT + "/" + CASE_ID.toString());
+            expectedCMODraftCompleteNotificationParameters(), CASE_REFERENCE_WITH_ENVIRONMENT);
     }
 
     @Test
@@ -209,11 +209,11 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
         verify(notificationClient, never()).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, HMCTS_ADMIN_INBOX,
-            expectedCMODraftCompleteNotificationParameters(), ENVIRONMENT + "/" + CASE_ID.toString());
+            expectedCMODraftCompleteNotificationParameters(), CASE_REFERENCE_WITH_ENVIRONMENT);
 
         verify(notificationClient).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, CTSC_ADMIN_INBOX,
-            expectedCMODraftCompleteNotificationParameters(), ENVIRONMENT + "/" + CASE_ID.toString());
+            expectedCMODraftCompleteNotificationParameters(), CASE_REFERENCE_WITH_ENVIRONMENT);
     }
 
     @Test
