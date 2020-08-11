@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplat
 import uk.gov.hmcts.reform.fpl.model.notify.c2uploaded.C2UploadedTemplate;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
-import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.util.Map;
 
@@ -30,14 +29,15 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
     @Autowired
     private C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
 
-    private static final byte[] APPLICATION_BINARY = TestDataHelper.DOCUMENT_CONTENT;
+    private static final byte[] C2_DOCUMENT_BINARY = {5};
     private static DocumentReference applicationDocument;
+    private DocumentReference uploadedC2 = testDocumentReference();
 
     @BeforeEach
     void init() {
         applicationDocument = testDocumentReference();
-        when(documentDownloadService.downloadDocument(applicationDocument.getBinaryUrl()))
-            .thenReturn(APPLICATION_BINARY);
+        when(documentDownloadService.downloadDocument(uploadedC2.getBinaryUrl()))
+            .thenReturn(C2_DOCUMENT_BINARY);
     }
 
     @Test
@@ -47,7 +47,7 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
 
         C2UploadedTemplate c2UploadedTemplateParameters = getC2UploadedTemplateParameters();
 
-        assertThat(c2UploadedEmailContentProvider.buildC2UploadNotificationTemplate(caseDetails))
+        assertThat(c2UploadedEmailContentProvider.buildC2UploadNotificationTemplate(caseDetails, uploadedC2))
             .isEqualToComparingFieldByField(c2UploadedTemplateParameters);
     }
 
@@ -93,7 +93,7 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
         c2UploadedTemplate.setCallout(format("Smith, %s", CASE_REFERENCE));
         c2UploadedTemplate.setRespondentLastName("Smith");
         c2UploadedTemplate.setCaseUrl("http://fake-url/cases/case-details/12345");
-        c2UploadedTemplate.setDocumentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
+        c2UploadedTemplate.setDocumentLink(generateAttachedDocumentLink(C2_DOCUMENT_BINARY)
             .map(JSONObject::toMap)
             .orElse(null));
 

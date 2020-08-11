@@ -30,6 +30,7 @@
     "ShowSummary": "Y",
     "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-docs/about-to-submit",
     "Comment": "Recreated due to differing permissions in this state compared to other states"
   }
 ]

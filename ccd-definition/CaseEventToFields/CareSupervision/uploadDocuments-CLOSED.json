@@ -15,7 +15,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadDocuments-CLOSED",
-    "CaseFieldID": "otherCourtAdminDocuments",
+    "CaseFieldID": "limitedCourtAdminDocuments",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "OPTIONAL",
     "PageID": 1,
