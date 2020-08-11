@@ -67,7 +67,7 @@ import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
 
     private static final byte[] PDF = {1, 2, 3, 4, 5};
-    public static final String ENVIRONMENT = "localhost";
+    private static final String ENVIRONMENT = "localhost";
     private static final String CASE_ID = "12345";
 
     @MockBean

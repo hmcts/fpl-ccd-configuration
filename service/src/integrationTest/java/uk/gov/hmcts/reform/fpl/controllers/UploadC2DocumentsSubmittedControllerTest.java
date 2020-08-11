@@ -60,6 +60,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
     private static DocumentReference applicationDocument;
     private static DocumentReference latestC2Document;
     private static final byte[] C2_BINARY = {5, 4, 3, 2, 1};
+    private static final String ENVIRONMENT = "localhost";
 
     @MockBean
     private NotificationClient notificationClient;
@@ -95,14 +96,14 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
             C2_UPLOAD_NOTIFICATION_TEMPLATE,
             "admin@family-court.com",
             buildExpectedNotificationParams(),
-            CASE_ID.toString()
+            ENVIRONMENT + "/" + CASE_ID.toString()
         );
 
         verify(notificationClient, never()).sendEmail(
             C2_UPLOAD_NOTIFICATION_TEMPLATE,
             "FamilyPublicLaw+ctsc@gmail.com",
             buildExpectedNotificationParams(),
-            CASE_ID.toString()
+            ENVIRONMENT + "/" + CASE_ID.toString()
         );
     }
 
@@ -114,13 +115,13 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
             C2_UPLOAD_NOTIFICATION_TEMPLATE,
             "admin@family-court.com",
             buildExpectedNotificationParams(),
-            CASE_ID.toString()
+            ENVIRONMENT + "/" + CASE_ID.toString()
         );
 
         verify(notificationClient).sendEmail(
             C2_UPLOAD_NOTIFICATION_TEMPLATE,
             "FamilyPublicLaw+ctsc@gmail.com", buildExpectedNotificationParams(),
-            CASE_ID.toString()
+            ENVIRONMENT + "/" + CASE_ID.toString()
         );
     }
 
@@ -132,14 +133,14 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
             C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
             "admin@family-court.com",
             expectedPbaPaymentNotTakenNotificationParams(),
-            CASE_ID.toString()
+            ENVIRONMENT + "/" + CASE_ID.toString()
         );
 
         verify(notificationClient, never()).sendEmail(
             C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
             "FamilyPublicLaw+ctsc@gmail.com",
             expectedPbaPaymentNotTakenNotificationParams(),
-            CASE_ID.toString()
+            ENVIRONMENT + "/" + CASE_ID.toString()
         );
     }
 
@@ -151,14 +152,14 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
             C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
             "admin@family-court.com",
             expectedPbaPaymentNotTakenNotificationParams(),
-            CASE_ID.toString()
+            ENVIRONMENT + "/" + CASE_ID.toString()
         );
 
         verify(notificationClient).sendEmail(
             C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
             "FamilyPublicLaw+ctsc@gmail.com",
             expectedPbaPaymentNotTakenNotificationParams(),
-            CASE_ID.toString()
+            ENVIRONMENT + "/" + CASE_ID.toString()
         );
     }
 
@@ -216,13 +217,13 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
             APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
             "local-authority@local-authority.com",
             Map.of("applicationType", "C2"),
-            "12345");
+            ENVIRONMENT + "/" + "12345");
 
         verify(notificationClient).sendEmail(
             APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
             "FamilyPublicLaw+ctsc@gmail.com",
             expectedCtscNotificationParameters(),
-            "12345");
+            ENVIRONMENT + "/" + "12345");
     }
 
     @Test
@@ -239,13 +240,13 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
             APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
             "local-authority@local-authority.com",
             Map.of("applicationType", "C2"),
-            "12345");
+            ENVIRONMENT + "/" + "12345");
 
         verify(notificationClient).sendEmail(
             APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
             "FamilyPublicLaw+ctsc@gmail.com",
             expectedCtscNotificationParameters(),
-            "12345");
+            ENVIRONMENT + "/" + "12345");
     }
 
     @Test

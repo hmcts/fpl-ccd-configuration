@@ -26,6 +26,7 @@ public class NotifyGatekeeperControllerSubmittedTest extends AbstractControllerT
     private static final String CAFCASS_EMAIL = "Cafcass+gatekeeper@gmail.com";
     private static final String SUBMITTED = "Submitted";
     private static final String GATEKEEPING = "Gatekeeping";
+    private static final String ENVIRONMENT = "localhost";
 
     @MockBean
     private NotificationClient notificationClient;
@@ -58,11 +59,11 @@ public class NotifyGatekeeperControllerSubmittedTest extends AbstractControllerT
 
         verify(notificationClient).sendEmail(
             eq(GATEKEEPER_SUBMISSION_TEMPLATE), eq(GATEKEEPER_EMAIL),
-            anyMap(), eq("12345"));
+            anyMap(), eq(ENVIRONMENT + "/" + "12345"));
 
         verify(notificationClient).sendEmail(
             eq(GATEKEEPER_SUBMISSION_TEMPLATE), eq(CAFCASS_EMAIL),
-            anyMap(), eq("12345"));
+            anyMap(), eq(ENVIRONMENT + "/" + "12345"));
     }
 
     private CallbackRequest buildCallbackRequest(String state) {

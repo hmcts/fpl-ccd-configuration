@@ -25,6 +25,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 class NoticeOfProceedingsSubmittedControllerTest extends AbstractControllerTest {
 
     private static final String ALLOCATED_JUDGE_EMAIL_ADDRESS = "judge@gmail.com";
+    private static final String ENVIRONMENT = "localhost";
 
     @MockBean
     private NotificationClient notificationClient;
@@ -47,7 +48,7 @@ class NoticeOfProceedingsSubmittedControllerTest extends AbstractControllerTest 
             eq(NOTICE_OF_PROCEEDINGS_ISSUED_JUDGE_TEMPLATE),
             eq(ALLOCATED_JUDGE_EMAIL_ADDRESS),
             anyMap(),
-            eq("12345"));
+            eq(ENVIRONMENT + "/" + "12345"));
     }
 
     @Test
