@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static java.util.Optional.ofNullable;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -95,13 +94,7 @@ public class Other implements Representable, ConfidentialParty<Other> {
 
     @Override
     public Other addConfidentialDetails(Party party) {
-        Telephone telephoneNumber = ofNullable(party.getTelephoneNumber()).orElse(Telephone.builder().build());
-
-        return this.toBuilder()
-            .name(party.getFirstName())
-            .address(party.getAddress())
-            .telephone(ofNullable(telephoneNumber.getTelephoneNumber()).orElse(""))
-            .build();
+        return null;
     }
 
     @Override

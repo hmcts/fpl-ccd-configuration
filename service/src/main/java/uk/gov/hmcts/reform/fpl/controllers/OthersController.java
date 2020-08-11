@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
+import uk.gov.hmcts.reform.fpl.service.OthersService;
 
 import java.util.List;
 
@@ -28,16 +29,14 @@ import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.OTHER;
 public class OthersController {
     private final ObjectMapper mapper;
     private final ConfidentialDetailsService confidentialService;
+    private final OthersService othersService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<Other>> others = confidentialService.combineOtherDetails(caseData.getAllOthers(),
-            caseData.getConfidentialOthers());
-
-        caseDetails.getData().put("others", Others.from(others));
+        caseDetails.getData().put("others", othersService.prepareOthers(caseData));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

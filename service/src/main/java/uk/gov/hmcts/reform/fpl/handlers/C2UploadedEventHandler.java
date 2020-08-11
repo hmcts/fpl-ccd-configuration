@@ -40,7 +40,7 @@ public class C2UploadedEventHandler {
         if (!roles.containsAll(UserRole.HMCTS_ADMIN.getRoles())) {
             EventData eventData = new EventData(event);
             C2UploadedTemplate parameters = c2UploadedEmailContentProvider.buildC2UploadNotificationTemplate(
-                eventData.getCaseDetails());
+                eventData.getCaseDetails(), event.getUploadedBundle().getDocument());
 
             String email = adminNotificationHandler.getHmctsAdminEmail(eventData);
 
