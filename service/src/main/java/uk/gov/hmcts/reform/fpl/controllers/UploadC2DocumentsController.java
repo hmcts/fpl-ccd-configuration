@@ -125,10 +125,9 @@ public class UploadC2DocumentsController {
             applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, C2_APPLICATION));
         }
 
-        applicationEventPublisher.publishEvent(new C2UploadedEvent(callbackRequest));
-
         C2DocumentBundle c2DocumentBundle = caseData.getLastC2DocumentBundle();
 
+        applicationEventPublisher.publishEvent(new C2UploadedEvent(callbackRequest, c2DocumentBundle));
         if (isNotPaidByPba(c2DocumentBundle)) {
             applicationEventPublisher.publishEvent(new C2PbaPaymentNotTakenEvent(callbackRequest));
         }

@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.c2uploaded.C2UploadedTemplate;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
-import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.service.notify.NotificationClient;
@@ -59,7 +58,8 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final Long CASE_ID = 12345L;
     private static DocumentReference applicationDocument;
-    private static final byte[] APPLICATION_BINARY = TestDataHelper.DOCUMENT_CONTENT;
+    private static DocumentReference latestC2Document;
+    private static final byte[] C2_BINARY = {5, 4, 3, 2, 1};
 
     @MockBean
     private NotificationClient notificationClient;
@@ -82,8 +82,9 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
         given(idamApi.retrieveUserInfo(any())).willReturn(USER_INFO_CAFCASS);
 
         applicationDocument = testDocumentReference();
-        when(documentDownloadService.downloadDocument(applicationDocument.getBinaryUrl()))
-            .thenReturn(APPLICATION_BINARY);
+        latestC2Document = testDocumentReference();
+        when(documentDownloadService.downloadDocument(latestC2Document.getBinaryUrl()))
+            .thenReturn(C2_BINARY);
     }
 
     @Test
@@ -304,6 +305,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
     private Map<String, Object> buildC2DocumentBundle(YesNo usePbaPayment) {
         return ImmutableMap.of(
             "c2DocumentBundle", wrapElements(C2DocumentBundle.builder()
+                .document(latestC2Document)
                 .usePbaPayment(usePbaPayment.getValue())
                 .build())
         );
@@ -320,7 +322,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
         c2UploadedTemplate.setCallout(String.format("%s, %s", RESPONDENT_SURNAME, CASE_ID.toString()));
         c2UploadedTemplate.setRespondentLastName("Watson");
         c2UploadedTemplate.setCaseUrl("http://fake-url/cases/case-details/" + CASE_ID);
-        c2UploadedTemplate.setDocumentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
+        c2UploadedTemplate.setDocumentLink(generateAttachedDocumentLink(C2_BINARY)
             .map(JSONObject::toMap)
             .orElse(null));
 
