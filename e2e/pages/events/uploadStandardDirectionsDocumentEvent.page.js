@@ -2,27 +2,27 @@ const { I } = inject();
 
 module.exports = {
 
-  fields: {
+  documents: {
     standardDirections: locate('input').withAttr({id:'standardDirectionsDocument'}),
-    otherDocument: {
-      document: function (index) {
-        return `#limitedCourtAdminDocuments_${index}_document`;
-      },
-      title: function (index) {
-        return `#limitedCourtAdminDocuments_${index}_documentTitle`;
-      },
-    },
+    otherDocument1: '#otherCourtAdminDocuments_0_document',
+    otherDocument2: '#otherCourtAdminDocuments_1_document',
+  },
+
+  fields: {
+    otherDocumentTitle1: '#otherCourtAdminDocuments_0_documentTitle',
+    otherDocumentTitle2: '#otherCourtAdminDocuments_1_documentTitle',
   },
 
   uploadStandardDirections(file) {
-    I.attachFile(this.fields.standardDirections, file);
+    I.attachFile(this.documents.standardDirections, file);
   },
 
-  uploadAdditionalDocuments(file, num) {
-    for (let i = 0; i < num; i++) {
-      I.click('Add new');
-      I.fillField(this.fields.otherDocument.title(i), `Document ${i + 1}`);
-      I.attachFile(this.fields.otherDocument.document(i), file);
-    }
+  uploadAdditionalDocuments(file) {
+    I.click('Add new');
+    I.fillField(this.fields.otherDocumentTitle1, 'Document 1');
+    I.attachFile(this.documents.otherDocument1, file);
+    I.click('Add new');
+    I.fillField(this.fields.otherDocumentTitle2, 'Document 2');
+    I.attachFile(this.documents.otherDocument2, file);
   },
 };

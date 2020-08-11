@@ -77,7 +77,7 @@ Scenario('HMCTS admin amends children, respondents, others, international elemen
 Scenario('HMCTS admin uploads standard directions with other documents', async (I, caseViewPage, uploadStandardDirectionsDocumentEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
   uploadStandardDirectionsDocumentEventPage.uploadStandardDirections(config.testFile);
-  uploadStandardDirectionsDocumentEventPage.uploadAdditionalDocuments(config.testFile, 2);
+  uploadStandardDirectionsDocumentEventPage.uploadAdditionalDocuments(config.testFile);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.documents);

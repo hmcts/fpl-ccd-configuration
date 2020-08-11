@@ -339,15 +339,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "limitedCourtAdminDocuments",
-    "Label": "Other documents",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "CourtAdminDocument",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "submissionConsentLabel",
     "Label": "Declaration",
     "FieldType": "Text",
