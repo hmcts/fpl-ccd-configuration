@@ -97,23 +97,25 @@ Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage,
   uploadC2DocumentsEventPage.uploadC2Document(config.testFile, 'Rachel Zane C2');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.uploadC2Documents);
-  await caseViewPage.goToNewActions(config.administrationActions.uploadC2Documents);
+  caseViewPage.selectTab(caseViewPage.tabs.c2);
+  I.seeInTab(['C2 Application 1', 'File'], 'mockFile.txt');
+  I.seeInTab(['C2 Application 1', 'Notes'], 'Rachel Zane C2');
+  I.seeInTab(['C2 Application 1', 'Paid with PBA'], 'Yes');
+  I.seeInTab(['C2 Application 1', 'Payment by account (PBA) number'], 'PBA0082848');
+  I.seeInTab(['C2 Application 1', 'Client code'], '8888');
+  I.seeInTab(['C2 Application 1', 'Customer reference'], 'Example reference');
+  await I.startEventViaHyperlink('Upload a new C2 application');
+  
   uploadC2DocumentsEventPage.selectApplicationType('WITHOUT_NOTICE');
   await I.retryUntilExists(() => I.click('Continue'), '#temporaryC2Document_document');
   uploadC2DocumentsEventPage.usePbaPayment(false);
   uploadC2DocumentsEventPage.uploadC2Document(config.testFile, 'Jessica Pearson C2');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.uploadC2Documents);
-  caseViewPage.selectTab(caseViewPage.tabs.documents);
-  I.seeInTab(['C2 Application 1', 'Upload a file'], 'mockFile.txt');
-  I.seeInTab(['C2 Application 1', 'Description'], 'Rachel Zane C2');
-  I.seeInTab(['C2 Application 1', 'Are you using PBA to pay?'], 'Yes');
-  I.seeInTab(['C2 Application 1', 'Payment by account (PBA) number'], 'PBA0082848');
-  I.seeInTab(['C2 Application 1', 'Client code'], '8888');
-  I.seeInTab(['C2 Application 1', 'Customer reference'], 'Example reference');
-  I.seeInTab(['C2 Application 2', 'Upload a file'], 'mockFile.txt');
-  I.seeInTab(['C2 Application 2', 'Description'], 'Jessica Pearson C2');
-  I.seeInTab(['C2 Application 2', 'Are you using PBA to pay?'], 'No');
+  caseViewPage.selectTab(caseViewPage.tabs.c2);
+  I.seeInTab(['C2 Application 2', 'File'], 'mockFile.txt');
+  I.seeInTab(['C2 Application 2', 'Notes'], 'Jessica Pearson C2');
+  I.seeInTab(['C2 Application 2', 'Paid with PBA'], 'No');
 });
 
 Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
