@@ -13,6 +13,7 @@ module.exports = {
     legalBasis: 'Legal basis',
     documents: 'Documents',
     documentsSentToParties: 'Documents sent to parties',
+    c2: 'C2',
     confidential: 'Confidential information',
     placement: 'Placement',
     paymentHistory: 'Payment History',
