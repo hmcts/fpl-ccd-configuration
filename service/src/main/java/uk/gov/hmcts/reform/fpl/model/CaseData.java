@@ -629,4 +629,16 @@ public class CaseData {
     public List<Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder>> getSealedCMOs() {
         return defaultIfNull(sealedCMOs, new ArrayList<>());
     }
+
+    private final List<Element<CourtAdminDocument>> otherCourtAdminDocuments;
+
+    public List<Element<CourtAdminDocument>> getOtherCourtAdminDocuments() {
+        return defaultIfNull(otherCourtAdminDocuments, new ArrayList<>());
+    }
+
+    private final List<Element<CourtAdminDocument>> limitedCourtAdminDocuments;
+
+    public List<Element<CourtAdminDocument>> getLimitedCourtAdminDocuments() {
+        return defaultIfNull(limitedCourtAdminDocuments, new ArrayList<>());
+    }
 }
