@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForC2;
 import uk.gov.hmcts.reform.fpl.model.notify.c2uploaded.C2UploadedTemplate;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
@@ -82,6 +83,8 @@ public class C2UploadedEventHandlerTest {
     @Autowired
     private C2UploadedEventHandler c2UploadedEventHandler;
 
+    private C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder().build();
+
     @Nested
     class C2UploadedNotificationChecks {
         final String subjectLine = "Lastname, SACCCCCCCC5676576567";
@@ -91,7 +94,8 @@ public class C2UploadedEventHandlerTest {
         void before() {
             CaseDetails caseDetails = callbackRequest().getCaseDetails();
 
-            given(c2UploadedEmailContentProvider.buildC2UploadNotificationTemplate(callbackRequest().getCaseDetails()))
+            given(c2UploadedEmailContentProvider.buildC2UploadNotificationTemplate(callbackRequest().getCaseDetails(),
+                c2DocumentBundle.getDocument()))
                 .willReturn(c2Parameters);
 
             given(requestData.authorisation()).willReturn(AUTH_TOKEN);
@@ -110,7 +114,7 @@ public class C2UploadedEventHandlerTest {
                     COURT_CODE));
 
             c2UploadedEventHandler.sendNotifications(
-                new C2UploadedEvent(callbackRequest()));
+                new C2UploadedEvent(callbackRequest(), c2DocumentBundle));
 
             verify(notificationService).sendEmail(
                 C2_UPLOAD_NOTIFICATION_TEMPLATE, "hmcts-non-admin@test.com", c2Parameters, "12345");
@@ -127,11 +131,12 @@ public class C2UploadedEventHandlerTest {
             given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
                 .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
 
-            given(c2UploadedEmailContentProvider.buildC2UploadNotificationTemplate(caseDetails))
+            given(c2UploadedEmailContentProvider
+                .buildC2UploadNotificationTemplate(caseDetails, c2DocumentBundle.getDocument()))
                 .willReturn(c2Parameters);
 
             c2UploadedEventHandler.sendNotifications(
-                new C2UploadedEvent(callbackRequest));
+                new C2UploadedEvent(callbackRequest, c2DocumentBundle));
 
             verify(notificationService).sendEmail(
                 C2_UPLOAD_NOTIFICATION_TEMPLATE,
@@ -146,7 +151,7 @@ public class C2UploadedEventHandlerTest {
                 UserInfo.builder().sub("hmcts-admin@test.com").roles(HMCTS_ADMIN.getRoles()).build());
 
             c2UploadedEventHandler.sendNotifications(
-                new C2UploadedEvent(callbackRequest()));
+                new C2UploadedEvent(callbackRequest(), c2DocumentBundle));
 
             verify(notificationService, never())
                 .sendEmail(C2_UPLOAD_NOTIFICATION_TEMPLATE, "hmcts-admin@test.com",
@@ -165,7 +170,7 @@ public class C2UploadedEventHandlerTest {
                 .willReturn(allocatedJudgeParametersForC2);
 
             c2UploadedEventHandler.sendC2UploadedNotificationToAllocatedJudge(
-                new C2UploadedEvent(callbackRequest));
+                new C2UploadedEvent(callbackRequest, c2DocumentBundle));
 
             verify(notificationService).sendEmail(
                 C2_UPLOAD_NOTIFICATION_TEMPLATE_JUDGE,
@@ -186,7 +191,7 @@ public class C2UploadedEventHandlerTest {
                 .willReturn(allocatedJudgeParametersForC2);
 
             c2UploadedEventHandler.sendC2UploadedNotificationToAllocatedJudge(
-                new C2UploadedEvent(callbackRequest));
+                new C2UploadedEvent(callbackRequest, c2DocumentBundle));
 
             verify(notificationService, never()).sendEmail(
                 eq(C2_UPLOAD_NOTIFICATION_TEMPLATE_JUDGE),
@@ -208,7 +213,7 @@ public class C2UploadedEventHandlerTest {
                 .willReturn(getAllocatedJudgeParametersForC2());
 
             c2UploadedEventHandler.sendC2UploadedNotificationToAllocatedJudge(
-                new C2UploadedEvent(callbackRequest));
+                new C2UploadedEvent(callbackRequest, c2DocumentBundle));
 
             verify(notificationService, never()).sendEmail(any(), any(), anyMap(), any());
         }
