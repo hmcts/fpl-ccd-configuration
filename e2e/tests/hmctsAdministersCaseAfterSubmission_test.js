@@ -78,7 +78,7 @@ Scenario('HMCTS admin uploads standard directions with other documents', async (
   await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
   uploadStandardDirectionsDocumentEventPage.uploadStandardDirections(config.testFile);
   uploadStandardDirectionsDocumentEventPage.uploadAdditionalDocuments(config.testFile);
-  await I.completeEvent('Save and continue');
+  await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.see('mockFile.txt');
