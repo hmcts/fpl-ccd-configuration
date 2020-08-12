@@ -74,10 +74,9 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractControllerTest 
 
     @Test
     void shouldUpdateDocumentListWithReplacementDocumentWhenUserSelectsAmend() {
-        DocumentReference REPLACEMENT_DOC = TestDataHelper.testDocumentReference();
-
         List<Element<CourtAdminDocument>> courtAdminDocuments = buildDocuments();
-        CourtAdminDocument editedDocument = new CourtAdminDocument("Replacement Document", REPLACEMENT_DOC);
+        CourtAdminDocument editedDocument = new CourtAdminDocument("Replacement Document",
+            TestDataHelper.testDocumentReference());
 
         CaseData caseData = CaseData.builder()
             .otherCourtAdminDocuments(courtAdminDocuments)
