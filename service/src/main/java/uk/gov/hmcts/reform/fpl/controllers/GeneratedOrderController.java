@@ -59,7 +59,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.CloseCaseReason.FINAL_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
-import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.concatGatewayConfigurationUrlAndMostRecentUploadedDocumentPath;
+import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.concatUrlAndMostRecentUploadedDocumentPath;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
@@ -294,7 +294,7 @@ public class GeneratedOrderController {
             Map.of("documentToBeSent", mostRecentUploadedDocument)
         );
         applicationEventPublisher.publishEvent(new GeneratedOrderEvent(callbackRequest,
-            concatGatewayConfigurationUrlAndMostRecentUploadedDocumentPath(
+            concatUrlAndMostRecentUploadedDocumentPath(
                 gatewayConfiguration.getUrl(),
                 mostRecentUploadedDocument.getBinaryUrl()),
             documentDownloadService.downloadDocument(mostRecentUploadedDocument.getBinaryUrl())));

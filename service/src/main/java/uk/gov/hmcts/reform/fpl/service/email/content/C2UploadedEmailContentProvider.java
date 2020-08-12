@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.concatGatewayConfigurationUrlAndMostRecentUploadedDocumentPath;
+import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.concatUrlAndMostRecentUploadedDocumentPath;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
@@ -38,7 +38,7 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
         adminTemplateForC2.setCallout(buildCallout(caseData));
         adminTemplateForC2.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
         adminTemplateForC2.setCaseUrl(getCaseUrl(caseDetails.getId()));
-        adminTemplateForC2.setDocumentUrl(concatGatewayConfigurationUrlAndMostRecentUploadedDocumentPath(
+        adminTemplateForC2.setDocumentUrl(concatUrlAndMostRecentUploadedDocumentPath(
             latestC2.getBinaryUrl(),
             caseUrlService.getXuiBaseUrl()));
 
