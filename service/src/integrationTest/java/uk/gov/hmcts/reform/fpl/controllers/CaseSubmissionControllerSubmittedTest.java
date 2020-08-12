@@ -246,13 +246,13 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
                 "local-authority@local-authority.com",
                 Map.of("applicationType", "C110a"),
-                caseId.toString());
+                CASE_REFERENCE_WITH_ENVIRONMENT);
 
             verify(notificationClient).sendEmail(
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
                 "FamilyPublicLaw+ctsc@gmail.com",
                 expectedCtscNotificationParameters(),
-                caseId.toString());
+                CASE_REFERENCE_WITH_ENVIRONMENT);
         });
     }
 
