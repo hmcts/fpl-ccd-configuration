@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -40,6 +41,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -300,6 +302,11 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     class CaseResubmission {
 
         final State state = RETURNED;
+
+        @AfterEach
+        void resetMocks() {
+            reset(notificationClient);
+        }
 
         @Test
         void shouldNotifyAdminAndCafcassWhenCaseIsResubmitted() {
