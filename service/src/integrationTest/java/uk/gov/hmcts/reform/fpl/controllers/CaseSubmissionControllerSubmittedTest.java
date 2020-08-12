@@ -350,6 +350,11 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
             verifyNoMoreInteractions(notificationClient);
             verifyNoMoreInteractions(paymentService);
         }
+
+        @AfterEach
+        void resetMocks() {
+            reset(notificationClient);
+        }
     }
 
     private Map<String, Object> expectedCtscNotificationParameters() {
