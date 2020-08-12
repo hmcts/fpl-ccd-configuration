@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Document;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+
 @Slf4j
 public class DocumentsHelper {
 
@@ -29,7 +30,8 @@ public class DocumentsHelper {
         return hasDocumentPresent(document) && document.getTypeOfDocument() != null;
     }
 
-    public static String concatGatewayConfigurationUrlAndMostRecentUploadedDocumentPath(final String mostRecentUploadedDocument, String url) {
+    public static String concatGatewayConfigurationUrlAndMostRecentUploadedDocumentPath(
+        final String mostRecentUploadedDocument, String url) {
         try {
             URI uri = new URI(mostRecentUploadedDocument);
             return url + uri.getPath();
