@@ -6,7 +6,6 @@ java:
   ingressHost: ${SERVICE_FQDN}
   livenessDelay: 50
   environment:
-    FPL_ENV: preview
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-ccd-data-store-api
     IDAM_CLIENT_REDIRECT_URI: https://fpl-case-service-*.service.core-compute-aat.internal/oauth2/callback
     SPRING_SECURITY_ENABLED: true
