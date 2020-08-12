@@ -43,7 +43,7 @@ public class ManageDocumentsController {
         Map<String, Object> data = request.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        data.put("pageShow", caseData.getOtherCourtAdminDocuments().size() != 0 ? "Yes" : "No");
+        data.put("pageShow", !caseData.getOtherCourtAdminDocuments().isEmpty() ? "Yes" : "No");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -66,6 +66,7 @@ public class ManageDocumentsController {
             data.put("courtDocumentList", courtDocumentList);
         }
 
+        // needed to prevent issues when using previous button
         // is affected by RDM-9147
         CourtAdminDocument editedDocument = caseData.getEditedCourtDocument();
         if (editedDocument != null && editedDocument.getDocument() != null && editedDocument.getDocument().isEmpty()) {
@@ -106,6 +107,7 @@ public class ManageDocumentsController {
 
         data.put("courtDocumentList", regeneratedList);
 
+        // needed to prevent issues when using previous button
         // is affected by RDM-9147
         CourtAdminDocument editedDocument = caseData.getEditedCourtDocument();
         if (editedDocument != null && editedDocument.getDocument() != null && editedDocument.getDocument().isEmpty()) {

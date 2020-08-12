@@ -55,6 +55,20 @@ public class ManageDocumentsControllerPopulateListMidEventTest extends AbstractC
     }
 
     @Test
+    void shouldRemoveEditedDocumentIfNoReplacementDocumentUploaded() {
+        List<Element<CourtAdminDocument>> courtAdminDocuments = buildDocuments();
+
+        CaseData caseData = CaseData.builder()
+            .uploadDocumentsRouter(AMEND)
+            .otherCourtAdminDocuments(courtAdminDocuments)
+            .editedCourtDocument(new CourtAdminDocument("", DocumentReference.builder().build()))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "populate-list");
+        assertThat(response.getData()).doesNotContainKey("editedCourtDocument");
+    }
+
+    @Test
     void shouldBuildDynamicListOfDocumentsWhenUserSelectsDelete() {
         List<Element<CourtAdminDocument>> courtAdminDocuments = buildDocuments();
 
