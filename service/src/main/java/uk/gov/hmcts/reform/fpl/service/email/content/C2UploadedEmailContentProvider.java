@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -10,20 +11,25 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForC2;
 import uk.gov.hmcts.reform.fpl.model.notify.c2uploaded.C2UploadedTemplate;
+import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider {
 
     private final ObjectMapper mapper;
     private final Time time;
+    private final CaseUrlService caseUrlService;
 
     public C2UploadedTemplate buildC2UploadNotificationTemplate(final CaseDetails caseDetails,
                                                                 final DocumentReference latestC2) {
@@ -33,7 +39,7 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
         adminTemplateForC2.setCallout(buildCallout(caseData));
         adminTemplateForC2.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
         adminTemplateForC2.setCaseUrl(getCaseUrl(caseDetails.getId()));
-        adminTemplateForC2.setDocumentLink(linkToAttachedDocument(latestC2));
+        adminTemplateForC2.setDocumentUrl(concatGatewayConfigurationUrlAndMostRecentUploadedC2Path(latestC2.getBinaryUrl()));
 
         return adminTemplateForC2;
     }
@@ -68,4 +74,14 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
     private Map<String, Object> buildCommonNotificationParameters(final CaseDetails caseDetails) {
         return Map.of("caseUrl", getCaseUrl(caseDetails.getId()));
     }
+
+    private String concatGatewayConfigurationUrlAndMostRecentUploadedC2Path(final String mostRecentUploadedC2Document) {
+            try {
+                URI uri = new URI(mostRecentUploadedC2Document);
+                return caseUrlService.getXuiBaseUrl() + uri.getPath();
+            } catch (URISyntaxException e) {
+                log.error(mostRecentUploadedC2Document + " url incorrect.", e);
+            }
+            return "";
+        }
 }

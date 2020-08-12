@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Service
+@Getter
 @RequiredArgsConstructor(onConstructor = @__({@Autowired}))
 public class CaseUrlService {
 
