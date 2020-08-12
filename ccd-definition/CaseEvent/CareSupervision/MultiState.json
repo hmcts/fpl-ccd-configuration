@@ -502,7 +502,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "uploadStandardDirections",
     "Name": "Manage documents",
-    "Description": "Upload standard directions",
+    "Description": "Manage documents and upload standard directions",
     "DisplayOrder": 13,
     "PreConditionState(s)": "Submitted;Gatekeeping",
     "PostConditionState": "*",

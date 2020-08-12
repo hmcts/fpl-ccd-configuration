@@ -36,8 +36,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getSelectedIdFromDynami
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class ManageDocumentsController {
 
-    // TODO: 07/08/2020 Investigate backwards flow issues where pages become locked down
-
     private final ObjectMapper mapper;
 
     @PostMapping("/about-to-start")
@@ -68,10 +66,10 @@ public class ManageDocumentsController {
             data.put("courtDocumentList", courtDocumentList);
         }
 
-        // see RDM-9147
+        // is affected by RDM-9147
         CourtAdminDocument editedDocument = caseData.getEditedCourtDocument();
         if (editedDocument != null && editedDocument.getDocument() != null && editedDocument.getDocument().isEmpty()) {
-            data.put("editedCourtDocument", new CourtAdminDocument(editedDocument.getDocumentTitle(), null));
+            data.remove("editedCourtDocument");
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -108,10 +106,10 @@ public class ManageDocumentsController {
 
         data.put("courtDocumentList", regeneratedList);
 
-        // see RDM-9147
+        // is affected by RDM-9147
         CourtAdminDocument editedDocument = caseData.getEditedCourtDocument();
         if (editedDocument != null && editedDocument.getDocument() != null && editedDocument.getDocument().isEmpty()) {
-            data.put("editedCourtDocument", new CourtAdminDocument(editedDocument.getDocumentTitle(), null));
+            data.remove("editedCourtDocument");
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
