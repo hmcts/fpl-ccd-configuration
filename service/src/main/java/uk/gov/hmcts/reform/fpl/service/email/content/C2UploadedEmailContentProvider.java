@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -11,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForC2;
 import uk.gov.hmcts.reform.fpl.model.notify.c2uploaded.C2UploadedTemplate;
-import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
@@ -28,7 +28,8 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
 
     private final ObjectMapper mapper;
     private final Time time;
-    private final CaseUrlService caseUrlService;
+    @Value("${manage-case.ui.base.url}")
+    private String xuiBaseUrl;
 
     public C2UploadedTemplate buildC2UploadNotificationTemplate(final CaseDetails caseDetails,
                                                                 final DocumentReference latestC2) {
@@ -39,8 +40,7 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
         adminTemplateForC2.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
         adminTemplateForC2.setCaseUrl(getCaseUrl(caseDetails.getId()));
         adminTemplateForC2.setDocumentUrl(concatUrlAndMostRecentUploadedDocumentPath(
-            latestC2.getBinaryUrl(),
-            caseUrlService.getXuiBaseUrl()));
+            latestC2.getBinaryUrl(), xuiBaseUrl));
 
         return adminTemplateForC2;
     }

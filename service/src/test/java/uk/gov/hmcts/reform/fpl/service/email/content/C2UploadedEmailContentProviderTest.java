@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForC2;
@@ -23,6 +24,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 
 @ContextConfiguration(classes = {C2UploadedEmailContentProvider.class, EmailNotificationHelper.class,
     FixedTimeConfiguration.class})
+@TestPropertySource(properties = {"manage-case.ui.base.url=http://fake-url"})
 class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     @Autowired
@@ -37,8 +39,6 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
         applicationDocument = testDocumentReference();
         when(documentDownloadService.downloadDocument(uploadedC2.getBinaryUrl()))
             .thenReturn(C2_DOCUMENT_BINARY);
-
-        when(caseUrlService.getXuiBaseUrl()).thenReturn("http://fake-url");
     }
 
 
