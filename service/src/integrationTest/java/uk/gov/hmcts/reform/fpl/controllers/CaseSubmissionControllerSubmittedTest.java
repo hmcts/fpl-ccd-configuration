@@ -303,11 +303,6 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
         final State state = RETURNED;
 
-        @AfterEach
-        void resetMocks() {
-            reset(notificationClient);
-        }
-
         @Test
         void shouldNotifyAdminAndCafcassWhenCaseIsResubmitted() {
             CaseDetails caseDetails = enableSendToCtscOnCaseDetails(NO);
