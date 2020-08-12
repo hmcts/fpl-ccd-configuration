@@ -74,18 +74,39 @@ Scenario('HMCTS admin amends children, respondents, others, international elemen
     summaryText, descriptionText);
 });
 
-Scenario('HMCTS admin uploads standard directions with other documents', async (I, caseViewPage, uploadStandardDirectionsDocumentEventPage) => {
-  await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
+Scenario('HMCTS admin uploads standard directions and manages other documents', async (I, caseViewPage, uploadStandardDirectionsDocumentEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.manageDocuments);
   uploadStandardDirectionsDocumentEventPage.uploadStandardDirections(config.testFile);
   uploadStandardDirectionsDocumentEventPage.uploadAdditionalDocuments(config.testFile, 2);
   await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
+  I.seeEventSubmissionConfirmation(config.applicationActions.manageDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.see('mockFile.txt');
   I.seeInTab(['Other documents 1', 'Document name'], 'Document 1');
   I.seeInTab(['Other documents 1', 'Upload a file'], 'mockFile.txt');
   I.seeInTab(['Other documents 2', 'Document name'], 'Document 2');
   I.seeInTab(['Other documents 2', 'Upload a file'], 'mockFile.txt');
+
+  await caseViewPage.goToNewActions(config.applicationActions.manageDocuments);
+  uploadStandardDirectionsDocumentEventPage.selectEventOption('Find and replace a case document');
+  I.click('Continue');
+  uploadStandardDirectionsDocumentEventPage.selectDocument('1');
+  I.click('Continue');
+  uploadStandardDirectionsDocumentEventPage.replaceDocument(config.testNonEmptyPdfFile);
+  await I.completeEvent('Save and continue');
+  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  I.seeInTab(['Other documents 1', 'Document name'], 'Replacement Document');
+  I.seeInTab(['Other documents 1', 'Upload a file'], 'mockFile.pdf');
+
+  await caseViewPage.goToNewActions(config.applicationActions.manageDocuments);
+  uploadStandardDirectionsDocumentEventPage.selectEventOption('Find and delete a case document');
+  I.click('Continue');
+  uploadStandardDirectionsDocumentEventPage.selectDocument('2');
+  I.click('Continue');
+  I.see('mockFile.txt');
+  await I.completeEvent('Save and continue');
+  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  I.dontSee('Other documents 2');
 });
 
 Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage, uploadC2DocumentsEventPage) => {
@@ -353,7 +374,7 @@ Scenario('HMCTS admin closes the case', async (I, caseViewPage, closeTheCaseEven
   I.seeInTab(['Close the case', 'Reason'], 'Deprivation of liberty');
 });
 
-const verifyOrderCreation = async function(I, caseViewPage, createOrderEventPage, order){
+const verifyOrderCreation = async function (I, caseViewPage, createOrderEventPage, order) {
   await caseViewPage.goToNewActions(config.administrationActions.createOrder);
   const defaultIssuedDate = new Date();
   await orderFunctions.createOrder(I, createOrderEventPage, order);

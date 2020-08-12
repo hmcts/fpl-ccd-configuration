@@ -1,9 +1,15 @@
-const { I } = inject();
+const {I} = inject();
 
 module.exports = {
 
   fields: {
-    standardDirections: locate('input').withAttr({id:'standardDirectionsDocument'}),
+    documentRouter: '#uploadDocumentsRouter',
+    documentList: '#courtDocumentList',
+    replacementDocument: {
+      title: '#editedCourtDocument_documentTitle',
+      document: '#editedCourtDocument_document',
+    },
+    standardDirections: locate('input').withAttr({id: 'standardDirectionsDocument'}),
     otherDocument: {
       document: function (index) {
         return `#limitedCourtAdminDocuments_${index}_document`;
@@ -12,6 +18,22 @@ module.exports = {
         return `#limitedCourtAdminDocuments_${index}_documentTitle`;
       },
     },
+  },
+
+  selectEventOption(option) {
+    within(this.fields.documentRouter, () => {
+      I.click(locate('label').withText(option));
+    });
+  },
+
+  selectDocument(index) {
+    I.waitForElement(this.fields.documentList);
+    I.selectOption(this.fields.documentList, `Document ${index}`);
+  },
+
+  replaceDocument(file) {
+    I.fillField(this.fields.replacementDocument.title, 'Replacement Document');
+    I.attachFile(this.fields.replacementDocument.document, file);
   },
 
   uploadStandardDirections(file) {

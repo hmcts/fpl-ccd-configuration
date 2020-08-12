@@ -25,7 +25,7 @@ Scenario('local authority sees task list', async (I, caseViewPage) => {
   caseViewPage.checkTaskIsNotCompleted(config.applicationActions.enterGrounds);
   caseViewPage.checkTaskIsNotCompleted(config.applicationActions.enterRiskAndHarmToChildren);
   caseViewPage.checkTaskIsNotCompleted(config.applicationActions.enterFactorsAffectingParenting);
-  caseViewPage.checkTaskIsNotCompleted(config.applicationActions.uploadDocuments);
+  caseViewPage.checkTaskIsNotCompleted(config.applicationActions.manageDocuments);
   caseViewPage.checkTaskIsNotCompleted(config.applicationActions.enterApplicant);
   caseViewPage.checkTaskIsNotCompleted(config.applicationActions.enterChildren);
   caseViewPage.checkTaskIsNotCompleted(config.applicationActions.enterRespondents);
@@ -528,24 +528,24 @@ Scenario('local authority enters attending hearing', async (I, caseViewPage, ent
 });
 
 Scenario('local authority uploads documents @create-case-with-mandatory-sections-only', async (I, caseViewPage, uploadDocumentsEventPage) => {
-  await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
+  await caseViewPage.goToNewActions(config.applicationActions.manageDocuments);
   uploadDocumentsHelper.uploadCaseDocuments(uploadDocumentsEventPage);
   await I.seeCheckAnswersAndCompleteEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
+  I.seeEventSubmissionConfirmation(config.applicationActions.manageDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   uploadDocumentsHelper.assertCaseDocuments(I);
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
-  caseViewPage.checkTaskIsCompleted(config.applicationActions.uploadDocuments);
-  caseViewPage.checkTaskIsAvailable(config.applicationActions.uploadDocuments);
+  caseViewPage.checkTaskIsCompleted(config.applicationActions.manageDocuments);
+  caseViewPage.checkTaskIsAvailable(config.applicationActions.manageDocuments);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.submitCase);
 });
 
 Scenario('local authority cannot upload court bundle', async (I, caseViewPage, uploadDocumentsEventPage) => {
-  await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
+  await caseViewPage.goToNewActions(config.applicationActions.manageDocuments);
   I.dontSeeElement(uploadDocumentsEventPage.documents.courtBundle);
   await I.seeCheckAnswersAndCompleteEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
+  I.seeEventSubmissionConfirmation(config.applicationActions.manageDocuments);
 });
 
 Scenario('local authority tries to submit without giving consent', async (I, caseViewPage, submitApplicationEventPage) => {
