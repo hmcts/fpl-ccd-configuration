@@ -40,10 +40,9 @@ import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.DocumentsHelper;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -295,7 +294,8 @@ public class GeneratedOrderController {
             Map.of("documentToBeSent", mostRecentUploadedDocument)
         );
         applicationEventPublisher.publishEvent(new GeneratedOrderEvent(callbackRequest,
-            concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(
+            DocumentsHelper.concatGatewayConfigurationUrlAndMostRecentUploadedDocumentPath(
+                gatewayConfiguration.getUrl(),
                 mostRecentUploadedDocument.getBinaryUrl()),
             documentDownloadService.downloadDocument(mostRecentUploadedDocument.getBinaryUrl())));
     }
@@ -328,19 +328,6 @@ public class GeneratedOrderController {
         }
 
         return document;
-    }
-
-    private String concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(
-        final String mostRecentUploadedOrderDocumentUrl) {
-        final String gatewayUrl = gatewayConfiguration.getUrl();
-
-        try {
-            URI uri = new URI(mostRecentUploadedOrderDocumentUrl);
-            return gatewayUrl + uri.getPath();
-        } catch (URISyntaxException e) {
-            log.error(mostRecentUploadedOrderDocumentUrl + " url incorrect.", e);
-        }
-        return "";
     }
 
     private List<Element<Child>> getUpdatedChildren(CaseData caseData) {
