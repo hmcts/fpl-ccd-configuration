@@ -36,7 +36,6 @@ import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
@@ -105,7 +104,10 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         Map<String, Object> expectedHmctsParameters = getExpectedHmctsParameters(true);
         Map<String, Object> completeCafcassParameters = getExpectedCafcassParameters(true);
 
-        postSubmittedEvent(buildCallbackRequest(populatedCaseDetails(Map.of("id", caseId)), OPEN));
+        CaseDetails caseDetails = populatedCaseDetails(Map.of("id", caseId));
+        caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
+
+        postSubmittedEvent(buildCallbackRequest(caseDetails, OPEN));
 
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
@@ -128,6 +130,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     @Test
     void shouldBuildNotificationTemplatesWithValuesMissingInCallback() {
         CaseDetails caseDetails = enableSendToCtscOnCaseDetails(NO);
+        caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
         CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, OPEN);
 
         postSubmittedEvent(callbackRequest);
@@ -229,26 +232,25 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldNotSendFailedPaymentNotificationWhenDisplayAmountToPayNotSet() {
+    void shouldSendFailedPaymentNotificationWhenDisplayAmountToPayNotSet() {
         CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
 
         CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, OPEN);
         postSubmittedEvent(callbackRequest);
 
-        checkThat(() -> {
-            verify(notificationClient, never()).sendEmail(
-                eq(APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA),
-                anyString(),
-                anyMap(),
-                eq(caseId.toString()));
+        checkUntil(() -> {
+            verify(notificationClient).sendEmail(
+                APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
+                "local-authority@local-authority.com",
+                Map.of("applicationType", "C110a"),
+                caseId.toString());
 
-            verify(notificationClient, never()).sendEmail(
-                eq(APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC),
-                anyString(),
-                anyMap(),
-                eq(caseId.toString()));
+            verify(notificationClient).sendEmail(
+                APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
+                "FamilyPublicLaw+ctsc@gmail.com",
+                expectedCtscNotificationParameters(),
+                caseId.toString());
         });
-
     }
 
     @Test

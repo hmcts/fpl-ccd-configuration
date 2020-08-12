@@ -5,6 +5,7 @@
     "ListElementCode": "documentTitle",
     "FieldType": "Text",
     "ElementLabel": "Document name",
+    "HintText": "Give the document a descriptive name. For example, 'Parenting assessment' or 'Paediatric report'",
     "SecurityClassification": "Public"
   },
   {

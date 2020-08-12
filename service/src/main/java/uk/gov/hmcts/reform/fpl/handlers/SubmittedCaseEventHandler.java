@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C110A_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInOpenState;
 
 @Slf4j
@@ -74,15 +75,10 @@ public class SubmittedCaseEventHandler {
             return;
         }
 
-        switch (getPaymentDecision(caseDetails)) {
-            case YES:
-                makePaymentForCaseOrders(event);
-                return;
-            case NO:
-                handlePaymentNotTaken(event);
-                return;
-            default:
-                log.info("Payment not taken for case {}.", event.getCallbackRequest().getCaseDetails().getId());
+        if (YES == getPaymentDecision(caseDetails)) {
+            makePaymentForCaseOrders(event);
+        } else {
+            handlePaymentNotTaken(event);
         }
     }
 
@@ -101,6 +97,7 @@ public class SubmittedCaseEventHandler {
     }
 
     private void handlePaymentNotTaken(SubmittedCaseEvent submittedCaseEvent) {
+        log.error("Payment not taken for case {}.", submittedCaseEvent.getCallbackRequest().getCaseDetails().getId());
         applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(submittedCaseEvent, C110A_APPLICATION));
     }
 

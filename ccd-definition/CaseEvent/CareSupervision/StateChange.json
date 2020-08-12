@@ -15,7 +15,6 @@
     "RetriesTimeoutURLAboutToSubmitEvent": "1,2,3,4,5",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-submission/submitted",
     "RetriesTimeoutURLSubmittedEvent": "1,2,3,4,5",
-    "ShowSummary": "Y",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Submit"
   },
