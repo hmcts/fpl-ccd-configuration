@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.notify.c2uploaded.C2UploadedTemplate;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
@@ -313,17 +312,6 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
     private Map<String, Object> expectedCtscNotificationParameters() {
         return Map.of("applicationType", "C2",
             "caseUrl", "http://fake-url/cases/case-details/12345");
-    }
-
-    private Map<String, Object> buildExpectedNotificationParams() {
-        C2UploadedTemplate c2UploadedTemplate = new C2UploadedTemplate();
-
-        c2UploadedTemplate.setCallout(String.format("%s, %s", RESPONDENT_SURNAME, CASE_ID.toString()));
-        c2UploadedTemplate.setRespondentLastName("Watson");
-        c2UploadedTemplate.setCaseUrl("http://fake-url/cases/case-details/" + CASE_ID);
-        c2UploadedTemplate.setDocumentUrl("http://fake-url/documents/b28f859b-7521-4c84-9057-47e56afd773f/binary");
-
-        return c2UploadedTemplate.toMap(mapper);
     }
 
     private Map<String, Object> expectedPbaPaymentNotTakenNotificationParams() {
