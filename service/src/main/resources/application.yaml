@@ -152,6 +152,8 @@ spring:
   profiles: integration-test
   main:
     lazy-initialization: true
+  fpl:
+    env: 'localhost'
   mail:
     host: 127.0.0.1
     port: 1025

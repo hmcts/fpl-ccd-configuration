@@ -77,8 +77,8 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     private static final String DISPLAY_AMOUNT_TO_PAY = "displayAmountToPay";
     private static final String SURVEY_LINK = "https://www.smartsurvey.co"
         + ".uk/s/preview/FamilyPublicLaw/44945E4F1F8CBEE3E10D79A4CED903";
-    private static final Long caseId = nextLong();
-    private static final String CASE_REFERENCE_WITH_ENVIRONMENT = "localhost/" + caseId;
+    private static final Long CASE_ID = nextLong();
+    private static final String CASE_REFERENCE_WITH_ENVIRONMENT = "localhost/" + CASE_ID;
 
 
     @MockBean
@@ -107,7 +107,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         Map<String, Object> expectedHmctsParameters = getExpectedHmctsParameters(true);
         Map<String, Object> completeCafcassParameters = getExpectedCafcassParameters(true);
 
-        CaseDetails caseDetails = populatedCaseDetails(Map.of("id", caseId));
+        CaseDetails caseDetails = populatedCaseDetails(Map.of("id", CASE_ID));
         caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
 
         postSubmittedEvent(buildCallbackRequest(caseDetails, OPEN));
@@ -127,7 +127,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         });
 
         checkThat(() -> verifyNoMoreInteractions(notificationClient));
-        verifyTaskListUpdated(caseId);
+        verifyTaskListUpdated(CASE_ID);
     }
 
     @Test
@@ -193,7 +193,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         postSubmittedEvent(callbackRequest);
 
         checkUntil(() ->
-            verify(paymentService).makePaymentForCaseOrders(caseId,
+            verify(paymentService).makePaymentForCaseOrders(CASE_ID,
                 mapper.convertValue(caseDetails.getData(), CaseData.class)));
     }
 
@@ -356,12 +356,12 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
     private Map<String, Object> expectedCtscNotificationParameters() {
         return Map.of("applicationType", "C110a",
-            "caseUrl", "http://fake-url/cases/case-details/" + caseId);
+            "caseUrl", "http://fake-url/cases/case-details/" + CASE_ID);
     }
 
     private CaseDetails enableSendToCtscOnCaseDetails(YesNo enableCtsc) {
         return CaseDetails.builder()
-            .id(caseId)
+            .id(CASE_ID)
             .data(new HashMap<>(Map.of(
                 "submittedForm", TestDataHelper.testDocumentReference(),
                 RETURN_APPLICATION, ReturnApplication.builder()
@@ -433,8 +433,8 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
 
         template.setLocalAuthority("Example Local Authority");
-        template.setReference(caseId.toString());
-        template.setCaseUrl(String.format("http://fake-url/cases/case-details/%s", caseId));
+        template.setReference(CASE_ID.toString());
+        template.setCaseUrl(String.format("http://fake-url/cases/case-details/%s", CASE_ID));
         template.setDataPresent(YES.getValue());
         template.setFullStop(NO.getValue());
         template.setOrdersAndDirections(List.of("Emergency protection order", "Contact with any named person"));

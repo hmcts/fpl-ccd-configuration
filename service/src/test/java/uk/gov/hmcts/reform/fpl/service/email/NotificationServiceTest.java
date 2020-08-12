@@ -18,15 +18,17 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.service.email.NotificationServiceTest.ENV;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {NotificationService.class, NotificationClient.class, JacksonAutoConfiguration.class})
-@TestPropertySource(properties = {"fpl.env=localhost" })
-public class NotificationServiceTest {
+@ContextConfiguration(classes = {NotificationService.class, JacksonAutoConfiguration.class})
+@TestPropertySource(properties = {"fpl.env=" + ENV })
+class NotificationServiceTest {
     public static final String TEST_RECIPIENT_EMAIL = "test@example.com";
     public static final String REFERENCE = "12345L";
     public static final String TEMPLATE_ID = PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
-    private static final String CASE_REFERENCE_WITH_ENVIRONMENT = "localhost/" + REFERENCE;
+    public static final String ENV = "TEST_ENV";
+    private static final String CASE_REFERENCE_WITH_ENVIRONMENT = String.format("%s/%s", ENV, REFERENCE);
 
     @MockBean
     private NotificationClient notificationClient;
