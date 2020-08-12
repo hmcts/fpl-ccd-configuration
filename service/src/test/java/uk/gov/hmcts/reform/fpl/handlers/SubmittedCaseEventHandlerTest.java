@@ -139,12 +139,14 @@ class SubmittedCaseEventHandlerTest {
         }
 
         @Test
-        void shouldNotPayAndNotEmitFailureEventIfPaymentDecisionIsNotPresent() {
+        void shouldNotPayAndEmitFailureEventIfPaymentDecisionsIsNotPresent() {
             final CallbackRequest request = callbackRequest(OPEN, emptyMap());
             final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 
+            verify(applicationEventPublisher)
+                .publishEvent(new FailedPBAPaymentEvent(submittedCaseEvent, C110A_APPLICATION));
             verifyNoMoreInteractions(paymentService, applicationEventPublisher);
         }
 
