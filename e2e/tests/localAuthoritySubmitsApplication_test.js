@@ -561,7 +561,7 @@ Scenario('local authority submits after giving consent @create-case-with-mandato
   // I.see('£2,055.00'); Disabled until Fee Register updated on AAT
   submitApplicationEventPage.seeDraftApplicationFile();
   submitApplicationEventPage.giveConsent();
-  await I.seeCheckAnswersAndCompleteEvent('Submit', true);
+  await I.completeEvent('Submit', null, true);
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.see('New_case_name.pdf');
