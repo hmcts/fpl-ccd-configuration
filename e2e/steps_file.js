@@ -41,6 +41,7 @@ module.exports = function () {
       await this.retryUntilExists(() => this.click('Create case'), `#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
       await openApplicationEventPage.populateForm(caseName);
       await this.completeEvent('Save and continue');
+      this.waitForElement('.markdown h2', 5);
       const caseId = normalizeCaseId(await this.grabTextFrom('.markdown h2'));
       console.log(`Case created #${caseId}`);
       return caseId;
