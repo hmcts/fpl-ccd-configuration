@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.google.common.collect.ImmutableMap;
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForC2;
@@ -16,14 +16,15 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import java.util.Map;
 
 import static java.lang.String.format;
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
-import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ContextConfiguration(classes = {C2UploadedEmailContentProvider.class, EmailNotificationHelper.class,
     FixedTimeConfiguration.class})
+@TestPropertySource(properties = {"manage-case.ui.base.url=http://fake-url"})
 class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     @Autowired
@@ -40,8 +41,15 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
             .thenReturn(C2_DOCUMENT_BINARY);
     }
 
+
     @Test
     void shouldReturnExpectedMapWithGivenCaseDetails() {
+        DocumentReference uploadedC2 = DocumentReference.builder()
+            .filename(randomAlphanumeric(10))
+            .url(randomAlphanumeric(10))
+            .binaryUrl("http://dm-store:8080/documents/b28f859b-7521-4c84-9057-47e56afd773f/binary")
+            .build();
+
         CaseDetails caseDetails = populatedCaseDetails(
             Map.of("applicationBinaryUrl", applicationDocument.getBinaryUrl()));
 
@@ -93,9 +101,7 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
         c2UploadedTemplate.setCallout(format("Smith, %s", CASE_REFERENCE));
         c2UploadedTemplate.setRespondentLastName("Smith");
         c2UploadedTemplate.setCaseUrl("http://fake-url/cases/case-details/12345");
-        c2UploadedTemplate.setDocumentLink(generateAttachedDocumentLink(C2_DOCUMENT_BINARY)
-            .map(JSONObject::toMap)
-            .orElse(null));
+        c2UploadedTemplate.setDocumentUrl("http://fake-url/documents/b28f859b-7521-4c84-9057-47e56afd773f/binary");
 
         return c2UploadedTemplate;
     }
