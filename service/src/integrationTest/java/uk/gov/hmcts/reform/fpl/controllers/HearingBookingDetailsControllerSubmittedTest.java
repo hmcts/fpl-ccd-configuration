@@ -58,7 +58,7 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
     private static final String CAFCASS_EMAIL = "cafcass@cafcass.com";
-    private static final String CASE_REFERENCE_WITH_ENVIRONMENT = "localhost/" + CASE_ID;
+    private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 
     @MockBean
     private CoreCaseDataService coreCaseDataService;
@@ -144,19 +144,19 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
                 eq(NOTICE_OF_NEW_HEARING),
                 eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
                 anyMap(),
-                eq(CASE_REFERENCE_WITH_ENVIRONMENT));
+                eq(NOTIFICATION_REFERENCE));
 
             verify(notificationClient).sendEmail(
                 eq(NOTICE_OF_NEW_HEARING),
                 eq(CAFCASS_EMAIL),
                 anyMap(),
-                eq(CASE_REFERENCE_WITH_ENVIRONMENT));
+                eq(NOTIFICATION_REFERENCE));
 
             verify(notificationClient).sendEmail(
                 eq(NOTICE_OF_NEW_HEARING),
                 eq("abc@example.com"),
                 anyMap(),
-                eq(CASE_REFERENCE_WITH_ENVIRONMENT));
+                eq(NOTIFICATION_REFERENCE));
         });
     }
 

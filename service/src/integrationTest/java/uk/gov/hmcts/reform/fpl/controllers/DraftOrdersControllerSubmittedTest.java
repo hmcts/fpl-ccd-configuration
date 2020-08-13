@@ -44,7 +44,7 @@ public class DraftOrdersControllerSubmittedTest extends AbstractControllerTest {
     private static final String PREPARE_FOR_HEARING_EVENT = "internal-changeState-Gatekeeping->PREPARE_FOR_HEARING";
     private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
     private static final DocumentReference DOCUMENT_REFERENCE = DocumentReference.builder().build();
-    private static final String CASE_REFERENCE_WITH_ENVIRONMENT = "localhost/" + CASE_ID;
+    private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 
     @Mock
     private ApplicationEventPublisher applicationEventPublisher;
@@ -80,7 +80,7 @@ public class DraftOrdersControllerSubmittedTest extends AbstractControllerTest {
         verify(notificationClient).sendEmail(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE,
             "cafcass@cafcass.com",
             cafcassParameters(),
-            CASE_REFERENCE_WITH_ENVIRONMENT
+            NOTIFICATION_REFERENCE
         );
     }
 

@@ -43,7 +43,7 @@ class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest 
     private static final Long CASE_ID = 12345L;
     private static final String CASE_REFERENCE = "12345";
     private static final String RESPONDENT_SURNAME = "Watson";
-    private static final String CASE_REFERENCE_WITH_ENVIRONMENT = "localhost/" + CASE_ID;
+    private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 
     RepresentativeSubmittedEventControllerTest() {
         super("manage-representatives");
@@ -66,7 +66,7 @@ class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest 
 
         verify(notificationClient).sendEmail(
             PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE, "test@test.com",
-            expectedTemplateParametersEmail(), CASE_REFERENCE_WITH_ENVIRONMENT);
+            expectedTemplateParametersEmail(), NOTIFICATION_REFERENCE);
     }
 
 
@@ -88,7 +88,7 @@ class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest 
 
         verify(notificationClient).sendEmail(
             PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE, "test@test.com",
-            expectedTemplateParametersDigitalService(), CASE_REFERENCE_WITH_ENVIRONMENT);
+            expectedTemplateParametersDigitalService(), NOTIFICATION_REFERENCE);
     }
 
     @Test

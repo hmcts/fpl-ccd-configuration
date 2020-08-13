@@ -28,7 +28,7 @@ class NotificationServiceTest {
     public static final String REFERENCE = "12345L";
     public static final String TEMPLATE_ID = PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
     public static final String ENV = "TEST_ENV";
-    private static final String CASE_REFERENCE_WITH_ENVIRONMENT = String.format("%s/%s", ENV, REFERENCE);
+    private static final String NOTIFICATION_REFERENCE = String.format("%s/%s", ENV, REFERENCE);
 
     @MockBean
     private NotificationClient notificationClient;
@@ -43,7 +43,7 @@ class NotificationServiceTest {
         notificationService.sendEmail(TEMPLATE_ID, TEST_RECIPIENT_EMAIL, templatePreference, REFERENCE);
 
         verify(notificationClient).sendEmail(eq(PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE),
-            eq(TEST_RECIPIENT_EMAIL), eq(templatePreference), eq(CASE_REFERENCE_WITH_ENVIRONMENT));
+            eq(TEST_RECIPIENT_EMAIL), eq(templatePreference), eq(NOTIFICATION_REFERENCE));
     }
 
     private static Map<String, Object> getDefaultForPartyAddedToCaseByEmailTemplate() {

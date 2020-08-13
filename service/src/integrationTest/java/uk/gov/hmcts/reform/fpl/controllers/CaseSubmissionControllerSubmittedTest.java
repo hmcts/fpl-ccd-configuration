@@ -78,7 +78,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     private static final String SURVEY_LINK = "https://www.smartsurvey.co"
         + ".uk/s/preview/FamilyPublicLaw/44945E4F1F8CBEE3E10D79A4CED903";
     private static final Long CASE_ID = nextLong();
-    private static final String CASE_REFERENCE_WITH_ENVIRONMENT = "localhost/" + CASE_ID;
+    private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 
 
     @MockBean
@@ -117,13 +117,13 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
                 HMCTS_COURT_SUBMISSION_TEMPLATE,
                 HMCTS_ADMIN_EMAIL,
                 expectedHmctsParameters,
-                CASE_REFERENCE_WITH_ENVIRONMENT);
+                NOTIFICATION_REFERENCE);
 
             verify(notificationClient).sendEmail(
                 CAFCASS_SUBMISSION_TEMPLATE,
                 CAFCASS_EMAIL,
                 completeCafcassParameters,
-                CASE_REFERENCE_WITH_ENVIRONMENT);
+                NOTIFICATION_REFERENCE);
         });
 
         checkThat(() -> verifyNoMoreInteractions(notificationClient));
@@ -145,13 +145,13 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
                 HMCTS_COURT_SUBMISSION_TEMPLATE,
                 HMCTS_ADMIN_EMAIL,
                 expectedIncompleteHmctsParameters,
-                CASE_REFERENCE_WITH_ENVIRONMENT);
+                NOTIFICATION_REFERENCE);
 
             verify(notificationClient).sendEmail(
                 CAFCASS_SUBMISSION_TEMPLATE,
                 CAFCASS_EMAIL,
                 getExpectedCafcassParameters(false),
-                CASE_REFERENCE_WITH_ENVIRONMENT);
+                NOTIFICATION_REFERENCE);
         });
 
         checkThat(() -> verifyNoMoreInteractions(notificationClient));
@@ -172,7 +172,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
                 HMCTS_COURT_SUBMISSION_TEMPLATE,
                 CTSC_EMAIL,
                 expectedIncompleteHmctsParameters,
-                CASE_REFERENCE_WITH_ENVIRONMENT
+                NOTIFICATION_REFERENCE
             ));
 
         checkThat(() ->
@@ -180,7 +180,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
                 HMCTS_COURT_SUBMISSION_TEMPLATE,
                 HMCTS_ADMIN_EMAIL,
                 expectedIncompleteHmctsParameters,
-                CASE_REFERENCE_WITH_ENVIRONMENT
+                NOTIFICATION_REFERENCE
             ));
     }
 
@@ -224,13 +224,13 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
                 "local-authority@local-authority.com",
                 Map.of("applicationType", "C110a"),
-                CASE_REFERENCE_WITH_ENVIRONMENT);
+                NOTIFICATION_REFERENCE);
 
             verify(notificationClient).sendEmail(
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
                 "FamilyPublicLaw+ctsc@gmail.com",
                 expectedCtscNotificationParameters(),
-                CASE_REFERENCE_WITH_ENVIRONMENT);
+                NOTIFICATION_REFERENCE);
         });
     }
 
@@ -246,13 +246,13 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
                 "local-authority@local-authority.com",
                 Map.of("applicationType", "C110a"),
-                CASE_REFERENCE_WITH_ENVIRONMENT);
+                NOTIFICATION_REFERENCE);
 
             verify(notificationClient).sendEmail(
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
                 "FamilyPublicLaw+ctsc@gmail.com",
                 expectedCtscNotificationParameters(),
-                CASE_REFERENCE_WITH_ENVIRONMENT);
+                NOTIFICATION_REFERENCE);
         });
     }
 
@@ -269,13 +269,13 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
                 "local-authority@local-authority.com",
                 Map.of("applicationType", "C110a"),
-                CASE_REFERENCE_WITH_ENVIRONMENT);
+                NOTIFICATION_REFERENCE);
 
             verify(notificationClient).sendEmail(
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
                 "FamilyPublicLaw+ctsc@gmail.com",
                 expectedCtscNotificationParameters(),
-                CASE_REFERENCE_WITH_ENVIRONMENT);
+                NOTIFICATION_REFERENCE);
         });
     }
 
@@ -334,13 +334,13 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
                 eq(AMENDED_APPLICATION_RETURNED_ADMIN_TEMPLATE),
                 eq(adminEmail),
                 anyMap(),
-                eq(CASE_REFERENCE_WITH_ENVIRONMENT));
+                eq(NOTIFICATION_REFERENCE));
 
             verify(notificationClient).sendEmail(
                 eq(AMENDED_APPLICATION_RETURNED_CAFCASS_TEMPLATE),
                 eq(CAFCASS_EMAIL),
                 anyMap(),
-                eq(CASE_REFERENCE_WITH_ENVIRONMENT));
+                eq(NOTIFICATION_REFERENCE));
         }
 
         private void paymentNotTakenAndNoMoreEmailsSent() {

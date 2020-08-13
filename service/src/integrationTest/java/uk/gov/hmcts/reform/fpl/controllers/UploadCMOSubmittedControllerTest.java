@@ -51,7 +51,7 @@ public class UploadCMOSubmittedControllerTest extends AbstractControllerTest {
     private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
     private static final long CASE_ID = 12345L;
     private static final String ADMIN_EMAIL = "admin@family-court.com";
-    private static final String CASE_REFERENCE_WITH_ENVIRONMENT = "localhost/" + CASE_ID;
+    private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 
     @MockBean
     private NotificationClient notificationClient;
@@ -88,14 +88,14 @@ public class UploadCMOSubmittedControllerTest extends AbstractControllerTest {
                 eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE),
                 eq(ADMIN_EMAIL),
                 anyMap(),
-                eq(CASE_REFERENCE_WITH_ENVIRONMENT)
+                eq(NOTIFICATION_REFERENCE)
             );
 
             verify(notificationClient).sendEmail(
                 eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE),
                 eq(JUDGE_EMAIL),
                 anyMap(),
-                eq(CASE_REFERENCE_WITH_ENVIRONMENT)
+                eq(NOTIFICATION_REFERENCE)
             );
         });
     }

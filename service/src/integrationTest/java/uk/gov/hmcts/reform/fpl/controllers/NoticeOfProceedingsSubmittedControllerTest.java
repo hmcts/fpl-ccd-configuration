@@ -26,7 +26,7 @@ class NoticeOfProceedingsSubmittedControllerTest extends AbstractControllerTest 
 
     private static final String ALLOCATED_JUDGE_EMAIL_ADDRESS = "judge@gmail.com";
     private static final String CASE_ID = "12345";
-    private static final String CASE_REFERENCE_WITH_ENVIRONMENT = "localhost/" + CASE_ID;
+    private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 
     @MockBean
     private NotificationClient notificationClient;
@@ -49,7 +49,7 @@ class NoticeOfProceedingsSubmittedControllerTest extends AbstractControllerTest 
             eq(NOTICE_OF_PROCEEDINGS_ISSUED_JUDGE_TEMPLATE),
             eq(ALLOCATED_JUDGE_EMAIL_ADDRESS),
             anyMap(),
-            eq(CASE_REFERENCE_WITH_ENVIRONMENT));
+            eq(NOTIFICATION_REFERENCE));
     }
 
     @Test
