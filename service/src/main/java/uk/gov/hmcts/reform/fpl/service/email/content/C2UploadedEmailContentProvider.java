@@ -39,8 +39,8 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
         adminTemplateForC2.setCallout(buildCallout(caseData));
         adminTemplateForC2.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
         adminTemplateForC2.setCaseUrl(getCaseUrl(caseDetails.getId()));
-        adminTemplateForC2.setDocumentUrl(concatUrlAndMostRecentUploadedDocumentPath(
-            latestC2.getBinaryUrl(), xuiBaseUrl));
+        adminTemplateForC2.setDocumentUrl(concatUrlAndMostRecentUploadedDocumentPath(xuiBaseUrl,
+            latestC2.getBinaryUrl()));
 
         return adminTemplateForC2;
     }

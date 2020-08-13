@@ -30,8 +30,8 @@ public class DocumentsHelper {
         return hasDocumentPresent(document) && document.getTypeOfDocument() != null;
     }
 
-    public static String concatUrlAndMostRecentUploadedDocumentPath(
-        final String mostRecentUploadedDocument, String url) {
+    public static String concatUrlAndMostRecentUploadedDocumentPath(String url,
+        final String mostRecentUploadedDocument) {
         try {
             URI uri = new URI(mostRecentUploadedDocument);
             return url + uri.getPath();

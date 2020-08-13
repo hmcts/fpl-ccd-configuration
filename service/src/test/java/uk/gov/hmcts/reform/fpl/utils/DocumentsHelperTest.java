@@ -55,7 +55,7 @@ class DocumentsHelperTest {
         String invalidMostRecentDocumentLink = "http://dm-store:8080/documents/b28f859b-7521-4c84-9057-47e56afd773f/binary";
         String url = "http://fake-url";
 
-        String documentUrl = concatUrlAndMostRecentUploadedDocumentPath(invalidMostRecentDocumentLink, url);
+        String documentUrl = concatUrlAndMostRecentUploadedDocumentPath(url, invalidMostRecentDocumentLink);
 
         assertThat(documentUrl).isEqualTo("http://fake-url/documents/b28f859b-7521-4c84-9057-47e56afd773f/binary");
     }
@@ -66,7 +66,7 @@ class DocumentsHelperTest {
         String invalidMostRecentDocumentLink = "http://dm-store:8080/documents/b28f859b-7521-4c84-9057-47e56afd773f/binary^";
         String url = "http://fake-url";
 
-        String documentUrl = concatUrlAndMostRecentUploadedDocumentPath(invalidMostRecentDocumentLink, url);
+        String documentUrl = concatUrlAndMostRecentUploadedDocumentPath(url, invalidMostRecentDocumentLink);
 
         assertThat(documentUrl).isEqualTo("");
     }
