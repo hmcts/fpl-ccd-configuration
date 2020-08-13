@@ -24,7 +24,7 @@ import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
-import uk.gov.hmcts.reform.idam.client.IdamApi;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.util.Map;
@@ -60,7 +60,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
     HmctsAdminNotificationHandler.class})
 public class C2UploadedEventHandlerTest {
     @MockBean
-    private IdamApi idamApi;
+    private IdamClient idamClient;
 
     @MockBean
     private RequestData requestData;
@@ -106,7 +106,7 @@ public class C2UploadedEventHandlerTest {
 
         @Test
         void shouldNotifyNonHmctsAdminOnC2Upload() {
-            given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(
+            given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(
                 UserInfo.builder().sub("hmcts-non-admin@test.com").roles(LOCAL_AUTHORITY.getRoles()).build());
 
             given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
@@ -125,7 +125,7 @@ public class C2UploadedEventHandlerTest {
             CallbackRequest callbackRequest = appendSendToCtscOnCallback();
             CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
-            given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(
+            given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(
                 UserInfo.builder().sub(CTSC_INBOX).roles(LOCAL_AUTHORITY.getRoles()).build());
 
             given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
@@ -147,7 +147,7 @@ public class C2UploadedEventHandlerTest {
 
         @Test
         void shouldNotNotifyHmctsAdminOnC2Upload() {
-            given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(
+            given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(
                 UserInfo.builder().sub("hmcts-admin@test.com").roles(HMCTS_ADMIN.getRoles()).build());
 
             c2UploadedEventHandler.sendNotifications(

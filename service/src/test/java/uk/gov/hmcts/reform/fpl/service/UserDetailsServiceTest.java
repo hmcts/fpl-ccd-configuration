@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.idam.client.IdamApi;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import static org.apache.commons.lang.RandomStringUtils.randomAlphanumeric;
@@ -17,7 +17,7 @@ import static org.mockito.Mockito.when;
 class UserDetailsServiceTest {
 
     @Mock
-    private IdamApi idamApi;
+    private IdamClient idamClient;
     @Mock
     private RequestData requestData;
     @InjectMocks
@@ -29,7 +29,7 @@ class UserDetailsServiceTest {
         UserInfo userInfo = UserInfo.builder().name("John Smith").build();
 
         when(requestData.authorisation()).thenReturn(userToken);
-        when(idamApi.retrieveUserInfo(userToken)).thenReturn(userInfo);
+        when(idamClient.getUserInfo(userToken)).thenReturn(userInfo);
 
         assertThat(userDetailsService.getUserName()).isEqualTo(userInfo.getName());
     }
