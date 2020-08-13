@@ -50,6 +50,21 @@ public class ManageDocumentsControllerGetDocMidEventTest extends AbstractControl
         assertThat(originalCourtDocument).isEqualTo(courtAdminDocuments.get(0).getValue().getDocument());
     }
 
+    //RDM-9147
+    @Test
+    void shouldRemoveEditedDocumentIfNoReplacementDocumentUploaded() {
+        List<Element<CourtAdminDocument>> courtAdminDocuments = buildDocuments();
+
+        CaseData caseData = CaseData.builder()
+            .uploadDocumentsRouter(AMEND)
+            .otherCourtAdminDocuments(courtAdminDocuments)
+            .editedCourtDocument(new CourtAdminDocument("", DocumentReference.builder().build()))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "get-doc");
+        assertThat(response.getData()).doesNotContainKey("editedCourtDocument");
+    }
+
     @Test
     void shouldShowDocumentToBeDeletedWhenUserSelectsDeleteAndChoosesDocument() {
         List<Element<CourtAdminDocument>> courtAdminDocuments = buildDocuments();

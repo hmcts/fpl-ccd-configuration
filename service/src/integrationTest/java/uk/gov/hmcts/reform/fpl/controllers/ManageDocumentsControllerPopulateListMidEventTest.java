@@ -54,6 +54,7 @@ public class ManageDocumentsControllerPopulateListMidEventTest extends AbstractC
         assertThat(documentList).isEqualTo(expectedList);
     }
 
+    //RDM-9147
     @Test
     void shouldRemoveEditedDocumentIfNoReplacementDocumentUploaded() {
         List<Element<CourtAdminDocument>> courtAdminDocuments = buildDocuments();

@@ -11,24 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.DocumentRouter;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtAdminDocument;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.service.ManageDocumentsService;
 
-import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.DocumentRouter.AMEND;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.DocumentRouter.DELETE;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.DocumentRouter.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getSelectedIdFromDynamicList;
 
 @Api
 @RestController
@@ -37,6 +26,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getSelectedIdFromDynami
 public class ManageDocumentsController {
 
     private final ObjectMapper mapper;
+    private final ManageDocumentsService service;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
@@ -54,17 +44,8 @@ public class ManageDocumentsController {
     public AboutToStartOrSubmitCallbackResponse populateList(@RequestBody CallbackRequest request) {
         Map<String, Object> data = request.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
-        List<Element<CourtAdminDocument>> courtAdminDocuments = caseData.getOtherCourtAdminDocuments();
-        DocumentRouter uploadDocumentsRouter = caseData.getUploadDocumentsRouter();
 
-        if (AMEND == uploadDocumentsRouter || DELETE == uploadDocumentsRouter) {
-            DynamicList courtDocumentList = asDynamicList(
-                courtAdminDocuments,
-                CourtAdminDocument::getDocumentTitle
-            );
-
-            data.put("courtDocumentList", courtDocumentList);
-        }
+        data.put("courtDocumentList", service.buildDocumentDynamicList(caseData));
 
         // needed to prevent issues when using previous button
         // is affected by RDM-9147
@@ -82,30 +63,9 @@ public class ManageDocumentsController {
     public AboutToStartOrSubmitCallbackResponse getDocument(@RequestBody CallbackRequest request) {
         Map<String, Object> data = request.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
-        List<Element<CourtAdminDocument>> otherCourtAdminDocuments = caseData.getOtherCourtAdminDocuments();
-        DocumentRouter router = caseData.getUploadDocumentsRouter();
 
-        Object courtDocumentList = caseData.getCourtDocumentList();
-
-        UUID selectedId = getSelectedIdFromDynamicList(courtDocumentList, mapper);
-
-        findElement(selectedId, otherCourtAdminDocuments).ifPresent(
-            courtAdminDocument -> {
-                if (AMEND == router) {
-                    data.put("originalCourtDocument", courtAdminDocument.getValue().getDocument());
-                } else {
-                    data.put("deletedCourtDocument", courtAdminDocument.getValue());
-                }
-            }
-        );
-
-        DynamicList regeneratedList = asDynamicList(
-            otherCourtAdminDocuments,
-            selectedId,
-            CourtAdminDocument::getDocumentTitle
-        );
-
-        data.put("courtDocumentList", regeneratedList);
+        data.putAll(service.getDocumentToDisplay(caseData));
+        data.put("courtDocumentList", service.regenerateDynamicList(caseData));
 
         // needed to prevent issues when using previous button
         // is affected by RDM-9147
@@ -124,32 +84,8 @@ public class ManageDocumentsController {
         CaseDetails caseDetails = request.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
-        List<Element<CourtAdminDocument>> otherCourtAdminDocuments = caseData.getOtherCourtAdminDocuments();
-        DocumentRouter router = caseData.getUploadDocumentsRouter();
 
-        // Will be null if pageShow was NO in which case upload is the only option
-        if (UPLOAD == router || null == router) {
-            List<Element<CourtAdminDocument>> limitedCourtAdminDocuments = caseData.getLimitedCourtAdminDocuments();
-            otherCourtAdminDocuments.addAll(limitedCourtAdminDocuments);
-        } else {
-            Object courtDocumentList = caseData.getCourtDocumentList();
-            UUID selectedId = getSelectedIdFromDynamicList(courtDocumentList, mapper);
-            int index = -1;
-            for (int i = 0; i < otherCourtAdminDocuments.size(); i++) {
-                Element<?> element = otherCourtAdminDocuments.get(i);
-                if (selectedId.equals(element.getId())) {
-                    index = i;
-                }
-            }
-            if (AMEND == router) {
-                Element<CourtAdminDocument> editedDocument = element(selectedId, caseData.getEditedCourtDocument());
-                otherCourtAdminDocuments.set(index, editedDocument);
-            } else if (DELETE == router) {
-                otherCourtAdminDocuments.remove(index);
-            }
-        }
-
-        data.put("otherCourtAdminDocuments", otherCourtAdminDocuments);
+        data.put("otherCourtAdminDocuments", service.updateDocumentCollection(caseData));
         removeTemporaryFields(
             caseDetails,
             "limitedCourtAdminDocuments",
