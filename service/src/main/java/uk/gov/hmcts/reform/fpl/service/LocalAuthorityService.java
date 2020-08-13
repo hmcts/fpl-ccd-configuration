@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityCodeLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.idam.client.IdamApi;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 /**
@@ -13,15 +13,15 @@ import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 @Service
 public class LocalAuthorityService {
 
-    private final IdamApi idamApi;
+    private final IdamClient idamClient;
     private final LocalAuthorityCodeLookupConfiguration localAuthorityCodeLookupConfiguration;
     private final RequestData requestData;
 
     @Autowired
-    public LocalAuthorityService(IdamApi idamApi,
+    public LocalAuthorityService(IdamClient idamClient,
                                  LocalAuthorityCodeLookupConfiguration localAuthorityCodeLookupConfiguration,
                                  RequestData requestData) {
-        this.idamApi = idamApi;
+        this.idamClient = idamClient;
         this.localAuthorityCodeLookupConfiguration = localAuthorityCodeLookupConfiguration;
         this.requestData = requestData;
     }
@@ -32,7 +32,7 @@ public class LocalAuthorityService {
      * @return caseLocalAuthority for user.
      */
     public String getLocalAuthorityCode() {
-        UserInfo userInfo = idamApi.retrieveUserInfo(requestData.authorisation());
+        UserInfo userInfo = idamClient.getUserInfo(requestData.authorisation());
         String email = userInfo.getSub();
         String domain = extractEmailDomain(email);
 
