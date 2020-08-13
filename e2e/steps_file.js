@@ -18,6 +18,10 @@ const signedOutSelector = '#global-header';
 
 'use strict';
 
+function log (msg) {
+  console.log(`[${require('codeceptjs').config.get().mocha.child}] ${msg}`);
+}
+
 module.exports = function () {
   return actor({
     async signIn(user) {
@@ -43,7 +47,7 @@ module.exports = function () {
       await this.completeEvent('Save and continue');
       this.waitForElement('.markdown h2', 5);
       const caseId = normalizeCaseId(await this.grabTextFrom('.markdown h2'));
-      console.log(`Case created #${caseId}`);
+      log(`Case created #${caseId}`);
       return caseId;
     },
 
@@ -195,7 +199,7 @@ module.exports = function () {
     async submitNewCaseWithData(data = mandatorySubmissionFields) {
       const caseId = await this.logInAndCreateCase(config.swanseaLocalAuthorityUserOne);
       await caseHelper.populateWithData(caseId, data);
-      console.log(`Case #${caseId} has been populated with data`);
+      log(`Case #${caseId} has been populated with data`);
 
       return caseId;
     },
@@ -221,7 +225,7 @@ module.exports = function () {
         try {
           await action();
         }catch(error){
-          console.log(error);
+          log(error);
         }
         if (await this.waitForSelector(locator) != null) {
           output.log(`retryUntilExists(${locator}): element found after try #${tryNumber} was executed`);
