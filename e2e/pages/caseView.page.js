@@ -66,7 +66,11 @@ module.exports = {
     this.checkTaskStatus(task, 'Information added');
   },
 
-  checkTaskIsNotCompleted(task) {
+  checkTaskIsInProgress(task) {
+    this.checkTaskStatus(task, 'In progress');
+  },
+
+  checkTaskIsNotStarted(task) {
     this.checkTaskStatus(task, undefined);
   },
 

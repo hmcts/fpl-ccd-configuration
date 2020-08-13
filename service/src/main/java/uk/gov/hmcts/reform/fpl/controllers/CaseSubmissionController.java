@@ -30,7 +30,7 @@ import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
 import uk.gov.hmcts.reform.fpl.service.markdown.CaseSubmissionMarkdownService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
-import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionGuard;
+import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
 
 import java.time.ZoneId;
@@ -62,7 +62,7 @@ public class CaseSubmissionController {
     private final FeatureToggleService featureToggleService;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final CaseSubmissionMarkdownService markdownService;
-    private final CaseSubmissionGuard caseSubmissionGuard;
+    private final CaseSubmissionChecker caseSubmissionChecker;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
@@ -115,7 +115,7 @@ public class CaseSubmissionController {
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        final List<String> errors = caseSubmissionGuard.validate(caseData);
+        final List<String> errors = caseSubmissionChecker.validate(caseData);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
                 .data(caseDetails.getData())
