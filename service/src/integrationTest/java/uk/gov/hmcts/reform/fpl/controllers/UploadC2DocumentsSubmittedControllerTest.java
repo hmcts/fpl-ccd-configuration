@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.c2uploaded.C2UploadedTemplate;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
-import uk.gov.hmcts.reform.idam.client.IdamApi;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -65,7 +65,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
     private NotificationClient notificationClient;
 
     @MockBean
-    private IdamApi idamApi;
+    private IdamClient idamClient;
 
     @MockBean
     private PaymentService paymentService;
@@ -79,7 +79,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setup() {
-        given(idamApi.retrieveUserInfo(any())).willReturn(USER_INFO_CAFCASS);
+        given(idamClient.getUserInfo((any()))).willReturn(USER_INFO_CAFCASS);
 
         applicationDocument = testDocumentReference();
         latestC2Document = testDocumentReference();
