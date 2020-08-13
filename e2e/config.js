@@ -77,6 +77,7 @@ module.exports = {
     enterAllocationProposal: 'Allocation proposal',
     enterAllocationDecision: 'Allocation decision',
     enterAttendingHearing: 'Court services needed',
+    uploadDocuments: 'Upload documents',
     manageDocuments: 'Manage documents',
     changeCaseName: 'Change case name',
     submitCase: 'Submit application',

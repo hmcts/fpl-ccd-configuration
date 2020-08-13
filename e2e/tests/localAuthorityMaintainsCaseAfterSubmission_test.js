@@ -13,28 +13,28 @@ BeforeSuite(async I => caseId = await I.submitNewCaseWithData(mandatoryWithMulti
 Before(async I => await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId));
 
 Scenario('local authority uploads documents', async (I, caseViewPage, uploadDocumentsEventPage) => {
-  await caseViewPage.goToNewActions(config.applicationActions.manageDocuments);
+  await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
   uploadDocumentsHelper.uploadCaseDocuments(uploadDocumentsEventPage);
   await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.applicationActions.manageDocuments);
+  I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   uploadDocumentsHelper.assertCaseDocuments(I);
 });
 
 Scenario('local authority uploads documents when SWET not required', async (I, caseViewPage, uploadDocumentsEventPage) => {
-  await caseViewPage.goToNewActions(config.applicationActions.manageDocuments);
+  await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
   uploadDocumentsHelper.uploadCaseDocuments(uploadDocumentsEventPage, false);
   await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.applicationActions.manageDocuments);
+  I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   uploadDocumentsHelper.assertCaseDocuments(I, false);
 });
 
 Scenario('local authority uploads court bundle', async (I, caseViewPage, uploadDocumentsEventPage) => {
-  await caseViewPage.goToNewActions(config.applicationActions.manageDocuments);
+  await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
   uploadDocumentsEventPage.uploadCourtBundle(config.testFile);
   await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.applicationActions.manageDocuments);
+  I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.seeDocument('Court bundle', 'mockFile.txt');
 });
