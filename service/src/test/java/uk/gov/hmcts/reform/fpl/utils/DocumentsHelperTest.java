@@ -68,7 +68,7 @@ class DocumentsHelperTest {
 
         String documentUrl = concatUrlAndMostRecentUploadedDocumentPath(url, invalidMostRecentDocumentLink);
 
-        assertThat(documentUrl).isEqualTo("");
+        assertThat(documentUrl).isEmpty();
     }
 
     private static Document document(DocumentStatus documentStatus) {
