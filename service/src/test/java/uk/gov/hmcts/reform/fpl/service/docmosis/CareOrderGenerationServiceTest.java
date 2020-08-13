@@ -85,25 +85,28 @@ class CareOrderGenerationServiceTest extends AbstractOrderGenerationServiceTest 
     }
 
     private DocmosisGeneratedOrder getExpectedDocument(GeneratedOrderSubtype subtype, OrderStatus orderStatus) {
-        DocmosisGeneratedOrderBuilder orderBuilder = DocmosisGeneratedOrder.builder()
+        DocmosisGeneratedOrder docmosisGeneratedOrder = DocmosisGeneratedOrder.builder()
             .children(getChildren())
             .orderType(CARE_ORDER)
-            .localAuthorityName(LOCAL_AUTHORITY_NAME);
+            .localAuthorityName(LOCAL_AUTHORITY_NAME)
+            .build();
 
         if (subtype == INTERIM) {
-            orderBuilder
+            docmosisGeneratedOrder.toBuilder()
                 .orderTitle("Interim care order")
                 .childrenAct("Section 38 Children Act 1989")
                 .orderDetails("It is ordered that the children are "
-                    + "placed in the care of Example Local Authority until the end of the proceedings.");
+                    + "placed in the care of Example Local Authority until the end of the proceedings.")
+                .build();
 
         } else if (subtype == FINAL) {
-            orderBuilder
+            docmosisGeneratedOrder.toBuilder()
                 .orderTitle("Care order")
                 .childrenAct("Section 31 Children Act 1989")
-                .orderDetails("It is ordered that the children are placed in the care of Example Local Authority.");
+                .orderDetails("It is ordered that the children are placed in the care of Example Local Authority.")
+                .build();
         }
 
-        return enrichWithStandardData(CARE_ORDER, subtype, orderStatus, orderBuilder).build();
+        return enrichWithStandardData(CARE_ORDER, subtype, orderStatus, docmosisGeneratedOrder);
     }
 }

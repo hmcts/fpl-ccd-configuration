@@ -110,14 +110,14 @@ class SupervisionOrderGenerationServiceTest extends AbstractOrderGenerationServi
                 .gender("Boy")
                 .dateOfBirth(formattedDate).build());
 
-        DocmosisGeneratedOrderBuilder orderBuilder = DocmosisGeneratedOrder.builder().children(children);
+        DocmosisGeneratedOrder orderBuilder = DocmosisGeneratedOrder.builder().children(children).build();
 
         if (subtype == INTERIM) {
             String detailsDate = formatLocalDateToString(
                 time.now().toLocalDate(), "d'" + getDayOfMonthSuffix(time.now().toLocalDate().getDayOfMonth())
                     + "' MMMM y");
 
-            orderBuilder
+            orderBuilder.toBuilder()
                 .orderTitle("Interim supervision order")
                 .childrenAct("Section 38 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
                 .orderDetails(format("It is ordered that Example Local Authority supervises"
@@ -127,13 +127,13 @@ class SupervisionOrderGenerationServiceTest extends AbstractOrderGenerationServi
             final String formattedDateTime = formatLocalDateTimeBaseUsingFormat(expiryDate,
                 "h:mma 'on the' d'" + getDayOfMonthSuffix(expiryDate.getDayOfMonth()) + "' MMMM y");
 
-            orderBuilder
+            orderBuilder.toBuilder()
                 .orderTitle("Supervision order")
                 .childrenAct("Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
                 .orderDetails(format("It is ordered that Example Local Authority supervises the child for 5 months "
                     + "from the date of this order until %s.", formattedDateTime));
         }
-        return enrichWithStandardData(SUPERVISION_ORDER, orderStatus, orderBuilder).build();
+        return enrichWithStandardData(SUPERVISION_ORDER, orderStatus, orderBuilder);
     }
 
 }

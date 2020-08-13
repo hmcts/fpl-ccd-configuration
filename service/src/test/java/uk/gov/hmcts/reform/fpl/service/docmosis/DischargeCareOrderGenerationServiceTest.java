@@ -169,13 +169,14 @@ class DischargeCareOrderGenerationServiceTest extends AbstractOrderGenerationSer
     private DocmosisGeneratedOrder getExpectedDocument(OrderStatus status, List<DocmosisOrder> docmosisOrders,
                                                        List<DocmosisChild> children) {
 
-        DocmosisDischargeOfCareOrderBuilder dischargeOfCareOrderBuilder = DocmosisDischargeOfCareOrder.builder()
+        DocmosisDischargeOfCareOrder dischargeOfCareOrder = DocmosisDischargeOfCareOrder.builder()
             .orderTitle("Discharge of care order")
             .childrenAct("Section 39(1) Children Act 1989")
             .children(children)
-            .careOrders(docmosisOrders);
+            .careOrders(docmosisOrders)
+            .build();
 
-        return enrichWithStandardData(DISCHARGE_OF_CARE_ORDER, status, dischargeOfCareOrderBuilder).build();
+        return enrichWithStandardData(DISCHARGE_OF_CARE_ORDER, status, dischargeOfCareOrder);
     }
 
     private List<DocmosisOrder> docmosisOrders(GeneratedOrder... generatedOrders) {

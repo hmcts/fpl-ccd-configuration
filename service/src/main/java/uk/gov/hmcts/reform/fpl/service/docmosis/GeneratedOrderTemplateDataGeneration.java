@@ -40,22 +40,26 @@ public abstract class GeneratedOrderTemplateDataGeneration
     @Autowired
     private ChildrenService childrenService;
 
-    abstract DocmosisGeneratedOrderBuilder populateCustomOrderFields(CaseData caseData);
+    abstract DocmosisGeneratedOrder populateCustomOrderFields(CaseData caseData);
 
     @Override
     public DocmosisGeneratedOrder getTemplateData(CaseData caseData) {
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
         GeneratedOrderType orderType = orderTypeAndDocument.getType();
 
-        DocmosisGeneratedOrderBuilder<?, ?> orderBuilder = populateCustomOrderFields(caseData);
+        DocmosisGeneratedOrder docmosisGeneratedOrder = populateCustomOrderFields(caseData);
 
         OrderStatus orderStatus = caseData.getGeneratedOrderStatus();
         if (orderStatus == DRAFT) {
-            orderBuilder.draftbackground(getDraftWaterMarkData());
+            docmosisGeneratedOrder.toBuilder()
+                .draftbackground(getDraftWaterMarkData())
+                .build();
         }
 
         if (orderStatus == SEALED) {
-            orderBuilder.courtseal(getCourtSealData());
+            docmosisGeneratedOrder.toBuilder()
+                .courtseal(getCourtSealData())
+                .build();
         }
 
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(caseData.getJudgeAndLegalAdvisor(),
@@ -64,7 +68,7 @@ public abstract class GeneratedOrderTemplateDataGeneration
         DocmosisJudgeAndLegalAdvisor docmosisJudgeAndLegalAdvisor
             = caseDataExtractionService.getJudgeAndLegalAdvisor(judgeAndLegalAdvisor);
 
-        return orderBuilder
+        return docmosisGeneratedOrder.toBuilder()
             .orderType(orderType)
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .courtName(caseDataExtractionService.getCourtName(caseData.getCaseLocalAuthority()))

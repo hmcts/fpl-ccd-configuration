@@ -27,27 +27,28 @@ public class SupervisionOrderGenerationService extends GeneratedOrderTemplateDat
 
     private final Time time;
 
-    @SuppressWarnings("rawtypes")
     @Override
-    DocmosisGeneratedOrderBuilder populateCustomOrderFields(CaseData caseData) {
+    DocmosisGeneratedOrder populateCustomOrderFields(CaseData caseData) {
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
         GeneratedOrderSubtype subtype = orderTypeAndDocument.getSubtype();
         InterimEndDate interimEndDate = caseData.getInterimEndDate();
         int childrenCount = getChildrenCount(caseData);
 
-        DocmosisGeneratedOrderBuilder<?, ?> orderBuilder = DocmosisGeneratedOrder.builder();
+        DocmosisGeneratedOrder docmosisGeneratedOrder = DocmosisGeneratedOrder.builder().build();
         if (subtype == INTERIM) {
-            return orderBuilder
+            return docmosisGeneratedOrder.toBuilder()
                 .orderTitle(getFullOrderType(orderTypeAndDocument))
                 .childrenAct("Section 38 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
                 .orderDetails(getFormattedInterimSupervisionOrderDetails(childrenCount,
-                    caseData.getCaseLocalAuthority(), interimEndDate));
+                    caseData.getCaseLocalAuthority(), interimEndDate))
+                .build();
         } else {
-            return orderBuilder
+            return docmosisGeneratedOrder.toBuilder()
                 .orderTitle(getFullOrderType(orderTypeAndDocument.getType()))
                 .childrenAct("Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
                 .orderDetails(getFormattedFinalSupervisionOrderDetails(childrenCount,
-                    caseData.getCaseLocalAuthority(), caseData.getOrderMonths()));
+                    caseData.getCaseLocalAuthority(), caseData.getOrderMonths()))
+                .build();
         }
     }
 

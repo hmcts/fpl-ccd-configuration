@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder.DocmosisGeneratedOrderBuilder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -57,38 +58,39 @@ abstract class AbstractOrderGenerationServiceTest {
             ));
     }
 
-    DocmosisGeneratedOrderBuilder<?, ?> enrichWithStandardData(GeneratedOrderType type,
+    DocmosisGeneratedOrder enrichWithStandardData(GeneratedOrderType type,
                                                                OrderStatus orderStatus,
-                                                               DocmosisGeneratedOrderBuilder orderBuilder) {
-        return enrichWithStandardData(type, null, orderStatus, orderBuilder);
+                                                               DocmosisGeneratedOrder docmosisGeneratedOrder) {
+        return enrichWithStandardData(type, null, orderStatus, docmosisGeneratedOrder);
     }
 
-    DocmosisGeneratedOrderBuilder<?, ?> enrichWithStandardData(GeneratedOrderType type,
+    DocmosisGeneratedOrder enrichWithStandardData(GeneratedOrderType type,
                                                                GeneratedOrderSubtype subtype,
                                                                OrderStatus orderStatus,
-                                                               DocmosisGeneratedOrderBuilder orderBuilder) {
+                                                               DocmosisGeneratedOrder docmosisGeneratedOrder) {
 
         DocmosisJudgeAndLegalAdvisor judgeAndLegalAdvisor = DocmosisJudgeAndLegalAdvisor.builder()
             .judgeTitleAndName("Her Honour Judge Judy")
             .legalAdvisorName("Peter Parker")
             .build();
 
-        orderBuilder
+        docmosisGeneratedOrder.toBuilder()
             .orderType(type)
             .furtherDirections(type != BLANK_ORDER ? "Example Directions" : "")
             .familyManCaseNumber("123")
             .courtName("Family Court")
             .dateOfIssue(formatLocalDateToString(time.now().toLocalDate(), "d MMMM yyyy"))
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
-            .crest("[userImage:crest.png]");
+            .crest("[userImage:crest.png]")
+            .build();
 
         if (orderStatus == DRAFT) {
-            orderBuilder.draftbackground(DRAFT_WATERMARK.getValue()).build();
+            docmosisGeneratedOrder.toBuilder().draftbackground(DRAFT_WATERMARK.getValue()).build();
         } else if (orderStatus == SEALED) {
-            orderBuilder.courtseal(COURT_SEAL.getValue()).build();
+            docmosisGeneratedOrder.toBuilder().courtseal(COURT_SEAL.getValue()).build();
         }
 
-        return orderBuilder;
+        return docmosisGeneratedOrder;
     }
 
     List<DocmosisChild> getChildren() {

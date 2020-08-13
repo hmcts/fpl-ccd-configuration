@@ -18,30 +18,30 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CareOrderGenerationService extends GeneratedOrderTemplateDataGeneration {
 
-    @SuppressWarnings("rawtypes")
     @Override
-    DocmosisGeneratedOrderBuilder populateCustomOrderFields(CaseData caseData) {
+    DocmosisGeneratedOrder populateCustomOrderFields(CaseData caseData) {
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
         GeneratedOrderSubtype subtype = orderTypeAndDocument.getSubtype();
         InterimEndDate interimEndDate = caseData.getInterimEndDate();
 
-        DocmosisGeneratedOrderBuilder<?, ?> orderBuilder = DocmosisGeneratedOrder.builder();
+        DocmosisGeneratedOrder docmosisGeneratedOrder = DocmosisGeneratedOrder.builder().build();
         if (subtype == INTERIM) {
-            orderBuilder
+            docmosisGeneratedOrder.toBuilder()
                 .orderTitle(getFullOrderType(orderTypeAndDocument))
                 .childrenAct("Section 38 Children Act 1989");
         } else if (subtype == FINAL) {
-            orderBuilder
+            docmosisGeneratedOrder.toBuilder()
                 .orderTitle(getFullOrderType(orderTypeAndDocument.getType()))
                 .childrenAct("Section 31 Children Act 1989");
         }
 
         int childrenCount = getChildrenCount(caseData);
 
-        return orderBuilder
+        return docmosisGeneratedOrder.toBuilder()
             .localAuthorityName(getLocalAuthorityName(caseData.getCaseLocalAuthority()))
             .orderDetails(getFormattedCareOrderDetails(childrenCount, caseData.getCaseLocalAuthority(),
-                orderTypeAndDocument.isInterim(), interimEndDate));
+                orderTypeAndDocument.isInterim(), interimEndDate))
+            .build();
     }
 
     private String getFormattedCareOrderDetails(int numOfChildren,
