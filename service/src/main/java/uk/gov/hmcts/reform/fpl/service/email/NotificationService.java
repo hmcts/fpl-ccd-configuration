@@ -11,6 +11,8 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.fpl.utils.MaskHelper.maskEmail;
+
 @Slf4j
 @Service
 public class NotificationService {
@@ -28,11 +30,11 @@ public class NotificationService {
     }
 
     public void sendEmail(String templateId, String email, Map<String, Object> parameters, String reference) {
-        log.debug("Sending email (with template id: {}) to {}", templateId, email);
+        log.debug("Sending email (with template id: {}) to {}", templateId, maskEmail(email));
         try {
             notificationClient.sendEmail(templateId, email, parameters, environment + "/" + reference);
         } catch (NotificationClientException e) {
-            log.error("Failed to send email (with template id: {}) to {}", templateId, email, e);
+            log.error("Failed to send email (with template id: {}) to {}", templateId, maskEmail(email), e);
         }
     }
 
