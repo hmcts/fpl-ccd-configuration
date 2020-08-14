@@ -57,6 +57,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
     private static DocumentReference applicationDocument;
     private static DocumentReference latestC2Document;
     private static final byte[] C2_BINARY = {5, 4, 3, 2, 1};
+    private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 
     @MockBean
     private NotificationClient notificationClient;
@@ -92,14 +93,14 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
             eq(C2_UPLOAD_NOTIFICATION_TEMPLATE),
             eq("admin@family-court.com"),
             anyMap(),
-            eq(CASE_ID.toString())
+            eq(NOTIFICATION_REFERENCE)
         );
 
         verify(notificationClient, never()).sendEmail(
             eq(C2_UPLOAD_NOTIFICATION_TEMPLATE),
             eq("FamilyPublicLaw+ctsc@gmail.com"),
             anyMap(),
-            eq(CASE_ID.toString())
+            eq(NOTIFICATION_REFERENCE)
         );
     }
 
@@ -111,14 +112,14 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
             eq(C2_UPLOAD_NOTIFICATION_TEMPLATE),
             eq("admin@family-court.com"),
             anyMap(),
-            eq(CASE_ID.toString())
+            eq(NOTIFICATION_REFERENCE)
         );
 
         verify(notificationClient).sendEmail(
             eq(C2_UPLOAD_NOTIFICATION_TEMPLATE),
             eq("FamilyPublicLaw+ctsc@gmail.com"),
             anyMap(),
-            eq(CASE_ID.toString())
+            eq(NOTIFICATION_REFERENCE)
         );
     }
 
@@ -130,14 +131,14 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
             C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
             "admin@family-court.com",
             expectedPbaPaymentNotTakenNotificationParams(),
-            CASE_ID.toString()
+            NOTIFICATION_REFERENCE
         );
 
         verify(notificationClient, never()).sendEmail(
             C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
             "FamilyPublicLaw+ctsc@gmail.com",
             expectedPbaPaymentNotTakenNotificationParams(),
-            CASE_ID.toString()
+            NOTIFICATION_REFERENCE
         );
     }
 
@@ -149,14 +150,14 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
             C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
             "admin@family-court.com",
             expectedPbaPaymentNotTakenNotificationParams(),
-            CASE_ID.toString()
+            NOTIFICATION_REFERENCE
         );
 
         verify(notificationClient).sendEmail(
             C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
             "FamilyPublicLaw+ctsc@gmail.com",
             expectedPbaPaymentNotTakenNotificationParams(),
-            CASE_ID.toString()
+            NOTIFICATION_REFERENCE
         );
     }
 
@@ -214,13 +215,13 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
             APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
             "local-authority@local-authority.com",
             Map.of("applicationType", "C2"),
-            "12345");
+            NOTIFICATION_REFERENCE);
 
         verify(notificationClient).sendEmail(
             APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
             "FamilyPublicLaw+ctsc@gmail.com",
             expectedCtscNotificationParameters(),
-            "12345");
+            NOTIFICATION_REFERENCE);
     }
 
     @Test
@@ -237,13 +238,13 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
             APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
             "local-authority@local-authority.com",
             Map.of("applicationType", "C2"),
-            "12345");
+            NOTIFICATION_REFERENCE);
 
         verify(notificationClient).sendEmail(
             APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
             "FamilyPublicLaw+ctsc@gmail.com",
             expectedCtscNotificationParameters(),
-            "12345");
+            NOTIFICATION_REFERENCE);
     }
 
     @Test

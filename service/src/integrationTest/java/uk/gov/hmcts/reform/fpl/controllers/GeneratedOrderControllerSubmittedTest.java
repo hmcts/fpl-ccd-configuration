@@ -53,6 +53,7 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
     private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
     private static final String CASE_ID = "12345";
     private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
+    private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 
     private final DocumentReference lastOrderDocumentReference = DocumentReference.builder()
         .filename("C21 3.pdf")
@@ -100,25 +101,25 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES),
             eq(EMAIL_SERVED_REPRESENTATIVE_ADDRESS),
             eqJson(getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true)),
-            eq(CASE_ID));
+            eq(NOTIFICATION_REFERENCE));
 
         verify(notificationClient).sendEmail(
             eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
             eq(DIGITAL_SERVED_REPRESENTATIVE_ADDRESS),
             eqJson(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true)),
-            eq(CASE_ID));
+            eq(NOTIFICATION_REFERENCE));
 
         verify(notificationClient).sendEmail(
             eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
             eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             eqJson(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true)),
-            eq(CASE_ID));
+            eq(NOTIFICATION_REFERENCE));
 
         verify(notificationClient).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
             eq(ADMIN_EMAIL_ADDRESS),
             eqJson(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true)),
-            eq(CASE_ID));
+            eq(NOTIFICATION_REFERENCE));
 
         verifySendDocumentEventTriggered();
     }
@@ -134,7 +135,7 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
             eq(CTSC_EMAIL_ADDRESS),
             eqJson(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true)),
-            eq(CASE_ID));
+            eq(NOTIFICATION_REFERENCE));
 
         verify(notificationClient, never()).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),

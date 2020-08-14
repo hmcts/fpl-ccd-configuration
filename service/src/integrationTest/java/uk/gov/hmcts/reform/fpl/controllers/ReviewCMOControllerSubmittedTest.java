@@ -63,6 +63,7 @@ class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
     private static final String ADMIN_EMAIL = "admin@family-court.com";
     private static final String CAFCASS_EMAIL = "cafcass@cafcass.com";
     private static final DocumentReference order = testDocumentReference();
+    private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 
     @MockBean
     private NotificationClient notificationClient;
@@ -108,35 +109,35 @@ class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
                 eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
                 eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
                 anyMap(),
-                eq(String.valueOf(CASE_ID))
+                eq(NOTIFICATION_REFERENCE)
             );
 
             verify(notificationClient).sendEmail(
                 eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
                 eq(CAFCASS_EMAIL),
                 anyMap(),
-                eq(String.valueOf(CASE_ID))
+                eq(NOTIFICATION_REFERENCE)
             );
 
             verify(notificationClient).sendEmail(
                 eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
                 eq("robert@example.com"),
                 anyMap(),
-                eq(String.valueOf(CASE_ID))
+                eq(NOTIFICATION_REFERENCE)
             );
 
             verify(notificationClient).sendEmail(
                 eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
                 eq("charlie@example.com"),
                 anyMap(),
-                eq(String.valueOf(CASE_ID))
+                eq(NOTIFICATION_REFERENCE)
             );
 
             verify(notificationClient).sendEmail(
                 eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
                 eq(ADMIN_EMAIL),
                 anyMap(),
-                eq(String.valueOf(CASE_ID))
+                eq(NOTIFICATION_REFERENCE)
             );
 
             verifyNoMoreInteractions(notificationClient);
@@ -161,7 +162,7 @@ class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
             eq(CMO_REJECTED_BY_JUDGE_TEMPLATE),
             eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             anyMap(),
-            eq(String.valueOf(CASE_ID))
+            eq(NOTIFICATION_REFERENCE)
         ));
 
         verifyNoMoreInteractions(notificationClient);
