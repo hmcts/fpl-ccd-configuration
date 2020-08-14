@@ -60,6 +60,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
     private static DocumentReference applicationDocument;
     private static DocumentReference latestC2Document;
     private static final byte[] C2_BINARY = {5, 4, 3, 2, 1};
+    private static final String AUTH_TOKEN = "Bearer token";
 
     @MockBean
     private NotificationClient notificationClient;
@@ -79,7 +80,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setup() {
-        given(idamClient.getUserInfo((any()))).willReturn(USER_INFO_CAFCASS);
+        given(idamClient.getUserInfo((AUTH_TOKEN))).willReturn(USER_INFO_CAFCASS);
 
         applicationDocument = testDocumentReference();
         latestC2Document = testDocumentReference();
