@@ -25,13 +25,14 @@ import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.markdown.MarkdownData;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
 import uk.gov.hmcts.reform.fpl.service.markdown.CaseSubmissionMarkdownService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -53,7 +54,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInReturnedState;
 public class CaseSubmissionController {
     private static final String DISPLAY_AMOUNT_TO_PAY = "displayAmountToPay";
     private static final String CONSENT_TEMPLATE = "I, %s, believe that the facts stated in this application are true.";
-    private final UserDetailsService userDetailsService;
     private final CaseSubmissionService caseSubmissionService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final ObjectMapper mapper;
@@ -63,6 +63,8 @@ public class CaseSubmissionController {
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final CaseSubmissionMarkdownService markdownService;
     private final CaseSubmissionChecker caseSubmissionChecker;
+    private final IdamClient idamClient;
+    private final RequestData requestData;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
@@ -90,7 +92,7 @@ public class CaseSubmissionController {
                 }
             }
 
-            String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName());
+            String label = String.format(CONSENT_TEMPLATE, idamClient.getUserInfo(requestData.authorisation()).getName());
             data.put("submissionConsentLabel", label);
         }
 

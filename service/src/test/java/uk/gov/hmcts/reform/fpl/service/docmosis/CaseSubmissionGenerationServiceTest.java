@@ -41,10 +41,12 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearing;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingPreferences;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisInternationalElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRisks;
-import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
-import uk.gov.hmcts.reform.fpl.service.docmosis.CaseSubmissionGenerationService;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
+import uk.gov.hmcts.reform.idam.client.IdamApi;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.time.LocalDate;
 
@@ -74,9 +76,16 @@ class CaseSubmissionGenerationServiceTest {
     private static final LocalDate NOW = now();
 
     private static final String FORMATTED_DATE = formatLocalDateToString(NOW, DATE);
+    private static final String AUTH_TOKEN = "Bearer token";
 
     @MockBean
-    private UserDetailsService userDetailsService;
+    private IdamClient idamClient;
+
+    @MockBean
+    private RequestData requestData;
+
+    @MockBean
+    private IdamApi idamApi;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -89,7 +98,9 @@ class CaseSubmissionGenerationServiceTest {
     @BeforeEach
     void init() {
         givenCaseData = prepareCaseData();
-        given(userDetailsService.getUserName()).willReturn("Professor");
+        given(requestData.authorisation()).willReturn(AUTH_TOKEN);
+        given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(UserInfo.builder().name("Professor").build());
+        given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(UserInfo.builder().name("Professor").build());
     }
 
     @Test
