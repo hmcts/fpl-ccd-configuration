@@ -22,6 +22,10 @@ public class FeatureToggleService {
         this.ldUserKey = ldUserKey;
     }
 
+    public boolean isTaskListInProgressTagsEnabled() {
+        return ldClient.boolVariation("task-list-in-progress-tags", createLDUser(), false);
+    }
+
     public boolean isCtscEnabled(String localAuthorityName) {
         return ldClient.boolVariation("CTSC",
             createLDUser(Map.of("localAuthorityName", LDValue.of(localAuthorityName))),false);
