@@ -110,7 +110,7 @@ class FeatureToggleServiceTest {
         givenToggle(toggleState);
 
         assertThat(service.isAllocatedJudgeNotificationEnabled(NOTICE_OF_PROCEEDINGS))
-            .isEqualTo(toggleState);
+                .isEqualTo(toggleState);
         verify(ldClient).boolVariation(eq("judge-notification"), any(LDUser.class), eq(false));
     }
 
@@ -133,9 +133,18 @@ class FeatureToggleServiceTest {
     }
 
     @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForTaskListInProgressTags(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isTaskListInProgressTagsEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(eq("task-list-in-progress-tags"), any(LDUser.class), eq(false));
+    }
+
+    @ParameterizedTest
     @MethodSource("userAttributesTestSource")
     void shouldNotAccumulateAttributesBetweenRequests(Runnable functionToTest, Runnable accumulateFunction,
-                                                 List<UserAttribute> attributes) {
+                                                      List<UserAttribute> attributes) {
         accumulateFunction.run();
         functionToTest.run();
 
@@ -145,26 +154,26 @@ class FeatureToggleServiceTest {
 
     private static Stream<Arguments> userAttributesTestSource() {
         return Stream.of(
-            Arguments.of(
-                (Runnable) () -> service.isCloseCaseEnabled(),
-                (Runnable) () -> service.isCtscReportEnabled(),
-                buildAttributes()),
-            Arguments.of(
-                (Runnable) () -> service.isCtscReportEnabled(),
-                (Runnable) () -> service.isCtscEnabled("test name"),
-                buildAttributes("report")),
-            Arguments.of(
-                (Runnable) () -> service.isAllocatedJudgeNotificationEnabled(SDO),
-                (Runnable) () -> service.isCtscReportEnabled(),
-                buildAttributes("allocatedJudgeNotificationType")),
-            Arguments.of(
-                (Runnable) () -> service.isCtscEnabled("test name"),
-                (Runnable) () -> service.isCtscReportEnabled(),
-                buildAttributes("localAuthorityName")),
-            Arguments.of(
-                (Runnable) () -> service.isExpertUIEnabled(),
-                (Runnable) () -> service.isCtscReportEnabled(),
-                buildAttributes())
+                Arguments.of(
+                        (Runnable) () -> service.isCloseCaseEnabled(),
+                        (Runnable) () -> service.isCtscReportEnabled(),
+                        buildAttributes()),
+                Arguments.of(
+                        (Runnable) () -> service.isCtscReportEnabled(),
+                        (Runnable) () -> service.isCtscEnabled("test name"),
+                        buildAttributes("report")),
+                Arguments.of(
+                        (Runnable) () -> service.isAllocatedJudgeNotificationEnabled(SDO),
+                        (Runnable) () -> service.isCtscReportEnabled(),
+                        buildAttributes("allocatedJudgeNotificationType")),
+                Arguments.of(
+                        (Runnable) () -> service.isCtscEnabled("test name"),
+                        (Runnable) () -> service.isCtscReportEnabled(),
+                        buildAttributes("localAuthorityName")),
+                Arguments.of(
+                        (Runnable) () -> service.isExpertUIEnabled(),
+                        (Runnable) () -> service.isCtscReportEnabled(),
+                        buildAttributes())
         );
     }
 
@@ -173,8 +182,8 @@ class FeatureToggleServiceTest {
 
         attributes.add(UserAttribute.forName("timestamp"));
         Arrays.stream(additionalAttributes)
-            .map(UserAttribute::forName)
-            .forEach(attributes::add);
+                .map(UserAttribute::forName)
+                .forEach(attributes::add);
 
         return attributes;
     }

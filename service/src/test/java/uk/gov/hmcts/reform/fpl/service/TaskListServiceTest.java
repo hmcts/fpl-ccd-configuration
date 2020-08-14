@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
 import uk.gov.hmcts.reform.fpl.model.tasklist.TaskState;
-import uk.gov.hmcts.reform.fpl.service.validators.EventChecker;
+import uk.gov.hmcts.reform.fpl.service.validators.EventsChecker;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,7 +47,7 @@ import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_AVAILABLE;
 class TaskListServiceTest {
 
     @Mock
-    private EventChecker eventChecker;
+    private EventsChecker eventsChecker;
 
     @InjectMocks
     private TaskListService taskListService;
@@ -56,29 +56,32 @@ class TaskListServiceTest {
 
     @Test
     void shouldReturnTasksInProgress() {
-        when(eventChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(false);
-        when(eventChecker.isAvailable(any(Event.class), eq(caseData))).thenReturn(true);
+        when(eventsChecker.isInProgress(any(Event.class), eq(caseData))).thenReturn(true);
+        when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(false);
 
         final List<Task> tasks = taskListService.getTasksForOpenCase(caseData);
 
         assertThat(tasks).containsExactlyInAnyOrderElementsOf(getTasks(IN_PROGRESS));
+
+        verify(eventsChecker, never()).isAvailable(any(), any());
     }
 
     @Test
     void shouldReturnCompletedTasks() {
-        when(eventChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(true);
+        when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(true);
 
         final List<Task> tasks = taskListService.getTasksForOpenCase(caseData);
 
         assertThat(tasks).containsExactlyInAnyOrderElementsOf(getTasks(COMPLETED));
 
-        verify(eventChecker, never()).isAvailable(any(), any());
+        verify(eventsChecker, never()).isAvailable(any(), any());
+        verify(eventsChecker, never()).isInProgress(any(), any());
     }
 
     @Test
     void shouldReturnNotAvailableTasks() {
-        when(eventChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(false);
-        when(eventChecker.isAvailable(any(Event.class), eq(caseData))).thenReturn(false);
+        when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(false);
+        when(eventsChecker.isAvailable(any(Event.class), eq(caseData))).thenReturn(false);
 
         final List<Task> tasks = taskListService.getTasksForOpenCase(caseData);
 
@@ -87,23 +90,23 @@ class TaskListServiceTest {
 
     private List<Task> getTasks(TaskState state) {
         return Stream.of(
-            ORDERS_SOUGHT,
-            HEARING_URGENCY,
-            GROUNDS,
-            RISK_AND_HARM,
-            FACTORS_AFFECTING_PARENTING,
-            ORGANISATION_DETAILS,
-            CHILDREN,
-            RESPONDENTS,
-            ALLOCATION_PROPOSAL,
-            OTHER_PROCEEDINGS,
-            INTERNATIONAL_ELEMENT,
-            OTHERS,
-            COURT_SERVICES,
-            DOCUMENTS,
-            CASE_NAME,
-            SUBMIT_APPLICATION)
-            .map(event -> task(event, state))
-            .collect(Collectors.toList());
+                ORDERS_SOUGHT,
+                HEARING_URGENCY,
+                GROUNDS,
+                RISK_AND_HARM,
+                FACTORS_AFFECTING_PARENTING,
+                ORGANISATION_DETAILS,
+                CHILDREN,
+                RESPONDENTS,
+                ALLOCATION_PROPOSAL,
+                OTHER_PROCEEDINGS,
+                INTERNATIONAL_ELEMENT,
+                OTHERS,
+                COURT_SERVICES,
+                DOCUMENTS,
+                CASE_NAME,
+                SUBMIT_APPLICATION)
+                .map(event -> task(event, state))
+                .collect(Collectors.toList());
     }
 }

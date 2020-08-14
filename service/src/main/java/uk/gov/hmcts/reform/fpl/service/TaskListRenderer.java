@@ -38,9 +38,28 @@ import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskSection.newSection;
 public class TaskListRenderer {
 
     private final String imagesBaseUrl;
+    private final FeatureToggleService featureToggleService;
 
-    public TaskListRenderer(@Value("${resources.images.baseUrl}") String imagesBaseUrl) {
+    public TaskListRenderer(
+            @Value("${resources.images.baseUrl}") String imagesBaseUrl,
+            FeatureToggleService featureToggleService) {
         this.imagesBaseUrl = imagesBaseUrl;
+        this.featureToggleService = featureToggleService;
+    }
+
+    //TODO consider templating solution like mustache
+    public String render(List<Task> allTasks) {
+        final boolean showInProgressTag = featureToggleService.isTaskListInProgressTagsEnabled();
+        final List<String> lines = new LinkedList<>();
+
+        lines.add("<div class='width-50'>");
+
+        groupInSections(allTasks)
+                .forEach(section -> lines.addAll(renderSection(section, showInProgressTag)));
+
+        lines.add("</div>");
+
+        return String.join("\n\n", lines);
     }
 
     private List<TaskSection> groupInSections(List<Task> allTasks) {
@@ -92,21 +111,7 @@ public class TaskListRenderer {
                 sentApplication);
     }
 
-    //TODO consider templating solution like mustache
-    public String render(List<Task> allTasks) {
-        final List<String> lines = new LinkedList<>();
-
-        lines.add("<div class='width-50'>");
-
-        groupInSections(allTasks)
-                .forEach(section -> lines.addAll(renderSection(section)));
-
-        lines.add("</div>");
-
-        return String.join("\n\n", lines);
-    }
-
-    private List<String> renderSection(TaskSection sec) {
+    private List<String> renderSection(TaskSection sec, boolean showInProgressTag) {
         final List<String> section = new LinkedList<>();
 
         section.add(renderNewLine());
@@ -117,19 +122,26 @@ public class TaskListRenderer {
 
         section.add(renderHorizontalLine());
         sec.getTasks().forEach(task -> {
-            section.addAll(renderTask(task));
+            section.addAll(renderTask(task, showInProgressTag));
             section.add(renderHorizontalLine());
         });
 
         return section;
     }
 
-    private List<String> renderTask(Task task) {
+    private List<String> renderTask(Task task, boolean showInProgress) {
         final List<String> lines = new LinkedList<>();
 
         switch (task.getState()) {
             case NOT_AVAILABLE:
                 lines.add(renderDisabledLink(task) + renderImage("cannot-send-yet.png", "Cannot send yet"));
+                break;
+            case IN_PROGRESS:
+                if (showInProgress) {
+                    lines.add(renderLink(task) + renderImage("in-progress.png", "In progress"));
+                } else {
+                    lines.add(renderLink(task));
+                }
                 break;
             case COMPLETED:
                 lines.add(renderLink(task) + renderImage("information-added.png", "Information added"));
