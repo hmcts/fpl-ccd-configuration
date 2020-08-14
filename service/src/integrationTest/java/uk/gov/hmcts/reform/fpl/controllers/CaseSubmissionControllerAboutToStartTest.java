@@ -15,9 +15,10 @@ import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
-import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -41,9 +42,10 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 @WebMvcTest(CaseSubmissionController.class)
 @OverrideAutoConfiguration(enabled = true)
 class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
+    private static final String AUTH_TOKEN = "Bearer token";
 
     @MockBean
-    private UserDetailsService userDetailsService;
+    private IdamClient idamClient;
 
     @MockBean
     private FeeService feeService;
@@ -62,7 +64,7 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
 
     @BeforeEach
     void mocking() {
-        given(userDetailsService.getUserName()).willReturn("Emma Taylor");
+        given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(UserInfo.builder().name("Emma Taylor").build());
         given(caseSubmissionService.generateSubmittedFormPDF(any(), eq(true)))
             .willReturn(document);
         given(uploadDocumentService.uploadPDF(DOCUMENT_CONTENT, "2313.pdf"))

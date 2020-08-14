@@ -2,13 +2,14 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Service;
-
 import uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.util.List;
 import java.util.Map;
@@ -29,13 +30,16 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
  */
 @Service
 public class PrepareDirectionsForDataStoreService {
-    private final UserDetailsService userDetailsService;
     private final CommonDirectionService directionService;
+    private final IdamClient idamClient;
+    private final RequestData requestData;
 
-    public PrepareDirectionsForDataStoreService(UserDetailsService userDetailsService,
-                                                CommonDirectionService directionService) {
-        this.userDetailsService = userDetailsService;
+    public PrepareDirectionsForDataStoreService(IdamClient idamClient,
+                                                CommonDirectionService directionService,
+                                                RequestData requestData) {
+        this.idamClient = idamClient;
         this.directionService = directionService;
+        this.requestData = requestData;
     }
 
     /**
@@ -184,7 +188,7 @@ public class PrepareDirectionsForDataStoreService {
 
     private String getUsername(Element<DirectionResponse> element) {
         if (isEmpty(element.getValue().getResponder())) {
-            return userDetailsService.getUserName();
+            return idamClient.getUserInfo(requestData.authorisation()).getName();
         }
         return element.getValue().getResponder();
     }

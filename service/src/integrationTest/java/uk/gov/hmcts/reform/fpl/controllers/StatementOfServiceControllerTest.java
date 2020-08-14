@@ -8,7 +8,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.util.Map;
 
@@ -19,9 +20,10 @@ import static org.mockito.BDDMockito.given;
 @WebMvcTest(StatementOfServiceController.class)
 @OverrideAutoConfiguration(enabled = true)
 class StatementOfServiceControllerTest extends AbstractControllerTest {
+    private static final String AUTH_TOKEN = "Bearer token";
 
     @MockBean
-    private UserDetailsService userDetailsService;
+    private IdamClient idamClient;
 
     StatementOfServiceControllerTest() {
         super("statement-of-service");
@@ -29,7 +31,7 @@ class StatementOfServiceControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void mockUserNameRetrieval() {
-        given(userDetailsService.getUserName()).willReturn("Emma Taylor");
+        given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(UserInfo.builder().name("Emma Taylor").build());
     }
 
     @Test

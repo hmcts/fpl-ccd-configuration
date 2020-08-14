@@ -13,8 +13,9 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
-import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.util.List;
 import java.util.Map;
@@ -37,9 +38,10 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
 
     private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
+    private static final String AUTH_TOKEN = "Bearer token";
 
     @MockBean
-    private UserDetailsService userDetailsService;
+    private IdamClient idamClient;
 
     @MockBean
     private UploadDocumentService uploadDocumentService;
@@ -58,8 +60,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @BeforeEach
     void mocking() {
-        given(userDetailsService.getUserName())
-            .willReturn("Emma Taylor");
+        given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(UserInfo.builder().name("Emma Taylor").build());
         given(caseSubmissionService.generateSubmittedFormPDF(any(), eq(false)))
             .willReturn(document);
         given(uploadDocumentService.uploadPDF(DOCUMENT_CONTENT, "2313.pdf"))

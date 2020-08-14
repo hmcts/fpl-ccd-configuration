@@ -13,8 +13,9 @@ import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.util.List;
 import java.util.Map;
@@ -34,18 +35,19 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 @OverrideAutoConfiguration(enabled = true)
 class ComplyOnBehalfControllerAboutToSubmitTest extends AbstractControllerTest {
     private static final UUID DIRECTION_ID = randomUUID();
-
-    @MockBean
-    private UserDetailsService userDetailsService;
-
     private static final String AUTH_TOKEN = "Bearer token";
 
     ComplyOnBehalfControllerAboutToSubmitTest() {
         super("comply-on-behalf");
     }
 
+    @MockBean
+    private IdamClient idamClient;
+
     @Test
     void shouldAddResponsesOnBehalfOfPartyWhenCompliedWith() {
+        given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(UserInfo.builder().build());
+
         CallbackRequest request = CallbackRequest.builder()
             .eventId(COMPLY_ON_BEHALF_COURT.toString())
             .caseDetails(CaseDetails.builder()
@@ -72,7 +74,7 @@ class ComplyOnBehalfControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldAddResponsesOnBehalfOfWhenOtherEvent() {
-        given(userDetailsService.getUserName()).willReturn("Emma Taylor");
+        given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(UserInfo.builder().name("Emma Taylor").build());
 
         CallbackRequest request = CallbackRequest.builder()
             .eventId(COMPLY_OTHERS.toString())
