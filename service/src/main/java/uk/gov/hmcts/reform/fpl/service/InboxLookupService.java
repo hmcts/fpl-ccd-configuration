@@ -41,7 +41,7 @@ public class InboxLookupService {
     }
 
     private String getSolicitorOrFallbackEmail(final Solicitor solicitor) {
-        return Optional.of(solicitor)
+        return Optional.ofNullable(solicitor)
             .map(Solicitor::getEmail)
             .filter(StringUtils::isNotBlank)
             .orElse(fallbackInbox);
