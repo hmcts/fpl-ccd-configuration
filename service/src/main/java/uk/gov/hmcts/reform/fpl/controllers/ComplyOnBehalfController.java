@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForDataStoreService;
 import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForUsersService;
@@ -40,7 +39,6 @@ public class ComplyOnBehalfController {
     private final PrepareDirectionsForUsersService prepareDirectionsForUsersService;
     private final RespondentService respondentService;
     private final OthersService othersService;
-    private final RequestData requestData;
 
     //TODO: filter responses with different userName in aboutToStart. Code below makes the assumption that only
     // the same responder will be able edit a response. Currently any solicitor can amend a response but the
