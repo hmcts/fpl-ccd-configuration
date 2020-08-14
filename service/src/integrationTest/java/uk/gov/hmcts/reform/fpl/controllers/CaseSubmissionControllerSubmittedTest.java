@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -39,6 +40,7 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -75,8 +77,9 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     private static final String DISPLAY_AMOUNT_TO_PAY = "displayAmountToPay";
     private static final String SURVEY_LINK = "https://www.smartsurvey.co"
         + ".uk/s/preview/FamilyPublicLaw/44945E4F1F8CBEE3E10D79A4CED903";
+    private static final Long CASE_ID = nextLong();
+    private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 
-    private final Long caseId = nextLong();
 
     @MockBean
     private PaymentService paymentService;
@@ -104,7 +107,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         Map<String, Object> expectedHmctsParameters = getExpectedHmctsParameters(true);
         Map<String, Object> completeCafcassParameters = getExpectedCafcassParameters(true);
 
-        CaseDetails caseDetails = populatedCaseDetails(Map.of("id", caseId));
+        CaseDetails caseDetails = populatedCaseDetails(Map.of("id", CASE_ID));
         caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
 
         postSubmittedEvent(buildCallbackRequest(caseDetails, OPEN));
@@ -114,17 +117,17 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
                 HMCTS_COURT_SUBMISSION_TEMPLATE,
                 HMCTS_ADMIN_EMAIL,
                 expectedHmctsParameters,
-                caseId.toString());
+                NOTIFICATION_REFERENCE);
 
             verify(notificationClient).sendEmail(
                 CAFCASS_SUBMISSION_TEMPLATE,
                 CAFCASS_EMAIL,
                 completeCafcassParameters,
-                caseId.toString());
+                NOTIFICATION_REFERENCE);
         });
 
         checkThat(() -> verifyNoMoreInteractions(notificationClient));
-        verifyTaskListUpdated(caseId);
+        verifyTaskListUpdated(CASE_ID);
     }
 
     @Test
@@ -142,13 +145,13 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
                 HMCTS_COURT_SUBMISSION_TEMPLATE,
                 HMCTS_ADMIN_EMAIL,
                 expectedIncompleteHmctsParameters,
-                caseId.toString());
+                NOTIFICATION_REFERENCE);
 
             verify(notificationClient).sendEmail(
                 CAFCASS_SUBMISSION_TEMPLATE,
                 CAFCASS_EMAIL,
                 getExpectedCafcassParameters(false),
-                caseId.toString());
+                NOTIFICATION_REFERENCE);
         });
 
         checkThat(() -> verifyNoMoreInteractions(notificationClient));
@@ -169,7 +172,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
                 HMCTS_COURT_SUBMISSION_TEMPLATE,
                 CTSC_EMAIL,
                 expectedIncompleteHmctsParameters,
-                caseId.toString()
+                NOTIFICATION_REFERENCE
             ));
 
         checkThat(() ->
@@ -177,7 +180,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
                 HMCTS_COURT_SUBMISSION_TEMPLATE,
                 HMCTS_ADMIN_EMAIL,
                 expectedIncompleteHmctsParameters,
-                caseId.toString()
+                NOTIFICATION_REFERENCE
             ));
     }
 
@@ -190,7 +193,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         postSubmittedEvent(callbackRequest);
 
         checkUntil(() ->
-            verify(paymentService).makePaymentForCaseOrders(caseId,
+            verify(paymentService).makePaymentForCaseOrders(CASE_ID,
                 mapper.convertValue(caseDetails.getData(), CaseData.class)));
     }
 
@@ -221,13 +224,13 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
                 "local-authority@local-authority.com",
                 Map.of("applicationType", "C110a"),
-                caseId.toString());
+                NOTIFICATION_REFERENCE);
 
             verify(notificationClient).sendEmail(
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
                 "FamilyPublicLaw+ctsc@gmail.com",
                 expectedCtscNotificationParameters(),
-                caseId.toString());
+                NOTIFICATION_REFERENCE);
         });
     }
 
@@ -243,13 +246,13 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
                 "local-authority@local-authority.com",
                 Map.of("applicationType", "C110a"),
-                caseId.toString());
+                NOTIFICATION_REFERENCE);
 
             verify(notificationClient).sendEmail(
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
                 "FamilyPublicLaw+ctsc@gmail.com",
                 expectedCtscNotificationParameters(),
-                caseId.toString());
+                NOTIFICATION_REFERENCE);
         });
     }
 
@@ -266,13 +269,13 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
                 "local-authority@local-authority.com",
                 Map.of("applicationType", "C110a"),
-                caseId.toString());
+                NOTIFICATION_REFERENCE);
 
             verify(notificationClient).sendEmail(
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
                 "FamilyPublicLaw+ctsc@gmail.com",
                 expectedCtscNotificationParameters(),
-                caseId.toString());
+                NOTIFICATION_REFERENCE);
         });
     }
 
@@ -331,29 +334,34 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
                 eq(AMENDED_APPLICATION_RETURNED_ADMIN_TEMPLATE),
                 eq(adminEmail),
                 anyMap(),
-                eq(caseId.toString()));
+                eq(NOTIFICATION_REFERENCE));
 
             verify(notificationClient).sendEmail(
                 eq(AMENDED_APPLICATION_RETURNED_CAFCASS_TEMPLATE),
                 eq(CAFCASS_EMAIL),
                 anyMap(),
-                eq(caseId.toString()));
+                eq(NOTIFICATION_REFERENCE));
         }
 
         private void paymentNotTakenAndNoMoreEmailsSent() {
             verifyNoMoreInteractions(notificationClient);
             verifyNoMoreInteractions(paymentService);
         }
+
+        @AfterEach
+        void resetMocks() {
+            reset(notificationClient);
+        }
     }
 
     private Map<String, Object> expectedCtscNotificationParameters() {
         return Map.of("applicationType", "C110a",
-            "caseUrl", "http://fake-url/cases/case-details/" + caseId);
+            "caseUrl", "http://fake-url/cases/case-details/" + CASE_ID);
     }
 
     private CaseDetails enableSendToCtscOnCaseDetails(YesNo enableCtsc) {
         return CaseDetails.builder()
-            .id(caseId)
+            .id(CASE_ID)
             .data(new HashMap<>(Map.of(
                 "submittedForm", TestDataHelper.testDocumentReference(),
                 RETURN_APPLICATION, ReturnApplication.builder()
@@ -425,8 +433,8 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
 
         template.setLocalAuthority("Example Local Authority");
-        template.setReference(caseId.toString());
-        template.setCaseUrl(String.format("http://fake-url/cases/case-details/%s", caseId));
+        template.setReference(CASE_ID.toString());
+        template.setCaseUrl(String.format("http://fake-url/cases/case-details/%s", CASE_ID));
         template.setDataPresent(YES.getValue());
         template.setFullStop(NO.getValue());
         template.setOrdersAndDirections(List.of("Emergency protection order", "Contact with any named person"));

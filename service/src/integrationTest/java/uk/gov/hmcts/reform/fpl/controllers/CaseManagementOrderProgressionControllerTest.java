@@ -79,6 +79,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
     private static final String CTSC_ADMIN_INBOX = "FamilyPublicLaw+ctsc@gmail.com";
     private static final byte[] PDF = {1, 2, 3, 4, 5};
     private static final Long CASE_ID = 12345L;
+    private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 
     private LocalDateTime futureDate;
 
@@ -121,7 +122,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
         verify(notificationClient).sendEmail(
             eq(CMO_REJECTED_BY_JUDGE_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            anyMap(), eq(CASE_ID.toString()));
+            anyMap(), eq(NOTIFICATION_REFERENCE));
     }
 
     @Test
@@ -172,13 +173,13 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
             eq(CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE),
             eq("robert@example.com"),
             eqJson(expectedReviewByRepresentativesNotificationParameters(DIGITAL_SERVICE)),
-            eq(CASE_ID.toString()));
+            eq(NOTIFICATION_REFERENCE));
 
         verify(notificationClient).sendEmail(
             eq(CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE),
             eq("charlie@example.com"),
             eqJson(expectedReviewByRepresentativesNotificationParameters(EMAIL)),
-            eq(CASE_ID.toString()));
+            eq(NOTIFICATION_REFERENCE));
     }
 
     @Test
@@ -191,11 +192,11 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
         verify(notificationClient).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, HMCTS_ADMIN_INBOX,
-            expectedCMODraftCompleteNotificationParameters(), CASE_ID.toString());
+            expectedCMODraftCompleteNotificationParameters(), NOTIFICATION_REFERENCE);
 
         verify(notificationClient, never()).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, CTSC_ADMIN_INBOX,
-            expectedCMODraftCompleteNotificationParameters(), CASE_ID.toString());
+            expectedCMODraftCompleteNotificationParameters(), NOTIFICATION_REFERENCE);
     }
 
     @Test
@@ -208,11 +209,11 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
         verify(notificationClient, never()).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, HMCTS_ADMIN_INBOX,
-            expectedCMODraftCompleteNotificationParameters(), CASE_ID.toString());
+            expectedCMODraftCompleteNotificationParameters(), NOTIFICATION_REFERENCE);
 
         verify(notificationClient).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, CTSC_ADMIN_INBOX,
-            expectedCMODraftCompleteNotificationParameters(), CASE_ID.toString());
+            expectedCMODraftCompleteNotificationParameters(), NOTIFICATION_REFERENCE);
     }
 
     @Test

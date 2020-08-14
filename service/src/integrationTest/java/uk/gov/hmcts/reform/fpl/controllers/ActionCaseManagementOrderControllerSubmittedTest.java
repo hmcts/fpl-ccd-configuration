@@ -74,6 +74,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
     private static final UUID ID = randomUUID();
     private static final byte[] PDF = {1, 2, 3, 4, 5};
     private static final DocumentReference CMO_DOCUMENT = DocumentReference.buildFromDocument(document());
+    private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 
     @MockBean
     private DocumentDownloadService documentDownloadService;
@@ -113,31 +114,31 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
             eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
             eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             anyMap(),
-            eq(CASE_ID));
+            eq(NOTIFICATION_REFERENCE));
 
         verify(notificationClient).sendEmail(
             eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
             eq(DIGITAL_SERVED_REPRESENTATIVE_ADDRESS),
             anyMap(),
-            eq(CASE_ID));
+            eq(NOTIFICATION_REFERENCE));
 
         verify(notificationClient).sendEmail(
             eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
             eq(CAFCASS_EMAIL_ADDRESS),
             anyMap(),
-            eq(CASE_ID));
+            eq(NOTIFICATION_REFERENCE));
 
         verify(notificationClient).sendEmail(
             eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
             eq(EMAIL_SERVED_REPRESENTATIVE_ADDRESS),
             anyMap(),
-            eq(CASE_ID));
+            eq(NOTIFICATION_REFERENCE));
 
         verify(notificationClient).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
             eq(ADMIN_EMAIL_ADDRESS),
             eqJson(getExpectedCaseUrlParameters(CMO.getLabel(), true)),
-            eq(CASE_ID));
+            eq(NOTIFICATION_REFERENCE));
 
         verifyZeroInteractions(notificationClient);
     }
@@ -163,7 +164,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
             eq(CTSC_EMAIL_ADDRESS),
             eqJson(getExpectedCaseUrlParameters(CMO.getLabel(), true)),
-            eq(CASE_ID));
+            eq(NOTIFICATION_REFERENCE));
     }
 
     @Test
