@@ -92,7 +92,8 @@ public class CaseSubmissionController {
                 }
             }
 
-            String label = String.format(CONSENT_TEMPLATE, idamClient.getUserInfo(requestData.authorisation()).getName());
+            String label = String.format(CONSENT_TEMPLATE, idamClient.getUserInfo(requestData.authorisation())
+                .getName());
             data.put("submissionConsentLabel", label);
         }
 

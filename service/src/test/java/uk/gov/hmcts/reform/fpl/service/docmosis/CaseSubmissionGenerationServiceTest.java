@@ -44,7 +44,6 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRisks;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
-import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
@@ -84,9 +83,6 @@ class CaseSubmissionGenerationServiceTest {
     @MockBean
     private RequestData requestData;
 
-    @MockBean
-    private IdamApi idamApi;
-
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -99,7 +95,6 @@ class CaseSubmissionGenerationServiceTest {
     void init() {
         givenCaseData = prepareCaseData();
         given(requestData.authorisation()).willReturn(AUTH_TOKEN);
-        given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(UserInfo.builder().name("Professor").build());
         given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(UserInfo.builder().name("Professor").build());
     }
 

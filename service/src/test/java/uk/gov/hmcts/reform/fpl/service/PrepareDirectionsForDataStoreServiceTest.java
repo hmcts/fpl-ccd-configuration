@@ -52,6 +52,7 @@ class PrepareDirectionsForDataStoreServiceTest {
     @BeforeEach
     void setUp() {
         service = new PrepareDirectionsForDataStoreService(idamClient, new CommonDirectionService(), requestData);
+        given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(UserInfo.builder().name("Emma Taylor").build());
     }
 
     @Test
@@ -321,6 +322,7 @@ class PrepareDirectionsForDataStoreServiceTest {
 
         @BeforeEach
         void initValues() {
+            given(requestData.authorisation()).willReturn(AUTH_TOKEN);
             given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(UserInfo.builder().name("Emma Taylor").build());
 
             directionId = randomUUID();
