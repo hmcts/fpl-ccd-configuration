@@ -42,8 +42,6 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +59,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.CloseCaseReason.FINAL_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
+import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.concatUrlAndMostRecentUploadedDocumentPath;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
@@ -295,7 +294,8 @@ public class GeneratedOrderController {
             Map.of("documentToBeSent", mostRecentUploadedDocument)
         );
         applicationEventPublisher.publishEvent(new GeneratedOrderEvent(callbackRequest,
-            concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(
+            concatUrlAndMostRecentUploadedDocumentPath(
+                gatewayConfiguration.getUrl(),
                 mostRecentUploadedDocument.getBinaryUrl()),
             documentDownloadService.downloadDocument(mostRecentUploadedDocument.getBinaryUrl())));
     }
@@ -328,19 +328,6 @@ public class GeneratedOrderController {
         }
 
         return document;
-    }
-
-    private String concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(
-        final String mostRecentUploadedOrderDocumentUrl) {
-        final String gatewayUrl = gatewayConfiguration.getUrl();
-
-        try {
-            URI uri = new URI(mostRecentUploadedOrderDocumentUrl);
-            return gatewayUrl + uri.getPath();
-        } catch (URISyntaxException e) {
-            log.error(mostRecentUploadedOrderDocumentUrl + " url incorrect.", e);
-        }
-        return "";
     }
 
     private List<Element<Child>> getUpdatedChildren(CaseData caseData) {
