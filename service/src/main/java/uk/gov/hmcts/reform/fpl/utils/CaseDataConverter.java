@@ -17,7 +17,7 @@ public class CaseDataConverter {
 
     @SuppressWarnings("unchecked")
     public Map<String, Object> convertToMap(CaseData caseData) {
-        return (Map<String, Object>) mapper.convertValue(caseData, Map.class);
+        return mapper.convertValue(caseData, Map.class);
     }
 
     public CaseData convertToCaseData(CallbackRequest callbackRequest) {
