@@ -77,8 +77,8 @@ public class DraftOrdersController {
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = caseDataConverter.convertToCaseData(caseDetails);
+        CaseData caseData = caseDataConverter.convertToCaseData(callbackRequest);
+
         LocalDate dateOfIssue = time.now().toLocalDate();
         Order standardDirectionOrder = caseData.getStandardDirectionOrder();
 
@@ -131,8 +131,7 @@ public class DraftOrdersController {
 
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = caseDataConverter.convertToCaseData(caseDetails);
+        CaseData caseData = caseDataConverter.convertToCaseData(callbackRequest);
 
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(caseData.getJudgeAndLegalAdvisor(),
             caseData.getAllocatedJudge());
@@ -213,8 +212,7 @@ public class DraftOrdersController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = caseDataConverter.convertToCaseData(caseDetails);
+        CaseData caseData = caseDataConverter.convertToCaseData(callbackRequest);
 
         Order standardDirectionOrder = caseData.getStandardDirectionOrder();
         if (standardDirectionOrder.getOrderStatus() != OrderStatus.SEALED) {

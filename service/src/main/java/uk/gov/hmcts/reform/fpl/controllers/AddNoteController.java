@@ -30,8 +30,7 @@ public class AddNoteController {
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = caseDataConverter.convertToCaseData(caseDetails);
+        CaseData caseData = caseDataConverter.convertToCaseData(callbackRequest);
 
         CaseNote caseNote = service.buildCaseNote(requestData.authorisation(), caseData.getCaseNote());
         List<Element<CaseNote>> caseNotes = service.addNoteToList(caseNote, caseData.getCaseNotes());
