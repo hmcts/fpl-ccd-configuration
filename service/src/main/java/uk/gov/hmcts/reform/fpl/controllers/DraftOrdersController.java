@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +60,6 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAll
 @RequestMapping("/callback/draft-standard-directions")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DraftOrdersController {
-    private final ObjectMapper mapper;
     private final DocumentService documentService;
     private final StandardDirectionOrderGenerationService standardDirectionOrderGenerationService;
     private final CommonDirectionService commonDirectionService;
@@ -80,7 +78,7 @@ public class DraftOrdersController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = caseDataConverter.convertToCaseData(caseDetails);
         LocalDate dateOfIssue = time.now().toLocalDate();
         Order standardDirectionOrder = caseData.getStandardDirectionOrder();
 
@@ -100,7 +98,7 @@ public class DraftOrdersController {
     @PostMapping("/date-of-issue/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEventIssueDate(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = caseDataConverter.convertToCaseData(caseDetails);
 
         List<String> errors = validateGroupService.validateGroup(caseData, DateOfIssueGroup.class);
 
@@ -134,7 +132,7 @@ public class DraftOrdersController {
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = caseDataConverter.convertToCaseData(caseDetails);
 
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(caseData.getJudgeAndLegalAdvisor(),
             caseData.getAllocatedJudge());
@@ -163,7 +161,7 @@ public class DraftOrdersController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = caseDataConverter.convertToCaseData(caseDetails);
 
         List<String> validationErrors = orderValidationService.validate(caseData);
         if (!validationErrors.isEmpty()) {
@@ -215,7 +213,8 @@ public class DraftOrdersController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = caseDataConverter.convertToCaseData(caseDetails);
 
         Order standardDirectionOrder = caseData.getStandardDirectionOrder();
         if (standardDirectionOrder.getOrderStatus() != OrderStatus.SEALED) {

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseNoteService;
+import uk.gov.hmcts.reform.fpl.utils.CaseDataConverter;
 
 import java.util.List;
 
@@ -26,21 +26,23 @@ import java.util.List;
 public class AddNoteController {
     private final CaseNoteService service;
     private final RequestData requestData;
-    private final ObjectMapper mapper;
+    private final CaseDataConverter caseDataConverter;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = caseDataConverter.convertToCaseData(caseDetails);
 
         CaseNote caseNote = service.buildCaseNote(requestData.authorisation(), caseData.getCaseNote());
         List<Element<CaseNote>> caseNotes = service.addNoteToList(caseNote, caseData.getCaseNotes());
 
-        caseDetails.getData().put("caseNotes", caseNotes);
-        caseDetails.getData().remove("caseNote");
+        CaseData updatedCase = caseData.toBuilder()
+            .caseNotes(caseNotes)
+            .caseNote(null)
+            .build();
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
+            .data(caseDataConverter.convertToMap(updatedCase))
             .build();
     }
 }
