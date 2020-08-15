@@ -33,6 +33,7 @@ import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.StandardDirectionOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.CaseDataConverter;
 import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 
 import java.time.LocalDate;
@@ -72,6 +73,7 @@ public class DraftOrdersController {
     private final Time time;
     private final ValidateGroupService validateGroupService;
     private final StandardDirectionsService standardDirectionsService;
+    private final CaseDataConverter caseDataConverter;
 
     private static final String JUDGE_AND_LEGAL_ADVISOR_KEY = "judgeAndLegalAdvisor";
 
@@ -86,10 +88,12 @@ public class DraftOrdersController {
             dateOfIssue = parseLocalDateFromStringUsingFormat(standardDirectionOrder.getDateOfIssue(), DATE);
         }
 
-        caseDetails.getData().put("dateOfIssue", dateOfIssue);
+        CaseData updatedCaseData = caseData.toBuilder()
+            .dateOfIssue(dateOfIssue)
+            .build();
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
+            .data(caseDataConverter.convertToMap(updatedCaseData))
             .build();
     }
 
@@ -151,10 +155,8 @@ public class DraftOrdersController {
         order.setDirectionsToEmptyList();
         order.setOrderDocReferenceFromDocument(document);
 
-        caseDetails.getData().put("standardDirectionOrder", order);
-
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
+            .data(caseDataConverter.convertToMap(updated))
             .build();
     }
 
@@ -193,7 +195,11 @@ public class DraftOrdersController {
             .build();
 
         //add sdo to case data for document generation
-        CaseData updated = caseData.toBuilder().standardDirectionOrder(order).build();
+        CaseData updated = caseData.toBuilder()
+            .standardDirectionOrder(order)
+            .judgeAndLegalAdvisor(null)
+            .dateOfIssue(null)
+            .build();
 
         //generate sdo document
         DocmosisStandardDirectionOrder templateData = standardDirectionOrderGenerationService.getTemplateData(updated);
@@ -202,12 +208,8 @@ public class DraftOrdersController {
         //add document to order
         order.setOrderDocReferenceFromDocument(document);
 
-        caseDetails.getData().put("standardDirectionOrder", order);
-        caseDetails.getData().remove(JUDGE_AND_LEGAL_ADVISOR_KEY);
-        caseDetails.getData().remove("dateOfIssue");
-
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
+            .data(caseDataConverter.convertToMap(updated))
             .build();
     }
 
