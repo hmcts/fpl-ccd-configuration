@@ -11,7 +11,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
-import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.util.Map;
 
@@ -30,7 +31,7 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
     private static final Long CASE_ID = 12345L;
 
     @MockBean
-    private UserDetailsService userDetailsService;
+    private IdamClient idamClient;
 
     UploadC2DocumentsAboutToSubmitControllerTest() {
         super("upload-c2");
@@ -38,8 +39,7 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
 
     @BeforeEach
     void before() {
-        given(userDetailsService.getUserName())
-            .willReturn(USER_NAME);
+        given(idamClient.getUserInfo(USER_AUTH_TOKEN)).willReturn(UserInfo.builder().name("Emma Taylor").build());
     }
 
     @Test
