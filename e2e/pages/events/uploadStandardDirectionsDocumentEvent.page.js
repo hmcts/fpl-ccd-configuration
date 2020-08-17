@@ -12,10 +12,10 @@ module.exports = {
     standardDirections: locate('input').withAttr({id: 'standardDirectionsDocument'}),
     otherDocument: {
       document: function (index) {
-        return `#limitedCourtAdminDocuments_${index}_document`;
+        return `#newCourtDocuments_${index}_document`;
       },
       title: function (index) {
-        return `#limitedCourtAdminDocuments_${index}_documentTitle`;
+        return `#newCourtDocuments_${index}_documentTitle`;
       },
     },
   },
