@@ -17,7 +17,7 @@ properties([
       defaultValue: 'https://raw.githubusercontent.com/hmcts/security-test-rules/FPLA-security-test-rules-DO-NOT-MERGE/conf/security-rules.conf',
       description: 'The security rules to use'),
     string(name: 'FUNCTIONAL_TESTS_WORKERS',
-      defaultValue: '10',
+      defaultValue: '5',
       description: 'Number of workers running functional tests'),
   ])
 ])
