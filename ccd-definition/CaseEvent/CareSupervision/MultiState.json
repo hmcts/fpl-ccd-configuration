@@ -88,7 +88,7 @@
     "Name": "Add case number",
     "Description": "Add case number",
     "DisplayOrder": 5,
-    "PreConditionState(s)": "Submitted;PREPARE_FOR_HEARING",
+    "PreConditionState(s)": "Submitted",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "ShowSummary": "N",
