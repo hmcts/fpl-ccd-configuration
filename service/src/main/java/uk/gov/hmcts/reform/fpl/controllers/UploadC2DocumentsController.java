@@ -22,12 +22,13 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
-import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.util.List;
 import java.util.Map;
@@ -50,12 +51,13 @@ public class UploadC2DocumentsController {
     private static final String AMOUNT_TO_PAY = "amountToPay";
     private static final String TEMPORARY_C2_DOCUMENT = "temporaryC2Document";
     private final ObjectMapper mapper;
-    private final UserDetailsService userDetailsService;
+    private final IdamClient idamClient;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final FeeService feeService;
     private final PaymentService paymentService;
     private final PbaNumberService pbaNumberService;
     private final Time time;
+    private final RequestData requestData;
 
     @PostMapping("/get-fee/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
@@ -148,7 +150,7 @@ public class UploadC2DocumentsController {
             Lists.newArrayList());
 
         var c2DocumentBundleBuilder = caseData.getTemporaryC2Document().toBuilder()
-            .author(userDetailsService.getUserName())
+            .author(idamClient.getUserInfo(requestData.authorisation()).getName())
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME));
 
         c2DocumentBundleBuilder.type(caseData.getC2ApplicationType().get("type"));

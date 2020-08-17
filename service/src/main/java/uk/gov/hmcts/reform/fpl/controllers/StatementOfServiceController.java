@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
 import uk.gov.hmcts.reform.fpl.service.StatementOfServiceService;
-import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.util.Map;
 
@@ -24,7 +24,7 @@ import java.util.Map;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class StatementOfServiceController {
     private static final String CONSENT_TEMPLATE = "I, %s, have served the documents as stated.";
-    private final UserDetailsService userDetailsService;
+    private final IdamClient idamClient;
     private final MapperService mapperService;
     private final StatementOfServiceService statementOfServiceService;
     private final RequestData requestData;
@@ -37,7 +37,7 @@ public class StatementOfServiceController {
 
         caseDetails.getData().put("statementOfService", statementOfServiceService.expandRecipientCollection(caseData));
 
-        String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName());
+        String label = String.format(CONSENT_TEMPLATE, idamClient.getUserInfo(requestData.authorisation()).getName());
 
         Map<String, Object> data = caseDetails.getData();
         data.put("serviceDeclarationLabel", label);
