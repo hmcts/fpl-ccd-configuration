@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.reform.fpl.exceptions.EmptyFileException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.idam.client.IdamApi;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.net.URI;
 import java.util.Optional;
@@ -27,11 +27,11 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 public class DocumentDownloadService {
     private final AuthTokenGenerator authTokenGenerator;
     private final DocumentDownloadClientApi documentDownloadClient;
-    private final IdamApi idamApi;
+    private final IdamClient idamClient;
     private final RequestData requestData;
 
     public byte[] downloadDocument(final String documentUrlString) {
-        final String userRoles = join(",", idamApi.retrieveUserInfo(requestData.authorisation()).getRoles());
+        final String userRoles = join(",", idamClient.getUserInfo(requestData.authorisation()).getRoles());
 
         ResponseEntity<Resource> documentDownloadResponse =
             documentDownloadClient.downloadBinary(requestData.authorisation(),
