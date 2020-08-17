@@ -39,7 +39,7 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractControllerTest 
     void shouldAppendUploadedDocumentsToOtherCourtAdminDocumentsWhenMainCollectionIsNull() {
         CourtAdminDocument courtAdminDocument = buildCourtAdminDocument("Document 1");
         CaseData caseData = CaseData.builder()
-            .limitedCourtAdminDocuments(wrapElements(courtAdminDocument))
+            .newCourtDocuments(wrapElements(courtAdminDocument))
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
@@ -58,7 +58,7 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractControllerTest 
         CourtAdminDocument document2 = buildCourtAdminDocument("Document 2");
         CaseData caseData = CaseData.builder()
             .otherCourtAdminDocuments(wrapElements(document1))
-            .limitedCourtAdminDocuments(wrapElements(document2))
+            .newCourtDocuments(wrapElements(document2))
             .manageDocumentsAction(UPLOAD)
             .build();
 
@@ -115,12 +115,12 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractControllerTest 
     void shouldRemoveIntermediaryCollection() {
         CourtAdminDocument document1 = buildCourtAdminDocument("Document 1");
         CaseData caseData = CaseData.builder()
-            .limitedCourtAdminDocuments(wrapElements(document1))
+            .newCourtDocuments(wrapElements(document1))
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
 
-        assertThat(response.getData()).doesNotContainKey("limitedCourtAdminDocuments");
+        assertThat(response.getData()).doesNotContainKey("newCourtDocuments");
     }
 
     private static List<Element<CourtAdminDocument>> buildDocuments() {

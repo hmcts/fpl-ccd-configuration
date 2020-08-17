@@ -88,7 +88,7 @@ public class ManageDocumentsController {
         data.put("otherCourtAdminDocuments", service.updateDocumentCollection(caseData));
         removeTemporaryFields(
             caseDetails,
-            "limitedCourtAdminDocuments",
+            "newCourtDocuments",
             "editedCourtDocument",
             "deletedCourtDocument",
             "courtDocumentList",

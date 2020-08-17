@@ -76,8 +76,8 @@ public class ManageDocumentsService {
 
         // Will be null if pageShow was NO in which case upload is the only option
         if (UPLOAD == action || null == action) {
-            List<Element<CourtAdminDocument>> limitedCourtAdminDocuments = caseData.getLimitedCourtAdminDocuments();
-            otherCourtAdminDocuments.addAll(limitedCourtAdminDocuments);
+            List<Element<CourtAdminDocument>> newCourtDocuments = caseData.getNewCourtDocuments();
+            otherCourtAdminDocuments.addAll(newCourtDocuments);
         } else {
             Object courtDocumentList = caseData.getCourtDocumentList();
             UUID selectedId = getSelectedIdFromDynamicList(courtDocumentList, mapper);

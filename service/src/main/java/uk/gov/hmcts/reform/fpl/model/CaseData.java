@@ -637,10 +637,10 @@ public class CaseData {
         return defaultIfNull(otherCourtAdminDocuments, new ArrayList<>());
     }
 
-    private final List<Element<CourtAdminDocument>> limitedCourtAdminDocuments;
+    private final List<Element<CourtAdminDocument>> newCourtDocuments;
 
-    public List<Element<CourtAdminDocument>> getLimitedCourtAdminDocuments() {
-        return defaultIfNull(limitedCourtAdminDocuments, new ArrayList<>());
+    public List<Element<CourtAdminDocument>> getNewCourtDocuments() {
+        return defaultIfNull(newCourtDocuments, new ArrayList<>());
     }
 
     private final ManageDocumentsAction manageDocumentsAction;
