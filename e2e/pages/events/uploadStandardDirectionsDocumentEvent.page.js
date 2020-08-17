@@ -3,7 +3,7 @@ const {I} = inject();
 module.exports = {
 
   fields: {
-    documentRouter: '#uploadDocumentsRouter',
+    documentAction: '#manageDocumentsAction',
     documentList: '#courtDocumentList',
     replacementDocument: {
       title: '#editedCourtDocument_documentTitle',
@@ -21,7 +21,7 @@ module.exports = {
   },
 
   selectEventOption(option) {
-    within(this.fields.documentRouter, () => {
+    within(this.fields.documentAction, () => {
       I.click(locate('label').withText(option));
     });
   },

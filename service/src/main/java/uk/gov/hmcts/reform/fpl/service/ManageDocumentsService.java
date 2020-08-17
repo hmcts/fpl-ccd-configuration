@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.DocumentRouter;
+import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ManageDocumentsAction;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtAdminDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -15,9 +15,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.DocumentRouter.AMEND;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.DocumentRouter.DELETE;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.DocumentRouter.UPLOAD;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ManageDocumentsAction.AMEND;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ManageDocumentsAction.DELETE;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ManageDocumentsAction.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
@@ -31,9 +31,9 @@ public class ManageDocumentsService {
 
     public DynamicList buildDocumentDynamicList(CaseData caseData) {
         List<Element<CourtAdminDocument>> courtAdminDocuments = caseData.getOtherCourtAdminDocuments();
-        DocumentRouter router = caseData.getUploadDocumentsRouter();
+        ManageDocumentsAction action = caseData.getManageDocumentsAction();
 
-        if (AMEND == router || DELETE == router) {
+        if (AMEND == action || DELETE == action) {
             return asDynamicList(courtAdminDocuments, CourtAdminDocument::getDocumentTitle);
         } else {
             return null;
@@ -42,7 +42,7 @@ public class ManageDocumentsService {
 
     public Map<String, Object> getDocumentToDisplay(CaseData caseData) {
         List<Element<CourtAdminDocument>> otherCourtAdminDocuments = caseData.getOtherCourtAdminDocuments();
-        DocumentRouter router = caseData.getUploadDocumentsRouter();
+        ManageDocumentsAction action = caseData.getManageDocumentsAction();
 
         Object courtDocumentList = caseData.getCourtDocumentList();
 
@@ -52,7 +52,7 @@ public class ManageDocumentsService {
 
         findElement(selectedId, otherCourtAdminDocuments).ifPresent(
             courtAdminDocument -> {
-                if (AMEND == router) {
+                if (AMEND == action) {
                     data.put("originalCourtDocument", courtAdminDocument.getValue().getDocument());
                 } else {
                     data.put("deletedCourtDocument", courtAdminDocument.getValue());
@@ -72,10 +72,10 @@ public class ManageDocumentsService {
 
     public List<Element<CourtAdminDocument>> updateDocumentCollection(CaseData caseData) {
         List<Element<CourtAdminDocument>> otherCourtAdminDocuments = caseData.getOtherCourtAdminDocuments();
-        DocumentRouter router = caseData.getUploadDocumentsRouter();
+        ManageDocumentsAction action = caseData.getManageDocumentsAction();
 
         // Will be null if pageShow was NO in which case upload is the only option
-        if (UPLOAD == router || null == router) {
+        if (UPLOAD == action || null == action) {
             List<Element<CourtAdminDocument>> limitedCourtAdminDocuments = caseData.getLimitedCourtAdminDocuments();
             otherCourtAdminDocuments.addAll(limitedCourtAdminDocuments);
         } else {
@@ -83,9 +83,9 @@ public class ManageDocumentsService {
             UUID selectedId = getSelectedIdFromDynamicList(courtDocumentList, mapper);
             int index = getSelectedIdIndex(selectedId, otherCourtAdminDocuments);
 
-            if (AMEND == router) {
+            if (AMEND == action) {
                 otherCourtAdminDocuments.set(index, element(selectedId, caseData.getEditedCourtDocument()));
-            } else if (DELETE == router) {
+            } else if (DELETE == action) {
                 otherCourtAdminDocuments.remove(index);
             }
         }

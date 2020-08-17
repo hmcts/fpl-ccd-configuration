@@ -18,9 +18,9 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.DocumentRouter.AMEND;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.DocumentRouter.DELETE;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.DocumentRouter.UPLOAD;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ManageDocumentsAction.AMEND;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ManageDocumentsAction.DELETE;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ManageDocumentsAction.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -59,7 +59,7 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractControllerTest 
         CaseData caseData = CaseData.builder()
             .otherCourtAdminDocuments(wrapElements(document1))
             .limitedCourtAdminDocuments(wrapElements(document2))
-            .uploadDocumentsRouter(UPLOAD)
+            .manageDocumentsAction(UPLOAD)
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
@@ -80,7 +80,7 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractControllerTest 
 
         CaseData caseData = CaseData.builder()
             .otherCourtAdminDocuments(courtAdminDocuments)
-            .uploadDocumentsRouter(AMEND)
+            .manageDocumentsAction(AMEND)
             .editedCourtDocument(editedDocument)
             .courtDocumentList(dynamicListWithFirstElementSelected(
                 courtAdminDocuments.get(0).getId(), courtAdminDocuments.get(1).getId()))
@@ -99,7 +99,7 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractControllerTest 
 
         CaseData caseData = CaseData.builder()
             .otherCourtAdminDocuments(courtAdminDocuments)
-            .uploadDocumentsRouter(DELETE)
+            .manageDocumentsAction(DELETE)
             .courtDocumentList(dynamicListWithFirstElementSelected(
                 courtAdminDocuments.get(0).getId(), courtAdminDocuments.get(1).getId()))
             .build();

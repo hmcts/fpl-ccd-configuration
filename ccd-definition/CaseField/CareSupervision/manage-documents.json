@@ -11,9 +11,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "uploadDocumentsRouter",
+    "ID": "manageDocumentsAction",
     "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "DocumentRouter",
+    "FieldTypeParameter": "ManageDocumentsAction",
     "Label": "What do you want to do?",
     "SecurityClassification": "Public"
   },

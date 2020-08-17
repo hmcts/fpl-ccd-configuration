@@ -514,7 +514,9 @@
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-docs/about-to-start",
-    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-docs/about-to-submit"
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-docs/about-to-submit",
+    "Comment": "This event is for admins and judges. Future discussion: remove SDO from flow and use manageDocuments event"
+
   },
   {
     "LiveFrom": "01/01/2017",
@@ -530,7 +532,8 @@
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-docs/about-to-start",
-    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-docs/about-to-submit"
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-docs/about-to-submit",
+    "Comment": "This event is for representatives (cafcass solicitor and solicitor)"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -583,7 +586,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "uploadOtherCourtAdminDocuments",
+    "ID": "manageDocuments",
     "Name": "Manage Documents",
     "Description": "Upload, amend or delete documents on the case",
     "DisplayOrder": 13,
@@ -594,6 +597,7 @@
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-docs/about-to-start",
-    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-docs/about-to-submit"
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-docs/about-to-submit",
+    "Comment": "Same event as uploadStandardDirections but with no SDO element. Possibly deprecate other event and use this one in future"
   }
 ]

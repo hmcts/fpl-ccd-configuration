@@ -19,9 +19,9 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.DocumentRouter.AMEND;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.DocumentRouter.DELETE;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.DocumentRouter.UPLOAD;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ManageDocumentsAction.AMEND;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ManageDocumentsAction.DELETE;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ManageDocumentsAction.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement.EMPTY;
 import static uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement.builder;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -42,7 +42,7 @@ public class ManageDocumentsControllerPopulateListMidEventTest extends AbstractC
         List<Element<CourtAdminDocument>> courtAdminDocuments = buildDocuments();
 
         CaseData caseData = CaseData.builder()
-            .uploadDocumentsRouter(AMEND)
+            .manageDocumentsAction(AMEND)
             .otherCourtAdminDocuments(courtAdminDocuments)
             .build();
 
@@ -54,27 +54,12 @@ public class ManageDocumentsControllerPopulateListMidEventTest extends AbstractC
         assertThat(documentList).isEqualTo(expectedList);
     }
 
-    //RDM-9147
-    @Test
-    void shouldRemoveEditedDocumentIfNoReplacementDocumentUploaded() {
-        List<Element<CourtAdminDocument>> courtAdminDocuments = buildDocuments();
-
-        CaseData caseData = CaseData.builder()
-            .uploadDocumentsRouter(AMEND)
-            .otherCourtAdminDocuments(courtAdminDocuments)
-            .editedCourtDocument(new CourtAdminDocument("", DocumentReference.builder().build()))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "populate-list");
-        assertThat(response.getData()).doesNotContainKey("editedCourtDocument");
-    }
-
     @Test
     void shouldBuildDynamicListOfDocumentsWhenUserSelectsDelete() {
         List<Element<CourtAdminDocument>> courtAdminDocuments = buildDocuments();
 
         CaseData caseData = CaseData.builder()
-            .uploadDocumentsRouter(DELETE)
+            .manageDocumentsAction(DELETE)
             .otherCourtAdminDocuments(courtAdminDocuments)
             .build();
 
@@ -89,7 +74,7 @@ public class ManageDocumentsControllerPopulateListMidEventTest extends AbstractC
     @Test
     void shouldNotBuildDynamicListWhenUserSelectsUpload() {
         CaseData caseData = CaseData.builder()
-            .uploadDocumentsRouter(UPLOAD)
+            .manageDocumentsAction(UPLOAD)
             .otherCourtAdminDocuments(buildDocuments())
             .build();
 

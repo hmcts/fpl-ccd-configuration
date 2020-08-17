@@ -1,21 +1,21 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "DocumentRouter",
+    "ID": "ManageDocumentsAction",
     "ListElementCode": "UPLOAD",
     "ListElement": "Upload a new case document",
     "DisplayOrder": 1
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "DocumentRouter",
+    "ID": "ManageDocumentsAction",
     "ListElementCode": "AMEND",
     "ListElement": "Find and replace a case document",
     "DisplayOrder": 2
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "DocumentRouter",
+    "ID": "ManageDocumentsAction",
     "ListElementCode": "DELETE",
     "ListElement": "Find and delete a case document",
     "DisplayOrder": 3

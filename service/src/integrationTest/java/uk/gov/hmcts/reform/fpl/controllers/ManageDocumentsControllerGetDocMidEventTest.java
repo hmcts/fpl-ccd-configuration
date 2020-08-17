@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.DocumentRouter.AMEND;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.DocumentRouter.DELETE;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ManageDocumentsAction.AMEND;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ManageDocumentsAction.DELETE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ActiveProfiles("integration-test")
@@ -38,7 +38,7 @@ public class ManageDocumentsControllerGetDocMidEventTest extends AbstractControl
         List<Element<CourtAdminDocument>> courtAdminDocuments = buildDocuments();
 
         CaseData caseData = CaseData.builder()
-            .uploadDocumentsRouter(AMEND)
+            .manageDocumentsAction(AMEND)
             .otherCourtAdminDocuments(courtAdminDocuments)
             .courtDocumentList(dynamicList(courtAdminDocuments.get(0).getId(), courtAdminDocuments.get(1).getId()))
             .build();
@@ -56,7 +56,7 @@ public class ManageDocumentsControllerGetDocMidEventTest extends AbstractControl
         List<Element<CourtAdminDocument>> courtAdminDocuments = buildDocuments();
 
         CaseData caseData = CaseData.builder()
-            .uploadDocumentsRouter(AMEND)
+            .manageDocumentsAction(AMEND)
             .otherCourtAdminDocuments(courtAdminDocuments)
             .editedCourtDocument(new CourtAdminDocument("", DocumentReference.builder().build()))
             .build();
@@ -70,7 +70,7 @@ public class ManageDocumentsControllerGetDocMidEventTest extends AbstractControl
         List<Element<CourtAdminDocument>> courtAdminDocuments = buildDocuments();
 
         CaseData caseData = CaseData.builder()
-            .uploadDocumentsRouter(DELETE)
+            .manageDocumentsAction(DELETE)
             .otherCourtAdminDocuments(courtAdminDocuments)
             .courtDocumentList(dynamicList(courtAdminDocuments.get(0).getId(), courtAdminDocuments.get(1).getId()))
             .build();

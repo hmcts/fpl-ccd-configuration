@@ -2,8 +2,8 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadOtherCourtAdminDocuments",
-    "CaseFieldID": "uploadDocumentsRouter",
+    "CaseEventID": "manageDocuments",
+    "CaseFieldID": "manageDocumentsAction",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
     "PageID": "routing",
@@ -15,31 +15,31 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadOtherCourtAdminDocuments",
+    "CaseEventID": "manageDocuments",
     "CaseFieldID": "pageShow",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": "routing",
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "uploadDocumentsRouter = \"DO_NOT_SHOW\""
+    "FieldShowCondition": "manageDocumentsAction = \"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadOtherCourtAdminDocuments",
+    "CaseEventID": "manageDocuments",
     "CaseFieldID": "newDocumentLabel",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": "new",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
-    "PageShowCondition": "uploadDocumentsRouter = \"UPLOAD\" OR pageShow = \"No\""
+    "PageShowCondition": "manageDocumentsAction = \"UPLOAD\" OR pageShow = \"No\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadOtherCourtAdminDocuments",
+    "CaseEventID": "manageDocuments",
     "CaseFieldID": "limitedCourtAdminDocuments",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "OPTIONAL",
@@ -50,33 +50,33 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadOtherCourtAdminDocuments",
+    "CaseEventID": "manageDocuments",
     "CaseFieldID": "amendDocumentLabel",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": "select",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "PageShowCondition": "uploadDocumentsRouter = \"AMEND\" OR uploadDocumentsRouter = \"DELETE\"",
+    "PageShowCondition": "manageDocumentsAction = \"AMEND\" OR manageDocumentsAction = \"DELETE\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-docs/get-doc/mid-event",
-    "FieldShowCondition": "uploadDocumentsRouter = \"AMEND\""
+    "FieldShowCondition": "manageDocumentsAction = \"AMEND\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadOtherCourtAdminDocuments",
+    "CaseEventID": "manageDocuments",
     "CaseFieldID": "deleteDocumentLabel",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
     "PageID": "select",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "uploadDocumentsRouter = \"DELETE\""
+    "FieldShowCondition": "manageDocumentsAction = \"DELETE\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadOtherCourtAdminDocuments",
+    "CaseEventID": "manageDocuments",
     "CaseFieldID": "courtDocumentList",
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
@@ -87,19 +87,19 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadOtherCourtAdminDocuments",
+    "CaseEventID": "manageDocuments",
     "CaseFieldID": "replaceDocumentLabel",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": "amend",
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
-    "PageShowCondition": "uploadDocumentsRouter = \"AMEND\""
+    "PageShowCondition": "manageDocumentsAction = \"AMEND\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadOtherCourtAdminDocuments",
+    "CaseEventID": "manageDocuments",
     "CaseFieldID": "originalCourtDocument",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
@@ -110,7 +110,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadOtherCourtAdminDocuments",
+    "CaseEventID": "manageDocuments",
     "CaseFieldID": "replacementDocumentInfo",
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "READONLY",
@@ -121,7 +121,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadOtherCourtAdminDocuments",
+    "CaseEventID": "manageDocuments",
     "CaseFieldID": "editedCourtDocument",
     "PageFieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY",
@@ -132,14 +132,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadOtherCourtAdminDocuments",
+    "CaseEventID": "manageDocuments",
     "CaseFieldID": "deletedCourtDocument",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "COMPLEX",
     "PageID": "delete",
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
-    "PageShowCondition": "uploadDocumentsRouter = \"DELETE\"",
+    "PageShowCondition": "manageDocumentsAction = \"DELETE\"",
     "Comment": "Complex to overwrite the file field label"
   }
 ]

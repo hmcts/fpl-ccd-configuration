@@ -92,7 +92,7 @@ public class ManageDocumentsController {
             "editedCourtDocument",
             "deletedCourtDocument",
             "courtDocumentList",
-            "uploadDocumentsRouter",
+            "manageDocumentsAction",
             "originalCourtDocument",
             "pageShow"
         );
