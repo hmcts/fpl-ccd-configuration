@@ -58,6 +58,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
     private static DocumentReference latestC2Document;
     private static final byte[] C2_BINARY = {5, 4, 3, 2, 1};
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
+    private static final String AUTH_TOKEN = "Bearer token";
 
     @MockBean
     private NotificationClient notificationClient;
