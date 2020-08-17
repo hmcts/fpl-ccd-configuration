@@ -89,9 +89,9 @@ Scenario('HMCTS admin uploads standard directions and manages other documents', 
 
   await caseViewPage.goToNewActions(config.applicationActions.manageDocuments);
   uploadStandardDirectionsDocumentEventPage.selectEventOption('Find and replace a case document');
-  I.click('Continue');
+  await I.retryUntilExists(() => I.click('Continue'), '#courtDocumentList');
   uploadStandardDirectionsDocumentEventPage.selectDocument('1');
-  I.click('Continue');
+  await I.retryUntilExists(() => I.click('Continue'), '#editedCourtDocument_documentTitle');
   uploadStandardDirectionsDocumentEventPage.replaceDocument(config.testNonEmptyPdfFile);
   await I.completeEvent('Save and continue');
   caseViewPage.selectTab(caseViewPage.tabs.documents);
@@ -100,9 +100,9 @@ Scenario('HMCTS admin uploads standard directions and manages other documents', 
 
   await caseViewPage.goToNewActions(config.applicationActions.manageDocuments);
   uploadStandardDirectionsDocumentEventPage.selectEventOption('Find and delete a case document');
-  I.click('Continue');
+  await I.retryUntilExists(() => I.click('Continue'), '#courtDocumentList');
   uploadStandardDirectionsDocumentEventPage.selectDocument('2');
-  I.click('Continue');
+  await I.retryUntilExists(() => I.click('Continue'), '#deletedCourtDocument_deletedCourtDocument');
   I.see('mockFile.txt');
   await I.completeEvent('Save and continue');
   caseViewPage.selectTab(caseViewPage.tabs.documents);
@@ -126,7 +126,7 @@ Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage,
   I.seeInTab(['C2 Application 1', 'Client code'], '8888');
   I.seeInTab(['C2 Application 1', 'Customer reference'], 'Example reference');
   await I.startEventViaHyperlink('Upload a new C2 application');
-  
+
   uploadC2DocumentsEventPage.selectApplicationType('WITHOUT_NOTICE');
   await I.retryUntilExists(() => I.click('Continue'), '#temporaryC2Document_document');
   uploadC2DocumentsEventPage.usePbaPayment(false);
