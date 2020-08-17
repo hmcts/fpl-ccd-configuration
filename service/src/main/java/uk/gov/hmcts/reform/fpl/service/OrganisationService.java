@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityCodeException;
+import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
 import uk.gov.hmcts.reform.fpl.exceptions.UserOrganisationLookupException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.utils.MaskHelper;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 import uk.gov.hmcts.reform.rd.model.OrganisationUser;
@@ -21,6 +23,9 @@ import java.util.Set;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
+import static uk.gov.hmcts.reform.fpl.utils.MaskHelper.maskEmail;
+import static uk.gov.hmcts.reform.fpl.utils.MaskHelper.maskEmail;
 
 @Service
 @Slf4j
@@ -47,7 +52,7 @@ public class OrganisationService {
             return Set.copyOf(getUsersFromSameOrganisationBasedOnAppConfig(localAuthorityCode));
         } catch (UnknownLocalAuthorityCodeException exception) {
             throw new UserOrganisationLookupException(
-                format("Can't find users for %s local authority", localAuthorityCode), exception
+                    format("Can't find users for %s local authority", localAuthorityCode), exception
             );
         }
     }
@@ -58,27 +63,29 @@ public class OrganisationService {
 
     private List<String> getUsersFromSameOrganisationBasedOnReferenceData(String authorisation) {
         return organisationApi
-            .findUsersByOrganisation(authorisation, authTokenGenerator.generate(), Status.ACTIVE, false)
-            .getUsers()
-            .stream()
-            .map(OrganisationUser::getUserIdentifier)
-            .collect(toList());
+                .findUsersByOrganisation(authorisation, authTokenGenerator.generate(), Status.ACTIVE, false)
+                .getUsers()
+                .stream()
+                .map(OrganisationUser::getUserIdentifier)
+                .collect(toList());
     }
 
     public Optional<String> findUserByEmail(String email) {
         try {
             return Optional.of(organisationApi.findUserByEmail(requestData.authorisation(),
-                authTokenGenerator.generate(), email).getUserIdentifier());
+                    authTokenGenerator.generate(), email).getUserIdentifier());
         } catch (FeignException.NotFound notFoundException) {
-            log.debug("User with email {} not found", email);
+            log.info("User with email {} not found", MaskHelper.maskEmail(email));
             return Optional.empty();
+        } catch (FeignException exception) {
+            throw new UserLookupException(maskEmail(getStackTrace(exception), email));
         }
     }
 
     public Organisation findOrganisation() {
         try {
             return organisationApi.findOrganisationById(requestData.authorisation(),
-                authTokenGenerator.generate());
+                    authTokenGenerator.generate());
 
         } catch (FeignException ex) {
             log.error("Could not find the associated organisation from reference data", ex);

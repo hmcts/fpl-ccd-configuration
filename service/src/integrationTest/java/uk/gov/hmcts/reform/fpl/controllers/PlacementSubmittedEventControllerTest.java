@@ -68,6 +68,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
 
     private static final byte[] PDF = {1, 2, 3, 4, 5};
     private static final String CASE_ID = "12345";
+    private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 
     @MockBean
     private NotificationClient notificationClient;
@@ -119,13 +120,13 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
                 NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
                 "admin@family-court.com",
                 expectedTemplateParameters(),
-                CASE_ID);
+                NOTIFICATION_REFERENCE);
 
             verify(notificationClient, never()).sendEmail(
                 NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
                 "FamilyPublicLaw+ctsc@gmail.com",
                 expectedTemplateParameters(),
-                CASE_ID);
+                NOTIFICATION_REFERENCE);
         }
 
         @Test
@@ -158,13 +159,13 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
                 NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
                 "admin@family-court.com",
                 expectedTemplateParameters(),
-                CASE_ID);
+                NOTIFICATION_REFERENCE);
 
             verify(notificationClient).sendEmail(
                 NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
                 "FamilyPublicLaw+ctsc@gmail.com",
                 expectedTemplateParameters(),
-                CASE_ID);
+                NOTIFICATION_REFERENCE);
         }
 
         @Test
@@ -188,7 +189,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
                 NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
                 "admin@family-court.com",
                 expectedTemplateParameters(),
-                CASE_ID);
+                NOTIFICATION_REFERENCE);
         }
 
         private Map<String, Object> expectedTemplateParameters() {
@@ -219,32 +220,32 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
                 NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
                 ADMIN_EMAIL_ADDRESS,
                 expectedParameters(),
-                CASE_ID);
+                NOTIFICATION_REFERENCE);
 
             verify(notificationClient).sendEmail(
                 NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE,
                 LOCAL_AUTHORITY_EMAIL_ADDRESS,
                 expectedParameters(),
-                CASE_ID);
+                NOTIFICATION_REFERENCE);
 
             verify(notificationClient).sendEmail(
                 NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE,
                 DIGITAL_SERVED_REPRESENTATIVE_ADDRESS,
                 expectedParameters(),
-                CASE_ID);
+                NOTIFICATION_REFERENCE);
 
             verify(notificationClient).sendEmail(
                 eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES),
                 eq(EMAIL_SERVED_REPRESENTATIVE_ADDRESS),
                 eqJson(getExpectedParametersForRepresentatives(IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER.getLabel(),
                     false)),
-                eq(CASE_ID));
+                eq(NOTIFICATION_REFERENCE));
 
             verify(notificationClient).sendEmail(
                 eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
                 eq(ADMIN_EMAIL_ADDRESS),
                 eqJson(getExpectedCaseUrlParameters(IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER.getLabel(), false)),
-                eq(CASE_ID));
+                eq(NOTIFICATION_REFERENCE));
 
             verify(notificationClient, never()).sendEmail(
                 eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
@@ -287,7 +288,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
                 eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
                 eq(CTSC_EMAIL_ADDRESS),
                 eqJson(getExpectedCaseUrlParameters(IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER.getLabel(), false)),
-                eq(CASE_ID));
+                eq(NOTIFICATION_REFERENCE));
         }
 
         @Test

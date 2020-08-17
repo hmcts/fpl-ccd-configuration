@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
 import uk.gov.hmcts.reform.fpl.exceptions.UserOrganisationLookupException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
@@ -152,13 +153,16 @@ class OrganisationServiceTest {
 
     @Test
     void shouldRethrowExceptionOtherThanNotFound() {
-        Exception exception = new FeignException.InternalServerError(EMPTY, REQUEST, new byte[] {});
+        String email = "test@test.com";
+        Exception exception = new FeignException.InternalServerError(email, REQUEST, new byte[] {});
 
-        when(organisationApi.findUserByEmail(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, USER_EMAIL)).thenThrow(exception);
+        when(organisationApi.findUserByEmail(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, email)).thenThrow(exception);
 
-        Exception actualException = assertThrows(FeignException.InternalServerError.class,
-            () -> organisationService.findUserByEmail(USER_EMAIL));
-        assertThat(actualException).isEqualTo(exception);
+        UserLookupException actualException = assertThrows(UserLookupException.class,
+            () -> organisationService.findUserByEmail(email));
+
+        assertThat(actualException).hasMessageNotContaining(email);
+        assertThat(actualException).hasMessageContaining("****@********");
     }
 
     @Test

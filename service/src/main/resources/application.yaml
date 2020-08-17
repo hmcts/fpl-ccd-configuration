@@ -152,6 +152,8 @@ spring:
   profiles: integration-test
   main:
     lazy-initialization: true
+  fpl:
+    env: 'localhost'
   mail:
     host: 127.0.0.1
     port: 1025
@@ -223,6 +225,7 @@ fees-register:
 
 
 fpl:
+  env: 'localhost'
   local_authority_codes_forbidden_case_submission: FPLA
   local_authority_email_to_code:
     mapping: 'example.gov.uk=>example'
