@@ -38,7 +38,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
 
     private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
-    private static final String AUTH_TOKEN = "Bearer token";
 
     @MockBean
     private IdamClient idamClient;
@@ -60,7 +59,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @BeforeEach
     void mocking() {
-        given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(UserInfo.builder().name("Emma Taylor").build());
+        given(idamClient.getUserInfo(USER_AUTH_TOKEN)).willReturn(UserInfo.builder().name("Emma Taylor").build());
         given(caseSubmissionService.generateSubmittedFormPDF(any(), eq(false)))
             .willReturn(document);
         given(uploadDocumentService.uploadPDF(DOCUMENT_CONTENT, "2313.pdf"))

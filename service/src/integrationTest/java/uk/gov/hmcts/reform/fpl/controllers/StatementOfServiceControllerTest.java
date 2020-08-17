@@ -20,8 +20,7 @@ import static org.mockito.BDDMockito.given;
 @WebMvcTest(StatementOfServiceController.class)
 @OverrideAutoConfiguration(enabled = true)
 class StatementOfServiceControllerTest extends AbstractControllerTest {
-    private static final String AUTH_TOKEN = "Bearer token";
-
+    
     @MockBean
     private IdamClient idamClient;
 
@@ -31,7 +30,7 @@ class StatementOfServiceControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void mockUserNameRetrieval() {
-        given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(UserInfo.builder().name("Emma Taylor").build());
+        given(idamClient.getUserInfo(USER_AUTH_TOKEN)).willReturn(UserInfo.builder().name("Emma Taylor").build());
     }
 
     @Test

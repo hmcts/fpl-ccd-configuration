@@ -35,7 +35,6 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 @OverrideAutoConfiguration(enabled = true)
 class ComplyOnBehalfControllerAboutToSubmitTest extends AbstractControllerTest {
     private static final UUID DIRECTION_ID = randomUUID();
-    private static final String AUTH_TOKEN = "Bearer token";
 
     ComplyOnBehalfControllerAboutToSubmitTest() {
         super("comply-on-behalf");
@@ -46,7 +45,7 @@ class ComplyOnBehalfControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldAddResponsesOnBehalfOfPartyWhenCompliedWith() {
-        given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(UserInfo.builder().build());
+        given(idamClient.getUserInfo(USER_AUTH_TOKEN)).willReturn(UserInfo.builder().build());
 
         CallbackRequest request = CallbackRequest.builder()
             .eventId(COMPLY_ON_BEHALF_COURT.toString())
@@ -74,7 +73,7 @@ class ComplyOnBehalfControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldAddResponsesOnBehalfOfWhenOtherEvent() {
-        given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(UserInfo.builder().name("Emma Taylor").build());
+        given(idamClient.getUserInfo(USER_AUTH_TOKEN)).willReturn(UserInfo.builder().name("Emma Taylor").build());
 
         CallbackRequest request = CallbackRequest.builder()
             .eventId(COMPLY_OTHERS.toString())

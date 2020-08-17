@@ -29,7 +29,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTest {
     private static final String USER_NAME = "Emma Taylor";
     private static final Long CASE_ID = 12345L;
-    private static final String AUTH_TOKEN = "Bearer token";
 
     @MockBean
     private IdamClient idamClient;
@@ -40,7 +39,7 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
 
     @BeforeEach
     void before() {
-        given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(UserInfo.builder().name("Emma Taylor").build());
+        given(idamClient.getUserInfo(USER_AUTH_TOKEN)).willReturn(UserInfo.builder().name("Emma Taylor").build());
     }
 
     @Test
