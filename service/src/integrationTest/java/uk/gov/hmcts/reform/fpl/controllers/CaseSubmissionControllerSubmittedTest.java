@@ -430,7 +430,9 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
     private <T extends SharedNotifyTemplate> void setSharedTemplateParameters(T template) {
         String fileContent = new String(Base64.encodeBase64(DOCUMENT_CONTENT), ISO_8859_1);
-        JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
+        JSONObject jsonFileObject = new JSONObject()
+            .put("file", fileContent)
+            .put("is_csv", false);
 
         template.setLocalAuthority("Example Local Authority");
         template.setReference(CASE_ID.toString());

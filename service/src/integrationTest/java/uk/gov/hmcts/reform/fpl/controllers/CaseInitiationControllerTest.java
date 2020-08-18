@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.GrantCaseAccessException;
 import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityCodeException;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
-import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
@@ -82,9 +81,6 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
     private ServiceAuthorisationApi serviceAuthorisationApi;
 
     @MockBean
-    private IdamApi idamApi;
-
-    @MockBean
     private CaseUserApi caseUserApi;
 
     @MockBean
@@ -111,7 +107,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
         given(serviceAuthorisationApi.serviceToken(anyMap())).willReturn(SERVICE_AUTH_TOKEN);
 
-        given(idamApi.retrieveUserInfo(USER_AUTH_TOKEN)).willReturn(
+        given(client.getUserInfo(USER_AUTH_TOKEN)).willReturn(
             UserInfo.builder().sub("user@example.gov.uk").build());
 
         given(localAuthorityUserLookupConfiguration.getUserIds(LA_1_CODE)).willReturn(LA_1_USER_IDS);
@@ -141,7 +137,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
             .errors(List.of("The email address was not linked to a known Local Authority"))
             .build();
 
-        given(idamApi.retrieveUserInfo(USER_AUTH_TOKEN))
+        given(client.getUserInfo(USER_AUTH_TOKEN))
             .willReturn(UserInfo.builder().sub("user@email.gov.uk").build());
 
         AboutToStartOrSubmitCallbackResponse actualResponse = postAboutToSubmitEvent(

@@ -244,7 +244,9 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
     private Map<String, Object> expectedReviewByRepresentativesNotificationParameters(
         RepresentativeServingPreferences servingPreference) {
         String fileContent = new String(Base64.encodeBase64(PDF), ISO_8859_1);
-        JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
+        JSONObject jsonFileObject = new JSONObject()
+            .put("file", fileContent)
+            .put("is_csv", false);
 
         final String hearingDate = formatLocalDateTimeBaseUsingFormat(futureDate, DATE_SHORT_MONTH);
         final String subjectLine = "Jones, SACCCCCCCC5676576567, hearing " + hearingDate;
