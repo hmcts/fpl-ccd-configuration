@@ -7,7 +7,7 @@ import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class StateTest {
+class StateTest {
 
     @Test
     void shouldMapValueToStateEnum() {
