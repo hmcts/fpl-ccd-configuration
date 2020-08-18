@@ -93,29 +93,7 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldPopulateHiddenCCDFieldsInStandardDirectionOrderToPersistData() {
-        JudgeAndLegalAdvisor legalAdvisorWithAllocatedJudge = JudgeAndLegalAdvisor.builder()
-            .useAllocatedJudge("Yes")
-            .legalAdvisorName("Chris Newport")
-            .build();
-
-        Judge allocatedJudge = Judge.builder().judgeTitle(MAGISTRATES).judgeFullName("John Walker").build();
-
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(directionsWithShowHideValuesRemoved()
-                .put("dateOfIssue", dateNow())
-                .put("standardDirectionOrder", Order.builder().orderStatus(SEALED).build())
-                .put("judgeAndLegalAdvisor", legalAdvisorWithAllocatedJudge)
-                .put("allocatedJudge", allocatedJudge)
-                .put(HEARING_DETAILS_KEY, wrapElements(HearingBooking.builder()
-                    .startDate(HEARING_START_DATE)
-                    .endDate(HEARING_END_DATE)
-                    .venue("EXAMPLE")
-                    .build()))
-                .put("caseLocalAuthority", "example")
-                .put("dateSubmitted", dateNow())
-                .put("applicants", getApplicant())
-                .build())
-            .build();
+        CaseDetails caseDetails = getCaseDetailsWithLegalAdvisorAndAllocatedJudge();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
@@ -125,6 +103,16 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
         assertThat(caseData.getJudgeAndLegalAdvisor()).isNull();
         assertThatDirectionsArePlacedBackIntoCaseDetailsWithValues(caseData);
         assertThat(fileName.getValue()).isEqualTo(SEALED_ORDER_FILE_NAME);
+    }
+
+    @Test
+    void shouldRemoveJudgeAndLegalAdvisorAndDateOfIssueFromCaseData() {
+        CaseDetails caseDetails = getCaseDetailsWithLegalAdvisorAndAllocatedJudge();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
+
+        assertThat(response.getData()).doesNotContainKey("judgeAndLegalAdvisor");
+        assertThat(response.getData()).doesNotContainKey("dateOfIssue");
     }
 
     @Test
@@ -256,6 +244,32 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
             .jurisdiction(JURISDICTION)
             .caseTypeId(CASE_TYPE)
             .data(data)
+            .build();
+    }
+
+    private CaseDetails getCaseDetailsWithLegalAdvisorAndAllocatedJudge() {
+        JudgeAndLegalAdvisor legalAdvisorWithAllocatedJudge = JudgeAndLegalAdvisor.builder()
+            .useAllocatedJudge("Yes")
+            .legalAdvisorName("Chris Newport")
+            .build();
+
+        Judge allocatedJudge = Judge.builder().judgeTitle(MAGISTRATES).judgeFullName("John Walker").build();
+
+        return CaseDetails.builder()
+            .data(directionsWithShowHideValuesRemoved()
+                .put("dateOfIssue", dateNow())
+                .put("standardDirectionOrder", Order.builder().orderStatus(SEALED).build())
+                .put("judgeAndLegalAdvisor", legalAdvisorWithAllocatedJudge)
+                .put("allocatedJudge", allocatedJudge)
+                .put(HEARING_DETAILS_KEY, wrapElements(HearingBooking.builder()
+                    .startDate(HEARING_START_DATE)
+                    .endDate(HEARING_END_DATE)
+                    .venue("EXAMPLE")
+                    .build()))
+                .put("caseLocalAuthority", "example")
+                .put("dateSubmitted", dateNow())
+                .put("applicants", getApplicant())
+                .build())
             .build();
     }
 
