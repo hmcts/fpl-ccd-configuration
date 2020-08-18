@@ -102,8 +102,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseStateID": "PREPARE_FOR_HEARING",
     "UserRole": "caseworker-publiclaw-solicitor",
-    "CRUD": "CRU",
-    "Comment": "PREPARE_FOR_HEARING state name changed as part of FPLA-1920. CaseStateID naming remains to avoid break existing cases."
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",

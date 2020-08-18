@@ -115,7 +115,6 @@
     "Name": "Populate - Case management",
     "PreConditionState(s)": "*",
     "PostConditionState": "PREPARE_FOR_HEARING",
-    "SecurityClassification": "Public",
-    "Comment": "PREPARE_FOR_HEARING state name changed as part of FPLA-1920"
+    "SecurityClassification": "Public"
   }
 ]

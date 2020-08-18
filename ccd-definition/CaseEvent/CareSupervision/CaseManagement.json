@@ -11,8 +11,7 @@
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "N",
-    "EndButtonLabel": "Save and continue",
-    "Comment": "PREPARE_FOR_HEARING state name changed as part of FPLA-1920. Event ID naming remains to avoid break existing cases."
+    "EndButtonLabel": "Save and continue"
   },
   {
     "LiveFrom": "01/01/2017",
