@@ -112,9 +112,10 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "populateCase-PREPARE_FOR_HEARING",
-    "Name": "Populate - Prepare for hearing",
+    "Name": "Populate - Case management",
     "PreConditionState(s)": "*",
     "PostConditionState": "PREPARE_FOR_HEARING",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Comment": "PREPARE_FOR_HEARING state name changed as part of FPLA-1920"
   }
 ]
