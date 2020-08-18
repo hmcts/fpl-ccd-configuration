@@ -82,7 +82,7 @@ class TestingSupportControllerTest {
         return Stream.of(
             Arguments.of("GATEKEEPING", "populateCase-Gatekeeping"),
             Arguments.of("SUBMITTED", "populateCase-Submitted"),
-            Arguments.of("CASE_MANAGEMENT", "populateCase-PREPARE_FOR_HEARING")
+            Arguments.of("PREPARE_FOR_HEARING", "populateCase-PREPARE_FOR_HEARING")
         );
     }
 }

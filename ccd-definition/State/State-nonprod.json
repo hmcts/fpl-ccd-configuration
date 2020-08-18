@@ -9,4 +9,3 @@
     "TitleDisplay": "# ${caseName}\n## **FamilyMan ID: ${familyManCaseNumber}**\n## **CCD ID: #${[CASE_REFERENCE]}**"
   }
 ]
-
