@@ -46,7 +46,6 @@ class CaseDataConverterTest {
         @Test
         void shouldConvertCallbackRequestToCaseData() {
             assertThat(caseDataConverter.convertToCaseData(request).getCaseLocalAuthority()).isEqualTo(localAuthority);
-            assertThat(caseDataConverter.convertToCaseData(request)).isInstanceOf(CaseData.class);
         }
 
         @Test
@@ -54,7 +53,6 @@ class CaseDataConverterTest {
             final CaseDetails caseDetails = request.getCaseDetails();
 
             assertThat(caseDataConverter.convertToCaseData(request).getCaseLocalAuthority()).isEqualTo(localAuthority);
-            assertThat(caseDataConverter.convertToCaseData(caseDetails)).isInstanceOf(CaseData.class);
         }
 
     }
