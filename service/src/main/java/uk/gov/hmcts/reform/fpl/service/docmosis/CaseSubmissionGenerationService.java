@@ -47,8 +47,9 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisOtherParty;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisProceeding;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRisks;
-import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -83,8 +84,9 @@ public class CaseSubmissionGenerationService
     private static final String CONFIDENTIAL = "Confidential";
 
     private final Time time;
-    private final UserDetailsService userDetailsService;
     private final HmctsCourtLookupConfiguration courtLookupConfiguration;
+    private final IdamClient idamClient;
+    private final RequestData requestData;
 
     public DocmosisCaseSubmission getTemplateData(final CaseData caseData) {
         DocmosisCaseSubmission.Builder applicationFormBuilder = DocmosisCaseSubmission.builder();
@@ -115,7 +117,7 @@ public class CaseSubmissionGenerationService
                 ? buildGroundsThresholdReason(caseData.getGrounds().getThresholdReason()) : DEFAULT_STRING)
             .thresholdDetails(getThresholdDetails(caseData.getGrounds()))
             .annexDocuments(buildDocmosisAnnexDocuments(caseData))
-            .userFullName(userDetailsService.getUserName());
+            .userFullName(idamClient.getUserInfo(requestData.authorisation()).getName());
 
         return applicationFormBuilder.build();
     }

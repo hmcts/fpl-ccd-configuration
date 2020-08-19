@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
-import uk.gov.hmcts.reform.idam.client.IdamApi;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.util.Map;
@@ -41,7 +41,7 @@ public class C2PbaPaymentNotTakenEventHandlerTest {
         .build();
 
     @MockBean
-    private IdamApi idamApi;
+    private IdamClient idamClient;
 
     @MockBean
     private InboxLookupService inboxLookupService;
@@ -74,7 +74,7 @@ public class C2PbaPaymentNotTakenEventHandlerTest {
         CallbackRequest callbackRequest = appendSendToCtscOnCallback();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
-        given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(
+        given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(
             UserInfo.builder().sub(CTSC_INBOX).roles(LOCAL_AUTHORITY.getRoles()).build());
 
         given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))

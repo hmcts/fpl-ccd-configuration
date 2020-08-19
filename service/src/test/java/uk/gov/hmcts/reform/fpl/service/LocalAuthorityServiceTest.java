@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityCodeLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.idam.client.IdamApi;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -25,7 +25,7 @@ class LocalAuthorityServiceTest {
     private static final String LOCAL_AUTHORITY_CODE = "EX";
 
     @Mock
-    private IdamApi idamApi;
+    private IdamClient idamClient;
 
     @Mock
     private LocalAuthorityCodeLookupConfiguration codeConfig;
@@ -48,7 +48,7 @@ class LocalAuthorityServiceTest {
 
         given(codeConfig.getLocalAuthorityCode("example.gov.uk")).willReturn(LOCAL_AUTHORITY_CODE);
 
-        given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(
+        given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(
             UserInfo.builder().sub(email).build());
 
         String domain = localAuthorityService.getLocalAuthorityCode();
@@ -57,8 +57,8 @@ class LocalAuthorityServiceTest {
     }
 
     @Test
-    void shouldReturnExceptionWhenIdamApiThrows() {
-        given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willThrow(
+    void shouldReturnExceptionWhenIdamClientThrows() {
+        given(idamClient.getUserInfo(AUTH_TOKEN)).willThrow(
             new RuntimeException("user does not exist"));
 
         assertThatThrownBy(() -> localAuthorityService.getLocalAuthorityCode())
