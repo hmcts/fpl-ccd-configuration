@@ -12,20 +12,20 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CourtLevelAllocationService;
-import uk.gov.hmcts.reform.fpl.utils.CaseDataConverter;
+import uk.gov.hmcts.reform.fpl.utils.CaseConverter;
 
 @Api
 @RestController
 @RequestMapping("/callback/allocation-decision")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AllocationDecisionController {
-    private final CaseDataConverter caseDataConverter;
+    private final CaseConverter caseConverter;
     private final CourtLevelAllocationService service;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(
         @RequestBody CallbackRequest callbackRequest) {
-        CaseData caseData = caseDataConverter.convertToCaseData(callbackRequest);
+        CaseData caseData = caseConverter.convertToCaseData(callbackRequest.getCaseDetails());
 
         Allocation allocationDecision = service.createDecision(caseData);
 
@@ -34,13 +34,13 @@ public class AllocationDecisionController {
             .build();
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDataConverter.convertToMap(updatedCase))
+            .data(caseConverter.convertToMap(updatedCase))
             .build();
     }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
-        CaseData caseData = caseDataConverter.convertToCaseData(callbackRequest);
+        CaseData caseData = caseConverter.convertToCaseData(callbackRequest.getCaseDetails());
 
         Allocation allocationDecision = service.setAllocationDecisionIfNull(caseData);
 
@@ -49,7 +49,7 @@ public class AllocationDecisionController {
             .build();
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDataConverter.convertToMap(updatedCase))
+            .data(caseConverter.convertToMap(updatedCase))
             .build();
     }
 }

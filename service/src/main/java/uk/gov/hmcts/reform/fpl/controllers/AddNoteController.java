@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseNoteService;
-import uk.gov.hmcts.reform.fpl.utils.CaseDataConverter;
+import uk.gov.hmcts.reform.fpl.utils.CaseConverter;
 
 import java.util.List;
 
@@ -25,11 +25,11 @@ import java.util.List;
 public class AddNoteController {
     private final CaseNoteService service;
     private final RequestData requestData;
-    private final CaseDataConverter caseDataConverter;
+    private final CaseConverter caseConverter;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
-        CaseData caseData = caseDataConverter.convertToCaseData(callbackRequest);
+        CaseData caseData = caseConverter.convertToCaseData(callbackRequest.getCaseDetails());
 
         CaseNote caseNote = service.buildCaseNote(requestData.authorisation(), caseData.getCaseNote());
         List<Element<CaseNote>> caseNotes = service.addNoteToList(caseNote, caseData.getCaseNotes());
@@ -40,7 +40,7 @@ public class AddNoteController {
             .build();
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDataConverter.convertToMap(updatedCase))
+            .data(caseConverter.convertToMap(updatedCase))
             .build();
     }
 }
