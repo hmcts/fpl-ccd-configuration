@@ -1,0 +1,10 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "ISSUE_RESOLUTION",
+    "Name": "Issue Resolution",
+    "Description": "Issue resolution case state - Triggered via CMO event and hearing is of issue resolution type",
+    "DisplayOrder": 8
+  }
+]
