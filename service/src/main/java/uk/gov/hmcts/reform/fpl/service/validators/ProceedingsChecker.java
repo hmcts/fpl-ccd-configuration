@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.Proceeding;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
-import static net.logstash.logback.encoder.org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Component
 public class ProceedingsChecker implements EventChecker {
