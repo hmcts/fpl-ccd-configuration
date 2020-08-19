@@ -25,7 +25,7 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.util.Map;
 
-import static com.microsoft.applicationinsights.boot.dependencies.google.common.base.Charsets.ISO_8859_1;
+import static com.google.common.base.Charsets.ISO_8859_1;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
