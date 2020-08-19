@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentPr
 
 import java.util.Map;
 
-import static net.logstash.logback.encoder.org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
