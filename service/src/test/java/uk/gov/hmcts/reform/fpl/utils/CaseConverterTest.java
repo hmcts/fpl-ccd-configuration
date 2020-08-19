@@ -9,11 +9,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildCaseDataForCMODocmosisGeneration;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @ExtendWith(SpringExtension.class)
@@ -38,7 +37,11 @@ class CaseConverterTest {
     }
 
     private CaseData getCaseData() {
-        LocalDateTime dateTime = LocalDateTime.of(2099, 1, 1, 10, 0, 0);
-        return buildCaseDataForCMODocmosisGeneration(dateTime);
+        return CaseData.builder()
+            .caseLocalAuthority("example")
+            .familyManCaseNumber("123")
+            .dateSubmitted(LocalDate.now())
+            .dateOfIssue(LocalDate.now())
+            .build();
     }
 }
