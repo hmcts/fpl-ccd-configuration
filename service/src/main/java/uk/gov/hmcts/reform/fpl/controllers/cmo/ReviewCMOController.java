@@ -62,6 +62,9 @@ public class ReviewCMOController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
+        data.putAll(reviewCMOService.getPageDisplayControls(caseData));
+        // need to reconstruct lost hidden fields
+        caseData = mapper.convertValue(data, CaseData.class);
 
         Element<CaseManagementOrder> selectedCMO = reviewCMOService.getSelectedCMO(caseData);
 

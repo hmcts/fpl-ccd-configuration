@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -56,6 +57,36 @@ class ReviewCMOServiceTest {
     private Time time;
 
     @Test
+    void shouldRebuildDynamicListWithAppropriateElementSelected() {
+        List<Element<CaseManagementOrder>> draftCMOs = List.of(draftCMO(hearing1), draftCMO(hearing2));
+        UUID firstElementId = draftCMOs.get(0).getId();
+
+        CaseData caseData = CaseData.builder()
+            .draftUploadedCMOs(draftCMOs)
+            //This replicates bug in CCD which sends only String UUID in mid event
+            .cmoToReviewList(firstElementId.toString())
+            .numDraftCMOs("MULTI")
+            .build();
+
+        DynamicList actualDynamicList = service.buildDynamicList(caseData);
+
+        List<DynamicListElement> elements = draftCMOs.stream().map(cmoElement ->
+            DynamicListElement.builder()
+                .code(cmoElement.getId())
+                .label(cmoElement.getValue().getHearing())
+                .build()
+        ).collect(Collectors.toList());
+
+        DynamicList expectedDynamicList = DynamicList.builder()
+            .listItems(elements)
+            .build();
+
+        assertThat(actualDynamicList)
+            .isEqualTo(expectedDynamicList);
+    }
+
+
+    @Test
     void shouldReturnMultiPageDataWhenThereAreMultipleDraftCMOsReadyForApproval() {
         List<Element<CaseManagementOrder>> draftCMOs = List.of(draftCMO(hearing1), draftCMO(hearing2));
         CaseData caseData = CaseData.builder().draftUploadedCMOs(draftCMOs).build();
@@ -65,6 +96,21 @@ class ReviewCMOServiceTest {
             "cmoToReviewList", DynamicList.builder()
                 .value(EMPTY)
                 .listItems(dynamicListItems(draftCMOs.get(0).getId(), draftCMOs.get(1).getId())).build());
+
+        assertThat(service.getPageDisplayControls(caseData)).isEqualTo(expectedData);
+    }
+
+    @Test
+    void shouldReturnMultiPageDataWhenThereAreMultipleDraftCMOsReadyForApprovalWithoutExistingSelectionOverride() {
+        List<Element<CaseManagementOrder>> draftCMOs = List.of(draftCMO(hearing1), draftCMO(hearing2));
+        CaseData caseData = CaseData.builder()
+            .draftUploadedCMOs(draftCMOs)
+            .cmoToReviewList("selected")
+            .build();
+
+        Map<String, Object> expectedData = Map.of(
+            "numDraftCMOs", MULTI,
+            "cmoToReviewList", "selected");
 
         assertThat(service.getPageDisplayControls(caseData)).isEqualTo(expectedData);
     }

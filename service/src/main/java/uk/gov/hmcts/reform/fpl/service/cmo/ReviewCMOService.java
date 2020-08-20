@@ -64,7 +64,14 @@ public class ReviewCMOService {
                 break;
             default:
                 data.put(numDraftCMOs, "MULTI");
-                data.put("cmoToReviewList", buildUnselectedDynamicList(caseData));
+
+                if (caseData.getCmoToReviewList() == null) {
+                    data.put("cmoToReviewList", buildUnselectedDynamicList(caseData));
+                }
+                else {
+                    data.put("cmoToReviewList", caseData.getCmoToReviewList());
+                }
+
                 break;
         }
 
