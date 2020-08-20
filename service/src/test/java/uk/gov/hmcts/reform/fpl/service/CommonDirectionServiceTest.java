@@ -130,7 +130,8 @@ class CommonDirectionServiceTest {
                 service.directionsToMap(CaseData.builder().build());
 
             @SuppressWarnings("unchecked")
-            Collection<List<Element<Direction>>> expected = ImmutableList.of(EMPTY_LIST, EMPTY_LIST, EMPTY_LIST, EMPTY_LIST, EMPTY_LIST, EMPTY_LIST);
+            Collection<List<Element<Direction>>> expected = ImmutableList
+                .of(EMPTY_LIST, EMPTY_LIST, EMPTY_LIST, EMPTY_LIST, EMPTY_LIST, EMPTY_LIST);
             Collection<List<Element<Direction>>> actual = new ArrayList<>(map.values());
 
             assertThat(actual)
