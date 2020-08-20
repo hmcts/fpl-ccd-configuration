@@ -56,7 +56,7 @@ module.exports = {
     I.fillField(this.fields(elementIndex).solicitor.reference, solicitor.reference);
   },
 
-  enterPbaNumber(pbaNumber = 'PBA1234567') {
+  enterPbaNumber(pbaNumber) {
     const elementIndex = 0;
     I.fillField(this.fields(elementIndex).applicant.pbaNumber, pbaNumber);
   },
