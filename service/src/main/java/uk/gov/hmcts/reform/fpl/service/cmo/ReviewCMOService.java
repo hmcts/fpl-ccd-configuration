@@ -67,8 +67,7 @@ public class ReviewCMOService {
 
                 if (caseData.getCmoToReviewList() == null) {
                     data.put("cmoToReviewList", buildUnselectedDynamicList(caseData));
-                }
-                else {
+                } else {
                     data.put("cmoToReviewList", caseData.getCmoToReviewList());
                 }
 
