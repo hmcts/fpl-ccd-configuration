@@ -15,7 +15,7 @@ module.exports = {
   mobileNumber: '07000000000',
   telephoneNumber: '00000000000',
   email: 'applicant@email.com',
-  pbaNumber: 'PBA1234567',
+  pbaNumber: 'PBA0082848',
   clientCode: '8888',
   customerReference: 'Example reference',
 };
