@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.service.validators;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -11,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -26,9 +29,12 @@ class OrganisationDetailsCheckerTest {
     @Autowired
     private OrganisationDetailsChecker organisationDetailsChecker;
 
-    @Test
-    void shouldReturnErrorWhenNoRespondentsSpecified() {
-        final CaseData caseData = CaseData.builder().build();
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldReturnErrorWhenNoApplicantNorSolicitorSpecified(List<Element<Applicant>> applicants) {
+        final CaseData caseData = CaseData.builder()
+            .applicants(applicants)
+            .build();
 
         final List<String> errors = organisationDetailsChecker.validate(caseData);
         final boolean isCompleted = organisationDetailsChecker.isCompleted(caseData);
