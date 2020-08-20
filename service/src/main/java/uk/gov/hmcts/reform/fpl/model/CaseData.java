@@ -74,10 +74,8 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.getMostUrgentHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -634,36 +632,15 @@ public class CaseData {
     }
 
     @JsonIgnore
-    public boolean isNextHearingOfHearingType(HearingType hearingType) {
-        List<Element<HearingBooking>> hearingBookings = getHearingsWithoutAssociatedCMO(hearingDetails);
+    public boolean isNextHearingOfHearingType(UUID cmoID, HearingType hearingType) {
+        if (!hearingDetails.isEmpty()) {
+            HearingBooking mostUrgentHearing = unwrapElements(hearingDetails).stream()
+                .filter(hearingBooking -> !hearingBooking.getCaseManagementOrderId().equals(cmoID))
+                .min(comparing(HearingBooking::getStartDate))
+                .orElseThrow(NoHearingBookingException::new);
 
-        if (!hearingBookings.isEmpty()) {
-            HearingBooking mostUrgentHearing = getMostUrgentHearingBooking(hearingBookings);
-            return hearingType.equals(mostUrgentHearing.getType());
+            return hearingType.getLabel().equals(mostUrgentHearing.getType().getLabel());
         }
-
         return false;
-    }
-
-    @JsonIgnore
-    public List<Element<HearingBooking>> getHearingsWithoutAssociatedCMO() {
-        return hearingDetails.stream()
-            .filter(hearing -> associatedToReturnedCMO(hearing) || !hearing.getValue().hasCMOAssociation())
-            .collect(toList());
-    }
-
-    @JsonIgnore
-    public List<Element<HearingBooking>> getHearingsWithoutAssociatedCMO(
-        List<Element<HearingBooking>> hearingBookings) {
-        return hearingBookings.stream()
-            .filter(hearing -> associatedToReturnedCMO(hearing) || !hearing.getValue().hasCMOAssociation())
-            .collect(toList());
-    }
-
-    @JsonIgnore
-    private boolean associatedToReturnedCMO(Element<HearingBooking> hearing) {
-        return getDraftUploadedCMOs().stream()
-            .filter(cmo -> cmo.getValue().getStatus() == RETURNED)
-            .anyMatch(cmo -> cmo.getId().equals(hearing.getValue().getCaseManagementOrderId()));
     }
 }

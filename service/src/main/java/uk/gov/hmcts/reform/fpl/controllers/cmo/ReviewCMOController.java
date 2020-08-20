@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
@@ -97,12 +98,6 @@ public class ReviewCMOController {
         if (!cmosReadyForApproval.isEmpty()) {
             Element<CaseManagementOrder> cmo = reviewCMOService.getSelectedCMO(caseData);
 
-            // TODO
-            // Add feature flag
-            if (isSendingCMOToAllParties(caseData.getReviewCMODecision().getDecision())
-                && isNextHearingOfType(caseData, ISSUE_RESOLUTION)) {
-                data.put("state", State.ISSUE_RESOLUTION.getValue());
-            }
 
             if (!JUDGE_REQUESTED_CHANGES.equals(caseData.getReviewCMODecision().getDecision())) {
                 Element<CaseManagementOrder> cmoToSeal = reviewCMOService.getCMOToSeal(caseData);
@@ -119,6 +114,14 @@ public class ReviewCMOController {
                 sealedCMOs.add(cmoToSeal);
 
                 data.put("sealedCMOs", sealedCMOs);
+
+                // TODO
+                // Add feature flag
+                if (isSendingCMOToAllParties(caseData.getReviewCMODecision().getDecision())
+                    && isNextHearingOfType(caseData, cmo.getId(), ISSUE_RESOLUTION)) {
+                    data.put("state", State.ISSUE_RESOLUTION.getValue());
+                }
+
             } else {
                 cmo.getValue().setStatus(RETURNED);
                 cmo.getValue().setRequestedChanges(caseData.getReviewCMODecision().getChangesRequestedByJudge());
@@ -161,8 +164,8 @@ public class ReviewCMOController {
         }
     }
 
-    private boolean isNextHearingOfType(CaseData caseData, HearingType hearingType) {
-        return caseData.isNextHearingOfHearingType(hearingType);
+    private boolean isNextHearingOfType(CaseData caseData, UUID cmoID, HearingType hearingType) {
+        return caseData.isNextHearingOfHearingType(cmoID, hearingType);
     }
 
     private boolean isSendingCMOToAllParties(CMOReviewOutcome reviewOutcome) {

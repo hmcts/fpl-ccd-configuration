@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -37,7 +36,6 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
     JacksonAutoConfiguration.class, FixedTimeConfiguration.class, UploadCMOService.class
@@ -54,12 +52,7 @@ class UploadCMOServiceTest {
     void shouldReturnMultiPageDataWhenThereAreMultipleHearings() {
         List<Element<HearingBooking>> hearings = hearings();
 
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(hearings)
-            .draftUploadedCMOs(List.of())
-            .build();
-
-        Map<String, Object> initialPageData = service.getInitialPageData(caseData);
+        Map<String, Object> initialPageData = service.getInitialPageData(hearings, List.of());
 
         Map<String, Object> expected = Map.of(
             "hearingsWithoutApprovedCMO",
@@ -82,12 +75,7 @@ class UploadCMOServiceTest {
 
         hearings.add(hearing);
 
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(hearings)
-            .draftUploadedCMOs(List.of(cmo))
-            .build();
-
-        Map<String, Object> initialPageData = service.getInitialPageData(caseData);
+        Map<String, Object> initialPageData = service.getInitialPageData(hearings, List.of(cmo));
 
         Map<String, Object> expected = Map.of(
             "hearingsWithoutApprovedCMO",
@@ -109,12 +97,7 @@ class UploadCMOServiceTest {
             hearing(CASE_MANAGEMENT, LocalDateTime.of(2020, 2, 1, 0, 0))
         ));
 
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(hearings)
-            .draftUploadedCMOs(List.of())
-            .build();
-
-        Map<String, Object> initialPageData = service.getInitialPageData(caseData);
+        Map<String, Object> initialPageData = service.getInitialPageData(hearings, List.of());
 
         Map<String, Object> expected = Map.of(
             "numHearingsWithoutCMO", "SINGLE",
@@ -134,12 +117,7 @@ class UploadCMOServiceTest {
             element(hearing(CASE_MANAGEMENT, LocalDateTime.of(2020, 2, 2, 0, 0), cmo.getId()))
         );
 
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(hearings)
-            .draftUploadedCMOs(List.of(cmo))
-            .build();
-
-        Map<String, Object> initialPageData = service.getInitialPageData(caseData);
+        Map<String, Object> initialPageData = service.getInitialPageData(hearings, List.of(cmo));
 
         Map<String, Object> expected = Map.of(
             "numHearingsWithoutCMO", "SINGLE",
@@ -155,12 +133,7 @@ class UploadCMOServiceTest {
 
     @Test
     void shouldReturnPageShowHideFieldOnlyWhenThereAreNoRemainingHearingsWithoutCmoMappings() {
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(List.of())
-            .draftUploadedCMOs(List.of())
-            .build();
-
-        Map<String, Object> initialPageData = service.getInitialPageData(caseData);
+        Map<String, Object> initialPageData = service.getInitialPageData(List.of(), List.of());
 
         Map<String, String> expected = Map.of(
             "numHearingsWithoutCMO", "NONE"
@@ -186,12 +159,7 @@ class UploadCMOServiceTest {
 
         hearings.addAll(additionalHearings);
 
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(hearings)
-            .draftUploadedCMOs(List.of(cmo, returnedCMO))
-            .build();
-
-        Map<String, Object> initialPageData = service.getInitialPageData(caseData);
+        Map<String, Object> initialPageData = service.getInitialPageData(hearings, List.of(cmo, returnedCMO));
 
         DynamicListElement listElement = DynamicListElement.builder()
             .code(additionalHearings.get(1).getId())
@@ -226,12 +194,7 @@ class UploadCMOServiceTest {
             true
         );
 
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(hearings)
-            .draftUploadedCMOs(List.of())
-            .build();
-
-        Map<String, Object> preparedData = service.prepareJudgeAndHearingDetails(caseData, dynamicList);
+        Map<String, Object> preparedData = service.prepareJudgeAndHearingDetails(dynamicList, hearings, List.of());
 
         assertThat(preparedData).isEqualTo(Map.of(
             "cmoHearingInfo", "Case management hearing, 2 March 2020",
@@ -244,12 +207,7 @@ class UploadCMOServiceTest {
         List<Element<HearingBooking>> hearings = hearings();
         String malformedData = hearings.get(0).getId().toString();
 
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(hearings)
-            .draftUploadedCMOs(List.of())
-            .build();
-
-        Map<String, Object> preparedData = service.prepareJudgeAndHearingDetails(caseData, malformedData);
+        Map<String, Object> preparedData = service.prepareJudgeAndHearingDetails(malformedData, hearings, List.of());
 
         DynamicList dynamicList = dynamicList(
             hearings.get(0).getId(),
@@ -273,12 +231,7 @@ class UploadCMOServiceTest {
             true
         );
 
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(hearings)
-            .draftUploadedCMOs(List.of())
-            .build();
-
-        Map<String, Object> preparedData = service.prepareJudgeAndHearingDetails(caseData, dynamicList);
+        Map<String, Object> preparedData = service.prepareJudgeAndHearingDetails(dynamicList, hearings, List.of());
 
         assertThat(preparedData).isNotEmpty().doesNotContainKey("hearingsWithoutApprovedCMO");
     }
@@ -295,12 +248,7 @@ class UploadCMOServiceTest {
         List<Element<CaseManagementOrder>> unsealedOrders = new ArrayList<>();
         DocumentReference order = DocumentReference.builder().build();
 
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(hearings)
-            .draftUploadedCMOs(unsealedOrders)
-            .build();
-
-        service.updateHearingsAndUnsealedCMOs(caseData, unsealedOrders, order, dynamicList);
+        service.updateHearingsAndUnsealedCMOs(hearings, unsealedOrders, order, dynamicList);
 
         CaseManagementOrder expectedOrder = CaseManagementOrder.builder()
             .status(SEND_TO_JUDGE)
@@ -310,16 +258,16 @@ class UploadCMOServiceTest {
             .judgeTitleAndName("His Honour Judge Dredd")
             .build();
 
-        assertThat(caseData.getDraftUploadedCMOs()).isNotEmpty()
+        assertThat(unsealedOrders).isNotEmpty()
             .first()
             .extracting("value")
             .isEqualTo(expectedOrder);
 
-        assertThat(caseData.getHearingDetails()).hasSize(3)
+        assertThat(hearings).hasSize(3)
             .first()
             .extracting("value")
             .extracting("caseManagementOrderId")
-            .isEqualTo(caseData.getDraftUploadedCMOs().get(0).getId());
+            .isEqualTo(unsealedOrders.get(0).getId());
     }
 
     @Test
@@ -342,12 +290,7 @@ class UploadCMOServiceTest {
 
         DocumentReference order = DocumentReference.builder().build();
 
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(hearings)
-            .draftUploadedCMOs(unsealedOrders)
-            .build();
-
-        service.updateHearingsAndUnsealedCMOs(caseData, unsealedOrders, order, dynamicList);
+        service.updateHearingsAndUnsealedCMOs(hearings, unsealedOrders, order, dynamicList);
 
         CaseManagementOrder expectedOrder = CaseManagementOrder.builder()
             .status(SEND_TO_JUDGE)
@@ -357,13 +300,13 @@ class UploadCMOServiceTest {
             .judgeTitleAndName("His Honour Judge Dredd")
             .build();
 
-        assertThat(caseData.getDraftUploadedCMOs()).hasSize(2)
+        assertThat(unsealedOrders).hasSize(2)
             .first()
             .extracting("value")
             .isNotEqualTo(oldOrder.getValue())
             .isEqualTo(expectedOrder);
 
-        assertThat(caseData.getHearingDetails()).hasSize(3)
+        assertThat(hearings).hasSize(3)
             .first()
             .extracting("value")
             .extracting("caseManagementOrderId")

@@ -45,7 +45,7 @@ public class UploadCMOController {
         Map<String, Object> data = request.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        data.putAll(cmoService.getInitialPageData(caseData));
+        data.putAll(cmoService.getInitialPageData(caseData.getPastHearings(), caseData.getDraftUploadedCMOs()));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -64,7 +64,11 @@ public class UploadCMOController {
         }
 
         // update judge and hearing labels
-        data.putAll(cmoService.prepareJudgeAndHearingDetails(caseData, caseData.getHearingsWithoutApprovedCMO()));
+        data.putAll(cmoService.prepareJudgeAndHearingDetails(
+            caseData.getHearingsWithoutApprovedCMO(),
+            caseData.getPastHearings(),
+            caseData.getDraftUploadedCMOs()
+        ));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -81,8 +85,12 @@ public class UploadCMOController {
 
         if (uploadedCaseManagementOrder != null) {
             List<Element<HearingBooking>> hearings = caseData.getPastHearings();
-            cmoService.updateHearingsAndUnsealedCMOs(caseData, draftCMOs, uploadedCaseManagementOrder,
-                caseData.getHearingsWithoutApprovedCMO());
+            cmoService.updateHearingsAndUnsealedCMOs(
+                hearings,
+                draftCMOs,
+                uploadedCaseManagementOrder,
+                caseData.getHearingsWithoutApprovedCMO()
+            );
             // update case data
             data.put("draftUploadedCMOs", draftCMOs);
             data.put("hearingDetails", hearings);

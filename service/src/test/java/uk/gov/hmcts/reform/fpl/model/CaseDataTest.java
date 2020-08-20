@@ -39,7 +39,6 @@ import static java.util.Collections.emptyList;
 import static java.util.UUID.fromString;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
@@ -54,8 +53,6 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
@@ -592,7 +589,7 @@ class CaseDataTest {
                 .draftUploadedCMOs(List.of())
                 .build();
 
-            assertThat(caseData.isNextHearingOfHearingType(ISSUE_RESOLUTION)).isTrue();
+            assertThat(caseData.isNextHearingOfHearingType(null, ISSUE_RESOLUTION)).isTrue();
         }
 
         @Test
@@ -602,7 +599,7 @@ class CaseDataTest {
                 .draftUploadedCMOs(List.of())
                 .build();
 
-            assertThat(caseData.isNextHearingOfHearingType(ISSUE_RESOLUTION)).isFalse();
+            assertThat(caseData.isNextHearingOfHearingType(null, ISSUE_RESOLUTION)).isFalse();
         }
 
         @Test
@@ -611,84 +608,7 @@ class CaseDataTest {
                 .hearingDetails(List.of())
                 .build();
 
-            assertThat(caseData.isNextHearingOfHearingType(ISSUE_RESOLUTION)).isFalse();
-        }
-    }
-
-    @Nested
-    class GetHearingsWithoutAssociatedCMO {
-        @Test
-        void shouldRemoveHearingBookingThatHasIsAssociatedToACMO() {
-            List<Element<HearingBooking>> expectedHearings = createHearingBookingElements();
-            List<Element<HearingBooking>> hearingBookings = new ArrayList<>(expectedHearings);
-            Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder> cmo =
-                element(uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.builder().build());
-
-            HearingBooking associatedCaseManagementHearing
-                = createHearingBooking(LocalDateTime.of(2020, 1, 15, 0, 0),
-                null, CASE_MANAGEMENT, cmo.getId());
-
-            hearingBookings.add(element(associatedCaseManagementHearing));
-
-            CaseData caseData = CaseData.builder()
-                .hearingDetails(hearingBookings)
-                .draftUploadedCMOs(List.of(cmo))
-                .build();
-
-            List<Element<HearingBooking>> filteredHearingBookings = caseData.getHearingsWithoutAssociatedCMO();
-
-            assertThat(filteredHearingBookings).isEqualTo(expectedHearings);
-        }
-
-        @Test
-        void shouldRemoveHearingBookingThatIsAssociatedToAReturnedCMO() {
-            List<Element<HearingBooking>> expectedHearings = createHearingBookingElements();
-            List<Element<HearingBooking>> hearingBookings = new ArrayList<>(expectedHearings);
-
-            Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder> cmo =
-                element(uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder
-                    .builder().build());
-            Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder> returnedCMO
-                = element(uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.builder().status(RETURNED).build());
-
-            List<Element<HearingBooking>> additionalHearings = List.of(
-                element(createHearingBooking(LocalDateTime.of(2020, 1, 15, 0, 0),
-                    null, CASE_MANAGEMENT, returnedCMO.getId())),
-                element(createHearingBooking(LocalDateTime.of(2020, 1, 16, 0, 0),
-                    null, CASE_MANAGEMENT, returnedCMO.getId())));
-
-            hearingBookings.addAll(additionalHearings);
-
-            CaseData caseData = CaseData.builder()
-                .hearingDetails(hearingBookings)
-                .draftUploadedCMOs(List.of(cmo))
-                .build();
-
-            List<Element<HearingBooking>> filteredHearingBookings = caseData.getHearingsWithoutAssociatedCMO();
-
-            assertThat(filteredHearingBookings).isEqualTo(expectedHearings);
-        }
-
-        @Test
-        void shouldReturnEmptyListOfHearingBookingsIfAllHearingsAssociatedWithACMO() {
-            Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder> cmo
-                = element(uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.builder().build());
-
-            List<Element<HearingBooking>> hearingBookings;
-
-            hearingBookings = wrapElements(
-                createHearingBooking(LocalDateTime.of(2020, 1, 15, 0, 0),
-                    null, FINAL, cmo.getId()),
-                createHearingBooking(LocalDateTime.of(2020, 1, 15, 0, 0),
-                    null, CASE_MANAGEMENT, cmo.getId()));
-
-            CaseData caseData = CaseData.builder()
-                .hearingDetails(hearingBookings)
-                .draftUploadedCMOs(List.of(cmo))
-                .build();
-
-            List<Element<HearingBooking>> filteredHearingBookings = caseData.getHearingsWithoutAssociatedCMO();
-            assertThat(filteredHearingBookings).isEmpty();
+            assertThat(caseData.isNextHearingOfHearingType(null, ISSUE_RESOLUTION)).isFalse();
         }
     }
 
