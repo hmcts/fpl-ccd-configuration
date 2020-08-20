@@ -99,6 +99,29 @@ public class CaseDataGeneratorHelper {
             .build();
     }
 
+    public static HearingBooking createHearingBooking(LocalDateTime startDate,
+                                                      LocalDateTime endDate,
+                                                      HearingType hearingType,
+                                                      UUID cmoID) {
+        return HearingBooking.builder()
+            .type(hearingType)
+            .startDate(startDate)
+            .venue("Venue")
+            .endDate(endDate)
+            .caseManagementOrderId(cmoID)
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeTitle(HER_HONOUR_JUDGE)
+                .judgeLastName("Law")
+                .legalAdvisorName("Peter Parker")
+                .build())
+            .noticeOfHearing(DocumentReference.builder()
+                .filename("fileName")
+                .binaryUrl("binary_url")
+                .url("www.url.com")
+                .build())
+            .build();
+    }
+
     public static List<Element<Applicant>> createPopulatedApplicants() {
         return ImmutableList.of(
             Element.<Applicant>builder()

@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +23,9 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
+import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +39,7 @@ import static java.util.Collections.emptyList;
 import static java.util.UUID.fromString;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
@@ -50,6 +54,9 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
@@ -69,6 +76,13 @@ class CaseDataTest {
 
     @Autowired
     private Time time;
+
+    private LocalDateTime futureDate;
+
+    @BeforeEach
+    void setUp() {
+        futureDate = time.now().plusDays(1);
+    }
 
     @Nested
     class GetDirectionsToComplyWith {
@@ -563,6 +577,121 @@ class CaseDataTest {
         assertThat(hearingBookingInFuture).isFalse();
     }
 
+    @Nested
+    class IsNextHearingOfHearingType {
+        @Test
+        void shouldReturnTrueIfNextHearingIsOfTypeIssueResolution() {
+            List<Element<HearingBooking>> hearingBookings = createHearingBookingElements();
+            HearingBooking issueResolutionHearing = createHearingBooking(time.now().plusMinutes(1),
+                futureDate.plusDays(2));
+            issueResolutionHearing.setType(ISSUE_RESOLUTION);
+            hearingBookings.add(element(issueResolutionHearing));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(hearingBookings)
+                .draftUploadedCMOs(List.of())
+                .build();
+
+            assertThat(caseData.isNextHearingOfHearingType(ISSUE_RESOLUTION)).isTrue();
+        }
+
+        @Test
+        void shouldReturnFalseIfNextHearingIsNotOfTypeIssueResolution() {
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(createHearingBookingElements())
+                .draftUploadedCMOs(List.of())
+                .build();
+
+            assertThat(caseData.isNextHearingOfHearingType(ISSUE_RESOLUTION)).isFalse();
+        }
+
+        @Test
+        void shouldReturnFalseIfHearingBookingsAreEmpty() {
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(List.of())
+                .build();
+
+            assertThat(caseData.isNextHearingOfHearingType(ISSUE_RESOLUTION)).isFalse();
+        }
+    }
+
+    @Nested
+    class GetHearingsWithoutAssociatedCMO {
+        @Test
+        void shouldRemoveHearingBookingThatHasIsAssociatedToACMO() {
+            List<Element<HearingBooking>> expectedHearings = createHearingBookingElements();
+            List<Element<HearingBooking>> hearingBookings = new ArrayList<>(expectedHearings);
+            Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder> cmo =
+                element(uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.builder().build());
+
+            HearingBooking associatedCaseManagementHearing
+                = createHearingBooking(LocalDateTime.of(2020, 1, 15, 0, 0),
+                null, CASE_MANAGEMENT, cmo.getId());
+
+            hearingBookings.add(element(associatedCaseManagementHearing));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(hearingBookings)
+                .draftUploadedCMOs(List.of(cmo))
+                .build();
+
+            List<Element<HearingBooking>> filteredHearingBookings = caseData.getHearingsWithoutAssociatedCMO();
+
+            assertThat(filteredHearingBookings).isEqualTo(expectedHearings);
+        }
+
+        @Test
+        void shouldRemoveHearingBookingThatIsAssociatedToAReturnedCMO() {
+            List<Element<HearingBooking>> expectedHearings = createHearingBookingElements();
+            List<Element<HearingBooking>> hearingBookings = new ArrayList<>(expectedHearings);
+
+            Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder> cmo =
+                element(uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder
+                    .builder().build());
+            Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder> returnedCMO
+                = element(uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.builder().status(RETURNED).build());
+
+            List<Element<HearingBooking>> additionalHearings = List.of(
+                element(createHearingBooking(LocalDateTime.of(2020, 1, 15, 0, 0),
+                    null, CASE_MANAGEMENT, returnedCMO.getId())),
+                element(createHearingBooking(LocalDateTime.of(2020, 1, 16, 0, 0),
+                    null, CASE_MANAGEMENT, returnedCMO.getId())));
+
+            hearingBookings.addAll(additionalHearings);
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(hearingBookings)
+                .draftUploadedCMOs(List.of(cmo))
+                .build();
+
+            List<Element<HearingBooking>> filteredHearingBookings = caseData.getHearingsWithoutAssociatedCMO();
+
+            assertThat(filteredHearingBookings).isEqualTo(expectedHearings);
+        }
+
+        @Test
+        void shouldReturnEmptyListOfHearingBookingsIfAllHearingsAssociatedWithACMO() {
+            Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder> cmo
+                = element(uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.builder().build());
+
+            List<Element<HearingBooking>> hearingBookings;
+
+            hearingBookings = wrapElements(
+                createHearingBooking(LocalDateTime.of(2020, 1, 15, 0, 0),
+                    null, FINAL, cmo.getId()),
+                createHearingBooking(LocalDateTime.of(2020, 1, 15, 0, 0),
+                    null, CASE_MANAGEMENT, cmo.getId()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(hearingBookings)
+                .draftUploadedCMOs(List.of(cmo))
+                .build();
+
+            List<Element<HearingBooking>> filteredHearingBookings = caseData.getHearingsWithoutAssociatedCMO();
+            assertThat(filteredHearingBookings).isEmpty();
+        }
+    }
+
     private String buildJsonDirections(UUID id) throws JsonProcessingException {
         List<Element<Direction>> directions = List.of(element(id, Direction.builder().directionType("title").build()));
         String directionString = mapper.writeValueAsString(directions);
@@ -608,5 +737,12 @@ class CaseDataTest {
 
         return format("{\"%s\": [{\"id\":\"%s\",\"value\":{\"directionType\":\"title\",\"assignee\":\"%s\","
             + "\"readOnly\":\"No\",\"custom\":\"Yes\",\"responses\":[]}}]}", key, id, assignee.toString());
+    }
+
+    private List<Element<HearingBooking>> createHearingBookingElements() {
+        return new ArrayList<>(List.of(
+            element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))),
+            element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3))),
+            element(createHearingBooking(futureDate, futureDate.plusDays(1)))));
     }
 }

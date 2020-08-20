@@ -7,6 +7,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.fpl.controllers.cmo.ReviewCMOController;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
@@ -30,6 +31,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
@@ -99,10 +101,40 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
             .status(APPROVED)
             .build();
 
+        assertThat(State.ISSUE_RESOLUTION.getValue().equals(responseData.getState())).isFalse();
         assertThat(responseData.getDraftUploadedCMOs()).isEmpty();
         assertThat(responseData.getSealedCMOs())
             .extracting(Element::getValue)
             .containsExactly(expectedSealedCmo);
+    }
+
+    @Test
+    void shouldUpdateStateToIssueResolutionWhenNextHearingIssueResolutionAndCmoDecisionIsSendToAllParties()
+        throws Exception {
+        CaseManagementOrder cmo = buildCMO();
+        DocumentReference convertedDocument = testDocumentReference();
+        DocumentReference sealedDocument = testDocumentReference();
+
+        given(documentConversionService.convertToPdf(cmo.getOrder())).willReturn(convertedDocument);
+        given(documentSealingService.sealDocument(convertedDocument)).willReturn(sealedDocument);
+
+        UUID cmoId = UUID.randomUUID();
+
+        HearingBooking issueResolutionHearing = HearingBooking.builder()
+            .startDate(LocalDateTime.now().plusDays(1))
+            .type(ISSUE_RESOLUTION)
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .draftUploadedCMOs(List.of(element(cmoId, cmo)))
+            .hearingDetails(List.of(
+                element(hearing(cmoId)),
+                element(issueResolutionHearing)))
+            .reviewCMODecision(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build()).build();
+
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
+
+        assertThat(State.ISSUE_RESOLUTION.getValue().equals(responseData.getState()));
     }
 
     @Test

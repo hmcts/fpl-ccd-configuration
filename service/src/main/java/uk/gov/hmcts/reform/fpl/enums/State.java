@@ -22,7 +22,9 @@ public enum State {
     @JsonProperty("Deleted")
     DELETED("Deleted"),
 
-    RETURNED("RETURNED");
+    RETURNED("RETURNED"),
+
+    ISSUE_RESOLUTION("ISSUE_RESOLUTION");
 
     private final String value;
 }

@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -28,7 +31,9 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
+import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 
 @Api
 @RestController
@@ -92,6 +97,13 @@ public class ReviewCMOController {
         if (!cmosReadyForApproval.isEmpty()) {
             Element<CaseManagementOrder> cmo = reviewCMOService.getSelectedCMO(caseData);
 
+            // TODO
+            // Add feature flag
+            if (isSendingCMOToAllParties(caseData.getReviewCMODecision().getDecision())
+                && isNextHearingOfType(caseData, ISSUE_RESOLUTION)) {
+                data.put("state", State.ISSUE_RESOLUTION.getValue());
+            }
+
             if (!JUDGE_REQUESTED_CHANGES.equals(caseData.getReviewCMODecision().getDecision())) {
                 Element<CaseManagementOrder> cmoToSeal = reviewCMOService.getCMOToSeal(caseData);
 
@@ -147,5 +159,13 @@ public class ReviewCMOController {
                 eventPublisher.publishEvent(new CaseManagementOrderRejectedEvent(callbackRequest, cmoToReturn));
             }
         }
+    }
+
+    private boolean isNextHearingOfType(CaseData caseData, HearingType hearingType) {
+        return caseData.isNextHearingOfHearingType(hearingType);
+    }
+
+    private boolean isSendingCMOToAllParties(CMOReviewOutcome reviewOutcome) {
+        return SEND_TO_ALL_PARTIES.equals(reviewOutcome);
     }
 }

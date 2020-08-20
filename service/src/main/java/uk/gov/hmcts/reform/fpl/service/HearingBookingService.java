@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService
 import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -70,9 +71,9 @@ public class HearingBookingService {
         }
     }
 
-    public HearingBooking getMostUrgentHearingBooking(List<Element<HearingBooking>> hearingDetails) {
+    public static HearingBooking getMostUrgentHearingBooking(List<Element<HearingBooking>> hearingDetails) {
         return unwrapElements(hearingDetails).stream()
-            .filter(hearing -> hearing.getStartDate().isAfter(time.now()))
+            .filter(hearing -> hearing.getStartDate().isAfter(LocalDateTime.now()))
             .min(comparing(HearingBooking::getStartDate))
             .orElseThrow(NoHearingBookingException::new);
     }

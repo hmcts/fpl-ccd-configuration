@@ -27,7 +27,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @AllArgsConstructor
 @HasEndDateAfterStartDate(groups = HearingBookingDetailsGroup.class)
 public class HearingBooking {
-    private final HearingType type;
+    private HearingType type;
     private final String typeDetails;
     private final String venue;
     private final Address venueCustomAddress;

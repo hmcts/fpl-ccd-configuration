@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -22,7 +23,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
-import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.from;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -46,10 +46,9 @@ public class UploadCMOService {
     private final ObjectMapper mapper;
     private final Time time;
 
-    public Map<String, Object> getInitialPageData(List<Element<HearingBooking>> hearings,
-                                                  List<Element<CaseManagementOrder>> unsealedOrders) {
-
-        List<Element<HearingBooking>> hearingsWithoutCMOs = getHearingsWithoutCMO(hearings, unsealedOrders);
+    public Map<String, Object> getInitialPageData(CaseData caseData) {
+        List<Element<HearingBooking>> hearingsWithoutCMOs
+            = caseData.getHearingsWithoutAssociatedCMO(caseData.getPastHearings());
 
         Map<String, Object> data = new HashMap<>();
         String textAreaKey = null;
@@ -82,7 +81,7 @@ public class UploadCMOService {
                 data.put(PAST_HEARING_LIST_FIELD, buildDynamicList(hearingsWithoutCMOs));
         }
 
-        String textAreaContent = buildHearingsWithCMOsText(unsealedOrders, hearings);
+        String textAreaContent = buildHearingsWithCMOsText(caseData.getDraftUploadedCMOs(), caseData.getPastHearings());
 
         if (textAreaContent.length() != 0 && textAreaKey != null) {
             data.put(textAreaKey, textAreaContent);
@@ -94,14 +93,13 @@ public class UploadCMOService {
         return data;
     }
 
-    public Map<String, Object> prepareJudgeAndHearingDetails(Object dynamicList,
-                                                             List<Element<HearingBooking>> hearings,
-                                                             List<Element<CaseManagementOrder>> unsealedOrders) {
+    public Map<String, Object> prepareJudgeAndHearingDetails(CaseData caseData, Object dynamicList) {
         // When dynamic lists are fixed unsealedOrders shouldn't need passing, we can just remove the statement below
         // as hearings is just a superset of hearingsWithoutCMO.
         // Currently it is used to get the hearings to rebuild the dynamic list and as a byproduct the filtered list of
         // hearings has a reduced search space for get getSelectedHearing.
-        List<Element<HearingBooking>> hearingsWithoutCMO = getHearingsWithoutCMO(hearings, unsealedOrders);
+        List<Element<HearingBooking>> hearingsWithoutCMO
+            = caseData.getHearingsWithoutAssociatedCMO(caseData.getPastHearings());
         UUID selectedHearingId = getSelectedHearingId(dynamicList, hearingsWithoutCMO);
         HearingBooking selectedHearing = getSelectedHearing(selectedHearingId, hearingsWithoutCMO);
         Map<String, Object> data = new HashMap<>(getJudgeAndHearingDetails(selectedHearing));
@@ -115,17 +113,20 @@ public class UploadCMOService {
         return data;
     }
 
-    public void updateHearingsAndUnsealedCMOs(List<Element<HearingBooking>> hearings,
+    public void updateHearingsAndUnsealedCMOs(CaseData caseData,
                                               List<Element<CaseManagementOrder>> unsealedOrders,
                                               DocumentReference uploadedOrder,
                                               Object dynamicList) {
-        List<Element<HearingBooking>> filteredHearings = getHearingsWithoutCMO(hearings, unsealedOrders);
+        List<Element<HearingBooking>> pastHearings = caseData.getPastHearings();
+        List<Element<HearingBooking>> filteredHearings
+            = caseData.getHearingsWithoutAssociatedCMO(pastHearings);
+
         UUID selectedHearingId = getSelectedHearingId(dynamicList, filteredHearings);
         HearingBooking hearing = getSelectedHearing(selectedHearingId, filteredHearings);
 
         Element<CaseManagementOrder> element = element(from(uploadedOrder, hearing, time.now().toLocalDate()));
 
-        Optional<UUID> uuid = updateHearingWithCmoId(selectedHearingId, hearings, element);
+        Optional<UUID> uuid = updateHearingWithCmoId(selectedHearingId, pastHearings, element);
 
         if (uuid.isPresent()) {
             // overwrite old draft CMO
@@ -150,14 +151,6 @@ public class UploadCMOService {
         current.removeAll(cmosBefore);
 
         return !current.isEmpty();
-    }
-
-    private List<Element<HearingBooking>> getHearingsWithoutCMO(List<Element<HearingBooking>> hearings,
-                                                                List<Element<CaseManagementOrder>> unsealedOrders) {
-        return hearings.stream()
-            .filter(hearing -> associatedToReturnedCMO(hearing, unsealedOrders)
-                || !hearing.getValue().hasCMOAssociation())
-            .collect(toList());
     }
 
     private Optional<UUID> updateHearingWithCmoId(UUID selectedHearing, List<Element<HearingBooking>> hearings,
@@ -199,13 +192,6 @@ public class UploadCMOService {
             CMO_JUDGE_INFO_FIELD, formatJudgeTitleAndName(hearing.getJudgeAndLegalAdvisor()),
             CMO_HEARING_INFO_FIELD, hearing.toLabel(DATE)
         );
-    }
-
-    private boolean associatedToReturnedCMO(Element<HearingBooking> hearing,
-                                            List<Element<CaseManagementOrder>> unsealedCMOs) {
-        return unsealedCMOs.stream()
-            .filter(cmo -> cmo.getValue().getStatus() == RETURNED)
-            .anyMatch(cmo -> cmo.getId().equals(hearing.getValue().getCaseManagementOrderId()));
     }
 
     private String buildHearingsWithCMOsText(List<Element<CaseManagementOrder>> unsealedOrders,
