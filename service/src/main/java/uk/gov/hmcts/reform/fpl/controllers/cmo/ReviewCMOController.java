@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ReviewCMOService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 
@@ -47,6 +48,7 @@ public class ReviewCMOController {
     private final DocumentConversionService documentConversionService;
     private final DocumentSealingService documentSealingService;
     private final ApplicationEventPublisher eventPublisher;
+    private final FeatureToggleService featureToggleService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -115,13 +117,11 @@ public class ReviewCMOController {
 
                 data.put("sealedCMOs", sealedCMOs);
 
-                // TODO
-                // Add feature flag
-                if (isSendingCMOToAllParties(caseData.getReviewCMODecision().getDecision())
+                if (featureToggleService.isNewCaseStateModelEnabled()
+                    && isSendingCMOToAllParties(caseData.getReviewCMODecision().getDecision())
                     && isNextHearingOfType(caseData, cmo.getId(), ISSUE_RESOLUTION)) {
                     data.put("state", State.ISSUE_RESOLUTION.getValue());
                 }
-
             } else {
                 cmo.getValue().setStatus(RETURNED);
                 cmo.getValue().setRequestedChanges(caseData.getReviewCMODecision().getChangesRequestedByJudge());
