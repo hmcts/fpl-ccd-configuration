@@ -633,14 +633,19 @@ public class CaseData {
 
     @JsonIgnore
     public boolean isNextHearingOfHearingType(UUID cmoID, HearingType hearingType) {
-        if (!hearingDetails.isEmpty()) {
-            HearingBooking mostUrgentHearing = unwrapElements(hearingDetails).stream()
-                .filter(hearingBooking -> !hearingBooking.getCaseManagementOrderId().equals(cmoID))
-                .min(comparing(HearingBooking::getStartDate))
-                .orElseThrow(NoHearingBookingException::new);
-
-            return hearingType.getLabel().equals(mostUrgentHearing.getType().getLabel());
+        if (hearingDetails.isEmpty()) {
+            return false;
         }
-        return false;
+
+        HearingBooking mostUrgentHearing = unwrapElements(hearingDetails).stream()
+            .filter(hearingBooking -> !hearingBooking.getCaseManagementOrderId().equals(cmoID))
+            .min(comparing(HearingBooking::getStartDate))
+            .orElse(HearingBooking.builder().build());
+
+        if (mostUrgentHearing.getType() != null) {
+            return hearingType.getLabel().equals(mostUrgentHearing.getType().getLabel());
+        } else {
+            return false;
+        }
     }
 }

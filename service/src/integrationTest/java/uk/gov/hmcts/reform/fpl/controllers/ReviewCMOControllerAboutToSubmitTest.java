@@ -74,7 +74,6 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
             .build();
 
         assertThat(returnedCMO).isEqualTo(expectedCMO);
-
     }
 
     @Test
@@ -123,6 +122,7 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
         HearingBooking issueResolutionHearing = HearingBooking.builder()
             .startDate(LocalDateTime.now().plusDays(1))
             .type(ISSUE_RESOLUTION)
+            .caseManagementOrderId(UUID.randomUUID())
             .build();
 
         CaseData caseData = CaseData.builder()
