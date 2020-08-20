@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.service.validators;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -9,6 +11,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDate;
@@ -23,9 +26,12 @@ class ChildrenCheckerTest {
     @Autowired
     private ChildrenChecker childrenChecker;
 
-    @Test
-    void shouldReturnErrorWhenNoChildrenSpecified() {
-        final CaseData caseData = CaseData.builder().build();
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldReturnErrorWhenNoChildrenSpecified(List<Element<Child>> children) {
+        final CaseData caseData = CaseData.builder()
+            .children1(children)
+            .build();
 
         final List<String> errors = childrenChecker.validate(caseData);
         final boolean isCompleted = childrenChecker.isCompleted(caseData);
