@@ -96,8 +96,10 @@ class CaseExtensionServiceTest {
 
     @Test
     void shouldGetCaseCompletionDateWhenCompletionDateExists() {
-        CaseData data = CaseData.builder().dateSubmitted(LocalDate
-            .of(2020, 11, 20)).build();
+        CaseData data = CaseData.builder()
+            .dateSubmitted(LocalDate.of(2020, 11, 20))
+            .caseCompletionDate(LocalDate.of(2021, 1, 15))
+            .build();
 
         LocalDate expectedCaseCompletionDate = data.getDateSubmitted().plusWeeks(8);
 
