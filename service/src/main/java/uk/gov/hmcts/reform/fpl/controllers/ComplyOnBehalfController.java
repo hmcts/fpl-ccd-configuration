@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.emptyList;
-import static net.logstash.logback.encoder.org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMapping;
 
 @Api

@@ -1,5 +1,6 @@
 const config = require('../config.js');
 const dateFormat = require('dateformat');
+const applicant = require('../fixtures/applicant.js');
 const mandatorySubmissionFields = require('../fixtures/mandatorySubmissionFields.json');
 
 let caseId;
@@ -32,11 +33,11 @@ Scenario('LA makes corrections to the application', async (I, caseViewPage, ente
   I.seeInTab(['Return details', 'Reason for rejection'], 'Application Incorrect');
   I.seeInTab(['Return details', 'Let the local authority know what they need to change'], 'PBA number is incorrect');
   await caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
-  enterApplicantEventPage.enterPbaNumber();
+  enterApplicantEventPage.enterPbaNumber(applicant.pbaNumber);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterApplicant);
   caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
-  I.seeInTab(['Applicants 1', 'Party', 'Payment by account (PBA) number'], 'PBA1234567');
+  I.seeInTab(['Applicants 1', 'Party', 'Payment by account (PBA) number'], applicant.pbaNumber);
   await caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationEventPage.seeDraftApplicationFile();
   submitApplicationEventPage.giveConsent();

@@ -38,6 +38,7 @@ exports.config = {
     loginPage: './e2e/pages/login.page.js',
     caseListPage: './e2e/pages/caseList.page.js',
     caseViewPage: './e2e/pages/caseView.page.js',
+    paymentHistoryPage: './e2e/pages/paymentHistory.page.js',
     eventSummaryPage: './e2e/pages/eventSummary.page.js',
     openApplicationEventPage: './e2e/pages/events/openApplicationEvent.page.js',
     deleteApplicationEventPage: './e2e/pages/events/deleteApplicationEvent.page.js',
