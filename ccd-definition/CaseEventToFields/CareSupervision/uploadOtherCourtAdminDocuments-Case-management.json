@@ -1,0 +1,13 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "uploadOtherCourtAdminDocuments-PREPARE_FOR_HEARING",
+    "CaseFieldID": "otherCourtAdminDocuments",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1
+  }
+]

@@ -108,6 +108,13 @@ See [fpl-service](service/README.md) for more information.
 Some external dependencies need to be stubbed (i.e. professional reference data). 
 Stubbing is configured in fpla-docker repository
 
+## App insight (optional)
+To connect local environment to azure app insight: 
+- set APPINSIGHTS_INSTRUMENTATIONKEY env variable (value can be found in env vault under name AppInsightsInstrumentationKey) 
+- add env variable JAVA_TOOL_OPTIONS=-javaagent:<PATH_TO_PROJECT>/fpl-ccd-configuration/lib/applicationinsights-agent-2.6.1.jar
+
+To connect preview env to azure app insight:
+- add AppInsightsInstrumentationKey under java.keyVaults.fpla.secrets in charts/fpl-case-service/values.preview.template.yaml
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.

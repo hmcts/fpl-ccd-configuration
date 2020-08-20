@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -25,7 +26,6 @@ import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
 import static uk.gov.hmcts.reform.fpl.utils.MaskHelper.maskEmail;
-import static uk.gov.hmcts.reform.fpl.utils.MaskHelper.maskEmail;
 
 @Service
 @Slf4j
@@ -40,9 +40,10 @@ public class OrganisationService {
         try {
             return Set.copyOf(getUsersFromSameOrganisationBasedOnReferenceData(requestData.authorisation()));
         } catch (FeignException.NotFound | FeignException.Forbidden unregisteredException) {
-            log.warn("User not registered in any org in MO", unregisteredException);
+            log.warn("User {} from {} not registered in MO. {}", requestData.userId(), localAuthorityCode,
+                ExceptionUtils.getStackTrace(unregisteredException));
         } catch (FeignException prdFailureException) {
-            log.error("Request for user in same organisation failed", prdFailureException);
+            log.error("Request for users in same organisation failed", prdFailureException);
         }
         return useLocalMapping(localAuthorityCode);
     }
@@ -52,7 +53,7 @@ public class OrganisationService {
             return Set.copyOf(getUsersFromSameOrganisationBasedOnAppConfig(localAuthorityCode));
         } catch (UnknownLocalAuthorityCodeException exception) {
             throw new UserOrganisationLookupException(
-                    format("Can't find users for %s local authority", localAuthorityCode), exception
+                format("Can't find users for %s local authority", localAuthorityCode), exception
             );
         }
     }
@@ -63,17 +64,17 @@ public class OrganisationService {
 
     private List<String> getUsersFromSameOrganisationBasedOnReferenceData(String authorisation) {
         return organisationApi
-                .findUsersByOrganisation(authorisation, authTokenGenerator.generate(), Status.ACTIVE, false)
-                .getUsers()
-                .stream()
-                .map(OrganisationUser::getUserIdentifier)
-                .collect(toList());
+            .findUsersByOrganisation(authorisation, authTokenGenerator.generate(), Status.ACTIVE, false)
+            .getUsers()
+            .stream()
+            .map(OrganisationUser::getUserIdentifier)
+            .collect(toList());
     }
 
     public Optional<String> findUserByEmail(String email) {
         try {
             return Optional.of(organisationApi.findUserByEmail(requestData.authorisation(),
-                    authTokenGenerator.generate(), email).getUserIdentifier());
+                authTokenGenerator.generate(), email).getUserIdentifier());
         } catch (FeignException.NotFound notFoundException) {
             log.info("User with email {} not found", MaskHelper.maskEmail(email));
             return Optional.empty();
@@ -85,7 +86,7 @@ public class OrganisationService {
     public Organisation findOrganisation() {
         try {
             return organisationApi.findOrganisationById(requestData.authorisation(),
-                    authTokenGenerator.generate());
+                authTokenGenerator.generate());
 
         } catch (FeignException ex) {
             log.error("Could not find the associated organisation from reference data", ex);
