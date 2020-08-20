@@ -79,6 +79,7 @@ class ReviewCMOServiceTest {
 
         DynamicList expectedDynamicList = DynamicList.builder()
             .listItems(elements)
+            .value(elements.get(0))
             .build();
 
         assertThat(actualDynamicList)
