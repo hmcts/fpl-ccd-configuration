@@ -1,4 +1,5 @@
 const { I } = inject();
+const money = require('../../helpers/money_helper');
 
 module.exports = {
   fields: {
@@ -35,5 +36,9 @@ module.exports = {
     I.fillField(this.fields.pbaNumber, payment.pbaNumber);
     I.fillField(this.fields.clientCode, payment.clientCode);
     I.fillField(this.fields.customerReference, payment.customerReference);
+  },
+
+  async getFeeToPay(){
+    return money.parse(await I.grabTextFrom('ccd-read-money-gbp-field'));
   },
 };

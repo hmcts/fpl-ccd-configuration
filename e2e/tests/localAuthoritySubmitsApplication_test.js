@@ -555,15 +555,22 @@ Scenario('local authority tries to submit without giving consent', async (I, cas
   I.seeInCurrentUrl('/submitApplication');
 });
 
-Scenario('local authority submits after giving consent @create-case-with-mandatory-sections-only', async (I, caseViewPage, submitApplicationEventPage) => {
+Scenario('local authority submits after giving consent @create-case-with-mandatory-sections-only', async (I, caseViewPage, submitApplicationEventPage, paymentHistoryPage) => {
   await caseViewPage.startTask(config.applicationActions.submitCase);
-  // I.see('£2,055.00'); Disabled until Fee Register updated on AAT
+
+  const feeToPay = await submitApplicationEventPage.getFeeToPay();
   submitApplicationEventPage.seeDraftApplicationFile();
   submitApplicationEventPage.giveConsent();
+
   await I.completeEvent('Submit', null, true);
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.see('New_case_name.pdf');
 
   caseViewPage.checkTabIsNotPresent(caseViewPage.tabs.startApplication);
+  caseViewPage.checkTabIsNotPresent(caseViewPage.tabs.viewApplication);
+
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  caseViewPage.selectTab(caseViewPage.tabs.paymentHistory);
+  paymentHistoryPage.checkPayment(feeToPay, applicant.pbaNumber);
 });
