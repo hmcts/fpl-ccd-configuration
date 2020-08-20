@@ -152,6 +152,9 @@ spring:
   profiles: integration-test
   main:
     lazy-initialization: true
+  fpl:
+    env: 'localhost'
+    wait: 0
   mail:
     host: 127.0.0.1
     port: 1025
@@ -362,7 +365,6 @@ fpl:
     username: 'fpl-system-update@mailnesia.com'
     password: 'Password12'
   ctsc_inbox: 'FamilyPublicLaw+ctsc@gmail.com'
-  env: 'localhost'
 
 robotics:
   notification:

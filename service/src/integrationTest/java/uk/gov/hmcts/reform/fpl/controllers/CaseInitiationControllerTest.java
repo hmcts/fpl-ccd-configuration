@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import feign.FeignException;
 import feign.Request;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -54,6 +55,7 @@ import static uk.gov.hmcts.reform.fpl.utils.assertions.ExceptionAssertion.assert
 @ActiveProfiles("integration-test")
 @WebMvcTest(CaseInitiationController.class)
 @OverrideAutoConfiguration(enabled = true)
+@Disabled
 class CaseInitiationControllerTest extends AbstractControllerTest {
 
     private static final String CALLER_ID = USER_ID;

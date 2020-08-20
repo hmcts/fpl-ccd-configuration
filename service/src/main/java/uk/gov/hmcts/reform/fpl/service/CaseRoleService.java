@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -23,6 +24,8 @@ import static java.util.stream.Collectors.toSet;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseRoleService {
 
+    @Value("${fpl.wait:10000}")
+    private int wait = 10000;
     private final IdamClient idam;
     private final CaseUserApi caseUser;
     private final AuthTokenGenerator authTokenGenerator;
@@ -36,6 +39,12 @@ public class CaseRoleService {
     @Async
     public void grantAccessToLocalAuthority(String caseId, String localAuthority, Set<CaseRole> roles,
                                             Set<String> excludeUsers) {
+        try {
+            Thread.sleep(wait);
+        } catch (InterruptedException e) {
+            log.error("e", e);
+            Thread.currentThread().interrupt();
+        }
         Set<String> localAuthorityUsers = getUsers(caseId, localAuthority, excludeUsers, roles);
         grantCaseAccess(caseId, localAuthorityUsers, roles);
     }
