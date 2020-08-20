@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
@@ -118,7 +117,7 @@ public class ReviewCMOController {
                 data.put("sealedCMOs", sealedCMOs);
 
                 if (featureToggleService.isNewCaseStateModelEnabled()
-                    && isSendingCMOToAllParties(caseData.getReviewCMODecision().getDecision())
+                    && caseData.getReviewCMODecision().hasReviewOutcomeOf(SEND_TO_ALL_PARTIES)
                     && isNextHearingOfType(caseData, cmo.getId(), ISSUE_RESOLUTION)) {
                     data.put("state", State.ISSUE_RESOLUTION.getValue());
                 }
@@ -166,9 +165,5 @@ public class ReviewCMOController {
 
     private boolean isNextHearingOfType(CaseData caseData, UUID cmoID, HearingType hearingType) {
         return caseData.isNextHearingOfHearingType(cmoID, hearingType);
-    }
-
-    private boolean isSendingCMOToAllParties(CMOReviewOutcome reviewOutcome) {
-        return SEND_TO_ALL_PARTIES.equals(reviewOutcome);
     }
 }

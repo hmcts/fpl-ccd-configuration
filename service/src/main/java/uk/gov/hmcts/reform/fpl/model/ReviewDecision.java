@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
@@ -13,4 +14,9 @@ public class ReviewDecision {
     private final String hearing;
     private final CMOReviewOutcome decision;
     private final String changesRequestedByJudge;
+
+    @JsonIgnore
+    public boolean hasReviewOutcomeOf(CMOReviewOutcome reviewOutcome) {
+        return reviewOutcome.equals(decision);
+    }
 }
