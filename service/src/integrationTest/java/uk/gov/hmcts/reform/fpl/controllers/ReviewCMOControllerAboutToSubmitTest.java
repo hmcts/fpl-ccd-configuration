@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.fpl.controllers.cmo.ReviewCMOController;
+import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -121,22 +122,30 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
         given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
 
         UUID cmoId = UUID.randomUUID();
-
-        CaseData caseData = CaseData.builder()
-            .draftUploadedCMOs(List.of(element(cmoId, cmo)))
-            .hearingDetails(List.of(
-                element(hearing(cmoId)),
-                element(buildIssueResolutionHearing())))
-            .reviewCMODecision(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build()).build();
-
+        CaseData caseData = buildCaseData(cmoId, SEND_TO_ALL_PARTIES);
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
         assertThat(State.ISSUE_RESOLUTION).isEqualTo(responseData.getState());
     }
 
     @Test
-    void shouldNotUpdateStateToIssueResolutionWhenFeatureToggledOff()
-        throws Exception {
+    void shouldNotUpdateStateToIssueResolutionWhenFeatureToggledOff() throws Exception {
+        DocumentReference convertedDocument = testDocumentReference();
+        DocumentReference sealedDocument = testDocumentReference();
+
+        given(documentConversionService.convertToPdf(cmo.getOrder())).willReturn(convertedDocument);
+        given(documentSealingService.sealDocument(convertedDocument)).willReturn(sealedDocument);
+        given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(false);
+
+        UUID cmoId = UUID.randomUUID();
+        CaseData caseData = buildCaseData(cmoId, SEND_TO_ALL_PARTIES);
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
+
+        assertThat(State.ISSUE_RESOLUTION).isNotEqualTo(responseData.getState());
+    }
+
+    @Test
+    void shouldNotUpdateStateToIssueResolutionWhenReviewDecisionIsNotSendToAllParties() throws Exception {
         DocumentReference convertedDocument = testDocumentReference();
         DocumentReference sealedDocument = testDocumentReference();
 
@@ -145,17 +154,10 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
         given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
 
         UUID cmoId = UUID.randomUUID();
-
-        CaseData caseData = CaseData.builder()
-            .draftUploadedCMOs(List.of(element(cmoId, cmo)))
-            .hearingDetails(List.of(
-                element(hearing(cmoId)),
-                element(buildIssueResolutionHearing())))
-            .reviewCMODecision(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build()).build();
-
+        CaseData caseData = buildCaseData(cmoId, JUDGE_REQUESTED_CHANGES);
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
-        assertThat(State.ISSUE_RESOLUTION).isEqualTo(responseData.getState());
+        assertThat(State.ISSUE_RESOLUTION).isNotEqualTo(responseData.getState());
     }
 
     @Test
@@ -165,6 +167,15 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
         assertThat(responseData).isEqualTo(caseData);
+    }
+
+    private CaseData buildCaseData(UUID cmoID, CMOReviewOutcome cmoReviewOutcome) {
+        return CaseData.builder()
+            .draftUploadedCMOs(List.of(element(cmoID, cmo)))
+            .hearingDetails(List.of(
+                element(hearing(cmoID)),
+                element(buildIssueResolutionHearing())))
+            .reviewCMODecision(ReviewDecision.builder().decision(cmoReviewOutcome).build()).build();
     }
 
     private HearingBooking buildIssueResolutionHearing() {
