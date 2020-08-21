@@ -94,7 +94,7 @@ public class ReviewCMOService {
     }
 
     public Element<CaseManagementOrder> getSelectedCMO(CaseData caseData) {
-        if (("MULTI").equals(caseData.getNumDraftCMOs())) {
+        if (getCMOsReadyForApproval(caseData).size() > 1) {
             UUID selectedCMOCode = getSelectedCMOId(caseData.getCmoToReviewList());
 
             return caseData.getDraftUploadedCMOs().stream()
