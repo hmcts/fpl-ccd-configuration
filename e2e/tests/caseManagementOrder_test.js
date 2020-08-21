@@ -1,5 +1,6 @@
 const config = require('../config.js');
 const standardDirectionOrder = require('../fixtures/standardDirectionOrder.json');
+const cmoHelper = require('../helpers/cmo_helper');
 const dateFormat = require('dateformat');
 
 const changeRequestReason = 'Timetable for the proceedings is incomplete';
@@ -19,9 +20,9 @@ BeforeSuite(async (I) => {
 
 Scenario('Local authority sends agreed CMOs to judge', async (I, caseViewPage, uploadCaseManagementOrderEventPage) => {
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
-  await localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, '1 January 2020', true);
+  await cmoHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, '1 January 2020', true);
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadCMO);
-  await localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage);
+  await cmoHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage);
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadCMO);
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   assertDraftCMO(I, '1', '1 January 2020', withJudgeStatus);
@@ -59,7 +60,7 @@ Scenario('Local authority makes changes requested by the judge', async (I, caseV
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   assertDraftCMO(I, '1', '1 January 2020', returnedStatus);
-  await localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage);
+  await cmoHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage);
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadCMO);
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   assertDraftCMO(I, '1', '1 January 2020', withJudgeStatus);
@@ -76,18 +77,6 @@ Scenario('Judge seals and sends the agreed CMO to parties', async (I, caseViewPa
   assertSealedCMO(I, '1', '1 March 2020');
   assertSealedCMO(I, '2', '1 January 2020');
 });
-
-const localAuthoritySendsAgreedCmo = async function (I, caseViewPage, uploadCaseManagementOrderEventPage, hearingDate, multiHearings) {
-  await caseViewPage.goToNewActions(config.applicationActions.uploadCMO);
-
-  if (multiHearings) {
-    await uploadCaseManagementOrderEventPage.associateHearing(hearingDate);
-    await I.retryUntilExists(() => I.click('Continue'), '#uploadedCaseManagementOrder');
-  }
-
-  await uploadCaseManagementOrderEventPage.uploadCaseManagementOrder(config.testNonEmptyWordFile);
-  await I.completeEvent('Submit');
-};
 
 const assertDraftCMO = function (I, collectionId, hearingDate, status) {
   const draftCMO = `Draft Case Management Order ${collectionId}`;
