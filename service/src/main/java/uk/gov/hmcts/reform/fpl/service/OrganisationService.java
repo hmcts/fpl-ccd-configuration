@@ -3,13 +3,16 @@ package uk.gov.hmcts.reform.fpl.service;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityCodeException;
+import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
 import uk.gov.hmcts.reform.fpl.exceptions.UserOrganisationLookupException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.utils.MaskHelper;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 import uk.gov.hmcts.reform.rd.model.OrganisationUser;
@@ -21,6 +24,8 @@ import java.util.Set;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
+import static uk.gov.hmcts.reform.fpl.utils.MaskHelper.maskEmail;
 
 @Service
 @Slf4j
@@ -35,9 +40,10 @@ public class OrganisationService {
         try {
             return Set.copyOf(getUsersFromSameOrganisationBasedOnReferenceData(requestData.authorisation()));
         } catch (FeignException.NotFound | FeignException.Forbidden unregisteredException) {
-            log.warn("User not registered in any org in MO", unregisteredException);
+            log.warn("User {} from {} not registered in MO. {}", requestData.userId(), localAuthorityCode,
+                ExceptionUtils.getStackTrace(unregisteredException));
         } catch (FeignException prdFailureException) {
-            log.error("Request for user in same organisation failed", prdFailureException);
+            log.error("Request for users in same organisation failed", prdFailureException);
         }
         return useLocalMapping(localAuthorityCode);
     }
@@ -70,8 +76,10 @@ public class OrganisationService {
             return Optional.of(organisationApi.findUserByEmail(requestData.authorisation(),
                 authTokenGenerator.generate(), email).getUserIdentifier());
         } catch (FeignException.NotFound notFoundException) {
-            log.debug("User with email {} not found", email);
+            log.info("User with email {} not found", MaskHelper.maskEmail(email));
             return Optional.empty();
+        } catch (FeignException exception) {
+            throw new UserLookupException(maskEmail(getStackTrace(exception), email));
         }
     }
 

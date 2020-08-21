@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
-import uk.gov.hmcts.reform.idam.client.IdamApi;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.util.List;
 
@@ -26,7 +26,7 @@ import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.C2_AP
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class C2UploadedEventHandler {
-    private final IdamApi idamApi;
+    private final IdamClient idamClient;
     private final RequestData requestData;
     private final NotificationService notificationService;
     private final HmctsAdminNotificationHandler adminNotificationHandler;
@@ -36,7 +36,7 @@ public class C2UploadedEventHandler {
 
     @EventListener
     public void sendNotifications(final C2UploadedEvent event) {
-        List<String> roles = idamApi.retrieveUserInfo(requestData.authorisation()).getRoles();
+        List<String> roles = idamClient.getUserInfo(requestData.authorisation()).getRoles();
         if (!roles.containsAll(UserRole.HMCTS_ADMIN.getRoles())) {
             EventData eventData = new EventData(event);
             C2UploadedTemplate parameters = c2UploadedEmailContentProvider.buildC2UploadNotificationTemplate(

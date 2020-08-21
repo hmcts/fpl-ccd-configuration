@@ -41,9 +41,10 @@ import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETA
 @OverrideAutoConfiguration(enabled = true)
 public class DraftOrdersControllerSubmittedTest extends AbstractControllerTest {
     private static final Long CASE_ID = 1L;
-    private static final String PREPARE_FOR_HEARING_EVENT = "internal-changeState-Gatekeeping->PREPARE_FOR_HEARING";
+    private static final String CASE_MANAGEMENT_EVENT = "internal-changeState-Gatekeeping->PREPARE_FOR_HEARING";
     private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
     private static final DocumentReference DOCUMENT_REFERENCE = DocumentReference.builder().build();
+    private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 
     @Mock
     private ApplicationEventPublisher applicationEventPublisher;
@@ -79,7 +80,7 @@ public class DraftOrdersControllerSubmittedTest extends AbstractControllerTest {
         verify(notificationClient).sendEmail(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE,
             "cafcass@cafcass.com",
             cafcassParameters(),
-            String.valueOf(CASE_ID)
+            NOTIFICATION_REFERENCE
         );
     }
 
@@ -98,14 +99,14 @@ public class DraftOrdersControllerSubmittedTest extends AbstractControllerTest {
     void shouldTriggerStateChangeWhenOrderIsMarkedAsFinal() {
         postSubmittedEvent(buildCallbackRequest(SEALED));
 
-        verify(coreCaseDataService).triggerEvent(JURISDICTION, CASE_TYPE, CASE_ID, PREPARE_FOR_HEARING_EVENT);
+        verify(coreCaseDataService).triggerEvent(JURISDICTION, CASE_TYPE, CASE_ID, CASE_MANAGEMENT_EVENT);
     }
 
     @Test
     void shouldNotTriggerStateChangeWhenOrderIsStillInDraftState() {
         postSubmittedEvent(buildCallbackRequest(DRAFT));
 
-        verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), eq(PREPARE_FOR_HEARING_EVENT));
+        verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), eq(CASE_MANAGEMENT_EVENT));
     }
 
     private Map<String, Object> cafcassParameters() {

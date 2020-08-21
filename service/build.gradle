@@ -4,13 +4,13 @@ plugins {
   id 'application'
   id 'checkstyle'
   id 'jacoco'
-  id 'io.spring.dependency-management' version '1.0.9.RELEASE'
-  id 'org.springframework.boot' version '2.3.1.RELEASE'
+  id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+  id 'org.springframework.boot' version '2.3.3.RELEASE'
   id 'com.github.ben-manes.versions' version '0.29.0'
   id 'org.sonarqube' version '2.8'
   id 'project-report'
   id "idea"
-  id 'info.solidsoft.pitest' version '1.5.1'
+  id 'info.solidsoft.pitest' version '1.5.2'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -165,7 +165,7 @@ repositories {
 // it is important to specify logback classic and core packages explicitly as libraries like spring boot
 // enforces it's own (older) version which is not recommended.
 def versions = [
-  reformLogging: '5.1.0',
+  reformLogging: '5.1.7',
   springBoot: springBoot.class.package.implementationVersion,
   springfoxSwagger: '2.9.2',
   log4j: '2.13.2',
@@ -197,12 +197,12 @@ dependencies {
 
   implementation group: 'org.apache.commons', name: 'commons-text', version: '1.9'
 
-  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.0.2'
+  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.0.3'
 
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '11.0'
 
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.14'
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '6.5.3'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '6.5.5'
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
@@ -218,7 +218,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.2'
   compile group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4'
   compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.5.0'
-  compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.15.3-RELEASE'
+  compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.0-RELEASE'
 
   implementation group: 'com.google.guava', name: 'guava', version: '29.0-jre'
   implementation group: 'commons-io', name: 'commons-io', version: '2.7'

@@ -88,22 +88,28 @@ Scenario('HMCTS admin uploads standard directions with other documents', async (
   I.seeInTab(['Other documents 2', 'Upload a file'], 'mockFile.txt');
 });
 
-Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage, uploadC2DocumentsEventPage) => {
+Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage, uploadC2DocumentsEventPage, paymentHistoryPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.uploadC2Documents);
   uploadC2DocumentsEventPage.selectApplicationType('WITH_NOTICE');
   await I.retryUntilExists(() => I.click('Continue'), '#temporaryC2Document_document');
+  const feeToPay = await uploadC2DocumentsEventPage.getFeeToPay();
   uploadC2DocumentsEventPage.usePbaPayment();
   uploadC2DocumentsEventPage.enterPbaPaymentDetails(c2Payment);
   uploadC2DocumentsEventPage.uploadC2Document(config.testFile, 'Rachel Zane C2');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.uploadC2Documents);
+
+  caseViewPage.selectTab(caseViewPage.tabs.paymentHistory);
+  paymentHistoryPage.checkPayment(feeToPay, c2Payment.pbaNumber);
+
   caseViewPage.selectTab(caseViewPage.tabs.c2);
   I.seeInTab(['C2 Application 1', 'File'], 'mockFile.txt');
   I.seeInTab(['C2 Application 1', 'Notes'], 'Rachel Zane C2');
   I.seeInTab(['C2 Application 1', 'Paid with PBA'], 'Yes');
-  I.seeInTab(['C2 Application 1', 'Payment by account (PBA) number'], 'PBA0082848');
-  I.seeInTab(['C2 Application 1', 'Client code'], '8888');
-  I.seeInTab(['C2 Application 1', 'Customer reference'], 'Example reference');
+  I.seeInTab(['C2 Application 1', 'Payment by account (PBA) number'], c2Payment.pbaNumber);
+  I.seeInTab(['C2 Application 1', 'Client code'], c2Payment.clientCode);
+  I.seeInTab(['C2 Application 1', 'Customer reference'], c2Payment.customerReference);
+
   await I.startEventViaHyperlink('Upload a new C2 application');
   
   uploadC2DocumentsEventPage.selectApplicationType('WITHOUT_NOTICE');

@@ -32,7 +32,9 @@ public class OrderIssuedNotificationTestHelper {
 
     public static Map<String, Object> getExpectedCaseUrlParameters(String orderType, boolean withCallout) {
         String fileContent = new String(Base64.encodeBase64(PDF), ISO_8859_1);
-        JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
+        JSONObject jsonFileObject = new JSONObject()
+            .put("file", fileContent)
+            .put("is_csv", false);
 
         return Map.of(
             "orderType", orderType.toLowerCase(),
@@ -45,7 +47,9 @@ public class OrderIssuedNotificationTestHelper {
 
     public static Map<String, Object> getExpectedParametersForRepresentatives(String orderType, boolean withCallout) {
         String fileContent = new String(Base64.encodeBase64(PDF), ISO_8859_1);
-        JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
+        JSONObject jsonFileObject = new JSONObject()
+            .put("file", fileContent)
+            .put("is_csv", false);
 
         return Map.of("orderType", orderType.toLowerCase(),
             "respondentLastName", "Jones",

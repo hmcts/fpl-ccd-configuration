@@ -223,6 +223,7 @@ fees-register:
 
 
 fpl:
+  env: 'localhost'
   local_authority_codes_forbidden_case_submission: FPLA
   local_authority_email_to_code:
     mapping: 'example.gov.uk=>example'
@@ -361,6 +362,7 @@ fpl:
     username: 'fpl-system-update@mailnesia.com'
     password: 'Password12'
   ctsc_inbox: 'FamilyPublicLaw+ctsc@gmail.com'
+  env: 'localhost'
 
 robotics:
   notification:
