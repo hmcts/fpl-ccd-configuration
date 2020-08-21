@@ -80,6 +80,24 @@ class ReviewCMOServiceTest {
             .isEqualTo(expectedDynamicList);
     }
 
+    @Test
+    void shouldBuildUnselectedDynamicList() {
+        List<Element<CaseManagementOrder>> draftCMOs = List.of(
+            draftCMO(hearing1), draftCMO(hearing2)
+        );
+
+        CaseData caseData = CaseData.builder()
+            .draftUploadedCMOs(draftCMOs)
+            .build();
+
+        DynamicList actualDynamicList = service.buildUnselectedDynamicList(caseData);
+        DynamicList expectedDynamicList = ElementUtils
+            .asDynamicList(draftCMOs, CaseManagementOrder::getHearing);
+
+        assertThat(actualDynamicList)
+            .isEqualTo(expectedDynamicList);
+    }
+
 
     @Test
     void shouldReturnMultiPageDataWhenThereAreMultipleDraftCMOsReadyForApproval() {
