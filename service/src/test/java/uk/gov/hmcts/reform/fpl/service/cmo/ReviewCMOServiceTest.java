@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDate;
@@ -25,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -57,9 +57,12 @@ class ReviewCMOServiceTest {
     private Time time;
 
     @Test
-    void shouldRebuildDynamicListWithAppropriateElementSelected() {
-        List<Element<CaseManagementOrder>> draftCMOs = List.of(draftCMO(hearing1), draftCMO(hearing2));
-        UUID firstElementId = draftCMOs.get(0).getId();
+    void shouldBuildDynamicListWithAppropriateElementSelected() {
+        Element<CaseManagementOrder> firstCMO = draftCMO(hearing1);
+        List<Element<CaseManagementOrder>> draftCMOs = List.of(
+            firstCMO, draftCMO(hearing2)
+        );
+        UUID firstElementId = firstCMO.getId();
 
         CaseData caseData = CaseData.builder()
             .draftUploadedCMOs(draftCMOs)
@@ -70,17 +73,8 @@ class ReviewCMOServiceTest {
 
         DynamicList actualDynamicList = service.buildDynamicList(caseData);
 
-        List<DynamicListElement> elements = draftCMOs.stream().map(cmoElement ->
-            DynamicListElement.builder()
-                .code(cmoElement.getId())
-                .label(cmoElement.getValue().getHearing())
-                .build()
-        ).collect(Collectors.toList());
-
-        DynamicList expectedDynamicList = DynamicList.builder()
-            .listItems(elements)
-            .value(elements.get(0))
-            .build();
+        DynamicList expectedDynamicList = ElementUtils
+            .asDynamicList(draftCMOs, firstElementId, CaseManagementOrder::getHearing);
 
         assertThat(actualDynamicList)
             .isEqualTo(expectedDynamicList);

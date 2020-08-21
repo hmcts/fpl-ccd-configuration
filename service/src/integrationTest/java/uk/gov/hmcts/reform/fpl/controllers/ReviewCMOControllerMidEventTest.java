@@ -34,12 +34,13 @@ class ReviewCMOControllerMidEventTest extends AbstractControllerTest {
     void shouldPopulateReviewDecisionPage() {
         DocumentReference orderForFirstCMO = testDocumentReference();
         DocumentReference orderForSecondCMO = testDocumentReference();
+        UUID firstDraftCMOId = UUID.randomUUID();
 
         List<Element<CaseManagementOrder>> draftedCMOs = List.of(
-            element(buildCMO(orderForFirstCMO, "Case management hearing 25th December 2020")),
+            element(firstDraftCMOId, buildCMO(orderForFirstCMO, "Case management hearing 25th December 2020")),
             element(buildCMO(orderForSecondCMO, "Issue resolution hearing 1st January 2021"))
         );
-        UUID firstDraftCMOId = draftedCMOs.get(0).getId();
+
 
         CaseDetails caseDetails = CaseDetails.builder().data(
             Map.of("draftUploadedCMOs",
