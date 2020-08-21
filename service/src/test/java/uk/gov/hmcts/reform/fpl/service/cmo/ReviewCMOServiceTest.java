@@ -102,21 +102,6 @@ class ReviewCMOServiceTest {
     }
 
     @Test
-    void shouldReturnMultiPageDataWhenThereAreMultipleDraftCMOsReadyForApprovalWithoutExistingSelectionOverride() {
-        List<Element<CaseManagementOrder>> draftCMOs = List.of(draftCMO(hearing1), draftCMO(hearing2));
-        CaseData caseData = CaseData.builder()
-            .draftUploadedCMOs(draftCMOs)
-            .cmoToReviewList("selected")
-            .build();
-
-        Map<String, Object> expectedData = Map.of(
-            "numDraftCMOs", MULTI,
-            "cmoToReviewList", "selected");
-
-        assertThat(service.getPageDisplayControls(caseData)).isEqualTo(expectedData);
-    }
-
-    @Test
     void shouldReturnSinglePageDataWhenThereIsOneDraftCMOReadyForApproval() {
         CaseData caseData = CaseData.builder().draftUploadedCMOs(List.of(draftCMO(hearing1))).build();
 
