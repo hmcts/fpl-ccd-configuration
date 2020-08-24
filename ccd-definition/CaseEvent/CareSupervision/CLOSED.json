@@ -27,7 +27,7 @@
     "PreConditionState(s)": "CLOSED",
     "PostConditionState": "CLOSED",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
+    "ShowSummary": "Y",
     "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue",
     "Comment": "Recreated due to differing permissions in this state compared to other states"
