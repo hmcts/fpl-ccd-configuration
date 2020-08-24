@@ -24,7 +24,7 @@ Scenario('Judge transitions CMO to issue resolution case date', async (I, caseVi
   await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
   I.seeEventSubmissionConfirmation(config.applicationActions.reviewAgreedCmo);
   caseListPage.navigate();
-  caseListPage.changeStateFilter('Issue Resolution');
+  caseListPage.changeStateFilter('Issue resolution');
   I.click(caseListPage.locateCase(caseId));
 });
 
