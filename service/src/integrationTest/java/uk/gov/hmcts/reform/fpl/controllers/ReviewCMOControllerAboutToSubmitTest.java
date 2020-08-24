@@ -8,6 +8,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.fpl.controllers.cmo.ReviewCMOController;
 import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -34,6 +35,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
@@ -117,14 +119,25 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldUpdateStateToIssueResolutionWhenNextHearingIssueResolutionAndCmoDecisionIsSendToAllParties() {
+    void shouldUpdateStateToIssueResolutionWhenNextHearingIsOfTypeIssueResolutionAndCmoDecisionIsSendToAllParties() {
         given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
 
         UUID cmoId = UUID.randomUUID();
-        CaseData caseData = buildCaseData(cmoId, SEND_TO_ALL_PARTIES);
+        CaseData caseData = buildCaseData(cmoId, SEND_TO_ALL_PARTIES, ISSUE_RESOLUTION);
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
         assertThat(State.ISSUE_RESOLUTION).isEqualTo(responseData.getState());
+    }
+
+    @Test
+    void shouldUpdateStateToFinalHearingWhenNextHearingIssueIsOfTypeFinalAndCmoDecisionIsSendToAllParties() {
+        given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
+
+        UUID cmoId = UUID.randomUUID();
+        CaseData caseData = buildCaseData(cmoId, SEND_TO_ALL_PARTIES, FINAL);
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
+
+        assertThat(State.FINAL_HEARING).isEqualTo(responseData.getState());
     }
 
     @Test
@@ -132,7 +145,7 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
         given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(false);
 
         UUID cmoId = UUID.randomUUID();
-        CaseData caseData = buildCaseData(cmoId, SEND_TO_ALL_PARTIES);
+        CaseData caseData = buildCaseData(cmoId, SEND_TO_ALL_PARTIES, ISSUE_RESOLUTION);
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
         assertThat(State.ISSUE_RESOLUTION).isNotEqualTo(responseData.getState());
@@ -143,7 +156,7 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
         given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
 
         UUID cmoId = UUID.randomUUID();
-        CaseData caseData = buildCaseData(cmoId, JUDGE_REQUESTED_CHANGES);
+        CaseData caseData = buildCaseData(cmoId, JUDGE_REQUESTED_CHANGES, ISSUE_RESOLUTION);
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
         assertThat(State.ISSUE_RESOLUTION).isNotEqualTo(responseData.getState());
@@ -180,19 +193,19 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
         assertThat(responseData).isEqualTo(caseData);
     }
 
-    private CaseData buildCaseData(UUID cmoID, CMOReviewOutcome cmoReviewOutcome) {
+    private CaseData buildCaseData(UUID cmoID, CMOReviewOutcome cmoReviewOutcome, HearingType hearingType) {
         return CaseData.builder()
             .draftUploadedCMOs(List.of(element(cmoID, cmo)))
             .hearingDetails(List.of(
                 element(hearing(cmoID)),
-                element(buildIssueResolutionHearing())))
+                element(buildHearing(hearingType))))
             .reviewCMODecision(ReviewDecision.builder().decision(cmoReviewOutcome).build()).build();
     }
 
-    private HearingBooking buildIssueResolutionHearing() {
+    private HearingBooking buildHearing(HearingType hearingType) {
         return HearingBooking.builder()
             .startDate(LocalDateTime.now().plusDays(1))
-            .type(ISSUE_RESOLUTION)
+            .type(hearingType)
             .caseManagementOrderId(UUID.randomUUID())
             .build();
     }

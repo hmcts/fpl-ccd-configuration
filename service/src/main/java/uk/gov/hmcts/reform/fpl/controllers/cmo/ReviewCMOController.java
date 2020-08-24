@@ -35,6 +35,7 @@ import java.util.UUID;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 
 @Api
@@ -118,9 +119,13 @@ public class ReviewCMOController {
                 data.put("sealedCMOs", sealedCMOs);
 
                 if (featureToggleService.isNewCaseStateModelEnabled()
-                    && caseData.getReviewCMODecision().hasReviewOutcomeOf(SEND_TO_ALL_PARTIES)
-                    && isNextHearingOfType(caseData, cmo.getId(), ISSUE_RESOLUTION)) {
-                    data.put("state", State.ISSUE_RESOLUTION.getValue());
+                    && caseData.getReviewCMODecision().hasReviewOutcomeOf(SEND_TO_ALL_PARTIES)) {
+
+                    if (isNextHearingOfType(caseData, cmo.getId(), ISSUE_RESOLUTION)) {
+                        data.put("state", State.ISSUE_RESOLUTION.getValue());
+                    } else if (isNextHearingOfType(caseData, cmo.getId(), FINAL)) {
+                        data.put("state", State.FINAL_HEARING.getValue());
+                    }
                 }
             } else {
                 cmo.getValue().setStatus(RETURNED);
