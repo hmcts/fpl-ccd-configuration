@@ -32,7 +32,7 @@
     "ID": "CLOSED",
     "Name": "Closed",
     "Description": "Final case state, no longer allowed to create orders apart from C21",
-    "DisplayOrder": 5,
+    "DisplayOrder": 6,
     "TitleDisplay": "# ${caseName}\n## **FamilyMan ID: ${familyManCaseNumber}**\n## **CCD ID: #${[CASE_REFERENCE]}**"
   },
   {
@@ -41,7 +41,7 @@
     "ID": "Deleted",
     "Name": "Deleted",
     "Description": "Deleted case state - all data is removed",
-    "DisplayOrder": 6,
+    "DisplayOrder": 7,
     "TitleDisplay": "# ${caseName}\n## **FamilyMan ID: ${familyManCaseNumber}**\n## **CCD ID: #${[CASE_REFERENCE]}**"
   },
   {
@@ -50,7 +50,7 @@
     "ID": "RETURNED",
     "Name": "Returned",
     "Description": "Returned case state - LA to make changes to previously submitted application",
-    "DisplayOrder": 7,
+    "DisplayOrder": 8,
     "TitleDisplay": "# ${caseName}\n## **FamilyMan ID: ${familyManCaseNumber}**\n## **CCD ID: #${[CASE_REFERENCE]}**"
   },
   {

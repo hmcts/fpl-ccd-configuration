@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -52,9 +53,17 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
     private FeatureToggleService featureToggleService;
 
     private CaseManagementOrder cmo = buildCMO();
+    private DocumentReference convertedDocument;
+    private DocumentReference sealedDocument;
 
     ReviewCMOControllerAboutToSubmitTest() {
         super("review-cmo");
+    }
+
+    @BeforeEach()
+    void setup() {
+        convertedDocument = testDocumentReference();
+        sealedDocument = testDocumentReference();
     }
 
     @Test
@@ -83,9 +92,6 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldSealPDFAndAddToSealedCMOsListWhenJudgeApprovesOrder() throws Exception {
-        DocumentReference convertedDocument = testDocumentReference();
-        DocumentReference sealedDocument = testDocumentReference();
-
         given(documentConversionService.convertToPdf(cmo.getOrder())).willReturn(convertedDocument);
         given(documentSealingService.sealDocument(convertedDocument)).willReturn(sealedDocument);
 
@@ -114,9 +120,6 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
     @Test
     void shouldUpdateStateToIssueResolutionWhenNextHearingIssueResolutionAndCmoDecisionIsSendToAllParties()
         throws Exception {
-        DocumentReference convertedDocument = testDocumentReference();
-        DocumentReference sealedDocument = testDocumentReference();
-
         given(documentConversionService.convertToPdf(cmo.getOrder())).willReturn(convertedDocument);
         given(documentSealingService.sealDocument(convertedDocument)).willReturn(sealedDocument);
         given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
@@ -130,9 +133,6 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldNotUpdateStateToIssueResolutionWhenFeatureToggledOff() throws Exception {
-        DocumentReference convertedDocument = testDocumentReference();
-        DocumentReference sealedDocument = testDocumentReference();
-
         given(documentConversionService.convertToPdf(cmo.getOrder())).willReturn(convertedDocument);
         given(documentSealingService.sealDocument(convertedDocument)).willReturn(sealedDocument);
         given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(false);
@@ -146,15 +146,36 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldNotUpdateStateToIssueResolutionWhenReviewDecisionIsNotSendToAllParties() throws Exception {
-        DocumentReference convertedDocument = testDocumentReference();
-        DocumentReference sealedDocument = testDocumentReference();
-
         given(documentConversionService.convertToPdf(cmo.getOrder())).willReturn(convertedDocument);
         given(documentSealingService.sealDocument(convertedDocument)).willReturn(sealedDocument);
         given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
 
         UUID cmoId = UUID.randomUUID();
         CaseData caseData = buildCaseData(cmoId, JUDGE_REQUESTED_CHANGES);
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
+
+        assertThat(State.ISSUE_RESOLUTION).isNotEqualTo(responseData.getState());
+    }
+
+    @Test
+    void shouldNotUpdateStateToIssueResolutionWhenNextHearingIsNotOfTypeIssueResolution() throws Exception {
+        given(documentConversionService.convertToPdf(cmo.getOrder())).willReturn(convertedDocument);
+        given(documentSealingService.sealDocument(convertedDocument)).willReturn(sealedDocument);
+        given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
+
+        UUID cmoId = UUID.randomUUID();
+
+        CaseData caseData = CaseData.builder()
+            .draftUploadedCMOs(List.of(element(cmoId, cmo)))
+            .hearingDetails(List.of(
+                element(hearing(cmoId)),
+                element(HearingBooking.builder()
+                    .startDate(LocalDateTime.now().plusDays(1))
+                    .type(CASE_MANAGEMENT)
+                    .caseManagementOrderId(UUID.randomUUID())
+                    .build())))
+            .reviewCMODecision(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build()).build();
+
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
         assertThat(State.ISSUE_RESOLUTION).isNotEqualTo(responseData.getState());

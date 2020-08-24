@@ -77,13 +77,12 @@ class CaseDataTest {
     private Time time;
 
     private LocalDateTime futureDate;
+    private UUID cmoID = UUID.randomUUID();
 
     @BeforeEach
     void setUp() {
         futureDate = time.now().plusDays(1);
     }
-
-    private UUID cmoID = UUID.randomUUID();
 
     @Nested
     class GetDirectionsToComplyWith {
