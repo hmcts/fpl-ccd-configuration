@@ -1,16 +1,16 @@
 const config = require('../config.js');
-const issueResolution = require('../fixtures/IssueResolution.json');
+const finalHearing = require('../fixtures/finalHearing.json');
 const cmoHelper = require('../helpers/cmo_helper');
 
 let caseId;
 
-Feature('Issue resolution state progression');
+Feature('Final hearing state progression');
 
 BeforeSuite(async (I) => {
-  caseId = await I.submitNewCaseWithData(issueResolution);
+  caseId = await I.submitNewCaseWithData(finalHearing);
 });
 
-Scenario('Judge transitions CMO to issue resolution case state', async (I, caseViewPage, caseListPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage) => {
+Scenario('Judge transitions CMO to final hearing case state', async (I, caseViewPage, caseListPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage) => {
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   await cmoHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, '1 January 2020', true);
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadCMO);
@@ -24,6 +24,6 @@ Scenario('Judge transitions CMO to issue resolution case state', async (I, caseV
   await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
   I.seeEventSubmissionConfirmation(config.applicationActions.reviewAgreedCmo);
   caseListPage.navigate();
-  caseListPage.changeStateFilter('Issue resolution');
+  caseListPage.changeStateFilter('Final hearing');
   I.click(caseListPage.locateCase(caseId));
 });
