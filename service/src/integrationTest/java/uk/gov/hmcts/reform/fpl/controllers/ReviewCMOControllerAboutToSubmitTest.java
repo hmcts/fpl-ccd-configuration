@@ -61,9 +61,11 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
     }
 
     @BeforeEach()
-    void setup() {
+    void setup() throws Exception {
         convertedDocument = testDocumentReference();
         sealedDocument = testDocumentReference();
+        given(documentConversionService.convertToPdf(cmo.getOrder())).willReturn(convertedDocument);
+        given(documentSealingService.sealDocument(convertedDocument)).willReturn(sealedDocument);
     }
 
     @Test
@@ -92,9 +94,6 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldSealPDFAndAddToSealedCMOsListWhenJudgeApprovesOrder() throws Exception {
-        given(documentConversionService.convertToPdf(cmo.getOrder())).willReturn(convertedDocument);
-        given(documentSealingService.sealDocument(convertedDocument)).willReturn(sealedDocument);
-
         UUID cmoId = UUID.randomUUID();
 
         CaseData caseData = CaseData.builder()
@@ -118,10 +117,7 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldUpdateStateToIssueResolutionWhenNextHearingIssueResolutionAndCmoDecisionIsSendToAllParties()
-        throws Exception {
-        given(documentConversionService.convertToPdf(cmo.getOrder())).willReturn(convertedDocument);
-        given(documentSealingService.sealDocument(convertedDocument)).willReturn(sealedDocument);
+    void shouldUpdateStateToIssueResolutionWhenNextHearingIssueResolutionAndCmoDecisionIsSendToAllParties() {
         given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
 
         UUID cmoId = UUID.randomUUID();
@@ -132,9 +128,7 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldNotUpdateStateToIssueResolutionWhenFeatureToggledOff() throws Exception {
-        given(documentConversionService.convertToPdf(cmo.getOrder())).willReturn(convertedDocument);
-        given(documentSealingService.sealDocument(convertedDocument)).willReturn(sealedDocument);
+    void shouldNotUpdateStateToIssueResolutionWhenFeatureToggledOff() {
         given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(false);
 
         UUID cmoId = UUID.randomUUID();
@@ -145,9 +139,7 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldNotUpdateStateToIssueResolutionWhenReviewDecisionIsNotSendToAllParties() throws Exception {
-        given(documentConversionService.convertToPdf(cmo.getOrder())).willReturn(convertedDocument);
-        given(documentSealingService.sealDocument(convertedDocument)).willReturn(sealedDocument);
+    void shouldNotUpdateStateToIssueResolutionWhenReviewDecisionIsNotSendToAllParties() {
         given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
 
         UUID cmoId = UUID.randomUUID();
@@ -158,9 +150,7 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldNotUpdateStateToIssueResolutionWhenNextHearingIsNotOfTypeIssueResolution() throws Exception {
-        given(documentConversionService.convertToPdf(cmo.getOrder())).willReturn(convertedDocument);
-        given(documentSealingService.sealDocument(convertedDocument)).willReturn(sealedDocument);
+    void shouldNotUpdateStateToIssueResolutionWhenNextHearingIsNotOfTypeIssueResolution() {
         given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
 
         UUID cmoId = UUID.randomUUID();
