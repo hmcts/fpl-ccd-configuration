@@ -54,6 +54,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
@@ -578,28 +579,23 @@ class CaseDataTest {
     }
 
     @Nested
-    class IsNextHearingOfHearingType {
+    class GetNextHearingAfterCmo {
         @Test
-        void shouldReturnTrueIfNextHearingIsOfTypeIssueResolution() {
+        void shouldReturnExpectedHearingBookingWhenAllOtherHearingsAreAssociatedWithGivenCmoID() {
             List<Element<HearingBooking>> hearingBookings = createHearingBookingElements();
             HearingBooking issueResolutionHearing = createHearingBooking(time.now().plusMinutes(1),
                 futureDate.plusDays(2), ISSUE_RESOLUTION, UUID.randomUUID());
             hearingBookings.add(element(issueResolutionHearing));
 
             CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
-            assertThat(caseData.isNextHearingOfHearingType(cmoID, ISSUE_RESOLUTION)).isTrue();
+            assertThat(caseData.getNextHearingAfterCmo(cmoID)).isEqualTo(issueResolutionHearing);
         }
 
         @Test
-        void shouldReturnFalseIfNextHearingIsNotOfTypeIssueResolution() {
-            CaseData caseData = CaseData.builder().hearingDetails(createHearingBookingElements()).build();
-            assertThat(caseData.isNextHearingOfHearingType(cmoID, ISSUE_RESOLUTION)).isFalse();
-        }
-
-        @Test
-        void shouldReturnFalseIfHearingBookingsAreEmpty() {
-            CaseData caseData = CaseData.builder().hearingDetails(List.of()).build();
-            assertThat(caseData.isNextHearingOfHearingType(cmoID, ISSUE_RESOLUTION)).isFalse();
+        void shouldReturnEmptyHearingBookingIfAllHearingsMatchCmoID() {
+            List<Element<HearingBooking>> hearingBookings = createHearingBookingElements();
+            CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
+            assertThat(caseData.getNextHearingAfterCmo(cmoID)).isEqualTo(HearingBooking.builder().build());
         }
     }
 
@@ -652,8 +648,8 @@ class CaseDataTest {
 
     private List<Element<HearingBooking>> createHearingBookingElements() {
         return new ArrayList<>(List.of(
-            element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6), CASE_MANAGEMENT, cmoID)),
+            element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6), FINAL, cmoID)),
             element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3), CASE_MANAGEMENT, cmoID)),
-            element(createHearingBooking(futureDate, futureDate.plusDays(1), CASE_MANAGEMENT, UUID.randomUUID()))));
+            element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, cmoID))));
     }
 }

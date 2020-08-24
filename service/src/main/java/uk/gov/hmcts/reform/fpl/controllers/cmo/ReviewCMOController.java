@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -164,6 +165,12 @@ public class ReviewCMOController {
     }
 
     private boolean isNextHearingOfType(CaseData caseData, UUID cmoID, HearingType hearingType) {
-        return caseData.isNextHearingOfHearingType(cmoID, hearingType);
+        HearingBooking nextHearingBooking = caseData.getNextHearingAfterCmo(cmoID);
+
+        if (nextHearingBooking.getType() != null) {
+            return hearingType.getLabel().equals(nextHearingBooking.getType().getLabel());
+        }
+
+        return false;
     }
 }

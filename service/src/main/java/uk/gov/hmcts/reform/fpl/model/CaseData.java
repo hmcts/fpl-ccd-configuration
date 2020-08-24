@@ -11,7 +11,6 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
-import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
@@ -632,20 +631,10 @@ public class CaseData {
     }
 
     @JsonIgnore
-    public boolean isNextHearingOfHearingType(UUID cmoID, HearingType hearingType) {
-        if (hearingDetails.isEmpty()) {
-            return false;
-        }
-
-        HearingBooking mostUrgentHearing = unwrapElements(hearingDetails).stream()
+    public HearingBooking getNextHearingAfterCmo(UUID cmoID) {
+        return unwrapElements(hearingDetails).stream()
             .filter(hearingBooking -> !hearingBooking.getCaseManagementOrderId().equals(cmoID))
             .min(comparing(HearingBooking::getStartDate))
             .orElse(HearingBooking.builder().build());
-
-        if (mostUrgentHearing.getType() != null) {
-            return hearingType.getLabel().equals(mostUrgentHearing.getType().getLabel());
-        } else {
-            return false;
-        }
     }
 }
