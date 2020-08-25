@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDate;
@@ -54,6 +55,49 @@ class ReviewCMOServiceTest {
 
     @Autowired
     private Time time;
+
+    @Test
+    void shouldBuildDynamicListWithAppropriateElementSelected() {
+        Element<CaseManagementOrder> firstCMO = draftCMO(hearing1);
+        List<Element<CaseManagementOrder>> draftCMOs = List.of(
+            firstCMO, draftCMO(hearing2)
+        );
+        UUID firstElementId = firstCMO.getId();
+
+        CaseData caseData = CaseData.builder()
+            .draftUploadedCMOs(draftCMOs)
+            //This replicates bug in CCD which sends only String UUID in mid event
+            .cmoToReviewList(firstElementId.toString())
+            .numDraftCMOs("MULTI")
+            .build();
+
+        DynamicList actualDynamicList = service.buildDynamicList(caseData);
+
+        DynamicList expectedDynamicList = ElementUtils
+            .asDynamicList(draftCMOs, firstElementId, CaseManagementOrder::getHearing);
+
+        assertThat(actualDynamicList)
+            .isEqualTo(expectedDynamicList);
+    }
+
+    @Test
+    void shouldBuildUnselectedDynamicList() {
+        List<Element<CaseManagementOrder>> draftCMOs = List.of(
+            draftCMO(hearing1), draftCMO(hearing2)
+        );
+
+        CaseData caseData = CaseData.builder()
+            .draftUploadedCMOs(draftCMOs)
+            .build();
+
+        DynamicList actualDynamicList = service.buildUnselectedDynamicList(caseData);
+        DynamicList expectedDynamicList = ElementUtils
+            .asDynamicList(draftCMOs, CaseManagementOrder::getHearing);
+
+        assertThat(actualDynamicList)
+            .isEqualTo(expectedDynamicList);
+    }
+
 
     @Test
     void shouldReturnMultiPageDataWhenThereAreMultipleDraftCMOsReadyForApproval() {
