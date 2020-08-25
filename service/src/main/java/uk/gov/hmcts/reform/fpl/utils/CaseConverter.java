@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +15,8 @@ import java.util.Map;
 public class CaseConverter {
     private final ObjectMapper mapper;
 
-    @SuppressWarnings("unchecked")
     public Map<String, Object> convertToMap(CaseData caseData) {
-        return mapper.convertValue(caseData, Map.class);
+        return mapper.convertValue(caseData, new TypeReference<>() {});
     }
 
     public CaseData convertToCaseData(CaseDetails caseDetails) {

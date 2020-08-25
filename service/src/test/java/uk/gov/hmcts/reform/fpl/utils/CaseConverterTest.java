@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,9 +39,8 @@ class CaseConverterTest {
         verify(mapper).convertValue(eq(getCaseDetails().getData()), eq(CaseData.class));
     }
 
-    @SuppressWarnings("unchecked")
     private CaseDetails getCaseDetails() {
-        Map<String, Object> data = mapper.convertValue(getCaseData(), Map.class);
+        Map<String, Object> data = mapper.convertValue(getCaseData(), new TypeReference<>() {});
         return CaseDetails.builder().data(data).build();
     }
 
