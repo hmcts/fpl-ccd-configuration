@@ -112,6 +112,7 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
             .build();
 
         assertThat(State.ISSUE_RESOLUTION).isNotEqualTo(responseData.getState());
+        assertThat(State.FINAL_HEARING).isNotEqualTo(responseData.getState());
         assertThat(responseData.getDraftUploadedCMOs()).isEmpty();
         assertThat(responseData.getSealedCMOs())
             .extracting(Element::getValue)
@@ -141,7 +142,7 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldNotUpdateStateToIssueResolutionWhenFeatureToggledOff() {
+    void shouldNotUpdateStateWhenNewCaseStateFeatureToggledIsToggledOff() {
         given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(false);
 
         UUID cmoId = UUID.randomUUID();
@@ -149,6 +150,7 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
         assertThat(State.ISSUE_RESOLUTION).isNotEqualTo(responseData.getState());
+        assertThat(State.FINAL_HEARING).isNotEqualTo(responseData.getState());
     }
 
     @Test
@@ -163,7 +165,7 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldNotUpdateStateToIssueResolutionWhenNextHearingIsNotOfTypeIssueResolution() {
+    void shouldNotUpdateStateToIssueResolutionOrFinalHearingWhenNextHearingIsNotOfTypeIssueResolution() {
         given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
 
         UUID cmoId = UUID.randomUUID();
@@ -182,6 +184,7 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
         assertThat(State.ISSUE_RESOLUTION).isNotEqualTo(responseData.getState());
+        assertThat(State.FINAL_HEARING).isNotEqualTo(responseData.getState());
     }
 
     @Test
