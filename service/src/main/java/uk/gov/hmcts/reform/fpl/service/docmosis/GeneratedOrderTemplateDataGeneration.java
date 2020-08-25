@@ -46,8 +46,7 @@ public abstract class GeneratedOrderTemplateDataGeneration
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
         GeneratedOrderType orderType = orderTypeAndDocument.getType();
 
-        DocmosisGeneratedOrder docmosisGeneratedOrder = populateCustomOrderFields(caseData);
-        var docmosisGeneratedOrderBuilder = docmosisGeneratedOrder.toBuilder();
+        var docmosisGeneratedOrderBuilder = populateCustomOrderFields(caseData).toBuilder();
 
         OrderStatus orderStatus = caseData.getGeneratedOrderStatus();
         if (orderStatus == DRAFT) {

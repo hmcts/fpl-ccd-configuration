@@ -59,21 +59,21 @@ abstract class AbstractOrderGenerationServiceTest {
 
     DocmosisGeneratedOrder enrichWithStandardData(GeneratedOrderType type,
                                                                OrderStatus orderStatus,
-                                                               DocmosisGeneratedOrder orderBuilder) {
-        return enrichWithStandardData(type, null, orderStatus, orderBuilder);
+                                                               DocmosisGeneratedOrder docmosisGeneratedOrder) {
+        return enrichWithStandardData(type, null, orderStatus, docmosisGeneratedOrder);
     }
 
     DocmosisGeneratedOrder enrichWithStandardData(GeneratedOrderType type,
                                                                GeneratedOrderSubtype subtype,
                                                                OrderStatus orderStatus,
-                                                               DocmosisGeneratedOrder orderBuilder) {
+                                                               DocmosisGeneratedOrder docmosisGeneratedOrder) {
 
         DocmosisJudgeAndLegalAdvisor judgeAndLegalAdvisor = DocmosisJudgeAndLegalAdvisor.builder()
             .judgeTitleAndName("Her Honour Judge Judy")
             .legalAdvisorName("Peter Parker")
             .build();
 
-        var newOrderBuilder = orderBuilder
+        var newOrderBuilder = docmosisGeneratedOrder
             .toBuilder()
             .orderType(type)
             .furtherDirections(type != BLANK_ORDER ? "Example Directions" : "")
