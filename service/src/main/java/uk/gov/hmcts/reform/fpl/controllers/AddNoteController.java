@@ -22,7 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/callback/add-note")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class AddNoteController {
+public class AddNoteController extends AbstractSaveCase {
     private final CaseNoteService service;
     private final RequestData requestData;
     private final CaseConverter caseConverter;
@@ -39,8 +39,6 @@ public class AddNoteController {
             .caseNote(null)
             .build();
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseConverter.convertToMap(updatedCase))
-            .build();
+        return saveCase(updatedCase);
     }
 }

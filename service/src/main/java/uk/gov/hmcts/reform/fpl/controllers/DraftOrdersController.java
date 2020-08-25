@@ -59,7 +59,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAll
 @RestController
 @RequestMapping("/callback/draft-standard-directions")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class DraftOrdersController {
+public class DraftOrdersController extends AbstractSaveCase {
     private final DocumentService documentService;
     private final StandardDirectionOrderGenerationService standardDirectionOrderGenerationService;
     private final CommonDirectionService commonDirectionService;
@@ -90,9 +90,7 @@ public class DraftOrdersController {
             .dateOfIssue(dateOfIssue)
             .build();
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseConverter.convertToMap(updatedCaseData))
-            .build();
+        return saveCase(updatedCaseData);
     }
 
     @PostMapping("/date-of-issue/mid-event")
@@ -152,9 +150,7 @@ public class DraftOrdersController {
         order.setDirectionsToEmptyList();
         order.setOrderDocReferenceFromDocument(document);
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseConverter.convertToMap(updated))
-            .build();
+        return saveCase(updated);
     }
 
     @PostMapping("/about-to-submit")
@@ -205,9 +201,7 @@ public class DraftOrdersController {
         //add document to order
         order.setOrderDocReferenceFromDocument(document);
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseConverter.convertToMap(updated))
-            .build();
+        return saveCase(updated);
     }
 
     @PostMapping("/submitted")

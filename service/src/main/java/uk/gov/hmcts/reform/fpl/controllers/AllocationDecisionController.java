@@ -18,7 +18,7 @@ import uk.gov.hmcts.reform.fpl.utils.CaseConverter;
 @RestController
 @RequestMapping("/callback/allocation-decision")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class AllocationDecisionController {
+public class AllocationDecisionController extends AbstractSaveCase {
     private final CaseConverter caseConverter;
     private final CourtLevelAllocationService service;
 
@@ -33,9 +33,7 @@ public class AllocationDecisionController {
             .allocationDecision(allocationDecision)
             .build();
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseConverter.convertToMap(updatedCase))
-            .build();
+        return saveCase(updatedCase);
     }
 
     @PostMapping("/about-to-submit")
@@ -48,8 +46,6 @@ public class AllocationDecisionController {
             .allocationDecision(allocationDecision)
             .build();
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseConverter.convertToMap(updatedCase))
-            .build();
+        return saveCase(updatedCase);
     }
 }
