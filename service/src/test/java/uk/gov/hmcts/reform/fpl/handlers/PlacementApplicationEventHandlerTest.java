@@ -21,7 +21,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.appendSendToCtscOnCallback;
@@ -55,7 +55,7 @@ public class PlacementApplicationEventHandlerTest {
             new PlacementApplicationEvent(callbackRequest));
 
         verify(notificationService).sendEmail(
-            NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
+            PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
             COURT_EMAIL_ADDRESS,
             expectedParameters,
             "12345");
@@ -75,7 +75,7 @@ public class PlacementApplicationEventHandlerTest {
             new PlacementApplicationEvent(callbackRequest));
 
         verify(notificationService).sendEmail(
-            NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
+            PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
             CTSC_INBOX,
             expectedParameters,
             "12345");
