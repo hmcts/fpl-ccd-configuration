@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.service.validators;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -9,6 +11,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.List;
@@ -22,9 +25,12 @@ class RespondentsCheckerTest {
     @Autowired
     private RespondentsChecker respondentsChecker;
 
-    @Test
-    void shouldReturnErrorWhenNoRespondentsSpecified() {
-        final CaseData caseData = CaseData.builder().build();
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldReturnErrorWhenNoRespondentsSpecified(List<Element<Respondent>> respondents) {
+        final CaseData caseData = CaseData.builder()
+            .respondents1(respondents)
+            .build();
 
         final List<String> errors = respondentsChecker.validate(caseData);
         final boolean isCompleted = respondentsChecker.isCompleted(caseData);

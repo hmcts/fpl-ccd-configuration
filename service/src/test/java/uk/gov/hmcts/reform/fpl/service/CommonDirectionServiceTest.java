@@ -129,8 +129,13 @@ class CommonDirectionServiceTest {
             Map<DirectionAssignee, List<Element<Direction>>> map =
                 service.directionsToMap(CaseData.builder().build());
 
-            assertThat(new ArrayList<>(map.values()))
-                .isEqualTo(ImmutableList.of(EMPTY_LIST, EMPTY_LIST, EMPTY_LIST, EMPTY_LIST, EMPTY_LIST, EMPTY_LIST));
+            @SuppressWarnings("unchecked")
+            Collection<List<Element<Direction>>> expected = ImmutableList
+                .of(EMPTY_LIST, EMPTY_LIST, EMPTY_LIST, EMPTY_LIST, EMPTY_LIST, EMPTY_LIST);
+            Collection<List<Element<Direction>>> actual = new ArrayList<>(map.values());
+
+            assertThat(actual)
+                .isEqualTo(expected);
         }
 
         @Test

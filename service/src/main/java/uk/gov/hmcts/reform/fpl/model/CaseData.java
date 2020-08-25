@@ -101,12 +101,12 @@ public class CaseData {
     @NotNull(message = "Add the grounds for the application", groups = EPOGroup.class)
     @Valid
     private final GroundsForEPO groundsForEPO;
-    @NotNull(message = "Add your organisation's details")
+    @NotEmpty(message = "Add your organisation's details")
     @Valid
     private final List<@NotNull(message = "Add your organisation's details") Element<Applicant>> applicants;
 
     @Valid
-    @NotNull(message = "Add the respondents' details")
+    @NotEmpty(message = "Add the respondents' details")
     private final List<@NotNull(message = "Add the respondents' details") Element<Respondent>> respondents1;
 
     private final Proceeding proceeding;
@@ -200,7 +200,7 @@ public class CaseData {
     @JsonProperty("documents_socialWorkEvidenceTemplate_document")
     @Valid
     private final Document socialWorkEvidenceTemplateDocument;
-    @NotNull(message = "Add the child's details")
+    @NotEmpty(message = "Add the child's details")
     @Valid
     private final List<@NotNull(message = "Add the child's details") Element<Child>> children1;
     @NotBlank(message = "Enter Familyman case number", groups = {NoticeOfProceedingsGroup.class,

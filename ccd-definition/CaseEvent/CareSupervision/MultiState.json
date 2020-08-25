@@ -511,7 +511,7 @@
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "ShowSummary": "N",
-    "ShowEventNotes": "N",
+    "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue"
   },
   {
