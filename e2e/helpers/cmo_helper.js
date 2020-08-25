@@ -12,6 +12,22 @@ const localAuthoritySendsAgreedCmo = async function (I, caseViewPage, uploadCase
   await I.completeEvent('Submit');
 };
 
+const judgeSendsReviewedCmoToAllParties = async function(I, caseId, caseViewPage, caseListPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage) {
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  await localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, '1 January 2020', true);
+  I.seeEventSubmissionConfirmation(config.applicationActions.uploadCMO);
+  await localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage);
+  I.seeEventSubmissionConfirmation(config.applicationActions.uploadCMO);
+  await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
+  await caseViewPage.goToNewActions(config.applicationActions.reviewAgreedCmo);
+  reviewAgreedCaseManagementOrderEventPage.selectCMOToReview('1 January 2020');
+  await I.retryUntilExists(() => I.click('Continue'), '#reviewCMODecision_decision');
+  reviewAgreedCaseManagementOrderEventPage.selectSealCmo();
+  await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
+  I.seeEventSubmissionConfirmation(config.applicationActions.reviewAgreedCmo);
+};
+
 module.exports = {
   localAuthoritySendsAgreedCmo,
+  judgeSendsReviewedCmoToAllParties,
 };
