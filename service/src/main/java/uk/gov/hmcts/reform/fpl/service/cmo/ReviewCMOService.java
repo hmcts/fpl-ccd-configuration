@@ -32,6 +32,10 @@ public class ReviewCMOService {
     private final ObjectMapper mapper;
     private final Time time;
 
+    /**
+     * That methods shouldn't be invoked without any cmo selected as the outcome is unexpected.
+     * There is dedicated method below to support this functionality.
+     */
     public DynamicList buildDynamicList(CaseData caseData) {
         List<Element<CaseManagementOrder>> cmosReadyForApproval = getCMOsReadyForApproval(caseData);
         Element<CaseManagementOrder> selectedCMO = getSelectedCMO(caseData);
@@ -94,7 +98,7 @@ public class ReviewCMOService {
     }
 
     public Element<CaseManagementOrder> getSelectedCMO(CaseData caseData) {
-        if (("MULTI").equals(caseData.getNumDraftCMOs())) {
+        if (getCMOsReadyForApproval(caseData).size() > 1) {
             UUID selectedCMOCode = getSelectedCMOId(caseData.getCmoToReviewList());
 
             return caseData.getDraftUploadedCMOs().stream()
