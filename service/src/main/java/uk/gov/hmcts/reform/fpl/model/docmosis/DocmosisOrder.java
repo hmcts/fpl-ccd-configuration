@@ -14,7 +14,7 @@ import static java.util.stream.Collectors.groupingBy;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Getter
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @AllArgsConstructor
 @EqualsAndHashCode
 public class DocmosisOrder implements DocmosisData {
