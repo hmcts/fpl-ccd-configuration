@@ -39,7 +39,6 @@ import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
 import static uk.gov.hmcts.reform.fpl.enums.ChildGender.BOY;
 import static uk.gov.hmcts.reform.fpl.enums.ChildGender.GIRL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.DISCHARGE_OF_CARE_ORDER;
-import static uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDischargeOfCareOrder.DocmosisDischargeOfCareOrderBuilder;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
@@ -169,13 +168,14 @@ class DischargeCareOrderGenerationServiceTest extends AbstractOrderGenerationSer
     private DocmosisGeneratedOrder getExpectedDocument(OrderStatus status, List<DocmosisOrder> docmosisOrders,
                                                        List<DocmosisChild> children) {
 
-        DocmosisDischargeOfCareOrderBuilder dischargeOfCareOrderBuilder = DocmosisDischargeOfCareOrder.builder()
+        DocmosisDischargeOfCareOrder dischargeOfCareOrderBuilder = DocmosisDischargeOfCareOrder.builder()
             .orderTitle("Discharge of care order")
             .childrenAct("Section 39(1) Children Act 1989")
             .children(children)
-            .careOrders(docmosisOrders);
+            .careOrders(docmosisOrders)
+            .build();
 
-        return enrichWithStandardData(DISCHARGE_OF_CARE_ORDER, status, dischargeOfCareOrderBuilder).build();
+        return enrichWithStandardData(DISCHARGE_OF_CARE_ORDER, status, dischargeOfCareOrderBuilder);
     }
 
     private List<DocmosisOrder> docmosisOrders(GeneratedOrder... generatedOrders) {

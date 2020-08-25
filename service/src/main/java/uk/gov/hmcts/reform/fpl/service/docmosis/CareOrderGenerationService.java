@@ -18,9 +18,8 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CareOrderGenerationService extends GeneratedOrderTemplateDataGeneration {
 
-    @SuppressWarnings("rawtypes")
     @Override
-    DocmosisGeneratedOrderBuilder populateCustomOrderFields(CaseData caseData) {
+    DocmosisGeneratedOrder populateCustomOrderFields(CaseData caseData) {
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
         GeneratedOrderSubtype subtype = orderTypeAndDocument.getSubtype();
         InterimEndDate interimEndDate = caseData.getInterimEndDate();
@@ -41,7 +40,8 @@ public class CareOrderGenerationService extends GeneratedOrderTemplateDataGenera
         return orderBuilder
             .localAuthorityName(getLocalAuthorityName(caseData.getCaseLocalAuthority()))
             .orderDetails(getFormattedCareOrderDetails(childrenCount, caseData.getCaseLocalAuthority(),
-                orderTypeAndDocument.isInterim(), interimEndDate));
+                orderTypeAndDocument.isInterim(), interimEndDate))
+            .build();
     }
 
     private String getFormattedCareOrderDetails(int numOfChildren,
