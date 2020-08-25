@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder.DocmosisGeneratedOrderBuilder;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {BlankOrderGenerationService.class, CaseDataExtractionService.class,
@@ -59,12 +58,13 @@ class BlankOrderGenerationServiceTest extends AbstractOrderGenerationServiceTest
     }
 
     private DocmosisGeneratedOrder getExpectedDocument(OrderStatus orderStatus) {
-        DocmosisGeneratedOrderBuilder orderBuilder = DocmosisGeneratedOrder.builder()
+        DocmosisGeneratedOrder orderBuilder = DocmosisGeneratedOrder.builder()
             .orderTitle("Example Title")
             .childrenAct("Children Act 1989")
             .orderDetails("Example details")
-            .children(getChildren());
+            .children(getChildren())
+            .build();
 
-        return enrichWithStandardData(BLANK_ORDER, orderStatus, orderBuilder).build();
+        return enrichWithStandardData(BLANK_ORDER, orderStatus, orderBuilder);
     }
 }
