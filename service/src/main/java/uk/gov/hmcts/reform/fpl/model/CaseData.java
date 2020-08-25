@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
@@ -84,7 +83,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @HasDocumentsIncludedInSwet(groups = UploadDocumentsGroup.class)
-@JsonInclude(JsonInclude.Include.NON_NULL)
+//@JsonInclude(JsonInclude.Include.NON_NULL)
 @SuppressWarnings({"java:S1874", "java:S1133"}) // Remove once deprecations dealt with
 public class CaseData {
     private final State state;
@@ -272,12 +271,13 @@ public class CaseData {
         return orderCollection != null ? orderCollection : new ArrayList<>();
     }
 
-    private final DynamicList activeOrderCollection;
+    private final DynamicList removableOrderList;
     private final String reasonToRemoveOrder;
-    private final List<Element<GeneratedOrder>> removedOrdersCollection;
+    private final List<Element<GeneratedOrder>> hiddenOrders;
 
-    public List<Element<GeneratedOrder>> getRemovedOrdersCollection() {
-        return removedOrdersCollection != null ? removedOrdersCollection : new ArrayList<>();    }
+    public List<Element<GeneratedOrder>> getHiddenOrders() {
+        return defaultIfNull(hiddenOrders, new ArrayList<>());
+    }
 
     /**
      * General object for CMO. Can be either in a draft state or action state. Ignored by jackson so that custom
