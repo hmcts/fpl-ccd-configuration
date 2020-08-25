@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +12,14 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.RemoveOrderService;
+
+import java.util.List;
+import java.util.Map;
+
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
 @Api
 @RestController
@@ -21,20 +27,37 @@ import uk.gov.hmcts.reform.fpl.service.RemoveOrderService;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RemoveOrderController {
     private final ObjectMapper mapper;
-    private final RemoveOrderService removeOrderService;
+    private final RemoveOrderService service;
 
     @PostMapping("/about-to-start")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
+        Map<String, Object> data = request.getCaseDetails().getData();
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        CaseData updateCaseData = caseData.toBuilder()
-            .activeOrderCollection(removeOrderService.getDropDownListOfExistingOrders(caseData))
-            .build();
+        data.put("removableOrderList", service.getDropDownListOfExistingOrders(caseData.getOrderCollection()));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(mapper.convertValue(updateCaseData, new TypeReference<>() {
-            }))
+            .data(data)
+            .build();
+    }
+
+    @PostMapping("/about-to-submit")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest request) {
+        CaseDetails caseDetails = request.getCaseDetails();
+        Map<String, Object> data = caseDetails.getData();
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
+
+        List<Element<GeneratedOrder>> orders = caseData.getOrderCollection();
+        List<Element<GeneratedOrder>> hiddenOrders = caseData.getHiddenOrders();
+
+        service.hideOrder(orders, hiddenOrders, caseData.getRemovableOrderList(), caseData.getReasonToRemoveOrder());
+
+        data.put("orderCollection", orders);
+        data.put("hiddenOrders", hiddenOrders);
+        removeTemporaryFields(caseDetails, "removableOrderList", "reasonToRemoveOrder");
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(data)
             .build();
     }
 }
