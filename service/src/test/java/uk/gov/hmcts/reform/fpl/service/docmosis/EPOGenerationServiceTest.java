@@ -90,7 +90,7 @@ class EPOGenerationServiceTest extends AbstractOrderGenerationServiceTest {
     }
 
     private DocmosisGeneratedOrder getExpectedDocument(OrderStatus orderStatus) {
-        DocmosisGeneratedOrder.DocmosisGeneratedOrderBuilder orderBuilder = DocmosisGeneratedOrder.builder()
+        DocmosisGeneratedOrder orderBuilder = DocmosisGeneratedOrder.builder()
             .orderType(EMERGENCY_PROTECTION_ORDER)
             .localAuthorityName(LOCAL_AUTHORITY_NAME)
             .children(getChildren())
@@ -100,8 +100,9 @@ class EPOGenerationServiceTest extends AbstractOrderGenerationServiceTest {
             .removalAddress("1 Main Street, Lurgan, BT66 7PP, Armagh, United Kingdom")
             .epoStartDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), "d MMMM yyyy 'at' h:mma"))
             .epoEndDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), "d MMMM yyyy 'at' h:mma"))
-            .children(getChildren());
+            .children(getChildren())
+            .build();
 
-        return enrichWithStandardData(EMERGENCY_PROTECTION_ORDER, orderStatus, orderBuilder).build();
+        return enrichWithStandardData(EMERGENCY_PROTECTION_ORDER, orderStatus, orderBuilder);
     }
 }

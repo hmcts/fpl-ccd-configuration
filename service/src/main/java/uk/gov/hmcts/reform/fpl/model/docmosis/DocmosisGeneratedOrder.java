@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 
 @Getter
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 public class DocmosisGeneratedOrder extends DocmosisOrder {
     private final String orderTitle;
