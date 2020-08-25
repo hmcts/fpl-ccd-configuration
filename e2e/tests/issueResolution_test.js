@@ -1,5 +1,5 @@
 const config = require('../config.js');
-const issueResolution = require('../fixtures/IssueResolution.json');
+const issueResolution = require('../fixtures/issueResolution.json');
 const cmoHelper = require('../helpers/cmo_helper');
 
 let caseId;

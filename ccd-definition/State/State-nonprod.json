@@ -16,7 +16,6 @@
     "Name": "Issue resolution",
     "Description": "Issue resolution case state - Triggered via CMO event and hearing is of issue resolution type",
     "DisplayOrder": 5,
-    "TitleDisplay": "# ${caseName}\n## **FamilyMan ID: ${familyManCaseNumber}**\n## **CCD ID: #${[CASE_REFERENCE]}**",
-    "Comment": "PREPARE_FOR_HEARING state name changed as part of FPLA-1920. CaseStateID naming remains to avoid break existing cases."
+    "TitleDisplay": "# ${caseName}\n## **FamilyMan ID: ${familyManCaseNumber}**\n## **CCD ID: #${[CASE_REFERENCE]}**"
   }
 ]
