@@ -165,7 +165,7 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldNotUpdateStateWhenNextHearingIsNotOfTypeIssueResolution() {
+    void shouldNotUpdateStateWhenNextHearingIsNotOfTypeIssueResolutionOrFinal() {
         given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
 
         UUID cmoId = UUID.randomUUID();
