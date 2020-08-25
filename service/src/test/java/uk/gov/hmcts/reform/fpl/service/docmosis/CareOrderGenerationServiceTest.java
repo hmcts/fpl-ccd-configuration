@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder.DocmosisGeneratedOrderBuilder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
@@ -85,7 +84,7 @@ class CareOrderGenerationServiceTest extends AbstractOrderGenerationServiceTest 
     }
 
     private DocmosisGeneratedOrder getExpectedDocument(GeneratedOrderSubtype subtype, OrderStatus orderStatus) {
-        DocmosisGeneratedOrderBuilder orderBuilder = DocmosisGeneratedOrder.builder()
+        var orderBuilder = DocmosisGeneratedOrder.builder()
             .children(getChildren())
             .orderType(CARE_ORDER)
             .localAuthorityName(LOCAL_AUTHORITY_NAME);
@@ -104,6 +103,6 @@ class CareOrderGenerationServiceTest extends AbstractOrderGenerationServiceTest 
                 .orderDetails("It is ordered that the children are placed in the care of Example Local Authority.");
         }
 
-        return enrichWithStandardData(CARE_ORDER, subtype, orderStatus, orderBuilder).build();
+        return enrichWithStandardData(CARE_ORDER, subtype, orderStatus, orderBuilder.build());
     }
 }

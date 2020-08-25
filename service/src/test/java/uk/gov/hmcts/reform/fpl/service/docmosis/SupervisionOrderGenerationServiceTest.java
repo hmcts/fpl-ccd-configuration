@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder.DocmosisGeneratedOrderBuilder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
@@ -110,7 +109,7 @@ class SupervisionOrderGenerationServiceTest extends AbstractOrderGenerationServi
                 .gender("Boy")
                 .dateOfBirth(formattedDate).build());
 
-        DocmosisGeneratedOrderBuilder orderBuilder = DocmosisGeneratedOrder.builder().children(children);
+        var orderBuilder = DocmosisGeneratedOrder.builder().children(children);
 
         if (subtype == INTERIM) {
             String detailsDate = formatLocalDateToString(
@@ -133,7 +132,7 @@ class SupervisionOrderGenerationServiceTest extends AbstractOrderGenerationServi
                 .orderDetails(format("It is ordered that Example Local Authority supervises the child for 5 months "
                     + "from the date of this order until %s.", formattedDateTime));
         }
-        return enrichWithStandardData(SUPERVISION_ORDER, orderStatus, orderBuilder).build();
+        return enrichWithStandardData(SUPERVISION_ORDER, orderStatus, orderBuilder.build());
     }
 
 }

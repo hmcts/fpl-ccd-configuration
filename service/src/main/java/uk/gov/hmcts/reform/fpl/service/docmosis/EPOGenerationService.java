@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder.DocmosisGeneratedOrderBuilder;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
@@ -21,9 +20,8 @@ public class EPOGenerationService extends GeneratedOrderTemplateDataGeneration {
 
     private final Time time;
 
-    @SuppressWarnings("rawtypes")
     @Override
-    DocmosisGeneratedOrderBuilder populateCustomOrderFields(CaseData caseData) {
+    DocmosisGeneratedOrder populateCustomOrderFields(CaseData caseData) {
         return DocmosisGeneratedOrder.builder()
             .localAuthorityName(getLocalAuthorityName(caseData.getCaseLocalAuthority()))
             .childrenDescription(getChildrenDescription(caseData.getEpoChildren()))
@@ -31,7 +29,8 @@ public class EPOGenerationService extends GeneratedOrderTemplateDataGeneration {
             .includePhrase(caseData.getEpoPhrase().getIncludePhrase())
             .removalAddress(getFormattedRemovalAddress(caseData))
             .epoStartDateTime(formatEPODateTime(time.now()))
-            .epoEndDateTime(formatEPODateTime(caseData.getEpoEndDate()));
+            .epoEndDateTime(formatEPODateTime(caseData.getEpoEndDate()))
+            .build();
     }
 
     private String getChildrenDescription(EPOChildren epoChildren) {
