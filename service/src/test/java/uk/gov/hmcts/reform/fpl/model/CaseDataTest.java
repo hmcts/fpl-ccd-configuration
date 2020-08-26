@@ -588,7 +588,7 @@ class CaseDataTest {
                 element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6), FINAL, cmoID)),
                 element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3), CASE_MANAGEMENT,
                     UUID.randomUUID())),
-                element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, cmoID)),
+                element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, UUID.randomUUID())),
                 element(nextHearing));
 
             CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
@@ -620,8 +620,9 @@ class CaseDataTest {
         void shouldReturnEmptyOptionalHearingIfNoUpcomingHearingsAreFound() {
             List<Element<HearingBooking>> hearingBookings = List.of(
                 element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6), FINAL, cmoID)),
-                element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3), CASE_MANAGEMENT, cmoID)),
-                element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, cmoID)));
+                element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3), CASE_MANAGEMENT,
+                    UUID.randomUUID())),
+                element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, UUID.randomUUID())));
 
             CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
             Optional<HearingBooking> nextHearingBooking = caseData.getNextHearingAfterCmo(cmoID);

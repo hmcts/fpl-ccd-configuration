@@ -266,10 +266,11 @@ class ReviewCMOServiceTest {
 
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6), FINAL, cmoID)),
-            element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3), CASE_MANAGEMENT, cmoID)),
+            element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3), CASE_MANAGEMENT,
+                UUID.randomUUID())),
             element(createHearingBooking(futureDate.plusDays(6), futureDate.plusDays(7), ISSUE_RESOLUTION,
                 UUID.randomUUID())),
-            element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, cmoID)));
+            element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, UUID.randomUUID())));
 
         CaseData caseData = buildCaseData(SEND_TO_ALL_PARTIES, hearingBookings);
         assertThat(service.getStateBasedOnNextHearing(caseData, cmoID)).isEqualTo(State.ISSUE_RESOLUTION);
@@ -281,10 +282,11 @@ class ReviewCMOServiceTest {
 
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6), FINAL, cmoID)),
-            element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3), CASE_MANAGEMENT, cmoID)),
+            element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3), CASE_MANAGEMENT,
+                UUID.randomUUID())),
             element(createHearingBooking(futureDate.plusDays(6), futureDate.plusDays(7), ISSUE_RESOLUTION,
                 UUID.randomUUID())),
-            element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, cmoID)));
+            element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, UUID.randomUUID())));
 
         CaseData caseData = buildCaseData(SEND_TO_ALL_PARTIES, hearingBookings);
         assertThat(service.getStateBasedOnNextHearing(caseData, cmoID)).isEqualTo(State.CASE_MANAGEMENT);
@@ -308,10 +310,11 @@ class ReviewCMOServiceTest {
 
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6), FINAL, cmoID)),
-            element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3), CASE_MANAGEMENT, cmoID)),
+            element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3), CASE_MANAGEMENT,
+                UUID.randomUUID())),
             element(createHearingBooking(futureDate.plusDays(6), futureDate.plusDays(7), ISSUE_RESOLUTION,
                 UUID.randomUUID())),
-            element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, cmoID)));
+            element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, UUID.randomUUID())));
 
         CaseData caseData = buildCaseData(JUDGE_AMENDS_DRAFT, hearingBookings);
         assertThat(service.getStateBasedOnNextHearing(caseData, cmoID)).isEqualTo(State.CASE_MANAGEMENT);
