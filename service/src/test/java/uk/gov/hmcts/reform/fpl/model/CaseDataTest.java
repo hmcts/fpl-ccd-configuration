@@ -590,8 +590,8 @@ class CaseDataTest {
             CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
             Optional<HearingBooking> nextHearingBooking = caseData.getNextHearingAfterCmo(cmoID);
 
-            assertThat(nextHearingBooking.isPresent()).isTrue();
-            assertThat(nextHearingBooking.get()).isEqualTo(issueResolutionHearing);
+            assertThat(nextHearingBooking).isPresent();
+            assertThat(nextHearingBooking).contains(issueResolutionHearing);
         }
 
         @Test
@@ -611,7 +611,7 @@ class CaseDataTest {
             CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
             Optional<HearingBooking> nextHearingBooking = caseData.getNextHearingAfterCmo(cmoID);
 
-            assertThat(nextHearingBooking.isPresent()).isFalse();
+            assertThat(nextHearingBooking).isNotPresent();
         }
     }
 
