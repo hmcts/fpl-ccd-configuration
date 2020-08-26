@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -59,12 +58,6 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
         super("review-cmo");
     }
 
-    @BeforeEach()
-    void setup() throws Exception {
-        convertedDocument = testDocumentReference();
-        sealedDocument = testDocumentReference();
-    }
-
     @Test
     void shouldSetReturnStatusAndRequestedChangesWhenJudgeRejectsOrder() {
         ReviewDecision reviewDecision = ReviewDecision.builder()
@@ -92,6 +85,9 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldSealPDFAndAddToSealedCMOsListWhenJudgeApprovesOrder() throws Exception {
+        DocumentReference convertedDocument = testDocumentReference();
+        DocumentReference sealedDocument = testDocumentReference();
+
         given(documentConversionService.convertToPdf(cmo.getOrder())).willReturn(convertedDocument);
         given(documentSealingService.sealDocument(convertedDocument)).willReturn(sealedDocument);
 

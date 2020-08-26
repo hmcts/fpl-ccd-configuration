@@ -263,14 +263,30 @@ class ReviewCMOServiceTest {
     @Test
     void shouldReturnIssueResolutionStateWhenNextHearingTypeIsIssueResolutionAndFeatureToggleIsToggledOn() {
         given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
-        CaseData caseData = buildCaseData(SEND_TO_ALL_PARTIES);
+
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6), FINAL, cmoID)),
+            element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3), CASE_MANAGEMENT, cmoID)),
+            element(createHearingBooking(futureDate.plusDays(6), futureDate.plusDays(7), ISSUE_RESOLUTION,
+                UUID.randomUUID())),
+            element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, cmoID)));
+
+        CaseData caseData = buildCaseData(SEND_TO_ALL_PARTIES, hearingBookings);
         assertThat(service.getStateBasedOnNextHearing(caseData, cmoID)).isEqualTo(State.ISSUE_RESOLUTION);
     }
 
     @Test
     void shouldReturnCurrentCaseStateWhenNextHearingIsTypeIssueResolutionAndFeatureToggleIsToggledOff() {
         given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(false);
-        CaseData caseData = buildCaseData(SEND_TO_ALL_PARTIES);
+
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6), FINAL, cmoID)),
+            element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3), CASE_MANAGEMENT, cmoID)),
+            element(createHearingBooking(futureDate.plusDays(6), futureDate.plusDays(7), ISSUE_RESOLUTION,
+                UUID.randomUUID())),
+            element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, cmoID)));
+
+        CaseData caseData = buildCaseData(SEND_TO_ALL_PARTIES, hearingBookings);
         assertThat(service.getStateBasedOnNextHearing(caseData, cmoID)).isEqualTo(State.CASE_MANAGEMENT);
     }
 
@@ -289,7 +305,15 @@ class ReviewCMOServiceTest {
     @Test
     void shouldReturnCurrentStateWhenNextReviewDecisionIsNotSendToAllParties() {
         given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
-        CaseData caseData = buildCaseData(JUDGE_AMENDS_DRAFT);
+
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6), FINAL, cmoID)),
+            element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3), CASE_MANAGEMENT, cmoID)),
+            element(createHearingBooking(futureDate.plusDays(6), futureDate.plusDays(7), ISSUE_RESOLUTION,
+                UUID.randomUUID())),
+            element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, cmoID)));
+
+        CaseData caseData = buildCaseData(JUDGE_AMENDS_DRAFT, hearingBookings);
         assertThat(service.getStateBasedOnNextHearing(caseData, cmoID)).isEqualTo(State.CASE_MANAGEMENT);
     }
 
@@ -338,24 +362,11 @@ class ReviewCMOServiceTest {
             .build();
     }
 
-    private CaseData buildCaseData(CMOReviewOutcome cmoReviewOutcome) {
-        return buildCaseData(cmoReviewOutcome, createHearingBookingElements());
-    }
-
     private CaseData buildCaseData(CMOReviewOutcome cmoReviewOutcome, List<Element<HearingBooking>> hearingDetails) {
         return CaseData.builder()
             .state(State.CASE_MANAGEMENT)
             .reviewCMODecision(ReviewDecision.builder().decision(cmoReviewOutcome).build())
             .hearingDetails(hearingDetails)
             .build();
-    }
-
-    private List<Element<HearingBooking>> createHearingBookingElements() {
-        return new ArrayList<>(List.of(
-            element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6), FINAL, cmoID)),
-            element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3), CASE_MANAGEMENT, cmoID)),
-            element(createHearingBooking(futureDate.plusDays(6), futureDate.plusDays(7), ISSUE_RESOLUTION,
-                UUID.randomUUID())),
-            element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, cmoID))));
     }
 }

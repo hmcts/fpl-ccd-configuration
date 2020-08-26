@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -582,22 +581,34 @@ class CaseDataTest {
     class GetNextHearingAfterCmo {
         @Test
         void shouldReturnExpectedNextHearingBooking() {
-            List<Element<HearingBooking>> hearingBookings = createHearingBookingElements();
-            HearingBooking issueResolutionHearing = createHearingBooking(futureDate.plusDays(6),
-                futureDate.plusDays(7), ISSUE_RESOLUTION, UUID.randomUUID());
-            hearingBookings.add(element(issueResolutionHearing));
+            HearingBooking nextHearing = createHearingBooking(futureDate.plusDays(6), futureDate.plusDays(7),
+                ISSUE_RESOLUTION, UUID.randomUUID());
+
+            List<Element<HearingBooking>> hearingBookings = List.of(
+                element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6), FINAL, cmoID)),
+                element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3), CASE_MANAGEMENT,
+                    UUID.randomUUID())),
+                element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, cmoID)),
+                element(nextHearing));
 
             CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
             Optional<HearingBooking> nextHearingBooking = caseData.getNextHearingAfterCmo(cmoID);
 
-            assertThat(nextHearingBooking).isPresent();
-            assertThat(nextHearingBooking).contains(issueResolutionHearing);
+            assertThat(nextHearingBooking).isPresent().contains(nextHearing);
         }
 
         @Test
         void shouldThrowAnExceptionWhenNoHearingsNotMatchCmo() {
             UUID cmoID = UUID.randomUUID();
-            CaseData caseData = CaseData.builder().hearingDetails(createHearingBookingElements()).build();
+            List<Element<HearingBooking>> hearingBookings = List.of(
+                element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6), FINAL,
+                    UUID.randomUUID())),
+                element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3), CASE_MANAGEMENT,
+                    UUID.randomUUID())),
+                element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION,
+                    UUID.randomUUID())));
+
+            CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
 
             IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> caseData.getNextHearingAfterCmo(cmoID));
@@ -607,7 +618,11 @@ class CaseDataTest {
 
         @Test
         void shouldReturnEmptyOptionalHearingIfNoUpcomingHearingsAreFound() {
-            List<Element<HearingBooking>> hearingBookings = createHearingBookingElements();
+            List<Element<HearingBooking>> hearingBookings = List.of(
+                element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6), FINAL, cmoID)),
+                element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3), CASE_MANAGEMENT, cmoID)),
+                element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, cmoID)));
+
             CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
             Optional<HearingBooking> nextHearingBooking = caseData.getNextHearingAfterCmo(cmoID);
 
@@ -660,12 +675,5 @@ class CaseDataTest {
 
         return format("{\"%s\": [{\"id\":\"%s\",\"value\":{\"directionType\":\"title\",\"assignee\":\"%s\","
             + "\"readOnly\":\"No\",\"custom\":\"Yes\",\"responses\":[]}}]}", key, id, assignee.toString());
-    }
-
-    private List<Element<HearingBooking>> createHearingBookingElements() {
-        return new ArrayList<>(List.of(
-            element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6), FINAL, cmoID)),
-            element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3), CASE_MANAGEMENT, cmoID)),
-            element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, cmoID))));
     }
 }
