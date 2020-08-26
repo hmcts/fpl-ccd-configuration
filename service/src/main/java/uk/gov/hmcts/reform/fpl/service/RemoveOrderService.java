@@ -12,7 +12,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 
 @Service
 public class RemoveOrderService {
-    public DynamicList getDropDownListOfExistingOrders(List<Element<GeneratedOrder>> orders) {
+    public DynamicList buildDynamicListOfOrders(List<Element<GeneratedOrder>> orders) {
         List<Element<GeneratedOrder>> blankOrders = orders.stream()
             .filter(order -> order.getValue().isRemovable())
             .collect(Collectors.toList());

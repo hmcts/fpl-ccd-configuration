@@ -34,7 +34,7 @@ public class RemoveOrderController {
         Map<String, Object> data = request.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        data.put("removableOrderList", service.getDropDownListOfExistingOrders(caseData.getOrderCollection()));
+        data.put("removableOrderList", service.buildDynamicListOfOrders(caseData.getOrderCollection()));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)

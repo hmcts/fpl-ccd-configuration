@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 import java.util.List;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 
 @Data
@@ -38,6 +38,6 @@ public class GeneratedOrder {
     }
 
     public String asLabel() {
-        return defaultIfNull(title, type) + " - " + dateOfIssue;
+        return defaultIfEmpty(title, type) + " - " + dateOfIssue;
     }
 }
