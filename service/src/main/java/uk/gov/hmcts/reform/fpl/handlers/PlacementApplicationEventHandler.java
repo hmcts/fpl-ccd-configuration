@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.PlacementApplicationContent
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -29,7 +29,7 @@ public class PlacementApplicationEventHandler {
 
         String email = adminNotificationHandler.getHmctsAdminEmail(eventData);
 
-        notificationService.sendEmail(NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE, email, parameters,
+        notificationService.sendEmail(PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE, email, parameters,
             eventData.getReference());
     }
 }
