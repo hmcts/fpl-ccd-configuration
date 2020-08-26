@@ -12,30 +12,23 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.HearingType;
-import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ReviewCMOService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
-import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 
 @Api
 @RestController
@@ -48,7 +41,6 @@ public class ReviewCMOController {
     private final DocumentConversionService documentConversionService;
     private final DocumentSealingService documentSealingService;
     private final ApplicationEventPublisher eventPublisher;
-    private final FeatureToggleService featureToggleService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -116,12 +108,7 @@ public class ReviewCMOController {
                 sealedCMOs.add(cmoToSeal);
 
                 data.put("sealedCMOs", sealedCMOs);
-
-                if (featureToggleService.isNewCaseStateModelEnabled()
-                    && caseData.getReviewCMODecision().hasReviewOutcomeOf(SEND_TO_ALL_PARTIES)
-                    && isNextHearingOfType(caseData, cmo.getId(), ISSUE_RESOLUTION)) {
-                    data.put("state", State.ISSUE_RESOLUTION.getValue());
-                }
+                data.put("state", reviewCMOService.getStateBasedOnNextHearing(caseData, cmo.getId()));
             } else {
                 cmo.getValue().setStatus(RETURNED);
                 cmo.getValue().setRequestedChanges(caseData.getReviewCMODecision().getChangesRequestedByJudge());
@@ -162,15 +149,5 @@ public class ReviewCMOController {
                 eventPublisher.publishEvent(new CaseManagementOrderRejectedEvent(callbackRequest, cmoToReturn));
             }
         }
-    }
-
-    private boolean isNextHearingOfType(CaseData caseData, UUID cmoID, HearingType hearingType) {
-        HearingBooking nextHearingBooking = caseData.getNextHearingAfterCmo(cmoID);
-
-        if (nextHearingBooking.getType() != null) {
-            return hearingType.getLabel().equals(nextHearingBooking.getType().getLabel());
-        }
-
-        return false;
     }
 }

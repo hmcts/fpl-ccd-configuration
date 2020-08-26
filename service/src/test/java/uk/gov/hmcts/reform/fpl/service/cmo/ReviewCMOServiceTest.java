@@ -1,12 +1,16 @@
 package uk.gov.hmcts.reform.fpl.service.cmo;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -17,11 +21,13 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,13 +35,18 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement.EMPTY;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
@@ -49,12 +60,22 @@ class ReviewCMOServiceTest {
     private static final String hearing1 = "Case management hearing, 2 March 2020";
     private static final String hearing2 = "Test hearing, 15 October 2020";
     private static final DocumentReference order = testDocumentReference();
+    private UUID cmoID = UUID.randomUUID();
+    private LocalDateTime futureDate;
 
     @Autowired
     private ReviewCMOService service;
 
     @Autowired
     private Time time;
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
+
+    @BeforeEach
+    void setUp() {
+        futureDate = time.now().plusDays(1);
+    }
 
     @Test
     void shouldBuildDynamicListWithAppropriateElementSelected() {
@@ -239,6 +260,51 @@ class ReviewCMOServiceTest {
             () -> service.getLatestSealedCMO(caseData));
     }
 
+    @Test
+    void shouldReturnIssueResolutionStateWhenNextHearingTypeIsIssueResolutionAndFeatureToggleIsToggledOn() {
+        given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
+        CaseData caseData = buildCaseData(SEND_TO_ALL_PARTIES);
+        assertThat(service.getStateBasedOnNextHearing(caseData, cmoID)).isEqualTo(State.ISSUE_RESOLUTION);
+    }
+
+    @Test
+    void shouldReturnCurrentCaseStateWhenNextHearingIsTypeIssueResolutionAndFeatureToggleIsToggledOff() {
+        given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(false);
+        CaseData caseData = buildCaseData(SEND_TO_ALL_PARTIES);
+        assertThat(service.getStateBasedOnNextHearing(caseData, cmoID)).isEqualTo(State.CASE_MANAGEMENT);
+    }
+
+    @Test
+    void shouldReturnCurrentStateWhenNextHearingIsNotOfTypeIssueResolution() {
+        given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
+
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6), FINAL, cmoID)),
+            element(createHearingBooking(futureDate.plusDays(6), futureDate.plusDays(7), FINAL, UUID.randomUUID())));
+
+        CaseData caseData = buildCaseData(SEND_TO_ALL_PARTIES, hearingBookings);
+        assertThat(service.getStateBasedOnNextHearing(caseData, cmoID)).isEqualTo(State.CASE_MANAGEMENT);
+    }
+
+    @Test
+    void shouldReturnCurrentStateWhenNextReviewDecisionIsNotSendToAllParties() {
+        given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
+        CaseData caseData = buildCaseData(JUDGE_AMENDS_DRAFT);
+        assertThat(service.getStateBasedOnNextHearing(caseData, cmoID)).isEqualTo(State.CASE_MANAGEMENT);
+    }
+
+    @Test
+    void shouldThrowAnExceptionWhenNoUpcomingHearingsAreAvailable() {
+        given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
+        List<Element<HearingBooking>> hearingBookings = new ArrayList<>();
+        CaseData caseData = buildCaseData(SEND_TO_ALL_PARTIES, hearingBookings);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+            () -> service.getStateBasedOnNextHearing(caseData, cmoID));
+
+        assertThat(exception).hasMessageContaining("Failed to find hearing matching cmo id", cmoID);
+    }
+
     private static Element<CaseManagementOrder> draftCMO(String hearing) {
         return element(CaseManagementOrder.builder()
             .hearing(hearing)
@@ -270,5 +336,26 @@ class ReviewCMOServiceTest {
                 .judgeLastName("Judy")
                 .build())
             .build();
+    }
+
+    private CaseData buildCaseData(CMOReviewOutcome cmoReviewOutcome) {
+        return buildCaseData(cmoReviewOutcome, createHearingBookingElements());
+    }
+
+    private CaseData buildCaseData(CMOReviewOutcome cmoReviewOutcome, List<Element<HearingBooking>> hearingDetails) {
+        return CaseData.builder()
+            .state(State.CASE_MANAGEMENT)
+            .reviewCMODecision(ReviewDecision.builder().decision(cmoReviewOutcome).build())
+            .hearingDetails(hearingDetails)
+            .build();
+    }
+
+    private List<Element<HearingBooking>> createHearingBookingElements() {
+        return new ArrayList<>(List.of(
+            element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6), FINAL, cmoID)),
+            element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3), CASE_MANAGEMENT, cmoID)),
+            element(createHearingBooking(futureDate.plusDays(6), futureDate.plusDays(7), ISSUE_RESOLUTION,
+                UUID.randomUUID())),
+            element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, cmoID))));
     }
 }

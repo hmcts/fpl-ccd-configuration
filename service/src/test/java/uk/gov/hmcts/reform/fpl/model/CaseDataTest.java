@@ -39,6 +39,7 @@ import static java.util.Collections.emptyList;
 import static java.util.UUID.fromString;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
@@ -580,21 +581,37 @@ class CaseDataTest {
     @Nested
     class GetNextHearingAfterCmo {
         @Test
-        void shouldReturnExpectedHearingBookingWhenAllOtherHearingsAreAssociatedWithGivenCmoID() {
+        void shouldReturnExpectedNextHearingBooking() {
             List<Element<HearingBooking>> hearingBookings = createHearingBookingElements();
-            HearingBooking issueResolutionHearing = createHearingBooking(time.now().plusMinutes(1),
-                futureDate.plusDays(2), ISSUE_RESOLUTION, UUID.randomUUID());
+            HearingBooking issueResolutionHearing = createHearingBooking(futureDate.plusDays(6),
+                futureDate.plusDays(7), ISSUE_RESOLUTION, UUID.randomUUID());
             hearingBookings.add(element(issueResolutionHearing));
 
             CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
-            assertThat(caseData.getNextHearingAfterCmo(cmoID)).isEqualTo(issueResolutionHearing);
+            Optional<HearingBooking> nextHearingBooking = caseData.getNextHearingAfterCmo(cmoID);
+
+            assertThat(nextHearingBooking.isPresent()).isTrue();
+            assertThat(nextHearingBooking.get()).isEqualTo(issueResolutionHearing);
         }
 
         @Test
-        void shouldReturnEmptyHearingBookingIfAllHearingsMatchCmoID() {
+        void shouldThrowAnExceptionWhenNoHearingsNotMatchCmo() {
+            UUID cmoID = UUID.randomUUID();
+            CaseData caseData = CaseData.builder().hearingDetails(createHearingBookingElements()).build();
+
+            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> caseData.getNextHearingAfterCmo(cmoID));
+
+            assertThat(exception).hasMessageContaining("Failed to find hearing matching cmo id", cmoID);
+        }
+
+        @Test
+        void shouldReturnEmptyOptionalHearingIfNoUpcomingHearingsAreFound() {
             List<Element<HearingBooking>> hearingBookings = createHearingBookingElements();
             CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
-            assertThat(caseData.getNextHearingAfterCmo(cmoID)).isEqualTo(HearingBooking.builder().build());
+            Optional<HearingBooking> nextHearingBooking = caseData.getNextHearingAfterCmo(cmoID);
+
+            assertThat(nextHearingBooking.isPresent()).isFalse();
         }
     }
 
