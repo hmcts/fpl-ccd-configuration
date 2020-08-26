@@ -23,12 +23,12 @@ public class RemoveOrderService {
     public void hideOrder(List<Element<GeneratedOrder>> orders, List<Element<GeneratedOrder>> hiddenOrders,
                           DynamicList removableOrderList, String reason) {
         orders.stream()
-            .filter(o -> removableOrderList.getValueCode().equals(o.getId()))
+            .filter(order -> removableOrderList.getValueCode().equals(order.getId()))
             .findFirst()
-            .ifPresent(o -> {
-                orders.remove(o);
-                o.getValue().setRemovalReason(reason);
-                hiddenOrders.add(o);
+            .ifPresent(order -> {
+                orders.remove(order);
+                order.getValue().setRemovalReason(reason);
+                hiddenOrders.add(order);
             });
     }
 }
