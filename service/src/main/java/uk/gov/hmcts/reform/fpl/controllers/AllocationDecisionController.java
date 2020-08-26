@@ -12,20 +12,18 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CourtLevelAllocationService;
-import uk.gov.hmcts.reform.fpl.utils.CaseConverter;
 
 @Api
 @RestController
 @RequestMapping("/callback/allocation-decision")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AllocationDecisionController extends AbstractSaveCase {
-    private final CaseConverter caseConverter;
     private final CourtLevelAllocationService service;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(
         @RequestBody CallbackRequest callbackRequest) {
-        CaseData caseData = caseConverter.convertToCaseData(callbackRequest.getCaseDetails());
+        CaseData caseData = convertToCaseData(callbackRequest.getCaseDetails());
 
         Allocation allocationDecision = service.createDecision(caseData);
 
@@ -38,7 +36,7 @@ public class AllocationDecisionController extends AbstractSaveCase {
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
-        CaseData caseData = caseConverter.convertToCaseData(callbackRequest.getCaseDetails());
+        CaseData caseData = convertToCaseData(callbackRequest.getCaseDetails());
 
         Allocation allocationDecision = service.setAllocationDecisionIfNull(caseData);
 

@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseNoteService;
-import uk.gov.hmcts.reform.fpl.utils.CaseConverter;
 
 import java.util.List;
 
@@ -25,11 +24,10 @@ import java.util.List;
 public class AddNoteController extends AbstractSaveCase {
     private final CaseNoteService service;
     private final RequestData requestData;
-    private final CaseConverter caseConverter;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
-        CaseData caseData = caseConverter.convertToCaseData(callbackRequest.getCaseDetails());
+        CaseData caseData = convertToCaseData(callbackRequest.getCaseDetails());
 
         CaseNote caseNote = service.buildCaseNote(requestData.authorisation(), caseData.getCaseNote());
         List<Element<CaseNote>> caseNotes = service.addNoteToList(caseNote, caseData.getCaseNotes());

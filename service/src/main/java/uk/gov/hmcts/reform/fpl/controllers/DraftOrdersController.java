@@ -32,7 +32,6 @@ import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.StandardDirectionOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.fpl.utils.CaseConverter;
 import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 
 import java.time.LocalDate;
@@ -71,13 +70,12 @@ public class DraftOrdersController extends AbstractSaveCase {
     private final Time time;
     private final ValidateGroupService validateGroupService;
     private final StandardDirectionsService standardDirectionsService;
-    private final CaseConverter caseConverter;
 
     private static final String JUDGE_AND_LEGAL_ADVISOR_KEY = "judgeAndLegalAdvisor";
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
-        CaseData caseData = caseConverter.convertToCaseData(callbackRequest.getCaseDetails());
+        CaseData caseData = convertToCaseData(callbackRequest.getCaseDetails());
 
         LocalDate dateOfIssue = time.now().toLocalDate();
         Order standardDirectionOrder = caseData.getStandardDirectionOrder();
@@ -96,7 +94,7 @@ public class DraftOrdersController extends AbstractSaveCase {
     @PostMapping("/date-of-issue/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEventIssueDate(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = caseConverter.convertToCaseData(caseDetails);
+        CaseData caseData = convertToCaseData(caseDetails);
 
         List<String> errors = validateGroupService.validateGroup(caseData, DateOfIssueGroup.class);
 
@@ -129,7 +127,7 @@ public class DraftOrdersController extends AbstractSaveCase {
 
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseData caseData = caseConverter.convertToCaseData(callbackRequest.getCaseDetails());
+        CaseData caseData = convertToCaseData(callbackRequest.getCaseDetails());
 
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(caseData.getJudgeAndLegalAdvisor(),
             caseData.getAllocatedJudge());
@@ -156,7 +154,7 @@ public class DraftOrdersController extends AbstractSaveCase {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = caseConverter.convertToCaseData(caseDetails);
+        CaseData caseData = convertToCaseData(caseDetails);
 
         List<String> validationErrors = orderValidationService.validate(caseData);
         if (!validationErrors.isEmpty()) {
@@ -206,7 +204,7 @@ public class DraftOrdersController extends AbstractSaveCase {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseData caseData = caseConverter.convertToCaseData(callbackRequest.getCaseDetails());
+        CaseData caseData = convertToCaseData(callbackRequest.getCaseDetails());
 
         Order standardDirectionOrder = caseData.getStandardDirectionOrder();
         if (standardDirectionOrder.getOrderStatus() != OrderStatus.SEALED) {
