@@ -270,7 +270,7 @@ public class CaseData {
         return orderCollection != null ? orderCollection : new ArrayList<>();
     }
 
-    private final DynamicList removableOrderList;
+    private final Object removableOrderList;
     private final String reasonToRemoveOrder;
     private final List<Element<GeneratedOrder>> hiddenOrders;
 

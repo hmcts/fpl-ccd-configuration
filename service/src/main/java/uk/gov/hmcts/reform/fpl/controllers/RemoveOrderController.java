@@ -15,9 +15,11 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.RemoveOrderService;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
@@ -41,6 +43,32 @@ public class RemoveOrderController {
             .build();
     }
 
+    @PostMapping("/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest request) {
+        Map<String, Object> data = request.getCaseDetails().getData();
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
+
+        UUID id = ElementUtils.getDynamicListValueCode(caseData.getRemovableOrderList(), mapper);
+
+        caseData.getOrderCollection()
+            .stream()
+            .filter(o -> id.equals(o.getId()))
+            .findFirst()
+            .ifPresent(orderElement -> {
+                GeneratedOrder order = orderElement.getValue();
+                data.put("orderToBeRemoved", order.getDocument());
+                data.put("orderTitleToBeRemoved", order.getTitle());
+                data.put("orderDoIToBeRemoved", order.getDateOfIssue());
+                data.put("orderDaTUToBeRemoved", order.getDate());
+            });
+
+        data.put("removableOrderList", service.buildDynamicListOfOrders(caseData.getOrderCollection(), id));
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(data)
+            .build();
+    }
+
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
@@ -54,7 +82,15 @@ public class RemoveOrderController {
 
         data.put("orderCollection", orders);
         data.put("hiddenOrders", hiddenOrders);
-        removeTemporaryFields(caseDetails, "removableOrderList", "reasonToRemoveOrder");
+        removeTemporaryFields(
+            caseDetails,
+            "removableOrderList",
+            "reasonToRemoveOrder",
+            "orderToBeRemoved",
+            "orderTitleToBeRemoved",
+            "orderDoIToBeRemoved",
+            "orderDaTUToBeRemoved"
+        );
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
