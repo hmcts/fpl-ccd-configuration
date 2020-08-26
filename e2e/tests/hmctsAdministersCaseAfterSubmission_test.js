@@ -278,7 +278,7 @@ Scenario('HMCTS admin creates notice of proceedings documents with allocated jud
   await createNoticeOfProceedingsEventPage.enterLegalAdvisorName('Ian Watson');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.createNoticeOfProceedings);
-  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  caseViewPage.selectTab(caseViewPage.tabs.hearings);
   I.seeInTab(['Notice of proceedings 1', 'File name'], 'Notice_of_proceedings_c6a.pdf');
   I.seeInTab(['Notice of proceedings 2', 'File name'], 'Notice_of_proceedings_c6.pdf');
 });
