@@ -507,11 +507,6 @@ declare namespace CodeceptJS {
     addNote(): void,
 
   }
-
-  export interface removeAnOrderPage {
-    selectOrderToRemove(): void,
-    enterReasonToRemoveOrder(): void
-  }
 }
 
 declare module "codeceptjs" {
