@@ -174,7 +174,7 @@ module.exports = {
     let orderHeading = `Order ${numberOfOrders}`;
 
     isOrderRemoved ?
-      orderHeading = `Removed orders ${numberOfOrders}`: orderHeading = `Order ${numberOfOrders}`;
+      orderHeading = `Removed orders ${numberOfOrders}` : orderHeading = `Order ${numberOfOrders}`;
 
     if (order.type === 'Blank order (C21)') {
       I.seeInTab([orderHeading, 'Order title'], order.title);
