@@ -221,6 +221,8 @@ fees-register:
   api:
     url: http://fake-fees-register-api
 
+retry:
+  delay: 50
 
 fpl:
   env: 'localhost'
