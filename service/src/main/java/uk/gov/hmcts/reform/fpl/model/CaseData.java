@@ -631,10 +631,15 @@ public class CaseData {
     }
 
     @JsonIgnore
-    public HearingBooking getNextHearingAfterCmo(UUID cmoID) {
+    public Optional<HearingBooking> getNextHearingAfterCmo(UUID cmoID) {
+        LocalDateTime currentCmoStartDate = unwrapElements(hearingDetails).stream()
+            .filter(hearingBooking -> hearingBooking.getCaseManagementOrderId().equals(cmoID))
+            .map(HearingBooking::getStartDate)
+            .findAny()
+            .orElseThrow(() -> new IllegalArgumentException("Failed to find hearing matching cmo id " + cmoID));
+
         return unwrapElements(hearingDetails).stream()
-            .filter(hearingBooking -> !hearingBooking.getCaseManagementOrderId().equals(cmoID))
-            .min(comparing(HearingBooking::getStartDate))
-            .orElse(HearingBooking.builder().build());
+            .filter(hearingBooking -> hearingBooking.getStartDate().isAfter(currentCmoStartDate))
+            .min(comparing(HearingBooking::getStartDate));
     }
 }

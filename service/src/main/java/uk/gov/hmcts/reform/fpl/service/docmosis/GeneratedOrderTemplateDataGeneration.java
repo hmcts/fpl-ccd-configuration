@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder.DocmosisGeneratedOrderBuilder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
@@ -40,22 +39,22 @@ public abstract class GeneratedOrderTemplateDataGeneration
     @Autowired
     private ChildrenService childrenService;
 
-    abstract DocmosisGeneratedOrderBuilder populateCustomOrderFields(CaseData caseData);
+    abstract DocmosisGeneratedOrder populateCustomOrderFields(CaseData caseData);
 
     @Override
     public DocmosisGeneratedOrder getTemplateData(CaseData caseData) {
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
         GeneratedOrderType orderType = orderTypeAndDocument.getType();
 
-        DocmosisGeneratedOrderBuilder<?, ?> orderBuilder = populateCustomOrderFields(caseData);
+        var docmosisGeneratedOrderBuilder = populateCustomOrderFields(caseData).toBuilder();
 
         OrderStatus orderStatus = caseData.getGeneratedOrderStatus();
         if (orderStatus == DRAFT) {
-            orderBuilder.draftbackground(getDraftWaterMarkData());
+            docmosisGeneratedOrderBuilder.draftbackground(getDraftWaterMarkData());
         }
 
         if (orderStatus == SEALED) {
-            orderBuilder.courtseal(getCourtSealData());
+            docmosisGeneratedOrderBuilder.courtseal(getCourtSealData());
         }
 
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(caseData.getJudgeAndLegalAdvisor(),
@@ -64,7 +63,7 @@ public abstract class GeneratedOrderTemplateDataGeneration
         DocmosisJudgeAndLegalAdvisor docmosisJudgeAndLegalAdvisor
             = caseDataExtractionService.getJudgeAndLegalAdvisor(judgeAndLegalAdvisor);
 
-        return orderBuilder
+        return docmosisGeneratedOrderBuilder
             .orderType(orderType)
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .courtName(caseDataExtractionService.getCourtName(caseData.getCaseLocalAuthority()))

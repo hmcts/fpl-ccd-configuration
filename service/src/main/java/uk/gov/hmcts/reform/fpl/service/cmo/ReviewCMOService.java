@@ -5,22 +5,27 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -30,8 +35,13 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 public class ReviewCMOService {
 
     private final ObjectMapper mapper;
+    private final FeatureToggleService featureToggleService;
     private final Time time;
 
+    /**
+     * That methods shouldn't be invoked without any cmo selected as the outcome is unexpected.
+     * There is dedicated method below to support this functionality.
+     */
     public DynamicList buildDynamicList(CaseData caseData) {
         List<Element<CaseManagementOrder>> cmosReadyForApproval = getCMOsReadyForApproval(caseData);
         Element<CaseManagementOrder> selectedCMO = getSelectedCMO(caseData);
@@ -113,6 +123,26 @@ public class ReviewCMOService {
         } else {
             throw new CMONotFoundException("No sealed CMOS found");
         }
+    }
+
+    public State getStateBasedOnNextHearing(CaseData caseData, UUID cmoID) {
+        Optional<HearingBooking> nextHearingBooking = caseData.getNextHearingAfterCmo(cmoID);
+        State currentState = caseData.getState();
+
+        if (featureToggleService.isNewCaseStateModelEnabled()
+            && nextHearingBooking.isPresent()
+            && caseData.getReviewCMODecision().hasReviewOutcomeOf(SEND_TO_ALL_PARTIES)) {
+            switch (nextHearingBooking.get().getType()) {
+                case ISSUE_RESOLUTION:
+                    return State.ISSUE_RESOLUTION;
+                case FINAL:
+                    return State.FINAL_HEARING;
+                default:
+                    return currentState;
+            }
+        }
+
+        return currentState;
     }
 
     private UUID getSelectedCMOId(Object dynamicList) {
