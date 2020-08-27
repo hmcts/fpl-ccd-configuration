@@ -8,23 +8,5 @@
     "DisplayOrder": 4,
     "TitleDisplay": "# ${caseName}\n## **FamilyMan ID: ${familyManCaseNumber}**\n## **CCD ID: #${[CASE_REFERENCE]}**",
     "Comment": "PREPARE_FOR_HEARING state name changed as part of FPLA-1920. CaseStateID naming remains to avoid break existing cases."
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "ISSUE_RESOLUTION",
-    "Name": "Issue resolution",
-    "Description": "Issue resolution case state - Triggered via CMO event and hearing is of issue resolution type",
-    "DisplayOrder": 5,
-    "TitleDisplay": "# ${caseName}\n## **FamilyMan ID: ${familyManCaseNumber}**\n## **CCD ID: #${[CASE_REFERENCE]}**"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "FINAL_HEARING",
-    "Name": "Final hearing",
-    "Description": "Final hearing case state - Triggered via CMO event and hearing is of final type",
-    "DisplayOrder": 6,
-    "TitleDisplay": "# ${caseName}\n## **FamilyMan ID: ${familyManCaseNumber}**\n## **CCD ID: #${[CASE_REFERENCE]}**"
   }
 ]
