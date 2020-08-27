@@ -180,6 +180,7 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-quartz'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
+  implementation group: 'org.springframework.retry', name: 'spring-retry'
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
@@ -217,7 +218,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.2'
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.2'
   compile group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4'
-  compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.5.0'
+  compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.7.0'
   compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.0-RELEASE'
 
   implementation group: 'com.google.guava', name: 'guava', version: '29.0-jre'
@@ -236,6 +237,7 @@ dependencies {
   }
 
   integrationTestImplementation group: 'org.apache.commons', name: 'commons-text', version: '1.8'
+  testCompile group: 'org.springframework.retry', name: 'spring-retry'
   testCompile group: 'org.awaitility', name: 'awaitility', version: '4.0.3'
 
   testCompile group: 'org.springframework.security', name: 'spring-security-test'

@@ -39,10 +39,10 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_HEARING;
@@ -117,13 +117,13 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             postSubmittedEvent(callbackRequest);
 
             verify(notificationClient).sendEmail(
-                NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
+                PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
                 "admin@family-court.com",
                 expectedTemplateParameters(),
                 NOTIFICATION_REFERENCE);
 
             verify(notificationClient, never()).sendEmail(
-                NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
+                PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
                 "FamilyPublicLaw+ctsc@gmail.com",
                 expectedTemplateParameters(),
                 NOTIFICATION_REFERENCE);
@@ -156,13 +156,13 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             postSubmittedEvent(callbackRequest);
 
             verify(notificationClient, never()).sendEmail(
-                NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
+                PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
                 "admin@family-court.com",
                 expectedTemplateParameters(),
                 NOTIFICATION_REFERENCE);
 
             verify(notificationClient).sendEmail(
-                NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
+                PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
                 "FamilyPublicLaw+ctsc@gmail.com",
                 expectedTemplateParameters(),
                 NOTIFICATION_REFERENCE);
@@ -186,7 +186,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             postSubmittedEvent(callbackRequest);
 
             verify(notificationClient, never()).sendEmail(
-                NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
+                PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
                 "admin@family-court.com",
                 expectedTemplateParameters(),
                 NOTIFICATION_REFERENCE);
@@ -217,7 +217,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             postSubmittedEvent(callbackRequestWithEmptyCaseDetailsBefore());
 
             verify(notificationClient).sendEmail(
-                NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
+                PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
                 ADMIN_EMAIL_ADDRESS,
                 expectedParameters(),
                 NOTIFICATION_REFERENCE);
