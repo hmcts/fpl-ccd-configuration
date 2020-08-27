@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.controllers;
+package uk.gov.hmcts.reform.fpl.controllers.support;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

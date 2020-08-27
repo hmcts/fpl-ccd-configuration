@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.controllers;
+package uk.gov.hmcts.reform.fpl.controllers.support;
 
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
