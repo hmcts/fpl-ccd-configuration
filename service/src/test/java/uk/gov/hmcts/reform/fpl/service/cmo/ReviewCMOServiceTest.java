@@ -309,7 +309,7 @@ class ReviewCMOServiceTest {
     }
 
     @Test
-    void shouldReturnCurrentStateWhenNextHearingIsNotOfTypeIssueResolutionOrFinalHearing() {
+    void shouldReturnCurrentStateWhenNextHearingIsNotOfTypeIssueResolutionOrFinal() {
         given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
 
         List<Element<HearingBooking>> hearingBookings = List.of(
