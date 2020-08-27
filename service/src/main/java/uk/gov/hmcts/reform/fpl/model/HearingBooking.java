@@ -14,14 +14,12 @@ import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeNotMidnight;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import javax.validation.constraints.Future;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.capitalize;
-import static uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked.SOMETHING_ELSE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 

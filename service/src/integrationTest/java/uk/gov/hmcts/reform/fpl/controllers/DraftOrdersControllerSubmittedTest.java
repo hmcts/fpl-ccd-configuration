@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.service.notify.NotificationClient;
 
 import java.time.LocalDateTime;
@@ -26,11 +27,13 @@ import java.util.List;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_CTSC_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
@@ -43,7 +46,7 @@ public class DraftOrdersControllerSubmittedTest extends AbstractControllerTest {
     private static final Long CASE_ID = 1L;
     private static final String CASE_MANAGEMENT_EVENT = "internal-changeState-Gatekeeping->PREPARE_FOR_HEARING";
     private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
-    private static final DocumentReference DOCUMENT_REFERENCE = DocumentReference.builder().build();
+    private static final DocumentReference DOCUMENT_REFERENCE = TestDataHelper.testDocumentReference();
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 
     @Mock
@@ -77,10 +80,18 @@ public class DraftOrdersControllerSubmittedTest extends AbstractControllerTest {
     void shouldTriggerSDOEventWhenSubmitted() throws Exception {
         postSubmittedEvent(buildCallbackRequest(SEALED));
 
-        verify(notificationClient).sendEmail(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE,
+        verify(notificationClient).sendEmail(
+            STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE,
             "cafcass@cafcass.com",
             cafcassParameters(),
             NOTIFICATION_REFERENCE
+        );
+
+        verify(notificationClient).sendEmail(
+            eq(STANDARD_DIRECTION_ORDER_ISSUED_CTSC_TEMPLATE),
+            eq("FamilyPublicLaw+ctsc@gmail.com"),
+            anyMap(),
+            eq(NOTIFICATION_REFERENCE)
         );
     }
 

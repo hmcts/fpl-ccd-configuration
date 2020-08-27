@@ -477,25 +477,34 @@
         }
       }
     ],
-    "hearingDetails": [{
-      "id": "51d02c7f-2a51-424b-b299-a90b98bb1774",
-      "value": {
-        "startDate": "2020-01-01T15:30:00.000",
-        "endDate": "2020-01-02T14:30:00.000",
-        "type": "CASE_MANAGEMENT",
-        "venue": "1",
-        "judgeAndLegalAdvisor": {
-          "judgeTitle": "HIS_HONOUR_JUDGE",
-          "judgeLastName": "Walker",
-          "legalAdvisorName": "John Smith"
-        },
-        "hearingNeedsBooked": ["INTERMEDIARY"],
-        "hearingNeedsDetails": "ok"
+    "hearingDetails": [
+      {
+        "id": "51d02c7f-2a51-424b-b299-a90b98bb1774",
+        "value": {
+          "startDate": "2020-01-01T15:30:00.000",
+          "endDate": "2020-01-02T14:30:00.000",
+          "type": "CASE_MANAGEMENT",
+          "venue": "1",
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "HIS_HONOUR_JUDGE",
+            "judgeLastName": "Walker",
+            "legalAdvisorName": "John Smith"
+          },
+          "hearingNeedsBooked": [
+            "INTERMEDIARY"
+          ],
+          "hearingNeedsDetails": "Some details about what needs to be booked"
+        }
       }
-    }],
+    ],
     "familyManCaseNumber": "${familyManCaseNumber:-12345}",
     "amountToPay": "2055.0",
     "standardDirectionOrder": {
+      "orderDoc": {
+        "document_url": "http://dm-store:8080/documents/be17a76e-38ed-4448-8b83-45de1aa93f55",
+        "document_filename": "sdo.pdf",
+        "document_binary_url": "http://dm-store:8080/documents/be17a76e-38ed-4448-8b83-45de1aa93f55/binary"
+      },
       "judgeAndLegalAdvisor": {
         "judgeTitle": "HER_HONOUR_JUDGE",
         "otherTitle": null,
@@ -530,7 +539,8 @@
     "returnApplication": {
       "note": "Missing children details",
       "reason": [
-        "INCOMPLETE", "CLARIFICATION_NEEDED"
+        "INCOMPLETE",
+        "CLARIFICATION_NEEDED"
       ],
       "document": {
         "document_url": "http://dm-store:8080/documents/be17a76e-38ed-4448-8b83-45de1aa93f55",
