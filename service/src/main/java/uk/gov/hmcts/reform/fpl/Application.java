@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
@@ -14,6 +15,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
     "uk.gov.hmcts.reform.calendar.client"
 })
 @ComponentScan
+@EnableRetry
 @EnableAsync
 @SuppressWarnings("HideUtilityClassConstructor") // Spring needs a constructor, its not a utility class
 public class Application {
