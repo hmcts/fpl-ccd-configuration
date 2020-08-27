@@ -4,6 +4,8 @@ import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -31,13 +33,19 @@ public class CaseRoleService {
 
     public void grantAccessToUser(String caseId, String user, Set<CaseRole> roles) {
         grantCaseAccess(caseId, Set.of(user), roles);
+        log.info("User {} granted {} to case {}", user, roles, caseId);
     }
 
     @Async
+    @Retryable(value = {GrantCaseAccessException.class},
+        backoff = @Backoff(delayExpression = "#{${retry.delay:1000}}"),
+        label = "share a case")
+    //Due to @Retryable keep this method idempotent
     public void grantAccessToLocalAuthority(String caseId, String localAuthority, Set<CaseRole> roles,
                                             Set<String> excludeUsers) {
         Set<String> localAuthorityUsers = getUsers(caseId, localAuthority, excludeUsers, roles);
         grantCaseAccess(caseId, localAuthorityUsers, roles);
+        log.info("Users {} granted {} to case {}", localAuthorityUsers, roles, caseId);
     }
 
     private void grantCaseAccess(String caseId, Set<String> users, Set<CaseRole> roles) {
