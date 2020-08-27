@@ -2,7 +2,7 @@ const {I} = inject();
 
 module.exports = {
   fields: {
-    reason: '#removeOrderReason',
+    reason: '#reasonToRemoveOrder',
     list: '#removableOrderList',
   },
 

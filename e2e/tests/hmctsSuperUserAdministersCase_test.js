@@ -1,22 +1,22 @@
 const config = require('../config.js');
 
-const orderCollection = require('../fixtures/testData/orderCollection.json');
-const mandatoryWithMultipleChildren = require('../fixtures/mandatoryWithMultipleChildren.json');
+const orderCaseData = require('../fixtures/testData/caseDataWithOrderCollection.json');
 
 Feature('Case administration by super user');
 
 let caseId;
 
-BeforeSuite(async I => caseId = await I.submitNewCaseWithData({...mandatoryWithMultipleChildren, ...orderCollection}));
+BeforeSuite(async I => caseId = await I.submitNewCaseWithData(orderCaseData));
 
 Before(async I => await I.navigateToCaseDetailsAs(config.hmctsSuperUser, caseId));
 
 Scenario('HMCTS super user removes an order from a case', async (I, caseViewPage, loginPage, removeOrderEventPage) => {
   await caseViewPage.goToNewActions(config.superUserActions.removeOrder);
-  const labelToSelect = orderCollection[0].value.title + '-' + orderCollection[0].value.date;
+  let order = orderCaseData.caseData.orderCollection[0];
+  const labelToSelect = order.value.title + ' - ' + order.value.dateOfIssue;
   removeOrderEventPage.selectOrderToRemove(labelToSelect);
   await I.retryUntilExists(() => I.click('Continue'), removeOrderEventPage.fields.reason);
   removeOrderEventPage.addRemoveOrderReason('Entered incorrect order');
-  await I.completeEvent('Save and continue');
+  await I.completeEvent('Submit');
   // await orderFunctions.assertOrder(I, caseViewPage, order, defaultIssuedDate);
 });

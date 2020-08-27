@@ -47,7 +47,7 @@ const updateCaseDataWithDocuments = (caseData) => {
     caseData.standardDirectionOrder.orderDoc = documentData('sdo.pdf');
   }
   if (caseData.orderCollection) {
-    for (const order in caseData.orderCollection) {
+    for (const order of caseData.orderCollection) {
       order.value.document = documentData(order.value.type + '.pdf');
     }
   }
