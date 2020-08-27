@@ -11,7 +11,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked.NONE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked.SOMETHING_ELSE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked.SPOKEN_OR_WRITTEN_WELSH;
 
-public class HearingBookingTest {
+class HearingBookingTest {
 
     @Test
     void shouldReturnEmptyListWhenNoHearingNeedsBooked() {
