@@ -120,7 +120,6 @@ module.exports = {
   },
   superUserActions: {
     removeOrder: 'Remove an order',
-    removeOrderReason: 'Order entered in error'
   },
   // files
   testFile: './e2e/fixtures/mockFile.txt',
