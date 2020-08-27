@@ -21,7 +21,7 @@ public class GrantCaseAccessException extends RuntimeException {
     }
 
     public GrantCaseAccessException(String caseId, String localAuthority, Set<CaseRole> caseRoles, Exception e) {
-        super(String.format("User from %s not granted %s to case %s", localAuthority, caseRoles, caseId), e);
+        super(String.format("Users from %s not granted %s to case %s", localAuthority, caseRoles, caseId), e);
         this.caseId = caseId;
         this.localAuthority = localAuthority;
         this.caseRoles = caseRoles;
