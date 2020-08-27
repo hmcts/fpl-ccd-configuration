@@ -209,6 +209,27 @@
             "legalAdvisorName": "Rupert Robert"
           }
         }
+      },
+      {
+        "id": "c2a5d73c-0c5c-416b-b288-236e3b395df6",
+        "value": {
+          "type": "CASE_MANAGEMENT",
+          "venue": "16",
+          "endDate": "2020-01-02T16:30:00",
+          "startDate": "2020-01-01T15:15:00",
+          "hearingNeedsBooked": [
+            "INTERPRETER",
+            "SOMETHING_ELSE"
+          ],
+          "venueCustomAddress": {},
+          "hearingNeedsDetails": "Some details",
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "HER_HONOUR_JUDGE",
+            "judgeLastName": "Reed",
+            "legalAdvisorName": "Rupert Robert"
+          },
+          "caseManagementOrderId": "749f29dc-c200-4377-9e12-a5b4bad631b3"
+        }
       }
     ],
     "courtDirections": [
@@ -291,6 +312,24 @@
           "directionNeeded": "Yes",
           "directionRemovable": "Yes",
           "dateToBeCompletedBy": "2050-01-01T12:00:00.000"
+        }
+      }
+    ],
+    "sealedCMOs": [
+      {
+        "id": "749f29dc-c200-4377-9e12-a5b4bad631b3",
+        "value": {
+          "order":{
+            "document_url":"http://dm-store:8080/documents/7196dcc4-dd17-49ba-9924-7480b91e620e",
+            "document_filename":"mockFile.pdf",
+            "document_binary_url":"http://dm-store:8080/documents/7196dcc4-dd17-49ba-9924-7480b91e620e/binary"
+          },
+          "status": "APPROVED",
+          "hearing": "Case management hearing, 1 January 2020",
+          "dateSent": "2020-08-27",
+          "dateIssued": "2020-08-27",
+          "requestedChanges": null,
+          "judgeTitleAndName":"Her Honour Judge Reed"
         }
       }
     ],
