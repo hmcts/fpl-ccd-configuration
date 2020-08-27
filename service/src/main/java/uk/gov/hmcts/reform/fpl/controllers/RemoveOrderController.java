@@ -15,13 +15,13 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.RemoveOrderService;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListValueCode;
 
 @Api
 @RestController
@@ -48,20 +48,12 @@ public class RemoveOrderController {
         Map<String, Object> data = request.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        UUID id = ElementUtils.getDynamicListValueCode(caseData.getRemovableOrderList(), mapper);
+        // When dynamic lists are fixed this can be moved into the below method
+        UUID id = getDynamicListValueCode(caseData.getRemovableOrderList(), mapper);
 
-        caseData.getOrderCollection()
-            .stream()
-            .filter(o -> id.equals(o.getId()))
-            .findFirst()
-            .ifPresent(orderElement -> {
-                GeneratedOrder order = orderElement.getValue();
-                data.put("orderToBeRemoved", order.getDocument());
-                data.put("orderTitleToBeRemoved", order.getTitle());
-                data.put("orderIssuedDateToBeRemoved", order.getDateOfIssue());
-                data.put("orderDateToBeRemoved", order.getDate());
-            });
+        data.putAll(service.populateSelectedOrderFields(caseData.getOrderCollection(), id));
 
+        // Can be removed once dynamic lists are fixed
         data.put("removableOrderList", service.buildDynamicListOfOrders(caseData.getOrderCollection(), id));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
