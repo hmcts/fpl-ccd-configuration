@@ -173,11 +173,8 @@ module.exports = {
     const numberOfOrders = await I.grabNumberOfVisibleElements('//*[text() = \'Type of order\']');
     let orderHeading = `Order ${numberOfOrders}`;
 
-    if(isOrderRemoved) {
-      orderHeading = `Removed orders ${numberOfOrders}`;
-    } else {
-      orderHeading = `Order ${numberOfOrders}`;
-    }
+    isOrderRemoved ?
+      orderHeading = `Removed orders ${numberOfOrders}`: orderHeading = `Order ${numberOfOrders}`;
 
     if (order.type === 'Blank order (C21)') {
       I.seeInTab([orderHeading, 'Order title'], order.title);
@@ -196,6 +193,8 @@ module.exports = {
       I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Last name'], order.judgeAndLegalAdvisor.judgeLastName);
       I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name'], order.judgeAndLegalAdvisor.legalAdvisorName);
     }
+
+    isOrderRemoved && I.seeInTab([orderHeading, 'Reason for removal'], order.reasonForRemoval);
   },
 
   async assertOrderSentToParty(I, caseViewPage, partyName, order) {
