@@ -38,6 +38,7 @@ public class RemoveOrderControllerAboutToStartTest extends AbstractControllerTes
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(asCaseDetails(caseData));
         CaseData responseData = mapper.convertValue(response.getData(), CaseData.class);
+        DynamicList builtDynamicList = mapper.convertValue(responseData.getRemovableOrderList(), DynamicList.class);
 
         DynamicList expectedList = DynamicList.builder()
             .value(DynamicListElement.EMPTY)
@@ -47,7 +48,7 @@ public class RemoveOrderControllerAboutToStartTest extends AbstractControllerTes
             ))
             .build();
 
-        assertThat(responseData.getRemovableOrderList()).isEqualTo(expectedList);
+        assertThat(builtDynamicList).isEqualTo(expectedList);
     }
 
     private DynamicListElement buildListElement(UUID id, String label) {
