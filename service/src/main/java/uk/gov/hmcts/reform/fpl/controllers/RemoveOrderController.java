@@ -58,8 +58,8 @@ public class RemoveOrderController {
                 GeneratedOrder order = orderElement.getValue();
                 data.put("orderToBeRemoved", order.getDocument());
                 data.put("orderTitleToBeRemoved", order.getTitle());
-                data.put("orderDoIToBeRemoved", order.getDateOfIssue());
-                data.put("orderDaTUToBeRemoved", order.getDate());
+                data.put("orderIssuedDateToBeRemoved", order.getDateOfIssue());
+                data.put("orderDateToBeRemoved", order.getDate());
             });
 
         data.put("removableOrderList", service.buildDynamicListOfOrders(caseData.getOrderCollection(), id));
@@ -88,8 +88,8 @@ public class RemoveOrderController {
             "reasonToRemoveOrder",
             "orderToBeRemoved",
             "orderTitleToBeRemoved",
-            "orderDoIToBeRemoved",
-            "orderDaTUToBeRemoved"
+            "orderIssuedDateToBeRemoved",
+            "orderDateToBeRemoved"
         );
 
         return AboutToStartOrSubmitCallbackResponse.builder()

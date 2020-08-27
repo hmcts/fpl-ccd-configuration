@@ -59,7 +59,6 @@
     "TabLabel": "Orders",
     "TabDisplayOrder": 4,
     "CaseFieldID": "hiddenOrders",
-    "TabFieldDisplayOrder": 5,
-    "comment": "here for testing purposes, remove once complete"
+    "TabFieldDisplayOrder": 5
   }
 ]
