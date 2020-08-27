@@ -1,7 +1,13 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
@@ -9,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,9 +24,14 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECT
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
 
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {
+    RemoveOrderService.class, JacksonAutoConfiguration.class
+})
 class RemoveOrderServiceTest {
 
-    private final RemoveOrderService service = new RemoveOrderService();
+    @Autowired
+    private RemoveOrderService service;
 
     @Test
     void shouldMakeDynamicListOfBlankOrders() {
@@ -100,6 +112,51 @@ class RemoveOrderServiceTest {
         assertThat(order2.getValue().getRemovalReason()).isNull();
     }
 
+    @Test
+    void shouldReturnAMapOfExtractedOrderDetailsWhenIdMatchOrderInList() {
+        DocumentReference document = DocumentReference.builder().build();
+        String orderTitle = "order title";
+        String dateOfIssue = "14 July 2020";
+        String dateAndTimeOfUpload = "2:28pm, 31 August 2020";
+
+        Element<GeneratedOrder> order = element(
+            buildOrder(BLANK_ORDER, orderTitle, dateOfIssue).toBuilder()
+            .date(dateAndTimeOfUpload)
+            .document(document)
+            .build()
+        );
+
+        Map<String, Object> orderFields = service.populateSelectedOrderFields(List.of(order), order.getId());
+
+        Map<String, Object> expectedFields = Map.of(
+            "orderToBeRemoved", document,
+            "orderTitleToBeRemoved", orderTitle,
+            "orderIssuedDateToBeRemoved", dateOfIssue,
+            "orderDateToBeRemoved", dateAndTimeOfUpload
+        );
+
+        assertThat(orderFields).isEqualTo(expectedFields);
+    }
+
+    @Test
+    void shouldReturnEmptyMapWhenIdDoesNotMatchOrderInList() {
+        DocumentReference document = DocumentReference.builder().build();
+        String orderTitle = "order title";
+        String dateOfIssue = "14 July 2020";
+        String dateAndTimeOfUpload = "2:28pm, 31 August 2020";
+
+        Element<GeneratedOrder> order = element(
+            buildOrder(BLANK_ORDER, orderTitle, dateOfIssue).toBuilder()
+                .date(dateAndTimeOfUpload)
+                .document(document)
+                .build()
+        );
+
+        Map<String, Object> orderFields = service.populateSelectedOrderFields(List.of(order), UUID.randomUUID());
+
+        assertThat(orderFields).isEmpty();
+    }
+
     private DynamicListElement buildListElement(UUID id, String label) {
         return DynamicListElement.builder()
             .code(id)
@@ -107,11 +164,11 @@ class RemoveOrderServiceTest {
             .build();
     }
 
-    private GeneratedOrder buildOrder(GeneratedOrderType type, String title, String date) {
+    private GeneratedOrder buildOrder(GeneratedOrderType type, String title, String dateOfIssue) {
         return GeneratedOrder.builder()
             .type(getFullOrderType(type))
             .title(title)
-            .dateOfIssue(date)
+            .dateOfIssue(dateOfIssue)
             .build();
     }
 }

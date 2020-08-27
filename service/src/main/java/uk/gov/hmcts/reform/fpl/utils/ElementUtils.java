@@ -103,5 +103,4 @@ public class ElementUtils {
 
         return mapper.convertValue(dynamicList, DynamicList.class).getValueCode();
     }
-
 }
