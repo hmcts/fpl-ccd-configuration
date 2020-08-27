@@ -6,22 +6,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForSDO;
 import uk.gov.hmcts.reform.fpl.model.notify.sdo.CTSCTemplateForSDO;
+import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.StandardDirectionOrderContent;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
-import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked.NONE;
-import static uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked.SOMETHING_ELSE;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.concatUrlAndMostRecentUploadedDocumentPath;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
@@ -30,7 +25,7 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class StandardDirectionOrderIssuedEmailContentProvider extends StandardDirectionOrderContent {
     private final ObjectMapper mapper;
-    private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+    private final CaseDataExtractionService caseDataExtractionService;
     @Value("${manage-case.ui.base.url}")
     private String xuiBaseUrl;
 
@@ -62,9 +57,9 @@ public class StandardDirectionOrderIssuedEmailContentProvider extends StandardDi
         CTSCTemplateForSDO ctscTemplateForSDO = new CTSCTemplateForSDO();
         ctscTemplateForSDO.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
         ctscTemplateForSDO.setCallout(buildCallout(caseData));
-        ctscTemplateForSDO.setCourtName(getCourtName(caseData.getCaseLocalAuthority()));
+        ctscTemplateForSDO.setCourtName(caseDataExtractionService.getCourtName(caseData.getCaseLocalAuthority()));
         ctscTemplateForSDO.setHearingNeedsPresent(getHearingNeedsPresent(hearing));
-        ctscTemplateForSDO.setHearingNeeds(buildHearingNeedsList(hearing.getHearingNeedsBooked()));
+        ctscTemplateForSDO.setHearingNeeds(hearing.buildHearingNeedsList());
         ctscTemplateForSDO.setHearingNeedsDetails(hearing.getHearingNeedsDetails());
         ctscTemplateForSDO.setCaseUrl(getCaseUrl(caseDetails.getId()));
         ctscTemplateForSDO.setDocumentLink(concatUrlAndMostRecentUploadedDocumentPath(xuiBaseUrl,
@@ -77,28 +72,6 @@ public class StandardDirectionOrderIssuedEmailContentProvider extends StandardDi
         return "^" + buildSubjectLineWithHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
             caseData.getRespondents1(),
             caseData.getFirstHearing().orElse(null));
-    }
-
-    private String getCourtName(String courtName) {
-        return hmctsCourtLookupConfiguration.getCourt(courtName).getName();
-    }
-
-    private List<String> buildHearingNeedsList(List<HearingNeedsBooked> hearingNeedsBooked) {
-        List<String> list = new ArrayList<>();
-
-        if (hearingNeedsBooked == null || hearingNeedsBooked.isEmpty()) {
-            return list;
-        }
-
-        for (HearingNeedsBooked hearingNeed : hearingNeedsBooked) {
-            if (hearingNeed == NONE) {
-                return emptyList();
-            }
-            if (hearingNeed != SOMETHING_ELSE) {
-                list.add(hearingNeed.getLabel());
-            }
-        }
-        return list;
     }
 
     private String getHearingNeedsPresent(HearingBooking hearingBooking) {
