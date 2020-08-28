@@ -24,7 +24,8 @@ class GeneratedOrderTest {
         "Interim care order",
         "Final supervision order",
         "Interim supervision order",
-        "Emergency protection order"
+        "Emergency protection order",
+        "Discharge of care order"
     })
     void shouldNotMarkOtherOrdersAreRemovable(String type) {
         GeneratedOrder order = GeneratedOrder.builder()

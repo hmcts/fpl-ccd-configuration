@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -14,4 +15,16 @@ public enum GeneratedOrderType {
 
     private final String label;
     private final String fileName;
+
+    public static GeneratedOrderType fromType(String type) {
+        type = type.replaceAll("(^(Final|Interim)|\\(C21\\))", "").strip();
+        type = type.toUpperCase();
+        type = type.replace(" ", "_");
+        return GeneratedOrderType.valueOf(type);
+    }
+
+    @JsonIgnore
+    public boolean isRemovable() {
+        return this == BLANK_ORDER;
+    }
 }
