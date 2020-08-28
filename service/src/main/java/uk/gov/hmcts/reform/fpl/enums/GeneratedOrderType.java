@@ -17,7 +17,7 @@ public enum GeneratedOrderType {
     private final String fileName;
 
     public static GeneratedOrderType fromType(String type) {
-        type = type.replaceAll("(^(Final|Interim)|\\(C21\\))", "").strip();
+        type = type.replaceAll("(Final|Interim|\\(C21\\))", "").strip();
         type = type.toUpperCase();
         type = type.replace(" ", "_");
         return GeneratedOrderType.valueOf(type);
