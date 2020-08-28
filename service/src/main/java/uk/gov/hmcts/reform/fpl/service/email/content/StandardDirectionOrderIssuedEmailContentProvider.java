@@ -52,6 +52,8 @@ public class StandardDirectionOrderIssuedEmailContentProvider extends StandardDi
         return allocatedJudgeTemplate;
     }
 
+    //Clean up private method logic when hearing needs list is improved (remove 'none' option, make others optional)
+    //FPLA-2144
     public CTSCTemplateForSDO buildNotificationParametersForCTSC(CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
