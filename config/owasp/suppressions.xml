@@ -31,7 +31,8 @@
         a related issue to CVE-2003-1564.
       ]]>
     </notes>
-    <gav regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</gav>
+    <packageUrl regex="true">^pkg:maven\/org\.yaml\/snakeyaml@.*$</packageUrl>
+    <cpe>cpe:/a:snakeyaml_project:snakeyaml</cpe>
     <cve>CVE-2017-18640</cve>
   </suppress>
 </suppressions>
