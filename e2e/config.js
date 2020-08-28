@@ -32,7 +32,7 @@ module.exports = {
     password: process.env.CA_USER_PASSWORD || defaultPassword,
   },
   hmctsSuperUser: {
-    email: 'hmcts-superuser@example.com',
+    email: 'hmcts-superuser@mailnesia.com',
     password: process.env.SUPER_USER_PASSWORD || defaultPassword,
   },
   cafcassUser: {
