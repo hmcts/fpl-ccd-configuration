@@ -28,6 +28,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListValueCode
 @RequestMapping("/callback/remove-order")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RemoveOrderController {
+    private static final String REMOVABLE_ORDER_LIST_KEY = "removableOrderList";
+
     private final ObjectMapper mapper;
     private final RemoveOrderService service;
 
@@ -36,7 +38,7 @@ public class RemoveOrderController {
         Map<String, Object> data = request.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        data.put("removableOrderList", service.buildDynamicListOfOrders(caseData.getOrderCollection()));
+        data.put(REMOVABLE_ORDER_LIST_KEY, service.buildDynamicListOfOrders(caseData.getOrderCollection()));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -54,7 +56,7 @@ public class RemoveOrderController {
         data.putAll(service.populateSelectedOrderFields(caseData.getOrderCollection(), id));
 
         // Can be removed once dynamic lists are fixed
-        data.put("removableOrderList", service.buildDynamicListOfOrders(caseData.getOrderCollection(), id));
+        data.put(REMOVABLE_ORDER_LIST_KEY, service.buildDynamicListOfOrders(caseData.getOrderCollection(), id));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -76,7 +78,7 @@ public class RemoveOrderController {
         data.put("hiddenOrders", hiddenOrders);
         removeTemporaryFields(
             caseDetails,
-            "removableOrderList",
+            REMOVABLE_ORDER_LIST_KEY,
             "reasonToRemoveOrder",
             "orderToBeRemoved",
             "orderTitleToBeRemoved",
