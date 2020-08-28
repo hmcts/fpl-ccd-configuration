@@ -15,6 +15,7 @@ public class CTSCTemplateForSDO implements NotifyData {
     private String caseUrl;
     private String documentLink;
     private String hearingNeedsPresent;
+    private String showDetailsLabel;
     private List<String> hearingNeeds;
     private String hearingNeedsDetails;
 }

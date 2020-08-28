@@ -59,6 +59,7 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
         ctscTemplateForSDO.setHearingNeeds(List.of("Intermediary"));
         ctscTemplateForSDO.setHearingNeedsDetails("Some details about what needs to be booked");
         ctscTemplateForSDO.setHearingNeedsPresent("Yes");
+        ctscTemplateForSDO.setShowDetailsLabel("Yes");
         ctscTemplateForSDO.setCourtName(COURT_NAME);
         ctscTemplateForSDO.setCallout("^Smith, 12345, hearing 1 Jan 2020");
         ctscTemplateForSDO.setRespondentLastName("Smith");
