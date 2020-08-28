@@ -51,6 +51,10 @@ public class FeatureToggleService {
         return ldClient.boolVariation("close-case", createLDUser(), false);
     }
 
+    public boolean isNewCaseStateModelEnabled() {
+        return ldClient.boolVariation("new-case-state-model", createLDUser(), false);
+    }
+
     private LDUser createLDUser() {
         return createLDUser(Map.of());
     }

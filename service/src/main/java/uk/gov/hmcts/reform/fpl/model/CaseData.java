@@ -637,4 +637,17 @@ public class CaseData {
     public List<Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder>> getSealedCMOs() {
         return defaultIfNull(sealedCMOs, new ArrayList<>());
     }
+
+    @JsonIgnore
+    public Optional<HearingBooking> getNextHearingAfterCmo(UUID cmoID) {
+        LocalDateTime currentCmoStartDate = unwrapElements(hearingDetails).stream()
+            .filter(hearingBooking -> hearingBooking.getCaseManagementOrderId().equals(cmoID))
+            .map(HearingBooking::getStartDate)
+            .findAny()
+            .orElseThrow(() -> new IllegalArgumentException("Failed to find hearing matching cmo id " + cmoID));
+
+        return unwrapElements(hearingDetails).stream()
+            .filter(hearingBooking -> hearingBooking.getStartDate().isAfter(currentCmoStartDate))
+            .min(comparing(HearingBooking::getStartDate));
+    }
 }

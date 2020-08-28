@@ -92,6 +92,7 @@ public class ReviewCMOController {
         if (!cmosReadyForApproval.isEmpty()) {
             Element<CaseManagementOrder> cmo = reviewCMOService.getSelectedCMO(caseData);
 
+
             if (!JUDGE_REQUESTED_CHANGES.equals(caseData.getReviewCMODecision().getDecision())) {
                 Element<CaseManagementOrder> cmoToSeal = reviewCMOService.getCMOToSeal(caseData);
 
@@ -107,6 +108,7 @@ public class ReviewCMOController {
                 sealedCMOs.add(cmoToSeal);
 
                 data.put("sealedCMOs", sealedCMOs);
+                data.put("state", reviewCMOService.getStateBasedOnNextHearing(caseData, cmo.getId()));
             } else {
                 cmo.getValue().setStatus(RETURNED);
                 cmo.getValue().setRequestedChanges(caseData.getReviewCMODecision().getChangesRequestedByJudge());

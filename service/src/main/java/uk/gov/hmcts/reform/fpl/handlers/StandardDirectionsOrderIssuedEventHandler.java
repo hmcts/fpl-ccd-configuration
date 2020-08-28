@@ -6,11 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForSDO;
+import uk.gov.hmcts.reform.fpl.model.notify.sdo.CTSCTemplateForSDO;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -21,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.StandardDirectionOrderIssue
 import java.util.Map;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_CTSC_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.SDO;
@@ -31,6 +34,7 @@ public class StandardDirectionsOrderIssuedEventHandler {
     private final NotificationService notificationService;
     private final InboxLookupService inboxLookupService;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
+    private final CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
     private final CafcassEmailContentProviderSDOIssued cafcassEmailContentProviderSDOIssued;
     private final LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
     private final StandardDirectionOrderIssuedEmailContentProvider standardDirectionOrderIssuedEmailContentProvider;
@@ -77,6 +81,17 @@ public class StandardDirectionsOrderIssuedEventHandler {
             notificationService.sendEmail(STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE, email, parameters,
                 eventData.getReference());
         }
+    }
+
+    @EventListener
+    public void notifyCTSCOfIssuedStandardDirectionsOrder(StandardDirectionsOrderIssuedEvent event) {
+        EventData eventData = new EventData(event);
+        CTSCTemplateForSDO parameters = standardDirectionOrderIssuedEmailContentProvider
+            .buildNotificationParametersForCTSC(eventData.getCaseDetails());
+        String email = ctscEmailLookupConfiguration.getEmail();
+
+        notificationService.sendEmail(STANDARD_DIRECTION_ORDER_ISSUED_CTSC_TEMPLATE, email, parameters,
+            eventData.getReference());
     }
 
     private boolean hasJudgeEmail(Order standardDirectionOrder) {
