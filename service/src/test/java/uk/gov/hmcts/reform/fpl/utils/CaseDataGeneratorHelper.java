@@ -99,6 +99,16 @@ public class CaseDataGeneratorHelper {
             .build();
     }
 
+    public static HearingBooking createHearingBooking(LocalDateTime startDate,
+                                                      LocalDateTime endDate,
+                                                      HearingType hearingType,
+                                                      UUID cmoID) {
+        return createHearingBooking(startDate, endDate).toBuilder()
+            .type(hearingType)
+            .caseManagementOrderId(cmoID)
+            .build();
+    }
+
     public static List<Element<Applicant>> createPopulatedApplicants() {
         return ImmutableList.of(
             Element.<Applicant>builder()
