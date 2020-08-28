@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
 @ContextConfiguration(classes = {StandardDirectionOrderIssuedEmailContentProvider.class, LookupTestConfig.class,
@@ -41,6 +42,15 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
             .isEqualToComparingFieldByField(expectedMap);
     }
 
+    @Test
+    void shouldReturnExpectedMapForCTSCWhenNoneSelectedInHearingNeeds() {
+        CTSCTemplateForSDO expectedMap = ctscSDOTemplateParametersWithNoneSelected();
+
+        assertThat(standardDirectionOrderIssuedEmailContentProvider
+            .buildNotificationParametersForCTSC(callbackRequest().getCaseDetails()))
+            .isEqualToComparingFieldByField(expectedMap);
+    }
+
     private AllocatedJudgeTemplateForSDO allocatedJudgeSDOTemplateParameters() {
         AllocatedJudgeTemplateForSDO allocatedJudgeTemplate = new AllocatedJudgeTemplateForSDO();
         allocatedJudgeTemplate.setFamilyManCaseNumber("12345,");
@@ -62,6 +72,21 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
         ctscTemplateForSDO.setShowDetailsLabel("Yes");
         ctscTemplateForSDO.setCourtName(COURT_NAME);
         ctscTemplateForSDO.setCallout("^Smith, 12345, hearing 1 Jan 2020");
+        ctscTemplateForSDO.setRespondentLastName("Smith");
+        ctscTemplateForSDO.setCaseUrl(caseUrl(CASE_REFERENCE));
+
+        return ctscTemplateForSDO;
+    }
+
+    private CTSCTemplateForSDO ctscSDOTemplateParametersWithNoneSelected() {
+        CTSCTemplateForSDO ctscTemplateForSDO = new CTSCTemplateForSDO();
+        ctscTemplateForSDO.setDocumentLink("http://fake-url/documents/be17a76e-38ed-4448-8b83-45de1aa93f55/binary");
+        ctscTemplateForSDO.setHearingNeedsPresent("No");
+        ctscTemplateForSDO.setHearingNeeds(List.of());
+        ctscTemplateForSDO.setHearingNeedsDetails("");
+        ctscTemplateForSDO.setShowDetailsLabel("No");
+        ctscTemplateForSDO.setCourtName(COURT_NAME);
+        ctscTemplateForSDO.setCallout("^Smith, 12345L, hearing 1 Jan 2020");
         ctscTemplateForSDO.setRespondentLastName("Smith");
         ctscTemplateForSDO.setCaseUrl(caseUrl(CASE_REFERENCE));
 
