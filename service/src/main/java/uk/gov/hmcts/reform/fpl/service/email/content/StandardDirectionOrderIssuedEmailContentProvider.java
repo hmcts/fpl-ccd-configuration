@@ -64,7 +64,7 @@ public class StandardDirectionOrderIssuedEmailContentProvider extends StandardDi
         ctscTemplateForSDO.setHearingNeedsPresent(getHearingNeedsPresent(hearing));
         ctscTemplateForSDO.setShowDetailsLabel(getShowDetailsLabel(hearing));
         ctscTemplateForSDO.setHearingNeeds(hearing.buildHearingNeedsList());
-        ctscTemplateForSDO.setHearingNeedsDetails(hearing.getHearingNeedsDetails());
+        ctscTemplateForSDO.setHearingNeedsDetails(getHearingNeedsDetails(hearing));
         ctscTemplateForSDO.setCaseUrl(getCaseUrl(caseDetails.getId()));
         ctscTemplateForSDO.setDocumentLink(concatUrlAndMostRecentUploadedDocumentPath(xuiBaseUrl,
             caseData.getStandardDirectionOrder().getOrderDoc().getBinaryUrl()));
@@ -81,6 +81,14 @@ public class StandardDirectionOrderIssuedEmailContentProvider extends StandardDi
     private String getHearingNeedsPresent(HearingBooking hearingBooking) {
         return hearingBooking.getHearingNeedsBooked() == null
             || hearingBooking.getHearingNeedsBooked().contains(NONE) ? "No" : "Yes";
+    }
+
+    private String getHearingNeedsDetails(HearingBooking hearingBooking) {
+        if (hearingBooking.getHearingNeedsBooked() != null && hearingBooking.getHearingNeedsBooked().contains(NONE)) {
+            return "";
+        } else {
+            return hearingBooking.getHearingNeedsDetails();
+        }
     }
 
     //Do not show label if NONE is selected or if SOMETHING_ELSE is only option selected
