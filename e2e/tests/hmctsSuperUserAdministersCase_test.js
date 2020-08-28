@@ -24,7 +24,6 @@ Scenario('HMCTS super user removes an order from a case', async (I, caseViewPage
   const issuedDate = new Date(2020, 4,26, 14, 33);
   order = {...blankOrder, ...{
     document: 'Blank order (C21).pdf',
-    reasonForRemoval: 'Entered incorrect order',
   } };
   await orderFunctions.assertOrder(I, caseViewPage, order, issuedDate, false, true);
 });
