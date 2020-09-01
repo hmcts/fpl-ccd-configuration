@@ -36,7 +36,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(DraftOrdersController.class)
+@WebMvcTest(ComplyWithDirectionsController.class)
 @OverrideAutoConfiguration(enabled = true)
 class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
 

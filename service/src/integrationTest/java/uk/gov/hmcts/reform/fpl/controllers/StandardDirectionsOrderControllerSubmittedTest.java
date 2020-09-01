@@ -40,9 +40,9 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(DraftOrdersController.class)
+@WebMvcTest(StandardDirectionsOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class DraftOrdersControllerSubmittedTest extends AbstractControllerTest {
+public class StandardDirectionsOrderControllerSubmittedTest extends AbstractControllerTest {
     private static final Long CASE_ID = 1L;
     private static final String CASE_MANAGEMENT_EVENT = "internal-changeState-Gatekeeping->PREPARE_FOR_HEARING";
     private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
@@ -58,7 +58,7 @@ public class DraftOrdersControllerSubmittedTest extends AbstractControllerTest {
     @MockBean
     private CoreCaseDataService coreCaseDataService;
 
-    DraftOrdersControllerSubmittedTest() {
+    StandardDirectionsOrderControllerSubmittedTest() {
         super("draft-standard-directions");
     }
 

@@ -14,11 +14,11 @@ import java.time.LocalDate;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(DraftOrdersController.class)
+@WebMvcTest(StandardDirectionsOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-class DraftOrdersControllerAboutToStartTest extends AbstractControllerTest {
+class StandardDirectionsOrderControllerAboutToStartTest extends AbstractControllerTest {
 
-    DraftOrdersControllerAboutToStartTest() {
+    StandardDirectionsOrderControllerAboutToStartTest() {
         super("draft-standard-directions");
     }
 

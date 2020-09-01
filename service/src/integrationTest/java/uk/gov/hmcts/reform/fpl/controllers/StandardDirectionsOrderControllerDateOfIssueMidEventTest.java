@@ -36,11 +36,11 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(DraftOrdersController.class)
+@WebMvcTest(StandardDirectionsOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-class DraftOrdersControllerDateOfIssueMidEventTest extends AbstractControllerTest {
+class StandardDirectionsOrderControllerDateOfIssueMidEventTest extends AbstractControllerTest {
 
-    DraftOrdersControllerDateOfIssueMidEventTest() {
+    StandardDirectionsOrderControllerDateOfIssueMidEventTest() {
         super("draft-standard-directions");
     }
 

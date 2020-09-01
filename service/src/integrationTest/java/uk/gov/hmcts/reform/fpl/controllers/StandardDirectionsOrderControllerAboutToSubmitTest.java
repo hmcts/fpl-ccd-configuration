@@ -58,9 +58,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(DraftOrdersController.class)
+@WebMvcTest(StandardDirectionsOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
+class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControllerTest {
     private static final byte[] PDF = {1, 2, 3, 4, 5};
     private static final String SEALED_ORDER_FILE_NAME = "standard-directions-order.pdf";
     private static final Document DOCUMENT = document();
@@ -79,7 +79,7 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
     @Captor
     private ArgumentCaptor<String> fileName;
 
-    DraftOrdersControllerAboutToSubmitTest() {
+    StandardDirectionsOrderControllerAboutToSubmitTest() {
         super("draft-standard-directions");
     }
 

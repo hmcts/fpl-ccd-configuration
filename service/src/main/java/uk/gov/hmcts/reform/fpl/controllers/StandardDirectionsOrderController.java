@@ -59,7 +59,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAll
 @RestController
 @RequestMapping("/callback/draft-standard-directions")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class DraftOrdersController {
+public class StandardDirectionsOrderController {
     private final ObjectMapper mapper;
     private final DocumentService documentService;
     private final StandardDirectionOrderGenerationService standardDirectionOrderGenerationService;
