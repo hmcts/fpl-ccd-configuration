@@ -7,7 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.Order;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 
 import java.time.LocalDate;
 
@@ -44,7 +44,7 @@ class DraftOrdersControllerAboutToStartTest extends AbstractControllerTest {
         ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
 
         return CaseDetails.builder().data(builder
-            .put("standardDirectionOrder", Order.builder().dateOfIssue(date).build())
+            .put("standardDirectionOrder", StandardDirectionOrder.builder().dateOfIssue(date).build())
             .build())
             .build();
     }

@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Order;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForSDO;
 import uk.gov.hmcts.reform.fpl.model.notify.sdo.CTSCTemplateForSDO;
@@ -94,7 +94,7 @@ public class StandardDirectionsOrderIssuedEventHandler {
             eventData.getReference());
     }
 
-    private boolean hasJudgeEmail(Order standardDirectionOrder) {
+    private boolean hasJudgeEmail(StandardDirectionOrder standardDirectionOrder) {
         return isNotEmpty(standardDirectionOrder.getJudgeAndLegalAdvisor())
             && isNotEmpty(standardDirectionOrder.getJudgeAndLegalAdvisor().getJudgeEmailAddress());
     }

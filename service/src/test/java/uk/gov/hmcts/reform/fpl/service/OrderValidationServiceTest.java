@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Judge;
-import uk.gov.hmcts.reform.fpl.model.Order;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -100,8 +100,8 @@ public class OrderValidationServiceTest {
             .build();
     }
 
-    private static Order buildOrderWithStatus(final OrderStatus orderStatus) {
-        return Order.builder()
+    private static StandardDirectionOrder buildOrderWithStatus(final OrderStatus orderStatus) {
+        return StandardDirectionOrder.builder()
             .orderStatus(orderStatus)
             .build();
     }

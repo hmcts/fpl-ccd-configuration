@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.Order;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -132,7 +132,7 @@ public class DraftOrdersControllerSubmittedTest extends AbstractControllerTest {
     }
 
     private CallbackRequest buildCallbackRequest(OrderStatus status) {
-        Order order = Order.builder()
+        StandardDirectionOrder order = StandardDirectionOrder.builder()
             .orderStatus(status)
             .orderDoc(DOCUMENT_REFERENCE)
             .build();

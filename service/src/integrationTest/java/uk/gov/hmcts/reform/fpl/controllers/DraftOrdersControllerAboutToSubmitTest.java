@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
-import uk.gov.hmcts.reform.fpl.model.Order;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -103,7 +103,7 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(directionsWithShowHideValuesRemoved()
                 .put("dateOfIssue", dateNow())
-                .put("standardDirectionOrder", Order.builder().orderStatus(SEALED).build())
+                .put("standardDirectionOrder", StandardDirectionOrder.builder().orderStatus(SEALED).build())
                 .put("judgeAndLegalAdvisor", legalAdvisorWithAllocatedJudge)
                 .put("allocatedJudge", allocatedJudge)
                 .put(HEARING_DETAILS_KEY, wrapElements(HearingBooking.builder()
@@ -130,7 +130,7 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
     @Test
     void shouldReturnErrorsWhenNoHearingDetailsExistsForSealedOrder() {
         ImmutableMap<String, Object> build = mapWithDirections()
-            .put("standardDirectionOrder", Order.builder().orderStatus(SEALED).build())
+            .put("standardDirectionOrder", StandardDirectionOrder.builder().orderStatus(SEALED).build())
             .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
             .put("allocatedJudge", Judge.builder().build())
             .build();
@@ -169,8 +169,8 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
             .build());
     }
 
-    private Order expectedOrder() {
-        return Order.builder()
+    private StandardDirectionOrder expectedOrder() {
+        return StandardDirectionOrder.builder()
             .directions(fullyPopulatedDirections())
             .orderStatus(SEALED)
             .orderDoc(DocumentReference.builder()
@@ -245,7 +245,7 @@ class DraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
                     .relationshipToChild("Uncle")
                     .build())
                 .build()),
-            "standardDirectionOrder", Order.builder()
+            "standardDirectionOrder", StandardDirectionOrder.builder()
                 .orderStatus(SEALED)
                 .orderDoc(DocumentReference.builder().build())
                 .build(),
