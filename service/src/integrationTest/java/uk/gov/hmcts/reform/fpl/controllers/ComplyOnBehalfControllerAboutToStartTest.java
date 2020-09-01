@@ -12,12 +12,12 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
-import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
@@ -184,7 +184,7 @@ class ComplyOnBehalfControllerAboutToStartTest extends AbstractControllerTest {
     }
 
     private List<Element<Direction>> directionsForRespondentsCafcassOthersAndAllParties() {
-        return Stream.of(new DirectionAssignee[]{PARENTS_AND_RESPONDENTS, CAFCASS, OTHERS, ALL_PARTIES})
+        return Stream.of(new DirectionAssignee[] {PARENTS_AND_RESPONDENTS, CAFCASS, OTHERS, ALL_PARTIES})
             .map(directionAssignee -> (ElementUtils.element(
                 DIRECTION_ID,
                 Direction.builder()
