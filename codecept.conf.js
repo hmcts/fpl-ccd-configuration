@@ -83,7 +83,8 @@ exports.config = {
     closeTheCaseEventPage: './e2e/pages/events/closeTheCase.page.js',
     returnApplicationEventPage: './e2e/pages/events/returnApplicationEvent.page.js',
     uploadCaseManagementOrderEventPage: './e2e/pages/events/uploadCaseManagementOrderEvent.page.js',
-    reviewAgreedCaseManagementOrderEventPage: './e2e/pages/events/reviewAgreedCaseManagementOrderEvent.page.js'
+    reviewAgreedCaseManagementOrderEventPage: './e2e/pages/events/reviewAgreedCaseManagementOrderEvent.page.js',
+    removeOrderEventPage: './e2e/pages/events/removeOrderEvent.page.js',
   },
   plugins: {
     autoDelay: {
