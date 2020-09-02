@@ -39,9 +39,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(DraftOrdersController.class)
+@WebMvcTest(StandardDirectionsOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-class DraftOrdersControllerMidEventTest extends AbstractControllerTest {
+class StandardDirectionsOrderControllerMidEventTest extends AbstractControllerTest {
     private static final byte[] PDF = {1, 2, 3, 4, 5};
     private static final String SEALED_ORDER_FILE_NAME = "standard-directions-order.pdf";
     private static final String DRAFT_ORDER_FILE_NAME = "draft-standard-directions-order.pdf";
@@ -53,7 +53,7 @@ class DraftOrdersControllerMidEventTest extends AbstractControllerTest {
     @MockBean
     private UploadDocumentService uploadDocumentService;
 
-    DraftOrdersControllerMidEventTest() {
+    StandardDirectionsOrderControllerMidEventTest() {
         super("draft-standard-directions");
     }
 
