@@ -11,9 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
-import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityCodeException;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityUserService;
 
@@ -27,7 +26,7 @@ public class CaseInitiationController {
     private final LocalAuthorityService localAuthorityNameService;
     private final LocalAuthorityUserService localAuthorityUserService;
     private final ApplicationEventPublisher applicationEventPublisher;
-    private final LocalAuthorityUserLookupConfiguration localAuthorityUserLookupConfiguration;
+    private final FeatureToggleService featureToggleService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
@@ -38,14 +37,6 @@ public class CaseInitiationController {
         Map<String, Object> data = caseDetails.getData();
         data.put("caseLocalAuthority", caseLocalAuthority);
 
-        try {
-            localAuthorityUserLookupConfiguration.getUserIds(caseLocalAuthority);
-            System.out.println("using old config");
-            // if old config then show placeholder
-
-        } catch(UnknownLocalAuthorityCodeException unknownLocalAuthorityException) {
-            System.out.println("Not using old config, caught exception");
-        }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
