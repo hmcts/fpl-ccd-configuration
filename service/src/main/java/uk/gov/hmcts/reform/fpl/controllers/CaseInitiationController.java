@@ -36,7 +36,7 @@ public class CaseInitiationController {
 
         Map<String, Object> data = caseDetails.getData();
         data.put("caseLocalAuthority", caseLocalAuthority);
-        data.put("pageShow", "YES");
+        data.put("pageShow", "NO");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
