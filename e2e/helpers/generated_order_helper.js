@@ -168,11 +168,10 @@ module.exports = {
     }
   },
 
-  async assertOrder(I, caseViewPage, order, defaultIssuedDate, hasAllocatedJudge = false) {
+  async assertOrder(I, caseViewPage, order, defaultIssuedDate, hasAllocatedJudge = false, isOrderRemoved = false) {
     caseViewPage.selectTab(caseViewPage.tabs.orders);
     const numberOfOrders = await I.grabNumberOfVisibleElements('//*[text() = \'Type of order\']');
-    const orderHeading = `Order ${numberOfOrders}`;
-    I.seeInTab([orderHeading, 'Type of order'], order.fullType);
+    const orderHeading = isOrderRemoved ? `Removed orders ${numberOfOrders}` : `Order ${numberOfOrders}`;
 
     if (order.type === 'Blank order (C21)') {
       I.seeInTab([orderHeading, 'Order title'], order.title);
@@ -191,6 +190,8 @@ module.exports = {
       I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Last name'], order.judgeAndLegalAdvisor.judgeLastName);
       I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name'], order.judgeAndLegalAdvisor.legalAdvisorName);
     }
+
+    isOrderRemoved && I.seeInTab([orderHeading, 'Reason for removal'], order.reasonForRemoval);
   },
 
   async assertOrderSentToParty(I, caseViewPage, partyName, order) {

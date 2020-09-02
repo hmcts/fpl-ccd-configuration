@@ -270,6 +270,14 @@ public class CaseData {
         return orderCollection != null ? orderCollection : new ArrayList<>();
     }
 
+    private final Object removableOrderList;
+    private final String reasonToRemoveOrder;
+    private final List<Element<GeneratedOrder>> hiddenOrders;
+
+    public List<Element<GeneratedOrder>> getHiddenOrders() {
+        return defaultIfNull(hiddenOrders, new ArrayList<>());
+    }
+
     /**
      * General object for CMO. Can be either in a draft state or action state. Ignored by jackson so that custom
      * getters and setters can be used.
