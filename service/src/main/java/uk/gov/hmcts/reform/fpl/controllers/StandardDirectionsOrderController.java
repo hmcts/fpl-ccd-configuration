@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
@@ -127,7 +129,7 @@ public class StandardDirectionsOrderController {
             .build();
     }
 
-    @PostMapping("/mid-event")
+    @PostMapping("/service-route/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
@@ -155,6 +157,24 @@ public class StandardDirectionsOrderController {
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
+            .build();
+    }
+
+    @PostMapping("upload-route/mid-event")
+    public CallbackResponse handleUploadMidEvent(@RequestBody CallbackRequest request) {
+        Map<String, Object> data = request.getCaseDetails().getData();
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
+
+        DocumentReference preparedSDO = caseData.getPreparedSDO();
+
+        StandardDirectionOrder order = StandardDirectionOrder.builder()
+            .orderDoc(preparedSDO)
+            .build();
+
+        data.put("standardDirectionOrder", order);
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(data)
             .build();
     }
 
@@ -259,6 +279,9 @@ public class StandardDirectionsOrderController {
             .orElse("Please enter a hearing date");
     }
 
+    // TODO: 02/09/2020 Remove this method as part of FPLA-1486
+    //  there is an identical method in case data
+    //  this would remove the hearing booking service from the controller
     private HearingBooking getFirstHearing(List<Element<HearingBooking>> hearingBookings) {
         return hearingBookingService.getFirstHearing(hearingBookings).orElse(null);
     }
