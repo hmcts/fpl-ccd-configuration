@@ -41,6 +41,7 @@ public class CaseInitiationController {
         try {
             localAuthorityUserLookupConfiguration.getUserIds(caseLocalAuthority);
             System.out.println("using old config");
+            // if old config then show placeholder
 
         } catch(UnknownLocalAuthorityCodeException unknownLocalAuthorityException) {
             System.out.println("Not using old config, caught exception");
