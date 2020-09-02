@@ -4,14 +4,13 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.MaskHelper.maskEmail;
-import static uk.gov.hmcts.reform.fpl.utils.MaskHelper.maskEmail;
 
 class MaskHelperTest {
 
     @Test
     void shouldReturnMaskedEmail() {
-        assertThat(MaskHelper.maskEmail(null)).isEqualTo("");
-        assertThat(MaskHelper.maskEmail("")).isEqualTo("");
+        assertThat(MaskHelper.maskEmail(null)).isEmpty();
+        assertThat(MaskHelper.maskEmail("")).isEmpty();
         assertThat(MaskHelper.maskEmail("abc")).isEqualTo("***");
         assertThat(MaskHelper.maskEmail("abc@t")).isEqualTo("***@*");
     }
@@ -42,8 +41,8 @@ class MaskHelperTest {
 
     @Test
     void shouldNotMaskEmailInEmptyString() {
-        assertThat(maskEmail(null, "test@test.com")).isEqualTo(null);
-        assertThat(maskEmail("", "test@test.com")).isEqualTo("");
+        assertThat(maskEmail(null, "test@test.com")).isNull();
+        assertThat(maskEmail("", "test@test.com")).isEmpty();
     }
 
 }
