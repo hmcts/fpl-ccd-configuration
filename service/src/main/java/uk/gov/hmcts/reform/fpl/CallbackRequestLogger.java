@@ -49,7 +49,8 @@ public class CallbackRequestLogger extends RequestBodyAdviceAdapter {
 
     private String getCallback(CallbackRequest callbackRequest, MethodParameter parameter) {
         String eventName = callbackRequest.getEventId();
-        String callbackType = Optional.ofNullable(parameter.getMethod().getAnnotation(PostMapping.class))
+        String callbackType = Optional.ofNullable(parameter.getMethod())
+            .map(method -> method.getAnnotation(PostMapping.class))
             .map(PostMapping::value)
             .map(path -> String.join("", path))
             .orElse("");
