@@ -11,7 +11,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocumentType",
-    "ListElementCode": "evidenceDocumentRelatedToHearing",
+    "ListElementCode": "relatedToHearing",
     "FieldType": "YesOrNo",
     "ElementLabel": "Does the evidence document relate to a hearing?",
     "SecurityClassification": "Public",
@@ -20,11 +20,11 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocumentType",
-    "ListElementCode": "evidenceDocumentHearingList",
+    "ListElementCode": "hearingList",
     "FieldType": "DynamicList",
     "ElementLabel": "Which hearing?",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "evidenceDocumentRelatedToHearing=\"Yes\""
+    "FieldShowCondition": "relatedToHearing=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",

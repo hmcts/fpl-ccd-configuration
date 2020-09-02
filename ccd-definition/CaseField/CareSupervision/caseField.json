@@ -1655,7 +1655,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "furtherEvidenceDocuments",
     "FieldType": "Collection",
-    "FieldTypeParameter": "ManageDocumentCollection",
+    "FieldTypeParameter": "ManageDocumentBundle",
     "Label": "Further evidence document",
     "SecurityClassification": "Public"
   },
@@ -1664,7 +1664,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "correspondenceDocuments",
     "FieldType": "Collection",
-    "FieldTypeParameter": "ManageDocumentCollection",
+    "FieldTypeParameter": "ManageDocumentBundle",
     "Label": "Correspondence document",
     "SecurityClassification": "Public"
   },
@@ -1673,7 +1673,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "c2SupportingDocuments",
     "FieldType": "Collection",
-    "FieldTypeParameter": "ManageDocumentCollection",
+    "FieldTypeParameter": "ManageDocumentBundle",
     "Label": "C2 supporting document",
     "SecurityClassification": "Public"
   },

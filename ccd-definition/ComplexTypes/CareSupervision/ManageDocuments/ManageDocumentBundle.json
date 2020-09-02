@@ -1,7 +1,7 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ManageDocumentCollection",
+    "ID": "ManageDocumentBundle",
     "ListElementCode": "name",
     "FieldType": "Text",
     "ElementLabel": "Document name",
@@ -10,7 +10,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ManageDocumentCollection",
+    "ID": "ManageDocumentBundle",
     "ListElementCode": "notes",
     "FieldType": "TextArea",
     "ElementLabel": "Notes",
@@ -18,7 +18,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ManageDocumentCollection",
+    "ID": "ManageDocumentBundle",
     "ListElementCode": "dateTimeReceived",
     "FieldType": "DateTime",
     "ElementLabel": "Date and time received",
@@ -27,7 +27,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ManageDocumentCollection",
+    "ID": "ManageDocumentBundle",
     "ListElementCode": "document",
     "FieldType": "Document",
     "ElementLabel": "Upload document",

@@ -25,7 +25,7 @@
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
     "PageShowCondition": "manageDocument.type=\"FURTHER_EVIDENCE_DOCUMENTS\"",
-    "FieldShowCondition": "manageDocument.evidenceDocumentRelatedToHearing=\"Yes\""
+    "FieldShowCondition": "manageDocument.relatedToHearing=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
