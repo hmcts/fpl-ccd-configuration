@@ -20,7 +20,8 @@
     "PageID": "SdoDateOfIssue",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/draft-standard-directions/date-of-issue/mid-event"
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/draft-standard-directions/date-of-issue/mid-event",
+    "PageShowCondition": "sdoRouter=\"SERVICE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -42,7 +43,8 @@
     "DisplayContext": "COMPLEX",
     "PageID": "judgeAndLegalAdvisor",
     "PageDisplayOrder": 3,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "PageShowCondition": "sdoRouter=\"SERVICE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -64,7 +66,8 @@
     "DisplayContext": "COMPLEX",
     "PageID": "allPartiesDirections",
     "PageDisplayOrder": 4,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "PageShowCondition": "sdoRouter=\"SERVICE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -86,7 +89,8 @@
     "DisplayContext": "READONLY",
     "PageID": "localAuthorityDirections",
     "PageDisplayOrder": 5,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "PageShowCondition": "sdoRouter=\"SERVICE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -119,7 +123,8 @@
     "DisplayContext": "READONLY",
     "PageID": "parentsAndRespondentsDirections",
     "PageDisplayOrder": 6,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "PageShowCondition": "sdoRouter=\"SERVICE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -152,7 +157,8 @@
     "DisplayContext": "READONLY",
     "PageID": "cafcassDirections",
     "PageDisplayOrder": 7,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "PageShowCondition": "sdoRouter=\"SERVICE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -185,7 +191,8 @@
     "DisplayContext": "READONLY",
     "PageID": "otherPartiesDirections",
     "PageDisplayOrder": 8,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "PageShowCondition": "sdoRouter=\"SERVICE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -219,6 +226,7 @@
     "PageID": "courtDirections",
     "PageDisplayOrder": 9,
     "PageColumnNumber": 1,
+    "PageShowCondition": "sdoRouter=\"SERVICE\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/draft-standard-directions/mid-event"
   },
   {
@@ -247,11 +255,24 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "draftSDO",
+    "CaseFieldID": "preparedSDO",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY",
+    "PageID": "orderUpload",
+    "PageDisplayOrder": 10,
+    "PageColumnNumber": 1,
+    "PageShowCondition": "sdoRouter=\"UPLOAD\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "draftSDO",
     "CaseFieldID": "standardDirectionOrder",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "COMPLEX",
     "PageID": "documentReview",
-    "PageDisplayOrder": 10,
+    "CaseEventFieldLabel": " ",
+    "PageDisplayOrder": 11,
     "PageColumnNumber": 1
   }
 ]
