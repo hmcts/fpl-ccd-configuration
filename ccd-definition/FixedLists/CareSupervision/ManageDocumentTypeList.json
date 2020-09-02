@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentTypeList",
+    "ListElementCode": "FURTHER_EVIDENCE_DOCUMENTS",
+    "ListElement": "Further evidence documents",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentTypeList",
+    "ListElementCode": "CORRESPONDENCE",
+    "ListElement": "Correspondence",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentTypeList",
+    "ListElementCode": "C2",
+    "ListElement": "C2 supporting documents",
+    "DisplayOrder": 3
+  }
+]

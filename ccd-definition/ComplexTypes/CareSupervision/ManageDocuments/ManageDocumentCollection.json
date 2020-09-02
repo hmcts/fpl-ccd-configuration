@@ -1,0 +1,36 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentCollection",
+    "ListElementCode": "name",
+    "FieldType": "Text",
+    "ElementLabel": "Document name",
+    "HintText": "TODO Try and make this more generic so we can reuse the same object",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentCollection",
+    "ListElementCode": "notes",
+    "FieldType": "TextArea",
+    "ElementLabel": "Notes",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentCollection",
+    "ListElementCode": "dateTimeReceived",
+    "FieldType": "DateTime",
+    "ElementLabel": "Date and time received",
+    "HintText": "For example, 31 3 2016  2 30 00",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentCollection",
+    "ListElementCode": "document",
+    "FieldType": "Document",
+    "ElementLabel": "Upload document",
+    "SecurityClassification": "Public"
+  }
+]

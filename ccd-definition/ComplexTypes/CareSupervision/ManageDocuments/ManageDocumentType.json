@@ -1,0 +1,38 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentType",
+    "ListElementCode": "type",
+    "FieldType": "FixedRadioList",
+    "ElementLabel": "Which document type do you want to manage?",
+    "FieldTypeParameter": "ManageDocumentTypeList",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentType",
+    "ListElementCode": "evidenceDocumentRelatedToHearing",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Does the evidence document relate to a hearing?",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type=\"FURTHER_EVIDENCE_DOCUMENTS\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentType",
+    "ListElementCode": "evidenceDocumentHearingList",
+    "FieldType": "DynamicList",
+    "ElementLabel": "Which hearing?",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "evidenceDocumentRelatedToHearing=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentType",
+    "ListElementCode": "supportingC2List",
+    "FieldType": "DynamicList",
+    "ElementLabel": "Choose the relevant C2 application for this document",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type=\"C2\""
+  }
+]
