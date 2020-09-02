@@ -1,0 +1,38 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadDocuments-CLOSED",
+    "CaseEventID": "uploadDocuments-CLOSED",
+    "CaseFieldID": "furtherEvidenceDocuments",
+    "ListElementCode": "name",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadDocuments-CLOSED",
+    "CaseEventID": "uploadDocuments-CLOSED",
+    "CaseFieldID": "furtherEvidenceDocuments",
+    "ListElementCode": "notes",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadDocuments-CLOSED",
+    "CaseEventID": "uploadDocuments-CLOSED",
+    "CaseFieldID": "furtherEvidenceDocuments",
+    "ListElementCode": "dateTimeReceived",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadDocuments-CLOSED",
+    "CaseEventID": "uploadDocuments-CLOSED",
+    "CaseFieldID": "furtherEvidenceDocuments",
+    "ListElementCode": "document",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
+  }
+]
