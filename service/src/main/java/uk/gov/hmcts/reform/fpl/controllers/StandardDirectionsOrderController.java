@@ -207,7 +207,7 @@ public class StandardDirectionsOrderController {
         caseDetails.getData().remove("dateOfIssue");
 
         if (order.getOrderStatus() == SEALED) {
-            caseDetails.getData().put("state", State.CASE_MANAGEMENT.getValue());
+            caseDetails.getData().put("state", State.CASE_MANAGEMENT);
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
