@@ -1641,5 +1641,15 @@
     "FieldType": "Label",
     "Label": "[Make changes to court services needed](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/attendingHearing)",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "sdoRouter",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "SDORoutes",
+    "Label": "What do you want to do?",
+    "HintText": "You can upload the final order to send to all parties now, or upload and save it.",
+    "SecurityClassification": "Public"
   }
 ]
