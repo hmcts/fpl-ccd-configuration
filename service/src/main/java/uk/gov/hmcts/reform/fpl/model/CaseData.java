@@ -160,7 +160,7 @@ public class CaseData {
     }
 
     private final List<Element<Placement>> placements;
-    private final Order standardDirectionOrder;
+    private final StandardDirectionOrder standardDirectionOrder;
     private SDORoutes sdoRouter;
     private final DocumentReference preparedSDO;
 
@@ -271,6 +271,14 @@ public class CaseData {
 
     public List<Element<GeneratedOrder>> getOrderCollection() {
         return orderCollection != null ? orderCollection : new ArrayList<>();
+    }
+
+    private final Object removableOrderList;
+    private final String reasonToRemoveOrder;
+    private final List<Element<GeneratedOrder>> hiddenOrders;
+
+    public List<Element<GeneratedOrder>> getHiddenOrders() {
+        return defaultIfNull(hiddenOrders, new ArrayList<>());
     }
 
     /**
