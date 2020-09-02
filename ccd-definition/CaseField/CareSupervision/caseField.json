@@ -1651,5 +1651,14 @@
     "Label": "What do you want to do?",
     "HintText": "You can upload the final order to send to all parties now, or upload and save it.",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "preparedSDO",
+    "FieldType": "Document",
+    "Label": "Attach prepared order",
+    "RegularExpression": ".doc,.docx,.pdf",
+    "SecurityClassification": "Public"
   }
 ]
