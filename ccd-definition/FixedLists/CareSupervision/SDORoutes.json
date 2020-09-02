@@ -3,12 +3,14 @@
     "LiveFrom": "01/01/2017",
     "ID": "SDORoutes",
     "ListElementCode": "UPLOAD",
-    "ListElement": "Upload a prepared order"
+    "ListElement": "Upload a prepared order",
+    "DisplayOrder": 1
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "SDORoutes",
     "ListElementCode": "SERVICE",
-    "ListElement": "Create an order here"
+    "ListElement": "Create an order here",
+    "DisplayOrder": 2
   }
 ]
