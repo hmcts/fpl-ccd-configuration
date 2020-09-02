@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
-import uk.gov.hmcts.reform.fpl.model.Order;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForSDO;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
@@ -151,7 +151,7 @@ public class StandardDirectionsOrderIssuedEventHandlerTest {
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(111L)
-                .data(ImmutableMap.of("standardDirectionOrder", Order.builder().build()))
+                .data(ImmutableMap.of("standardDirectionOrder", StandardDirectionOrder.builder().build()))
                 .build())
             .build();
 
