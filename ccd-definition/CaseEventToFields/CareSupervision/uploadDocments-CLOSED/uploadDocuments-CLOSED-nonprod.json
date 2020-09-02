@@ -3,7 +3,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadDocuments-CLOSED",
-    "CaseFieldID": "manageDocumentType",
+    "CaseFieldID": "manageDocument",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
     "PageID": "ManageDocumentType",
@@ -24,8 +24,8 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "PageShowCondition": "manageDocumentType.type=\"FURTHER_EVIDENCE_DOCUMENTS\"",
-    "FieldShowCondition": "manageDocumentType.evidenceDocumentRelatedToHearing=\"Yes\""
+    "PageShowCondition": "manageDocument.type=\"FURTHER_EVIDENCE_DOCUMENTS\"",
+    "FieldShowCondition": "manageDocument.evidenceDocumentRelatedToHearing=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -52,7 +52,7 @@
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "PageShowCondition": "manageDocumentType.type=\"CORRESPONDENCE\""
+    "PageShowCondition": "manageDocument.type=\"CORRESPONDENCE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -66,7 +66,7 @@
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "PageShowCondition": "manageDocumentType.type=\"C2\""
+    "PageShowCondition": "manageDocument.type=\"C2\""
   },
   {
     "LiveFrom": "01/01/2017",
