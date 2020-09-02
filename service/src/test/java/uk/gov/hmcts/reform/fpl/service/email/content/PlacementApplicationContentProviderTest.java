@@ -8,7 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 
 @ContextConfiguration(classes = {PlacementApplicationContentProvider.class})
 class PlacementApplicationContentProviderTest extends AbstractEmailContentProviderTest {
@@ -23,7 +23,7 @@ class PlacementApplicationContentProviderTest extends AbstractEmailContentProvid
             .put("caseUrl", caseUrl(CASE_REFERENCE))
             .build();
 
-        assertThat(placementApplicationContentProvider.buildPlacementApplicationNotificationParameters(
-            callbackRequest().getCaseDetails())).isEqualTo(expectedParameters);
+        assertThat(placementApplicationContentProvider.buildPlacementApplicationNotificationParameters(caseData()))
+            .isEqualTo(expectedParameters);
     }
 }

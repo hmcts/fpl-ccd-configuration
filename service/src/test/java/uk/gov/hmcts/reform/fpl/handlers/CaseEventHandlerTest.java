@@ -1,13 +1,10 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
@@ -36,9 +33,6 @@ import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_AVAILABLE;
 class CaseEventHandlerTest {
 
     @Mock
-    private ObjectMapper objectMapper;
-
-    @Mock
     private CoreCaseDataService coreCaseDataService;
 
     @Mock
@@ -52,22 +46,17 @@ class CaseEventHandlerTest {
 
     @Test
     void shouldUpdateTaskListForCasesInOpenState() {
-        final CaseDetails caseDetails = CaseDetails.builder()
-                .id(nextLong())
-                .jurisdiction(JURISDICTION)
-                .caseTypeId(CASE_TYPE)
-                .state(OPEN.getValue())
-                .build();
-        final CaseData caseData = CaseData.builder().build();
-        final CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
-        final CaseDataChanged caseDataChanged = new CaseDataChanged(callbackRequest);
+        final CaseData caseData = CaseData.builder()
+            .id(nextLong())
+            .state(OPEN)
+            .build();
+        final CaseDataChanged caseDataChanged = new CaseDataChanged(caseData);
         final List<Task> tasks = List.of(
-                Task.builder().event(CASE_NAME).state(COMPLETED).build(),
-                Task.builder().event(SUBMIT_APPLICATION).state(NOT_AVAILABLE).build()
+            Task.builder().event(CASE_NAME).state(COMPLETED).build(),
+            Task.builder().event(SUBMIT_APPLICATION).state(NOT_AVAILABLE).build()
         );
         final String renderedTaskLists = "<h1>Task 1</h1><h2>Task 2</h2>";
 
-        when(objectMapper.convertValue(caseDetails.getData(), CaseData.class)).thenReturn(caseData);
         when(taskListService.getTasksForOpenCase(caseData)).thenReturn(tasks);
         when(taskListRenderer.render(tasks)).thenReturn(renderedTaskLists);
 
@@ -76,24 +65,22 @@ class CaseEventHandlerTest {
         verify(taskListService).getTasksForOpenCase(caseData);
         verify(taskListRenderer).render(tasks);
         verify(coreCaseDataService).triggerEvent(
-                JURISDICTION,
-                CASE_TYPE,
-                caseDetails.getId(),
-                "internal-update-task-list",
-                Map.of("taskList", renderedTaskLists)
+            JURISDICTION,
+            CASE_TYPE,
+            caseData.getId(),
+            "internal-update-task-list",
+            Map.of("taskList", renderedTaskLists)
         );
     }
 
     @Test
     void shouldNotUpdateTaskListForCasesInStateDifferentThanOpen() {
-        final CaseDetails caseDetails = CaseDetails.builder()
-                .id(nextLong())
-                .jurisdiction(JURISDICTION)
-                .caseTypeId(CASE_TYPE)
-                .state(SUBMITTED.getValue())
-                .build();
-        final CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
-        final CaseDataChanged caseDataChanged = new CaseDataChanged(callbackRequest);
+        final CaseData caseData = CaseData.builder()
+            .id(nextLong())
+            .state(SUBMITTED)
+            .build();
+
+        final CaseDataChanged caseDataChanged = new CaseDataChanged(caseData);
 
         caseEventHandler.handleCaseDataChange(caseDataChanged);
 

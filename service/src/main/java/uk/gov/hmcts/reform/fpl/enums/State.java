@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor
@@ -38,9 +39,13 @@ public enum State {
     private final String value;
 
     public static State fromValue(final String value) {
+        return tryFromValue(value)
+            .orElseThrow(() -> new NoSuchElementException("Unable to map " + value + " to a case state"));
+    }
+
+    public static Optional<State> tryFromValue(final String value) {
         return Stream.of(values())
             .filter(state -> state.value.equalsIgnoreCase(value))
-            .findFirst()
-            .orElseThrow(() -> new NoSuchElementException("Unable to map " + value + " to a case state"));
+            .findFirst();
     }
 }

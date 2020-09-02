@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.fpl.events;
 
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 
-public class CaseDataChanged extends CallbackEvent {
+@Getter
+@RequiredArgsConstructor
+public class CaseDataChanged {
 
-    public CaseDataChanged(CallbackRequest callbackRequest) {
-        super(callbackRequest);
-    }
+    private final CaseData caseData;
 }

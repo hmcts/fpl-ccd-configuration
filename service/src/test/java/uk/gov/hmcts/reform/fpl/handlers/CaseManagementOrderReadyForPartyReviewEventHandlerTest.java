@@ -1,18 +1,14 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForPartyReviewEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -35,14 +31,13 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMA
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.DOCUMENT_CONTENTS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.getExpectedDigitalRepresentativesForAddingPartiesToCase;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.getExpectedEmailRepresentativesForAddingPartiesToCase;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {CaseManagementOrderReadyForPartyReviewEventHandler.class, JacksonAutoConfiguration.class,
-    LookupTestConfig.class, RepresentativeNotificationService.class,
-    FixedTimeConfiguration.class})
+@SpringBootTest(classes = {CaseManagementOrderReadyForPartyReviewEventHandler.class, LookupTestConfig.class,
+    RepresentativeNotificationService.class, FixedTimeConfiguration.class})
 class CaseManagementOrderReadyForPartyReviewEventHandlerTest {
 
     @MockBean
@@ -55,16 +50,11 @@ class CaseManagementOrderReadyForPartyReviewEventHandlerTest {
     private CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
 
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
     private CaseManagementOrderReadyForPartyReviewEventHandler orderReadyForPartyReviewEventHandler;
 
     @Test
     void shouldNotifyRepresentativesOfCMOReadyForPartyReview() {
-        CallbackRequest callbackRequest = callbackRequest();
-        CaseDetails caseDetails = callbackRequest().getCaseDetails();
-        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = caseData();
 
         given(representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(),
             DIGITAL_SERVICE))
@@ -74,16 +64,16 @@ class CaseManagementOrderReadyForPartyReviewEventHandlerTest {
             EMAIL))
             .willReturn(getExpectedEmailRepresentativesForAddingPartiesToCase());
 
-        given(caseManagementOrderEmailContentProvider.buildCMOPartyReviewParameters(caseDetails, DOCUMENT_CONTENTS,
+        given(caseManagementOrderEmailContentProvider.buildCMOPartyReviewParameters(caseData, DOCUMENT_CONTENTS,
             DIGITAL_SERVICE))
             .willReturn((getCMOReadyforReviewByPartiesNotificationParameters(DIGITAL_SERVICE)));
 
-        given(caseManagementOrderEmailContentProvider.buildCMOPartyReviewParameters(caseDetails, DOCUMENT_CONTENTS,
+        given(caseManagementOrderEmailContentProvider.buildCMOPartyReviewParameters(caseData, DOCUMENT_CONTENTS,
             EMAIL))
             .willReturn((getCMOReadyforReviewByPartiesNotificationParameters(EMAIL)));
 
         orderReadyForPartyReviewEventHandler.sendEmailForCaseManagementOrderReadyForPartyReview(
-            new CaseManagementOrderReadyForPartyReviewEvent(callbackRequest, DOCUMENT_CONTENTS));
+            new CaseManagementOrderReadyForPartyReviewEvent(caseData, DOCUMENT_CONTENTS));
 
         verify(notificationService).sendEmail(
             eq(CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE),
