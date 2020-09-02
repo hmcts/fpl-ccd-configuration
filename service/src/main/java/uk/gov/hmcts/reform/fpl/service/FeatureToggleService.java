@@ -57,7 +57,7 @@ public class FeatureToggleService {
 
     public boolean isMigrateToManageOrgWarningPageEnabled(String localAuthorityName) {
         return ldClient.boolVariation("migrate-to-manage-org-warning-page",
-            createLDUser(Map.of("localAuthorityName", LDValue.of(localAuthorityName))),true);
+            createLDUser(Map.of("localAuthorityName", LDValue.of(localAuthorityName))),false);
     }
 
     private LDUser createLDUser() {
