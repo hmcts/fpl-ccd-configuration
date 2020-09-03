@@ -27,6 +27,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocumentBundle",
+    "ListElementCode": "dateTimeUploaded",
+    "FieldType": "DateTime",
+    "ElementLabel": "Date and time received",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentBundle",
     "ListElementCode": "document",
     "FieldType": "Document",
     "ElementLabel": "Upload document",
