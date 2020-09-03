@@ -3,6 +3,9 @@ package uk.gov.hmcts.reform.fpl.model.common;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
+import uk.gov.hmcts.reform.fpl.model.ManageDocumentBundle;
+
+import java.util.List;
 
 @Data
 @Builder(toBuilder = true)
@@ -17,4 +20,5 @@ public class C2DocumentBundle {
     private final String description;
     private final String uploadedDateTime;
     private final String author;
+    private final List<Element<ManageDocumentBundle>> manageDocumentBundle;
 }
