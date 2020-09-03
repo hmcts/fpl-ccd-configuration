@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoutes;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -107,6 +108,7 @@ public class StandardDirectionsOrderController {
                     break;
                 case SERVICE:
                     data.put("pageShow", "SERVICE");
+                    data.put("useServiceRoute", YesNo.YES);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected value: " + sdoRouter);
@@ -258,6 +260,7 @@ public class StandardDirectionsOrderController {
             "dateOfIssue",
             "preparedSDO",
             "pageShow",
+            "useServiceRoute",
             "currentSDO",
             "replacementSDO"
         );
