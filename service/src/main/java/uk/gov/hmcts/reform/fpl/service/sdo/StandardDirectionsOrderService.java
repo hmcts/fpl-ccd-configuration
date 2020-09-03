@@ -13,9 +13,6 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
-
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class StandardDirectionsOrderService {
@@ -30,7 +27,7 @@ public class StandardDirectionsOrderService {
 
         return StandardDirectionOrder.builder()
             .orderStatus(currentOrder.getOrderStatus())
-            .dateOfIssue(formatLocalDateToString(time.now().toLocalDate(), DATE))
+            .dateOfUpload(time.now().toLocalDate())
             .uploader(userInfo.getName())
             .orderDoc(prepareOrderDocument(currentOrder.getOrderDoc(), currentOrder.getOrderStatus()))
             .build();

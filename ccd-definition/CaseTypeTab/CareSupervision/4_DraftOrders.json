@@ -6,7 +6,7 @@
     "TabID": "DraftOrdersTab",
     "TabLabel": "Draft orders",
     "TabDisplayOrder": 4,
-    "CaseFieldID": "standardDirectionOrder",
+    "CaseFieldID": "draftSDOLabel",
     "TabFieldDisplayOrder": 1,
     "FieldShowCondition": "standardDirectionOrder.orderStatus!=\"SEALED\""
   },
@@ -17,8 +17,19 @@
     "TabID": "DraftOrdersTab",
     "TabLabel": "Draft orders",
     "TabDisplayOrder": 4,
-    "CaseFieldID": "draftSDOLinkDraftOrdersTab",
+    "CaseFieldID": "standardDirectionOrder",
     "TabFieldDisplayOrder": 2,
+    "FieldShowCondition": "standardDirectionOrder.orderStatus!=\"SEALED\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DraftOrdersTab",
+    "TabLabel": "Draft orders",
+    "TabDisplayOrder": 4,
+    "CaseFieldID": "draftSDOLinkDraftOrdersTab",
+    "TabFieldDisplayOrder": 3,
     "FieldShowCondition": "standardDirectionOrder!=\"\" AND [STATE]=\"Gatekeeping\""
   },
   {

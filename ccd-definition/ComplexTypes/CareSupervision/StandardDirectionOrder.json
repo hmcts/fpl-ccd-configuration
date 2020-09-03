@@ -55,7 +55,8 @@
     "FieldType": "FixedRadioList",
     "ElementLabel": "Is this the final version?",
     "FieldTypeParameter": "OrderStatus",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "directions=\"DO NOT SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
