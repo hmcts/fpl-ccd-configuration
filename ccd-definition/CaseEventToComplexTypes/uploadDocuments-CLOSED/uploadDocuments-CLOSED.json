@@ -44,7 +44,7 @@
     "ListElementCode": "name",
     "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
-    "EventHintText": "For example. 'Email to say evidence will be late' or 'Email with evidence attached'."
+    "EventHintText": "Give the document a descriptive name. For example. 'Email to say evidence will be late' or 'Email with evidence attached'."
   },
   {
     "LiveFrom": "01/01/2017",
@@ -81,7 +81,7 @@
     "ListElementCode": "name",
     "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
-    "EventHintText": "Give the document a meaningful name, for example form C1000 or C1A."
+    "EventHintText": "Give the document a descriptive name, for example form C1000 or C1A."
   },
   {
     "LiveFrom": "01/01/2017",

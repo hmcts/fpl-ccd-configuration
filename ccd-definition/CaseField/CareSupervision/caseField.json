@@ -1682,7 +1682,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageDocumentsHearingLabel",
     "FieldType": "Text",
-    "Label": "Further evidence documents for:",
+    "Label": "Upload further evidence documents for:",
     "SecurityClassification": "Public"
   },
   {
@@ -1690,7 +1690,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageDocumentsSupportingC2Label",
     "FieldType": "Text",
-    "Label": "C2 documents for:",
+    "Label": "Upload C2 documents for:",
     "SecurityClassification": "Public"
   }
 ]
