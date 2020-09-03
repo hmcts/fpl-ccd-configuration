@@ -163,6 +163,7 @@ public class CaseData {
     private final StandardDirectionOrder standardDirectionOrder;
     private SDORoutes sdoRouter;
     private final DocumentReference preparedSDO;
+    private final DocumentReference replacementSDO;
 
     @NotNull(message = "You need to enter the allocated judge.",
         groups = {SealedSDOGroup.class, HearingBookingDetailsGroup.class})

@@ -16,12 +16,12 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoutes;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.StandardDirectionOrderGenerationService;
+import uk.gov.hmcts.reform.fpl.service.sdo.StandardDirectionsOrderService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 
@@ -43,10 +44,12 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMapping;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -57,6 +60,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelect
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.prepareJudgeFields;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
 
+// TODO: 03/09/2020 refactor logic into sdo service
 @Api
 @RestController
 @RequestMapping("/callback/draft-standard-directions")
@@ -74,24 +78,43 @@ public class StandardDirectionsOrderController {
     private final Time time;
     private final ValidateGroupService validateGroupService;
     private final StandardDirectionsService standardDirectionsService;
+    private final StandardDirectionsOrderService sdoService;
 
     private static final String JUDGE_AND_LEGAL_ADVISOR_KEY = "judgeAndLegalAdvisor";
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        LocalDate dateOfIssue = time.now().toLocalDate();
+        Map<String, Object> data = callbackRequest.getCaseDetails().getData();
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
         StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
+        SDORoutes sdoRouter = caseData.getSdoRouter();
 
-        if (standardDirectionOrder != null && standardDirectionOrder.getDateOfIssue() != null) {
-            dateOfIssue = parseLocalDateFromStringUsingFormat(standardDirectionOrder.getDateOfIssue(), DATE);
+        if (sdoRouter == null || SDORoutes.SERVICE == sdoRouter) {
+            LocalDate dateOfIssue = time.now().toLocalDate();
+
+            if (standardDirectionOrder != null && standardDirectionOrder.getDateOfIssue() != null) {
+                dateOfIssue = parseLocalDateFromStringUsingFormat(standardDirectionOrder.getDateOfIssue(), DATE);
+            }
+
+            data.put("dateOfIssue", dateOfIssue);
         }
 
-        caseDetails.getData().put("dateOfIssue", dateOfIssue);
+        if (sdoRouter != null) {
+            switch (sdoRouter) {
+                case UPLOAD:
+                    data.put("currentSDO", standardDirectionOrder.getOrderDoc());
+                    data.put("pageShow", "UPLOAD");
+                    break;
+                case SERVICE:
+                    data.put("pageShow", "SERVICE");
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + sdoRouter);
+            }
+        }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
+            .data(data)
             .build();
     }
 
@@ -165,10 +188,8 @@ public class StandardDirectionsOrderController {
         Map<String, Object> data = request.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        DocumentReference preparedSDO = caseData.getPreparedSDO();
-
         StandardDirectionOrder order = StandardDirectionOrder.builder()
-            .orderDoc(preparedSDO)
+            .orderDoc(defaultIfNull(caseData.getPreparedSDO(), caseData.getReplacementSDO()))
             .build();
 
         data.put("standardDirectionOrder", order);
@@ -179,59 +200,75 @@ public class StandardDirectionsOrderController {
     }
 
     @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
+    public CallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) throws Exception {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        Map<String, Object> data = caseDetails.getData();
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         List<String> validationErrors = orderValidationService.validate(caseData);
         if (!validationErrors.isEmpty()) {
             return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(caseDetails.getData())
+                .data(data)
                 .errors(validationErrors)
                 .build();
         }
 
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
-            caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge());
+        StandardDirectionOrder order;
+        if (SDORoutes.SERVICE == caseData.getSdoRouter()) {
+            JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
+                caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge());
 
-        removeAllocatedJudgeProperties(judgeAndLegalAdvisor);
+            removeAllocatedJudgeProperties(judgeAndLegalAdvisor);
 
-        //combine all directions from collections
-        List<Element<Direction>> combinedDirections = commonDirectionService.combineAllDirections(caseData);
+            //combine all directions from collections
+            List<Element<Direction>> combinedDirections = commonDirectionService.combineAllDirections(caseData);
 
-        persistHiddenValues(getFirstHearing(caseData.getHearingDetails()), combinedDirections);
+            persistHiddenValues(getFirstHearing(caseData.getHearingDetails()), combinedDirections);
 
-        //place directions with hidden values back into case details
-        Map<DirectionAssignee, List<Element<Direction>>> directions = sortDirectionsByAssignee(combinedDirections);
-        directions.forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
+            //place directions with hidden values back into case details
+            Map<DirectionAssignee, List<Element<Direction>>> directions = sortDirectionsByAssignee(combinedDirections);
+            directions.forEach((key, value) -> data.put(key.getValue(), value));
 
-        StandardDirectionOrder order = StandardDirectionOrder.builder()
-            .directions(commonDirectionService.removeUnnecessaryDirections(combinedDirections))
-            .orderStatus(caseData.getStandardDirectionOrder().getOrderStatus())
-            .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
-            .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
-            .build();
+            order = StandardDirectionOrder.builder()
+                .directions(commonDirectionService.removeUnnecessaryDirections(combinedDirections))
+                .orderStatus(caseData.getStandardDirectionOrder().getOrderStatus())
+                .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
+                .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
+                .build();
 
-        //add sdo to case data for document generation
-        CaseData updated = caseData.toBuilder().standardDirectionOrder(order).build();
+            //add sdo to case data for document generation
+            CaseData updated = caseData.toBuilder().standardDirectionOrder(order).build();
 
-        //generate sdo document
-        DocmosisStandardDirectionOrder templateData = standardDirectionOrderGenerationService.getTemplateData(updated);
-        Document document = documentService.getDocumentFromDocmosisOrderTemplate(templateData, SDO);
+            //generate sdo document
+            DocmosisStandardDirectionOrder templateData = standardDirectionOrderGenerationService.getTemplateData(
+                updated);
+            Document document = documentService.getDocumentFromDocmosisOrderTemplate(templateData, SDO);
 
-        //add document to order
-        order.setOrderDocReferenceFromDocument(document);
+            //add document to order
+            order.setOrderDocReferenceFromDocument(document);
+        } else {
+            StandardDirectionOrder currentOrder = caseData.getStandardDirectionOrder();
 
-        caseDetails.getData().put("standardDirectionOrder", order);
-        caseDetails.getData().remove(JUDGE_AND_LEGAL_ADVISOR_KEY);
-        caseDetails.getData().remove("dateOfIssue");
+            order = sdoService.buildOrderFromUpload(currentOrder);
+        }
+
+        data.put("standardDirectionOrder", order);
+        removeTemporaryFields(caseDetails,
+            JUDGE_AND_LEGAL_ADVISOR_KEY,
+            "dateOfIssue",
+            "preparedSDO",
+            "pageShow",
+            "currentSDO",
+            "replacementSDO"
+        );
 
         if (order.getOrderStatus() == SEALED) {
-            caseDetails.getData().put("state", State.CASE_MANAGEMENT);
+            data.put("state", State.CASE_MANAGEMENT);
+            removeTemporaryFields(caseDetails, "sdoRouter");
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
+            .data(data)
             .build();
     }
 
