@@ -40,7 +40,7 @@ public class CaseInitiationController {
         Map<String, Object> data = caseDetails.getData();
 
         if (featureToggleService.isMigrateToManageOrgWarningPageEnabled(localAuthorityName)) {
-            data.put("showManageOrgWarning", "YES");
+            data.put("pageShow", "YES");
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()

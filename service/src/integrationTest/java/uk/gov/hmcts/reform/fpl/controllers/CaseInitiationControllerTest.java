@@ -246,7 +246,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
-        assertThat(callbackResponse.getData().get("showManageOrgWarning")).isEqualTo("YES");
+        assertThat(callbackResponse.getData().get("pageShow")).isEqualTo("YES");
     }
 
     @Test
@@ -259,7 +259,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
-        assertThat(callbackResponse.getData().get("showManageOrgWarning")).isNotEqualTo("YES");
+        assertThat(callbackResponse.getData().get("pageShow")).isNotEqualTo("YES");
     }
 
     private void verifyGrantCaseRoleAttempts(List<String> users, int attempts) {
