@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.interfaces.IssuableOrder;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
@@ -18,6 +19,8 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 public class StandardDirectionOrder extends OrderForHearing implements IssuableOrder {
     private final OrderStatus orderStatus;
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
+    private final LocalDate dateUploaded;
+    private final String uploader;
 
     @Builder
     public StandardDirectionOrder(String hearingDate,
@@ -25,10 +28,13 @@ public class StandardDirectionOrder extends OrderForHearing implements IssuableO
                                   List<Element<Direction>> directions,
                                   DocumentReference orderDoc,
                                   OrderStatus orderStatus,
-                                  JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+                                  JudgeAndLegalAdvisor judgeAndLegalAdvisor,
+                                  LocalDate dateUploaded, String uploader) {
         super(hearingDate, dateOfIssue, directions, orderDoc);
         this.orderStatus = orderStatus;
         this.judgeAndLegalAdvisor = judgeAndLegalAdvisor;
+        this.dateUploaded = dateUploaded;
+        this.uploader = uploader;
     }
 
     @JsonIgnore
