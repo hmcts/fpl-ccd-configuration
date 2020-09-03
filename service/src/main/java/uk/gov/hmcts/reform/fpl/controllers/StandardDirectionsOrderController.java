@@ -14,12 +14,12 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
-import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.Order;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
@@ -59,7 +59,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAll
 @RestController
 @RequestMapping("/callback/draft-standard-directions")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class DraftOrdersController {
+public class StandardDirectionsOrderController {
     private final ObjectMapper mapper;
     private final DocumentService documentService;
     private final StandardDirectionOrderGenerationService standardDirectionOrderGenerationService;
@@ -80,7 +80,7 @@ public class DraftOrdersController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         LocalDate dateOfIssue = time.now().toLocalDate();
-        Order standardDirectionOrder = caseData.getStandardDirectionOrder();
+        StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
 
         if (standardDirectionOrder != null && standardDirectionOrder.getDateOfIssue() != null) {
             dateOfIssue = parseLocalDateFromStringUsingFormat(standardDirectionOrder.getDateOfIssue(), DATE);
@@ -112,7 +112,7 @@ public class DraftOrdersController {
         Stream.of(DirectionAssignee.values()).forEach(assignee ->
             caseDetails.getData().put(assignee.toHearingDateField(), hearingDate));
 
-        Order standardDirectionOrder = caseData.getStandardDirectionOrder();
+        StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
 
         if (standardDirectionOrder != null) {
             caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, standardDirectionOrder.getJudgeAndLegalAdvisor());
@@ -135,7 +135,7 @@ public class DraftOrdersController {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(caseData.getJudgeAndLegalAdvisor(),
             caseData.getAllocatedJudge());
 
-        Order order = Order.builder()
+        StandardDirectionOrder order = StandardDirectionOrder.builder()
             .directions(commonDirectionService.combineAllDirections(caseData))
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
             .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
@@ -167,7 +167,7 @@ public class DraftOrdersController {
         if (!validationErrors.isEmpty()) {
             return AboutToStartOrSubmitCallbackResponse.builder()
                 .data(caseDetails.getData())
-                .errors(orderValidationService.validate(caseData))
+                .errors(validationErrors)
                 .build();
         }
 
@@ -185,7 +185,7 @@ public class DraftOrdersController {
         Map<DirectionAssignee, List<Element<Direction>>> directions = sortDirectionsByAssignee(combinedDirections);
         directions.forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
 
-        Order order = Order.builder()
+        StandardDirectionOrder order = StandardDirectionOrder.builder()
             .directions(commonDirectionService.removeUnnecessaryDirections(combinedDirections))
             .orderStatus(caseData.getStandardDirectionOrder().getOrderStatus())
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
@@ -206,6 +206,10 @@ public class DraftOrdersController {
         caseDetails.getData().remove(JUDGE_AND_LEGAL_ADVISOR_KEY);
         caseDetails.getData().remove("dateOfIssue");
 
+        if (order.getOrderStatus() == SEALED) {
+            caseDetails.getData().put("state", State.CASE_MANAGEMENT);
+        }
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
@@ -215,8 +219,8 @@ public class DraftOrdersController {
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
 
-        Order standardDirectionOrder = caseData.getStandardDirectionOrder();
-        if (standardDirectionOrder.getOrderStatus() != OrderStatus.SEALED) {
+        StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
+        if (standardDirectionOrder.getOrderStatus() != SEALED) {
             return;
         }
 
@@ -224,19 +228,10 @@ public class DraftOrdersController {
             callbackRequest.getCaseDetails().getJurisdiction(),
             callbackRequest.getCaseDetails().getCaseTypeId(),
             callbackRequest.getCaseDetails().getId(),
-            "internal-changeState-Gatekeeping->PREPARE_FOR_HEARING"
+            "internal-change-SEND_DOCUMENT",
+            Map.of("documentToBeSent", standardDirectionOrder.getOrderDoc())
         );
-
-        if (standardDirectionOrder.getOrderStatus() == SEALED) {
-            coreCaseDataService.triggerEvent(
-                callbackRequest.getCaseDetails().getJurisdiction(),
-                callbackRequest.getCaseDetails().getCaseTypeId(),
-                callbackRequest.getCaseDetails().getId(),
-                "internal-change-SEND_DOCUMENT",
-                Map.of("documentToBeSent", standardDirectionOrder.getOrderDoc())
-            );
-            applicationEventPublisher.publishEvent(new StandardDirectionsOrderIssuedEvent(callbackRequest));
-        }
+        applicationEventPublisher.publishEvent(new StandardDirectionsOrderIssuedEvent(callbackRequest));
     }
 
     private JudgeAndLegalAdvisor prepareJudge(CaseData caseData) {
