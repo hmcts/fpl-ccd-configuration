@@ -44,7 +44,6 @@ import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETA
 @OverrideAutoConfiguration(enabled = true)
 public class StandardDirectionsOrderControllerSubmittedTest extends AbstractControllerTest {
     private static final Long CASE_ID = 1L;
-    private static final String CASE_MANAGEMENT_EVENT = "internal-changeState-Gatekeeping->PREPARE_FOR_HEARING";
     private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
     private static final DocumentReference DOCUMENT_REFERENCE = TestDataHelper.testDocumentReference();
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
@@ -104,20 +103,6 @@ public class StandardDirectionsOrderControllerSubmittedTest extends AbstractCont
             CASE_ID,
             SEND_DOCUMENT_EVENT,
             Map.of("documentToBeSent", DOCUMENT_REFERENCE));
-    }
-
-    @Test
-    void shouldTriggerStateChangeWhenOrderIsMarkedAsFinal() {
-        postSubmittedEvent(buildCallbackRequest(SEALED));
-
-        verify(coreCaseDataService).triggerEvent(JURISDICTION, CASE_TYPE, CASE_ID, CASE_MANAGEMENT_EVENT);
-    }
-
-    @Test
-    void shouldNotTriggerStateChangeWhenOrderIsStillInDraftState() {
-        postSubmittedEvent(buildCallbackRequest(DRAFT));
-
-        verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), eq(CASE_MANAGEMENT_EVENT));
     }
 
     private Map<String, Object> cafcassParameters() {

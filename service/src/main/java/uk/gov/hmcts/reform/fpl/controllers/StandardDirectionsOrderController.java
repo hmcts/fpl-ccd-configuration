@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
-import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -167,7 +167,7 @@ public class StandardDirectionsOrderController {
         if (!validationErrors.isEmpty()) {
             return AboutToStartOrSubmitCallbackResponse.builder()
                 .data(caseDetails.getData())
-                .errors(orderValidationService.validate(caseData))
+                .errors(validationErrors)
                 .build();
         }
 
@@ -206,6 +206,10 @@ public class StandardDirectionsOrderController {
         caseDetails.getData().remove(JUDGE_AND_LEGAL_ADVISOR_KEY);
         caseDetails.getData().remove("dateOfIssue");
 
+        if (order.getOrderStatus() == SEALED) {
+            caseDetails.getData().put("state", State.CASE_MANAGEMENT);
+        }
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
@@ -216,7 +220,7 @@ public class StandardDirectionsOrderController {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
 
         StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
-        if (standardDirectionOrder.getOrderStatus() != OrderStatus.SEALED) {
+        if (standardDirectionOrder.getOrderStatus() != SEALED) {
             return;
         }
 
@@ -224,19 +228,10 @@ public class StandardDirectionsOrderController {
             callbackRequest.getCaseDetails().getJurisdiction(),
             callbackRequest.getCaseDetails().getCaseTypeId(),
             callbackRequest.getCaseDetails().getId(),
-            "internal-changeState-Gatekeeping->PREPARE_FOR_HEARING"
+            "internal-change-SEND_DOCUMENT",
+            Map.of("documentToBeSent", standardDirectionOrder.getOrderDoc())
         );
-
-        if (standardDirectionOrder.getOrderStatus() == SEALED) {
-            coreCaseDataService.triggerEvent(
-                callbackRequest.getCaseDetails().getJurisdiction(),
-                callbackRequest.getCaseDetails().getCaseTypeId(),
-                callbackRequest.getCaseDetails().getId(),
-                "internal-change-SEND_DOCUMENT",
-                Map.of("documentToBeSent", standardDirectionOrder.getOrderDoc())
-            );
-            applicationEventPublisher.publishEvent(new StandardDirectionsOrderIssuedEvent(callbackRequest));
-        }
+        applicationEventPublisher.publishEvent(new StandardDirectionsOrderIssuedEvent(callbackRequest));
     }
 
     private JudgeAndLegalAdvisor prepareJudge(CaseData caseData) {
