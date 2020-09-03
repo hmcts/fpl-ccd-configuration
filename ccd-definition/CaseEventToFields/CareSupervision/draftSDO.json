@@ -8,7 +8,20 @@
     "DisplayContext": "MANDATORY",
     "PageID": "routing",
     "PageDisplayOrder": 1,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "PageShowCondition": "pageShow=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "pageShow",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "PageID": "routing",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "sdoRouter=\"DO NOT SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -261,8 +274,32 @@
     "PageID": "orderUpload",
     "PageDisplayOrder": 10,
     "PageColumnNumber": 1,
-    "PageShowCondition": "sdoRouter=\"UPLOAD\"",
+    "PageShowCondition": "sdoRouter=\"UPLOAD\" AND pageShow=\"\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/draft-standard-directions/upload-route/mid-event"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "currentSDO",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": "orderUpload2",
+    "PageDisplayOrder": 11,
+    "PageColumnNumber": 1,
+    "PageShowCondition": "sdoRouter=\"UPLOAD\" AND pageShow=\"UPLOAD\"",
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/draft-standard-directions/upload-route/mid-event"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "replacementSDO",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL",
+    "PageID": "orderUpload2",
+    "PageDisplayOrder": 11,
+    "PageColumnNumber": 1
   },
   {
     "LiveFrom": "01/01/2017",
@@ -273,7 +310,7 @@
     "DisplayContext": "COMPLEX",
     "PageID": "documentReview",
     "CaseEventFieldLabel": " ",
-    "PageDisplayOrder": 11,
+    "PageDisplayOrder": 12,
     "PageColumnNumber": 1
   }
 ]
