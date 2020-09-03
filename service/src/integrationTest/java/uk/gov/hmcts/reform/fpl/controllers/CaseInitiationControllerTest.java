@@ -39,6 +39,7 @@ import static feign.Request.HttpMethod.GET;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -76,6 +77,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
     private static final String CASE_ID = "12345";
     private static final Set<String> CASE_ROLES = Set.of("[LASOLICITOR]", "[CREATOR]");
+    private static final String PAGE_SHOW = "pageShow";
 
     @MockBean
     private LocalAuthorityUserLookupConfiguration localAuthorityUserLookupConfiguration;
@@ -237,7 +239,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldSetShowManageOrgWarningToYesWhenToggleIsEnabled() {
+    void shouldSetPageShowToYesWhenToggleIsEnabled() {
         given(featureToggleService.isMigrateToManageOrgWarningPageEnabled(anyString())).willReturn(true);
 
         CaseDetails caseDetails = CaseDetails.builder()
@@ -246,11 +248,11 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
-        assertThat(callbackResponse.getData().get("pageShow")).isEqualTo("YES");
+        assertThat(callbackResponse.getData().get(PAGE_SHOW)).isEqualTo("YES");
     }
 
     @Test
-    void shouldNotSetShowManageOrgWarningWhenToggleIsDisabled() {
+    void shouldNotSetPageShowWhenToggleIsDisabled() {
         given(featureToggleService.isMigrateToManageOrgWarningPageEnabled(anyString())).willReturn(false);
 
         CaseDetails caseDetails = CaseDetails.builder()
@@ -259,7 +261,20 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
-        assertThat(callbackResponse.getData().get("pageShow")).isNotEqualTo("YES");
+        assertThat(callbackResponse.getData().get(PAGE_SHOW)).isNotEqualTo("YES");
+    }
+
+    @Test
+    void shouldRemovePageShowOnAboutToSubmit() {
+        given(featureToggleService.isMigrateToManageOrgWarningPageEnabled(anyString())).willReturn(false);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("caseName", "title", PAGE_SHOW, "YES"))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
+
+        assertNull(callbackResponse.getData().get(PAGE_SHOW));
     }
 
     private void verifyGrantCaseRoleAttempts(List<String> users, int attempts) {
