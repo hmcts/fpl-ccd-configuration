@@ -4,7 +4,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "draftSDOLinkOrdersTab",
     "FieldType": "Label",
-    "Label": "[Add the gatekeeping order](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/draftSDO)\nThis is known as the initial or standard directions order",
+    "Label": "[Add the gatekeeping order](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/draftSDO)\n\nThis is known as the initial or standard directions order",
     "SecurityClassification": "Public"
   },
   {
