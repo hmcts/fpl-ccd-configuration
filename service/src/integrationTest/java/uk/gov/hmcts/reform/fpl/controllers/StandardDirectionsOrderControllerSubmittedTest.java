@@ -13,9 +13,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -40,11 +40,10 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(DraftOrdersController.class)
+@WebMvcTest(StandardDirectionsOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class DraftOrdersControllerSubmittedTest extends AbstractControllerTest {
+public class StandardDirectionsOrderControllerSubmittedTest extends AbstractControllerTest {
     private static final Long CASE_ID = 1L;
-    private static final String CASE_MANAGEMENT_EVENT = "internal-changeState-Gatekeeping->PREPARE_FOR_HEARING";
     private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
     private static final DocumentReference DOCUMENT_REFERENCE = TestDataHelper.testDocumentReference();
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
@@ -58,7 +57,7 @@ public class DraftOrdersControllerSubmittedTest extends AbstractControllerTest {
     @MockBean
     private CoreCaseDataService coreCaseDataService;
 
-    DraftOrdersControllerSubmittedTest() {
+    StandardDirectionsOrderControllerSubmittedTest() {
         super("draft-standard-directions");
     }
 
@@ -106,20 +105,6 @@ public class DraftOrdersControllerSubmittedTest extends AbstractControllerTest {
             Map.of("documentToBeSent", DOCUMENT_REFERENCE));
     }
 
-    @Test
-    void shouldTriggerStateChangeWhenOrderIsMarkedAsFinal() {
-        postSubmittedEvent(buildCallbackRequest(SEALED));
-
-        verify(coreCaseDataService).triggerEvent(JURISDICTION, CASE_TYPE, CASE_ID, CASE_MANAGEMENT_EVENT);
-    }
-
-    @Test
-    void shouldNotTriggerStateChangeWhenOrderIsStillInDraftState() {
-        postSubmittedEvent(buildCallbackRequest(DRAFT));
-
-        verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), eq(CASE_MANAGEMENT_EVENT));
-    }
-
     private Map<String, Object> cafcassParameters() {
         return ImmutableMap.<String, Object>builder()
             .put("title", "cafcass")
@@ -132,7 +117,7 @@ public class DraftOrdersControllerSubmittedTest extends AbstractControllerTest {
     }
 
     private CallbackRequest buildCallbackRequest(OrderStatus status) {
-        Order order = Order.builder()
+        StandardDirectionOrder order = StandardDirectionOrder.builder()
             .orderStatus(status)
             .orderDoc(DOCUMENT_REFERENCE)
             .build();

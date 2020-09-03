@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
-import uk.gov.hmcts.reform.fpl.model.Order;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
@@ -36,7 +36,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(DraftOrdersController.class)
+@WebMvcTest(ComplyWithDirectionsController.class)
 @OverrideAutoConfiguration(enabled = true)
 class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
 
@@ -58,7 +58,7 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
             .build()));
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("standardDirectionOrder", Order.builder().directions(directions).build()))
+            .data(Map.of("standardDirectionOrder", StandardDirectionOrder.builder().directions(directions).build()))
             .build();
 
         CaseData caseData = extractCaseData(postAboutToStartEvent(caseDetails));
@@ -79,7 +79,7 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
     @Test
     void aboutToStartCallbackShouldAddAllPartiesDirectionsIntoSeparateRoleCollections() {
         List<Direction> directions = directionsForAllRoles();
-        Order sdo = Order.builder().directions(buildDirections(directions)).build();
+        StandardDirectionOrder sdo = StandardDirectionOrder.builder().directions(buildDirections(directions)).build();
 
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
@@ -95,7 +95,7 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
     @Test
     void aboutToStartCallbackShouldReturnAllPartiesDirectionsWhenNoSpecificRoleDirections() {
         Direction direction = Direction.builder().assignee(ALL_PARTIES).build();
-        Order sdo = Order.builder().directions(buildDirections(direction)).build();
+        StandardDirectionOrder sdo = StandardDirectionOrder.builder().directions(buildDirections(direction)).build();
 
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
@@ -117,7 +117,7 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
     void aboutToSubmitShouldAddResponseToStandardDirectionOrderWhenEmptyServedCaseManagementOrders() {
         UUID uuid = randomUUID();
         List<Element<Direction>> directions = directions(uuid);
-        Order sdo = order(uuid);
+        StandardDirectionOrder sdo = order(uuid);
 
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
@@ -136,7 +136,7 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
     void aboutToSubmitShouldAddResponseToCaseManagementOrderWhenPopulatedServedCaseManagementOrders() {
         UUID uuid = randomUUID();
         List<Element<Direction>> directions = directions(uuid);
-        Order sdo = order(uuid);
+        StandardDirectionOrder sdo = order(uuid);
 
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
@@ -162,8 +162,8 @@ class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
             .build());
     }
 
-    private Order order(UUID uuid) {
-        return Order.builder()
+    private StandardDirectionOrder order(UUID uuid) {
+        return StandardDirectionOrder.builder()
             .directions(List.of(element(uuid, Direction.builder()
                 .directionType("example direction")
                 .build())))
