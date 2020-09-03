@@ -19,7 +19,7 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 public class StandardDirectionOrder extends OrderForHearing implements IssuableOrder {
     private final OrderStatus orderStatus;
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
-    private final LocalDate dateUploaded;
+    private final LocalDate dateOfUpload;
     private final String uploader;
 
     @Builder
@@ -29,11 +29,12 @@ public class StandardDirectionOrder extends OrderForHearing implements IssuableO
                                   DocumentReference orderDoc,
                                   OrderStatus orderStatus,
                                   JudgeAndLegalAdvisor judgeAndLegalAdvisor,
-                                  LocalDate dateUploaded, String uploader) {
+                                  LocalDate dateOfUpload,
+                                  String uploader) {
         super(hearingDate, dateOfIssue, directions, orderDoc);
         this.orderStatus = orderStatus;
         this.judgeAndLegalAdvisor = judgeAndLegalAdvisor;
-        this.dateUploaded = dateUploaded;
+        this.dateOfUpload = dateOfUpload;
         this.uploader = uploader;
     }
 
