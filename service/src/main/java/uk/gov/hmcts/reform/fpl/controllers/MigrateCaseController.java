@@ -33,18 +33,20 @@ public class MigrateCaseController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<Child>> children = caseData.getChildren1();
+        if (caseData.getFamilyManCaseNumber().equals("SA20C50019")) {
+            List<Element<Child>> children = caseData.getChildren1();
 
-        for (Element<Child> child : children) {
-            child.getValue().setFinalOrderIssued(null);
-            child.getValue().setFinalOrderIssuedType(null);
+            for (Element<Child> child : children) {
+                child.getValue().setFinalOrderIssued(null);
+                child.getValue().setFinalOrderIssuedType(null);
+            }
+
+            caseData.getOrderCollection().remove(1);
+            data.put("orderCollection", caseData.getOrderCollection());
+            data.put("children1", children);
+            data.put("state", State.CASE_MANAGEMENT.getValue());
+            data.remove("closeCaseTabField");
         }
-
-        caseData.getOrderCollection().remove(1);
-        data.put("orderCollection", caseData.getOrderCollection());
-        data.put("children1", children);
-        data.put("state", State.CASE_MANAGEMENT.getValue());
-        data.remove("closeCaseTabField");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
