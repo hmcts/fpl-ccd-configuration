@@ -114,7 +114,7 @@ class CaseDataTest {
         private CaseData buildCaseData(List<Element<Direction>> sdoDirections,
                                        List<Element<CaseManagementOrder>> cmoDirections) {
             return CaseData.builder()
-                .standardDirectionOrder(Order.builder().directions(sdoDirections).build())
+                .standardDirectionOrder(StandardDirectionOrder.builder().directions(sdoDirections).build())
                 .servedCaseManagementOrders(cmoDirections)
                 .build();
         }

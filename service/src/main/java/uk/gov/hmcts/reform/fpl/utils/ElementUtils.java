@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
@@ -95,4 +96,11 @@ public class ElementUtils {
         return defaultIfNull(collection, Collections.emptyList());
     }
 
+    public static UUID getDynamicListValueCode(Object dynamicList, ObjectMapper mapper) {
+        if (dynamicList instanceof String) {
+            return UUID.fromString((String) dynamicList);
+        }
+
+        return mapper.convertValue(dynamicList, DynamicList.class).getValueCode();
+    }
 }
