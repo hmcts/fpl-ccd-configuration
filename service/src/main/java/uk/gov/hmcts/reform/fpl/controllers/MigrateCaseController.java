@@ -19,6 +19,8 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+
 @Api
 @RestController
 @RequestMapping("/callback/migrate-case")
@@ -33,7 +35,7 @@ public class MigrateCaseController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (caseData.getFamilyManCaseNumber().equals("SA20C50019")) {
+        if (defaultIfNull(caseData.getFamilyManCaseNumber(), "").equals("SA20C50019")) {
             List<Element<Child>> children = caseData.getChildren1();
 
             for (Element<Child> child : children) {
