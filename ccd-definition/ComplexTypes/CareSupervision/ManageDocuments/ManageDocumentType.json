@@ -16,23 +16,5 @@
     "ElementLabel": "Does the evidence document relate to a hearing?",
     "SecurityClassification": "Public",
     "FieldShowCondition": "type=\"FURTHER_EVIDENCE_DOCUMENTS\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageDocumentType",
-    "ListElementCode": "hearingList",
-    "FieldType": "DynamicList",
-    "ElementLabel": "Which hearing?",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "relatedToHearing=\"Yes\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageDocumentType",
-    "ListElementCode": "supportingC2List",
-    "FieldType": "DynamicList",
-    "ElementLabel": "Choose the relevant C2 application for this document",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "type=\"C2\""
   }
 ]
