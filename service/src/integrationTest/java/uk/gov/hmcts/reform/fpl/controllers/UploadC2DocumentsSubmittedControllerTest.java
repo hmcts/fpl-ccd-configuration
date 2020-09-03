@@ -35,6 +35,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA;
@@ -125,7 +126,13 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
 
     @Test
     void submittedEventShouldNotifyAdminWhenC2IsNotUsingPbaPayment() throws Exception {
-        postSubmittedEvent(buildCaseDetails(NO, NO));
+        final Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
+            .putAll(buildCommonNotificationParameters())
+            .putAll(buildC2DocumentBundle(NO))
+            .put("displayAmountToPay", YES.getValue())
+            .build();
+
+        postSubmittedEvent(createCase(caseData));
 
         verify(notificationClient).sendEmail(
             C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
@@ -140,6 +147,8 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
             expectedPbaPaymentNotTakenNotificationParams(),
             NOTIFICATION_REFERENCE
         );
+
+        verifyNoInteractions(paymentService);
     }
 
     @Test
