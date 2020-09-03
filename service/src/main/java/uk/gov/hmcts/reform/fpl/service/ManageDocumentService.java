@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +20,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @Service
 public class ManageDocumentService {
     private ObjectMapper mapper;
+    private Time time;
 
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_KEY = "correspondenceDocuments";
     public static final String FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY = "furtherEvidenceDocuments";
@@ -26,20 +28,21 @@ public class ManageDocumentService {
     public static final String MANAGE_DOCUMENTS_HEARING_LABEL_KEY = "manageDocumentsHearingLabel";
 
     @Autowired
-    public ManageDocumentService(ObjectMapper objectMapper) {
+    public ManageDocumentService(ObjectMapper objectMapper, Time time) {
         this.mapper = objectMapper;
+        this.time = time;
     }
 
-    public void populateManageDocumentFields(CaseDetails caseDetails) {
+    public void initialiseManageDocumentBundleCollectionManageDocumentFields(CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         switch (caseData.getManageDocument().getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
-                populateFurtherEvidenceFields(caseDetails);
-                populateManageDocumentBundleCollection(caseDetails, FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY);
+                initialiseFurtherEvidenceFields(caseDetails);
+                initialiseManageDocumentBundleCollection(caseDetails, FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY);
                 break;
             case CORRESPONDENCE:
-                populateManageDocumentBundleCollection(caseDetails, CORRESPONDING_DOCUMENTS_COLLECTION_KEY);
+                initialiseManageDocumentBundleCollection(caseDetails, CORRESPONDING_DOCUMENTS_COLLECTION_KEY);
                 break;
             case C2:
                 // TODO
@@ -48,7 +51,7 @@ public class ManageDocumentService {
         }
     }
 
-    private void populateFurtherEvidenceFields(CaseDetails caseDetails) {
+    private void initialiseFurtherEvidenceFields(CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (caseData.getManageDocument().isDocumentRelatedToHearing()) {
@@ -62,11 +65,11 @@ public class ManageDocumentService {
         }
     }
 
-    private void populateManageDocumentBundleCollection(CaseDetails caseDetails, String collectionKey) {
+    private void initialiseManageDocumentBundleCollection(CaseDetails caseDetails, String collectionKey) {
         if (caseDetails.getData().get(collectionKey) == null) {
-            List<Element<ManageDocumentBundle>> emptyDocumentBundle
-                = wrapElements(ManageDocumentBundle.builder().build());
-            caseDetails.getData().put(collectionKey, emptyDocumentBundle);
+            List<Element<ManageDocumentBundle>> documentBundle = wrapElements(ManageDocumentBundle.builder()
+                .build());
+            caseDetails.getData().put(collectionKey, documentBundle);
         }
     }
 }

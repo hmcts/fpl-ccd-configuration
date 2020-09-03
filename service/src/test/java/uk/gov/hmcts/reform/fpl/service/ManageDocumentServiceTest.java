@@ -58,7 +58,7 @@ public class ManageDocumentServiceTest {
 
     @BeforeEach
     void before() {
-        manageDocumentService = new ManageDocumentService(mapper);
+        manageDocumentService = new ManageDocumentService(mapper, time);
         futureDate = time.now().plusDays(1);
     }
 
@@ -79,7 +79,7 @@ public class ManageDocumentServiceTest {
             MANAGE_DOCUMENT_KEY, buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue())));
 
         CaseDetails caseDetails = CaseDetails.builder().data(data).build();
-        manageDocumentService.populateManageDocumentFields(caseDetails);
+        manageDocumentService.initialiseManageDocumentBundleCollectionManageDocumentFields(caseDetails);
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         DynamicList expectedDynamicList = ElementUtils
@@ -98,7 +98,7 @@ public class ManageDocumentServiceTest {
             MANAGE_DOCUMENT_KEY, buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, NO.getValue())));
 
         CaseDetails caseDetails = CaseDetails.builder().data(data).build();
-        manageDocumentService.populateManageDocumentFields(caseDetails);
+        manageDocumentService.initialiseManageDocumentBundleCollectionManageDocumentFields(caseDetails);
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         assertThat(caseDetails.getData().get(MANAGE_DOCUMENTS_HEARING_LIST_KEY)).isNull();
@@ -115,7 +115,7 @@ public class ManageDocumentServiceTest {
             MANAGE_DOCUMENT_KEY, buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, NO.getValue())));
 
         CaseDetails caseDetails = CaseDetails.builder().data(data).build();
-        manageDocumentService.populateManageDocumentFields(caseDetails);
+        manageDocumentService.initialiseManageDocumentBundleCollectionManageDocumentFields(caseDetails);
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         assertThat(caseDetails.getData().get(MANAGE_DOCUMENTS_HEARING_LIST_KEY)).isNull();
@@ -129,7 +129,7 @@ public class ManageDocumentServiceTest {
             MANAGE_DOCUMENT_KEY, buildManagementDocument(CORRESPONDENCE)));
 
         CaseDetails caseDetails = CaseDetails.builder().data(data).build();
-        manageDocumentService.populateManageDocumentFields(caseDetails);
+        manageDocumentService.initialiseManageDocumentBundleCollectionManageDocumentFields(caseDetails);
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         assertThat(caseData.getCorrespondenceDocuments()).isNotEmpty();
@@ -144,14 +144,16 @@ public class ManageDocumentServiceTest {
             MANAGE_DOCUMENT_KEY, buildManagementDocument(CORRESPONDENCE)));
 
         CaseDetails caseDetails = CaseDetails.builder().data(data).build();
-        manageDocumentService.populateManageDocumentFields(caseDetails);
+        manageDocumentService.initialiseManageDocumentBundleCollectionManageDocumentFields(caseDetails);
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         assertThat(caseData.getCorrespondenceDocuments()).isEqualTo(correspondingDocuments);
     }
 
     private List<Element<ManageDocumentBundle>> buildManagementDocumentBundle() {
-        return wrapElements(ManageDocumentBundle.builder().name("test").build());
+        return wrapElements(ManageDocumentBundle.builder()
+            .name("test")
+            .build());
     }
 
     private ManageDocument buildManagementDocument(ManageDocumentType type) {

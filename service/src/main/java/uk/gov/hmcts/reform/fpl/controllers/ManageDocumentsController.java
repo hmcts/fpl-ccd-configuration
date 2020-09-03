@@ -40,7 +40,7 @@ public class ManageDocumentsController {
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        manageDocumentService.populateManageDocumentFields(caseDetails);
+        manageDocumentService.initialiseManageDocumentBundleCollectionManageDocumentFields(caseDetails);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
