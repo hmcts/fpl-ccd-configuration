@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
@@ -628,6 +629,45 @@ class CaseDataTest {
             Optional<HearingBooking> nextHearingBooking = caseData.getNextHearingAfterCmo(cmoID);
 
             assertThat(nextHearingBooking).isNotPresent();
+        }
+    }
+
+    @Nested
+    class BuildDynamicHearingList {
+        @Test
+        void shouldBuildDynamicHearingListFromHearingDetails() {
+            List<Element<HearingBooking>> hearingBookings = List.of(
+                element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))),
+                element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3))),
+                element(createHearingBooking(futureDate, futureDate.plusDays(1))));
+
+            CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
+            DynamicList expectedDynamicList = ElementUtils
+                .asDynamicList(hearingBookings, null, hearingBooking -> hearingBooking.toLabel(DATE));
+
+            assertThat(caseData.buildDynamicHearingList())
+                .isEqualTo(expectedDynamicList);
+        }
+
+        @Test
+        void shouldBuildDynamicHearingListWithSelectorPropertyFromHearingDetails() {
+            UUID selectHearingId = randomUUID();
+
+            List<Element<HearingBooking>> hearingBookings = List.of(
+                element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))),
+                element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3))),
+                element(createHearingBooking(futureDate, futureDate.plusDays(1))),
+                Element.<HearingBooking>builder()
+                    .id(selectHearingId)
+                    .value(createHearingBooking(futureDate, futureDate.plusDays(3)))
+                    .build());
+
+            CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
+            DynamicList expectedDynamicList = ElementUtils
+                .asDynamicList(hearingBookings, selectHearingId, hearingBooking -> hearingBooking.toLabel(DATE));
+
+            assertThat(caseData.buildDynamicHearingList(selectHearingId))
+                .isEqualTo(expectedDynamicList);
         }
     }
 

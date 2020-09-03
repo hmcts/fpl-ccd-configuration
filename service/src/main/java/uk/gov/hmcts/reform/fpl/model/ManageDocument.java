@@ -1,15 +1,20 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentType;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 public class ManageDocument {
     private final ManageDocumentType type;
     private final String relatedToHearing;
-    private DynamicList hearingList;
-    private DynamicList supportingC2List;
+
+    @JsonIgnore
+    public boolean isDocumentRelatedToHearing() {
+        return YES.getValue().equals(relatedToHearing);
+    }
 }

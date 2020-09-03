@@ -651,18 +651,11 @@ public class CaseData {
             .min(comparing(HearingBooking::getStartDate));
     }
 
-    @JsonIgnore
     public DynamicList buildDynamicHearingList() {
-        return buildDynamicHearingList(getHearingDetails(), null);
+        return buildDynamicHearingList(null);
     }
 
-    @JsonIgnore
-    public DynamicList buildDynamicHearingList(List<Element<HearingBooking>> hearings) {
-        return buildDynamicHearingList(hearings, null);
-    }
-
-    @JsonIgnore
-    public DynamicList buildDynamicHearingList(List<Element<HearingBooking>> hearings, UUID selected) {
-        return asDynamicList(hearings, selected, hearing -> hearing.toLabel(DATE));
+    public DynamicList buildDynamicHearingList(UUID selected) {
+        return asDynamicList(getHearingDetails(), selected, hearing -> hearing.toLabel(DATE));
     }
 }

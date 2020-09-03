@@ -27,7 +27,20 @@ public class ManageDocumentsController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData().put("manageDocument", manageDocumentService.buildInitialManageDocument(caseData));
+        caseDetails.getData().put("manageDocumentsHearingList", caseData.buildDynamicHearingList());
+
+        // TODO
+        // Populate supporting list
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetails.getData())
+            .build();
+    }
+
+    @PostMapping("/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
+        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        manageDocumentService.populateManageDocumentFields(caseDetails);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
