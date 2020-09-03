@@ -77,7 +77,7 @@ class OrganisationServiceTest {
     @Test
     void shouldReturnUsersFromLocalAuthorityMappingWhenTheyDoNotExistInRefData() {
         when(organisationApi.findUsersByOrganisation(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, Status.ACTIVE, false))
-            .thenThrow(new FeignException.NotFound(EMPTY, REQUEST, new byte[] {}));
+            .thenThrow(new FeignException.NotFound(EMPTY, REQUEST, new byte[]{}));
 
         Set<String> usersIdsWithinSaLa = organisationService.findUserIdsInSameOrganisation("SA");
 
@@ -87,7 +87,7 @@ class OrganisationServiceTest {
     @Test
     void shouldReturnUsersFromLocalAuthorityMappingWhenRefDataFailsForReasonOtherThanUserNotRegistered() {
         when(organisationApi.findUsersByOrganisation(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, Status.ACTIVE, false))
-            .thenThrow(new FeignException.InternalServerError(EMPTY, REQUEST, new byte[] {}));
+            .thenThrow(new FeignException.InternalServerError(EMPTY, REQUEST, new byte[]{}));
 
         Set<String> usersIdsWithinSaLa = organisationService.findUserIdsInSameOrganisation("SA");
 
@@ -109,7 +109,7 @@ class OrganisationServiceTest {
     @Test
     void shouldReturnEmptyListWhenTheLAIsNotKnownAndTheApiReturnsNotFound() {
         when(organisationApi.findUsersByOrganisation(any(), any(), any(), any()))
-            .thenThrow(new FeignException.Forbidden("No organisation", REQUEST, new byte[] {}));
+            .thenThrow(new FeignException.Forbidden("No organisation", REQUEST, new byte[]{}));
 
         assertThatThrownBy(() -> organisationService.findUserIdsInSameOrganisation("AN"))
             .isInstanceOf(UserOrganisationLookupException.class)
@@ -142,7 +142,7 @@ class OrganisationServiceTest {
 
     @Test
     void shouldNotReturnUserIdIfUserNotPresent() {
-        Exception exception = new FeignException.NotFound(EMPTY, REQUEST, new byte[] {});
+        Exception exception = new FeignException.NotFound(EMPTY, REQUEST, new byte[]{});
 
         when(organisationApi.findUserByEmail(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, USER_EMAIL)).thenThrow(exception);
 
@@ -154,15 +154,16 @@ class OrganisationServiceTest {
     @Test
     void shouldRethrowExceptionOtherThanNotFound() {
         String email = "test@test.com";
-        Exception exception = new FeignException.InternalServerError(email, REQUEST, new byte[] {});
+        Exception exception = new FeignException.InternalServerError(email, REQUEST, new byte[]{});
 
         when(organisationApi.findUserByEmail(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, email)).thenThrow(exception);
 
         UserLookupException actualException = assertThrows(UserLookupException.class,
             () -> organisationService.findUserByEmail(email));
 
-        assertThat(actualException).hasMessageNotContaining(email);
-        assertThat(actualException).hasMessageContaining("****@********");
+        assertThat(actualException)
+            .hasMessageNotContaining(email)
+            .hasMessageContaining("****@********");
     }
 
     @Test
@@ -178,7 +179,7 @@ class OrganisationServiceTest {
     @Test
     void shouldReturnEmptyOrganisationBuilderWhenOrganisationNotFound() {
         when(organisationApi.findOrganisationById(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID))
-            .thenThrow(new FeignException.NotFound("Organisation not found", REQUEST, new byte[] {}));
+            .thenThrow(new FeignException.NotFound("Organisation not found", REQUEST, new byte[]{}));
 
         Organisation organisation = organisationService.findOrganisation();
 
@@ -188,7 +189,7 @@ class OrganisationServiceTest {
     @Test
     void shouldThrowFeignExceptionWhenOrganisationIsNotFound() {
         when(organisationApi.findOrganisationById(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID))
-            .thenThrow(new FeignException.NotFound("Organisation not found", REQUEST, new byte[] {}));
+            .thenThrow(new FeignException.NotFound("Organisation not found", REQUEST, new byte[]{}));
 
         assertThatThrownBy(() -> organisationApi.findOrganisationById(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID))
             .isInstanceOf(FeignException.NotFound.class);
