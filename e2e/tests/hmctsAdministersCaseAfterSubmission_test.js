@@ -113,6 +113,7 @@ Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage,
   I.seeInTab(['C2 Application 1', 'Customer reference'], c2Payment.customerReference);
   I.seeInTab(['C2 Application 1', 'Document name'], 'C2 supporting document');
   I.seeInTab(['C2 Application 1', 'Notes'], 'C2 supporting document');
+  I.seeInTab(['C2 Application 1', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
   I.seeInTab(['C2 Application 1', 'Document name'], 'This is a note about supporting doc');
   I.seeInTab(['C2 Application 1', 'Upload document'], 'mockFile.txt');
 
