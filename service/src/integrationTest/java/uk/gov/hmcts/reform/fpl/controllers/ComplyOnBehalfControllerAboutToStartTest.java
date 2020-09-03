@@ -12,12 +12,12 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
-import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
@@ -61,7 +61,7 @@ class ComplyOnBehalfControllerAboutToStartTest extends AbstractControllerTest {
             .eventId(COMPLY_ON_BEHALF_COURT.toString())
             .caseDetails(CaseDetails.builder()
                 .data(Map.of(
-                    "standardDirectionOrder", Order.builder()
+                    "standardDirectionOrder", StandardDirectionOrder.builder()
                         .directions(directionsForRespondentsCafcassOthersAndAllParties())
                         .build(),
                     "others", firstOther(),
@@ -95,7 +95,7 @@ class ComplyOnBehalfControllerAboutToStartTest extends AbstractControllerTest {
             .eventId(COMPLY_ON_BEHALF_COURT.toString())
             .caseDetails(CaseDetails.builder()
                 .data(Map.of(
-                    "standardDirectionOrder", Order.builder().directions(directions).build(),
+                    "standardDirectionOrder", StandardDirectionOrder.builder().directions(directions).build(),
                     "others", firstOther(),
                     "respondents1", respondentWithRepresentative()
                 ))
@@ -124,7 +124,7 @@ class ComplyOnBehalfControllerAboutToStartTest extends AbstractControllerTest {
             .eventId(COMPLY_OTHERS.toString())
             .caseDetails(CaseDetails.builder()
                 .data(Map.of(
-                    "standardDirectionOrder", Order.builder().directions(directions).build(),
+                    "standardDirectionOrder", StandardDirectionOrder.builder().directions(directions).build(),
                     SERVED_CASE_MANAGEMENT_ORDERS.getKey(), orders,
                     "others", firstOther(),
                     "respondents1", respondentWithRepresentative()
@@ -184,7 +184,7 @@ class ComplyOnBehalfControllerAboutToStartTest extends AbstractControllerTest {
     }
 
     private List<Element<Direction>> directionsForRespondentsCafcassOthersAndAllParties() {
-        return Stream.of(new DirectionAssignee[]{PARENTS_AND_RESPONDENTS, CAFCASS, OTHERS, ALL_PARTIES})
+        return Stream.of(new DirectionAssignee[] {PARENTS_AND_RESPONDENTS, CAFCASS, OTHERS, ALL_PARTIES})
             .map(directionAssignee -> (ElementUtils.element(
                 DIRECTION_ID,
                 Direction.builder()

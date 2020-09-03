@@ -31,6 +31,10 @@ module.exports = {
     email: 'hmcts-admin@example.com',
     password: process.env.CA_USER_PASSWORD || defaultPassword,
   },
+  hmctsSuperUser: {
+    email: 'hmcts-superuser@mailnesia.com',
+    password: process.env.SUPER_USER_PASSWORD || defaultPassword,
+  },
   cafcassUser: {
     email: 'cafcass@example.com',
     password: process.env.CAFCASS_USER_PASSWORD || defaultPassword,
@@ -113,6 +117,9 @@ module.exports = {
     addExpertReportLog: 'Log expert report',
     closeTheCase: 'Close the case',
     returnApplication: 'Return application',
+  },
+  superUserActions: {
+    removeOrder: 'Remove an order',
   },
   // files
   testFile: './e2e/fixtures/mockFile.txt',
