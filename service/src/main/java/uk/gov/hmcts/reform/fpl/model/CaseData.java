@@ -77,6 +77,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Data
@@ -648,5 +649,20 @@ public class CaseData {
         return unwrapElements(hearingDetails).stream()
             .filter(hearingBooking -> hearingBooking.getStartDate().isAfter(currentCmoStartDate))
             .min(comparing(HearingBooking::getStartDate));
+    }
+
+    @JsonIgnore
+    public DynamicList buildDynamicHearingList() {
+        return buildDynamicHearingList(getHearingDetails(), null);
+    }
+
+    @JsonIgnore
+    public DynamicList buildDynamicHearingList(List<Element<HearingBooking>> hearings) {
+        return buildDynamicHearingList(hearings, null);
+    }
+
+    @JsonIgnore
+    public DynamicList buildDynamicHearingList(List<Element<HearingBooking>> hearings, UUID selected) {
+        return asDynamicList(hearings, selected, hearing -> hearing.toLabel(DATE));
     }
 }

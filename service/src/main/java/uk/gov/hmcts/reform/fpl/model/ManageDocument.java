@@ -10,6 +10,6 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 public class ManageDocument {
     private final ManageDocumentType type;
     private final String relatedToHearing;
-    private final DynamicList hearingList;
-    private final DynamicList supportingC2List;
+    private DynamicList hearingList;
+    private DynamicList supportingC2List;
 }
