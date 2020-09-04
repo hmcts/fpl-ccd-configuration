@@ -579,6 +579,7 @@ public class CaseData {
     private final List<Element<ManageDocumentBundle>> furtherEvidenceDocumentsTEMP;
     private final List<Element<ManageDocumentBundle>> correspondenceDocuments;
     private final List<Element<ManageDocumentBundle>> c2SupportingDocuments;
+    private final List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
 
     @JsonIgnore
     public boolean isClosedFromOrder() {
