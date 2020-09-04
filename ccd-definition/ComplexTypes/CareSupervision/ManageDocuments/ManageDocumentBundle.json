@@ -29,7 +29,7 @@
     "ID": "ManageDocumentBundle",
     "ListElementCode": "dateTimeUploaded",
     "FieldType": "DateTime",
-    "ElementLabel": "Date and time received",
+    "ElementLabel": "Date and time uploaded",
     "SecurityClassification": "Public"
   },
   {

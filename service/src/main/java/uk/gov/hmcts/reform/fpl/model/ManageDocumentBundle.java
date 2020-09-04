@@ -12,6 +12,6 @@ public class ManageDocumentBundle {
     private final String name;
     private final String notes;
     private final LocalDateTime dateTimeReceived;
-    private final LocalDateTime dateTimeUploaded;
+    private LocalDateTime dateTimeUploaded;
     private final DocumentReference document;
 }

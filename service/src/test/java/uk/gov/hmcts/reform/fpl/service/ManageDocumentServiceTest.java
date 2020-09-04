@@ -39,8 +39,8 @@ import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUM
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, FixedTimeConfiguration.class})
@@ -148,6 +148,29 @@ public class ManageDocumentServiceTest {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         assertThat(caseData.getCorrespondenceDocuments()).isEqualTo(correspondingDocuments);
+    }
+
+    @Test
+    void shouldSetDateTimeUploadedToNewCorrespondenceCollectionItems() {
+        LocalDateTime yesterday = time.now().minusDays(1);
+        List<Element<ManageDocumentBundle>> correspondingDocuments = buildManagementDocumentBundle();
+        Element<ManageDocumentBundle> previousCorrespondingDocument = element(ManageDocumentBundle.builder()
+            .dateTimeUploaded(yesterday)
+            .build());
+
+        correspondingDocuments.add(previousCorrespondingDocument);
+        Map<String, Object> data = new HashMap<>(Map.of(
+            CORRESPONDING_DOCUMENTS_COLLECTION_KEY, correspondingDocuments,
+            MANAGE_DOCUMENT_KEY, buildManagementDocument(CORRESPONDENCE)));
+
+        CaseDetails caseDetails = CaseDetails.builder().data(data).build();
+        manageDocumentService.updateManageDocumentCollections(caseDetails);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        List<ManageDocumentBundle> manageDocumentBundle = unwrapElements(caseData.getCorrespondenceDocuments());
+
+        assertThat(manageDocumentBundle.get(0).getDateTimeUploaded()).isEqualTo(time.now());
+        assertThat(manageDocumentBundle.get(1).getDateTimeUploaded()).isEqualTo(yesterday);
     }
 
     private List<Element<ManageDocumentBundle>> buildManagementDocumentBundle() {

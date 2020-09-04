@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.getHearingBookingByUUID;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -33,6 +34,8 @@ public class ManageDocumentService {
         this.time = time;
     }
 
+    // TODO
+    // Better name
     public void initialiseManageDocumentBundleCollectionManageDocumentFields(CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -49,6 +52,36 @@ public class ManageDocumentService {
                 // Populate data for case type is C2
                 break;
         }
+    }
+
+    // TODO
+    // Better name
+    public void updateManageDocumentCollections(CaseDetails caseDetails) {
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        switch (caseData.getManageDocument().getType()) {
+            case FURTHER_EVIDENCE_DOCUMENTS:
+
+                break;
+            case CORRESPONDENCE:
+                caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY,
+                    setDateTimeUploadedOnManageDocumentCollection(caseData.getCorrespondenceDocuments()));
+                break;
+            case C2:
+                // TODO
+                // Populate data for case type is C2
+                break;
+        }
+    }
+
+    private List<Element<ManageDocumentBundle>> setDateTimeUploadedOnManageDocumentCollection(
+        List<Element<ManageDocumentBundle>> manageDocumentBundle) {
+        return manageDocumentBundle.stream()
+            .peek(manageDocumentBundleElement -> {
+                if (manageDocumentBundleElement.getValue().getDateTimeUploaded() == null) {
+                    manageDocumentBundleElement.getValue().setDateTimeUploaded(time.now());
+                }
+            }).collect(Collectors.toList());
     }
 
     private void initialiseFurtherEvidenceFields(CaseDetails caseDetails) {
