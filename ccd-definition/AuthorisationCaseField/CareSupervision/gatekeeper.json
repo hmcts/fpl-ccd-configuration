@@ -835,14 +835,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "pageShow",
+    "CaseFieldID": "useServiceRoute",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "useServiceRoute",
+    "CaseFieldID": "useUploadRoute",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "CRU"
   },

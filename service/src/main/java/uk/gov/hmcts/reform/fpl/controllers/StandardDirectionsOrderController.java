@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.State;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoutes;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -50,6 +49,8 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoutes.SERVICE;
 import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMapping;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -91,7 +92,7 @@ public class StandardDirectionsOrderController {
         StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
         SDORoutes sdoRouter = caseData.getSdoRouter();
 
-        if (sdoRouter == null || SDORoutes.SERVICE == sdoRouter) {
+        if (sdoRouter == null || SERVICE == sdoRouter) {
             LocalDate dateOfIssue = time.now().toLocalDate();
 
             if (standardDirectionOrder != null && standardDirectionOrder.getDateOfIssue() != null) {
@@ -105,11 +106,11 @@ public class StandardDirectionsOrderController {
             switch (sdoRouter) {
                 case UPLOAD:
                     data.put("currentSDO", standardDirectionOrder.getOrderDoc());
-                    data.put("pageShow", "UPLOAD");
+                    data.put("useUploadRoute", YES);
                     break;
                 case SERVICE:
-                    data.put("pageShow", "SERVICE");
-                    data.put("useServiceRoute", YesNo.YES);
+                    data.put("pageShow", SERVICE);
+                    data.put("useServiceRoute", YES);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected value: " + sdoRouter);
@@ -190,7 +191,6 @@ public class StandardDirectionsOrderController {
     public CallbackResponse handleUploadMidEvent(@RequestBody CallbackRequest request) {
         Map<String, Object> data = request.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
-        boolean isSecondPass = false;
         DocumentReference document = caseData.getPreparedSDO();
 
         if (document == null) {
@@ -198,7 +198,6 @@ public class StandardDirectionsOrderController {
                 caseData.getReplacementSDO(),
                 mapper.convertValue(data.get("currentSDO"), DocumentReference.class)
             );
-            isSecondPass = true;
         }
 
         StandardDirectionOrder order = StandardDirectionOrder.builder()
@@ -206,10 +205,6 @@ public class StandardDirectionsOrderController {
             .build();
 
         data.put("standardDirectionOrder", order);
-
-        if (isSecondPass) {
-            data.put("pageShow", "UPLOAD");
-        }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -232,8 +227,7 @@ public class StandardDirectionsOrderController {
 
         StandardDirectionOrder order;
         SDORoutes sdoRouter = caseData.getSdoRouter();
-        if (sdoRouter == null || SDORoutes.SERVICE == sdoRouter) {
-            System.out.println("old");
+        if (sdoRouter == null || SERVICE == sdoRouter) { // null check can be removed when toggled on
             JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
                 caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()
             );
@@ -267,7 +261,6 @@ public class StandardDirectionsOrderController {
             //add document to order
             order.setOrderDocReferenceFromDocument(document);
         } else {
-            System.out.println("new");
             StandardDirectionOrder currentOrder = caseData.getStandardDirectionOrder();
 
             order = sdoService.buildOrderFromUpload(currentOrder);
