@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -43,6 +44,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
 @Api
+@Slf4j
 @RestController
 @RequestMapping("/callback/upload-c2")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -116,21 +118,24 @@ public class UploadC2DocumentsController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (displayAmountToPay(caseDetails)) {
-            try {
-                paymentService.makePaymentForC2(caseDetails.getId(), caseData);
-            } catch (FeeRegisterException | PaymentsApiException ignore) {
+        final C2DocumentBundle c2DocumentBundle = caseData.getLastC2DocumentBundle();
+        applicationEventPublisher.publishEvent(new C2UploadedEvent(callbackRequest, c2DocumentBundle));
+
+        if (isNotPaidByPba(c2DocumentBundle)) {
+            log.info("C2 payment for case {} not taken due to user decision", caseDetails.getId());
+            applicationEventPublisher.publishEvent(new C2PbaPaymentNotTakenEvent(callbackRequest));
+        } else {
+            if (displayAmountToPay(caseDetails)) {
+                try {
+                    paymentService.makePaymentForC2(caseDetails.getId(), caseData);
+                } catch (FeeRegisterException | PaymentsApiException paymentException) {
+                    log.error("C2 payment for case {} failed", caseDetails.getId());
+                    applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, C2_APPLICATION));
+                }
+            } else if (NO.getValue().equals(caseDetails.getData().get(DISPLAY_AMOUNT_TO_PAY))) {
+                log.error("C2 payment for case {} not taken as payment fee not shown to user", caseDetails.getId());
                 applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, C2_APPLICATION));
             }
-        } else if (NO.getValue().equals(caseDetails.getData().get(DISPLAY_AMOUNT_TO_PAY))) {
-            applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, C2_APPLICATION));
-        }
-
-        C2DocumentBundle c2DocumentBundle = caseData.getLastC2DocumentBundle();
-
-        applicationEventPublisher.publishEvent(new C2UploadedEvent(callbackRequest, c2DocumentBundle));
-        if (isNotPaidByPba(c2DocumentBundle)) {
-            applicationEventPublisher.publishEvent(new C2PbaPaymentNotTakenEvent(callbackRequest));
         }
     }
 
