@@ -161,6 +161,15 @@ class FeatureToggleServiceTest {
         assertThat(ldUser.getValue().getCustomAttributes()).containsExactlyInAnyOrderElementsOf(attributes);
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForIsMigrateToManageOrgWarningPageEnabled(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isMigrateToManageOrgWarningPageEnabled("test name")).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(eq("migrate-to-manage-org-warning-page"), any(LDUser.class), eq(false));
+    }
+
     private static Stream<Arguments> userAttributesTestSource() {
         return Stream.of(
                 Arguments.of(
