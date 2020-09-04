@@ -56,8 +56,9 @@ public class ManageDocumentService {
 
     // TODO
     // Better name
-    public void updateManageDocumentCollections(CaseDetails caseDetails) {
+    public void updateManageDocumentCollections(CaseDetails caseDetails, CaseDetails caseDetailsBefore) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
 
         switch (caseData.getManageDocument().getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
@@ -66,7 +67,7 @@ public class ManageDocumentService {
                 break;
             case CORRESPONDENCE:
                 caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY,
-                    setDateTimeUploadedOnManageDocumentCollection(caseData.getCorrespondenceDocuments()));
+                    setDateTimeUploadedOnManageDocumentCollection(caseData.getCorrespondenceDocuments(), caseDataBefore.getCorrespondenceDocuments()));
                 break;
             case C2:
                 // TODO
@@ -76,9 +77,17 @@ public class ManageDocumentService {
     }
 
     private List<Element<ManageDocumentBundle>> setDateTimeUploadedOnManageDocumentCollection(
-        List<Element<ManageDocumentBundle>> manageDocumentBundle) {
-        // TODO
-        // Consider scenario of overwrite i.e existing collection item but new document uploaded
+        List<Element<ManageDocumentBundle>> manageDocumentBundle, List<Element<ManageDocumentBundle>> manageDocumentBundleBefore) {
+
+        if(!manageDocumentBundle.equals(manageDocumentBundleBefore) && manageDocumentBundle.size() == manageDocumentBundleBefore.size()) {
+                //something has been updated
+                for(int i = 0; i < manageDocumentBundle.size(); i++) {
+                    if(!manageDocumentBundle.get(i).getValue().equals(manageDocumentBundleBefore.get(i).getValue())) {
+                        manageDocumentBundle.get(i).getValue().setDateTimeUploaded(time.now());
+                    }
+                }
+        }
+
         return manageDocumentBundle.stream()
             .peek(manageDocumentBundleElement -> {
                 if (manageDocumentBundleElement.getValue().getDateTimeUploaded() == null) {

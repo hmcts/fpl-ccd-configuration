@@ -50,8 +50,9 @@ public class ManageDocumentsController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
 
-        manageDocumentService.updateManageDocumentCollections(caseDetails);
+        manageDocumentService.updateManageDocumentCollections(caseDetails, caseDetailsBefore);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
