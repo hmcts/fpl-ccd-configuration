@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.robotics.RoboticsNotificationService;
 
@@ -23,27 +26,29 @@ import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 @RestController
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RoboticsController {
-    private static final List<String> EXCLUDED_STATES = of(OPEN.getValue(), DELETED.getValue());
+    private static final List<State> EXCLUDED_STATES = of(OPEN, DELETED);
 
     private final CoreCaseDataService coreCaseDataService;
     private final RoboticsNotificationService roboticsNotificationService;
+    private final CaseConverter caseConverter;
 
     @PostMapping("/sendRPAEmailByID/{caseId}")
     @Secured("caseworker-publiclaw-systemupdate")
     public void resendCaseDataNotification(@PathVariable("caseId") String caseId) {
         CaseDetails caseDetails = coreCaseDataService.findCaseDetailsById(caseId);
+        CaseData caseData = caseConverter.convert(caseDetails);
 
-        performVerification(caseId, caseDetails);
+        performVerification(caseId, caseData);
 
-        roboticsNotificationService.sendSubmittedCaseData(caseDetails);
+        roboticsNotificationService.sendSubmittedCaseData(caseData);
     }
 
-    private void performVerification(final String caseId, final CaseDetails caseDetails) {
-        if (caseDetails == null) {
+    private void performVerification(final String caseId, final CaseData caseData) {
+        if (caseData == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("No case found with id %s", caseId));
         }
 
-        if (EXCLUDED_STATES.contains(caseDetails.getState())) {
+        if (EXCLUDED_STATES.contains(caseData.getState())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                 String.format("Unable to proceed as case  with id %s is in the wrong state", caseId));
         }

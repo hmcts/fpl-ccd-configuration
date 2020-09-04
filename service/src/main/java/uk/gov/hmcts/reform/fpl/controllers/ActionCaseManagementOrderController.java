@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,9 +47,8 @@ import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDo
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Deprecated(since = "FPLA-1915")
 @SuppressWarnings("java:S1133") // Remove once deprecations dealt with
-public class ActionCaseManagementOrderController {
+public class ActionCaseManagementOrderController extends CallbackController {
     private final CaseManagementOrderService caseManagementOrderService;
-    private final ObjectMapper mapper;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final CoreCaseDataService coreCaseDataService;
     private final HearingBookingService hearingBookingService;
@@ -58,7 +56,7 @@ public class ActionCaseManagementOrderController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = getCaseData(callbackRequest);
 
         CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
         if (caseManagementOrder == null || !caseManagementOrder.isInJudgeReview()) {
@@ -82,7 +80,7 @@ public class ActionCaseManagementOrderController {
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         Map<String, Object> data = callbackRequest.getCaseDetails().getData();
-        CaseData caseData = mapper.convertValue(data, CaseData.class);
+        CaseData caseData = getCaseData(callbackRequest);
         CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
 
         Document document = caseManagementOrderService.getOrderDocument(caseData);
@@ -98,7 +96,7 @@ public class ActionCaseManagementOrderController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = getCaseData(callbackRequest);
         CaseManagementOrder order = caseData.getCaseManagementOrder();
 
         if (order == null || !order.isInJudgeReview()) {
@@ -132,7 +130,7 @@ public class ActionCaseManagementOrderController {
 
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
-        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
+        CaseData caseData = getCaseData(callbackRequest);
 
         CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
         if (caseManagementOrder != null && caseManagementOrder.isInJudgeReview()) {
@@ -150,7 +148,7 @@ public class ActionCaseManagementOrderController {
                 "internal-change-SEND_DOCUMENT",
                 Map.of("documentToBeSent", caseManagementOrder.getOrderDoc())
             );
-            publishEventOnApprovedCMO(callbackRequest);
+            publishEventOnApprovedCMO(caseData);
         }
     }
 
@@ -162,18 +160,16 @@ public class ActionCaseManagementOrderController {
 
     //Changes made so that updated CaseManagementOrderIssuedEvent can be reused in new controller.
     //This controller is deprecated and will be deleted once new interim CMO is toggled on
-    private void publishEventOnApprovedCMO(CallbackRequest callbackRequest) {
-        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
+    private void publishEventOnApprovedCMO(CaseData caseData) {
         CaseManagementOrder actionedCmo = caseData.getCaseManagementOrder();
 
         if (!actionedCmo.isDraft()) {
             uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder cmo =
                 uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.builder()
-                .hearing(actionedCmo.getHearingDate())
-                .order(actionedCmo.getOrderDoc()).build();
+                    .hearing(actionedCmo.getHearingDate())
+                    .order(actionedCmo.getOrderDoc()).build();
 
-            applicationEventPublisher.publishEvent(
-                new CaseManagementOrderIssuedEvent(callbackRequest, cmo));
+            applicationEventPublisher.publishEvent(new CaseManagementOrderIssuedEvent(caseData, cmo));
         }
     }
 }

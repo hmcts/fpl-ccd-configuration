@@ -1,12 +1,11 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 
 import java.util.Optional;
@@ -15,29 +14,21 @@ import static uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfigurat
 
 @Service
 public class InboxLookupService {
-    private final ObjectMapper objectMapper;
     private final LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
     private final String fallbackInbox;
 
     @Autowired
-    public InboxLookupService(ObjectMapper objectMapper,
-                              LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration,
+    public InboxLookupService(LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration,
                               @Value("${fpl.local_authority_fallback_inbox}") String fallbackInbox) {
-        this.objectMapper = objectMapper;
         this.localAuthorityEmailLookupConfiguration = localAuthorityEmailLookupConfiguration;
         this.fallbackInbox = fallbackInbox;
     }
 
-    public String getNotificationRecipientEmail(final CaseDetails caseDetails, final String localAuthorityCode) {
-        Solicitor solicitor = objectMapper.convertValue(caseDetails.getData().get("solicitor"), Solicitor.class);
-
-        Optional<LocalAuthority> localAuthorityOptional =
-            localAuthorityEmailLookupConfiguration.getLocalAuthority(localAuthorityCode);
-
-        return localAuthorityOptional
+    public String getNotificationRecipientEmail(final CaseData caseData) {
+        return localAuthorityEmailLookupConfiguration.getLocalAuthority(caseData.getCaseLocalAuthority())
             .map(LocalAuthority::getEmail)
             .filter(StringUtils::isNotBlank)
-            .orElseGet(() -> getSolicitorOrFallbackEmail(solicitor));
+            .orElseGet(() -> getSolicitorOrFallbackEmail(caseData.getSolicitor()));
     }
 
     private String getSolicitorOrFallbackEmail(final Solicitor solicitor) {

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CloseCase;
@@ -24,7 +24,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/callback/close-case")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class CloseCaseController {
+public class CloseCaseController extends CallbackController {
 
     public static final String LABEL = "The case will remain open for 21 days to allow for appeal.\n\n"
         + "In a closed case, you can still:\n"
@@ -39,12 +39,12 @@ public class CloseCaseController {
 
     private final ValidateGroupService validatorService;
     private final ChildrenService childrenService;
-    private final ObjectMapper mapper;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
-        Map<String, Object> data = request.getCaseDetails().getData();
-        CaseData caseData = mapper.convertValue(data, CaseData.class);
+        CaseDetails caseDetails = request.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+        Map<String, Object> data = caseDetails.getData();
 
         data.put(LABEL_FIELD, LABEL);
 
@@ -52,28 +52,24 @@ public class CloseCaseController {
 
         data.put(CLOSE_CASE_FIELD, CloseCase.builder().showFullReason(YesNo.from(displayFinalOrder)).build());
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .build();
+        return respond(caseDetails);
     }
 
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest request) {
-        Map<String, Object> data = request.getCaseDetails().getData();
-        CaseData caseData = mapper.convertValue(data, CaseData.class);
+        CaseDetails caseDetails = request.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
 
         List<String> errors = validatorService.validateGroup(caseData.getCloseCase(), CloseCaseGroup.class);
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .errors(errors)
-            .build();
+        return respond(caseDetails, errors);
     }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest request) {
+        CaseDetails caseDetails = request.getCaseDetails();
         Map<String, Object> data = request.getCaseDetails().getData();
-        CaseData caseData = mapper.convertValue(data, CaseData.class);
+        CaseData caseData = getCaseData(caseDetails);
 
         data.put(DEPRIVATION_OF_LIBERTY_FLAG, YesNo.from(caseData.getCloseCase().hasDeprivationOfLiberty()).getValue());
         data.put(CLOSE_CASE_TAB_FIELD, caseData.getCloseCase());
@@ -81,8 +77,6 @@ public class CloseCaseController {
         data.remove(CLOSE_CASE_FIELD);
         data.remove(LABEL_FIELD);
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .build();
+        return respond(caseDetails);
     }
 }

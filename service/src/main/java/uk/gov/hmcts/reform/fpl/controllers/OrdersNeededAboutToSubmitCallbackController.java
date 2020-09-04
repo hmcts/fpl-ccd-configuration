@@ -18,7 +18,7 @@ import java.util.Optional;
 @Api
 @RestController
 @RequestMapping("/callback/orders-needed")
-public class OrdersNeededAboutToSubmitCallbackController {
+public class OrdersNeededAboutToSubmitCallbackController extends CallbackController {
 
     @PostMapping("/about-to-submit")
     @SuppressWarnings("unchecked")
@@ -47,8 +47,6 @@ public class OrdersNeededAboutToSubmitCallbackController {
             data.remove(showEpoFieldId);
         }
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .build();
+        return respond(caseDetails);
     }
 }
