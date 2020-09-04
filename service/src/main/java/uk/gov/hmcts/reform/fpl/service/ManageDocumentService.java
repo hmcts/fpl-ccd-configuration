@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -25,6 +26,7 @@ public class ManageDocumentService {
 
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_KEY = "correspondenceDocuments";
     public static final String TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY = "furtherEvidenceDocumentsTEMP";
+    public static final String FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY = "hearingFurtherEvidenceDocuments";
     public static final String MANAGE_DOCUMENTS_HEARING_LIST_KEY = "manageDocumentsHearingList";
     public static final String MANAGE_DOCUMENTS_HEARING_LABEL_KEY = "manageDocumentsHearingLabel";
 
@@ -61,6 +63,9 @@ public class ManageDocumentService {
 
         switch (caseData.getManageDocument().getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
+                caseDetails.getData().put(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY,
+                    setDateTimeUploadedOnManageDocumentCollection(caseData.getCorrespondenceDocuments()));
+                buildFurtherEvidenceCollection(caseDetails);
                 // TODO
                 // Build new collection object
                 break;
@@ -72,6 +77,42 @@ public class ManageDocumentService {
                 // TODO
                 // Populate data for case type is C2
                 break;
+        }
+    }
+
+    private void buildFurtherEvidenceCollection(CaseDetails caseDetails) {
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        if (caseData.getManageDocument().isDocumentRelatedToHearing()) {
+            UUID selectedHearingCode = mapper.convertValue(caseDetails.getData().get(MANAGE_DOCUMENTS_HEARING_LIST_KEY),
+                UUID.class);
+            HearingBooking hearingBooking = getHearingBookingByUUID(caseData.getHearingDetails(), selectedHearingCode);
+
+            List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
+
+            if (caseData.getHearingFurtherEvidenceDocuments() == null) {
+                hearingFurtherEvidenceDocuments = List.of(
+                    buildHearingFurtherEvidenceBundle(selectedHearingCode, hearingBooking,
+                        caseData.getFurtherEvidenceDocumentsTEMP()));
+            } else if (caseData.documentBundleContainsHearingId(selectedHearingCode)) {
+                hearingFurtherEvidenceDocuments = caseData.getHearingFurtherEvidenceDocuments().stream()
+                    .filter(element -> element.getId().equals(selectedHearingCode))
+                    .peek(element -> element.getValue().getManageDocumentBundle()
+                        .addAll(caseData.getFurtherEvidenceDocumentsTEMP()))
+                    .collect(Collectors.toList());
+            } else {
+                Element<HearingFurtherEvidenceBundle> hearingFurtherEvidenceBundleElement =
+                    buildHearingFurtherEvidenceBundle(selectedHearingCode, hearingBooking,
+                        caseData.getFurtherEvidenceDocumentsTEMP());
+
+                caseData.getHearingFurtherEvidenceDocuments().add(hearingFurtherEvidenceBundleElement);
+                hearingFurtherEvidenceDocuments = caseData.getHearingFurtherEvidenceDocuments();
+            }
+
+            caseDetails.getData().put(FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, hearingFurtherEvidenceDocuments);
+        } else {
+            // TODO
+            // Build normal collection here
         }
     }
 
@@ -107,5 +148,16 @@ public class ManageDocumentService {
                 .build());
             caseDetails.getData().put(collectionKey, documentBundle);
         }
+    }
+
+    private Element<HearingFurtherEvidenceBundle> buildHearingFurtherEvidenceBundle(
+        UUID hearingId, HearingBooking hearingBooking, List<Element<ManageDocumentBundle>> manageDocumentBundle) {
+        return Element.<HearingFurtherEvidenceBundle>builder()
+            .id(hearingId)
+            .value(HearingFurtherEvidenceBundle.builder()
+                .hearingName(hearingBooking.toLabel(DATE))
+                .manageDocumentBundle(manageDocumentBundle)
+                .build())
+            .build();
     }
 }

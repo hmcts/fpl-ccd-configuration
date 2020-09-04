@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentType;
@@ -13,7 +12,6 @@ public class ManageDocument {
     private final ManageDocumentType type;
     private final String relatedToHearing;
 
-    @JsonIgnore
     public boolean isDocumentRelatedToHearing() {
         return YES.getValue().equals(relatedToHearing);
     }
