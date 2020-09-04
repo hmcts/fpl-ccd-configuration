@@ -9,7 +9,6 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 
 import static org.assertj.core.api.Assertions.assertThat;

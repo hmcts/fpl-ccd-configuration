@@ -8,12 +8,9 @@ import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
-import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Judge;
-import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForCMO;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.RejectedCMOTemplate;
@@ -27,7 +24,6 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -161,14 +157,6 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
         final Map<String, Object> data = new HashMap<>();
         data.put("familyManCaseNumber", "11");
         data.put("caseName", "case1");
-        data.put("cmoToAction", CaseManagementOrder.builder()
-            .orderDoc(DocumentReference.builder().binaryUrl("http://test.org").build())
-            .hearingDate("Test")
-            .action(OrderAction.builder()
-                .changeRequestedByJudge("change it")
-                .build())
-            .status(SEND_TO_JUDGE)
-            .build());
         data.put("respondents1", wrapElements(Respondent.builder()
             .party(RespondentParty.builder().lastName("lastName").build())
             .build()));
