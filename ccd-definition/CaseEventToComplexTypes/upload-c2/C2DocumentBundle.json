@@ -78,7 +78,7 @@
     "CaseEventID": "uploadC2",
     "CaseFieldID": "temporaryC2Document",
     "EventElementLabel": "C2 supporting document",
-    "ListElementCode": "manageDocumentBundle",
+    "ListElementCode": "supportingEvidenceBundle",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -86,7 +86,7 @@
     "ID": "C2DocumentBundle",
     "CaseEventID": "uploadC2",
     "CaseFieldID": "temporaryC2Document",
-    "ListElementCode": "manageDocumentBundle.name",
+    "ListElementCode": "supportingEvidenceBundle.name",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -94,7 +94,7 @@
     "ID": "C2DocumentBundle",
     "CaseEventID": "uploadC2",
     "CaseFieldID": "temporaryC2Document",
-    "ListElementCode": "manageDocumentBundle.notes",
+    "ListElementCode": "supportingEvidenceBundle.notes",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -102,7 +102,7 @@
     "ID": "C2DocumentBundle",
     "CaseEventID": "uploadC2",
     "CaseFieldID": "temporaryC2Document",
-    "ListElementCode": "manageDocumentBundle.dateTimeReceived",
+    "ListElementCode": "supportingEvidenceBundle.dateTimeReceived",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -110,7 +110,7 @@
     "ID": "C2DocumentBundle",
     "CaseEventID": "uploadC2",
     "CaseFieldID": "temporaryC2Document",
-    "ListElementCode": "manageDocumentBundle.document",
+    "ListElementCode": "supportingEvidenceBundle.document",
     "EventElementLabel": "Upload a file",
     "DisplayContext": "MANDATORY"
   }

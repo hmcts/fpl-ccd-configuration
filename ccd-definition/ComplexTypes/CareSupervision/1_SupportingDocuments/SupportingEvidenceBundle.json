@@ -1,7 +1,7 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ManageDocumentBundle",
+    "ID": "SupportingEvidenceBundle",
     "ListElementCode": "name",
     "FieldType": "Text",
     "ElementLabel": "Document name",
@@ -10,7 +10,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ManageDocumentBundle",
+    "ID": "SupportingEvidenceBundle",
     "ListElementCode": "notes",
     "FieldType": "TextArea",
     "ElementLabel": "Notes",
@@ -18,7 +18,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ManageDocumentBundle",
+    "ID": "SupportingEvidenceBundle",
     "ListElementCode": "dateTimeReceived",
     "FieldType": "DateTime",
     "ElementLabel": "Date and time received",
@@ -27,7 +27,15 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ManageDocumentBundle",
+    "ID": "SupportingEvidenceBundle",
+    "ListElementCode": "dateTimeUploaded",
+    "FieldType": "DateTime",
+    "ElementLabel": "Date and time uploaded",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SupportingEvidenceBundle",
     "ListElementCode": "document",
     "FieldType": "Document",
     "ElementLabel": "Upload document",

@@ -11,9 +11,10 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 @AllArgsConstructor(onConstructor_ = {@JsonCreator})
-public class ManageDocumentBundle {
+public class SupportingEvidenceBundle {
     private final String name;
     private final String notes;
     private final LocalDateTime dateTimeReceived;
+    private LocalDateTime dateTimeUploaded;
     private final DocumentReference document;
 }

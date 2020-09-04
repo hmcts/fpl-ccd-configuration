@@ -84,10 +84,10 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
-    "ListElementCode": "manageDocumentBundle",
+    "ListElementCode": "supportingEvidenceBundle",
     "ElementLabel": "C2 supporting documents",
     "FieldType": "Collection",
-    "FieldTypeParameter": "ManageDocumentBundle",
+    "FieldTypeParameter": "SupportingEvidenceBundle",
     "SecurityClassification": "Public"
   }
 ]
