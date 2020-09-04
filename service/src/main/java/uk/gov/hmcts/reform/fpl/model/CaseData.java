@@ -576,7 +576,7 @@ public class CaseData {
     // FPLA-2001
     // note: also includes manageDocumentsHearingLabel and manageDocumentsSupportingC2Label
     private final ManageDocument manageDocument;
-    private final List<Element<ManageDocumentBundle>> furtherEvidenceDocuments;
+    private final List<Element<ManageDocumentBundle>> furtherEvidenceDocumentsTEMP;
     private final List<Element<ManageDocumentBundle>> correspondenceDocuments;
     private final List<Element<ManageDocumentBundle>> c2SupportingDocuments;
 

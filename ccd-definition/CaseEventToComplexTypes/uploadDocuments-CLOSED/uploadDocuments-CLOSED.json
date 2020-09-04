@@ -3,7 +3,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "UploadDocuments-CLOSED",
     "CaseEventID": "uploadDocuments-CLOSED",
-    "CaseFieldID": "furtherEvidenceDocuments",
+    "CaseFieldID": "furtherEvidenceDocumentsTEMP",
     "ListElementCode": "name",
     "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
@@ -13,7 +13,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "UploadDocuments-CLOSED",
     "CaseEventID": "uploadDocuments-CLOSED",
-    "CaseFieldID": "furtherEvidenceDocuments",
+    "CaseFieldID": "furtherEvidenceDocumentsTEMP",
     "ListElementCode": "notes",
     "FieldDisplayOrder": 2,
     "DisplayContext": "OPTIONAL"
@@ -22,7 +22,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "UploadDocuments-CLOSED",
     "CaseEventID": "uploadDocuments-CLOSED",
-    "CaseFieldID": "furtherEvidenceDocuments",
+    "CaseFieldID": "furtherEvidenceDocumentsTEMP",
     "ListElementCode": "dateTimeReceived",
     "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY"
@@ -31,7 +31,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "UploadDocuments-CLOSED",
     "CaseEventID": "uploadDocuments-CLOSED",
-    "CaseFieldID": "furtherEvidenceDocuments",
+    "CaseFieldID": "furtherEvidenceDocumentsTEMP",
     "ListElementCode": "document",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY"

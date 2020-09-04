@@ -56,7 +56,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadDocuments-CLOSED",
-    "CaseFieldID": "furtherEvidenceDocuments",
+    "CaseFieldID": "furtherEvidenceDocumentsTEMP",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "COMPLEX",
     "PageID": "FurtherEvidenceDocuments",

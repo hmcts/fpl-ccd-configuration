@@ -33,9 +33,9 @@ import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
-import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LABEL_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -89,7 +89,7 @@ public class ManageDocumentServiceTest {
             .isEqualTo(expectedDynamicList);
         assertThat(caseDetails.getData().get(MANAGE_DOCUMENTS_HEARING_LABEL_KEY))
             .isEqualTo(selectedHearingBooking.toLabel(DATE));
-        assertThat(caseData.getFurtherEvidenceDocuments()).isNotEmpty();
+        assertThat(caseData.getFurtherEvidenceDocumentsTEMP()).isNotEmpty();
     }
 
     @Test
@@ -103,7 +103,7 @@ public class ManageDocumentServiceTest {
 
         assertThat(caseDetails.getData().get(MANAGE_DOCUMENTS_HEARING_LIST_KEY)).isNull();
         assertThat(caseDetails.getData().get(MANAGE_DOCUMENTS_HEARING_LABEL_KEY)).isNull();
-        assertThat(caseData.getFurtherEvidenceDocuments()).isNotEmpty();
+        assertThat(caseData.getFurtherEvidenceDocumentsTEMP()).isNotEmpty();
     }
 
     @Test
@@ -111,7 +111,7 @@ public class ManageDocumentServiceTest {
         List<Element<ManageDocumentBundle>> furtherEvidenceBundle = buildManagementDocumentBundle();
 
         Map<String, Object> data = new HashMap<>(Map.of(
-            FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, furtherEvidenceBundle,
+            TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, furtherEvidenceBundle,
             MANAGE_DOCUMENT_KEY, buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, NO.getValue())));
 
         CaseDetails caseDetails = CaseDetails.builder().data(data).build();
@@ -120,7 +120,7 @@ public class ManageDocumentServiceTest {
 
         assertThat(caseDetails.getData().get(MANAGE_DOCUMENTS_HEARING_LIST_KEY)).isNull();
         assertThat(caseDetails.getData().get(MANAGE_DOCUMENTS_HEARING_LABEL_KEY)).isNull();
-        assertThat(caseData.getFurtherEvidenceDocuments()).isEqualTo(furtherEvidenceBundle);
+        assertThat(caseData.getFurtherEvidenceDocumentsTEMP()).isEqualTo(furtherEvidenceBundle);
     }
 
     @Test

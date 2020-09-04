@@ -24,7 +24,7 @@ public class ManageDocumentService {
     private Time time;
 
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_KEY = "correspondenceDocuments";
-    public static final String FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY = "furtherEvidenceDocuments";
+    public static final String TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY = "furtherEvidenceDocumentsTEMP";
     public static final String MANAGE_DOCUMENTS_HEARING_LIST_KEY = "manageDocumentsHearingList";
     public static final String MANAGE_DOCUMENTS_HEARING_LABEL_KEY = "manageDocumentsHearingLabel";
 
@@ -42,7 +42,7 @@ public class ManageDocumentService {
         switch (caseData.getManageDocument().getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
                 initialiseFurtherEvidenceFields(caseDetails);
-                initialiseManageDocumentBundleCollection(caseDetails, FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY);
+                initialiseManageDocumentBundleCollection(caseDetails, TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY);
                 break;
             case CORRESPONDENCE:
                 initialiseManageDocumentBundleCollection(caseDetails, CORRESPONDING_DOCUMENTS_COLLECTION_KEY);
@@ -61,7 +61,8 @@ public class ManageDocumentService {
 
         switch (caseData.getManageDocument().getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
-
+                // TODO
+                // Build new collection object
                 break;
             case CORRESPONDENCE:
                 caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY,
@@ -76,6 +77,8 @@ public class ManageDocumentService {
 
     private List<Element<ManageDocumentBundle>> setDateTimeUploadedOnManageDocumentCollection(
         List<Element<ManageDocumentBundle>> manageDocumentBundle) {
+        // TODO
+        // Consider scenario of overwrite i.e existing collection item but new document uploaded
         return manageDocumentBundle.stream()
             .peek(manageDocumentBundleElement -> {
                 if (manageDocumentBundleElement.getValue().getDateTimeUploaded() == null) {
