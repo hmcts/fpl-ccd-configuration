@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import java.time.LocalDateTime;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor(onConstructor_ = {@JsonCreator})
 public class SupportingEvidenceBundle {
     private final String name;

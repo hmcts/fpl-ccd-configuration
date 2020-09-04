@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
@@ -31,10 +32,12 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
@@ -42,6 +45,8 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @Api
 @Slf4j
@@ -154,9 +159,16 @@ public class UploadC2DocumentsController {
         List<Element<C2DocumentBundle>> c2DocumentBundle = defaultIfNull(caseData.getC2DocumentBundle(),
             Lists.newArrayList());
 
+        List<SupportingEvidenceBundle> updatedSupportingEvidenceBundle =
+            unwrapElements(caseData.getTemporaryC2Document().getSupportingEvidenceBundle())
+                .stream()
+                .map(supportingEvidence -> supportingEvidence.toBuilder().dateTimeUploaded(LocalDateTime.now()).build())
+                .collect(Collectors.toList());
+
         var c2DocumentBundleBuilder = caseData.getTemporaryC2Document().toBuilder()
             .author(idamClient.getUserInfo(requestData.authorisation()).getName())
-            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME));
+            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
+            .supportingEvidenceBundle(wrapElements(updatedSupportingEvidenceBundle));
 
         c2DocumentBundleBuilder.type(caseData.getC2ApplicationType().get("type"));
 
