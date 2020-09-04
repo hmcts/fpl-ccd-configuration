@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
@@ -189,12 +190,26 @@ public class StandardDirectionsOrderController {
     public CallbackResponse handleUploadMidEvent(@RequestBody CallbackRequest request) {
         Map<String, Object> data = request.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
+        boolean isSecondPass = false;
+        DocumentReference document = caseData.getPreparedSDO();
+
+        if (document == null) {
+            document = defaultIfNull(
+                caseData.getReplacementSDO(),
+                mapper.convertValue(data.get("currentSDO"), DocumentReference.class)
+            );
+            isSecondPass = true;
+        }
 
         StandardDirectionOrder order = StandardDirectionOrder.builder()
-            .orderDoc(defaultIfNull(caseData.getPreparedSDO(), caseData.getReplacementSDO()))
+            .orderDoc(document)
             .build();
 
         data.put("standardDirectionOrder", order);
+
+        if (isSecondPass) {
+            data.put("pageShow", "UPLOAD");
+        }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -216,9 +231,12 @@ public class StandardDirectionsOrderController {
         }
 
         StandardDirectionOrder order;
-        if (SDORoutes.SERVICE == caseData.getSdoRouter()) {
+        SDORoutes sdoRouter = caseData.getSdoRouter();
+        if (sdoRouter == null || SDORoutes.SERVICE == sdoRouter) {
+            System.out.println("old");
             JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
-                caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge());
+                caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()
+            );
 
             removeAllocatedJudgeProperties(judgeAndLegalAdvisor);
 
@@ -249,6 +267,7 @@ public class StandardDirectionsOrderController {
             //add document to order
             order.setOrderDocReferenceFromDocument(document);
         } else {
+            System.out.println("new");
             StandardDirectionOrder currentOrder = caseData.getStandardDirectionOrder();
 
             order = sdoService.buildOrderFromUpload(currentOrder);
