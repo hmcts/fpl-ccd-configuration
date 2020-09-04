@@ -3,11 +3,35 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "openCase",
+    "CaseFieldID": "migrateToMoWarning",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "PageShowCondition": "pageShow=\"YES\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "openCase",
+    "CaseFieldID": "pageShow",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "migrateToMoWarning=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "openCase",
     "CaseFieldID": "caseName",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "OPTIONAL",
-    "PageID": 1,
-    "PageDisplayOrder": 1,
+    "PageID": 2,
+    "PageDisplayOrder": 2,
     "PageColumnNumber": 1
   }
 ]
