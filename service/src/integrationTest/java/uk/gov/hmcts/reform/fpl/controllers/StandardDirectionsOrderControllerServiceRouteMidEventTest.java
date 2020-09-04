@@ -41,7 +41,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ActiveProfiles("integration-test")
 @WebMvcTest(StandardDirectionsOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-class StandardDirectionsOrderControllerMidEventTest extends AbstractControllerTest {
+class StandardDirectionsOrderControllerServiceRouteMidEventTest extends AbstractControllerTest {
     private static final byte[] PDF = {1, 2, 3, 4, 5};
     private static final String SEALED_ORDER_FILE_NAME = "standard-directions-order.pdf";
     private static final String DRAFT_ORDER_FILE_NAME = "draft-standard-directions-order.pdf";
@@ -53,7 +53,7 @@ class StandardDirectionsOrderControllerMidEventTest extends AbstractControllerTe
     @MockBean
     private UploadDocumentService uploadDocumentService;
 
-    StandardDirectionsOrderControllerMidEventTest() {
+    StandardDirectionsOrderControllerServiceRouteMidEventTest() {
         super("draft-standard-directions");
     }
 
@@ -73,7 +73,7 @@ class StandardDirectionsOrderControllerMidEventTest extends AbstractControllerTe
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "service-route");
 
         assertThat(callbackResponse.getData().get("standardDirectionOrder")).extracting("orderDoc")
             .isEqualTo(Map.of(
@@ -92,7 +92,7 @@ class StandardDirectionsOrderControllerMidEventTest extends AbstractControllerTe
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "service-route");
 
         assertThat(callbackResponse.getData().get("judgeAndLegalAdvisor"))
             .isEqualToComparingOnlyGivenFields(Map.of("judgeTitle", HIS_HONOUR_JUDGE, "JudgeLastName", "Davidson"));
@@ -106,7 +106,7 @@ class StandardDirectionsOrderControllerMidEventTest extends AbstractControllerTe
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "service-route");
 
         assertThat(callbackResponse.getData().get("standardDirectionOrder")).extracting("directions")
             .isEqualTo(List.of());

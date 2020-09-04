@@ -187,7 +187,7 @@ public class StandardDirectionsOrderController {
             .build();
     }
 
-    @PostMapping("upload-route/mid-event")
+    @PostMapping("/upload-route/mid-event")
     public CallbackResponse handleUploadMidEvent(@RequestBody CallbackRequest request) {
         Map<String, Object> data = request.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
