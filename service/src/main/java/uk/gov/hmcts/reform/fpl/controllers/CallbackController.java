@@ -43,8 +43,7 @@ public abstract class CallbackController {
             .build();
     }
 
-    protected CallbackController publishEvent(Object event) {
+    protected void publishEvent(Object event) {
         eventPublisher.publishEvent(event);
-        return this;
     }
 }
