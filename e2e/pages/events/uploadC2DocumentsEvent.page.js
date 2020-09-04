@@ -1,5 +1,6 @@
 const { I } = inject();
 const money = require('../../helpers/money_helper');
+const c2SupportingDocuments = require('../../fixtures/testData/c2SupportingDocuments.js');
 
 module.exports = {
   fields: {
@@ -12,17 +13,19 @@ module.exports = {
     pbaNumber: '#temporaryC2Document_pbaNumber',
     clientCode: '#temporaryC2Document_clientCode',
     customerReference: '#temporaryC2Document_fileReference',
-    documentName: '#temporaryC2Document_manageDocumentBundle_0_name',
-    documentNotes: '#temporaryC2Document_manageDocumentBundle_0_notes',
-    documentDateAndTime: {
-      day: 'temporaryC2Document_manageDocumentBundle_0_dateTimeReceived-day',
-      month: 'temporaryC2Document_manageDocumentBundle_0_dateTimeReceived-month',
-      year: 'temporaryC2Document_manageDocumentBundle_0_dateTimeReceived-year',
-      hour: 'temporaryC2Document_manageDocumentBundle_0_dateTimeReceived-hour',
-      minute: 'temporaryC2Document_manageDocumentBundle_0_dateTimeReceived-minute',
-      second: 'temporaryC2Document_manageDocumentBundle_0_dateTimeReceived-second',
+    supportingDocuments: {
+      name: '#temporaryC2Document_manageDocumentBundle_0_name',
+      notes: '#temporaryC2Document_manageDocumentBundle_0_notes',
+      dateAndTime: {
+        day: '#temporaryC2Document_manageDocumentBundle_0_dateTimeReceived-day',
+        month: '#temporaryC2Document_manageDocumentBundle_0_dateTimeReceived-month',
+        year: '#temporaryC2Document_manageDocumentBundle_0_dateTimeReceived-year',
+        hour: '#temporaryC2Document_manageDocumentBundle_0_dateTimeReceived-hour',
+        minute: '#temporaryC2Document_manageDocumentBundle_0_dateTimeReceived-minute',
+        second: '#temporaryC2Document_manageDocumentBundle_0_dateTimeReceived-second',
+      },
+      document: '#temporaryC2Document_manageDocumentBundle_0_document',
     },
-    uploadC2SupportingDocument: '#temporaryC2Document_manageDocumentBundle_0_document',
   },
   applicationTypePrefix: '#c2ApplicationType_type-',
 
@@ -35,18 +38,18 @@ module.exports = {
     I.fillField(this.fields.description, description);
   },
 
-  async uploadC2SupportingDocument(file) {
+  async uploadC2SupportingDocument() {
 
     await I.addAnotherElementToCollection();
-    I.fillField(this.fields.documentName, 'C2 supporting document');
-    I.fillField(this.fields.documentNotes, 'This is a note about supporting doc');
-    I.fillField(this.fields.documentDateAndTime.day, '01');
-    I.fillField(this.fields.documentDateAndTime.month, '01');
-    I.fillField(this.fields.documentDateAndTime.year, '2020');
-    I.fillField(this.fields.documentDateAndTime.second, '00');
-    I.fillField(this.fields.documentDateAndTime.minute, '00');
-    I.fillField(this.fields.documentDateAndTime.hour, '11');
-    I.attachFile(this.fields.uploadC2SupportingDocument, file);
+    I.fillField(this.fields.supportingDocuments.name, c2SupportingDocuments.name);
+    I.fillField(this.fields.supportingDocuments.notes, c2SupportingDocuments.notes);
+    I.fillField(this.fields.supportingDocuments.dateAndTime.day, c2SupportingDocuments.dateAndTime.day);
+    I.fillField(this.fields.supportingDocuments.dateAndTime.month, c2SupportingDocuments.dateAndTime.month);
+    I.fillField(this.fields.supportingDocuments.dateAndTime.year, c2SupportingDocuments.dateAndTime.year);
+    I.fillField(this.fields.supportingDocuments.dateAndTime.second, c2SupportingDocuments.dateAndTime.second);
+    I.fillField(this.fields.supportingDocuments.dateAndTime.minute, c2SupportingDocuments.dateAndTime.minute);
+    I.fillField(this.fields.supportingDocuments.dateAndTime.hour, c2SupportingDocuments.dateAndTime.hour);
+    I.attachFile(this.fields.supportingDocuments.document, c2SupportingDocuments.document);
   },
 
   usePbaPayment(usePbaPayment=true) {
