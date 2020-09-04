@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
@@ -48,12 +49,45 @@ class StandardDirectionsOrderServiceTest {
     @BeforeEach
     void setUp() {
         service = new StandardDirectionsOrderService(conversionService, sealingService, TIME, idamClient, requestData);
-        given(idamClient.getUserInfo(USER_AUTH_TOKEN)).willReturn(UserInfo.builder().name(USER_NAME).build());
-        given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
+    }
+
+    @Test
+    void shouldUsePreparedSDOForTemporaryStandardDirectionOrder() {
+        CaseData caseData = CaseData.builder().preparedSDO(PDF_DOC).build();
+
+        StandardDirectionOrder order = service.buildTemporarySDO(caseData, null);
+
+        StandardDirectionOrder expectedOrder = StandardDirectionOrder.builder().orderDoc(PDF_DOC).build();
+
+        assertThat(order).isEqualTo(expectedOrder);
+    }
+
+    @Test
+    void shouldUseReplacementSDOForTemporaryStandardDirectionOrder() {
+        CaseData caseData = CaseData.builder().preparedSDO(null).replacementSDO(WORD_DOC).build();
+
+        StandardDirectionOrder order = service.buildTemporarySDO(caseData, null);
+
+        StandardDirectionOrder expectedOrder = StandardDirectionOrder.builder().orderDoc(WORD_DOC).build();
+
+        assertThat(order).isEqualTo(expectedOrder);
+    }
+
+    @Test
+    void shouldUseCurrentSDODocumentForTemporaryStandardDirectionOrder() {
+        CaseData caseData = CaseData.builder().preparedSDO(null).replacementSDO(null).build();
+
+        StandardDirectionOrder order = service.buildTemporarySDO(caseData, SEALED_DOC);
+
+        StandardDirectionOrder expectedOrder = StandardDirectionOrder.builder().orderDoc(SEALED_DOC).build();
+
+        assertThat(order).isEqualTo(expectedOrder);
     }
 
     @Test
     void shouldNotSealDocumentWhenSDOIsDraft() throws Exception {
+        mockIdamAndRequestData();
+
         StandardDirectionOrder order = buildStandardDirectionOrder(PDF_DOC, DRAFT);
 
         StandardDirectionOrder builtOrder = service.buildOrderFromUpload(order);
@@ -71,6 +105,7 @@ class StandardDirectionsOrderServiceTest {
     void shouldSealDocumentWhenSDOIsToBeSealed() throws Exception {
         given(conversionService.convertToPdf(PDF_DOC)).willCallRealMethod();
         mockSealingService();
+        mockIdamAndRequestData();
 
         StandardDirectionOrder order = buildStandardDirectionOrder(PDF_DOC, SEALED);
 
@@ -89,6 +124,7 @@ class StandardDirectionsOrderServiceTest {
     void shouldConvertWordDocumentAndSealWhenSDOIsSetToSeal() throws Exception {
         given(conversionService.convertToPdf(WORD_DOC)).willReturn(PDF_DOC);
         mockSealingService();
+        mockIdamAndRequestData();
 
         StandardDirectionOrder order = buildStandardDirectionOrder(WORD_DOC, SEALED);
 
@@ -110,6 +146,11 @@ class StandardDirectionsOrderServiceTest {
             .dateOfUpload(dateOfUpload)
             .uploader(uploader)
             .build();
+    }
+
+    private void mockIdamAndRequestData() {
+        given(idamClient.getUserInfo(USER_AUTH_TOKEN)).willReturn(UserInfo.builder().name(USER_NAME).build());
+        given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
     }
 
     private void mockSealingService() throws Exception {

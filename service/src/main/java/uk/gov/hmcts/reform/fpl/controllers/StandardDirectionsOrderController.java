@@ -45,7 +45,6 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
@@ -191,18 +190,11 @@ public class StandardDirectionsOrderController {
     public CallbackResponse handleUploadMidEvent(@RequestBody CallbackRequest request) {
         Map<String, Object> data = request.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
-        DocumentReference document = caseData.getPreparedSDO();
 
-        if (document == null) {
-            document = defaultIfNull(
-                caseData.getReplacementSDO(),
-                mapper.convertValue(data.get("currentSDO"), DocumentReference.class)
-            );
-        }
-
-        StandardDirectionOrder order = StandardDirectionOrder.builder()
-            .orderDoc(document)
-            .build();
+        StandardDirectionOrder order = sdoService.buildTemporarySDO(
+            caseData,
+            mapper.convertValue(data.get("currentSDO"), DocumentReference.class)
+        );
 
         data.put("standardDirectionOrder", order);
 

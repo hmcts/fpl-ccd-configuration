@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
@@ -13,6 +14,8 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class StandardDirectionsOrderService {
@@ -21,6 +24,20 @@ public class StandardDirectionsOrderService {
     private final Time time;
     private final IdamClient idamClient;
     private final RequestData requestData;
+
+    public StandardDirectionOrder buildTemporarySDO(CaseData caseData, DocumentReference currentSDODocument) {
+        DocumentReference document = defaultIfNull(
+            caseData.getPreparedSDO(),
+            defaultIfNull(
+                caseData.getReplacementSDO(),
+                currentSDODocument
+            )
+        );
+
+        return StandardDirectionOrder.builder()
+            .orderDoc(document)
+            .build();
+    }
 
     public StandardDirectionOrder buildOrderFromUpload(StandardDirectionOrder currentOrder) throws Exception {
         UserInfo userInfo = idamClient.getUserInfo(requestData.authorisation());
