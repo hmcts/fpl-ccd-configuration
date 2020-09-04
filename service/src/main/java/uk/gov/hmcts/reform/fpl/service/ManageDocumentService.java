@@ -36,52 +36,29 @@ public class ManageDocumentService {
         this.time = time;
     }
 
-    // TODO
-    // Better name
-    public void initialiseManageDocumentBundleCollectionManageDocumentFields(CaseDetails caseDetails) {
+    public void initialiseFurtherEvidenceFields(CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        switch (caseData.getManageDocument().getType()) {
-            case FURTHER_EVIDENCE_DOCUMENTS:
-                initialiseFurtherEvidenceFields(caseDetails);
-                initialiseManageDocumentBundleCollection(caseDetails, TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY);
-                break;
-            case CORRESPONDENCE:
-                initialiseManageDocumentBundleCollection(caseDetails, CORRESPONDING_DOCUMENTS_COLLECTION_KEY);
-                break;
-            case C2:
-                // TODO
-                // Populate data for case type is C2
-                break;
+        if (caseData.getManageDocument().isDocumentRelatedToHearing()) {
+            UUID selectedHearingCode = mapper.convertValue(caseDetails.getData().get(MANAGE_DOCUMENTS_HEARING_LIST_KEY),
+                UUID.class);
+            HearingBooking hearingBooking = getHearingBookingByUUID(caseData.getHearingDetails(), selectedHearingCode);
+
+            caseDetails.getData().put(MANAGE_DOCUMENTS_HEARING_LABEL_KEY, hearingBooking.toLabel(DATE));
+            caseDetails.getData().put(MANAGE_DOCUMENTS_HEARING_LIST_KEY,
+                caseData.buildDynamicHearingList(selectedHearingCode));
         }
     }
 
-    // TODO
-    // Better name
-    public void updateManageDocumentCollections(CaseDetails caseDetails, CaseDetails caseDetailsBefore) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
-
-        switch (caseData.getManageDocument().getType()) {
-            case FURTHER_EVIDENCE_DOCUMENTS:
-                caseDetails.getData().put(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY,
-                    setDateTimeUploadedOnManageDocumentCollection(caseData.getCorrespondenceDocuments()));
-                buildFurtherEvidenceCollection(caseDetails);
-                // TODO
-                // Build new collection object
-                break;
-            case CORRESPONDENCE:
-                caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY,
-                    setDateTimeUploadedOnManageDocumentCollection(caseData.getCorrespondenceDocuments(), caseDataBefore.getCorrespondenceDocuments()));
-                break;
-            case C2:
-                // TODO
-                // Populate data for case type is C2
-                break;
+    public void initialiseManageDocumentBundleCollection(CaseDetails caseDetails, String collectionKey) {
+        if (caseDetails.getData().get(collectionKey) == null) {
+            List<Element<ManageDocumentBundle>> documentBundle = wrapElements(ManageDocumentBundle.builder()
+                .build());
+            caseDetails.getData().put(collectionKey, documentBundle);
         }
     }
 
-    private void buildFurtherEvidenceCollection(CaseDetails caseDetails) {
+    public void buildFurtherEvidenceCollection(CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (caseData.getManageDocument().isDocumentRelatedToHearing()) {
@@ -117,7 +94,7 @@ public class ManageDocumentService {
         }
     }
 
-    private List<Element<ManageDocumentBundle>> setDateTimeUploadedOnManageDocumentCollection(
+    public List<Element<ManageDocumentBundle>> setDateTimeUploadedOnManageDocumentCollection(
         List<Element<ManageDocumentBundle>> manageDocumentBundle, List<Element<ManageDocumentBundle>> manageDocumentBundleBefore) {
 
         if(!manageDocumentBundle.equals(manageDocumentBundleBefore) && manageDocumentBundle.size() == manageDocumentBundleBefore.size()) {
@@ -135,28 +112,6 @@ public class ManageDocumentService {
                     manageDocumentBundleElement.getValue().setDateTimeUploaded(time.now());
                 }
             }).collect(Collectors.toList());
-    }
-
-    private void initialiseFurtherEvidenceFields(CaseDetails caseDetails) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
-        if (caseData.getManageDocument().isDocumentRelatedToHearing()) {
-            UUID selectedHearingCode = mapper.convertValue(caseDetails.getData().get(MANAGE_DOCUMENTS_HEARING_LIST_KEY),
-                UUID.class);
-            HearingBooking hearingBooking = getHearingBookingByUUID(caseData.getHearingDetails(), selectedHearingCode);
-
-            caseDetails.getData().put(MANAGE_DOCUMENTS_HEARING_LABEL_KEY, hearingBooking.toLabel(DATE));
-            caseDetails.getData().put(MANAGE_DOCUMENTS_HEARING_LIST_KEY,
-                caseData.buildDynamicHearingList(selectedHearingCode));
-        }
-    }
-
-    private void initialiseManageDocumentBundleCollection(CaseDetails caseDetails, String collectionKey) {
-        if (caseDetails.getData().get(collectionKey) == null) {
-            List<Element<ManageDocumentBundle>> documentBundle = wrapElements(ManageDocumentBundle.builder()
-                .build());
-            caseDetails.getData().put(collectionKey, documentBundle);
-        }
     }
 
     private Element<HearingFurtherEvidenceBundle> buildHearingFurtherEvidenceBundle(

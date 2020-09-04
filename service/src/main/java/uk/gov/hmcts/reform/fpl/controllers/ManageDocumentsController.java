@@ -14,6 +14,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.ManageDocumentService;
 
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
+
 @Api
 @RestController
 @RequestMapping("/callback/manage-documents")
@@ -40,7 +43,21 @@ public class ManageDocumentsController {
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        manageDocumentService.initialiseManageDocumentBundleCollectionManageDocumentFields(caseDetails);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        switch (caseData.getManageDocument().getType()) {
+            case FURTHER_EVIDENCE_DOCUMENTS:
+                manageDocumentService.initialiseFurtherEvidenceFields(caseDetails);
+                manageDocumentService.initialiseManageDocumentBundleCollection(caseDetails, TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY);
+                break;
+            case CORRESPONDENCE:
+                manageDocumentService.initialiseManageDocumentBundleCollection(caseDetails, CORRESPONDING_DOCUMENTS_COLLECTION_KEY);
+                break;
+            case C2:
+                // TODO
+                // Populate data for case type is C2
+                break;
+        }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -51,8 +68,27 @@ public class ManageDocumentsController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
 
-        manageDocumentService.updateManageDocumentCollections(caseDetails, caseDetailsBefore);
+
+        switch (caseData.getManageDocument().getType()) {
+            case FURTHER_EVIDENCE_DOCUMENTS:
+//                caseDetails.getData().put(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY,
+//                    setDateTimeUploadedOnManageDocumentCollection(caseData.getFurtherEvidenceDocumentsTEMP()));
+                manageDocumentService.buildFurtherEvidenceCollection(caseDetails);
+                // TODO
+                // Build new collection object
+                break;
+            case CORRESPONDENCE:
+                caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY,
+                    manageDocumentService.setDateTimeUploadedOnManageDocumentCollection(caseData.getCorrespondenceDocuments(), caseDataBefore.getCorrespondenceDocuments()));
+                break;
+            case C2:
+                // TODO
+                // Populate data for case type is C2
+                break;
+        }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
