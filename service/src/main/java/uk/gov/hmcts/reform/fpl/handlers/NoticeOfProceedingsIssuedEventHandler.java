@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfProceedingsIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
-import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForNoticeOfProceedings;
+import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfProceedingsEmailContentProvider;
 
@@ -21,17 +21,15 @@ public class NoticeOfProceedingsIssuedEventHandler {
     private final NoticeOfProceedingsEmailContentProvider noticeOfProceedingsEmailContentProvider;
 
     @EventListener
-    public void notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(NoticeOfProceedingsIssuedEvent event) {
+    public void notifyAllocatedJudge(NoticeOfProceedingsIssuedEvent event) {
         CaseData caseData = event.getCaseData();
 
         if (hasJudgeEmail(caseData.getNoticeOfProceedings())) {
-            AllocatedJudgeTemplateForNoticeOfProceedings parameters = noticeOfProceedingsEmailContentProvider
-                .buildAllocatedJudgeNotification(caseData);
+            NotifyData notifyData = noticeOfProceedingsEmailContentProvider.buildAllocatedJudgeNotification(caseData);
+            String recipient = caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor().getJudgeEmailAddress();
 
-            String email = caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor().getJudgeEmailAddress();
-
-            notificationService.sendEmail(NOTICE_OF_PROCEEDINGS_ISSUED_JUDGE_TEMPLATE, email, parameters,
-                caseData.getId().toString());
+            notificationService
+                .sendEmail(NOTICE_OF_PROCEEDINGS_ISSUED_JUDGE_TEMPLATE, recipient, notifyData, caseData.getId());
         }
     }
 

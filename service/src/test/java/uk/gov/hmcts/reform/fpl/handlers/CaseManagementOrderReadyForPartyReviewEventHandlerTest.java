@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import com.google.common.collect.ImmutableMap;
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -12,14 +11,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForPartyReviewEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.notify.cmo.CmoNotifyData;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
-
-import java.util.Map;
 
 import static com.google.common.base.Charsets.ISO_8859_1;
 import static org.mockito.ArgumentMatchers.eq;
@@ -72,35 +70,35 @@ class CaseManagementOrderReadyForPartyReviewEventHandlerTest {
             EMAIL))
             .willReturn((getCMOReadyforReviewByPartiesNotificationParameters(EMAIL)));
 
-        orderReadyForPartyReviewEventHandler.sendEmailForCaseManagementOrderReadyForPartyReview(
+        orderReadyForPartyReviewEventHandler.notifyRepresentatives(
             new CaseManagementOrderReadyForPartyReviewEvent(caseData, DOCUMENT_CONTENTS));
 
         verify(notificationService).sendEmail(
             eq(CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE),
             eq("fred@flinstone.com"),
             eqJson(getCMOReadyforReviewByPartiesNotificationParameters(DIGITAL_SERVICE)),
-            eq("12345"));
+            eq(caseData.getId()));
 
         verify(notificationService).sendEmail(
             eq(CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE),
             eq("barney@rubble.com"),
             eqJson(getCMOReadyforReviewByPartiesNotificationParameters(EMAIL)),
-            eq("12345"));
+            eq(caseData.getId()));
     }
 
-    private Map<String, Object> getCMOReadyforReviewByPartiesNotificationParameters(
+    private CmoNotifyData getCMOReadyforReviewByPartiesNotificationParameters(
         RepresentativeServingPreferences servingPreference) {
         String fileContent = new String(Base64.encodeBase64(DOCUMENT_CONTENTS), ISO_8859_1);
         JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
 
         final String subjectLine = "Jones, SACCCCCCCC5676576567," + " hearing 1 Feb 2020";
 
-        return ImmutableMap.<String, Object>builder()
-            .put("subjectLineWithHearingDate", subjectLine)
-            .put("respondentLastName", "Jones")
-            .put("digitalPreference", servingPreference == DIGITAL_SERVICE ? "Yes" : "No")
-            .put("caseUrl", servingPreference == DIGITAL_SERVICE ? formatCaseUrl("http://fake-url", 12345L) : "")
-            .put("link_to_document", jsonFileObject)
+        return CmoNotifyData.builder()
+            .subjectLineWithHearingDate(subjectLine)
+            .respondentLastName("Jones")
+            .digitalPreference(servingPreference == DIGITAL_SERVICE ? "Yes" : "No")
+            .caseUrl(servingPreference == DIGITAL_SERVICE ? formatCaseUrl("http://fake-url", 12345L) : "")
+            .documentLink(jsonFileObject.toMap())
             .build();
     }
 }

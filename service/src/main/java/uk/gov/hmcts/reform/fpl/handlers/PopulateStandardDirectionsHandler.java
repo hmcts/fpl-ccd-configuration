@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
@@ -10,6 +9,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -23,7 +23,7 @@ import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMap
 public class PopulateStandardDirectionsHandler {
     private final CoreCaseDataService coreCaseDataService;
     private final StandardDirectionsService standardDirectionsService;
-    private final ObjectMapper mapper;
+    private final CaseConverter caseConverter;
     private final HearingBookingService hearingService;
 
     @Async
@@ -35,16 +35,17 @@ public class PopulateStandardDirectionsHandler {
             caseDetails.getCaseTypeId(),
             caseDetails.getId(),
             "populateSDO",
-            populateStandardDirections(caseDetails.getData()));
+            populateStandardDirections(caseDetails));
     }
 
-    private Map<String, Object> populateStandardDirections(Map<String, Object> data) {
-        CaseData caseData = mapper.convertValue(data, CaseData.class);
+    private Map<String, Object> populateStandardDirections(CaseDetails caseDetails) {
+        CaseData caseData = caseConverter.convert(caseDetails);
         HearingBooking hearingBooking = hearingService.getFirstHearing(caseData.getHearingDetails()).orElse(null);
 
         getAssigneeToDirectionMapping(standardDirectionsService.getDirections(hearingBooking))
-            .forEach((assignee, directionsElements) -> data.put(assignee.getValue(), directionsElements));
+            .forEach((assignee, directionsElements) ->
+                caseDetails.getData().put(assignee.getValue(), directionsElements));
 
-        return data;
+        return caseDetails.getData();
     }
 }

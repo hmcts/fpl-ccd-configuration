@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.email;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,16 +30,19 @@ public class NotificationService {
         this.environment = environment;
     }
 
-    public void sendEmail(String templateId, String email, Map<String, Object> parameters, String reference) {
-        log.debug("Sending email (with template id: {}) to {}", templateId, maskEmail(email));
+    public void sendEmail(String templateId, String recipient, NotifyData data, String reference) {
+        Map<String, Object> personalisation = mapper.convertValue(data, new TypeReference<>() {
+        });
+        log.debug("Sending email (with template id: {}) to {}", templateId, maskEmail(recipient));
         try {
-            notificationClient.sendEmail(templateId, email, parameters, environment + "/" + reference);
+            notificationClient
+                .sendEmail(templateId, recipient, personalisation, environment + "/" + reference);
         } catch (NotificationClientException e) {
-            log.error("Failed to send email (with template id: {}) to {}", templateId, maskEmail(email), e);
+            log.error("Failed to send email (with template id: {}) to {}", templateId, maskEmail(recipient), e);
         }
     }
 
-    public void sendEmail(String templateId, String email, NotifyData data, String reference) {
-        sendEmail(templateId, email, data.toMap(mapper), reference);
+    public void sendEmail(String templateId, String recipient, NotifyData data, Long reference) {
+        sendEmail(templateId, recipient, data, reference.toString());
     }
 }

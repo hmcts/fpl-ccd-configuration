@@ -1,23 +1,17 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForCMO;
+import uk.gov.hmcts.reform.fpl.model.notify.cmo.CmoNotifyData;
 
 import java.util.List;
-import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 public class NotificationEventHandlerTestData {
     static final String LOCAL_AUTHORITY_CODE = "example";
@@ -40,71 +34,41 @@ public class NotificationEventHandlerTestData {
     }
 
     public static AllocatedJudgeTemplateForCMO getCMOReadyForJudgeNotificationParameters() {
-        Map<String, Object> commonCMONotificationParameters = expectedCommonCMONotificationParameters();
+        CmoNotifyData commonCMONotificationParameters = expectedCommonCMONotificationParameters();
 
-        AllocatedJudgeTemplateForCMO allocatedJudgeTemplate = new AllocatedJudgeTemplateForCMO();
-        allocatedJudgeTemplate.setSubjectLineWithHearingDate(commonCMONotificationParameters
-            .get("subjectLineWithHearingDate")
-            .toString());
-        allocatedJudgeTemplate.setCaseUrl(commonCMONotificationParameters.get("caseUrl").toString());
-        allocatedJudgeTemplate.setReference(commonCMONotificationParameters.get("reference").toString());
-        allocatedJudgeTemplate.setRespondentLastName("Smith");
-        allocatedJudgeTemplate.setJudgeTitle("Her Honour Judge");
-        allocatedJudgeTemplate.setJudgeName("Moley");
-
-        return allocatedJudgeTemplate;
+        return AllocatedJudgeTemplateForCMO.builder()
+            .subjectLineWithHearingDate(commonCMONotificationParameters.getSubjectLineWithHearingDate())
+            .caseUrl(commonCMONotificationParameters.getCaseUrl())
+            .reference(commonCMONotificationParameters.getReference())
+            .respondentLastName("Smith")
+            .judgeTitle("Her Honour Judge")
+            .judgeName("Moley")
+            .build();
     }
 
     public static AllocatedJudgeTemplate getExpectedAllocatedJudgeNotificationParameters() {
-        AllocatedJudgeTemplate allocatedJudgeTemplate = new AllocatedJudgeTemplate();
-        allocatedJudgeTemplate.setJudgeTitle("Her Honour Judge");
-        allocatedJudgeTemplate.setJudgeName("Moley");
-        allocatedJudgeTemplate.setCaseName("test");
-        allocatedJudgeTemplate.setCaseUrl("http://fake-url/cases/case-details/12345");
-
-        return allocatedJudgeTemplate;
-    }
-
-    public static Map<String, Object> expectedCommonCMONotificationParameters() {
-        String subjectLine = "Lastname, SACCCCCCCC5676576567";
-        return ImmutableMap.of("subjectLineWithHearingDate", subjectLine,
-            "reference", "12345",
-            "caseUrl", String.format("null/case/%s/%s/12345", JURISDICTION, CASE_TYPE));
-    }
-
-    public static Map<String, Object> getCMORejectedCaseLinkNotificationParameters() {
-        return ImmutableMap.<String, Object>builder()
-            .put("requestedChanges", "Please make these changes XYZ")
-            .putAll(expectedCommonCMONotificationParameters())
+        return AllocatedJudgeTemplate.builder()
+            .judgeTitle("Her Honour Judge")
+            .judgeName("Moley")
+            .caseName("test")
+            .caseUrl("http://fake-url/cases/case-details/12345")
             .build();
     }
 
-    public static ImmutableMap<String, Object> getCMOIssuedCaseLinkNotificationParameters() {
-        return ImmutableMap.<String, Object>builder()
-            .put("localAuthorityNameOrRepresentativeFullName", LOCAL_AUTHORITY_NAME)
-            .putAll(expectedCommonCMONotificationParameters())
+    public static CmoNotifyData expectedCommonCMONotificationParameters() {
+        return CmoNotifyData.builder()
+            .subjectLineWithHearingDate("Lastname, SACCCCCCCC5676576567")
+            .reference("12345")
+            .caseUrl(String.format("null/case/%s/%s/12345", JURISDICTION, CASE_TYPE))
             .build();
     }
 
-    public static CallbackRequest buildCallbackRequest() {
-        return CallbackRequest.builder()
-            .caseDetails(buildCaseDetailsWithRepresentatives())
-            .build();
-    }
-
-    public static CaseDetails buildCaseDetailsWithRepresentatives() {
-        CaseDetails caseDetails = callbackRequest().getCaseDetails();
-        Map<String, Object> caseData = caseDetails.getData();
-
-        caseData.put("representatives", createRepresentatives(DIGITAL_SERVICE));
-        return caseDetails.toBuilder()
-            .data(caseData)
-            .build();
-    }
-
-    public static CaseData buildCaseDataWithRepresentatives() {
-        return CaseData.builder()
-            .representatives(createRepresentatives(DIGITAL_SERVICE))
+    public static CmoNotifyData getCMOIssuedCaseLinkNotificationParameters() {
+        return CmoNotifyData.builder()
+            .subjectLineWithHearingDate("Lastname, SACCCCCCCC5676576567")
+            .reference("12345")
+            .caseUrl(String.format("null/case/%s/%s/12345", JURISDICTION, CASE_TYPE))
+            .localAuthorityNameOrRepresentativeFullName(LOCAL_AUTHORITY_NAME)
             .build();
     }
 

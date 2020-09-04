@@ -33,17 +33,16 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     private static final byte[] APPLICATION_BINARY = TestDataHelper.DOCUMENT_CONTENT;
 
-    private static DocumentReference applicationDocument;
+    private static DocumentReference applicationDocument = testDocumentReference();
 
     @BeforeEach
     void init() {
-        applicationDocument = testDocumentReference();
         when(documentDownloadService.downloadDocument(applicationDocument.getBinaryUrl()))
             .thenReturn(APPLICATION_BINARY);
     }
 
     @Test
-    void shouldReturnExpectedMapWithValidCaseDetails() {
+    void shouldReturnCompletedNotifyData() {
         List<String> ordersAndDirections = ImmutableList.of("Emergency protection order",
             "Contact with any named person");
 
@@ -59,7 +58,7 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
         cafcassSubmissionTemplate.setNonUrgentHearing(NO.getValue());
         cafcassSubmissionTemplate.setFirstRespondentName("Smith");
         cafcassSubmissionTemplate.setReference(CASE_REFERENCE);
-        cafcassSubmissionTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
+        cafcassSubmissionTemplate.setCaseUrl(getCaseUrl(CASE_REFERENCE));
         cafcassSubmissionTemplate.setDocumentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
             .map(JSONObject::toMap)
             .orElse(null));
@@ -71,7 +70,7 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
     }
 
     @Test
-    void shouldReturnSuccessfullyWithIncompleteCaseDetails() {
+    void shouldReturnIncompletedNotifyData() {
         SubmitCaseCafcassTemplate cafcassSubmissionTemplate = new SubmitCaseCafcassTemplate();
         cafcassSubmissionTemplate.setCafcass(CAFCASS_NAME);
         cafcassSubmissionTemplate.setLocalAuthority(LOCAL_AUTHORITY_NAME);
@@ -84,7 +83,7 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
         cafcassSubmissionTemplate.setNonUrgentHearing(NO.getValue());
         cafcassSubmissionTemplate.setFirstRespondentName("");
         cafcassSubmissionTemplate.setReference("123");
-        cafcassSubmissionTemplate.setCaseUrl(caseUrl("123"));
+        cafcassSubmissionTemplate.setCaseUrl(getCaseUrl("123"));
         cafcassSubmissionTemplate.setDocumentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
             .map(JSONObject::toMap).orElse(null));
 

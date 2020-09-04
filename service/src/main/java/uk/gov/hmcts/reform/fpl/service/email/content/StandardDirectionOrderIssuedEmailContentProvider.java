@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.StandardDirectionOrderContent;
 
 import java.util.List;
-import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked.NONE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked.SOMETHING_ELSE;
@@ -30,21 +29,20 @@ public class StandardDirectionOrderIssuedEmailContentProvider extends StandardDi
     private String xuiBaseUrl;
 
     public AllocatedJudgeTemplateForSDO buildNotificationParametersForAllocatedJudge(CaseData caseData) {
-        Map<String, Object> commonSDOParameters = super.getSDOPersonalisationBuilder(caseData).build();
 
-        AllocatedJudgeTemplateForSDO allocatedJudgeTemplate = new AllocatedJudgeTemplateForSDO();
-        allocatedJudgeTemplate.setFamilyManCaseNumber(commonSDOParameters.get("familyManCaseNumber").toString());
-        allocatedJudgeTemplate.setLeadRespondentsName(commonSDOParameters.get("leadRespondentsName").toString());
-        allocatedJudgeTemplate.setHearingDate(commonSDOParameters.get("hearingDate").toString());
-        allocatedJudgeTemplate.setCaseUrl(commonSDOParameters.get("caseUrl").toString());
-        allocatedJudgeTemplate.setJudgeTitle(caseData.getStandardDirectionOrder()
-            .getJudgeAndLegalAdvisor()
-            .getJudgeOrMagistrateTitle());
-        allocatedJudgeTemplate.setJudgeName(caseData.getStandardDirectionOrder()
-            .getJudgeAndLegalAdvisor()
-            .getJudgeName());
+        return AllocatedJudgeTemplateForSDO.builder()
+            .familyManCaseNumber(getFamilyManCaseNumber(caseData))
+            .leadRespondentsName(getLeadRespondentsName(caseData))
+            .hearingDate(getHearingDate(caseData))
+            .caseUrl(getCaseUrl(caseData.getId()))
+            .judgeTitle(caseData.getStandardDirectionOrder()
+                .getJudgeAndLegalAdvisor()
+                .getJudgeOrMagistrateTitle())
+            .judgeName(caseData.getStandardDirectionOrder()
+                .getJudgeAndLegalAdvisor()
+                .getJudgeName())
+            .build();
 
-        return allocatedJudgeTemplate;
     }
 
     //Clean up private method logic when hearing needs list is improved (remove 'none' option, make others optional)
@@ -54,7 +52,7 @@ public class StandardDirectionOrderIssuedEmailContentProvider extends StandardDi
         HearingBooking hearing = caseData.getFirstHearing().orElseThrow(NoHearingBookingException::new);
 
         CTSCTemplateForSDO ctscTemplateForSDO = new CTSCTemplateForSDO();
-        ctscTemplateForSDO.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
+        ctscTemplateForSDO.setRespondentLastName(getFirstRespondentLastName(caseData));
         ctscTemplateForSDO.setCallout(buildCallout(caseData));
         ctscTemplateForSDO.setCourtName(caseDataExtractionService.getCourtName(caseData.getCaseLocalAuthority()));
         ctscTemplateForSDO.setHearingNeedsPresent(getHearingNeedsPresent(hearing));

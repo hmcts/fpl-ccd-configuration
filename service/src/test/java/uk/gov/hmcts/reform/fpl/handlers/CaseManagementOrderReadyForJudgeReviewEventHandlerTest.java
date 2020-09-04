@@ -15,13 +15,9 @@ import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.CMO;
@@ -59,14 +55,14 @@ class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
             .buildCMOReadyForJudgeReviewNotificationParameters(caseData))
             .willReturn(cmoJudgeReviewParameters);
 
-        caseManagementOrderReadyForJudgeReviewEventHandler.sendEmailForCaseManagementOrderReadyForJudgeReview(
+        caseManagementOrderReadyForJudgeReviewEventHandler.notifyAdmin(
             new CaseManagementOrderReadyForJudgeReviewEvent(caseData));
 
         verify(notificationService).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
             COURT_EMAIL_ADDRESS,
             cmoJudgeReviewParameters,
-            CASE_REFERENCE);
+            caseData.getId());
     }
 
     @Test
@@ -83,14 +79,14 @@ class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
             .buildCMOReadyForJudgeReviewNotificationParameters(caseData))
             .willReturn(cmoJudgeReviewParameters);
 
-        caseManagementOrderReadyForJudgeReviewEventHandler.sendEmailForCaseManagementOrderReadyForJudgeReview(
+        caseManagementOrderReadyForJudgeReviewEventHandler.notifyAdmin(
             new CaseManagementOrderReadyForJudgeReviewEvent(caseData));
 
         verify(notificationService).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
             CTSC_INBOX,
             cmoJudgeReviewParameters,
-            caseData.getId().toString());
+            caseData.getId());
     }
 
     @Test
@@ -105,14 +101,14 @@ class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
             .willReturn(cmoJudgeReviewParameters);
 
         caseManagementOrderReadyForJudgeReviewEventHandler
-            .sendEmailForCaseManagementOrderReadyForJudgeReviewToAllocatedJudge(
+            .notifyAllocatedJudge(
                 new CaseManagementOrderReadyForJudgeReviewEvent(caseData));
 
         verify(notificationService).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE,
             ALLOCATED_JUDGE_EMAIL_ADDRESS,
             cmoJudgeReviewParameters,
-            CASE_REFERENCE);
+            caseData.getId());
     }
 
     @Test
@@ -127,14 +123,10 @@ class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
             .willReturn(cmoJudgeReviewParameters);
 
         caseManagementOrderReadyForJudgeReviewEventHandler
-            .sendEmailForCaseManagementOrderReadyForJudgeReviewToAllocatedJudge(
+            .notifyAllocatedJudge(
                 new CaseManagementOrderReadyForJudgeReviewEvent(caseData));
 
-        verify(notificationService, never()).sendEmail(
-            eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE),
-            anyString(),
-            anyMap(),
-            anyString());
+        verifyNoInteractions(notificationService);
     }
 
     @Test
@@ -151,13 +143,9 @@ class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
             .willReturn(cmoJudgeReviewParameters);
 
         caseManagementOrderReadyForJudgeReviewEventHandler
-            .sendEmailForCaseManagementOrderReadyForJudgeReviewToAllocatedJudge(
+            .notifyAllocatedJudge(
                 new CaseManagementOrderReadyForJudgeReviewEvent(caseData));
 
-        verify(notificationService, never()).sendEmail(
-            eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE),
-            any(),
-            anyMap(),
-            any());
+        verifyNoInteractions(notificationService);
     }
 }

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.notify.payment.FailedPBANotificationData;
+import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.FailedPBAPaymentContentProvider;
@@ -24,28 +24,24 @@ public class FailedPBAPaymentEventHandler {
     private final FailedPBAPaymentContentProvider notificationContent;
 
     @EventListener
-    public void sendFailedPBAPaymentEmailToLocalAuthority(FailedPBAPaymentEvent event) {
+    public void notifyLocalAuthority(FailedPBAPaymentEvent event) {
         CaseData caseData = event.getCaseData();
 
-        FailedPBANotificationData params = notificationContent
-            .buildLANotificationParameters(event.getApplicationType());
-
-        String email = inboxLookupService.getNotificationRecipientEmail(caseData);
+        NotifyData notifyData = notificationContent.getLocalAuthorityNotifyData(event.getApplicationType());
+        String recipient = inboxLookupService.getNotificationRecipientEmail(caseData);
 
         notificationService
-            .sendEmail(APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA, email, params, caseData.getId().toString());
+            .sendEmail(APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA, recipient, notifyData, caseData.getId());
     }
 
     @EventListener
-    public void sendFailedPBAPaymentEmailToCTSC(FailedPBAPaymentEvent event) {
+    public void notifyCTSC(FailedPBAPaymentEvent event) {
         CaseData caseData = event.getCaseData();
 
-        FailedPBANotificationData parameters = notificationContent.buildCtscNotificationParameters(caseData,
-            event.getApplicationType());
+        NotifyData notifyData = notificationContent.getCtscNotifyData(caseData, event.getApplicationType());
+        String recipient = ctscEmailLookupConfiguration.getEmail();
 
-        String email = ctscEmailLookupConfiguration.getEmail();
-
-        notificationService.sendEmail(APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC, email, parameters,
-            caseData.getId().toString());
+        notificationService
+            .sendEmail(APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC, recipient, notifyData, caseData.getId());
     }
 }

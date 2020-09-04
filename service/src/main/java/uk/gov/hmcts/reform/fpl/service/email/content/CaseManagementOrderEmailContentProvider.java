@@ -1,21 +1,20 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import com.google.common.collect.ImmutableMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForCMO;
+import uk.gov.hmcts.reform.fpl.model.notify.cmo.CmoNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.RejectedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-
-import java.util.Map;
 
 import static org.apache.commons.lang3.StringUtils.uncapitalize;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
@@ -30,25 +29,22 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
 
     private final Time time;
 
-    private static final String CASE_URL = "caseUrl";
-    private static final String SUBJECT_LINE = "subjectLineWithHearingDate";
-    private static final String REFERENCE = "reference";
-    private static final String RESPONDENT_LAST_NAME = "respondentLastName";
-    private static final String DIGITAL_PREFERENCE = "digitalPreference";
+    public CmoNotifyData buildCMOIssuedCaseLinkNotificationParameters(CaseData caseData, String recipientName) {
 
-    public Map<String, Object> buildCMOIssuedCaseLinkNotificationParameters(CaseData caseData, String recipientName) {
-        return ImmutableMap.<String, Object>builder()
-            .putAll(buildCommonCMONotificationParameters(caseData))
-            .put("localAuthorityNameOrRepresentativeFullName", recipientName)
+        return CmoNotifyData.builder()
+            .subjectLineWithHearingDate(buildCallout(caseData))
+            .reference(String.valueOf(caseData.getId()))
+            .caseUrl(getCaseUrl(caseData.getId()))
+            .localAuthorityNameOrRepresentativeFullName(recipientName)
             .build();
     }
 
-    public IssuedCMOTemplate buildCMOIssuedNotificationParameters(CaseData caseData, CaseManagementOrder cmo,
-                                                                  RepresentativeServingPreferences servingPreference) {
+    public IssuedCMOTemplate getCMOIssuedNotifyData(CaseData caseData, CaseManagementOrder cmo,
+                                                    RepresentativeServingPreferences servingPreference) {
 
         IssuedCMOTemplate template = new IssuedCMOTemplate();
 
-        template.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
+        template.setRespondentLastName(getFirstRespondentLastName(caseData));
         template.setFamilyManCaseNumber(caseData.getFamilyManCaseNumber());
         template.setHearing(uncapitalize(cmo.getHearing()));
         template.setDigitalPreference(hasDigitalServingPreference(servingPreference) ? "Yes" : "No");
@@ -62,7 +58,7 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
                                                                              CaseManagementOrder cmo) {
         RejectedCMOTemplate template = new RejectedCMOTemplate();
 
-        template.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
+        template.setRespondentLastName(getFirstRespondentLastName(caseData));
         template.setFamilyManCaseNumber(caseData.getFamilyManCaseNumber());
         template.setHearing(uncapitalize(cmo.getHearing()));
         template.setCaseUrl(getCaseUrl(caseData.getId()));
@@ -71,16 +67,18 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
         return template;
     }
 
-    public Map<String, Object> buildCMOPartyReviewParameters(final CaseData caseData,
-                                                             byte[] documentContents,
-                                                             RepresentativeServingPreferences servingPreference) {
+    public CmoNotifyData buildCMOPartyReviewParameters(final CaseData caseData,
+                                                       byte[] documentContents,
+                                                       RepresentativeServingPreferences servingPreference) {
 
-        return ImmutableMap.<String, Object>builder()
-            .put(SUBJECT_LINE, buildCallout(caseData))
-            .put(RESPONDENT_LAST_NAME, getFirstRespondentLastName(caseData.getRespondents1()))
-            .put(DIGITAL_PREFERENCE, servingPreference == DIGITAL_SERVICE ? "Yes" : "No")
-            .put(CASE_URL, servingPreference == DIGITAL_SERVICE ? getCaseUrl(caseData.getId()) : "")
-            .putAll(linkToAttachedDocument(documentContents))
+        return CmoNotifyData.builder()
+            .subjectLineWithHearingDate(buildCallout(caseData))
+            .digitalPreference(servingPreference == DIGITAL_SERVICE ? "Yes" : "No")
+            .caseUrl(servingPreference == DIGITAL_SERVICE ? getCaseUrl(caseData.getId()) : "")
+            .respondentLastName(getFirstRespondentLastName(caseData))
+            .documentLink(generateAttachedDocumentLink(documentContents)
+                .map(JSONObject::toMap)
+                .orElse(null))
             .build();
     }
 
@@ -94,40 +92,16 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
             hearing);
     }
 
-    public AllocatedJudgeTemplateForCMO buildCMOReadyForJudgeReviewNotificationParameters(
-        final CaseData caseData) {
-        Map<String, Object> commonCMONotificationParameters = buildCommonCMONotificationParameters(caseData);
+    public AllocatedJudgeTemplateForCMO buildCMOReadyForJudgeReviewNotificationParameters(CaseData caseData) {
 
-        AllocatedJudgeTemplateForCMO allocatedJudgeTemplate
-            = new AllocatedJudgeTemplateForCMO();
-        allocatedJudgeTemplate.setSubjectLineWithHearingDate(commonCMONotificationParameters
-            .get(SUBJECT_LINE)
-            .toString());
-        allocatedJudgeTemplate.setCaseUrl(commonCMONotificationParameters.get(CASE_URL).toString());
-        allocatedJudgeTemplate.setReference(commonCMONotificationParameters.get(REFERENCE).toString());
-        allocatedJudgeTemplate.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
-        allocatedJudgeTemplate.setJudgeTitle(caseData.getAllocatedJudge().getJudgeOrMagistrateTitle());
-        allocatedJudgeTemplate.setJudgeName(caseData.getAllocatedJudge().getJudgeName());
-
-        return allocatedJudgeTemplate;
-    }
-
-    private Map<String, Object> buildCommonCMONotificationParameters(final CaseData caseData) {
-
-        return ImmutableMap.of(
-            SUBJECT_LINE, buildCallout(caseData),
-            REFERENCE, String.valueOf(caseData.getId()),
-            CASE_URL, getCaseUrl(caseData.getId())
-        );
-    }
-
-    private Map<String, Object> linkToAttachedDocument(final byte[] documentContents) {
-        ImmutableMap.Builder<String, Object> url = ImmutableMap.builder();
-
-        generateAttachedDocumentLink(documentContents).ifPresent(
-            attachedDocumentLink -> url.put("link_to_document", attachedDocumentLink));
-
-        return url.build();
+        return AllocatedJudgeTemplateForCMO.builder()
+            .subjectLineWithHearingDate(buildCallout(caseData))
+            .caseUrl(getCaseUrl(caseData.getId()))
+            .reference(caseData.getId().toString())
+            .respondentLastName(getFirstRespondentLastName(caseData))
+            .judgeTitle(caseData.getAllocatedJudge().getJudgeOrMagistrateTitle())
+            .judgeName(caseData.getAllocatedJudge().getJudgeName())
+            .build();
     }
 
     private boolean hasDigitalServingPreference(RepresentativeServingPreferences servingPreference) {

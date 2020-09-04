@@ -9,15 +9,14 @@ import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentPr
 @Service
 public class FailedPBAPaymentContentProvider extends AbstractEmailContentProvider {
 
-    public FailedPBANotificationData buildCtscNotificationParameters(CaseData caseData,
-                                                                     ApplicationType applicationType) {
+    public FailedPBANotificationData getCtscNotifyData(CaseData caseData, ApplicationType applicationType) {
         return FailedPBANotificationData.builder()
             .caseUrl(getCaseUrl(caseData.getId()))
             .applicationType(applicationType.getType())
             .build();
     }
 
-    public FailedPBANotificationData buildLANotificationParameters(ApplicationType applicationType) {
+    public FailedPBANotificationData getLocalAuthorityNotifyData(ApplicationType applicationType) {
         return FailedPBANotificationData.builder()
             .applicationType(applicationType.getType())
             .build();

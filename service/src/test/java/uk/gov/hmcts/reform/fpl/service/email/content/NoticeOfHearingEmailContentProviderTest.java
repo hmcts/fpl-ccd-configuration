@@ -54,7 +54,6 @@ class NoticeOfHearingEmailContentProviderTest extends AbstractEmailContentProvid
 
     @BeforeEach
     void setUp() {
-
         LocalDateTime futureDate = time.now().plusDays(1);
         caseData = buildCaseDetails();
         hearingBooking = buildHearingBooking(futureDate, futureDate.plusDays(1));

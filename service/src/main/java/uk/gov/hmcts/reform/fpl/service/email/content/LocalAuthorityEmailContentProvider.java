@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
+import uk.gov.hmcts.reform.fpl.model.notify.sdo.SDONotifyData;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.StandardDirectionOrderContent;
-
-import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
@@ -16,15 +16,21 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 public class LocalAuthorityEmailContentProvider extends StandardDirectionOrderContent {
     private final LocalAuthorityNameLookupConfiguration config;
 
-    public Map<String, Object> buildLocalAuthorityStandardDirectionOrderIssuedNotification(CaseData caseData) {
-        return super.getSDOPersonalisationBuilder(caseData)
-            .put("title", config.getLocalAuthorityName(caseData.getCaseLocalAuthority()))
+    public SDONotifyData buildLocalAuthorityStandardDirectionOrderIssuedNotification(CaseData caseData) {
+        return SDONotifyData.builder()
+            .title(config.getLocalAuthorityName(caseData.getCaseLocalAuthority()))
+            .familyManCaseNumber(getFamilyManCaseNumber(caseData))
+            .leadRespondentsName(getLeadRespondentsName(caseData))
+            .hearingDate(getHearingDate(caseData))
+            .reference(caseData.getId().toString())
+            .caseUrl(getCaseUrl(caseData.getId()))
             .build();
     }
 
-    public Map<String, Object> buildNoticeOfPlacementOrderUploadedNotification(CaseData caseData) {
-        return Map.of(
-            "respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()),
-            "caseUrl", getCaseUrl(caseData.getId()));
+    public BaseCaseNotifyData buildNoticeOfPlacementOrderUploadedNotification(CaseData caseData) {
+        return BaseCaseNotifyData.builder()
+            .respondentLastName(getFirstRespondentLastName(caseData))
+            .caseUrl(getCaseUrl(caseData))
+            .build();
     }
 }

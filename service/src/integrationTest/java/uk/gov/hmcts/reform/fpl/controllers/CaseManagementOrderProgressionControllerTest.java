@@ -65,7 +65,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
-import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(CaseManagementOrderProgressionController.class)
@@ -170,16 +169,16 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         postAboutToSubmitEvent(buildCallbackRequest(caseDetails, DRAFT_CASE_MANAGEMENT_ORDER));
 
         verify(notificationClient).sendEmail(
-            eq(CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE),
-            eq("robert@example.com"),
-            eqJson(expectedReviewByRepresentativesNotificationParameters(DIGITAL_SERVICE)),
-            eq(NOTIFICATION_REFERENCE));
+            CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE,
+            "robert@example.com",
+            expectedReviewByRepresentativesNotificationParameters(DIGITAL_SERVICE),
+            NOTIFICATION_REFERENCE);
 
         verify(notificationClient).sendEmail(
-            eq(CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE),
-            eq("charlie@example.com"),
-            eqJson(expectedReviewByRepresentativesNotificationParameters(EMAIL)),
-            eq(NOTIFICATION_REFERENCE));
+            CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE,
+            "charlie@example.com",
+            expectedReviewByRepresentativesNotificationParameters(EMAIL),
+            NOTIFICATION_REFERENCE);
     }
 
     @Test
@@ -252,11 +251,11 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         final String subjectLine = "Jones, SACCCCCCCC5676576567, hearing " + hearingDate;
 
         return ImmutableMap.<String, Object>builder()
-            .put("subjectLineWithHearingDate", subjectLine)
             .put("respondentLastName", "Jones")
-            .put("digitalPreference", servingPreference == DIGITAL_SERVICE ? "Yes" : "No")
             .put("caseUrl", servingPreference == DIGITAL_SERVICE ? formatCaseUrl("http://fake-url", CASE_ID) : "")
-            .put("link_to_document", jsonFileObject)
+            .put("subjectLineWithHearingDate", subjectLine)
+            .put("digitalPreference", servingPreference == DIGITAL_SERVICE ? "Yes" : "No")
+            .put("link_to_document", jsonFileObject.toMap())
             .build();
     }
 

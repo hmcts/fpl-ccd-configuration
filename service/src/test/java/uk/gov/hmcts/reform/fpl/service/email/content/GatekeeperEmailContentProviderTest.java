@@ -39,7 +39,7 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
         gatekeeperNotificationTemplate.setNonUrgentHearing(NO.getValue());
         gatekeeperNotificationTemplate.setFirstRespondentName("Smith");
         gatekeeperNotificationTemplate.setReference(CASE_REFERENCE);
-        gatekeeperNotificationTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
+        gatekeeperNotificationTemplate.setCaseUrl(getCaseUrl(CASE_REFERENCE));
 
         assertThat(gatekeeperEmailContentProvider.buildGatekeeperNotification(populatedCaseData()))
             .isEqualToComparingFieldByField(gatekeeperNotificationTemplate);
@@ -59,7 +59,7 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
         gatekeeperNotificationTemplate.setNonUrgentHearing(NO.getValue());
         gatekeeperNotificationTemplate.setFirstRespondentName("");
         gatekeeperNotificationTemplate.setReference("123");
-        gatekeeperNotificationTemplate.setCaseUrl(caseUrl("123"));
+        gatekeeperNotificationTemplate.setCaseUrl(getCaseUrl("123"));
 
         CaseData caseData = CaseData.builder()
             .id(123L)
@@ -85,7 +85,7 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
         gatekeeperNotificationTemplate.setNonUrgentHearing(YES.getValue());
         gatekeeperNotificationTemplate.setFirstRespondentName("");
         gatekeeperNotificationTemplate.setReference("123");
-        gatekeeperNotificationTemplate.setCaseUrl(caseUrl("123"));
+        gatekeeperNotificationTemplate.setCaseUrl(getCaseUrl("123"));
 
         CaseData caseData = CaseData.builder()
             .id(123L)

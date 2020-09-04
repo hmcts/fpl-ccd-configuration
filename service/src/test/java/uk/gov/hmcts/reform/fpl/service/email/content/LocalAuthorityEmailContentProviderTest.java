@@ -7,8 +7,9 @@ import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
+import uk.gov.hmcts.reform.fpl.model.notify.sdo.SDONotifyData;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
-import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.util.Map;
 
@@ -16,11 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ContextConfiguration(classes = {
-    LocalAuthorityEmailContentProvider.class,
-    LookupTestConfig.class,
-    FixedTimeConfiguration.class
-})
+@ContextConfiguration(classes = {LocalAuthorityEmailContentProvider.class, LookupTestConfig.class})
 class LocalAuthorityEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     @Autowired
@@ -28,29 +25,39 @@ class LocalAuthorityEmailContentProviderTest extends AbstractEmailContentProvide
 
     @Test
     void shouldReturnExpectedMapWithValidSDODetails() {
-        Map<String, Object> expectedMap = standardDirectionTemplateParameters();
+        NotifyData expectedData = SDONotifyData.builder()
+            .title(LOCAL_AUTHORITY_NAME)
+            .familyManCaseNumber("12345,")
+            .leadRespondentsName("Smith")
+            .hearingDate("1 January 2020")
+            .reference(CASE_REFERENCE)
+            .caseUrl(getCaseUrl(CASE_REFERENCE))
+            .build();
 
-        assertThat(localAuthorityEmailContentProvider
-            .buildLocalAuthorityStandardDirectionOrderIssuedNotification(populatedCaseData())).isEqualTo(expectedMap);
+        NotifyData actualData = localAuthorityEmailContentProvider
+            .buildLocalAuthorityStandardDirectionOrderIssuedNotification(populatedCaseData());
+
+        assertThat(actualData).isEqualTo(expectedData);
     }
 
     @Test
     void shouldReturnExpectedMapWithNullSDODetails() {
-        assertThat(localAuthorityEmailContentProvider
-            .buildLocalAuthorityStandardDirectionOrderIssuedNotification(getCaseData()))
-            .isEqualTo(emptyTemplateParameters());
+
+        SDONotifyData expectedData = SDONotifyData.builder()
+            .title(LOCAL_AUTHORITY_NAME)
+            .familyManCaseNumber("")
+            .hearingDate("")
+            .leadRespondentsName("Moley")
+            .reference("1")
+            .caseUrl(getCaseUrl("1"))
+            .build();
+
+        SDONotifyData actualData = localAuthorityEmailContentProvider
+            .buildLocalAuthorityStandardDirectionOrderIssuedNotification(getCaseData());
+
+        assertThat(actualData).isEqualTo(expectedData);
     }
 
-    private Map<String, Object> standardDirectionTemplateParameters() {
-        return ImmutableMap.<String, Object>builder()
-            .put("title", LOCAL_AUTHORITY_NAME)
-            .put("familyManCaseNumber", "12345,")
-            .put("leadRespondentsName", "Smith")
-            .put("hearingDate", "1 January 2020")
-            .put("reference", CASE_REFERENCE)
-            .put("caseUrl", caseUrl(CASE_REFERENCE))
-            .build();
-    }
 
     private Map<String, Object> emptyTemplateParameters() {
         return ImmutableMap.<String, Object>builder()

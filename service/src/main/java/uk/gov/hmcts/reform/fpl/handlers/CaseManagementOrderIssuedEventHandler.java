@@ -37,7 +37,7 @@ public class CaseManagementOrderIssuedEventHandler {
     private final DocumentDownloadService documentDownloadService;
 
     @EventListener
-    public void sendEmailsForIssuedCaseManagementOrder(final CaseManagementOrderIssuedEvent event) {
+    public void notifyParties(final CaseManagementOrderIssuedEvent event) {
         CaseData caseData = event.getCaseData();
         CaseManagementOrder issuedCmo = event.getCmo();
 
@@ -46,28 +46,28 @@ public class CaseManagementOrderIssuedEventHandler {
         sendToCafcass(caseData, issuedCmo);
         sendToRepresentatives(caseData, issuedCmo, DIGITAL_SERVICE);
         sendToRepresentatives(caseData, issuedCmo, EMAIL);
-        issuedOrderAdminNotificationHandler.sendToAdmin(caseData,
+        issuedOrderAdminNotificationHandler.notifyAdmin(caseData,
             documentDownloadService.downloadDocument(issuedCmo.getOrder().getBinaryUrl()), CMO);
     }
 
     private void sendToLocalAuthority(final CaseData caseData, CaseManagementOrder cmo) {
         final IssuedCMOTemplate localAuthorityNotificationParameters = caseManagementOrderEmailContentProvider
-            .buildCMOIssuedNotificationParameters(caseData, cmo, DIGITAL_SERVICE);
+            .getCMOIssuedNotifyData(caseData, cmo, DIGITAL_SERVICE);
 
         final String email = inboxLookupService.getNotificationRecipientEmail(caseData);
 
         notificationService.sendEmail(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, email,
-            localAuthorityNotificationParameters, caseData.getId().toString());
+            localAuthorityNotificationParameters, caseData.getId());
     }
 
     private void sendToCafcass(final CaseData caseData, CaseManagementOrder cmo) {
         final IssuedCMOTemplate cafcassParameters =
-            caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(caseData, cmo, EMAIL);
+            caseManagementOrderEmailContentProvider.getCMOIssuedNotifyData(caseData, cmo, EMAIL);
 
         final String cafcassEmail = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
 
-        notificationService.sendEmail(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, cafcassEmail, cafcassParameters,
-            caseData.getId().toString());
+        notificationService
+            .sendEmail(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, cafcassEmail, cafcassParameters, caseData.getId());
     }
 
     private void sendToRepresentatives(final CaseData caseData,
@@ -80,11 +80,11 @@ public class CaseManagementOrderIssuedEventHandler {
             .filter(representative -> isNotBlank(representative.getEmail()))
             .forEach(representative -> {
                 IssuedCMOTemplate representativeNotificationParameters =
-                    caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(
+                    caseManagementOrderEmailContentProvider.getCMOIssuedNotifyData(
                         caseData, cmo, servingPreference);
 
                 notificationService.sendEmail(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, representative.getEmail(),
-                    representativeNotificationParameters, caseData.getId().toString());
+                    representativeNotificationParameters, caseData.getId());
             });
     }
 }

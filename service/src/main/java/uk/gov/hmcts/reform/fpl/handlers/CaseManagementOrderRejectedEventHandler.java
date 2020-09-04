@@ -21,15 +21,14 @@ public class CaseManagementOrderRejectedEventHandler {
     private final CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
 
     @EventListener
-    public void notifyLocalAuthorityOfRejectedCaseManagementOrder(final CaseManagementOrderRejectedEvent event) {
+    public void notifyLocalAuthority(final CaseManagementOrderRejectedEvent event) {
         CaseData caseData = event.getCaseData();
         RejectedCMOTemplate parameters =
             caseManagementOrderEmailContentProvider.buildCMORejectedByJudgeNotificationParameters(
                 caseData, event.getCmo());
 
-        String recipientEmail = inboxLookupService.getNotificationRecipientEmail(caseData);
+        String recipient = inboxLookupService.getNotificationRecipientEmail(caseData);
 
-        notificationService.sendEmail(CMO_REJECTED_BY_JUDGE_TEMPLATE, recipientEmail, parameters,
-            caseData.getId().toString());
+        notificationService.sendEmail(CMO_REJECTED_BY_JUDGE_TEMPLATE, recipient, parameters, caseData.getId());
     }
 }

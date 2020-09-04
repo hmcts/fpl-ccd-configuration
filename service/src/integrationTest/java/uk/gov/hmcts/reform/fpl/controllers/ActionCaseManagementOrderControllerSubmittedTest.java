@@ -52,7 +52,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespon
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedule;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedCaseUrlParameters;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersMap;
 import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
 @ActiveProfiles("integration-test")
@@ -137,7 +137,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
         verify(notificationClient).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
             eq(ADMIN_EMAIL_ADDRESS),
-            eqJson(getExpectedCaseUrlParameters(CMO.getLabel(), true)),
+            eqJson(getExpectedParametersMap(CMO.getLabel(), true)),
             eq(NOTIFICATION_REFERENCE));
 
         verifyZeroInteractions(notificationClient);
@@ -163,7 +163,7 @@ class ActionCaseManagementOrderControllerSubmittedTest extends AbstractControlle
         verify(notificationClient).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
             eq(CTSC_EMAIL_ADDRESS),
-            eqJson(getExpectedCaseUrlParameters(CMO.getLabel(), true)),
+            eqJson(getExpectedParametersMap(CMO.getLabel(), true)),
             eq(NOTIFICATION_REFERENCE));
     }
 

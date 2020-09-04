@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import com.google.common.collect.ImmutableMap;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForCMO;
+import uk.gov.hmcts.reform.fpl.model.notify.cmo.CmoNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.RejectedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
@@ -48,16 +48,17 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
 
     @Test
     void shouldBuildCMOIssuedCaseLinkNotificationExpectedParameters() {
-        Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
-            .put("localAuthorityNameOrRepresentativeFullName", "testName")
-            .put("caseUrl", caseUrl(CASE_REFERENCE))
-            .put("subjectLineWithHearingDate", "lastName, 11")
-            .put("reference", CASE_REFERENCE)
+        CmoNotifyData expected = CmoNotifyData.builder()
+            .localAuthorityNameOrRepresentativeFullName("testName")
+            .caseUrl(getCaseUrl(CASE_REFERENCE))
+            .subjectLineWithHearingDate("lastName, 11")
+            .reference(CASE_REFERENCE)
             .build();
 
-        assertThat(caseManagementOrderEmailContentProvider
-            .buildCMOIssuedCaseLinkNotificationParameters(createCase(), "testName"))
-            .isEqualTo(expectedParameters);
+        CmoNotifyData actual = caseManagementOrderEmailContentProvider
+            .buildCMOIssuedCaseLinkNotificationParameters(createCase(), "testName");
+
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -76,7 +77,7 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
             .map(JSONObject::toMap)
             .orElse(null));
 
-        assertThat(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(
+        assertThat(caseManagementOrderEmailContentProvider.getCMOIssuedNotifyData(
             createCase(), cmo, EMAIL))
             .isEqualToComparingFieldByField(expectedTemplate);
     }
@@ -98,23 +99,24 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
             .map(JSONObject::toMap)
             .orElse(null));
 
-        assertThat(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(
+        assertThat(caseManagementOrderEmailContentProvider.getCMOIssuedNotifyData(
             createCase(), cmo, DIGITAL_SERVICE))
             .isEqualToComparingFieldByField(expectedTemplate);
     }
 
     @Test
     void shouldBuildCMOPartyReviewExpectedParameters() {
-        Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
-            .put("caseUrl", "")
-            .put("digitalPreference", "No")
-            .put("subjectLineWithHearingDate", "lastName, 11")
-            .put("respondentLastName", "lastName")
+        CmoNotifyData expected = CmoNotifyData.builder()
+            .digitalPreference("No")
+            .subjectLineWithHearingDate("lastName, 11")
+            .respondentLastName("lastName")
+            .caseUrl("")
             .build();
 
-        assertThat(caseManagementOrderEmailContentProvider
-            .buildCMOPartyReviewParameters(createCase(), new byte[]{}, RepresentativeServingPreferences.POST))
-            .isEqualTo(expectedParameters);
+        CmoNotifyData actual = caseManagementOrderEmailContentProvider
+            .buildCMOPartyReviewParameters(createCase(), new byte[]{}, RepresentativeServingPreferences.POST);
+
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -126,7 +128,7 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
 
         expectedTemplate.setRequestedChanges("change it");
         expectedTemplate.setHearing("test hearing, 20th June");
-        expectedTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
+        expectedTemplate.setCaseUrl(getCaseUrl(CASE_REFERENCE));
         expectedTemplate.setRespondentLastName("lastName");
         expectedTemplate.setFamilyManCaseNumber("11");
 
@@ -151,15 +153,14 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
     }
 
     private AllocatedJudgeTemplateForCMO getCMOReadyForJudgeReviewParameters() {
-        AllocatedJudgeTemplateForCMO allocatedJudgeTemplate = new AllocatedJudgeTemplateForCMO();
-        allocatedJudgeTemplate.setSubjectLineWithHearingDate("lastName, 11");
-        allocatedJudgeTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
-        allocatedJudgeTemplate.setReference(CASE_REFERENCE);
-        allocatedJudgeTemplate.setRespondentLastName("lastName");
-        allocatedJudgeTemplate.setJudgeTitle("Deputy District Judge");
-        allocatedJudgeTemplate.setJudgeName("JudgeLastName");
-
-        return allocatedJudgeTemplate;
+        return AllocatedJudgeTemplateForCMO.builder()
+            .subjectLineWithHearingDate("lastName, 11")
+            .caseUrl(getCaseUrl(CASE_REFERENCE))
+            .reference(CASE_REFERENCE)
+            .respondentLastName("lastName")
+            .judgeTitle("Deputy District Judge")
+            .judgeName("JudgeLastName")
+            .build();
     }
 
     private CaseData createCase() {

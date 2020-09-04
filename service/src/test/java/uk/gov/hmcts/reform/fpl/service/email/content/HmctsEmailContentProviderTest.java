@@ -32,11 +32,10 @@ class HmctsEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     private static final byte[] APPLICATION_BINARY = TestDataHelper.DOCUMENT_CONTENT;
 
-    private static DocumentReference applicationDocument;
+    private static DocumentReference applicationDocument = testDocumentReference();
 
     @BeforeEach
     void init() {
-        applicationDocument = testDocumentReference();
         when(documentDownloadService.downloadDocument(applicationDocument.getBinaryUrl()))
             .thenReturn(APPLICATION_BINARY);
     }
@@ -57,7 +56,7 @@ class HmctsEmailContentProviderTest extends AbstractEmailContentProviderTest {
         hmctsSubmissionTemplate.setNonUrgentHearing(NO.getValue());
         hmctsSubmissionTemplate.setFirstRespondentName("Smith");
         hmctsSubmissionTemplate.setReference(CASE_REFERENCE);
-        hmctsSubmissionTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
+        hmctsSubmissionTemplate.setCaseUrl(getCaseUrl(CASE_REFERENCE));
         hmctsSubmissionTemplate.setDocumentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
             .map(JSONObject::toMap)
             .orElse(null));
@@ -83,7 +82,7 @@ class HmctsEmailContentProviderTest extends AbstractEmailContentProviderTest {
         hmctsSubmissionTemplate.setNonUrgentHearing(NO.getValue());
         hmctsSubmissionTemplate.setFirstRespondentName("");
         hmctsSubmissionTemplate.setReference("123");
-        hmctsSubmissionTemplate.setCaseUrl(caseUrl("123"));
+        hmctsSubmissionTemplate.setCaseUrl(getCaseUrl("123"));
         hmctsSubmissionTemplate.setDocumentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
             .map(JSONObject::toMap).orElse(null));
 

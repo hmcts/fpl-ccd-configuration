@@ -47,6 +47,6 @@ class NotifyAllocatedJudgeEventHandlerTest {
             ALLOCATED_JUDGE_TEMPLATE,
             ALLOCATED_JUDGE_EMAIL_ADDRESS,
             expectedParameters,
-            caseData.getId().toString());
+            caseData.getId());
     }
 }

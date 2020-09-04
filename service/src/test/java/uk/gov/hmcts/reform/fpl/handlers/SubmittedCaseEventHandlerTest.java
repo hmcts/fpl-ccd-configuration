@@ -78,13 +78,13 @@ class SubmittedCaseEventHandlerTest {
         when(hmctsEmailContentProvider.buildHmctsSubmissionNotification(caseData))
             .thenReturn(expectedTemplate);
 
-        submittedCaseEventHandler.sendEmailToHmctsAdmin(submittedCaseEvent);
+        submittedCaseEventHandler.notifyAdmin(submittedCaseEvent);
 
         verify(notificationService).sendEmail(
             HMCTS_COURT_SUBMISSION_TEMPLATE,
             expectedEmail,
             expectedTemplate,
-            caseData.getId().toString());
+            caseData.getId());
     }
 
     @Test
@@ -100,13 +100,13 @@ class SubmittedCaseEventHandlerTest {
         when(cafcassEmailContentProvider.buildCafcassSubmissionNotification(any(CaseData.class)))
             .thenReturn(expectedTemplate);
 
-        submittedCaseEventHandler.sendEmailToCafcass(submittedCaseEvent);
+        submittedCaseEventHandler.notifyCafcass(submittedCaseEvent);
 
         verify(notificationService).sendEmail(
             CAFCASS_SUBMISSION_TEMPLATE,
             expectedEmail,
             expectedTemplate,
-            caseData.getId().toString());
+            caseData.getId());
     }
 
     @Nested
@@ -199,8 +199,8 @@ class SubmittedCaseEventHandlerTest {
     @Test
     void shouldExecuteAsynchronously() {
         assertClass(SubmittedCaseEventHandler.class).hasAsyncMethods(
-            "sendEmailToHmctsAdmin",
-            "sendEmailToCafcass",
+            "notifyAdmin",
+            "notifyCafcass",
             "makePayment");
     }
 

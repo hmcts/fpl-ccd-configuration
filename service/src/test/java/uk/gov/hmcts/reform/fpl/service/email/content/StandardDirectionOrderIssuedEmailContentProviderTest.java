@@ -6,7 +6,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForSDO;
 import uk.gov.hmcts.reform.fpl.model.notify.sdo.CTSCTemplateForSDO;
-import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
@@ -18,7 +17,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
 
 @ContextConfiguration(classes = {StandardDirectionOrderIssuedEmailContentProvider.class, LookupTestConfig.class,
-    CaseDataExtractionService.class, HearingVenueLookUpService.class, CaseConverter.class})
+    CaseDataExtractionService.class, HearingVenueLookUpService.class})
 @TestPropertySource(properties = {"manage-case.ui.base.url=http://fake-url"})
 class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
@@ -26,42 +25,41 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
     private StandardDirectionOrderIssuedEmailContentProvider standardDirectionOrderIssuedEmailContentProvider;
 
     @Test
-    void shouldReturnExpectedMapForJudgeWithValidSDODetails() {
-        AllocatedJudgeTemplateForSDO expectedMap = allocatedJudgeSDOTemplateParameters();
+    void shouldReturnNotifyDataForJudgeWithValidSDODetails() {
+        AllocatedJudgeTemplateForSDO expectedData = allocatedJudgeSDOTemplateParameters();
+        AllocatedJudgeTemplateForSDO actualData = standardDirectionOrderIssuedEmailContentProvider
+            .buildNotificationParametersForAllocatedJudge(populatedCaseData());
 
-        assertThat(standardDirectionOrderIssuedEmailContentProvider
-            .buildNotificationParametersForAllocatedJudge(populatedCaseData()))
-            .isEqualToComparingFieldByField(expectedMap);
+        assertThat(actualData).isEqualToComparingFieldByField(expectedData);
     }
 
     @Test
-    void shouldReturnExpectedMapForCTSCWithValidSDODetails() {
-        CTSCTemplateForSDO expectedMap = ctscSDOTemplateParameters();
+    void shouldReturnNotifyDataForCTSCWithValidSDODetails() {
+        CTSCTemplateForSDO expectedData = ctscSDOTemplateParameters();
+        CTSCTemplateForSDO actualData = standardDirectionOrderIssuedEmailContentProvider
+            .buildNotificationParametersForCTSC(populatedCaseData());
 
-        assertThat(standardDirectionOrderIssuedEmailContentProvider
-            .buildNotificationParametersForCTSC(populatedCaseData()))
-            .isEqualToComparingFieldByField(expectedMap);
+        assertThat(actualData).isEqualToComparingFieldByField(expectedData);
     }
 
     @Test
-    void shouldReturnExpectedMapForCTSCWhenNoneSelectedInHearingNeeds() {
-        CTSCTemplateForSDO expectedMap = ctscSDOTemplateParametersWithNoneSelected();
+    void shouldReturnNotifyDataForCTSCWhenNoneSelectedInHearingNeeds() {
+        CTSCTemplateForSDO expectedData = ctscSDOTemplateParametersWithNoneSelected();
+        CTSCTemplateForSDO actualData = standardDirectionOrderIssuedEmailContentProvider
+            .buildNotificationParametersForCTSC(caseData());
 
-        assertThat(standardDirectionOrderIssuedEmailContentProvider
-            .buildNotificationParametersForCTSC(caseData()))
-            .isEqualToComparingFieldByField(expectedMap);
+        assertThat(actualData).isEqualToComparingFieldByField(expectedData);
     }
 
     private AllocatedJudgeTemplateForSDO allocatedJudgeSDOTemplateParameters() {
-        AllocatedJudgeTemplateForSDO allocatedJudgeTemplate = new AllocatedJudgeTemplateForSDO();
-        allocatedJudgeTemplate.setFamilyManCaseNumber("12345,");
-        allocatedJudgeTemplate.setLeadRespondentsName("Smith");
-        allocatedJudgeTemplate.setHearingDate("1 January 2020");
-        allocatedJudgeTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
-        allocatedJudgeTemplate.setJudgeTitle("Her Honour Judge");
-        allocatedJudgeTemplate.setJudgeName("Byrne");
-
-        return allocatedJudgeTemplate;
+        return AllocatedJudgeTemplateForSDO.builder()
+            .familyManCaseNumber("12345,")
+            .leadRespondentsName("Smith")
+            .hearingDate("1 January 2020")
+            .caseUrl(getCaseUrl(CASE_REFERENCE))
+            .judgeTitle("Her Honour Judge")
+            .judgeName("Byrne")
+            .build();
     }
 
     private CTSCTemplateForSDO ctscSDOTemplateParameters() {
@@ -74,7 +72,7 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
         ctscTemplateForSDO.setCourtName(COURT_NAME);
         ctscTemplateForSDO.setCallout("^Smith, 12345, hearing 1 Jan 2020");
         ctscTemplateForSDO.setRespondentLastName("Smith");
-        ctscTemplateForSDO.setCaseUrl(caseUrl(CASE_REFERENCE));
+        ctscTemplateForSDO.setCaseUrl(getCaseUrl(CASE_REFERENCE));
 
         return ctscTemplateForSDO;
     }
@@ -89,7 +87,7 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
         ctscTemplateForSDO.setCourtName(COURT_NAME);
         ctscTemplateForSDO.setCallout("^Smith, 12345L, hearing 1 Jan 2020");
         ctscTemplateForSDO.setRespondentLastName("Smith");
-        ctscTemplateForSDO.setCaseUrl(caseUrl(CASE_REFERENCE));
+        ctscTemplateForSDO.setCaseUrl(getCaseUrl(CASE_REFERENCE));
 
         return ctscTemplateForSDO;
     }

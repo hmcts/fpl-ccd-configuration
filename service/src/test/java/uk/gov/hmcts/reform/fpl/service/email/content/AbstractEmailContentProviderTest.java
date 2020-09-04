@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -21,11 +22,15 @@ public abstract class AbstractEmailContentProviderTest {
     static final String LOCAL_AUTHORITY_CODE = "example";
     static final String CAFCASS_NAME = "cafcass";
     static final String CASE_REFERENCE = "12345";
-    static final String UI_URL = "http://fake-url";
     static final String COURT_NAME = "Family Court";
+    private static final String UI_URL = "http://fake-url";
 
-    protected String caseUrl(String caseId) {
+    protected String getCaseUrl(String caseId) {
         return formatCaseUrl(UI_URL, Long.valueOf(caseId));
+    }
+
+    protected String getCaseUrl(CaseData caseData) {
+        return formatCaseUrl(UI_URL, Long.valueOf(caseData.getId()));
     }
 
     @MockBean
@@ -40,6 +45,6 @@ public abstract class AbstractEmailContentProviderTest {
     @BeforeEach
     void initCaseUrlService() {
         when(caseUrlService.getCaseUrl(anyLong()))
-            .thenAnswer(invocation -> caseUrl(invocation.getArgument(0).toString()));
+            .thenAnswer(invocation -> getCaseUrl(invocation.getArgument(0).toString()));
     }
 }

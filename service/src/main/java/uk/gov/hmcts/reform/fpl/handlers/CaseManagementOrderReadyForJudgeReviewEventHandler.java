@@ -6,7 +6,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForCMO;
+import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
@@ -24,31 +24,29 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandler {
     private final FeatureToggleService featureToggleService;
 
     @EventListener
-    public void sendEmailForCaseManagementOrderReadyForJudgeReview(
-        final CaseManagementOrderReadyForJudgeReviewEvent event) {
+    public void notifyAdmin(final CaseManagementOrderReadyForJudgeReviewEvent event) {
         CaseData caseData = event.getCaseData();
-        AllocatedJudgeTemplateForCMO parameters = caseManagementOrderEmailContentProvider
+
+        NotifyData notifyData = caseManagementOrderEmailContentProvider
             .buildCMOReadyForJudgeReviewNotificationParameters(caseData);
+        String recipient = adminNotificationHandler.getHmctsAdminEmail(caseData);
 
-        String email = adminNotificationHandler.getHmctsAdminEmail(caseData);
-
-        notificationService.sendEmail(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, email, parameters,
-            caseData.getId().toString());
+        notificationService
+            .sendEmail(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, recipient, notifyData, caseData.getId());
     }
 
     @EventListener
-    public void sendEmailForCaseManagementOrderReadyForJudgeReviewToAllocatedJudge(
+    public void notifyAllocatedJudge(
         final CaseManagementOrderReadyForJudgeReviewEvent event) {
         CaseData caseData = event.getCaseData();
 
         if (featureToggleService.isAllocatedJudgeNotificationEnabled(CMO) && caseData.hasAllocatedJudgeEmail()) {
-            AllocatedJudgeTemplateForCMO parameters = caseManagementOrderEmailContentProvider
+            NotifyData notifyData = caseManagementOrderEmailContentProvider
                 .buildCMOReadyForJudgeReviewNotificationParameters(caseData);
+            String recipient = caseData.getAllocatedJudge().getJudgeEmailAddress();
 
-            String email = caseData.getAllocatedJudge().getJudgeEmailAddress();
-
-            notificationService.sendEmail(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE, email, parameters,
-                caseData.getId().toString());
+            notificationService.sendEmail(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE, recipient,
+                notifyData, caseData.getId());
         }
     }
 }

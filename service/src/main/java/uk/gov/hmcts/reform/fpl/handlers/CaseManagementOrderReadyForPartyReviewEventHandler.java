@@ -6,10 +6,9 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForPartyReviewEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
-
-import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
@@ -22,20 +21,19 @@ public class CaseManagementOrderReadyForPartyReviewEventHandler {
     private final CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
 
     @EventListener
-    public void sendEmailForCaseManagementOrderReadyForPartyReview(
-        final CaseManagementOrderReadyForPartyReviewEvent event) {
+    public void notifyRepresentatives(final CaseManagementOrderReadyForPartyReviewEvent event) {
         CaseData caseData = event.getCaseData();
 
-        Map<String, Object> digitalRepresentativesParameters = caseManagementOrderEmailContentProvider
+        NotifyData digitalRepresentativesData = caseManagementOrderEmailContentProvider
             .buildCMOPartyReviewParameters(caseData, event.getDocumentContents(), DIGITAL_SERVICE);
 
         representativeNotificationService.sendToRepresentativesByServedPreference(DIGITAL_SERVICE,
-            CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE, digitalRepresentativesParameters, caseData);
+            CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE, digitalRepresentativesData, caseData);
 
-        Map<String, Object> emailRepresentativesParameters = caseManagementOrderEmailContentProvider
+        NotifyData emailRepresentativesData = caseManagementOrderEmailContentProvider
             .buildCMOPartyReviewParameters(caseData, event.getDocumentContents(), EMAIL);
 
         representativeNotificationService.sendToRepresentativesByServedPreference(EMAIL,
-            CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE, emailRepresentativesParameters, caseData);
+            CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE, emailRepresentativesData, caseData);
     }
 }

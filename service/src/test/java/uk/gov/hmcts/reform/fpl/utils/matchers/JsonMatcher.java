@@ -7,25 +7,25 @@ import org.mockito.internal.matchers.text.ValuePrinter;
 import org.skyscreamer.jsonassert.JSONCompare;
 
 import java.io.Serializable;
-import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
+import static org.skyscreamer.jsonassert.JSONCompareMode.NON_EXTENSIBLE;
 
-public class JsonMatcher implements ArgumentMatcher<Map<String, Object>>, ContainsExtraTypeInfo, Serializable {
+public class JsonMatcher implements ArgumentMatcher<Object>, ContainsExtraTypeInfo, Serializable {
 
-    private final Map<String, Object> wanted;
+    private final Object wanted;
 
-    public static Map<String, Object> eqJson(Map<String, Object> value) {
-        return argThat(new JsonMatcher(value));
+    @SuppressWarnings("unchecked")
+    public static <T> T eqJson(T value) {
+        return (T) argThat(new JsonMatcher(value));
     }
 
-    private JsonMatcher(Map<String, Object> wanted) {
+    private JsonMatcher(Object wanted) {
         this.wanted = wanted;
     }
 
-    public boolean matches(Map<String, Object> actual) {
-        return JSONCompare.compareJSON(new JSONObject(actual), new JSONObject(wanted), STRICT).passed();
+    public boolean matches(Object actual) {
+        return JSONCompare.compareJSON(new JSONObject(actual), new JSONObject(wanted), NON_EXTENSIBLE).passed();
     }
 
     public String toString() {

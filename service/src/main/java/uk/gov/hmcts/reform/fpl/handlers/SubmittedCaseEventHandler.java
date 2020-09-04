@@ -16,8 +16,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
-import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
@@ -42,24 +41,24 @@ public class SubmittedCaseEventHandler {
 
     @Async
     @EventListener
-    public void sendEmailToHmctsAdmin(final SubmittedCaseEvent event) {
+    public void notifyAdmin(final SubmittedCaseEvent event) {
         CaseData caseData = event.getCaseData();
 
-        notificationService.sendEmail(HMCTS_COURT_SUBMISSION_TEMPLATE,
-            adminNotificationHandler.getHmctsAdminEmail(caseData),
-            buildEmailTemplatePersonalisationForLocalAuthority(caseData),
-            caseData.getId().toString());
+        NotifyData notifyData = hmctsEmailContentProvider.buildHmctsSubmissionNotification(caseData);
+        String recipient = adminNotificationHandler.getHmctsAdminEmail(caseData);
+
+        notificationService.sendEmail(HMCTS_COURT_SUBMISSION_TEMPLATE, recipient, notifyData, caseData.getId());
     }
 
     @Async
     @EventListener
-    public void sendEmailToCafcass(final SubmittedCaseEvent event) {
+    public void notifyCafcass(final SubmittedCaseEvent event) {
         CaseData caseData = event.getCaseData();
 
-        notificationService.sendEmail(CAFCASS_SUBMISSION_TEMPLATE,
-            getEmailRecipientForCafcass(caseData.getCaseLocalAuthority()),
-            buildEmailTemplatePersonalisationForCafcass(caseData),
-            caseData.getId().toString());
+        NotifyData notifyData = cafcassEmailContentProvider.buildCafcassSubmissionNotification(caseData);
+        String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
+
+        notificationService.sendEmail(CAFCASS_SUBMISSION_TEMPLATE, recipient, notifyData, caseData.getId());
     }
 
     @Async
@@ -94,17 +93,5 @@ public class SubmittedCaseEventHandler {
     private void handlePaymentNotTaken(CaseData caseData) {
         log.error("Payment not taken for case {}.", caseData.getId());
         applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION));
-    }
-
-    private SubmitCaseHmctsTemplate buildEmailTemplatePersonalisationForLocalAuthority(final CaseData caseData) {
-        return hmctsEmailContentProvider.buildHmctsSubmissionNotification(caseData);
-    }
-
-    private String getEmailRecipientForCafcass(final String localAuthority) {
-        return cafcassLookupConfiguration.getCafcass(localAuthority).getEmail();
-    }
-
-    private SubmitCaseCafcassTemplate buildEmailTemplatePersonalisationForCafcass(final CaseData caseData) {
-        return cafcassEmailContentProvider.buildCafcassSubmissionNotification(caseData);
     }
 }

@@ -26,11 +26,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE;
@@ -66,25 +63,24 @@ class NewCMOUploadedEventHandlerTest {
     void shouldSendNotificationForAdmin() {
         CaseData caseData = caseDataWithAllocatedJudgeEmail(HMCTS_JUDGE_EMAIL);
         HearingBooking hearing = buildHearing();
-        CMOReadyToSealTemplate template = expectedTemplate();
+        CMOReadyToSealTemplate notificationData = expectedTemplate();
 
         mockContentProvider(
             caseData.getAllRespondents(),
             caseData.getFamilyManCaseNumber(),
             hearing,
             caseData.getAllocatedJudge(),
-            template
+            notificationData
         );
 
         NewCMOUploaded event = new NewCMOUploaded(caseData, hearing);
-        eventHandler.sendNotificationForAdmin(event);
+        eventHandler.notifyAdmin(event);
 
         verify(notificationService).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
             HMCTS_ADMIN_EMAIL,
-            template,
-            caseData.getId().toString()
-        );
+            notificationData,
+            caseData.getId());
     }
 
     @Test
@@ -102,14 +98,13 @@ class NewCMOUploadedEventHandlerTest {
         );
 
         NewCMOUploaded event = new NewCMOUploaded(caseData, hearing);
-        eventHandler.sendNotificationForJudge(event);
+        eventHandler.notifyAllocatedJudge(event);
 
         verify(notificationService).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE,
             HMCTS_JUDGE_EMAIL,
             template,
-            caseData.getId().toString()
-        );
+            caseData.getId());
     }
 
     @Test
@@ -118,25 +113,20 @@ class NewCMOUploadedEventHandlerTest {
         HearingBooking hearing = buildHearing();
         NewCMOUploaded event = new NewCMOUploaded(caseData, hearing);
 
-        eventHandler.sendNotificationForJudge(event);
+        eventHandler.notifyAllocatedJudge(event);
 
-        verify(notificationService, never()).sendEmail(
-            anyString(),
-            anyString(),
-            anyMap(),
-            anyString()
-        );
+        verifyNoInteractions(notificationService);
     }
 
     private void mockContentProvider(List<Element<Respondent>> respondents, String familyManNumber,
                                      HearingBooking hearing, AbstractJudge judge,
                                      CMOReadyToSealTemplate template) {
         when(contentProvider.buildTemplate(
-            eq(hearing),
-            eq(12345L),
-            eq(judge),
-            eq(respondents),
-            eq(familyManNumber)
+            hearing,
+            12345L,
+            judge,
+            respondents,
+            familyManNumber
         )).thenReturn(template);
     }
 

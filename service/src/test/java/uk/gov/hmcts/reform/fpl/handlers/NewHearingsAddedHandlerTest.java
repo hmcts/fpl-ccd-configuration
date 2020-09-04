@@ -95,13 +95,13 @@ class NewHearingsAddedHandlerTest {
         given(inboxLookupService.getNotificationRecipientEmail(caseData))
             .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
 
-        newHearingsAddedHandler.sendEmailToLA(new NewHearingsAdded(caseData, hearingBookings));
+        newHearingsAddedHandler.notifyLocalAuthority(new NewHearingsAdded(caseData, hearingBookings));
 
         verify(notificationService).sendEmail(
             NOTICE_OF_NEW_HEARING,
             LOCAL_AUTHORITY_EMAIL_ADDRESS,
             noticeOfHearingTemplate,
-            caseData.getId().toString());
+            caseData.getId());
     }
 
     @Test
@@ -110,13 +110,13 @@ class NewHearingsAddedHandlerTest {
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(UUID.randomUUID(), createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))));
 
-        newHearingsAddedHandler.sendEmailToCafcass(new NewHearingsAdded(caseData, hearingBookings));
+        newHearingsAddedHandler.notifyCafcass(new NewHearingsAdded(caseData, hearingBookings));
 
         verify(notificationService).sendEmail(
             NOTICE_OF_NEW_HEARING,
             CAFCASS_EMAIL_ADDRESS,
             noticeOfHearingTemplate,
-            caseData.getId().toString());
+            caseData.getId());
     }
 
     @Test
@@ -125,13 +125,13 @@ class NewHearingsAddedHandlerTest {
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(UUID.randomUUID(), createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))));
 
-        newHearingsAddedHandler.sendEmailToRepresentatives(new NewHearingsAdded(caseData, hearingBookings));
+        newHearingsAddedHandler.notifyRepresentatives(new NewHearingsAdded(caseData, hearingBookings));
 
         verify(representativeNotificationService)
             .sendToRepresentativesByServedPreference(
                 RepresentativeServingPreferences.EMAIL,
                 NOTICE_OF_NEW_HEARING,
-                noticeOfHearingTemplate.toMap(mapper),
+                noticeOfHearingTemplate,
                 caseData
             );
 
@@ -139,7 +139,7 @@ class NewHearingsAddedHandlerTest {
             .sendToRepresentativesByServedPreference(
                 RepresentativeServingPreferences.DIGITAL_SERVICE,
                 NOTICE_OF_NEW_HEARING,
-                noticeOfHearingTemplate.toMap(mapper),
+                noticeOfHearingTemplate,
                 caseData
             );
     }

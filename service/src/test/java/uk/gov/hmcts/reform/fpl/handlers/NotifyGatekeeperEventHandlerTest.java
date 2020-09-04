@@ -56,15 +56,15 @@ class NotifyGatekeeperEventHandlerTest {
     void shouldSendEmailToMultipleGatekeepers() {
         CaseData caseData = caseData();
 
-        notifyGatekeeperEventHandler.sendEmailToGatekeeper(new NotifyGatekeepersEvent(caseData));
+        notifyGatekeeperEventHandler.notifyGatekeeper(new NotifyGatekeepersEvent(caseData));
 
         verify(notificationService).sendEmail(
             eq(GATEKEEPER_SUBMISSION_TEMPLATE), eq(GATEKEEPER_EMAIL_ADDRESS),
-            captor.capture(), eq(CASE_ID));
+            captor.capture(), eq(caseData.getId()));
 
         verify(notificationService).sendEmail(
             eq(GATEKEEPER_SUBMISSION_TEMPLATE), eq("Cafcass+gatekeeper@gmail.com"),
-            captor.capture(), eq(CASE_ID));
+            captor.capture(), eq(caseData.getId()));
 
         NotifyGatekeeperTemplate firstTemplate = getExpectedTemplate();
         firstTemplate.setGatekeeperRecipients("Cafcass+gatekeeper@gmail.com has also received this notification");

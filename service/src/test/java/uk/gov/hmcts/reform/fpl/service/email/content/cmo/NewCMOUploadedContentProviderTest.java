@@ -59,7 +59,7 @@ class NewCMOUploadedContentProviderTest extends AbstractEmailContentProviderTest
             .setJudgeTitle("Her Honour Judge")
             .setRespondentLastName("Vlad")
             .setSubjectLineWithHearingDate("Vlad, 123456, case management hearing, 20 February 2020")
-            .setCaseUrl(caseUrl(CASE_NUMBER.toString()));
+            .setCaseUrl(getCaseUrl(CASE_NUMBER.toString()));
 
         assertThat(template).isEqualToComparingFieldByField(expected);
     }

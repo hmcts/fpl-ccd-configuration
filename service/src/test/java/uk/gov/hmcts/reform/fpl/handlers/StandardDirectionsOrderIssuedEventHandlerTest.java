@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForSDO;
+import uk.gov.hmcts.reform.fpl.model.notify.sdo.SDONotifyData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
@@ -21,13 +21,9 @@ import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.StandardDirectionOrderIssuedEmailContentProvider;
 
-import java.util.Map;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE;
@@ -70,43 +66,40 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
 
     @Test
     void shouldNotifyCafcassOfIssuedStandardDirectionsOrder() {
-        final Map<String, Object> expectedParameters = getStandardDirectionTemplateParameters();
+        final SDONotifyData expectedParameters = getStandardDirectionTemplateParameters();
 
         CaseData caseData = caseData();
 
         given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
             .willReturn(new CafcassLookupConfiguration.Cafcass(CAFCASS_NAME, CAFCASS_EMAIL_ADDRESS));
 
-        given(cafcassEmailContentProviderSDOIssued.buildCafcassStandardDirectionOrderIssuedNotification(caseData))
+        given(cafcassEmailContentProviderSDOIssued.getNotifyData(caseData))
             .willReturn(expectedParameters);
 
-        standardDirectionsOrderIssuedEventHandler.notifyCafcassOfIssuedStandardDirectionsOrder(
+        standardDirectionsOrderIssuedEventHandler.notifyCafcass(
             new StandardDirectionsOrderIssuedEvent(caseData));
 
         verify(notificationService).sendEmail(
             STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE,
             CAFCASS_EMAIL_ADDRESS,
             expectedParameters,
-            "12345");
+            caseData.getId());
     }
 
     @Test
     void shouldNotifyLocalAuthorityOfIssuedStandardDirectionsOrder() {
-        final Map<String, Object> expectedParameters = getStandardDirectionTemplateParameters();
+        final SDONotifyData expectedParameters = getStandardDirectionTemplateParameters();
         CaseData caseData = caseData();
         given(localAuthorityEmailContentProvider.buildLocalAuthorityStandardDirectionOrderIssuedNotification(caseData))
             .willReturn(expectedParameters);
 
-        given(
-            inboxLookupService.getNotificationRecipientEmail(caseData))
-            .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
+        given(inboxLookupService.getNotificationRecipientEmail(caseData)).willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
 
-        standardDirectionsOrderIssuedEventHandler.notifyLocalAuthorityOfIssuedStandardDirectionsOrder(
+        standardDirectionsOrderIssuedEventHandler.notifyLocalAuthority(
             new StandardDirectionsOrderIssuedEvent(caseData));
 
-        verify(notificationService).sendEmail(
-            STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, LOCAL_AUTHORITY_EMAIL_ADDRESS, expectedParameters,
-            "12345");
+        verify(notificationService).sendEmail(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, LOCAL_AUTHORITY_EMAIL_ADDRESS,
+            expectedParameters, caseData.getId());
     }
 
     @Test
@@ -120,12 +113,11 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
         given(standardDirectionOrderIssuedEmailContentProvider.buildNotificationParametersForAllocatedJudge(caseData))
             .willReturn(expectedParameters);
 
-        standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(
+        standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudge(
             new StandardDirectionsOrderIssuedEvent(caseData));
 
-        verify(notificationService).sendEmail(
-            STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE, ALLOCATED_JUDGE_EMAIL_ADDRESS, expectedParameters,
-            "12345");
+        verify(notificationService).sendEmail(STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE,
+            ALLOCATED_JUDGE_EMAIL_ADDRESS, expectedParameters, caseData.getId());
     }
 
     @Test
@@ -138,10 +130,10 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
         given(standardDirectionOrderIssuedEmailContentProvider.buildNotificationParametersForAllocatedJudge(caseData))
             .willReturn(expectedParameters);
 
-        standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(
+        standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudge(
             new StandardDirectionsOrderIssuedEvent(caseData));
 
-        verify(notificationService, never()).sendEmail(any(), any(), anyMap(), any());
+        verifyNoInteractions(notificationService);
     }
 
     @Test
@@ -158,31 +150,30 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
         given(standardDirectionOrderIssuedEmailContentProvider.buildNotificationParametersForAllocatedJudge(caseData))
             .willReturn(expectedParameters);
 
-        standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(
+        standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudge(
             new StandardDirectionsOrderIssuedEvent(caseData));
 
-        verify(notificationService, never()).sendEmail(any(), any(), anyMap(), any());
+        verifyNoInteractions(notificationService);
     }
 
-    private Map<String, Object> getStandardDirectionTemplateParameters() {
-        return ImmutableMap.<String, Object>builder()
-            .put("familyManCaseNumber", "6789")
-            .put("leadRespondentsName", "Moley")
-            .put("hearingDate", "21 October 2020")
-            .put("reference", "12345")
-            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+    private SDONotifyData getStandardDirectionTemplateParameters() {
+        return SDONotifyData.builder()
+            .familyManCaseNumber("6789")
+            .leadRespondentsName("Moley")
+            .hearingDate("21 October 2020")
+            .reference("12345")
+            .caseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
     }
 
     private AllocatedJudgeTemplateForSDO getAllocatedJudgeSDOTemplateParameters() {
-        AllocatedJudgeTemplateForSDO allocatedJudgeTemplate = new AllocatedJudgeTemplateForSDO();
-        allocatedJudgeTemplate.setFamilyManCaseNumber("6789");
-        allocatedJudgeTemplate.setLeadRespondentsName("Moley");
-        allocatedJudgeTemplate.setHearingDate("21 October 2020");
-        allocatedJudgeTemplate.setCaseUrl("null/case/\" + JURISDICTION + \"/\" + CASE_TYPE + \"/12345");
-        allocatedJudgeTemplate.setJudgeTitle("Her Honour Judge");
-        allocatedJudgeTemplate.setJudgeName("Byrne");
-
-        return allocatedJudgeTemplate;
+        return AllocatedJudgeTemplateForSDO.builder()
+            .familyManCaseNumber("6789")
+            .leadRespondentsName("Moley")
+            .hearingDate("21 October 2020")
+            .caseUrl("null/case/\" + JURISDICTION + \"/\" + CASE_TYPE + \"/12345")
+            .judgeTitle("Her Honour Judge")
+            .judgeName("Byrne")
+            .build();
     }
 }

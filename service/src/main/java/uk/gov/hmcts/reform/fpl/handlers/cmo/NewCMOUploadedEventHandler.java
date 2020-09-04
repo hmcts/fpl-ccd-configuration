@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.events.cmo.NewCMOUploaded;
 import uk.gov.hmcts.reform.fpl.handlers.HmctsAdminNotificationHandler;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.notify.cmo.CMOReadyToSealTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.NewCMOUploadedContentProvider;
 
@@ -24,45 +24,39 @@ public class NewCMOUploadedEventHandler {
 
     @Async
     @EventListener
-    public void sendNotificationForAdmin(final NewCMOUploaded event) {
+    public void notifyAdmin(final NewCMOUploaded event) {
         CaseData caseData = event.getCaseData();
 
-        CMOReadyToSealTemplate template = contentProvider.buildTemplate(
+        NotifyData notifyData = contentProvider.buildTemplate(
             event.getHearing(),
             caseData.getId(),
             caseData.getAllocatedJudge(),
             caseData.getAllRespondents(),
             caseData.getFamilyManCaseNumber()
         );
+        String recipient = adminNotificationHandler.getHmctsAdminEmail(caseData);
 
-        String email = adminNotificationHandler.getHmctsAdminEmail(caseData);
-
-        notificationService.sendEmail(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
-            email,
-            template,
-            caseData.getId().toString());
+        notificationService
+            .sendEmail(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, recipient, notifyData, caseData.getId());
     }
 
     @Async
     @EventListener
-    public void sendNotificationForJudge(final NewCMOUploaded event) {
+    public void notifyAllocatedJudge(final NewCMOUploaded event) {
         CaseData caseData = event.getCaseData();
 
         if (caseData.hasAllocatedJudgeEmail()) {
-            CMOReadyToSealTemplate template = contentProvider.buildTemplate(
+            NotifyData notifyData = contentProvider.buildTemplate(
                 event.getHearing(),
                 caseData.getId(),
                 caseData.getAllocatedJudge(),
                 caseData.getAllRespondents(),
                 caseData.getFamilyManCaseNumber()
             );
+            String recipient = caseData.getAllocatedJudge().getJudgeEmailAddress();
 
-            String email = caseData.getAllocatedJudge().getJudgeEmailAddress();
-
-            notificationService.sendEmail(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE,
-                email,
-                template,
-                caseData.getId().toString());
+            notificationService.sendEmail(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE, recipient,
+                notifyData, caseData.getId());
         }
     }
 }

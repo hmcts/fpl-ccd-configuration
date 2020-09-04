@@ -25,7 +25,7 @@ public class NotifyGatekeeperEventHandler {
     private final GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
 
     @EventListener
-    public void sendEmailToGatekeeper(NotifyGatekeepersEvent event) {
+    public void notifyGatekeeper(NotifyGatekeepersEvent event) {
         CaseData caseData = event.getCaseData();
 
         NotifyGatekeeperTemplate parameters = gatekeeperEmailContentProvider.buildGatekeeperNotification(caseData);
@@ -38,8 +38,7 @@ public class NotifyGatekeeperEventHandler {
             template.setGatekeeperRecipients(gatekeeperEmailContentProvider.buildRecipientsLabel(
                 emailList, recipientEmail));
 
-            notificationService.sendEmail(GATEKEEPER_SUBMISSION_TEMPLATE, recipientEmail, template,
-                caseData.getId().toString());
+            notificationService.sendEmail(GATEKEEPER_SUBMISSION_TEMPLATE, recipientEmail, template, caseData.getId());
         });
     }
 

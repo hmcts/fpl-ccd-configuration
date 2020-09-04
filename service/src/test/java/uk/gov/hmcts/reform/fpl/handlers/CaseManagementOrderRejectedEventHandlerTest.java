@@ -47,13 +47,13 @@ class CaseManagementOrderRejectedEventHandlerTest {
         given(caseManagementOrderEmailContentProvider.buildCMORejectedByJudgeNotificationParameters(caseData, cmo))
             .willReturn(expectedTemplate);
 
-        caseManagementOrderRejectedEventHandler.notifyLocalAuthorityOfRejectedCaseManagementOrder(
+        caseManagementOrderRejectedEventHandler.notifyLocalAuthority(
             new CaseManagementOrderRejectedEvent(caseData, cmo));
 
         verify(notificationService).sendEmail(
             CMO_REJECTED_BY_JUDGE_TEMPLATE,
             LOCAL_AUTHORITY_EMAIL_ADDRESS,
             expectedTemplate,
-            caseData.getId().toString());
+            caseData.getId());
     }
 }
