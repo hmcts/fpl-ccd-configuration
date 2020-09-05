@@ -1,12 +1,10 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -30,7 +28,6 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseManagementOrderEmailContentProvider extends AbstractEmailContentProvider {
 
-    private final ObjectMapper mapper;
     private final Time time;
 
     private static final String CASE_URL = "caseUrl";
@@ -39,19 +36,15 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
     private static final String RESPONDENT_LAST_NAME = "respondentLastName";
     private static final String DIGITAL_PREFERENCE = "digitalPreference";
 
-    public Map<String, Object> buildCMOIssuedCaseLinkNotificationParameters(final CaseDetails caseDetails,
-                                                                            final String recipientName) {
+    public Map<String, Object> buildCMOIssuedCaseLinkNotificationParameters(CaseData caseData, String recipientName) {
         return ImmutableMap.<String, Object>builder()
-            .putAll(buildCommonCMONotificationParameters(caseDetails))
+            .putAll(buildCommonCMONotificationParameters(caseData))
             .put("localAuthorityNameOrRepresentativeFullName", recipientName)
             .build();
     }
 
-    public IssuedCMOTemplate buildCMOIssuedNotificationParameters(
-        final CaseDetails caseDetails,
-        CaseManagementOrder cmo,
-        RepresentativeServingPreferences servingPreference) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+    public IssuedCMOTemplate buildCMOIssuedNotificationParameters(CaseData caseData, CaseManagementOrder cmo,
+                                                                  RepresentativeServingPreferences servingPreference) {
 
         IssuedCMOTemplate template = new IssuedCMOTemplate();
 
@@ -60,35 +53,33 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
         template.setHearing(uncapitalize(cmo.getHearing()));
         template.setDigitalPreference(hasDigitalServingPreference(servingPreference) ? "Yes" : "No");
         template.setDocumentLink(linkToAttachedDocument(cmo.getOrder()));
-        template.setCaseUrl((hasDigitalServingPreference(servingPreference) ? getCaseUrl(caseDetails.getId()) : ""));
+        template.setCaseUrl((hasDigitalServingPreference(servingPreference) ? getCaseUrl(caseData.getId()) : ""));
 
         return template;
     }
 
-    public RejectedCMOTemplate buildCMORejectedByJudgeNotificationParameters(final CaseDetails caseDetails,
+    public RejectedCMOTemplate buildCMORejectedByJudgeNotificationParameters(final CaseData caseData,
                                                                              CaseManagementOrder cmo) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         RejectedCMOTemplate template = new RejectedCMOTemplate();
 
         template.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
         template.setFamilyManCaseNumber(caseData.getFamilyManCaseNumber());
         template.setHearing(uncapitalize(cmo.getHearing()));
-        template.setCaseUrl(getCaseUrl(caseDetails.getId()));
+        template.setCaseUrl(getCaseUrl(caseData.getId()));
         template.setRequestedChanges(cmo.getRequestedChanges());
 
         return template;
     }
 
-    public Map<String, Object> buildCMOPartyReviewParameters(final CaseDetails caseDetails,
+    public Map<String, Object> buildCMOPartyReviewParameters(final CaseData caseData,
                                                              byte[] documentContents,
                                                              RepresentativeServingPreferences servingPreference) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         return ImmutableMap.<String, Object>builder()
             .put(SUBJECT_LINE, buildCallout(caseData))
             .put(RESPONDENT_LAST_NAME, getFirstRespondentLastName(caseData.getRespondents1()))
             .put(DIGITAL_PREFERENCE, servingPreference == DIGITAL_SERVICE ? "Yes" : "No")
-            .put(CASE_URL, servingPreference == DIGITAL_SERVICE ? getCaseUrl(caseDetails.getId()) : "")
+            .put(CASE_URL, servingPreference == DIGITAL_SERVICE ? getCaseUrl(caseData.getId()) : "")
             .putAll(linkToAttachedDocument(documentContents))
             .build();
     }
@@ -104,9 +95,8 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
     }
 
     public AllocatedJudgeTemplateForCMO buildCMOReadyForJudgeReviewNotificationParameters(
-        final CaseDetails caseDetails) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        Map<String, Object> commonCMONotificationParameters = buildCommonCMONotificationParameters(caseDetails);
+        final CaseData caseData) {
+        Map<String, Object> commonCMONotificationParameters = buildCommonCMONotificationParameters(caseData);
 
         AllocatedJudgeTemplateForCMO allocatedJudgeTemplate
             = new AllocatedJudgeTemplateForCMO();
@@ -122,13 +112,12 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
         return allocatedJudgeTemplate;
     }
 
-    private Map<String, Object> buildCommonCMONotificationParameters(final CaseDetails caseDetails) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+    private Map<String, Object> buildCommonCMONotificationParameters(final CaseData caseData) {
 
         return ImmutableMap.of(
             SUBJECT_LINE, buildCallout(caseData),
-            REFERENCE, String.valueOf(caseDetails.getId()),
-            CASE_URL, getCaseUrl(caseDetails.getId())
+            REFERENCE, String.valueOf(caseData.getId()),
+            CASE_URL, getCaseUrl(caseData.getId())
         );
     }
 

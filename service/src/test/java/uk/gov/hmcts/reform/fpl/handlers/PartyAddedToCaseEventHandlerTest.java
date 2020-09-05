@@ -1,16 +1,13 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -40,12 +37,12 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_EMAIL;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.getExpectedDigitalRepresentativesForAddingPartiesToCase;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.getExpectedEmailRepresentativesForAddingPartiesToCase;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {PartyAddedToCaseEventHandler.class, LookupTestConfig.class, JacksonAutoConfiguration.class,
+@SpringBootTest(classes = {PartyAddedToCaseEventHandler.class, LookupTestConfig.class,
     RepresentativeNotificationService.class})
-public class PartyAddedToCaseEventHandlerTest {
+class PartyAddedToCaseEventHandlerTest {
 
     @MockBean
     private NotificationService notificationService;
@@ -57,21 +54,13 @@ public class PartyAddedToCaseEventHandlerTest {
     private PartyAddedToCaseContentProvider partyAddedToCaseContentProvider;
 
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
     private PartyAddedToCaseEventHandler partyAddedToCaseEventHandler;
 
-    private static CaseDetails caseDetails = callbackRequest().getCaseDetails();
-    private static CaseDetails caseDetailsBefore = callbackRequest().getCaseDetailsBefore();
-    private static CaseData caseData;
-    private static CaseData caseDataBefore;
+    CaseData caseData = caseData();
+    CaseData caseDataBefore = caseData();
 
     @BeforeEach
     void init() {
-        caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
-        caseDataBefore = objectMapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
-
         given(representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(),
             DIGITAL_SERVICE))
             .willReturn(getExpectedDigitalRepresentativesForAddingPartiesToCase());
@@ -93,14 +82,13 @@ public class PartyAddedToCaseEventHandlerTest {
         final Map<String, Object> expectedEmailParameters = getPartyAddedByEmailNotificationParameters();
         final Map<String, Object> expectedDigitalParameters = getPartyAddedByDigitalServiceNotificationParameters();
 
-        given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(
-            callbackRequest().getCaseDetails(), EMAIL)).willReturn(expectedEmailParameters);
+        given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(caseData, EMAIL))
+            .willReturn(expectedEmailParameters);
 
-        given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(
-            callbackRequest().getCaseDetails(), DIGITAL_SERVICE)).willReturn(expectedDigitalParameters);
+        given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(caseData, DIGITAL_SERVICE))
+            .willReturn(expectedDigitalParameters);
 
-        partyAddedToCaseEventHandler.sendEmailToPartiesAddedToCase(
-            new PartyAddedToCaseEvent(callbackRequest()));
+        partyAddedToCaseEventHandler.sendEmailToPartiesAddedToCase(new PartyAddedToCaseEvent(caseData, caseDataBefore));
 
         verify(notificationService).sendEmail(
             PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE,
@@ -124,11 +112,10 @@ public class PartyAddedToCaseEventHandlerTest {
             caseDataBefore.getRepresentatives(), EMAIL)).willReturn(Collections.emptyList());
 
         given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(
-            callbackRequest().getCaseDetails(), DIGITAL_SERVICE))
+            caseData, DIGITAL_SERVICE))
             .willReturn(getPartyAddedByDigitalServiceNotificationParameters());
 
-        partyAddedToCaseEventHandler.sendEmailToPartiesAddedToCase(
-            new PartyAddedToCaseEvent(callbackRequest()));
+        partyAddedToCaseEventHandler.sendEmailToPartiesAddedToCase(new PartyAddedToCaseEvent(caseData, caseDataBefore));
 
         verify(notificationService, never()).sendEmail(
             eq(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE),

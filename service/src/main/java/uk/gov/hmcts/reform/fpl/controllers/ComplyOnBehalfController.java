@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +32,7 @@ import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMap
 @RestController
 @RequestMapping("/callback/comply-on-behalf")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class ComplyOnBehalfController {
-    private final ObjectMapper mapper;
+public class ComplyOnBehalfController extends CallbackController {
     private final PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService;
     private final PrepareDirectionsForUsersService prepareDirectionsForUsersService;
     private final RespondentService respondentService;
@@ -46,7 +44,7 @@ public class ComplyOnBehalfController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = getCaseData(caseDetails);
 
         Map<DirectionAssignee, List<Element<Direction>>> assigneeMap
             = getAssigneeToDirectionMapping(caseData.getDirectionsToComplyWith());
@@ -57,16 +55,14 @@ public class ComplyOnBehalfController {
         caseDetails.getData().put("respondents_label", getRespondentsLabel(caseData));
         caseDetails.getData().put("others_label", getOthersLabel(caseData));
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .build();
+        return respond(caseDetails);
     }
 
     @PostMapping("about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
         @RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = getCaseData(caseDetails);
 
         prepareDirectionsForDataStoreService.addComplyOnBehalfResponsesToDirectionsInOrder(
             caseData, ComplyOnBehalfEvent.valueOf(callbackrequest.getEventId()));
@@ -77,9 +73,7 @@ public class ComplyOnBehalfController {
             caseDetails.getData().put("servedCaseManagementOrders", caseData.getServedCaseManagementOrders());
         }
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .build();
+        return respond(caseDetails);
     }
 
     private String getRespondentsLabel(CaseData caseData) {

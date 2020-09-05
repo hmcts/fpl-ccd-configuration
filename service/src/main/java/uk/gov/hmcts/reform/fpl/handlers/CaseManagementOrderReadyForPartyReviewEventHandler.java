@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForPartyReviewEvent;
-import uk.gov.hmcts.reform.fpl.model.event.EventData;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
@@ -24,18 +24,18 @@ public class CaseManagementOrderReadyForPartyReviewEventHandler {
     @EventListener
     public void sendEmailForCaseManagementOrderReadyForPartyReview(
         final CaseManagementOrderReadyForPartyReviewEvent event) {
-        EventData eventData = new EventData(event);
+        CaseData caseData = event.getCaseData();
 
         Map<String, Object> digitalRepresentativesParameters = caseManagementOrderEmailContentProvider
-            .buildCMOPartyReviewParameters(eventData.getCaseDetails(), event.getDocumentContents(), DIGITAL_SERVICE);
+            .buildCMOPartyReviewParameters(caseData, event.getDocumentContents(), DIGITAL_SERVICE);
 
         representativeNotificationService.sendToRepresentativesByServedPreference(DIGITAL_SERVICE,
-            CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE, digitalRepresentativesParameters, eventData);
+            CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE, digitalRepresentativesParameters, caseData);
 
         Map<String, Object> emailRepresentativesParameters = caseManagementOrderEmailContentProvider
-            .buildCMOPartyReviewParameters(eventData.getCaseDetails(), event.getDocumentContents(), EMAIL);
+            .buildCMOPartyReviewParameters(caseData, event.getDocumentContents(), EMAIL);
 
         representativeNotificationService.sendToRepresentativesByServedPreference(EMAIL,
-            CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE, emailRepresentativesParameters, eventData);
+            CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE, emailRepresentativesParameters, caseData);
     }
 }

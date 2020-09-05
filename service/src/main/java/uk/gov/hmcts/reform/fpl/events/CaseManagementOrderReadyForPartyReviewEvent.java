@@ -1,17 +1,12 @@
 package uk.gov.hmcts.reform.fpl.events;
 
-import lombok.EqualsAndHashCode;
-import lombok.Value;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 
-@Value
-@EqualsAndHashCode(callSuper = true)
-public class CaseManagementOrderReadyForPartyReviewEvent extends CallbackEvent {
-
-    byte[] documentContents;
-
-    public CaseManagementOrderReadyForPartyReviewEvent(CallbackRequest callbackRequest, byte[] documentContents) {
-        super(callbackRequest);
-        this.documentContents = documentContents;
-    }
+@Getter
+@RequiredArgsConstructor
+public class CaseManagementOrderReadyForPartyReviewEvent {
+    final CaseData caseData;
+    final byte[] documentContents;
 }

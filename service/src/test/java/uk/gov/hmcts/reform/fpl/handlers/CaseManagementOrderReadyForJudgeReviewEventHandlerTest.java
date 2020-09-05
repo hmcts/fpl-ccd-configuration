@@ -1,22 +1,19 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForCMO;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
-
-import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -31,14 +28,14 @@ import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.CMO;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.ALLOCATED_JUDGE_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.appendSendToCtscOnCallback;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.getCMOReadyForJudgeNotificationParameters;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {CaseManagementOrderReadyForJudgeReviewEventHandler.class, JacksonAutoConfiguration.class,
-    LookupTestConfig.class, HmctsAdminNotificationHandler.class})
-public class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
+@SpringBootTest(classes = {CaseManagementOrderReadyForJudgeReviewEventHandler.class, LookupTestConfig.class,
+    HmctsAdminNotificationHandler.class})
+class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
     private static final String CASE_REFERENCE = "12345";
 
     @MockBean
@@ -55,16 +52,15 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
 
     @Test
     void shouldNotifyHmctsAdminOfCMOReadyForJudgeReviewWhenCtscIsDisabled() {
-        CallbackRequest callbackRequest = callbackRequest();
-        CaseDetails caseDetails = callbackRequest().getCaseDetails();
+        CaseData caseData = caseData();
         AllocatedJudgeTemplateForCMO cmoJudgeReviewParameters = getCMOReadyForJudgeNotificationParameters();
 
         given(caseManagementOrderEmailContentProvider
-            .buildCMOReadyForJudgeReviewNotificationParameters(caseDetails))
+            .buildCMOReadyForJudgeReviewNotificationParameters(caseData))
             .willReturn(cmoJudgeReviewParameters);
 
         caseManagementOrderReadyForJudgeReviewEventHandler.sendEmailForCaseManagementOrderReadyForJudgeReview(
-            new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest));
+            new CaseManagementOrderReadyForJudgeReviewEvent(caseData));
 
         verify(notificationService).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
@@ -74,40 +70,43 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyCtscAdminOfCMOReadyForJudgeReviewWhenCtscIsEnabled() throws Exception {
-        CallbackRequest callbackRequest = appendSendToCtscOnCallback();
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+    void shouldNotifyCtscAdminOfCMOReadyForJudgeReviewWhenCtscIsEnabled() {
+        CaseData caseData = CaseData.builder()
+            .id(RandomUtils.nextLong())
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .sendToCtsc("Yes")
+            .build();
+
         AllocatedJudgeTemplateForCMO cmoJudgeReviewParameters = getCMOReadyForJudgeNotificationParameters();
 
         given(caseManagementOrderEmailContentProvider
-            .buildCMOReadyForJudgeReviewNotificationParameters(caseDetails))
+            .buildCMOReadyForJudgeReviewNotificationParameters(caseData))
             .willReturn(cmoJudgeReviewParameters);
 
         caseManagementOrderReadyForJudgeReviewEventHandler.sendEmailForCaseManagementOrderReadyForJudgeReview(
-            new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest));
+            new CaseManagementOrderReadyForJudgeReviewEvent(caseData));
 
         verify(notificationService).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
             CTSC_INBOX,
             cmoJudgeReviewParameters,
-            CASE_REFERENCE);
+            caseData.getId().toString());
     }
 
     @Test
     void shouldNotifyAllocatedJudgeWhenCMOReadyForJudgeReviewAndEnabled() {
-        CallbackRequest callbackRequest = callbackRequest();
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = caseData();
         AllocatedJudgeTemplateForCMO cmoJudgeReviewParameters = getCMOReadyForJudgeNotificationParameters();
 
         given(featureToggleService.isAllocatedJudgeNotificationEnabled(CMO)).willReturn(true);
 
         given(caseManagementOrderEmailContentProvider
-            .buildCMOReadyForJudgeReviewNotificationParameters(caseDetails))
+            .buildCMOReadyForJudgeReviewNotificationParameters(caseData))
             .willReturn(cmoJudgeReviewParameters);
 
         caseManagementOrderReadyForJudgeReviewEventHandler
             .sendEmailForCaseManagementOrderReadyForJudgeReviewToAllocatedJudge(
-            new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest));
+                new CaseManagementOrderReadyForJudgeReviewEvent(caseData));
 
         verify(notificationService).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE,
@@ -118,19 +117,18 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
 
     @Test
     void shouldNotNotifyAllocatedJudgeWhenCMOReadyForJudgeReviewAndDisabled() {
-        CallbackRequest callbackRequest = callbackRequest();
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = caseData();
         AllocatedJudgeTemplateForCMO cmoJudgeReviewParameters = getCMOReadyForJudgeNotificationParameters();
 
         given(featureToggleService.isAllocatedJudgeNotificationEnabled(CMO)).willReturn(false);
 
         given(caseManagementOrderEmailContentProvider
-            .buildCMOReadyForJudgeReviewNotificationParameters(caseDetails))
+            .buildCMOReadyForJudgeReviewNotificationParameters(caseData))
             .willReturn(cmoJudgeReviewParameters);
 
         caseManagementOrderReadyForJudgeReviewEventHandler
             .sendEmailForCaseManagementOrderReadyForJudgeReviewToAllocatedJudge(
-                new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest));
+                new CaseManagementOrderReadyForJudgeReviewEvent(caseData));
 
         verify(notificationService, never()).sendEmail(
             eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE),
@@ -141,22 +139,20 @@ public class CaseManagementOrderReadyForJudgeReviewEventHandlerTest {
 
     @Test
     void shouldNotNotifyAllocatedJudgeWhenCMOReadyForJudgeReviewButNoAllocatedJudgeExists() {
-        CaseDetails caseDetails =  CaseDetails.builder().id(1L)
-            .data(Map.of("caseLocalAuthority", "SA"))
+        CaseData caseData = CaseData.builder()
+            .id(1L)
+            .caseLocalAuthority("SA")
             .build();
-
-        CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(
-            caseDetails).build();
 
         AllocatedJudgeTemplateForCMO cmoJudgeReviewParameters = getCMOReadyForJudgeNotificationParameters();
 
         given(caseManagementOrderEmailContentProvider
-            .buildCMOReadyForJudgeReviewNotificationParameters(caseDetails))
+            .buildCMOReadyForJudgeReviewNotificationParameters(caseData))
             .willReturn(cmoJudgeReviewParameters);
 
         caseManagementOrderReadyForJudgeReviewEventHandler
             .sendEmailForCaseManagementOrderReadyForJudgeReviewToAllocatedJudge(
-                new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest));
+                new CaseManagementOrderReadyForJudgeReviewEvent(caseData));
 
         verify(notificationService, never()).sendEmail(
             eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE),

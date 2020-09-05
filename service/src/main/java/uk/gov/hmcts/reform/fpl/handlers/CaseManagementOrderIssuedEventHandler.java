@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
@@ -10,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
-import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
@@ -30,7 +28,6 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMA
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseManagementOrderIssuedEventHandler {
-    private final ObjectMapper mapper;
     private final InboxLookupService inboxLookupService;
     private final NotificationService notificationService;
     private final RepresentativeService representativeService;
@@ -41,44 +38,41 @@ public class CaseManagementOrderIssuedEventHandler {
 
     @EventListener
     public void sendEmailsForIssuedCaseManagementOrder(final CaseManagementOrderIssuedEvent event) {
-        EventData eventData = new EventData(event);
+        CaseData caseData = event.getCaseData();
         CaseManagementOrder issuedCmo = event.getCmo();
 
         //TODO Document is downloaded 5 times, this could impact performance. Investigate in FPLA-2061
-        sendToLocalAuthority(eventData, issuedCmo);
-        sendToCafcass(eventData, issuedCmo);
-        sendToRepresentatives(eventData, issuedCmo, DIGITAL_SERVICE);
-        sendToRepresentatives(eventData, issuedCmo, EMAIL);
-        issuedOrderAdminNotificationHandler.sendToAdmin(eventData,
+        sendToLocalAuthority(caseData, issuedCmo);
+        sendToCafcass(caseData, issuedCmo);
+        sendToRepresentatives(caseData, issuedCmo, DIGITAL_SERVICE);
+        sendToRepresentatives(caseData, issuedCmo, EMAIL);
+        issuedOrderAdminNotificationHandler.sendToAdmin(caseData,
             documentDownloadService.downloadDocument(issuedCmo.getOrder().getBinaryUrl()), CMO);
     }
 
-    private void sendToLocalAuthority(final EventData eventData, CaseManagementOrder cmo) {
+    private void sendToLocalAuthority(final CaseData caseData, CaseManagementOrder cmo) {
         final IssuedCMOTemplate localAuthorityNotificationParameters = caseManagementOrderEmailContentProvider
-            .buildCMOIssuedNotificationParameters(eventData.getCaseDetails(), cmo, DIGITAL_SERVICE);
+            .buildCMOIssuedNotificationParameters(caseData, cmo, DIGITAL_SERVICE);
 
-        final String email = inboxLookupService.getNotificationRecipientEmail(eventData.getCaseDetails(),
-            eventData.getLocalAuthorityCode());
+        final String email = inboxLookupService.getNotificationRecipientEmail(caseData);
 
         notificationService.sendEmail(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, email,
-            localAuthorityNotificationParameters, eventData.getReference());
+            localAuthorityNotificationParameters, caseData.getId().toString());
     }
 
-    private void sendToCafcass(final EventData eventData, CaseManagementOrder cmo) {
+    private void sendToCafcass(final CaseData caseData, CaseManagementOrder cmo) {
         final IssuedCMOTemplate cafcassParameters =
-            caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(
-                eventData.getCaseDetails(), cmo, EMAIL);
+            caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(caseData, cmo, EMAIL);
 
-        final String cafcassEmail = cafcassLookupConfiguration.getCafcass(eventData.getLocalAuthorityCode()).getEmail();
+        final String cafcassEmail = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
 
         notificationService.sendEmail(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, cafcassEmail, cafcassParameters,
-            eventData.getReference());
+            caseData.getId().toString());
     }
 
-    private void sendToRepresentatives(final EventData eventData,
+    private void sendToRepresentatives(final CaseData caseData,
                                        CaseManagementOrder cmo,
                                        RepresentativeServingPreferences servingPreference) {
-        CaseData caseData = mapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
         List<Representative> representatives = representativeService.getRepresentativesByServedPreference(
             caseData.getRepresentatives(), servingPreference);
 
@@ -87,10 +81,10 @@ public class CaseManagementOrderIssuedEventHandler {
             .forEach(representative -> {
                 IssuedCMOTemplate representativeNotificationParameters =
                     caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(
-                        eventData.getCaseDetails(), cmo, servingPreference);
+                        caseData, cmo, servingPreference);
 
                 notificationService.sendEmail(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, representative.getEmail(),
-                    representativeNotificationParameters, eventData.getReference());
+                    representativeNotificationParameters, caseData.getId().toString());
             });
     }
 }

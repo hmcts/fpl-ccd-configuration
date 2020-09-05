@@ -1,20 +1,13 @@
 package uk.gov.hmcts.reform.fpl.events;
 
-import lombok.EqualsAndHashCode;
-import lombok.Value;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 
-@Value
-@EqualsAndHashCode(callSuper = true)
-public class GeneratedOrderEvent extends CallbackEvent {
-
+@Getter
+@RequiredArgsConstructor
+public class GeneratedOrderEvent {
+    private final CaseData caseData;
     private final String mostRecentUploadedDocumentUrl;
     private final byte[] documentContents;
-
-    public GeneratedOrderEvent(CallbackRequest callbackRequest, String mostRecentUploadedDocumentUrl,
-                               byte[] documentContents) {
-        super(callbackRequest);
-        this.mostRecentUploadedDocumentUrl = mostRecentUploadedDocumentUrl;
-        this.documentContents = documentContents;
-    }
 }

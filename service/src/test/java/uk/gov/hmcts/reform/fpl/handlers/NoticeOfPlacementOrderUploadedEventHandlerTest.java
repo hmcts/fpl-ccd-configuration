@@ -5,10 +5,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
-import uk.gov.hmcts.reform.fpl.model.event.EventData;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -26,12 +24,11 @@ import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.DOCUMENT_CONTENTS;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 
 @ExtendWith(SpringExtension.class)
-public class NoticeOfPlacementOrderUploadedEventHandlerTest {
+class NoticeOfPlacementOrderUploadedEventHandlerTest {
 
     @Mock
     private RequestData requestData;
@@ -63,20 +60,18 @@ public class NoticeOfPlacementOrderUploadedEventHandlerTest {
         final Map<String, Object> localAuthorityParameters = Map.of("key1", "value1");
         final Map<String, Object> representativesParameters = Map.of("key2", "value2");
 
-        final CallbackRequest caseData = callbackRequest();
-        final CaseDetails caseDetails = caseData.getCaseDetails();
+        final CaseData caseData = caseData();
         final NoticeOfPlacementOrderUploadedEvent event = new NoticeOfPlacementOrderUploadedEvent(
             caseData, DOCUMENT_CONTENTS);
-        final EventData eventData = new EventData(event);
 
-        given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
+        given(inboxLookupService.getNotificationRecipientEmail(caseData))
             .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
 
-        given(localAuthorityEmailContentProvider.buildNoticeOfPlacementOrderUploadedNotification(caseDetails))
+        given(localAuthorityEmailContentProvider.buildNoticeOfPlacementOrderUploadedNotification(caseData))
             .willReturn(localAuthorityParameters);
 
         given(orderIssuedEmailContentProvider.buildParametersWithoutCaseUrl(
-            caseDetails, LOCAL_AUTHORITY_CODE, DOCUMENT_CONTENTS, NOTICE_OF_PLACEMENT_ORDER))
+            caseData, DOCUMENT_CONTENTS, NOTICE_OF_PLACEMENT_ORDER))
             .willReturn(representativesParameters);
 
         noticeOfPlacementOrderUploadedEventHandler.sendEmailForNoticeOfPlacementOrderUploaded(event);
@@ -85,10 +80,10 @@ public class NoticeOfPlacementOrderUploadedEventHandlerTest {
             NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE,
             LOCAL_AUTHORITY_EMAIL_ADDRESS,
             localAuthorityParameters,
-            caseDetails.getId().toString());
+            caseData.getId().toString());
 
         verify(issuedOrderAdminNotificationHandler).sendToAdmin(
-            eventData,
+            caseData,
             event.getDocumentContents(),
             NOTICE_OF_PLACEMENT_ORDER);
 
@@ -96,12 +91,12 @@ public class NoticeOfPlacementOrderUploadedEventHandlerTest {
             DIGITAL_SERVICE,
             NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE,
             localAuthorityParameters,
-            eventData);
+            caseData);
 
         verify(representativeNotificationService).sendToRepresentativesByServedPreference(
             EMAIL,
             ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES,
             representativesParameters,
-            eventData);
+            caseData);
     }
 }
