@@ -49,6 +49,9 @@ public class ManageDocumentsController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
+        // TODO
+        // Validate date and time inputted
+
         switch (caseData.getManageDocument().getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
                 manageDocumentService.initialiseFurtherEvidenceFields(caseDetails);
@@ -70,9 +73,6 @@ public class ManageDocumentsController {
                 // Populate data for case type is C2
                 break;
         }
-
-        // TODO
-        // Validate date and time inputted
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
