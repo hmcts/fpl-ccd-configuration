@@ -30,7 +30,8 @@
     "FieldType": "Collection",
     "ElementLabel": "Directions",
     "FieldTypeParameter": "Direction",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "orderStatus!=\"SEALED\""
   },
   {
     "LiveFrom": "01/01/2017",
