@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.State;
-import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoutes;
+import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -49,7 +49,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoutes.SERVICE;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute.SERVICE;
 import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMapping;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -89,7 +89,7 @@ public class StandardDirectionsOrderController {
         Map<String, Object> data = callbackRequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
         StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
-        SDORoutes sdoRouter = caseData.getSdoRouter();
+        SDORoute sdoRouter = caseData.getSdoRouter();
 
         if (sdoRouter == null || SERVICE == sdoRouter) {
             LocalDate dateOfIssue = time.now().toLocalDate();
@@ -218,7 +218,7 @@ public class StandardDirectionsOrderController {
         }
 
         StandardDirectionOrder order;
-        SDORoutes sdoRouter = caseData.getSdoRouter();
+        SDORoute sdoRouter = caseData.getSdoRouter();
         if (sdoRouter == null || SERVICE == sdoRouter) { // null check can be removed when toggled on
             JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
                 caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()
