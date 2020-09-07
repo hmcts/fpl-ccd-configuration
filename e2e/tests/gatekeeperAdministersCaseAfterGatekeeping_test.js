@@ -4,6 +4,7 @@ const directions = require('../fixtures/directions.js');
 const dateFormat = require('dateformat');
 const dateToString = require('../helpers/date_to_string_helper');
 const gatekeepingNoHearingDetails = require('../fixtures/gatekeepingNoHearingDetails.json');
+const gatekeeping = require('../fixtures/gatekeeping.json');
 
 let caseId;
 
@@ -12,7 +13,7 @@ Feature('Gatekeeper Case administration after gatekeeping');
 BeforeSuite(async (I) => {
   caseId = await I.submitNewCaseWithData(gatekeepingNoHearingDetails);
 
-  await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
+  await I.signIn(config.gateKeeperUser);
 });
 
 Before(async I => await I.navigateToCaseDetails(caseId));
@@ -113,6 +114,7 @@ Scenario('Gatekeeper enters hearing details and submits', async (I, caseViewPage
 Scenario('Gatekeeper drafts standard directions', async (I, caseViewPage, draftStandardDirectionsEventPage) => {
   const today = new Date();
   await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
+  await draftStandardDirectionsEventPage.createSDOThroughService();
   await draftStandardDirectionsEventPage.skipDateOfIssue();
   await draftStandardDirectionsEventPage.useAllocatedJudge('Bob Ross');
   await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
@@ -121,8 +123,8 @@ Scenario('Gatekeeper drafts standard directions', async (I, caseViewPage, draftS
   I.seeEventSubmissionConfirmation(config.administrationActions.draftStandardDirections);
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
-  I.seeInTab(['Standard directions order', 'File'], 'draft-standard-directions-order.pdf');
-  I.seeInTab(['Standard directions order', 'Date of issue'], dateFormat(today, 'd mmmm yyyy'));
+  I.seeInTab(['Gatekeeping order', 'File'], 'draft-standard-directions-order.pdf');
+  I.seeInTab(['Gatekeeping order', 'Date of issue'], dateFormat(today, 'd mmmm yyyy'));
   I.seeInTab(['Directions 1', 'Title'], 'Request permission for expert evidence');
   I.seeInTab(['Directions 1', 'Description'], 'Your request must be in line with Family Procedure Rules part 25 and Practice Direction 25C. Give other parties a list of names of suitable experts.');
   I.seeInTab(['Directions 1', 'For'], 'All parties');
@@ -139,8 +141,8 @@ Scenario('Gatekeeper submits final version of standard directions', async (I, ca
   I.seeEventSubmissionConfirmation(config.administrationActions.draftStandardDirections);
 
   caseViewPage.selectTab(caseViewPage.tabs.orders);
-  I.seeInTab(['Standard directions order', 'File'], 'standard-directions-order.pdf');
-  I.seeInTab(['Standard directions order', 'Date of issue'], '11 January 2020');
+  I.seeInTab(['Gatekeeping order', 'File'], 'standard-directions-order.pdf');
+  I.seeInTab(['Gatekeeping order', 'Date of issue'], '11 January 2020');
 
   caseViewPage.checkActionsAreAvailable([
     config.administrationActions.addHearingBookingDetails,
@@ -154,4 +156,34 @@ Scenario('Gatekeeper submits final version of standard directions', async (I, ca
     config.applicationActions.enterAllocationDecision,
     config.administrationActions.draftStandardDirections,
   ]);
+});
+
+Scenario('Gatekeeper uploads draft standard directions', async (I, caseViewPage, draftStandardDirectionsEventPage) => {
+  caseId = await I.submitNewCaseWithData(gatekeeping);
+  await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
+
+  await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
+  await draftStandardDirectionsEventPage.createSDOThroughUpload();
+  await draftStandardDirectionsEventPage.uploadPreparedSDO(config.testNonEmptyPdfFile);
+  await draftStandardDirectionsEventPage.markAsDraft();
+  await I.completeEvent('Save and continue');
+
+  caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
+  I.see('Draft gatekeeping order');
+  I.seeInTab(['Gatekeeping order', 'File'], 'mockFile.pdf');
+  I.seeInTab(['Gatekeeping order', 'Date uploaded'], dateFormat('d mmm yyyy'));
+  I.seeInTab(['Gatekeeping order', 'Uploaded by'], 'gatekeeper-only@mailnesia.com (gatekeeper)');
+});
+
+Scenario('Gatekeeper uploads final standard directions', async (I, caseViewPage, draftStandardDirectionsEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
+  I.see('mockFile.pdf');
+  await draftStandardDirectionsEventPage.uploadReplacementSDO(config.testNonEmptyWordFile);
+  await draftStandardDirectionsEventPage.markAsFinal();
+  await I.completeEvent('Save and continue');
+
+  caseViewPage.selectTab(caseViewPage.tabs.orders);
+  I.seeInTab(['Gatekeeping order', 'File'], 'mockFile.pdf');
+  I.seeInTab(['Gatekeeping order', 'Date uploaded'], dateFormat('d mmm yyyy'));
+  I.seeInTab(['Gatekeeping order', 'Uploaded by'], 'gatekeeper-only@mailnesia.com (gatekeeper)');
 });
