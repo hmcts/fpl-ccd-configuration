@@ -86,6 +86,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @HasDocumentsIncludedInSwet(groups = UploadDocumentsGroup.class)
 @SuppressWarnings({"java:S1874", "java:S1133"}) // Remove once deprecations dealt with
 public class CaseData {
+    private final Long id;
     private final State state;
     @NotBlank(message = "Enter a case name")
     private final String caseName;
@@ -654,4 +655,7 @@ public class CaseData {
             .filter(hearingBooking -> hearingBooking.getStartDate().isAfter(currentCmoStartDate))
             .min(comparing(HearingBooking::getStartDate));
     }
+
+    private String sendToCtsc;
+    private String displayAmountToPay;
 }

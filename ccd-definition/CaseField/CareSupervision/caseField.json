@@ -1525,5 +1525,21 @@
     "FieldType": "Label",
     "Label": "[Make changes to court services needed](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/attendingHearing)",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "migrateToMoWarning",
+    "Label": "# Check you're registered for an account\n\nAfter 14 September 2020, only registered users can create cases on this system.\n\nAsk your team administrator to [check if you're registered](https://manage-org.platform.hmcts.net/organisation).",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "showManageOrgWarning",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
   }
 ]

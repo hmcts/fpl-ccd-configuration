@@ -39,21 +39,6 @@ public class NotificationEventHandlerTestData {
     private NotificationEventHandlerTestData() {
     }
 
-    public static CallbackRequest appendSendToCtscOnCallback() {
-        CallbackRequest callbackRequest = callbackRequest();
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-
-        Map<String, Object> updatedCaseData = ImmutableMap.<String, Object>builder()
-            .putAll(caseDetails.getData())
-            .put("sendToCtsc", "Yes")
-            .build();
-
-        caseDetails.setData(updatedCaseData);
-        callbackRequest.setCaseDetails(caseDetails);
-
-        return callbackRequest;
-    }
-
     public static AllocatedJudgeTemplateForCMO getCMOReadyForJudgeNotificationParameters() {
         Map<String, Object> commonCMONotificationParameters = expectedCommonCMONotificationParameters();
 

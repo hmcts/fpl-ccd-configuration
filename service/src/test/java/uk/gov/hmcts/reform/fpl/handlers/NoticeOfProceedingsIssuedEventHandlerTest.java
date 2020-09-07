@@ -1,16 +1,14 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import com.google.common.collect.ImmutableMap;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfProceedingsIssuedEvent;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForNoticeOfProceedings;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
@@ -29,14 +27,11 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PROCEEDINGS_ISSUED_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.NOTICE_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.ALLOCATED_JUDGE_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {NoticeOfProceedingsIssuedEventHandler.class, JacksonAutoConfiguration.class,
-    LookupTestConfig.class})
+@SpringBootTest(classes = {NoticeOfProceedingsIssuedEventHandler.class, LookupTestConfig.class})
 class NoticeOfProceedingsIssuedEventHandlerTest {
-    private static CallbackRequest callbackRequest = callbackRequest();
-
     @MockBean
     private RequestData requestData;
 
@@ -57,13 +52,15 @@ class NoticeOfProceedingsIssuedEventHandlerTest {
         final AllocatedJudgeTemplateForNoticeOfProceedings expectedParameters
             = getAllocatedJudgeTemplateParameters();
 
+        CaseData caseData = caseData();
+
         given(featureToggleService.isAllocatedJudgeNotificationEnabled(NOTICE_OF_PROCEEDINGS)).willReturn(true);
 
-        given(noticeOfProceedingsEmailContentProvider.buildAllocatedJudgeNotification(
-            callbackRequest.getCaseDetails())).willReturn(expectedParameters);
+        given(noticeOfProceedingsEmailContentProvider.buildAllocatedJudgeNotification(caseData))
+            .willReturn(expectedParameters);
 
         noticeOfProceedingsIssuedEventHandler.notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(
-            new NoticeOfProceedingsIssuedEvent(callbackRequest));
+            new NoticeOfProceedingsIssuedEvent(caseData));
 
         verify(notificationService).sendEmail(
             NOTICE_OF_PROCEEDINGS_ISSUED_JUDGE_TEMPLATE, ALLOCATED_JUDGE_EMAIL_ADDRESS, expectedParameters,
@@ -73,14 +70,15 @@ class NoticeOfProceedingsIssuedEventHandlerTest {
     @Test
     void shouldNotNotifyAllocatedJudgeOfIssuedNoticeOfProceedingsWhenNotificationDisabled() {
         AllocatedJudgeTemplateForNoticeOfProceedings expectedParameters = getAllocatedJudgeTemplateParameters();
+        CaseData caseData = caseData();
 
         given(featureToggleService.isAllocatedJudgeNotificationEnabled(NOTICE_OF_PROCEEDINGS)).willReturn(false);
 
-        given(noticeOfProceedingsEmailContentProvider.buildAllocatedJudgeNotification(
-            callbackRequest.getCaseDetails())).willReturn(expectedParameters);
+        given(noticeOfProceedingsEmailContentProvider.buildAllocatedJudgeNotification(caseData))
+            .willReturn(expectedParameters);
 
         noticeOfProceedingsIssuedEventHandler.notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(
-            new NoticeOfProceedingsIssuedEvent(callbackRequest));
+            new NoticeOfProceedingsIssuedEvent(caseData));
 
         verify(notificationService, never()).sendEmail(any(), any(), anyMap(), any());
     }
@@ -89,20 +87,18 @@ class NoticeOfProceedingsIssuedEventHandlerTest {
     void shouldNotNotifyAllocatedJudgeOfIssuedNoticeOfProceedingsWhenJudgeNotAllocated() {
         AllocatedJudgeTemplateForNoticeOfProceedings expectedParameters = getAllocatedJudgeTemplateParameters();
 
-        CallbackRequest callbackRequest = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(1111L)
-                .data(ImmutableMap.of("noticeOfProceedings", NoticeOfProceedings.builder().build()))
-                .build())
+        CaseData caseData = CaseData.builder()
+            .id(RandomUtils.nextLong())
+            .noticeOfProceedings(NoticeOfProceedings.builder().build())
             .build();
 
         given(featureToggleService.isAllocatedJudgeNotificationEnabled(NOTICE_OF_PROCEEDINGS)).willReturn(true);
 
-        given(noticeOfProceedingsEmailContentProvider.buildAllocatedJudgeNotification(
-            callbackRequest.getCaseDetails())).willReturn(expectedParameters);
+        given(noticeOfProceedingsEmailContentProvider.buildAllocatedJudgeNotification(caseData))
+            .willReturn(expectedParameters);
 
         noticeOfProceedingsIssuedEventHandler.notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(
-            new NoticeOfProceedingsIssuedEvent(callbackRequest));
+            new NoticeOfProceedingsIssuedEvent(caseData));
 
         verify(notificationService, never()).sendEmail(any(), any(), anyMap(), any());
     }

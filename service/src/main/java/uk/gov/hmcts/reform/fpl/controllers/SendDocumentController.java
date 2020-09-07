@@ -29,7 +29,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POS
 @RestController
 @RequestMapping("/callback/send-document")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class SendDocumentController {
+public class SendDocumentController extends CallbackController {
     private static final String DOCUMENT_TO_BE_SENT_KEY = "documentToBeSent";
     private final ObjectMapper mapper;
     private final DocumentSenderService documentSenderService;
@@ -39,7 +39,7 @@ public class SendDocumentController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSave(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = getCaseData(caseDetails);
 
         var representativesServedByPost =
             representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(), POST);
@@ -57,9 +57,7 @@ public class SendDocumentController {
         }
         caseDetails.getData().remove(DOCUMENT_TO_BE_SENT_KEY);
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .build();
+        return respond(caseDetails);
     }
 
     private void updateSentDocumentsHistory(CaseDetails caseDetails, List<SentDocument> sentDocuments) {

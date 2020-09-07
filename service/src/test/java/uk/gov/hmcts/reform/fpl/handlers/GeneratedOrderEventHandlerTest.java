@@ -1,16 +1,13 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -47,18 +44,16 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMA
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.ALLOCATED_JUDGE_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.DOCUMENT_CONTENTS;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedCaseUrlParameters;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {GeneratedOrderEventHandler.class, InboxLookupService.class,
-    JacksonAutoConfiguration.class, LookupTestConfig.class, IssuedOrderAdminNotificationHandler.class,
-    RepresentativeNotificationService.class, HmctsAdminNotificationHandler.class,
-    FixedTimeConfiguration.class})
+@SpringBootTest(classes = {GeneratedOrderEventHandler.class, InboxLookupService.class, LookupTestConfig.class,
+    IssuedOrderAdminNotificationHandler.class, RepresentativeNotificationService.class,
+    HmctsAdminNotificationHandler.class, FixedTimeConfiguration.class})
 class GeneratedOrderEventHandlerTest {
 
     final String mostRecentUploadedDocumentUrl =
@@ -83,9 +78,6 @@ class GeneratedOrderEventHandlerTest {
     private CaseUrlService caseUrlService;
 
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
     private GeneratedOrderEventHandler generatedOrderEventHandler;
 
     @MockBean
@@ -95,18 +87,16 @@ class GeneratedOrderEventHandlerTest {
 
     @BeforeEach
     void before() {
-        CaseDetails caseDetails = callbackRequest().getCaseDetails();
-        caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+        caseData = caseData();
 
-        given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
+        given(inboxLookupService.getNotificationRecipientEmail(caseData))
             .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
 
-        given(orderIssuedEmailContentProvider.buildParametersWithCaseUrl(
-            callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, DOCUMENT_CONTENTS, GENERATED_ORDER))
+        given(orderIssuedEmailContentProvider.buildParametersWithCaseUrl(caseData, DOCUMENT_CONTENTS, GENERATED_ORDER))
             .willReturn(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true));
 
         given(orderIssuedEmailContentProvider.buildParametersWithoutCaseUrl(
-            callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, DOCUMENT_CONTENTS, GENERATED_ORDER))
+            caseData, DOCUMENT_CONTENTS, GENERATED_ORDER))
             .willReturn(getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true));
     }
 
@@ -119,8 +109,8 @@ class GeneratedOrderEventHandlerTest {
             DIGITAL_SERVICE))
             .willReturn(getExpectedDigitalServedRepresentativesForAddingPartiesToCase());
 
-        generatedOrderEventHandler.sendEmailsForOrder(new GeneratedOrderEvent(callbackRequest(),
-            mostRecentUploadedDocumentUrl, DOCUMENT_CONTENTS));
+        generatedOrderEventHandler.sendEmailsForOrder(new GeneratedOrderEvent(caseData, mostRecentUploadedDocumentUrl,
+            DOCUMENT_CONTENTS));
 
         verify(notificationService).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
@@ -149,8 +139,6 @@ class GeneratedOrderEventHandlerTest {
 
     @Test
     void shouldNotifyAllocatedJudgeOnOrderIssuedAndEnabled() {
-        CaseDetails caseDetails = callbackRequest().getCaseDetails();
-        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
         JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .judgeEmailAddress("judge@gmail.com")
             .build();
@@ -163,10 +151,10 @@ class GeneratedOrderEventHandlerTest {
 
         final AllocatedJudgeTemplateForGeneratedOrder expectedParameters = getOrderIssuedAllocatedJudgeParameters();
 
-        given(orderIssuedEmailContentProvider.buildAllocatedJudgeOrderIssuedNotification(
-            caseDetails)).willReturn(expectedParameters);
+        given(orderIssuedEmailContentProvider.buildAllocatedJudgeOrderIssuedNotification(caseData))
+            .willReturn(expectedParameters);
 
-        generatedOrderEventHandler.sendNotificationToAllocatedJudgeForOrder(new GeneratedOrderEvent(callbackRequest(),
+        generatedOrderEventHandler.sendNotificationToAllocatedJudgeForOrder(new GeneratedOrderEvent(caseData,
             mostRecentUploadedDocumentUrl, DOCUMENT_CONTENTS));
 
         verify(notificationService).sendEmail(
@@ -178,8 +166,6 @@ class GeneratedOrderEventHandlerTest {
 
     @Test
     void shouldNotNotifyAllocatedJudgeOnOrderIssuedAndDisabled() {
-        CaseDetails caseDetails = callbackRequest().getCaseDetails();
-        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
         JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .judgeEmailAddress("judge@gmail.com")
             .build();
@@ -192,10 +178,10 @@ class GeneratedOrderEventHandlerTest {
 
         final AllocatedJudgeTemplateForGeneratedOrder expectedParameters = getOrderIssuedAllocatedJudgeParameters();
 
-        given(orderIssuedEmailContentProvider.buildAllocatedJudgeOrderIssuedNotification(
-            caseDetails)).willReturn(expectedParameters);
+        given(orderIssuedEmailContentProvider.buildAllocatedJudgeOrderIssuedNotification(caseData))
+            .willReturn(expectedParameters);
 
-        generatedOrderEventHandler.sendNotificationToAllocatedJudgeForOrder(new GeneratedOrderEvent(callbackRequest(),
+        generatedOrderEventHandler.sendNotificationToAllocatedJudgeForOrder(new GeneratedOrderEvent(caseData,
             mostRecentUploadedDocumentUrl, DOCUMENT_CONTENTS));
 
         verify(notificationService, never()).sendEmail(
@@ -207,8 +193,6 @@ class GeneratedOrderEventHandlerTest {
 
     @Test
     void shouldNotNotifyAllocatedJudgeOnOrderIssuedWithNoJudge() {
-        CaseDetails caseDetails = callbackRequest().getCaseDetails();
-        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
         JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder().build();
 
         given(featureToggleService.isAllocatedJudgeNotificationEnabled(AllocatedJudgeNotificationType.GENERATED_ORDER))
@@ -219,10 +203,10 @@ class GeneratedOrderEventHandlerTest {
 
         final AllocatedJudgeTemplateForGeneratedOrder expectedParameters = getOrderIssuedAllocatedJudgeParameters();
 
-        given(orderIssuedEmailContentProvider.buildAllocatedJudgeOrderIssuedNotification(
-            caseDetails)).willReturn(expectedParameters);
+        given(orderIssuedEmailContentProvider.buildAllocatedJudgeOrderIssuedNotification(caseData))
+            .willReturn(expectedParameters);
 
-        generatedOrderEventHandler.sendNotificationToAllocatedJudgeForOrder(new GeneratedOrderEvent(callbackRequest(),
+        generatedOrderEventHandler.sendNotificationToAllocatedJudgeForOrder(new GeneratedOrderEvent(caseData,
             mostRecentUploadedDocumentUrl, DOCUMENT_CONTENTS));
 
         verify(notificationService, never()).sendEmail(

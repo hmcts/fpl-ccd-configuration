@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,15 +10,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -27,13 +23,8 @@ import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static java.util.Collections.emptyMap;
 import static org.junit.jupiter.params.provider.EnumSource.Mode.EXCLUDE;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -42,14 +33,14 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLAT
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C110A_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
+import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
+import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 import static uk.gov.hmcts.reform.fpl.utils.assertions.AnnotationAssertion.assertClass;
 
 @ExtendWith(SpringExtension.class)
 class SubmittedCaseEventHandlerTest {
-
-    @Mock
-    private ObjectMapper mapper;
 
     @Mock
     private NotificationService notificationService;
@@ -78,12 +69,13 @@ class SubmittedCaseEventHandlerTest {
     @Test
     void shouldSendEmailToHmctsAdmin() {
         final String expectedEmail = "test@test.com";
-        final CallbackRequest request = callbackRequest();
+        final CaseData caseData = caseData();
+        final CaseData caseDataBefore = caseData();
         final SubmitCaseHmctsTemplate expectedTemplate = new SubmitCaseHmctsTemplate();
-        final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
+        final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(caseData, caseDataBefore);
 
-        when(adminNotificationHandler.getHmctsAdminEmail(new EventData(submittedCaseEvent))).thenReturn(expectedEmail);
-        when(hmctsEmailContentProvider.buildHmctsSubmissionNotification(request.getCaseDetails(), LOCAL_AUTHORITY_CODE))
+        when(adminNotificationHandler.getHmctsAdminEmail(caseData)).thenReturn(expectedEmail);
+        when(hmctsEmailContentProvider.buildHmctsSubmissionNotification(caseData))
             .thenReturn(expectedTemplate);
 
         submittedCaseEventHandler.sendEmailToHmctsAdmin(submittedCaseEvent);
@@ -92,21 +84,21 @@ class SubmittedCaseEventHandlerTest {
             HMCTS_COURT_SUBMISSION_TEMPLATE,
             expectedEmail,
             expectedTemplate,
-            request.getCaseDetails().getId().toString());
+            caseData.getId().toString());
     }
 
     @Test
     void shouldSendEmailToCafcass() {
         final String expectedEmail = "test@test.com";
-        final CallbackRequest request = callbackRequest();
+        final CaseData caseData = caseData();
+        final CaseData caseDataBefore = caseData();
         final CafcassLookupConfiguration.Cafcass cafcass =
             new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, expectedEmail);
         final SubmitCaseCafcassTemplate expectedTemplate = new SubmitCaseCafcassTemplate();
-        final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
-
+        final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(caseData, caseDataBefore);
         when(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE)).thenReturn(cafcass);
-        when(cafcassEmailContentProvider.buildCafcassSubmissionNotification(request.getCaseDetails(),
-            LOCAL_AUTHORITY_CODE)).thenReturn(expectedTemplate);
+        when(cafcassEmailContentProvider.buildCafcassSubmissionNotification(any(CaseData.class)))
+            .thenReturn(expectedTemplate);
 
         submittedCaseEventHandler.sendEmailToCafcass(submittedCaseEvent);
 
@@ -114,24 +106,23 @@ class SubmittedCaseEventHandlerTest {
             CAFCASS_SUBMISSION_TEMPLATE,
             expectedEmail,
             expectedTemplate,
-            request.getCaseDetails().getId().toString());
+            caseData.getId().toString());
     }
 
     @Nested
     class Payment {
 
-        final CaseData caseData = CaseData.builder().build();
-
-        @BeforeEach
-        void init() {
-            when(mapper.convertValue(any(), eq(CaseData.class))).thenReturn(caseData);
-        }
-
         @ParameterizedTest
         @EnumSource(value = State.class, mode = EXCLUDE, names = {"OPEN"})
         void shouldNotPayIfCaseStateIsDifferentThanOpen(State state) {
-            final CallbackRequest request = callbackRequest(state, Map.of("displayAmountToPay", "Yes"));
-            final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
+            final CaseData caseData = CaseData.builder()
+                .state(RETURNED)
+                .build();
+            final CaseData caseDataBefore = CaseData.builder()
+                .state(SUBMITTED)
+                .build();
+
+            final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(caseData, caseDataBefore);
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 
@@ -140,46 +131,64 @@ class SubmittedCaseEventHandlerTest {
 
         @Test
         void shouldNotPayAndEmitFailureEventIfPaymentDecisionsIsNotPresent() {
-            final CallbackRequest request = callbackRequest(OPEN, emptyMap());
-            final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
+            CaseData caseData = CaseData.builder()
+                .state(OPEN)
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .build();
+
+            final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(caseData, caseData);
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 
-            verify(applicationEventPublisher)
-                .publishEvent(new FailedPBAPaymentEvent(submittedCaseEvent, C110A_APPLICATION));
+            verify(applicationEventPublisher).publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION));
             verifyNoMoreInteractions(paymentService, applicationEventPublisher);
         }
 
         @Test
         void shouldNotPayAndEmitFailureEventIfPaymentDecisionsIsNo() {
-            final CallbackRequest request = callbackRequest(OPEN, Map.of("displayAmountToPay", "No"));
-            final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
+            CaseData caseData = CaseData.builder()
+                .state(OPEN)
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .displayAmountToPay("No")
+                .build();
+            final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(caseData, caseData);
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 
             verify(applicationEventPublisher)
-                .publishEvent(new FailedPBAPaymentEvent(submittedCaseEvent, C110A_APPLICATION));
+                .publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION));
             verifyNoMoreInteractions(paymentService, applicationEventPublisher);
         }
 
         @Test
         void shouldEmitFailureEventWhenPaymentFailed() {
-            final CallbackRequest request = callbackRequest(OPEN, Map.of("displayAmountToPay", "Yes"));
-            final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
+            CaseData caseData = CaseData.builder()
+                .id(RandomUtils.nextLong())
+                .state(OPEN)
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .displayAmountToPay("Yes")
+                .build();
+            final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(caseData, caseData);
+
             final Exception exception = new PaymentsApiException("", new RuntimeException());
 
-            doThrow(exception).when(paymentService).makePaymentForCaseOrders(1L, caseData);
+            doThrow(exception).when(paymentService).makePaymentForCaseOrders(caseData);
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 
             verify(applicationEventPublisher)
-                .publishEvent(new FailedPBAPaymentEvent(submittedCaseEvent, C110A_APPLICATION));
+                .publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION));
         }
 
         @Test
         void shouldPayWhenCaseIsOpenedAndPaymentDesicionIsYes() {
-            final CallbackRequest request = callbackRequest(OPEN, Map.of("displayAmountToPay", "Yes"));
-            final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(request);
+            CaseData caseData = CaseData.builder()
+                .state(OPEN)
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .displayAmountToPay("Yes")
+                .build();
+
+            final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(caseData, caseData);
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 
@@ -195,28 +204,4 @@ class SubmittedCaseEventHandlerTest {
             "makePayment");
     }
 
-    private static CallbackRequest callbackRequest() {
-        return callbackRequest(OPEN, emptyMap());
-    }
-
-    private static CallbackRequest callbackRequest(State state, Map<String, Object> data) {
-        Map<String, Object> caseData = new HashMap<>();
-        caseData.put("caseLocalAuthority", LOCAL_AUTHORITY_CODE);
-        caseData.putAll(data);
-
-        return CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(1L)
-                .state(state.getValue())
-                .data(caseData)
-                .build())
-            .caseDetailsBefore(
-                CaseDetails.builder()
-                    .id(1L)
-                    .state(state.getValue())
-                    .data(caseData)
-                    .build()
-            )
-            .build();
-    }
 }

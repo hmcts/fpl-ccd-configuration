@@ -1,10 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForNoticeOfProceedings;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
@@ -17,10 +15,8 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class NoticeOfProceedingsEmailContentProvider extends AbstractEmailContentProvider {
-    private final ObjectMapper mapper;
 
-    public AllocatedJudgeTemplateForNoticeOfProceedings buildAllocatedJudgeNotification(CaseDetails caseDetails) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+    public AllocatedJudgeTemplateForNoticeOfProceedings buildAllocatedJudgeNotification(CaseData caseData) {
 
         AllocatedJudgeTemplateForNoticeOfProceedings allocatedJudgeTemplate
             = new AllocatedJudgeTemplateForNoticeOfProceedings();
@@ -28,7 +24,7 @@ public class NoticeOfProceedingsEmailContentProvider extends AbstractEmailConten
         allocatedJudgeTemplate.setFamilyManCaseNumber(caseData.getFamilyManCaseNumber());
         allocatedJudgeTemplate.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
         allocatedJudgeTemplate.setHearingDate(getHearingBookingStartDate(caseData));
-        allocatedJudgeTemplate.setCaseUrl(getCaseUrl(caseDetails.getId()));
+        allocatedJudgeTemplate.setCaseUrl(getCaseUrl(caseData.getId()));
         allocatedJudgeTemplate.setJudgeTitle(caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()
             .getJudgeOrMagistrateTitle());
         allocatedJudgeTemplate.setJudgeName(caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor().getJudgeName());

@@ -1,11 +1,9 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -70,14 +68,12 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAll
 @RestController
 @RequestMapping("/callback/create-order")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class GeneratedOrderController {
+public class GeneratedOrderController extends CallbackController {
 
-    private final ObjectMapper mapper;
     private final GeneratedOrderService service;
     private final ValidateGroupService validateGroupService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
-    private final ApplicationEventPublisher applicationEventPublisher;
     private final GatewayConfiguration gatewayConfiguration;
     private final CoreCaseDataService coreCaseDataService;
     private final ChildrenService childrenService;
@@ -90,7 +86,7 @@ public class GeneratedOrderController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
-        CaseData caseData = mapper.convertValue(data, CaseData.class);
+        CaseData caseData = getCaseData(caseDetails);
 
         List<String> errors = validateGroupService.validateGroup(caseData, ValidateFamilyManCaseNumberGroup.class);
 
@@ -108,18 +104,15 @@ public class GeneratedOrderController {
             }
         }
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .errors(errors)
-            .build();
+        return respond(caseDetails, errors);
     }
 
     @PostMapping("/prepare-selected-order/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleFinalOrderFlagsMidEvent(
         @RequestBody CallbackRequest callbackRequest) {
-
-        Map<String, Object> data = callbackRequest.getCaseDetails().getData();
-        CaseData caseData = mapper.convertValue(data, CaseData.class);
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        Map<String, Object> data = caseDetails.getData();
+        CaseData caseData = getCaseData(caseDetails);
         final OrderTypeAndDocument currentOrder = caseData.getOrderTypeAndDocument();
 
         if (DISCHARGE_OF_CARE_ORDER == currentOrder.getType()) {
@@ -135,10 +128,7 @@ public class GeneratedOrderController {
                 data.put(MULTIPLE_CARE_ORDER_LABEL.getKey(), dischargeCareOrder.getOrdersLabel(careOrders));
             }
 
-            return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(data)
-                .errors(errors)
-                .build();
+            return respond(caseDetails, errors);
         }
 
         List<Element<Child>> children = caseData.getAllChildren();
@@ -162,9 +152,7 @@ public class GeneratedOrderController {
             }
         }
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .build();
+        return respond(caseDetails);
     }
 
     @PostMapping("/populate-children-selector/mid-event")
@@ -172,7 +160,7 @@ public class GeneratedOrderController {
         @RequestBody CallbackRequest callbackRequest) {
 
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = getCaseData(caseDetails);
 
         if (NO.getValue().equals(caseData.getOrderAppliesToAllChildren())) {
             final Selector childSelector = newSelector(caseData.getAllChildren().size());
@@ -186,9 +174,7 @@ public class GeneratedOrderController {
                 childrenService.getChildrenLabel(caseData.getAllChildren(), closable));
         }
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .build();
+        return respond(caseDetails);
     }
 
     /*
@@ -198,8 +184,9 @@ public class GeneratedOrderController {
     */
     @PostMapping("/generate-document/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
-        Map<String, Object> data = callbackRequest.getCaseDetails().getData();
-        CaseData caseData = mapper.convertValue(data, CaseData.class);
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        Map<String, Object> data = caseDetails.getData();
+        CaseData caseData = getCaseData(caseDetails);
 
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
         FurtherDirections orderFurtherDirections = caseData.getOrderFurtherDirections();
@@ -228,15 +215,14 @@ public class GeneratedOrderController {
                 orderTypeAndDocument, document));
         }
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .build();
+        return respond(caseDetails);
     }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
-        Map<String, Object> data = callbackRequest.getCaseDetails().getData();
-        CaseData caseData = mapper.convertValue(data, CaseData.class);
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        Map<String, Object> data = caseDetails.getData();
+        CaseData caseData = getCaseData(caseDetails);
 
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
             caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge());
@@ -275,14 +261,12 @@ public class GeneratedOrderController {
 
         service.removeOrderProperties(data);
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .build();
+        return respond(caseDetails);
     }
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
+        CaseData caseData = getCaseData(callbackRequest);
         DocumentReference mostRecentUploadedDocument = service.getMostRecentUploadedOrderDocument(
             caseData.getOrderCollection());
 
@@ -293,7 +277,7 @@ public class GeneratedOrderController {
             "internal-change-SEND_DOCUMENT",
             Map.of("documentToBeSent", mostRecentUploadedDocument)
         );
-        applicationEventPublisher.publishEvent(new GeneratedOrderEvent(callbackRequest,
+        publishEvent(new GeneratedOrderEvent(caseData,
             concatUrlAndMostRecentUploadedDocumentPath(
                 gatewayConfiguration.getUrl(),
                 mostRecentUploadedDocument.getBinaryUrl()),

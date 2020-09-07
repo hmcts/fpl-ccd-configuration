@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,12 +14,10 @@ import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 @RestController
 @RequestMapping("/callback/update-task-list")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class TaskListController {
-
-    private final ApplicationEventPublisher applicationEventPublisher;
+public class TaskListController extends CallbackController {
 
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
-        applicationEventPublisher.publishEvent(new CaseDataChanged(callbackRequest));
+        publishEvent(new CaseDataChanged(getCaseData(callbackRequest)));
     }
 }

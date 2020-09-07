@@ -12,20 +12,16 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fpl.service.MapperService;
 import uk.gov.hmcts.reform.fpl.service.StatementOfServiceService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
-
-import java.util.Map;
 
 @Api
 @RestController
 @RequestMapping("/callback/statement-of-service")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class StatementOfServiceController {
+public class StatementOfServiceController extends CallbackController {
     private static final String CONSENT_TEMPLATE = "I, %s, have served the documents as stated.";
     private final IdamClient idamClient;
-    private final MapperService mapperService;
     private final StatementOfServiceService statementOfServiceService;
     private final RequestData requestData;
 
@@ -33,18 +29,14 @@ public class StatementOfServiceController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapperService.mapObject(caseDetails.getData(), CaseData.class);
-
-        caseDetails.getData().put("statementOfService", statementOfServiceService.expandRecipientCollection(caseData));
+        CaseData caseData = getCaseData(caseDetails);
 
         String label = String.format(CONSENT_TEMPLATE, idamClient.getUserInfo(requestData.authorisation()).getName());
 
-        Map<String, Object> data = caseDetails.getData();
-        data.put("serviceDeclarationLabel", label);
+        caseDetails.getData().put("statementOfService", statementOfServiceService.expandRecipientCollection(caseData));
+        caseDetails.getData().put("serviceDeclarationLabel", label);
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .build();
+        return respond(caseDetails);
     }
 }
 

@@ -1,10 +1,11 @@
 package uk.gov.hmcts.reform.fpl.events;
 
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 
-public class NoticeOfProceedingsIssuedEvent extends CallbackEvent {
-
-    public NoticeOfProceedingsIssuedEvent(CallbackRequest callbackRequest) {
-        super(callbackRequest);
-    }
+@Getter
+@RequiredArgsConstructor
+public class NoticeOfProceedingsIssuedEvent {
+    private final CaseData caseData;
 }

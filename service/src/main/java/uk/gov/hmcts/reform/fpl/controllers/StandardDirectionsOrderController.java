@@ -1,10 +1,8 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -66,13 +64,11 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAll
 @RestController
 @RequestMapping("/callback/draft-standard-directions")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class StandardDirectionsOrderController {
-    private final ObjectMapper mapper;
+public class StandardDirectionsOrderController extends CallbackController {
     private final DocumentService documentService;
     private final StandardDirectionOrderGenerationService standardDirectionOrderGenerationService;
     private final CommonDirectionService commonDirectionService;
     private final CoreCaseDataService coreCaseDataService;
-    private final ApplicationEventPublisher applicationEventPublisher;
     private final PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService;
     private final OrderValidationService orderValidationService;
     private final HearingBookingService hearingBookingService;
@@ -85,8 +81,9 @@ public class StandardDirectionsOrderController {
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
-        Map<String, Object> data = callbackRequest.getCaseDetails().getData();
-        CaseData caseData = mapper.convertValue(data, CaseData.class);
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        Map<String, Object> data = caseDetails.getData();
+        CaseData caseData = getCaseData(caseDetails);
         StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
         SDORoute sdoRouter = caseData.getSdoRouter();
 
@@ -114,23 +111,18 @@ public class StandardDirectionsOrderController {
             }
         }
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .build();
+        return respond(caseDetails);
     }
 
     @PostMapping("/date-of-issue/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEventIssueDate(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = getCaseData(caseDetails);
 
         List<String> errors = validateGroupService.validateGroup(caseData, DateOfIssueGroup.class);
 
         if (!errors.isEmpty()) {
-            return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(caseDetails.getData())
-                .errors(errors)
-                .build();
+            return respond(caseDetails, errors);
         }
 
         String hearingDate = getFirstHearingStartDate(caseData.getHearingDetails());
@@ -148,15 +140,13 @@ public class StandardDirectionsOrderController {
             caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, prepareJudge(caseData));
         }
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .build();
+        return respond(caseDetails);
     }
 
     @PostMapping("/service-route/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = getCaseData(caseDetails);
 
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(caseData.getJudgeAndLegalAdvisor(),
             caseData.getAllocatedJudge());
@@ -179,15 +169,13 @@ public class StandardDirectionsOrderController {
 
         caseDetails.getData().put("standardDirectionOrder", order);
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .build();
+        return respond(caseDetails);
     }
 
     @PostMapping("/upload-route/mid-event")
     public CallbackResponse handleUploadMidEvent(@RequestBody CallbackRequest request) {
         Map<String, Object> data = request.getCaseDetails().getData();
-        CaseData caseData = mapper.convertValue(data, CaseData.class);
+        CaseData caseData = getCaseData(request.getCaseDetails());
 
         StandardDirectionOrder order = sdoService.buildTemporarySDO(caseData);
 
@@ -202,7 +190,7 @@ public class StandardDirectionsOrderController {
     public CallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) throws Exception {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
-        CaseData caseData = mapper.convertValue(data, CaseData.class);
+        CaseData caseData = getCaseData(caseDetails);
 
         List<String> validationErrors = orderValidationService.validate(caseData);
         if (!validationErrors.isEmpty()) {
@@ -269,14 +257,12 @@ public class StandardDirectionsOrderController {
             removeTemporaryFields(caseDetails, "sdoRouter");
         }
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .build();
+        return respond(caseDetails);
     }
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
+        CaseData caseData = getCaseData(callbackRequest);
 
         StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
         if (standardDirectionOrder.getOrderStatus() != SEALED) {
@@ -290,7 +276,7 @@ public class StandardDirectionsOrderController {
             "internal-change-SEND_DOCUMENT",
             Map.of("documentToBeSent", standardDirectionOrder.getOrderDoc())
         );
-        applicationEventPublisher.publishEvent(new StandardDirectionsOrderIssuedEvent(callbackRequest));
+        publishEvent(new StandardDirectionsOrderIssuedEvent(caseData));
     }
 
     private JudgeAndLegalAdvisor prepareJudge(CaseData caseData) {
