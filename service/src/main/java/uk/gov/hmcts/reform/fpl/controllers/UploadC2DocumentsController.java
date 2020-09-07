@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
+import uk.gov.hmcts.reform.fpl.service.UploadC2DocumentsService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -32,6 +33,7 @@ import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -63,6 +65,7 @@ public class UploadC2DocumentsController extends CallbackController {
     private final PbaNumberService pbaNumberService;
     private final Time time;
     private final RequestData requestData;
+    private final UploadC2DocumentsService uploadC2DocumentsService;
 
     @PostMapping("/get-fee/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
@@ -87,7 +90,7 @@ public class UploadC2DocumentsController extends CallbackController {
         return respond(caseDetails);
     }
 
-    @PostMapping("/validate-pba-number/mid-event")
+    @PostMapping("/validate/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleValidatePbaNumberMidEvent(
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
@@ -95,8 +98,11 @@ public class UploadC2DocumentsController extends CallbackController {
 
         var updatedTemporaryC2Document = pbaNumberService.update(caseData.getTemporaryC2Document());
         caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, updatedTemporaryC2Document);
+        List<String> errors = new ArrayList<>();
+        errors.addAll(pbaNumberService.validate(updatedTemporaryC2Document));
+        errors.addAll(uploadC2DocumentsService.validate(updatedTemporaryC2Document));
 
-        return respond(caseDetails, pbaNumberService.validate(updatedTemporaryC2Document));
+        return respond(caseDetails, errors);
     }
 
     @PostMapping("/about-to-submit")
