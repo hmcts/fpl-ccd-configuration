@@ -25,15 +25,16 @@ public class StandardDirectionsOrderService {
     private final IdamClient idamClient;
     private final RequestData requestData;
 
-    public StandardDirectionOrder buildTemporarySDO(CaseData caseData, DocumentReference currentSDODocument) {
-        DocumentReference document = defaultIfNull(
-            caseData.getPreparedSDO(),
-            defaultIfNull(
-                caseData.getReplacementSDO(),
-                currentSDODocument
-            )
-        );
+    public StandardDirectionOrder buildTemporarySDO(CaseData caseData) {
+        DocumentReference document = caseData.getPreparedSDO();
 
+        if (document == null) {
+            // been through once, either pull from replacement doc or SDO if that isn't present
+            document = defaultIfNull(
+                caseData.getReplacementSDO(),
+                caseData.getStandardDirectionOrder().getOrderDoc()
+            );
+        }
         return StandardDirectionOrder.builder()
             .orderDoc(document)
             .build();

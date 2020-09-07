@@ -53,9 +53,11 @@ class StandardDirectionsOrderServiceTest {
 
     @Test
     void shouldUsePreparedSDOForTemporaryStandardDirectionOrder() {
-        CaseData caseData = CaseData.builder().preparedSDO(PDF_DOC).build();
+        CaseData caseData = CaseData.builder()
+            .preparedSDO(PDF_DOC)
+            .build();
 
-        StandardDirectionOrder order = service.buildTemporarySDO(caseData, null);
+        StandardDirectionOrder order = service.buildTemporarySDO(caseData);
 
         StandardDirectionOrder expectedOrder = StandardDirectionOrder.builder().orderDoc(PDF_DOC).build();
 
@@ -64,9 +66,13 @@ class StandardDirectionsOrderServiceTest {
 
     @Test
     void shouldUseReplacementSDOForTemporaryStandardDirectionOrder() {
-        CaseData caseData = CaseData.builder().preparedSDO(null).replacementSDO(WORD_DOC).build();
+        CaseData caseData = CaseData.builder()
+            .preparedSDO(null)
+            .replacementSDO(WORD_DOC)
+            .standardDirectionOrder(StandardDirectionOrder.builder().build())
+            .build();
 
-        StandardDirectionOrder order = service.buildTemporarySDO(caseData, null);
+        StandardDirectionOrder order = service.buildTemporarySDO(caseData);
 
         StandardDirectionOrder expectedOrder = StandardDirectionOrder.builder().orderDoc(WORD_DOC).build();
 
@@ -75,9 +81,15 @@ class StandardDirectionsOrderServiceTest {
 
     @Test
     void shouldUseCurrentSDODocumentForTemporaryStandardDirectionOrder() {
-        CaseData caseData = CaseData.builder().preparedSDO(null).replacementSDO(null).build();
+        CaseData caseData = CaseData.builder()
+            .preparedSDO(null)
+            .replacementSDO(null)
+            .standardDirectionOrder(StandardDirectionOrder.builder()
+                .orderDoc(SEALED_DOC)
+                .build())
+            .build();
 
-        StandardDirectionOrder order = service.buildTemporarySDO(caseData, SEALED_DOC);
+        StandardDirectionOrder order = service.buildTemporarySDO(caseData);
 
         StandardDirectionOrder expectedOrder = StandardDirectionOrder.builder().orderDoc(SEALED_DOC).build();
 

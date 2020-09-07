@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
@@ -108,7 +107,6 @@ public class StandardDirectionsOrderController {
                     data.put("useUploadRoute", YES);
                     break;
                 case SERVICE:
-                    data.put("pageShow", SERVICE);
                     data.put("useServiceRoute", YES);
                     break;
                 default:
@@ -191,10 +189,7 @@ public class StandardDirectionsOrderController {
         Map<String, Object> data = request.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        StandardDirectionOrder order = sdoService.buildTemporarySDO(
-            caseData,
-            mapper.convertValue(data.get("currentSDO"), DocumentReference.class)
-        );
+        StandardDirectionOrder order = sdoService.buildTemporarySDO(caseData);
 
         data.put("standardDirectionOrder", order);
 
@@ -263,10 +258,10 @@ public class StandardDirectionsOrderController {
             JUDGE_AND_LEGAL_ADVISOR_KEY,
             "dateOfIssue",
             "preparedSDO",
-            "pageShow",
-            "useServiceRoute",
             "currentSDO",
-            "replacementSDO"
+            "replacementSDO",
+            "useServiceRoute",
+            "useUploadRoute"
         );
 
         if (order.getOrderStatus() == SEALED) {

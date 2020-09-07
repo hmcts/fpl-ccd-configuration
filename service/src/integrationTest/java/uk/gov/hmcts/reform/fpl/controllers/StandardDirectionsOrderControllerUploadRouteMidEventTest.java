@@ -5,12 +5,9 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,13 +41,11 @@ public class StandardDirectionsOrderControllerUploadRouteMidEventTest extends Ab
 
     @Test
     void shouldAddAlreadyUploadedDocumentToConstructedStandardDirectionOrder() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of(
-                "currentSDO", DOCUMENT
-            ))
+        CaseData caseData = CaseData.builder()
+            .standardDirectionOrder(StandardDirectionOrder.builder().orderDoc(DOCUMENT).build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseDetails, "upload-route");
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData), "upload-route");
 
         StandardDirectionOrder expectedOrder = StandardDirectionOrder.builder().orderDoc(DOCUMENT).build();
         StandardDirectionOrder builtOrder = mapper.convertValue(
