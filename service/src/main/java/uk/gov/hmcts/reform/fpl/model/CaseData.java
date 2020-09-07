@@ -581,8 +581,6 @@ public class CaseData {
     private final List<Element<ManageDocumentBundle>> c2SupportingDocuments;
     private final List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
 
-    // TODO
-    // Test me
     public boolean documentBundleContainsHearingId(UUID hearingId) {
         return hearingFurtherEvidenceDocuments.stream()
             .anyMatch(element -> element.getId().equals(hearingId));

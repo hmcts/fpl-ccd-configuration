@@ -9,13 +9,17 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -28,11 +32,10 @@ import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LABEL_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
@@ -95,7 +98,8 @@ public class ManageDocumentServiceTest {
             MANAGE_DOCUMENT_KEY, buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, NO.getValue())));
 
         CaseDetails caseDetails = CaseDetails.builder().data(data).build();
-        manageDocumentService.initialiseManageDocumentBundleCollection(caseDetails, TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY);
+        manageDocumentService.initialiseManageDocumentBundleCollection(caseDetails,
+            TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY);
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         assertThat(caseData.getFurtherEvidenceDocumentsTEMP()).isNotEmpty();
@@ -110,35 +114,157 @@ public class ManageDocumentServiceTest {
             MANAGE_DOCUMENT_KEY, buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, NO.getValue())));
 
         CaseDetails caseDetails = CaseDetails.builder().data(data).build();
-        manageDocumentService.initialiseManageDocumentBundleCollection(caseDetails, TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY);
+        manageDocumentService.initialiseManageDocumentBundleCollection(caseDetails,
+            TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY);
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         assertThat(caseData.getFurtherEvidenceDocumentsTEMP()).isEqualTo(furtherEvidenceBundle);
     }
 
-    // fix test
-//    @Test
-//    void shouldSetDateTimeUploadedToNewCorrespondenceCollectionItems() {
-//        LocalDateTime yesterday = time.now().minusDays(1);
-//        List<Element<ManageDocumentBundle>> correspondingDocuments = buildManagementDocumentBundle();
-//        Element<ManageDocumentBundle> previousCorrespondingDocument = element(ManageDocumentBundle.builder()
-//            .dateTimeUploaded(yesterday)
-//            .build());
-//
-//        correspondingDocuments.add(previousCorrespondingDocument);
-//        Map<String, Object> data = new HashMap<>(Map.of(
-//            CORRESPONDING_DOCUMENTS_COLLECTION_KEY, correspondingDocuments,
-//            MANAGE_DOCUMENT_KEY, buildManagementDocument(CORRESPONDENCE)));
-//
-//        CaseDetails caseDetails = CaseDetails.builder().data(data).build();
-//        manageDocumentService.updateManageDocumentCollections(caseDetails);
-//        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-//
-//        List<ManageDocumentBundle> manageDocumentBundle = unwrapElements(caseData.getCorrespondenceDocuments());
-//
-//        assertThat(manageDocumentBundle.get(0).getDateTimeUploaded()).isEqualTo(time.now());
-//        assertThat(manageDocumentBundle.get(1).getDateTimeUploaded()).isEqualTo(yesterday);
-//    }
+    @Test
+    void shouldSetDateTimeUploadedToNewCorrespondenceCollectionItems() {
+        LocalDateTime yesterday = time.now().minusDays(1);
+        List<Element<ManageDocumentBundle>> correspondingDocuments = buildManagementDocumentBundle();
+        correspondingDocuments.add(element(ManageDocumentBundle.builder()
+                .dateTimeUploaded(yesterday)
+                .build()));
+
+        List<Element<ManageDocumentBundle>> updatedCorrespondingDocuments
+            = manageDocumentService.setDateTimeUploadedOnManageDocumentCollection(correspondingDocuments, List.of());
+
+        List<ManageDocumentBundle> manageDocumentBundle = unwrapElements(updatedCorrespondingDocuments);
+
+        assertThat(manageDocumentBundle.get(0).getDateTimeUploaded()).isEqualTo(time.now());
+        assertThat(manageDocumentBundle.get(1).getDateTimeUploaded()).isEqualTo(yesterday);
+    }
+
+    @Test
+    void shouldSetNewDateTimeUploadedOnOverwriteOfPreviousDocumentUpload() {
+        LocalDateTime yesterday = time.now().minusDays(1);
+
+        List<Element<ManageDocumentBundle>> previousCorrespondingDocuments = List.of(
+            element(ManageDocumentBundle.builder()
+                .dateTimeUploaded(yesterday)
+                .document(DocumentReference.builder()
+                    .filename("Previous")
+                    .build())
+                .build()));
+
+        List<Element<ManageDocumentBundle>> currentCorrespondingDocuments = List.of(
+            element(ManageDocumentBundle.builder()
+                .document(DocumentReference.builder()
+                    .filename("Previous")
+                    .build())
+                .build()));
+
+        List<Element<ManageDocumentBundle>> updatedCorrespondingDocuments
+            = manageDocumentService.setDateTimeUploadedOnManageDocumentCollection(currentCorrespondingDocuments,
+            previousCorrespondingDocuments);
+
+        List<ManageDocumentBundle> manageDocumentBundle = unwrapElements(updatedCorrespondingDocuments);
+
+        assertThat(manageDocumentBundle.get(0).getDateTimeUploaded()).isEqualTo(time.now());
+    }
+
+    @Test
+    void shouldBuildNewFurtherEvidenceCollectionIfFurtherEvidenceIsRelatedToHearingAndCollectionDoesNotExist() {
+        List<Element<ManageDocumentBundle>> furtherEvidenceBundle = buildManagementDocumentBundle();
+        UUID hearingId = UUID.randomUUID();
+        HearingBooking hearingBooking = buildFinalHearingBooking();
+
+        Map<String, Object> data = new HashMap<>(Map.of(
+            "hearingDetails", List.of(element(hearingId, hearingBooking)),
+            "manageDocumentsHearingList", DynamicList.builder()
+                .value(DynamicListElement.builder()
+                    .code(hearingId)
+                    .build())
+                .build(),
+            TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, furtherEvidenceBundle,
+            MANAGE_DOCUMENT_KEY, buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue())));
+
+        CaseDetails caseDetails = CaseDetails.builder().data(data).build();
+        manageDocumentService.buildFurtherEvidenceCollection(caseDetails);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceBundle =
+            caseData.getHearingFurtherEvidenceDocuments();
+
+        Element<HearingFurtherEvidenceBundle> furtherEvidenceBundleElement = hearingFurtherEvidenceBundle.get(0);
+
+        assertThat(furtherEvidenceBundleElement.getId()).isEqualTo(hearingId);
+        assertThat(furtherEvidenceBundleElement.getValue().getHearingName()).isEqualTo(hearingBooking.toLabel(DATE));
+        assertThat(furtherEvidenceBundleElement.getValue().getManageDocumentBundle()).isEqualTo(furtherEvidenceBundle);
+    }
+
+    @Test
+    void shouldAppendToExistingEntryIfFurtherEvidenceIsRelatedToHearingAndCollectionEntryExists() {
+        List<Element<ManageDocumentBundle>> furtherEvidenceBundle = buildManagementDocumentBundle();
+        UUID hearingId = UUID.randomUUID();
+        HearingBooking hearingBooking = buildFinalHearingBooking();
+
+        Map<String, Object> data = new HashMap<>(Map.of(
+            "hearingDetails", List.of(element(hearingId, hearingBooking)),
+            "manageDocumentsHearingList", DynamicList.builder()
+                .value(DynamicListElement.builder()
+                    .code(hearingId)
+                    .build())
+                .build(),
+            FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, List.of(
+                element(hearingId, HearingFurtherEvidenceBundle.builder()
+                    .manageDocumentBundle(List.of(
+                        element(ManageDocumentBundle.builder().build())))
+                    .build())),
+            TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, furtherEvidenceBundle,
+            MANAGE_DOCUMENT_KEY, buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue())));
+
+        CaseDetails caseDetails = CaseDetails.builder().data(data).build();
+        manageDocumentService.buildFurtherEvidenceCollection(caseDetails);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceBundle =
+            caseData.getHearingFurtherEvidenceDocuments();
+
+        Element<HearingFurtherEvidenceBundle> furtherEvidenceBundleElement = hearingFurtherEvidenceBundle.get(0);
+        Element<ManageDocumentBundle> manageDocumentBundle
+            = furtherEvidenceBundleElement.getValue().getManageDocumentBundle().get(1);
+
+        assertThat(manageDocumentBundle).isEqualTo(furtherEvidenceBundle.get(0));
+    }
+
+    @Test
+    void shouldAppendToNewEntryIfFurtherEvidenceIsRelatedToHearingAndCollectionEntryExists() {
+        List<Element<ManageDocumentBundle>> furtherEvidenceBundle = buildManagementDocumentBundle();
+        UUID hearingId = UUID.randomUUID();
+        HearingBooking hearingBooking = buildFinalHearingBooking();
+
+        Map<String, Object> data = new HashMap<>(Map.of(
+            "hearingDetails", List.of(element(hearingId, hearingBooking)),
+            "manageDocumentsHearingList", DynamicList.builder()
+                .value(DynamicListElement.builder()
+                    .code(hearingId)
+                    .build())
+                .build(),
+            FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, List.of(
+                element(UUID.randomUUID(), HearingFurtherEvidenceBundle.builder()
+                    .manageDocumentBundle(List.of(
+                        element(ManageDocumentBundle.builder().build())))
+                    .build())),
+            TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, furtherEvidenceBundle,
+            MANAGE_DOCUMENT_KEY, buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue())));
+
+        CaseDetails caseDetails = CaseDetails.builder().data(data).build();
+        manageDocumentService.buildFurtherEvidenceCollection(caseDetails);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceBundle =
+            caseData.getHearingFurtherEvidenceDocuments();
+
+        Element<HearingFurtherEvidenceBundle> furtherEvidenceBundleElement = hearingFurtherEvidenceBundle.get(1);
+
+        assertThat(furtherEvidenceBundleElement.getId()).isEqualTo(hearingId);
+        assertThat(furtherEvidenceBundleElement.getValue().getHearingName()).isEqualTo(hearingBooking.toLabel(DATE));
+        assertThat(furtherEvidenceBundleElement.getValue().getManageDocumentBundle()).isEqualTo(furtherEvidenceBundle);
+    }
 
     private List<Element<ManageDocumentBundle>> buildManagementDocumentBundle() {
         return wrapElements(ManageDocumentBundle.builder()
@@ -153,6 +279,13 @@ public class ManageDocumentServiceTest {
     private ManageDocument buildManagementDocument(ManageDocumentType type, String isRelatedToHearing) {
         return buildManagementDocument(type).toBuilder()
             .relatedToHearing(isRelatedToHearing)
+            .build();
+    }
+
+    private HearingBooking buildFinalHearingBooking() {
+        return HearingBooking.builder()
+            .type(HearingType.FINAL)
+            .startDate(time.now())
             .build();
     }
 }

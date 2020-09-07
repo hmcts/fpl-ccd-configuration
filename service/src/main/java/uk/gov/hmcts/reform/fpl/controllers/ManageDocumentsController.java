@@ -48,16 +48,21 @@ public class ManageDocumentsController {
         switch (caseData.getManageDocument().getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
                 manageDocumentService.initialiseFurtherEvidenceFields(caseDetails);
-                manageDocumentService.initialiseManageDocumentBundleCollection(caseDetails, TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY);
+                manageDocumentService.initialiseManageDocumentBundleCollection(caseDetails,
+                    TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY);
                 break;
             case CORRESPONDENCE:
-                manageDocumentService.initialiseManageDocumentBundleCollection(caseDetails, CORRESPONDING_DOCUMENTS_COLLECTION_KEY);
+                manageDocumentService.initialiseManageDocumentBundleCollection(caseDetails,
+                    CORRESPONDING_DOCUMENTS_COLLECTION_KEY);
                 break;
             case C2:
                 // TODO
                 // Populate data for case type is C2
                 break;
         }
+
+        // TODO
+        // Validate date and time inputted
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -74,15 +79,15 @@ public class ManageDocumentsController {
 
         switch (caseData.getManageDocument().getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
-//                caseDetails.getData().put(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY,
-//                    setDateTimeUploadedOnManageDocumentCollection(caseData.getFurtherEvidenceDocumentsTEMP()));
+                caseDetails.getData().put(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY,
+                    manageDocumentService.setDateTimeUploadedOnManageDocumentCollection(
+                        caseData.getFurtherEvidenceDocumentsTEMP(), caseDataBefore.getFurtherEvidenceDocumentsTEMP()));
                 manageDocumentService.buildFurtherEvidenceCollection(caseDetails);
-                // TODO
-                // Build new collection object
                 break;
             case CORRESPONDENCE:
                 caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY,
-                    manageDocumentService.setDateTimeUploadedOnManageDocumentCollection(caseData.getCorrespondenceDocuments(), caseDataBefore.getCorrespondenceDocuments()));
+                    manageDocumentService.setDateTimeUploadedOnManageDocumentCollection(
+                        caseData.getCorrespondenceDocuments(), caseDataBefore.getCorrespondenceDocuments()));
                 break;
             case C2:
                 // TODO

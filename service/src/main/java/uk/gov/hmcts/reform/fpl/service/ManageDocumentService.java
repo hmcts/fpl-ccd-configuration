@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.List;
@@ -62,8 +63,10 @@ public class ManageDocumentService {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (caseData.getManageDocument().isDocumentRelatedToHearing()) {
-            UUID selectedHearingCode = mapper.convertValue(caseDetails.getData().get(MANAGE_DOCUMENTS_HEARING_LIST_KEY),
-                UUID.class);
+            DynamicList hearingList = mapper.convertValue(caseDetails.getData().get(MANAGE_DOCUMENTS_HEARING_LIST_KEY),
+                DynamicList.class);
+
+            UUID selectedHearingCode = hearingList.getValue().getCode();
             HearingBooking hearingBooking = getHearingBookingByUUID(caseData.getHearingDetails(), selectedHearingCode);
 
             List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
@@ -95,15 +98,17 @@ public class ManageDocumentService {
     }
 
     public List<Element<ManageDocumentBundle>> setDateTimeUploadedOnManageDocumentCollection(
-        List<Element<ManageDocumentBundle>> manageDocumentBundle, List<Element<ManageDocumentBundle>> manageDocumentBundleBefore) {
+        List<Element<ManageDocumentBundle>> manageDocumentBundle,
+        List<Element<ManageDocumentBundle>> manageDocumentBundleBefore) {
 
-        if(!manageDocumentBundle.equals(manageDocumentBundleBefore) && manageDocumentBundle.size() == manageDocumentBundleBefore.size()) {
-                //something has been updated
-                for(int i = 0; i < manageDocumentBundle.size(); i++) {
-                    if(!manageDocumentBundle.get(i).getValue().equals(manageDocumentBundleBefore.get(i).getValue())) {
-                        manageDocumentBundle.get(i).getValue().setDateTimeUploaded(time.now());
-                    }
+        if (!manageDocumentBundle.equals(manageDocumentBundleBefore)
+            && manageDocumentBundle.size() == manageDocumentBundleBefore.size()) {
+            for (int i = 0; i < manageDocumentBundle.size(); i++) {
+                if (!manageDocumentBundle.get(i).getValue().getDocument()
+                    .equals(manageDocumentBundleBefore.get(i).getValue().getDocument())) {
+                    manageDocumentBundle.get(i).getValue().setDateTimeUploaded(time.now());
                 }
+            }
         }
 
         return manageDocumentBundle.stream()

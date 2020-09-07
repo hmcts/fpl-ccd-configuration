@@ -671,6 +671,35 @@ class CaseDataTest {
         }
     }
 
+    @Nested
+    class DocumentBundleContainsHearingId {
+        @Test
+        void shouldReturnTrueIfDocumentBundleContainsHearingId() {
+            UUID hearingId = UUID.randomUUID();
+            List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments = List.of(
+                element(hearingId, HearingFurtherEvidenceBundle.builder().build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingFurtherEvidenceDocuments(hearingFurtherEvidenceDocuments)
+                .build();
+
+            assertThat(caseData.documentBundleContainsHearingId(hearingId)).isTrue();
+        }
+
+        @Test
+        void shouldReturnFalseIfDocumentBundleDoesNotContainHearingId() {
+            UUID hearingId = UUID.randomUUID();
+            List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments = List.of(
+                element(UUID.randomUUID(), HearingFurtherEvidenceBundle.builder().build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingFurtherEvidenceDocuments(hearingFurtherEvidenceDocuments)
+                .build();
+
+            assertThat(caseData.documentBundleContainsHearingId(hearingId)).isFalse();
+        }
+    }
+
     private String buildJsonDirections(UUID id) throws JsonProcessingException {
         List<Element<Direction>> directions = List.of(element(id, Direction.builder().directionType("title").build()));
         String directionString = mapper.writeValueAsString(directions);
