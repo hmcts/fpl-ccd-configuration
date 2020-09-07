@@ -1678,6 +1678,24 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "furtherEvidenceDocuments",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ManageDocumentBundle",
+    "Label": "Further evidence document",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hearingFurtherEvidenceDocuments",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingFurtherEvidenceBundle",
+    "Label": "Upload C2 documents for:",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "correspondenceDocuments",
     "FieldType": "Collection",
     "FieldTypeParameter": "ManageDocumentBundle",
@@ -1706,15 +1724,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageDocumentsSupportingC2Label",
     "FieldType": "Text",
-    "Label": "Upload C2 documents for:",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "hearingFurtherEvidenceDocuments",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "HearingFurtherEvidenceBundle",
     "Label": "Upload C2 documents for:",
     "SecurityClassification": "Public"
   }

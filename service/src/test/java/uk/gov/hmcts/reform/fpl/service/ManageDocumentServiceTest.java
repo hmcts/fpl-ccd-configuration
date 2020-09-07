@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LABEL_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
@@ -167,7 +167,7 @@ public class ManageDocumentServiceTest {
     }
 
     @Test
-    void shouldBuildNewFurtherEvidenceCollectionIfFurtherEvidenceIsRelatedToHearingAndCollectionDoesNotExist() {
+    void shouldBuildNewHearingFurtherEvidenceCollectionIfFurtherEvidenceIsRelatedToHearingAndCollectionDoesNotExist() {
         List<Element<ManageDocumentBundle>> furtherEvidenceBundle = buildManagementDocumentBundle();
         UUID hearingId = UUID.randomUUID();
         HearingBooking hearingBooking = buildFinalHearingBooking();
@@ -197,7 +197,7 @@ public class ManageDocumentServiceTest {
     }
 
     @Test
-    void shouldAppendToExistingEntryIfFurtherEvidenceIsRelatedToHearingAndCollectionEntryExists() {
+    void shouldAppendToExistingEntryIfFurtherHearingEvidenceIsRelatedToHearingAndCollectionEntryExists() {
         List<Element<ManageDocumentBundle>> furtherEvidenceBundle = buildManagementDocumentBundle();
         UUID hearingId = UUID.randomUUID();
         HearingBooking hearingBooking = buildFinalHearingBooking();
@@ -209,7 +209,7 @@ public class ManageDocumentServiceTest {
                     .code(hearingId)
                     .build())
                 .build(),
-            FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, List.of(
+            HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, List.of(
                 element(hearingId, HearingFurtherEvidenceBundle.builder()
                     .manageDocumentBundle(List.of(
                         element(ManageDocumentBundle.builder().build())))
@@ -232,7 +232,7 @@ public class ManageDocumentServiceTest {
     }
 
     @Test
-    void shouldAppendToNewEntryIfFurtherEvidenceIsRelatedToHearingAndCollectionEntryExists() {
+    void shouldAppendToNewEntryIfFurtherHearingEvidenceIsRelatedToHearingAndCollectionEntryExists() {
         List<Element<ManageDocumentBundle>> furtherEvidenceBundle = buildManagementDocumentBundle();
         UUID hearingId = UUID.randomUUID();
         HearingBooking hearingBooking = buildFinalHearingBooking();
@@ -244,7 +244,7 @@ public class ManageDocumentServiceTest {
                     .code(hearingId)
                     .build())
                 .build(),
-            FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, List.of(
+            HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, List.of(
                 element(UUID.randomUUID(), HearingFurtherEvidenceBundle.builder()
                     .manageDocumentBundle(List.of(
                         element(ManageDocumentBundle.builder().build())))
@@ -266,10 +266,23 @@ public class ManageDocumentServiceTest {
         assertThat(furtherEvidenceBundleElement.getValue().getManageDocumentBundle()).isEqualTo(furtherEvidenceBundle);
     }
 
+    @Test
+    void shouldAppendToFurtherEvidenceBundleIfUnrelatedToAHearing() {
+        List<Element<ManageDocumentBundle>> furtherEvidenceBundle = buildManagementDocumentBundle();
+        Map<String, Object> data = new HashMap<>(Map.of(
+            TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, furtherEvidenceBundle,
+            MANAGE_DOCUMENT_KEY, buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, NO.getValue())));
+
+        CaseDetails caseDetails = CaseDetails.builder().data(data).build();
+        manageDocumentService.buildFurtherEvidenceCollection(caseDetails);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        List<Element<ManageDocumentBundle>> evidenceBundle = caseData.getFurtherEvidenceDocuments();
+        assertThat(evidenceBundle).isEqualTo(furtherEvidenceBundle);
+    }
+
     private List<Element<ManageDocumentBundle>> buildManagementDocumentBundle() {
-        return wrapElements(ManageDocumentBundle.builder()
-            .name("test")
-            .build());
+        return wrapElements(ManageDocumentBundle.builder().name("test").build());
     }
 
     private ManageDocument buildManagementDocument(ManageDocumentType type) {
@@ -277,9 +290,7 @@ public class ManageDocumentServiceTest {
     }
 
     private ManageDocument buildManagementDocument(ManageDocumentType type, String isRelatedToHearing) {
-        return buildManagementDocument(type).toBuilder()
-            .relatedToHearing(isRelatedToHearing)
-            .build();
+        return buildManagementDocument(type).toBuilder().relatedToHearing(isRelatedToHearing).build();
     }
 
     private HearingBooking buildFinalHearingBooking() {

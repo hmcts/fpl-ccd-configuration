@@ -83,6 +83,8 @@ public class ManageDocumentsController {
                     manageDocumentService.setDateTimeUploadedOnManageDocumentCollection(
                         caseData.getFurtherEvidenceDocumentsTEMP(), caseDataBefore.getFurtherEvidenceDocumentsTEMP()));
                 manageDocumentService.buildFurtherEvidenceCollection(caseDetails);
+
+                caseDetails.getData().put(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, null);
                 break;
             case CORRESPONDENCE:
                 caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY,

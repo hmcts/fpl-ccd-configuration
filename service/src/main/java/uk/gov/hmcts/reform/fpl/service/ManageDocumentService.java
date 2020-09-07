@@ -27,7 +27,8 @@ public class ManageDocumentService {
 
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_KEY = "correspondenceDocuments";
     public static final String TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY = "furtherEvidenceDocumentsTEMP";
-    public static final String FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY = "hearingFurtherEvidenceDocuments";
+    public static final String FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY = "furtherEvidenceDocuments";
+    public static final String HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY = "hearingFurtherEvidenceDocuments";
     public static final String MANAGE_DOCUMENTS_HEARING_LIST_KEY = "manageDocumentsHearingList";
     public static final String MANAGE_DOCUMENTS_HEARING_LABEL_KEY = "manageDocumentsHearingLabel";
 
@@ -62,14 +63,14 @@ public class ManageDocumentService {
     public void buildFurtherEvidenceCollection(CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
+        List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
+
         if (caseData.getManageDocument().isDocumentRelatedToHearing()) {
             DynamicList hearingList = mapper.convertValue(caseDetails.getData().get(MANAGE_DOCUMENTS_HEARING_LIST_KEY),
                 DynamicList.class);
 
             UUID selectedHearingCode = hearingList.getValue().getCode();
             HearingBooking hearingBooking = getHearingBookingByUUID(caseData.getHearingDetails(), selectedHearingCode);
-
-            List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
 
             if (caseData.getHearingFurtherEvidenceDocuments() == null) {
                 hearingFurtherEvidenceDocuments = List.of(
@@ -90,10 +91,11 @@ public class ManageDocumentService {
                 hearingFurtherEvidenceDocuments = caseData.getHearingFurtherEvidenceDocuments();
             }
 
-            caseDetails.getData().put(FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, hearingFurtherEvidenceDocuments);
+            caseDetails.getData().put(HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY,
+                hearingFurtherEvidenceDocuments);
         } else {
-            // TODO
-            // Build normal collection here
+            caseDetails.getData().put(FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY,
+                caseData.getFurtherEvidenceDocumentsTEMP());
         }
     }
 
