@@ -576,11 +576,11 @@ public class CaseData {
     // FPLA-2001
     // note: also includes manageDocumentsHearingLabel and manageDocumentsSupportingC2Label
     private final ManageDocument manageDocument;
-    private final List<Element<ManageDocumentBundle>> furtherEvidenceDocumentsTEMP;
-    private final List<Element<ManageDocumentBundle>> furtherEvidenceDocuments;
+    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsTEMP;
+    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments;
     private final List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
-    private final List<Element<ManageDocumentBundle>> correspondenceDocuments;
-    private final List<Element<ManageDocumentBundle>> c2SupportingDocuments;
+    private final List<Element<SupportingEvidenceBundle>> correspondenceDocuments;
+    private final List<Element<SupportingEvidenceBundle>> c2SupportingDocuments;
 
     public boolean documentBundleContainsHearingId(UUID hearingId) {
         return hearingFurtherEvidenceDocuments.stream()

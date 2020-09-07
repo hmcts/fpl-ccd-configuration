@@ -10,9 +10,9 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingFurtherEvidenceBundle",
-    "ListElementCode": "manageDocumentBundle",
+    "ListElementCode": "supportingEvidenceBundle",
     "FieldType": "Collection",
-    "FieldTypeParameter": "ManageDocumentBundle",
+    "FieldTypeParameter": "SupportingEvidenceBundle",
     "ElementLabel": "Documents",
     "SecurityClassification": "Public"
   }

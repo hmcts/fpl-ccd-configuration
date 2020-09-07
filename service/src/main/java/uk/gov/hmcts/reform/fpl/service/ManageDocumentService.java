@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
-import uk.gov.hmcts.reform.fpl.model.ManageDocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -52,7 +52,7 @@ public class ManageDocumentService {
         }
     }
 
-    public List<Element<ManageDocumentBundle>> initialiseFurtherDocumentBundleCollection(CaseDetails caseDetails) {
+    public List<Element<SupportingEvidenceBundle>> initialiseFurtherDocumentBundleCollection(CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (caseData.getManageDocument().isDocumentRelatedToHearing()
@@ -66,7 +66,7 @@ public class ManageDocumentService {
                         = caseData.getHearingFurtherEvidenceDocuments().get(i);
 
                     if (selectedHearingCode.equals(currentHearingEvidenceBundle.getId())) {
-                        return currentHearingEvidenceBundle.getValue().getManageDocumentBundle();
+                        return currentHearingEvidenceBundle.getValue().getSupportingEvidenceBundle();
                     }
                 }
             }
@@ -75,16 +75,16 @@ public class ManageDocumentService {
             return caseData.getFurtherEvidenceDocuments();
         }
 
-        return initialiseManageDocumentBundleCollection(null);
+        return initialiseSupportingEvidenceBundleCollection(null);
     }
 
-    public List<Element<ManageDocumentBundle>> initialiseManageDocumentBundleCollection(
-        List<Element<ManageDocumentBundle>> manageDocumentBundleListCollection) {
-        if (manageDocumentBundleListCollection == null || manageDocumentBundleListCollection.isEmpty()) {
-            return List.of(element(ManageDocumentBundle.builder().build()));
+    public List<Element<SupportingEvidenceBundle>> initialiseSupportingEvidenceBundleCollection(
+        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundleList) {
+        if (supportingEvidenceBundleList == null || supportingEvidenceBundleList.isEmpty()) {
+            return List.of(element(SupportingEvidenceBundle.builder().build()));
         }
 
-        return manageDocumentBundleListCollection;
+        return supportingEvidenceBundleList;
     }
 
     public void buildFurtherEvidenceCollection(CaseDetails caseDetails) {
@@ -101,17 +101,17 @@ public class ManageDocumentService {
 
             if (caseData.getHearingFurtherEvidenceDocuments() == null) {
                 hearingFurtherEvidenceDocuments = List.of(
-                    buildHearingFurtherEvidenceBundle(selectedHearingCode, hearingBooking,
+                    buildHearingSupportingEvidenceBundle(selectedHearingCode, hearingBooking,
                         caseData.getFurtherEvidenceDocumentsTEMP()));
             } else if (caseData.documentBundleContainsHearingId(selectedHearingCode)) {
                 hearingFurtherEvidenceDocuments = caseData.getHearingFurtherEvidenceDocuments().stream()
                     .filter(element -> element.getId().equals(selectedHearingCode))
-                    .peek(element -> element.getValue().getManageDocumentBundle()
+                    .peek(element -> element.getValue().getSupportingEvidenceBundle()
                         .addAll(caseData.getFurtherEvidenceDocumentsTEMP()))
                     .collect(Collectors.toList());
             } else {
                 Element<HearingFurtherEvidenceBundle> hearingFurtherEvidenceBundleElement =
-                    buildHearingFurtherEvidenceBundle(selectedHearingCode, hearingBooking,
+                    buildHearingSupportingEvidenceBundle(selectedHearingCode, hearingBooking,
                         caseData.getFurtherEvidenceDocumentsTEMP());
 
                 caseData.getHearingFurtherEvidenceDocuments().add(hearingFurtherEvidenceBundleElement);
@@ -126,35 +126,36 @@ public class ManageDocumentService {
         }
     }
 
-    public List<Element<ManageDocumentBundle>> setDateTimeUploadedOnManageDocumentCollection(
-        List<Element<ManageDocumentBundle>> manageDocumentBundle,
-        List<Element<ManageDocumentBundle>> manageDocumentBundleBefore) {
+    public List<Element<SupportingEvidenceBundle>> setDateTimeUploadedOnManageDocumentCollection(
+        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle,
+        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundleBefore) {
 
-        if (!manageDocumentBundle.equals(manageDocumentBundleBefore)
-            && manageDocumentBundle.size() == manageDocumentBundleBefore.size()) {
-            for (int i = 0; i < manageDocumentBundle.size(); i++) {
-                if (!manageDocumentBundle.get(i).getValue().getDocument()
-                    .equals(manageDocumentBundleBefore.get(i).getValue().getDocument())) {
-                    manageDocumentBundle.get(i).getValue().setDateTimeUploaded(time.now());
+        if (!supportingEvidenceBundle.equals(supportingEvidenceBundleBefore)
+            && supportingEvidenceBundle.size() == supportingEvidenceBundleBefore.size()) {
+            for (int i = 0; i < supportingEvidenceBundle.size(); i++) {
+                if (!supportingEvidenceBundle.get(i).getValue().getDocument()
+                    .equals(supportingEvidenceBundleBefore.get(i).getValue().getDocument())) {
+                    supportingEvidenceBundle.get(i).getValue().setDateTimeUploaded(time.now());
                 }
             }
         }
 
-        return manageDocumentBundle.stream()
-            .peek(manageDocumentBundleElement -> {
-                if (manageDocumentBundleElement.getValue().getDateTimeUploaded() == null) {
-                    manageDocumentBundleElement.getValue().setDateTimeUploaded(time.now());
+        return supportingEvidenceBundle.stream()
+            .peek(supportingEvidenceBundleElement -> {
+                if (supportingEvidenceBundleElement.getValue().getDateTimeUploaded() == null) {
+                    supportingEvidenceBundleElement.getValue().setDateTimeUploaded(time.now());
                 }
             }).collect(Collectors.toList());
     }
 
-    private Element<HearingFurtherEvidenceBundle> buildHearingFurtherEvidenceBundle(
-        UUID hearingId, HearingBooking hearingBooking, List<Element<ManageDocumentBundle>> manageDocumentBundle) {
+    private Element<HearingFurtherEvidenceBundle> buildHearingSupportingEvidenceBundle(
+        UUID hearingId, HearingBooking hearingBooking,
+        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle) {
         return Element.<HearingFurtherEvidenceBundle>builder()
             .id(hearingId)
             .value(HearingFurtherEvidenceBundle.builder()
                 .hearingName(hearingBooking.toLabel(DATE))
-                .manageDocumentBundle(manageDocumentBundle)
+                .supportingEvidenceBundle(supportingEvidenceBundle)
                 .build())
             .build();
     }

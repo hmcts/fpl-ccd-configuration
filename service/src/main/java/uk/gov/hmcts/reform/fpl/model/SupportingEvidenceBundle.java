@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class ManageDocumentBundle {
+public class SupportingEvidenceBundle {
     private final String name;
     private final String notes;
     private final LocalDateTime dateTimeReceived;

@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.ManageDocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ManageDocumentService;
 
@@ -53,14 +53,14 @@ public class ManageDocumentsController {
             case FURTHER_EVIDENCE_DOCUMENTS:
                 manageDocumentService.initialiseFurtherEvidenceFields(caseDetails);
 
-                List<Element<ManageDocumentBundle>> furtherEvidenceDocuments =
+                List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments =
                     manageDocumentService.initialiseFurtherDocumentBundleCollection(caseDetails);
 
                 caseDetails.getData().put(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, furtherEvidenceDocuments);
                 break;
             case CORRESPONDENCE:
-                List<Element<ManageDocumentBundle>> correspondenceDocuments =
-                    manageDocumentService.initialiseManageDocumentBundleCollection(
+                List<Element<SupportingEvidenceBundle>> correspondenceDocuments =
+                    manageDocumentService.initialiseSupportingEvidenceBundleCollection(
                         caseData.getCorrespondenceDocuments());
 
                 caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, correspondenceDocuments);
@@ -88,7 +88,7 @@ public class ManageDocumentsController {
 
         switch (caseData.getManageDocument().getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
-                List<Element<ManageDocumentBundle>> updatedFurtherEvidenceDocuments =
+                List<Element<SupportingEvidenceBundle>> updatedFurtherEvidenceDocuments =
                     manageDocumentService.setDateTimeUploadedOnManageDocumentCollection(
                         caseData.getFurtherEvidenceDocumentsTEMP(), caseDataBefore.getFurtherEvidenceDocumentsTEMP());
 
@@ -100,7 +100,7 @@ public class ManageDocumentsController {
                 caseDetails.getData().put(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, null);
                 break;
             case CORRESPONDENCE:
-                List<Element<ManageDocumentBundle>> updatedCorrespondenceDocuments =
+                List<Element<SupportingEvidenceBundle>> updatedCorrespondenceDocuments =
                     manageDocumentService.setDateTimeUploadedOnManageDocumentCollection(
                     caseData.getCorrespondenceDocuments(), caseDataBefore.getCorrespondenceDocuments());
 

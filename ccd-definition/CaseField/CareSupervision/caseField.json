@@ -1671,7 +1671,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "furtherEvidenceDocumentsTEMP",
     "FieldType": "Collection",
-    "FieldTypeParameter": "ManageDocumentBundle",
+    "FieldTypeParameter": "SupportingEvidenceBundle",
     "Label": "Further evidence document",
     "SecurityClassification": "Public"
   },
@@ -1680,7 +1680,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "furtherEvidenceDocuments",
     "FieldType": "Collection",
-    "FieldTypeParameter": "ManageDocumentBundle",
+    "FieldTypeParameter": "SupportingEvidenceBundle",
     "Label": "Further evidence document",
     "SecurityClassification": "Public"
   },
@@ -1698,7 +1698,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "correspondenceDocuments",
     "FieldType": "Collection",
-    "FieldTypeParameter": "ManageDocumentBundle",
+    "FieldTypeParameter": "SupportingEvidenceBundle",
     "Label": "Correspondence document",
     "SecurityClassification": "Public"
   },
@@ -1707,7 +1707,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "c2SupportingDocuments",
     "FieldType": "Collection",
-    "FieldTypeParameter": "ManageDocumentBundle",
+    "FieldTypeParameter": "SupportingEvidenceBundle",
     "Label": "C2 supporting document",
     "SecurityClassification": "Public"
   },
