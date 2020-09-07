@@ -20,7 +20,6 @@ public class UploadC2DocumentsService {
     public List<String> validate(C2DocumentBundle c2DocumentBundle) {
         return Optional.ofNullable(c2DocumentBundle)
             .map(c2Bundle -> unwrapElements(c2Bundle.getSupportingEvidenceBundle()))
-            .filter(list -> !list.isEmpty())
             .map(validateSupportingEvidenceBundleService::validateBundle)
             .orElse(emptyList());
     }

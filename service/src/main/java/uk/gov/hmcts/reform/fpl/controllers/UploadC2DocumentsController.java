@@ -91,7 +91,7 @@ public class UploadC2DocumentsController extends CallbackController {
     }
 
     @PostMapping("/validate/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleValidatePbaNumberMidEvent(
+    public AboutToStartOrSubmitCallbackResponse handleValidateMidEvent(
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
@@ -103,6 +103,18 @@ public class UploadC2DocumentsController extends CallbackController {
         errors.addAll(uploadC2DocumentsService.validate(updatedTemporaryC2Document));
 
         return respond(caseDetails, errors);
+    }
+
+    @PostMapping("/validate-pba-number/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleValidatePbaNumberMidEvent(
+        @RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        var updatedTemporaryC2Document = pbaNumberService.update(caseData.getTemporaryC2Document());
+        caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, updatedTemporaryC2Document);
+
+        return respond(caseDetails, pbaNumberService.validate(updatedTemporaryC2Document));
     }
 
     @PostMapping("/about-to-submit")

@@ -44,6 +44,15 @@ class ValidateSupportingEvidenceBundleServiceTest {
     }
 
     @Test
+    void shouldReturnNoErrorsWhenTheDateOfIssueIsNow() {
+        SupportingEvidenceBundle updated = SupportingEvidenceBundle.builder()
+            .dateTimeReceived(LocalDateTime.now())
+            .build();
+
+        assertThat(validate.validateBundle(Collections.singletonList(updated)).size()).isZero();
+    }
+
+    @Test
     void shouldReturnNoErrorsWhenTheDateOfIssueIsInPast() {
         SupportingEvidenceBundle updated = supportingEvidenceBundle.toBuilder()
             .dateTimeReceived(LocalDateTime.now().minusDays(1))
