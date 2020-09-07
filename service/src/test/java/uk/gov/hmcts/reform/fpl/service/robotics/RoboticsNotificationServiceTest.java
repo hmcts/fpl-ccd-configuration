@@ -14,7 +14,6 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.robotics.RoboticsEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.events.CaseNumberAdded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -25,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.service.EmailService;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -40,15 +38,13 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION_ORDE
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.service.robotics.SampleRoboticsTestDataHelper.expectedRoboticsData;
 import static uk.gov.hmcts.reform.fpl.service.robotics.SampleRoboticsTestDataHelper.invalidRoboticsDataWithZeroOwningCourt;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class})
-public class RoboticsNotificationServiceTest {
+class RoboticsNotificationServiceTest {
     private static final String EMAIL_RECIPIENT = "recipient@example.com";
     private static final String EMAIL_FROM = "no-reply@exaple.com";
-
-    private static final long CASE_ID = 12345L;
 
     private static final LocalDate NOW = LocalDate.now();
 
@@ -78,7 +74,7 @@ public class RoboticsNotificationServiceTest {
             .willReturn(EMAIL_FROM);
 
         roboticsNotificationService = new RoboticsNotificationService(emailService, roboticsDataService,
-            roboticsEmailConfiguration, objectMapper);
+            roboticsEmailConfiguration);
     }
 
     @Test
@@ -88,19 +84,12 @@ public class RoboticsNotificationServiceTest {
     }
 
     @Test
-    void shouldSkipRobiticsNotificationWhenNoCaseDataIsEmpty() {
-        roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(
-            new CaseNumberAdded(CaseDetails.builder().build()));
-        verify(emailService, never()).sendEmail(any(), any());
-    }
-
-    @Test
     void shouldRethrowException() {
         Exception exception = new RuntimeException();
-        when(roboticsDataService.prepareRoboticsData(any(), any())).thenThrow(exception);
+        when(roboticsDataService.prepareRoboticsData(any(CaseData.class))).thenThrow(exception);
 
         try {
-            roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new CaseNumberAdded(prepareCaseDetails()));
+            roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new CaseNumberAdded(prepareCaseData()));
             fail();
         } catch (Exception e) {
             assertThat(e).isEqualTo(exception);
@@ -111,14 +100,14 @@ public class RoboticsNotificationServiceTest {
     @Test
     void notifyRoboticsOfSubmittedCaseDataShouldSendNotificationToRobotics() throws IOException {
         RoboticsData expectedRoboticsData = expectedRoboticsData(EMERGENCY_PROTECTION_ORDER.getLabel());
-        given(roboticsDataService.prepareRoboticsData(prepareCaseData(), CASE_ID))
+        given(roboticsDataService.prepareRoboticsData(prepareCaseData()))
             .willReturn(expectedRoboticsData);
 
         String expectedRoboticsDataJson = objectMapper.writeValueAsString(expectedRoboticsData);
         given(roboticsDataService.convertRoboticsDataToJson(expectedRoboticsData))
             .willReturn(expectedRoboticsDataJson);
 
-        roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new CaseNumberAdded(prepareCaseDetails()));
+        roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new CaseNumberAdded(prepareCaseData()));
 
         verify(emailService).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
 
@@ -132,14 +121,14 @@ public class RoboticsNotificationServiceTest {
         RoboticsData expectedRoboticsData = expectedRoboticsDataWithUpdatedContactNumber(
             EMERGENCY_PROTECTION_ORDER.getLabel(), number);
 
-        given(roboticsDataService.prepareRoboticsData(prepareCaseData(), CASE_ID))
+        given(roboticsDataService.prepareRoboticsData(prepareCaseData()))
             .willReturn(expectedRoboticsData);
 
         String expectedRoboticsDataJson = objectMapper.writeValueAsString(expectedRoboticsData);
         given(roboticsDataService.convertRoboticsDataToJson(expectedRoboticsData))
             .willReturn(expectedRoboticsDataJson);
 
-        roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new CaseNumberAdded(prepareCaseDetails()));
+        roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new CaseNumberAdded(prepareCaseData()));
 
         verify(emailService).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
 
@@ -149,14 +138,14 @@ public class RoboticsNotificationServiceTest {
     @Test
     void resendRoboticsOfSubmittedCaseDataShouldSendNotificationToRobotics() throws IOException {
         RoboticsData expectedRoboticsData = expectedRoboticsData(EMERGENCY_PROTECTION_ORDER.getLabel());
-        given(roboticsDataService.prepareRoboticsData(prepareCaseData(), CASE_ID))
+        given(roboticsDataService.prepareRoboticsData(prepareCaseData()))
             .willReturn(expectedRoboticsData);
 
         String expectedRoboticsDataJson = objectMapper.writeValueAsString(expectedRoboticsData);
         given(roboticsDataService.convertRoboticsDataToJson(expectedRoboticsData))
             .willReturn(expectedRoboticsDataJson);
 
-        roboticsNotificationService.sendSubmittedCaseData(prepareCaseDetails());
+        roboticsNotificationService.sendSubmittedCaseData(prepareCaseData());
 
         verify(emailService).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
 
@@ -167,7 +156,7 @@ public class RoboticsNotificationServiceTest {
     void notifyRoboticsOfSubmittedCaseDataShouldNotSendEmailWhenOwningCourtCodeZero() {
         CaseData caseData = prepareCaseData();
 
-        given(roboticsDataService.prepareRoboticsData(caseData, CASE_ID))
+        given(roboticsDataService.prepareRoboticsData(caseData))
             .willReturn(invalidRoboticsDataWithZeroOwningCourt());
 
         verify(emailService, never()).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
@@ -177,26 +166,15 @@ public class RoboticsNotificationServiceTest {
     void notifyRoboticsOfSubmittedCaseDataShouldNotSendEmailWhenRoboticsJsonDataNull() {
         CaseData caseData = prepareCaseData();
 
-        given(roboticsDataService.prepareRoboticsData(caseData, CASE_ID))
+        given(roboticsDataService.prepareRoboticsData(caseData))
             .willReturn(expectedRoboticsData(EDUCATION_SUPERVISION_ORDER.getLabel()));
 
         verify(emailService, never()).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
     }
 
     private CaseData prepareCaseData() {
-        CaseData caseData = objectMapper.convertValue(populatedCaseDetails().getData(), CaseData.class);
-        caseData.setDateSubmitted(NOW);
-        return caseData;
-    }
-
-    private CaseDetails prepareCaseDetails() {
-        CaseDetails caseDetails = populatedCaseDetails();
-
-        Map<String, Object> caseDataMap = populatedCaseDetails().getData();
-        caseDataMap.put("dateSubmitted", NOW);
-
-        return caseDetails.toBuilder()
-            .data(caseDataMap)
+        return populatedCaseData().toBuilder()
+            .dateSubmitted(NOW)
             .build();
     }
 

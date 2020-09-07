@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.fpl.events;
 
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 
-public class CaseManagementOrderReadyForJudgeReviewEvent extends CallbackEvent {
-    public CaseManagementOrderReadyForJudgeReviewEvent(CallbackRequest callbackRequest) {
-        super(callbackRequest);
-    }
+@Getter
+@RequiredArgsConstructor
+public class CaseManagementOrderReadyForJudgeReviewEvent {
+    private final CaseData caseData;
 }

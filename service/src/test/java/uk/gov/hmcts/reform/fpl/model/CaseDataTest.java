@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
+import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +38,7 @@ import static java.util.Collections.emptyList;
 import static java.util.UUID.fromString;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
@@ -50,6 +53,9 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
@@ -69,6 +75,14 @@ class CaseDataTest {
 
     @Autowired
     private Time time;
+
+    private LocalDateTime futureDate;
+    private UUID cmoID = UUID.randomUUID();
+
+    @BeforeEach
+    void setUp() {
+        futureDate = time.now().plusDays(1);
+    }
 
     @Nested
     class GetDirectionsToComplyWith {
@@ -100,7 +114,7 @@ class CaseDataTest {
         private CaseData buildCaseData(List<Element<Direction>> sdoDirections,
                                        List<Element<CaseManagementOrder>> cmoDirections) {
             return CaseData.builder()
-                .standardDirectionOrder(Order.builder().directions(sdoDirections).build())
+                .standardDirectionOrder(StandardDirectionOrder.builder().directions(sdoDirections).build())
                 .servedCaseManagementOrders(cmoDirections)
                 .build();
         }
@@ -561,6 +575,60 @@ class CaseDataTest {
         boolean hearingBookingInFuture = caseData.hasFutureHearing(hearingBooking);
 
         assertThat(hearingBookingInFuture).isFalse();
+    }
+
+    @Nested
+    class GetNextHearingAfterCmo {
+        @Test
+        void shouldReturnExpectedNextHearingBooking() {
+            HearingBooking nextHearing = createHearingBooking(futureDate.plusDays(6), futureDate.plusDays(7),
+                ISSUE_RESOLUTION, UUID.randomUUID());
+
+            List<Element<HearingBooking>> hearingBookings = List.of(
+                element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6), FINAL, cmoID)),
+                element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3), CASE_MANAGEMENT,
+                    UUID.randomUUID())),
+                element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, UUID.randomUUID())),
+                element(nextHearing));
+
+            CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
+            Optional<HearingBooking> nextHearingBooking = caseData.getNextHearingAfterCmo(cmoID);
+
+            assertThat(nextHearingBooking).isPresent().contains(nextHearing);
+        }
+
+        @Test
+        void shouldThrowAnExceptionWhenNoHearingsNotMatchCmo() {
+            UUID cmoID = UUID.randomUUID();
+            List<Element<HearingBooking>> hearingBookings = List.of(
+                element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6), FINAL,
+                    UUID.randomUUID())),
+                element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3), CASE_MANAGEMENT,
+                    UUID.randomUUID())),
+                element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION,
+                    UUID.randomUUID())));
+
+            CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
+
+            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> caseData.getNextHearingAfterCmo(cmoID));
+
+            assertThat(exception).hasMessageContaining("Failed to find hearing matching cmo id", cmoID);
+        }
+
+        @Test
+        void shouldReturnEmptyOptionalHearingIfNoUpcomingHearingsAreFound() {
+            List<Element<HearingBooking>> hearingBookings = List.of(
+                element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6), FINAL, cmoID)),
+                element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3), CASE_MANAGEMENT,
+                    UUID.randomUUID())),
+                element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, UUID.randomUUID())));
+
+            CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
+            Optional<HearingBooking> nextHearingBooking = caseData.getNextHearingAfterCmo(cmoID);
+
+            assertThat(nextHearingBooking).isNotPresent();
+        }
     }
 
     private String buildJsonDirections(UUID id) throws JsonProcessingException {

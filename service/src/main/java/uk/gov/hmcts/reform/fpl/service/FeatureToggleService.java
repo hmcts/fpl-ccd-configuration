@@ -51,6 +51,15 @@ public class FeatureToggleService {
         return ldClient.boolVariation("close-case", createLDUser(), false);
     }
 
+    public boolean isNewCaseStateModelEnabled() {
+        return ldClient.boolVariation("new-case-state-model", createLDUser(), false);
+    }
+
+    public boolean isMigrateToManageOrgWarningPageEnabled(String localAuthorityName) {
+        return ldClient.boolVariation("migrate-to-manage-org-warning-page",
+            createLDUser(Map.of("localAuthorityName", LDValue.of(localAuthorityName))), false);
+    }
+
     private LDUser createLDUser() {
         return createLDUser(Map.of());
     }

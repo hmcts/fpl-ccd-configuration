@@ -49,7 +49,7 @@ public class PaymentService {
         this.siteId = siteId;
     }
 
-    public void makePaymentForCaseOrders(Long caseId, CaseData caseData) {
+    public void makePaymentForCaseOrders(CaseData caseData) {
         FeesData feesData = feeService.getFeesDataForOrders(caseData.getOrders());
 
         if (!feesData.getTotalAmount().equals(BigDecimal.ZERO)) {
@@ -57,7 +57,7 @@ public class PaymentService {
                 localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseData.getCaseLocalAuthority());
             ApplicantParty applicantParty = getFirstApplicantParty(caseData);
 
-            CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseId,
+            CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseData.getId(),
                 applicantParty.getPbaNumber(),
                 defaultIfBlank(applicantParty.getClientCode(), BLANK_PARAMETER_VALUE),
                 defaultIfBlank(applicantParty.getCustomerReference(), BLANK_PARAMETER_VALUE),

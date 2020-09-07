@@ -142,6 +142,15 @@ class FeatureToggleServiceTest {
     }
 
     @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForNewCaseStateModel(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isNewCaseStateModelEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(eq("new-case-state-model"), any(LDUser.class), eq(false));
+    }
+
+    @ParameterizedTest
     @MethodSource("userAttributesTestSource")
     void shouldNotAccumulateAttributesBetweenRequests(Runnable functionToTest, Runnable accumulateFunction,
                                                       List<UserAttribute> attributes) {
@@ -150,6 +159,15 @@ class FeatureToggleServiceTest {
 
         verify(ldClient, times(2)).boolVariation(anyString(), ldUser.capture(), anyBoolean());
         assertThat(ldUser.getValue().getCustomAttributes()).containsExactlyInAnyOrderElementsOf(attributes);
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForIsMigrateToManageOrgWarningPageEnabled(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isMigrateToManageOrgWarningPageEnabled("test name")).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(eq("migrate-to-manage-org-warning-page"), any(LDUser.class), eq(false));
     }
 
     private static Stream<Arguments> userAttributesTestSource() {

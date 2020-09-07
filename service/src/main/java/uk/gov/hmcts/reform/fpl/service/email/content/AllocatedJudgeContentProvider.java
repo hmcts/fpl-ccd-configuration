@@ -1,10 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
@@ -13,16 +11,13 @@ import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentPr
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AllocatedJudgeContentProvider extends AbstractEmailContentProvider {
 
-    private final ObjectMapper mapper;
-
-    public AllocatedJudgeTemplate buildNotificationParameters(CaseDetails caseDetails) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+    public AllocatedJudgeTemplate buildNotificationParameters(CaseData caseData) {
 
         AllocatedJudgeTemplate allocatedJudgeTemplate = new AllocatedJudgeTemplate();
         allocatedJudgeTemplate.setJudgeTitle(caseData.getAllocatedJudge().getJudgeOrMagistrateTitle());
         allocatedJudgeTemplate.setJudgeName(caseData.getAllocatedJudge().getJudgeName());
         allocatedJudgeTemplate.setCaseName(caseData.getCaseName());
-        allocatedJudgeTemplate.setCaseUrl(getCaseUrl(caseDetails.getId()));
+        allocatedJudgeTemplate.setCaseUrl(getCaseUrl(caseData.getId()));
 
         return allocatedJudgeTemplate;
     }

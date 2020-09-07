@@ -5,8 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -48,7 +47,7 @@ class NoticeOfHearingEmailContentProviderTest extends AbstractEmailContentProvid
     @Autowired
     private Time time;
 
-    private CaseDetails caseDetails;
+    private CaseData caseData;
     private HearingBooking hearingBooking;
     private static final byte[] APPLICATION_BINARY = TestDataHelper.DOCUMENT_CONTENT;
     private static final String FAMILY_MAN_ID = "123";
@@ -57,7 +56,7 @@ class NoticeOfHearingEmailContentProviderTest extends AbstractEmailContentProvid
     void setUp() {
 
         LocalDateTime futureDate = time.now().plusDays(1);
-        caseDetails = buildCaseDetails();
+        caseData = buildCaseDetails();
         hearingBooking = buildHearingBooking(futureDate, futureDate.plusDays(1));
         given(documentDownloadService.downloadDocument(anyString())).willReturn(APPLICATION_BINARY);
     }
@@ -67,7 +66,7 @@ class NoticeOfHearingEmailContentProviderTest extends AbstractEmailContentProvid
         NoticeOfHearingTemplate expectedTemplateData = buildExpectedTemplate(hearingBooking, YES);
 
         assertThat(noticeOfHearingEmailContentProvider
-            .buildNewNoticeOfHearingNotification(caseDetails, hearingBooking, DIGITAL_SERVICE))
+            .buildNewNoticeOfHearingNotification(caseData, hearingBooking, DIGITAL_SERVICE))
             .isEqualToComparingFieldByField(expectedTemplateData);
     }
 
@@ -76,7 +75,7 @@ class NoticeOfHearingEmailContentProviderTest extends AbstractEmailContentProvid
         NoticeOfHearingTemplate expectedTemplateData = buildExpectedTemplate(hearingBooking, NO);
 
         assertThat(noticeOfHearingEmailContentProvider
-            .buildNewNoticeOfHearingNotification(caseDetails, hearingBooking, EMAIL))
+            .buildNewNoticeOfHearingNotification(caseData, hearingBooking, EMAIL))
             .isEqualToComparingFieldByField(expectedTemplateData);
     }
 
@@ -108,13 +107,14 @@ class NoticeOfHearingEmailContentProviderTest extends AbstractEmailContentProvid
             .build();
     }
 
-    private CaseDetails buildCaseDetails() {
-        return CaseDetails.builder()
+    private CaseData buildCaseDetails() {
+        return CaseData.builder()
             .id(1111L)
-            .data(Map.of(
-                "respondents1", wrapElements(Respondent.builder()
-                    .party(RespondentParty.builder().lastName("Wilson").build())
-                    .build()),
-                "familyManCaseNumber", FAMILY_MAN_ID)).build();
+            .respondents1(wrapElements(Respondent.builder()
+                .party(RespondentParty.builder().lastName("Wilson").build())
+                .build()))
+            .familyManCaseNumber(FAMILY_MAN_ID)
+            .build();
+
     }
 }

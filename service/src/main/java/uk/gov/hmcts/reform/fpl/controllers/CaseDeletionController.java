@@ -12,15 +12,13 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 @Api
 @RestController
 @RequestMapping("/callback/case-deletion")
-public class CaseDeletionController {
+public class CaseDeletionController extends CallbackController {
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
         caseDetails.getData().clear();
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .build();
+        return respond(caseDetails);
     }
 }

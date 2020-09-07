@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,14 +10,12 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.events.NewHearingsAdded;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.NoticeOfHearingTemplate;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -32,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static java.lang.Long.parseLong;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -40,17 +38,15 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {NewHearingsAddedHandler.class, JacksonAutoConfiguration.class, LookupTestConfig.class,
     FixedTimeConfiguration.class})
 class NewHearingsAddedHandlerTest {
-    private static final String CASE_REFERENCE = "12345";
 
     @Autowired
     private NewHearingsAddedHandler newHearingsAddedHandler;
@@ -85,62 +81,58 @@ class NewHearingsAddedHandlerTest {
         futureDate = time.now().plusDays(1);
 
         given(noticeOfHearingEmailContentProvider.buildNewNoticeOfHearingNotification(
-            any(CaseDetails.class), any(HearingBooking.class), any()))
+            any(CaseData.class), any(HearingBooking.class), any()))
             .willReturn(noticeOfHearingTemplate);
     }
 
     @Test
     void shouldSendNotificationToLAWhenNewHearingIsAdded() {
-        final CallbackRequest callbackRequest = callbackRequest();
-        final CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        final CaseData caseData = caseData();
 
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(UUID.randomUUID(), createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))));
 
-        given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
+        given(inboxLookupService.getNotificationRecipientEmail(caseData))
             .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
 
-        newHearingsAddedHandler.sendEmailToLA(new NewHearingsAdded(callbackRequest, hearingBookings));
+        newHearingsAddedHandler.sendEmailToLA(new NewHearingsAdded(caseData, hearingBookings));
 
         verify(notificationService).sendEmail(
             NOTICE_OF_NEW_HEARING,
             LOCAL_AUTHORITY_EMAIL_ADDRESS,
             noticeOfHearingTemplate,
-            CASE_REFERENCE);
+            caseData.getId().toString());
     }
 
     @Test
     void shouldSendNotificationToCafcassWhenNewHearingIsAdded() {
-        final CallbackRequest callbackRequest = callbackRequest();
-
+        final CaseData caseData = caseData();
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(UUID.randomUUID(), createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))));
 
-        newHearingsAddedHandler.sendEmailToCafcass(new NewHearingsAdded(callbackRequest, hearingBookings));
+        newHearingsAddedHandler.sendEmailToCafcass(new NewHearingsAdded(caseData, hearingBookings));
 
         verify(notificationService).sendEmail(
             NOTICE_OF_NEW_HEARING,
             CAFCASS_EMAIL_ADDRESS,
             noticeOfHearingTemplate,
-            CASE_REFERENCE);
+            caseData.getId().toString());
     }
 
     @Test
     void shouldSendNotificationToRepresentativesWhenNewHearingIsAdded() {
-        final CallbackRequest callbackRequest = callbackRequest();
-
+        final CaseData caseData = caseData();
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(UUID.randomUUID(), createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))));
-        final EventData eventData = new EventData(new NewHearingsAdded(callbackRequest, hearingBookings));
 
-        newHearingsAddedHandler.sendEmailToRepresentatives(new NewHearingsAdded(callbackRequest, hearingBookings));
+        newHearingsAddedHandler.sendEmailToRepresentatives(new NewHearingsAdded(caseData, hearingBookings));
 
         verify(representativeNotificationService)
             .sendToRepresentativesByServedPreference(
                 RepresentativeServingPreferences.EMAIL,
                 NOTICE_OF_NEW_HEARING,
                 noticeOfHearingTemplate.toMap(mapper),
-                eventData
+                caseData
             );
 
         verify(representativeNotificationService)
@@ -148,7 +140,7 @@ class NewHearingsAddedHandlerTest {
                 RepresentativeServingPreferences.DIGITAL_SERVICE,
                 NOTICE_OF_NEW_HEARING,
                 noticeOfHearingTemplate.toMap(mapper),
-                eventData
+                caseData
             );
     }
 
@@ -160,23 +152,16 @@ class NewHearingsAddedHandlerTest {
             .binaryUrl("binary_url")
             .build();
 
-        final CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(buildCaseDetails()).build();
+        CaseData caseData = CaseData.builder()
+            .id(RandomUtils.nextLong())
+            .build();
 
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(UUID.randomUUID(), createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))));
 
-        newHearingsAddedHandler.sendDocumentToRepresentatives(new NewHearingsAdded(callbackRequest, hearingBookings));
+        newHearingsAddedHandler.sendDocumentToRepresentatives(new NewHearingsAdded(caseData, hearingBookings));
 
-        verify(coreCaseDataService).triggerEvent(JURISDICTION, CASE_TYPE, parseLong(CASE_REFERENCE),
+        verify(coreCaseDataService).triggerEvent(JURISDICTION, CASE_TYPE, caseData.getId(),
             "internal-change-SEND_DOCUMENT", Map.of("documentToBeSent", noticeOfHearing));
-    }
-
-    private CaseDetails buildCaseDetails() {
-        return CaseDetails.builder()
-            .id(parseLong(CASE_REFERENCE))
-            .jurisdiction(JURISDICTION)
-            .caseTypeId(CASE_TYPE)
-            .data(Map.of("data", "some data"))
-            .build();
     }
 }

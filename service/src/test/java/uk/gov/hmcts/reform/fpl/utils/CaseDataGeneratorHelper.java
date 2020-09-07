@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.Directions;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.NextHearing;
-import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
@@ -28,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -96,6 +96,16 @@ public class CaseDataGeneratorHelper {
                 .binaryUrl("binary_url")
                 .url("www.url.com")
                 .build())
+            .build();
+    }
+
+    public static HearingBooking createHearingBooking(LocalDateTime startDate,
+                                                      LocalDateTime endDate,
+                                                      HearingType hearingType,
+                                                      UUID cmoID) {
+        return createHearingBooking(startDate, endDate).toBuilder()
+            .type(hearingType)
+            .caseManagementOrderId(cmoID)
             .build();
     }
 
@@ -168,8 +178,8 @@ public class CaseDataGeneratorHelper {
         );
     }
 
-    public static Order createStandardDirectionOrders(LocalDateTime today, OrderStatus status) {
-        return Order.builder()
+    public static StandardDirectionOrder createStandardDirectionOrders(LocalDateTime today, OrderStatus status) {
+        return StandardDirectionOrder.builder()
             .dateOfIssue("29 November 2019")
             .directions(wrapElements(Direction.builder()
                     .directionType("Test SDO type 1")
@@ -238,13 +248,13 @@ public class CaseDataGeneratorHelper {
                 .address(address())
                 .build())
             .additionalOthers(ElementUtils.wrapElements(Other.builder()
-                        .birthPlace("Craigavon")
-                        .DOB("02/02/05")
-                        .gender("Female")
-                        .name("Sarah Simpson")
-                        .telephone(TELEPHONE)
-                        .address(address())
-                        .build()))
+                .birthPlace("Craigavon")
+                .DOB("02/02/05")
+                .gender("Female")
+                .name("Sarah Simpson")
+                .telephone(TELEPHONE)
+                .address(address())
+                .build()))
             .build();
     }
 

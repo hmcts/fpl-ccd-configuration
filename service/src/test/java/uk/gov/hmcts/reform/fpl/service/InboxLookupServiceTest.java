@@ -1,20 +1,16 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 
-import java.util.HashMap;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,8 +18,7 @@ import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration.LocalAuthority;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, LocalAuthorityEmailLookupConfiguration.class,
-    InboxLookupService.class})
+@ContextConfiguration(classes = {LocalAuthorityEmailLookupConfiguration.class, InboxLookupService.class})
 class InboxLookupServiceTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
@@ -33,86 +28,80 @@ class InboxLookupServiceTest {
     @MockBean
     private LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
 
-    @Autowired
-    private ObjectMapper mapper;
-
     private InboxLookupService inboxLookupService;
 
     @BeforeEach
     void setup() {
-        this.inboxLookupService = new InboxLookupService(
-            mapper,
-            localAuthorityEmailLookupConfiguration,
-            FALLBACK_INBOX);
+        this.inboxLookupService = new InboxLookupService(localAuthorityEmailLookupConfiguration, FALLBACK_INBOX);
     }
 
     @Test
     void shouldReturnLocalAuthorityEmailWhenLocalAuthorityEmailExist() {
-        CaseDetails caseDetails = buildCaseDetails();
+        CaseData caseData = buildCaseDetails(LOCAL_AUTHORITY_CODE);
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
             .willReturn(Optional.of(new LocalAuthority(LOCAL_AUTHORITY_EMAIL_ADDRESS)));
 
-        String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE);
+        String email = inboxLookupService.getNotificationRecipientEmail(caseData);
 
         assertThat(email).isEqualTo(LOCAL_AUTHORITY_EMAIL_ADDRESS);
     }
 
     @Test
     void shouldReturnSolicitorEmailWhenLocalAuthorityEmailMappingNotExist() {
-        CaseDetails caseDetails = buildCaseDetails();
+        CaseData caseData = buildCaseDetails(LOCAL_AUTHORITY_CODE);
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
             .willReturn(Optional.empty());
 
-        String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE);
+        String email = inboxLookupService.getNotificationRecipientEmail(caseData);
 
         assertThat(email).isEqualTo(SOLICITOR_EMAIL_ADDRESS);
     }
 
     @Test
     void shouldReturnSolicitorEmailWhenLocalAuthorityEmailIsEmpty() {
-        CaseDetails caseDetails = buildCaseDetails();
+        CaseData caseData = buildCaseDetails(LOCAL_AUTHORITY_CODE);
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
             .willReturn(Optional.of(new LocalAuthority("")));
 
-        String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE);
+        String email = inboxLookupService.getNotificationRecipientEmail(caseData);
 
         assertThat(email).isEqualTo(SOLICITOR_EMAIL_ADDRESS);
     }
 
     @Test
     void shouldReturnPublicLawEmailWhenLocalAuthorityEmailAndSolicitorEmailIsEmpty() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(ImmutableMap.of("solicitor", Solicitor.builder().email("").build()))
+        CaseData caseData = CaseData.builder()
+            .solicitor(Solicitor.builder().email("").build())
             .build();
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
             .willReturn(Optional.of(new LocalAuthority("")));
 
-        String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE);
+        String email = inboxLookupService.getNotificationRecipientEmail(caseData);
 
         assertThat(email).isEqualTo(FALLBACK_INBOX);
     }
 
     @Test
     void shouldReturnPublicLawEmailWhenLocalAuthorityEmailIsNorPresentAndSolicitorIsNotPresent() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(new HashMap<>())
-            .build();
+        CaseData caseData = CaseData.builder().build();
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
             .willReturn(Optional.empty());
 
-        String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE);
+        String email = inboxLookupService.getNotificationRecipientEmail(caseData);
 
         assertThat(email).isEqualTo(FALLBACK_INBOX);
     }
 
-    private CaseDetails buildCaseDetails() {
-        return CaseDetails.builder()
-            .data(ImmutableMap.of("solicitor", Solicitor.builder().email(SOLICITOR_EMAIL_ADDRESS).build()))
+    private CaseData buildCaseDetails(String localAuthority) {
+        return CaseData.builder()
+            .id(RandomUtils.nextLong())
+            .caseLocalAuthority(localAuthority)
+            .solicitor(Solicitor.builder().email(SOLICITOR_EMAIL_ADDRESS).build())
             .build();
     }
 }

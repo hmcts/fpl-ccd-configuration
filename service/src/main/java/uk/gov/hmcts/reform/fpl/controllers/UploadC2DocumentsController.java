@@ -3,9 +3,9 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,16 +43,16 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
 @Api
+@Slf4j
 @RestController
 @RequestMapping("/callback/upload-c2")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class UploadC2DocumentsController {
+public class UploadC2DocumentsController extends CallbackController {
     private static final String DISPLAY_AMOUNT_TO_PAY = "displayAmountToPay";
     private static final String AMOUNT_TO_PAY = "amountToPay";
     private static final String TEMPORARY_C2_DOCUMENT = "temporaryC2Document";
     private final ObjectMapper mapper;
     private final IdamClient idamClient;
-    private final ApplicationEventPublisher applicationEventPublisher;
     private final FeeService feeService;
     private final PaymentService paymentService;
     private final PbaNumberService pbaNumberService;
@@ -60,9 +60,10 @@ public class UploadC2DocumentsController {
     private final RequestData requestData;
 
     @PostMapping("/get-fee/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
-        Map<String, Object> data = callbackrequest.getCaseDetails().getData();
-        CaseData caseData = mapper.convertValue(data, CaseData.class);
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        Map<String, Object> data = caseDetails.getData();
+        CaseData caseData = getCaseData(caseDetails);
         data.remove(DISPLAY_AMOUNT_TO_PAY);
 
         //workaround for previous-continue bug
@@ -78,59 +79,57 @@ public class UploadC2DocumentsController {
             data.put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
         }
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .build();
+        return respond(caseDetails);
     }
 
     @PostMapping("/validate-pba-number/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleValidatePbaNumberMidEvent(
-        @RequestBody CallbackRequest callbackrequest) {
-        Map<String, Object> data = callbackrequest.getCaseDetails().getData();
-        CaseData caseData = mapper.convertValue(data, CaseData.class);
+        @RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
 
         var updatedTemporaryC2Document = pbaNumberService.update(caseData.getTemporaryC2Document());
-        data.put(TEMPORARY_C2_DOCUMENT, updatedTemporaryC2Document);
+        caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, updatedTemporaryC2Document);
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .errors(pbaNumberService.validate(updatedTemporaryC2Document))
-            .build();
+        return respond(caseDetails, pbaNumberService.validate(updatedTemporaryC2Document));
     }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
-        @RequestBody CallbackRequest callbackrequest) {
-        Map<String, Object> data = callbackrequest.getCaseDetails().getData();
-        CaseData caseData = mapper.convertValue(data, CaseData.class);
+        @RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
 
-        data.put("c2DocumentBundle", buildC2DocumentBundle(caseData));
-        data.keySet().removeAll(Set.of(TEMPORARY_C2_DOCUMENT, "c2ApplicationType", AMOUNT_TO_PAY));
+        caseDetails.getData().put("c2DocumentBundle", buildC2DocumentBundle(caseData));
+        caseDetails.getData().keySet().removeAll(Set.of(TEMPORARY_C2_DOCUMENT, "c2ApplicationType", AMOUNT_TO_PAY));
 
-        return AboutToStartOrSubmitCallbackResponse.builder().data(data).build();
+        return respond(caseDetails);
     }
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = getCaseData(caseDetails);
 
-        if (displayAmountToPay(caseDetails)) {
-            try {
-                paymentService.makePaymentForC2(caseDetails.getId(), caseData);
-            } catch (FeeRegisterException | PaymentsApiException ignore) {
-                applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, C2_APPLICATION));
-            }
-        } else if (NO.getValue().equals(caseDetails.getData().get(DISPLAY_AMOUNT_TO_PAY))) {
-            applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(callbackRequest, C2_APPLICATION));
-        }
+        final C2DocumentBundle c2DocumentBundle = caseData.getLastC2DocumentBundle();
+        publishEvent(new C2UploadedEvent(caseData, c2DocumentBundle));
 
-        C2DocumentBundle c2DocumentBundle = caseData.getLastC2DocumentBundle();
-
-        applicationEventPublisher.publishEvent(new C2UploadedEvent(callbackRequest, c2DocumentBundle));
         if (isNotPaidByPba(c2DocumentBundle)) {
-            applicationEventPublisher.publishEvent(new C2PbaPaymentNotTakenEvent(callbackRequest));
+            log.info("C2 payment for case {} not taken due to user decision", caseDetails.getId());
+            publishEvent(new C2PbaPaymentNotTakenEvent(caseData));
+        } else {
+            if (displayAmountToPay(caseDetails)) {
+                try {
+                    paymentService.makePaymentForC2(caseDetails.getId(), caseData);
+                } catch (FeeRegisterException | PaymentsApiException paymentException) {
+                    log.error("C2 payment for case {} failed", caseDetails.getId());
+                    publishEvent(new FailedPBAPaymentEvent(caseData, C2_APPLICATION));
+                }
+            } else if (NO.getValue().equals(caseDetails.getData().get(DISPLAY_AMOUNT_TO_PAY))) {
+                log.error("C2 payment for case {} not taken as payment fee not shown to user", caseDetails.getId());
+                publishEvent(new FailedPBAPaymentEvent(caseData, C2_APPLICATION));
+            }
         }
     }
 
