@@ -50,15 +50,13 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderType.INTERIM_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.service.robotics.SampleRoboticsTestDataHelper.expectedRoboticsData;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {RoboticsDataService.class, JacksonAutoConfiguration.class, LookupTestConfig.class})
-public class RoboticsDataServiceTest {
-
-    private static final long CASE_ID = 12345L;
+class RoboticsDataServiceTest {
 
     @Autowired
     private RoboticsDataService roboticsDataService;
@@ -66,83 +64,15 @@ public class RoboticsDataServiceTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Nested
-    class Solicitor {
-
-        @Test
-        void shouldReturnRoboticsDataWithoutSolicitorNodeWhenSolicitorNull() {
-            CaseData caseData = prepareCaseData().toBuilder()
-                .solicitor(null)
-                .build();
-
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
-
-            assertThat(roboticsData.getSolicitor()).isNull();
-        }
-
-        @Test
-        void shouldReturnRoboticsDataWithoutSolicitorNodeWhenSolicitorNameIsEmpty() {
-            CaseData caseData = prepareCaseData().toBuilder()
-                .solicitor(uk.gov.hmcts.reform.fpl.model.Solicitor.builder().build())
-                .build();
-
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
-
-            assertThat(roboticsData.getSolicitor()).isNull();
-        }
-
-        @Test
-        void shouldReturnRoboticsDataWithoutSolicitorNodeWhenSolicitorNameIsNotFull() {
-            CaseData caseData = prepareCaseData().toBuilder()
-                .solicitor(uk.gov.hmcts.reform.fpl.model.Solicitor.builder()
-                    .name("Smith")
-                    .build())
-                .build();
-
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
-
-            assertThat(roboticsData.getSolicitor()).isNull();
-        }
-    }
-
     @Test
     void shouldReturnRoboticsDataWithoutRespondentNodeWhenNoRespondents() {
         CaseData caseData = prepareCaseData().toBuilder()
             .respondents1(emptyList())
             .build();
 
-        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
 
         assertThat(roboticsData.getRespondents()).isEmpty();
-    }
-
-    @Nested
-    class Children {
-
-        @Test
-        void shouldReturnRoboticsDataWithoutChildrenNodeWhenNoChildren() {
-            CaseData caseData = prepareCaseData().toBuilder()
-                .children1(emptyList())
-                .build();
-
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
-
-            assertThat(roboticsData.getChildren()).isEmpty();
-        }
-
-        @Test
-        void shouldReturnRoboticsDataWithEmptyChildWhenChildDoesNotHaveData() {
-            CaseData caseData = prepareCaseData().toBuilder()
-                .children1(wrapElements(Child.builder().party(
-                    ChildParty.builder().build())
-                    .build()))
-                .build();
-
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
-
-            assertThat(roboticsData.getChildren()).contains(uk.gov.hmcts.reform.fpl.model.robotics.Child.builder()
-                .build());
-        }
     }
 
     @Test
@@ -151,7 +81,7 @@ public class RoboticsDataServiceTest {
             .applicants(null)
             .build();
 
-        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
 
         assertThat(roboticsData.getApplicant()).isNull();
     }
@@ -162,7 +92,7 @@ public class RoboticsDataServiceTest {
             .dateSubmitted(null)
             .build();
 
-        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
 
         assertThat(roboticsData.getIssueDate()).isNull();
     }
@@ -175,58 +105,17 @@ public class RoboticsDataServiceTest {
                 .build()))
             .build();
 
-        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
 
         assertThat(roboticsData.getApplicant())
             .isEqualTo(uk.gov.hmcts.reform.fpl.model.robotics.Applicant.builder().build());
     }
 
-    @Nested
-    class AllocationProposal {
-        @Test
-        void shouldReturnRoboticsDataWithExpectedAllocationWhenAllocationProposalHasValue() {
-            CaseData caseData = prepareCaseData().toBuilder()
-                .allocationProposal(Allocation.builder()
-                    .proposal("To be moved")
-                    .build())
-                .build();
-
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
-
-            assertThat(roboticsData.getAllocation()).isEqualTo(caseData.getAllocationProposal().getProposal());
-        }
-
-        @Test
-        void shouldReturnRoboticsDataWithoutAllocationWhenAllocationProposalHasEmptyProposal() {
-            CaseData caseData = prepareCaseData().toBuilder()
-                .allocationProposal(Allocation.builder()
-                    .proposal("")
-                    .build())
-                .build();
-
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
-
-            assertThat(roboticsData.getAllocation()).isNull();
-        }
-
-        @Test
-        void shouldReturnRoboticsDataWithoutAllocationWhenAllocationProposalNotPresent() {
-            CaseData caseData = prepareCaseData().toBuilder()
-                .allocationProposal(null)
-                .build();
-
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
-
-            assertThat(roboticsData.getAllocation()).isNull();
-        }
-    }
-
-
     @Test
     void shouldReturnEmergencySupervisionOrderLabelWhenOrderTypeEmergencySupervisionOrder() {
         CaseData caseData = prepareCaseData();
 
-        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
 
         assertThat(roboticsData).isEqualTo(expectedRoboticsData("Emergency Protection Order"));
     }
@@ -238,7 +127,7 @@ public class RoboticsDataServiceTest {
             .risks(null)
             .build();
 
-        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataWithRisks, CASE_ID);
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataWithRisks);
 
         assertThat(roboticsData.isHarmAlleged()).isFalse();
     }
@@ -250,7 +139,7 @@ public class RoboticsDataServiceTest {
             .risks(Risks.builder().build())
             .build();
 
-        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataWithRisks, CASE_ID);
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataWithRisks);
 
         assertThat(roboticsData.isHarmAlleged()).isFalse();
     }
@@ -267,7 +156,7 @@ public class RoboticsDataServiceTest {
                 .build())
             .build();
 
-        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataWithRisks, CASE_ID);
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataWithRisks);
 
         assertThat(roboticsData.isHarmAlleged()).isTrue();
     }
@@ -284,7 +173,7 @@ public class RoboticsDataServiceTest {
                 .build())
             .build();
 
-        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataWithRisks, CASE_ID);
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataWithRisks);
 
         assertThat(roboticsData.isHarmAlleged()).isFalse();
     }
@@ -296,7 +185,7 @@ public class RoboticsDataServiceTest {
             .internationalElement(null)
             .build();
 
-        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataWithInternationalElement, CASE_ID);
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataWithInternationalElement);
 
         assertThat(roboticsData.isInternationalElement()).isFalse();
     }
@@ -308,7 +197,7 @@ public class RoboticsDataServiceTest {
             .internationalElement(InternationalElement.builder().build())
             .build();
 
-        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataWithInternationalElement, CASE_ID);
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataWithInternationalElement);
 
         assertThat(roboticsData.isInternationalElement()).isFalse();
     }
@@ -326,7 +215,7 @@ public class RoboticsDataServiceTest {
                 .build())
             .build();
 
-        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataWithInternationalElement, CASE_ID);
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataWithInternationalElement);
 
         assertThat(roboticsData.isInternationalElement()).isTrue();
     }
@@ -344,186 +233,13 @@ public class RoboticsDataServiceTest {
                 .build())
             .build();
 
-        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataWithInternationalElement, CASE_ID);
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataWithInternationalElement);
 
         assertThat(roboticsData.isInternationalElement()).isFalse();
     }
 
-    @Nested
-    class RoboticsApplicationTypeTests {
-
-        @Test
-        void shouldThrowExceptionWhenOrderTypeIsMissing() {
-            CaseData caseData = prepareCaseDataWithOrderType();
-
-            RoboticsDataException exception = assertThrows(RoboticsDataException.class,
-                () -> roboticsDataService.prepareRoboticsData(caseData, CASE_ID));
-
-            assertThat(exception.getMessage()).isEqualTo("no order type(s) to derive Application Type from.");
-        }
-
-        @Test
-        void shouldReturnCareOrderLabelAsApplicationTypeWhenInterimCareOrderSelected() {
-            CaseData caseData = prepareCaseDataWithOrderType(INTERIM_CARE_ORDER);
-
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
-
-            assertThat(roboticsData.getApplicationType()).isEqualTo("Care Order");
-        }
-
-        @Test
-        void shouldReturnCareOrderLabelAsApplicationTypeWhenCareOrderSelected() {
-            CaseData caseData = prepareCaseDataWithOrderType(CARE_ORDER);
-
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
-
-            assertThat(roboticsData.getApplicationType()).isEqualTo("Care Order");
-        }
-
-        @Test
-        void shouldReturnSupervisionOrderLabelAsApplicationTypeWhenInterimSupervisionOrderSelected() {
-            CaseData caseData = prepareCaseDataWithOrderType(INTERIM_SUPERVISION_ORDER);
-
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
-
-            assertThat(roboticsData.getApplicationType()).isEqualTo("Supervision Order");
-        }
-
-        @Test
-        void shouldReturnSupervisionOrderLabelAsApplicationTypeWhenSupervisionOrderSelected() {
-            CaseData caseData = prepareCaseDataWithOrderType(SUPERVISION_ORDER);
-
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
-
-            assertThat(roboticsData.getApplicationType()).isEqualTo("Supervision Order");
-        }
-
-        @Test
-        void shouldReturnEducationSupervisionOrderLabelAsApplicationTypeWhenOrderTypeEducationSupervisionOrder() {
-            CaseData caseData = prepareCaseDataWithOrderType(EDUCATION_SUPERVISION_ORDER);
-
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
-
-            assertThat(roboticsData.getApplicationType()).isEqualTo("Education Supervision Order");
-        }
-
-        @Test
-        void shouldReturnCommaSeparatedApplicationTypeWhenMoreThanOneOrderTypeSelected() {
-            CaseData caseData = prepareCaseDataWithOrderType(CARE_ORDER, EDUCATION_SUPERVISION_ORDER,
-                EMERGENCY_PROTECTION_ORDER, OTHER);
-
-            RoboticsData preparedRoboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
-
-            assertThat(preparedRoboticsData.getApplicationType()).isEqualTo(
-                "Care Order,Education Supervision Order,Emergency Protection Order,"
-                    + "Discharge of a Care Order");
-        }
-
-        @Test
-        void shouldReturnNonDuplicatedCommaSeparatedApplicationTypeWhenMoreThanOneOrderTypeSelected() {
-            CaseData caseData = prepareCaseDataWithOrderType(CARE_ORDER, INTERIM_CARE_ORDER,
-                INTERIM_SUPERVISION_ORDER, EDUCATION_SUPERVISION_ORDER, EMERGENCY_PROTECTION_ORDER, OTHER);
-
-            RoboticsData preparedRoboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
-
-            assertThat(preparedRoboticsData.getApplicationType()).isEqualTo(
-                "Care Order,Supervision Order,Education Supervision Order,Emergency Protection Order,"
-                    + "Discharge of a Care Order");
-        }
-    }
-
-    @Nested
-    class RoboticsJsonTests {
-
-        String expectedRoboticsDataJson;
-
-        @BeforeEach
-        void setup() throws IOException {
-            expectedRoboticsDataJson = objectMapper.writeValueAsString(expectedRoboticsData(
-                "Supervision Order"));
-        }
-
-        @Test
-        void shouldNotReturnEmptyRoboticsJsonWhenNoError() {
-            CaseData caseData = prepareCaseDataWithOrderType(INTERIM_SUPERVISION_ORDER);
-
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
-            String returnedRoboticsJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
-
-            assertNotEquals(new JSONObject().toString(), returnedRoboticsJson, true);
-        }
-
-        @Test
-        void shouldReturnExpectedJsonStringWhenOrderTypeInterimSupervisionOrderType() {
-            CaseData caseData = prepareCaseDataWithOrderType(INTERIM_SUPERVISION_ORDER);
-
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
-            String returnedRoboticsJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
-
-            assertEquals(expectedRoboticsDataJson, returnedRoboticsJson, true);
-        }
-
-        @Test
-        void shouldReturnRoboticsJsonWithCommaSeparatedApplicationTypeWhenMultipleOrderTypeSelected()
-            throws IOException {
-            String expectedJsonWithCommaSeparatedApplicationType = objectMapper.writeValueAsString(
-                expectedRoboticsData("Supervision Order,Care Order,Emergency Protection Order"));
-
-            CaseData caseData = prepareCaseDataWithOrderType(SUPERVISION_ORDER, CARE_ORDER,
-                EMERGENCY_PROTECTION_ORDER);
-
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, CASE_ID);
-            String returnedRoboticsJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
-
-            assertEquals(returnedRoboticsJson, expectedJsonWithCommaSeparatedApplicationType, true);
-        }
-
-        @Test
-        void shouldNotHaveCaseIdPropertyWhenRoboticsDataDeserializes() throws IOException {
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(prepareCaseData(), CASE_ID);
-            String returnedRoboticsJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
-
-            assertThat(returnedRoboticsJson).isNotEmpty();
-
-            Map<String, Object> returnedRoboticsDataMap = objectMapper.reader()
-                .forType(new TypeReference<Map<String, Object>>() {
-                })
-                .readValue(returnedRoboticsJson);
-
-            assertThat(returnedRoboticsDataMap).doesNotContainKey("caseId");
-        }
-    }
-
-    @Nested
-    class FeePaid {
-        private CaseData.CaseDataBuilder caseDataBuilder;
-
-        @BeforeEach
-        void setup() {
-            caseDataBuilder = prepareCaseData().toBuilder();
-        }
-
-        @Test
-        void shouldGetFeePaidFromCaseData() {
-            caseDataBuilder.amountToPay("100000");
-
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataBuilder.build(), CASE_ID);
-
-            MatcherAssert.assertThat(roboticsData.getFeePaid(), Matchers.comparesEqualTo(BigDecimal.valueOf(1000.00)));
-        }
-
-        @Test
-        void shouldGetDefaultFeePaidWhenThereIsNoFeePaidInClaimData() {
-            caseDataBuilder.amountToPay("");
-
-            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataBuilder.build(), CASE_ID);
-
-            MatcherAssert.assertThat(roboticsData.getFeePaid(), Matchers.comparesEqualTo(BigDecimal.valueOf(2055.00)));
-        }
-    }
-
     private CaseData prepareCaseData() {
-        CaseData caseData = objectMapper.convertValue(populatedCaseDetails().getData(), CaseData.class);
+        CaseData caseData = populatedCaseData();
         caseData.setDateSubmitted(LocalDate.now());
 
         RespondentParty respondentPartyWithConfidentialDetails = RespondentParty.builder()
@@ -558,5 +274,286 @@ public class RoboticsDataServiceTest {
                 .orderType(asList(orderTypes))
                 .build())
             .build();
+    }
+
+    @Nested
+    class Solicitor {
+
+        @Test
+        void shouldReturnRoboticsDataWithoutSolicitorNodeWhenSolicitorNull() {
+            CaseData caseData = prepareCaseData().toBuilder()
+                .solicitor(null)
+                .build();
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(roboticsData.getSolicitor()).isNull();
+        }
+
+        @Test
+        void shouldReturnRoboticsDataWithoutSolicitorNodeWhenSolicitorNameIsEmpty() {
+            CaseData caseData = prepareCaseData().toBuilder()
+                .solicitor(uk.gov.hmcts.reform.fpl.model.Solicitor.builder().build())
+                .build();
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(roboticsData.getSolicitor()).isNull();
+        }
+
+        @Test
+        void shouldReturnRoboticsDataWithoutSolicitorNodeWhenSolicitorNameIsNotFull() {
+            CaseData caseData = prepareCaseData().toBuilder()
+                .solicitor(uk.gov.hmcts.reform.fpl.model.Solicitor.builder()
+                    .name("Smith")
+                    .build())
+                .build();
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(roboticsData.getSolicitor()).isNull();
+        }
+    }
+
+    @Nested
+    class Children {
+
+        @Test
+        void shouldReturnRoboticsDataWithoutChildrenNodeWhenNoChildren() {
+            CaseData caseData = prepareCaseData().toBuilder()
+                .children1(emptyList())
+                .build();
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(roboticsData.getChildren()).isEmpty();
+        }
+
+        @Test
+        void shouldReturnRoboticsDataWithEmptyChildWhenChildDoesNotHaveData() {
+            CaseData caseData = prepareCaseData().toBuilder()
+                .children1(wrapElements(Child.builder().party(
+                    ChildParty.builder().build())
+                    .build()))
+                .build();
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(roboticsData.getChildren()).contains(uk.gov.hmcts.reform.fpl.model.robotics.Child.builder()
+                .build());
+        }
+    }
+
+    @Nested
+    class AllocationProposal {
+        @Test
+        void shouldReturnRoboticsDataWithExpectedAllocationWhenAllocationProposalHasValue() {
+            CaseData caseData = prepareCaseData().toBuilder()
+                .allocationProposal(Allocation.builder()
+                    .proposal("To be moved")
+                    .build())
+                .build();
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(roboticsData.getAllocation()).isEqualTo(caseData.getAllocationProposal().getProposal());
+        }
+
+        @Test
+        void shouldReturnRoboticsDataWithoutAllocationWhenAllocationProposalHasEmptyProposal() {
+            CaseData caseData = prepareCaseData().toBuilder()
+                .allocationProposal(Allocation.builder()
+                    .proposal("")
+                    .build())
+                .build();
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(roboticsData.getAllocation()).isNull();
+        }
+
+        @Test
+        void shouldReturnRoboticsDataWithoutAllocationWhenAllocationProposalNotPresent() {
+            CaseData caseData = prepareCaseData().toBuilder()
+                .allocationProposal(null)
+                .build();
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(roboticsData.getAllocation()).isNull();
+        }
+    }
+
+    @Nested
+    class RoboticsApplicationTypeTests {
+
+        @Test
+        void shouldThrowExceptionWhenOrderTypeIsMissing() {
+            CaseData caseData = prepareCaseDataWithOrderType();
+
+            RoboticsDataException exception = assertThrows(RoboticsDataException.class,
+                () -> roboticsDataService.prepareRoboticsData(caseData));
+
+            assertThat(exception.getMessage()).isEqualTo("no order type(s) to derive Application Type from.");
+        }
+
+        @Test
+        void shouldReturnCareOrderLabelAsApplicationTypeWhenInterimCareOrderSelected() {
+            CaseData caseData = prepareCaseDataWithOrderType(INTERIM_CARE_ORDER);
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(roboticsData.getApplicationType()).isEqualTo("Care Order");
+        }
+
+        @Test
+        void shouldReturnCareOrderLabelAsApplicationTypeWhenCareOrderSelected() {
+            CaseData caseData = prepareCaseDataWithOrderType(CARE_ORDER);
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(roboticsData.getApplicationType()).isEqualTo("Care Order");
+        }
+
+        @Test
+        void shouldReturnSupervisionOrderLabelAsApplicationTypeWhenInterimSupervisionOrderSelected() {
+            CaseData caseData = prepareCaseDataWithOrderType(INTERIM_SUPERVISION_ORDER);
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(roboticsData.getApplicationType()).isEqualTo("Supervision Order");
+        }
+
+        @Test
+        void shouldReturnSupervisionOrderLabelAsApplicationTypeWhenSupervisionOrderSelected() {
+            CaseData caseData = prepareCaseDataWithOrderType(SUPERVISION_ORDER);
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(roboticsData.getApplicationType()).isEqualTo("Supervision Order");
+        }
+
+        @Test
+        void shouldReturnEducationSupervisionOrderLabelAsApplicationTypeWhenOrderTypeEducationSupervisionOrder() {
+            CaseData caseData = prepareCaseDataWithOrderType(EDUCATION_SUPERVISION_ORDER);
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(roboticsData.getApplicationType()).isEqualTo("Education Supervision Order");
+        }
+
+        @Test
+        void shouldReturnCommaSeparatedApplicationTypeWhenMoreThanOneOrderTypeSelected() {
+            CaseData caseData = prepareCaseDataWithOrderType(CARE_ORDER, EDUCATION_SUPERVISION_ORDER,
+                EMERGENCY_PROTECTION_ORDER, OTHER);
+
+            RoboticsData preparedRoboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(preparedRoboticsData.getApplicationType()).isEqualTo(
+                "Care Order,Education Supervision Order,Emergency Protection Order,"
+                    + "Discharge of a Care Order");
+        }
+
+        @Test
+        void shouldReturnNonDuplicatedCommaSeparatedApplicationTypeWhenMoreThanOneOrderTypeSelected() {
+            CaseData caseData = prepareCaseDataWithOrderType(CARE_ORDER, INTERIM_CARE_ORDER,
+                INTERIM_SUPERVISION_ORDER, EDUCATION_SUPERVISION_ORDER, EMERGENCY_PROTECTION_ORDER, OTHER);
+
+            RoboticsData preparedRoboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(preparedRoboticsData.getApplicationType()).isEqualTo(
+                "Care Order,Supervision Order,Education Supervision Order,Emergency Protection Order,"
+                    + "Discharge of a Care Order");
+        }
+    }
+
+    @Nested
+    class RoboticsJsonTests {
+
+        String expectedRoboticsDataJson;
+
+        @BeforeEach
+        void setup() throws IOException {
+            expectedRoboticsDataJson = objectMapper.writeValueAsString(expectedRoboticsData(
+                "Supervision Order"));
+        }
+
+        @Test
+        void shouldNotReturnEmptyRoboticsJsonWhenNoError() {
+            CaseData caseData = prepareCaseDataWithOrderType(INTERIM_SUPERVISION_ORDER);
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+            String returnedRoboticsJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
+
+            assertNotEquals(new JSONObject().toString(), returnedRoboticsJson, true);
+        }
+
+        @Test
+        void shouldReturnExpectedJsonStringWhenOrderTypeInterimSupervisionOrderType() {
+            CaseData caseData = prepareCaseDataWithOrderType(INTERIM_SUPERVISION_ORDER);
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+            String returnedRoboticsJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
+
+            assertEquals(expectedRoboticsDataJson, returnedRoboticsJson, true);
+        }
+
+        @Test
+        void shouldReturnRoboticsJsonWithCommaSeparatedApplicationTypeWhenMultipleOrderTypeSelected()
+            throws IOException {
+            String expectedJsonWithCommaSeparatedApplicationType = objectMapper.writeValueAsString(
+                expectedRoboticsData("Supervision Order,Care Order,Emergency Protection Order"));
+
+            CaseData caseData = prepareCaseDataWithOrderType(SUPERVISION_ORDER, CARE_ORDER,
+                EMERGENCY_PROTECTION_ORDER);
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+            String returnedRoboticsJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
+
+            assertEquals(returnedRoboticsJson, expectedJsonWithCommaSeparatedApplicationType, true);
+        }
+
+        @Test
+        void shouldNotHaveCaseIdPropertyWhenRoboticsDataDeserializes() throws IOException {
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(prepareCaseData());
+            String returnedRoboticsJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
+
+            assertThat(returnedRoboticsJson).isNotEmpty();
+
+            Map<String, Object> returnedRoboticsDataMap = objectMapper.reader()
+                .forType(new TypeReference<Map<String, Object>>() {
+                })
+                .readValue(returnedRoboticsJson);
+
+            assertThat(returnedRoboticsDataMap).doesNotContainKey("caseId");
+        }
+    }
+
+    @Nested
+    class FeePaid {
+        private CaseData.CaseDataBuilder caseDataBuilder;
+
+        @BeforeEach
+        void setup() {
+            caseDataBuilder = prepareCaseData().toBuilder();
+        }
+
+        @Test
+        void shouldGetFeePaidFromCaseData() {
+            caseDataBuilder.amountToPay("100000");
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataBuilder.build());
+
+            MatcherAssert.assertThat(roboticsData.getFeePaid(), Matchers.comparesEqualTo(BigDecimal.valueOf(1000.00)));
+        }
+
+        @Test
+        void shouldGetDefaultFeePaidWhenThereIsNoFeePaidInClaimData() {
+            caseDataBuilder.amountToPay("");
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseDataBuilder.build());
+
+            MatcherAssert.assertThat(roboticsData.getFeePaid(), Matchers.comparesEqualTo(BigDecimal.valueOf(2055.00)));
+        }
     }
 }

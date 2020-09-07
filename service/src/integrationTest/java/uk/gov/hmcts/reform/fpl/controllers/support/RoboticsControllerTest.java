@@ -34,7 +34,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 @ActiveProfiles("integration-test")
 @WebMvcTest(RoboticsController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class RoboticsControllerTest {
+class RoboticsControllerTest {
     private static final String CASE_ID = "12345";
     private static final String USER_AUTH_TOKEN = "Bearer token";
     private static final String SERVICE_AUTH_TOKEN = "Bearer service-token";

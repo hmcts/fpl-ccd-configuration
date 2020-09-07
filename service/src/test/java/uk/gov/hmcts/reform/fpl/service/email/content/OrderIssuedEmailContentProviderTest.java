@@ -1,24 +1,23 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
+import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
+import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,11 +36,11 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.ge
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
 
 @ContextConfiguration(classes = {OrderIssuedEmailContentProvider.class, LookupTestConfig.class,
-    EmailNotificationHelper.class, FixedTimeConfiguration.class})
+    EmailNotificationHelper.class, FixedTimeConfiguration.class, CaseConverter.class})
 class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
-    private static final byte[] documentContents = {1, 2, 3, 4, 5};
-    private static final CaseDetails caseDetails = createCase();
+    private static final byte[] documentContents = TestDataHelper.DOCUMENT_CONTENT;
+    private static final CaseData caseData = createCase();
 
     @MockBean
     private GeneratedOrderService generatedOrderService;
@@ -49,13 +48,10 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
     @Autowired
     private OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
 
-    @Autowired
-    private ObjectMapper mapper;
-
     @Test
     void shouldBuildGeneratedOrderParametersWithCaseUrl() {
         Map<String, Object> actualParameters = orderIssuedEmailContentProvider.buildParametersWithCaseUrl(
-            caseDetails, LOCAL_AUTHORITY_CODE, documentContents, GENERATED_ORDER);
+            caseData, documentContents, GENERATED_ORDER);
         Map<String, Object> expectedParameters = getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true);
 
         assertEquals(actualParameters, expectedParameters);
@@ -64,7 +60,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
     @Test
     void shouldBuildGeneratedOrderParametersWithoutCaseUrl() {
         Map<String, Object> actualParameters = orderIssuedEmailContentProvider.buildParametersWithoutCaseUrl(
-            caseDetails, LOCAL_AUTHORITY_CODE, documentContents, GENERATED_ORDER);
+            caseData, documentContents, GENERATED_ORDER);
         Map<String, Object> expectedParameters = getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true);
 
         assertEquals(actualParameters, expectedParameters);
@@ -73,7 +69,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
     @Test
     void shouldBuildNoticeOfPlacementOrderParameters() {
         Map<String, Object> actualParameters = orderIssuedEmailContentProvider.buildParametersWithCaseUrl(
-            caseDetails, LOCAL_AUTHORITY_CODE, documentContents, NOTICE_OF_PLACEMENT_ORDER);
+            caseData, documentContents, NOTICE_OF_PLACEMENT_ORDER);
         Map<String, Object> expectedParameters = getExpectedCaseUrlParameters(NOTICE_OF_PLACEMENT_ORDER.getLabel(),
             false);
 
@@ -83,7 +79,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
     @Test
     void shouldBuildCaseManagementOrderParameters() {
         Map<String, Object> actualParameters = orderIssuedEmailContentProvider.buildParametersWithCaseUrl(
-            caseDetails, LOCAL_AUTHORITY_CODE, documentContents, CMO);
+            caseData, documentContents, CMO);
         Map<String, Object> expectedParameters = getExpectedCaseUrlParameters(CMO.getLabel(), true);
 
         assertEquals(actualParameters, expectedParameters);
@@ -91,7 +87,6 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
 
     @Test
     void shouldBuildGeneratedOrderParametersForAllocatedJudge() {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .judgeLastName("Scott")
             .judgeTitle(DEPUTY_DISTRICT_JUDGE)
@@ -101,26 +96,24 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
             .willReturn(expectedJudgeAndLegalAdvisor);
 
         AllocatedJudgeTemplateForGeneratedOrder actualParameters = orderIssuedEmailContentProvider
-            .buildAllocatedJudgeOrderIssuedNotification(caseDetails);
+            .buildAllocatedJudgeOrderIssuedNotification(caseData);
 
         AllocatedJudgeTemplateForGeneratedOrder expectedParameters = getExpectedAllocatedJudgeParameters();
 
         assertThat(actualParameters).isEqualToComparingFieldByField(expectedParameters);
     }
 
-    private static CaseDetails createCase() {
-        final Map<String, Object> data = new HashMap<>();
-        data.put("familyManCaseNumber", "SACCCCCCCC5676576567");
-        data.put("orderCollection", createOrders(DocumentReference.builder().build()));
-        data.put("hearingDetails",
-            createHearingBookings(LocalDateTime.now().plusMonths(3), LocalDateTime.now().plusMonths(3).plusHours(1)));
-        data.put("respondents1", wrapElements(Respondent.builder()
-            .party(RespondentParty.builder().lastName("Jones").build())
-            .build()));
-
-        return CaseDetails.builder()
-            .data(data)
+    private static CaseData createCase() {
+        return CaseData.builder()
             .id(Long.valueOf(CASE_REFERENCE))
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .familyManCaseNumber("SACCCCCCCC5676576567")
+            .orderCollection(createOrders(DocumentReference.builder().build()))
+            .hearingDetails(createHearingBookings(LocalDateTime.now().plusMonths(3),
+                LocalDateTime.now().plusMonths(3).plusHours(1)))
+            .respondents1(wrapElements(Respondent.builder()
+                .party(RespondentParty.builder().lastName("Jones").build())
+                .build()))
             .build();
     }
 }

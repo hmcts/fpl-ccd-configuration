@@ -192,9 +192,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
         postSubmittedEvent(callbackRequest);
 
-        checkUntil(() ->
-            verify(paymentService).makePaymentForCaseOrders(CASE_ID,
-                mapper.convertValue(caseDetails.getData(), CaseData.class)));
+        checkUntil(() -> verify(paymentService).makePaymentForCaseOrders(caseConverter.convert(caseDetails)));
     }
 
     @Test
@@ -205,7 +203,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
         postSubmittedEvent(callbackRequest);
 
-        checkThat(() -> verify(paymentService, never()).makePaymentForCaseOrders(any(), any()));
+        checkThat(() -> verify(paymentService, never()).makePaymentForCaseOrders(any()));
     }
 
     @Test
@@ -215,7 +213,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, OPEN);
 
         doThrow(new PaymentsApiException("", new Throwable())).when(paymentService)
-            .makePaymentForCaseOrders(any(), any());
+            .makePaymentForCaseOrders(any(CaseData.class));
 
         postSubmittedEvent(callbackRequest);
 
@@ -448,6 +446,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
             .caseDetails(caseDetails)
             .caseDetailsBefore(CaseDetails.builder()
                 .state(stateBefore.getValue())
+                .data(Map.of())
                 .build())
             .build();
     }

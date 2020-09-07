@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
-import uk.gov.hmcts.reform.fpl.model.event.EventData;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
@@ -32,30 +32,26 @@ public class NoticeOfPlacementOrderUploadedEventHandler {
 
     @EventListener
     public void sendEmailForNoticeOfPlacementOrderUploaded(NoticeOfPlacementOrderUploadedEvent noticeOfPlacementEvent) {
-        EventData eventData = new EventData(noticeOfPlacementEvent);
-
-        String recipientEmail = inboxLookupService.getNotificationRecipientEmail(eventData.getCaseDetails(),
-            eventData.getLocalAuthorityCode());
+        CaseData caseData = noticeOfPlacementEvent.getCaseData();
+        String recipientEmail = inboxLookupService.getNotificationRecipientEmail(caseData);
 
         Map<String, Object> parameters =
-            localAuthorityEmailContentProvider.buildNoticeOfPlacementOrderUploadedNotification(
-                eventData.getCaseDetails());
+            localAuthorityEmailContentProvider.buildNoticeOfPlacementOrderUploadedNotification(caseData);
 
         notificationService.sendEmail(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE, recipientEmail, parameters,
-            eventData.getReference());
+            caseData.getId().toString());
 
-        issuedOrderAdminNotificationHandler.sendToAdmin(eventData,
+        issuedOrderAdminNotificationHandler.sendToAdmin(caseData,
             noticeOfPlacementEvent.getDocumentContents(), NOTICE_OF_PLACEMENT_ORDER);
 
         representativeNotificationService.sendToRepresentativesByServedPreference(DIGITAL_SERVICE,
-            NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE, parameters, eventData);
+            NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE, parameters, caseData);
 
         Map<String, Object> representativesTemplateParameters =
-            orderIssuedEmailContentProvider.buildParametersWithoutCaseUrl(
-                eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
+            orderIssuedEmailContentProvider.buildParametersWithoutCaseUrl(caseData,
                 noticeOfPlacementEvent.getDocumentContents(), NOTICE_OF_PLACEMENT_ORDER);
 
         representativeNotificationService.sendToRepresentativesByServedPreference(EMAIL,
-            ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES, representativesTemplateParameters, eventData);
+            ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES, representativesTemplateParameters, caseData);
     }
 }

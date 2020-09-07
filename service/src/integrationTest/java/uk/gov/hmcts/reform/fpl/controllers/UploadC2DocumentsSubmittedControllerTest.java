@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -190,9 +189,11 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
             .put("displayAmountToPay", YES.getValue())
             .build();
 
-        postSubmittedEvent(createCase(caseData));
+        CaseDetails caseDetails = createCase(caseData);
 
-        verify(paymentService).makePaymentForC2(CASE_ID, mapper.convertValue(caseData, CaseData.class));
+        postSubmittedEvent(caseDetails);
+
+        verify(paymentService).makePaymentForC2(CASE_ID, caseConverter.convert(caseDetails));
     }
 
     @Test
