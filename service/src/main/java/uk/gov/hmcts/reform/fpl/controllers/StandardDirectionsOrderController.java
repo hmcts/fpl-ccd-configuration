@@ -97,7 +97,7 @@ public class StandardDirectionsOrderController extends CallbackController {
             data.put("dateOfIssue", dateOfIssue);
         }
 
-        if (sdoRouter != null) {
+        if (sdoRouter != null && standardDirectionOrder != null) {
             switch (sdoRouter) {
                 case UPLOAD:
                     data.put("currentSDO", standardDirectionOrder.getOrderDoc());
