@@ -1,10 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -26,15 +24,13 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class NoticeOfHearingEmailContentProvider extends AbstractEmailContentProvider {
 
-    private final ObjectMapper mapper;
     private final CaseDataExtractionService caseDataExtractionService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
 
     public NoticeOfHearingTemplate buildNewNoticeOfHearingNotification(
-        CaseDetails caseDetails,
+        CaseData caseData,
         HearingBooking hearingBooking,
         RepresentativeServingPreferences representativeServingPreferences) {
-        final CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         HearingVenue venue = hearingVenueLookUpService.getHearingVenue(hearingBooking);
 
         return NoticeOfHearingTemplate.builder()
@@ -43,12 +39,12 @@ public class NoticeOfHearingEmailContentProvider extends AbstractEmailContentPro
             .hearingVenue(hearingVenueLookUpService.buildHearingVenue(venue))
             .hearingTime(caseDataExtractionService.getHearingTime(hearingBooking))
             .preHearingTime(caseDataExtractionService.extractPrehearingAttendance(hearingBooking))
-            .caseUrl(getCaseUrl(caseDetails.getId()))
+            .caseUrl(getCaseUrl(caseData.getId()))
             .documentLink(linkToAttachedDocument(hearingBooking.getNoticeOfHearing()))
             .familyManCaseNumber(defaultIfNull(caseData.getFamilyManCaseNumber(), ""))
             .respondentLastName(getFirstRespondentLastName(caseData.getRespondents1()))
             .digitalPreference(representativeServingPreferences == DIGITAL_SERVICE ? "Yes" : "No")
-            .caseUrl(representativeServingPreferences == DIGITAL_SERVICE ? getCaseUrl(caseDetails.getId()) : "")
+            .caseUrl(representativeServingPreferences == DIGITAL_SERVICE ? getCaseUrl(caseData.getId()) : "")
             .build();
     }
 

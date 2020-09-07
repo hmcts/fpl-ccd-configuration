@@ -1,17 +1,12 @@
 package uk.gov.hmcts.reform.fpl.handlers.cmo;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.events.cmo.NewCMOUploaded;
 import uk.gov.hmcts.reform.fpl.handlers.HmctsAdminNotificationHandler;
@@ -23,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.AbstractJudge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.event.EventData;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.CMOReadyToSealTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.NewCMOUploadedContentProvider;
@@ -44,9 +38,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, NewCMOUploadedEventHandler.class
-})
+@ContextConfiguration(classes = {NewCMOUploadedEventHandler.class})
 class NewCMOUploadedEventHandlerTest {
 
     private static final String HMCTS_ADMIN_EMAIL = "admin@hmcts.gov.uk";
@@ -65,18 +57,14 @@ class NewCMOUploadedEventHandlerTest {
     @Autowired
     private NewCMOUploadedEventHandler eventHandler;
 
-    @Autowired
-    private ObjectMapper mapper;
-
     @BeforeEach
     void setUp() {
-        when(adminNotificationHandler.getHmctsAdminEmail(any(EventData.class))).thenReturn(HMCTS_ADMIN_EMAIL);
+        when(adminNotificationHandler.getHmctsAdminEmail(any(CaseData.class))).thenReturn(HMCTS_ADMIN_EMAIL);
     }
 
     @Test
     void shouldSendNotificationForAdmin() {
         CaseData caseData = caseDataWithAllocatedJudgeEmail(HMCTS_JUDGE_EMAIL);
-        CallbackRequest request = callbackRequest(caseData);
         HearingBooking hearing = buildHearing();
         CMOReadyToSealTemplate template = expectedTemplate();
 
@@ -88,21 +76,20 @@ class NewCMOUploadedEventHandlerTest {
             template
         );
 
-        NewCMOUploaded event = new NewCMOUploaded(request, hearing);
+        NewCMOUploaded event = new NewCMOUploaded(caseData, hearing);
         eventHandler.sendNotificationForAdmin(event);
 
         verify(notificationService).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
             HMCTS_ADMIN_EMAIL,
             template,
-            request.getCaseDetails().getId().toString()
+            caseData.getId().toString()
         );
     }
 
     @Test
     void shouldSendNotificationForJudge() {
         CaseData caseData = caseDataWithAllocatedJudgeEmail(HMCTS_JUDGE_EMAIL);
-        CallbackRequest request = callbackRequest(caseData);
         HearingBooking hearing = buildHearing();
         CMOReadyToSealTemplate template = expectedTemplate();
 
@@ -114,23 +101,22 @@ class NewCMOUploadedEventHandlerTest {
             template
         );
 
-        NewCMOUploaded event = new NewCMOUploaded(request, hearing);
+        NewCMOUploaded event = new NewCMOUploaded(caseData, hearing);
         eventHandler.sendNotificationForJudge(event);
 
         verify(notificationService).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE,
             HMCTS_JUDGE_EMAIL,
             template,
-            request.getCaseDetails().getId().toString()
+            caseData.getId().toString()
         );
     }
 
     @Test
     void shouldNotSendNotificationForJudgeWhenNoEmailIsProvided() {
         CaseData caseData = caseDataWithoutAllocatedJudgeEmail();
-        CallbackRequest request = callbackRequest(caseData);
         HearingBooking hearing = buildHearing();
-        NewCMOUploaded event = new NewCMOUploaded(request, hearing);
+        NewCMOUploaded event = new NewCMOUploaded(caseData, hearing);
 
         eventHandler.sendNotificationForJudge(event);
 
@@ -154,21 +140,13 @@ class NewCMOUploadedEventHandlerTest {
         )).thenReturn(template);
     }
 
-    private CallbackRequest callbackRequest(CaseData caseData) {
-        return CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .data(mapper.convertValue(caseData, new TypeReference<>() {}))
-                .id(12345L)
-                .build())
-            .build();
-    }
-
     private CaseData caseDataWithoutAllocatedJudgeEmail() {
         return caseDataWithAllocatedJudgeEmail("");
     }
 
     private CaseData caseDataWithAllocatedJudgeEmail(String email) {
         CaseData.CaseDataBuilder builder = CaseData.builder()
+            .id(12345L)
             .familyManCaseNumber("12345")
             .respondents1(wrapElements(
                 Respondent.builder()

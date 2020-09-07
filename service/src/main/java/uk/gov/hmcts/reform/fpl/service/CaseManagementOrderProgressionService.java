@@ -1,11 +1,9 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForPartyReviewEvent;
@@ -36,12 +34,12 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.DRAFT_CASE_MANAGEMENT_ORDER;
 @SuppressWarnings("java:S1133") // Remove once deprecations dealt with
 public class CaseManagementOrderProgressionService {
 
-    private final ObjectMapper mapper;
+    private final CaseConverter caseConverter;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final DocumentDownloadService documentDownloadService;
 
     public void handleCaseManagementOrderProgression(CaseDetails caseDetails, String eventId) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = caseConverter.convert(caseDetails);
 
         if (DRAFT_CASE_MANAGEMENT_ORDER.getId().equals(eventId)) {
             progressDraftCaseManagementOrder(caseDetails, caseData.getCaseManagementOrder());
@@ -109,16 +107,14 @@ public class CaseManagementOrderProgressionService {
     }
 
     private void publishReadyForJudgeReviewEvent(CaseDetails caseDetails) {
-        CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
-
-        applicationEventPublisher.publishEvent(new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest));
+        CaseData caseData = caseConverter.convert(caseDetails);
+        applicationEventPublisher.publishEvent(new CaseManagementOrderReadyForJudgeReviewEvent(caseData));
     }
 
     private void publishReadyForPartyReviewEvent(CaseDetails caseDetails) {
-        CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = caseConverter.convert(caseDetails);
 
-        applicationEventPublisher.publishEvent(new CaseManagementOrderReadyForPartyReviewEvent(callbackRequest,
+        applicationEventPublisher.publishEvent(new CaseManagementOrderReadyForPartyReviewEvent(caseData,
             documentDownloadService.downloadDocument(caseData.getSharedDraftCMODocument().getBinaryUrl())));
     }
 
@@ -127,6 +123,6 @@ public class CaseManagementOrderProgressionService {
         CaseDetails caseDetails,
         uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder cmo) {
         applicationEventPublisher.publishEvent(
-            new CaseManagementOrderRejectedEvent(CallbackRequest.builder().caseDetails(caseDetails).build(), cmo));
+            new CaseManagementOrderRejectedEvent(caseConverter.convert(caseDetails), cmo));
     }
 }

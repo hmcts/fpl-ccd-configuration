@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,15 +22,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/callback/add-note")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class AddNoteController {
+public class AddNoteController extends CallbackController {
     private final CaseNoteService service;
     private final RequestData requestData;
-    private final ObjectMapper mapper;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = getCaseData(caseDetails);
 
         CaseNote caseNote = service.buildCaseNote(requestData.authorisation(), caseData.getCaseNote());
         List<Element<CaseNote>> caseNotes = service.addNoteToList(caseNote, caseData.getCaseNotes());
@@ -39,8 +37,6 @@ public class AddNoteController {
         caseDetails.getData().put("caseNotes", caseNotes);
         caseDetails.getData().remove("caseNote");
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .build();
+        return respond(caseDetails);
     }
 }

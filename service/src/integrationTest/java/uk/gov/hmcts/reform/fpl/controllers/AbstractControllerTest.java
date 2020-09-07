@@ -11,11 +11,14 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -33,6 +36,9 @@ abstract class AbstractControllerTest {
 
     @Autowired
     ObjectMapper mapper;
+
+    @Autowired
+    CaseConverter caseConverter;
 
     @Autowired
     private Time time;
@@ -224,6 +230,8 @@ abstract class AbstractControllerTest {
 
     CaseDetails asCaseDetails(CaseData caseData) {
         return CaseDetails.builder()
+            .id(caseData.getId())
+            .state(Optional.ofNullable(caseData.getState()).map(State::getValue).orElse(null))
             .data(mapper.convertValue(caseData, new TypeReference<>() {}))
             .build();
     }

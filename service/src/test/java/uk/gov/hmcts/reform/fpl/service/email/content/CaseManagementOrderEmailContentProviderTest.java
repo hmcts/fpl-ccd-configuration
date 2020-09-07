@@ -8,6 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForCMO;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.RejectedCMOTemplate;
+import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
@@ -35,8 +37,11 @@ import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.gen
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ContextConfiguration(classes = {CaseManagementOrderEmailContentProvider.class, EmailNotificationHelper.class,
-    FixedTimeConfiguration.class})
+    FixedTimeConfiguration.class, CaseConverter.class})
 class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentProviderTest {
+
+    @Autowired
+    private CaseConverter caseConverter;
 
     @Autowired
     private CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
@@ -108,7 +113,7 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
             .build();
 
         assertThat(caseManagementOrderEmailContentProvider
-            .buildCMOPartyReviewParameters(createCase(), new byte[] {}, RepresentativeServingPreferences.POST))
+            .buildCMOPartyReviewParameters(createCase(), new byte[]{}, RepresentativeServingPreferences.POST))
             .isEqualTo(expectedParameters);
     }
 
@@ -157,7 +162,7 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
         return allocatedJudgeTemplate;
     }
 
-    private CaseDetails createCase() {
+    private CaseData createCase() {
         final Map<String, Object> data = new HashMap<>();
         data.put("familyManCaseNumber", "11");
         data.put("caseName", "case1");
@@ -178,9 +183,11 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
             .judgeEmailAddress("JudgeEmailAddress")
             .build());
 
-        return CaseDetails.builder()
+        CaseDetails caseDetails = CaseDetails.builder()
             .data(data)
             .id(Long.valueOf(CASE_REFERENCE))
             .build();
+
+        return caseConverter.convert(caseDetails);
     }
 }
