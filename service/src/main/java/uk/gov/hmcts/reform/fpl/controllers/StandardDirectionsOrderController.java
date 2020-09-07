@@ -143,7 +143,7 @@ public class StandardDirectionsOrderController extends CallbackController {
         return respond(caseDetails);
     }
 
-    @PostMapping("/service-route/mid-event")
+    @PostMapping({"/mid-event", "/service-route/mid-event"})
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
@@ -174,16 +174,15 @@ public class StandardDirectionsOrderController extends CallbackController {
 
     @PostMapping("/upload-route/mid-event")
     public CallbackResponse handleUploadMidEvent(@RequestBody CallbackRequest request) {
-        Map<String, Object> data = request.getCaseDetails().getData();
-        CaseData caseData = getCaseData(request.getCaseDetails());
+        CaseDetails caseDetails = request.getCaseDetails();
+        Map<String, Object> data = caseDetails.getData();
+        CaseData caseData = getCaseData(caseDetails);
 
         StandardDirectionOrder order = sdoService.buildTemporarySDO(caseData);
 
         data.put("standardDirectionOrder", order);
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .build();
+        return respond(caseDetails);
     }
 
     @PostMapping("/about-to-submit")
@@ -192,12 +191,9 @@ public class StandardDirectionsOrderController extends CallbackController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = getCaseData(caseDetails);
 
-        List<String> validationErrors = orderValidationService.validate(caseData);
-        if (!validationErrors.isEmpty()) {
-            return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(data)
-                .errors(validationErrors)
-                .build();
+        List<String> errors = orderValidationService.validate(caseData);
+        if (!errors.isEmpty()) {
+            return respond(caseDetails, errors);
         }
 
         StandardDirectionOrder order;
