@@ -34,7 +34,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 @RestController
 @RequestMapping("/callback/review-cmo")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class  ReviewCMOController {
+public class ReviewCMOController {
 
     private final ObjectMapper mapper;
     private final ReviewCMOService reviewCMOService;
