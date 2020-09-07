@@ -12,7 +12,11 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.ManageDocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ManageDocumentService;
+
+import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
@@ -33,7 +37,7 @@ public class ManageDocumentsController {
         caseDetails.getData().put("manageDocumentsHearingList", caseData.buildDynamicHearingList());
 
         // TODO
-        // Populate supporting list
+        // Populate C2 supporting list
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -48,12 +52,18 @@ public class ManageDocumentsController {
         switch (caseData.getManageDocument().getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
                 manageDocumentService.initialiseFurtherEvidenceFields(caseDetails);
-                manageDocumentService.initialiseManageDocumentBundleCollection(caseDetails,
-                    TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY);
+
+                List<Element<ManageDocumentBundle>> furtherEvidenceDocuments =
+                    manageDocumentService.initialiseFurtherDocumentBundleCollection(caseDetails);
+
+                caseDetails.getData().put(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, furtherEvidenceDocuments);
                 break;
             case CORRESPONDENCE:
-                manageDocumentService.initialiseManageDocumentBundleCollection(caseDetails,
-                    CORRESPONDING_DOCUMENTS_COLLECTION_KEY);
+                List<Element<ManageDocumentBundle>> correspondenceDocuments =
+                    manageDocumentService.initialiseManageDocumentBundleCollection(
+                        caseData.getCorrespondenceDocuments());
+
+                caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, correspondenceDocuments);
                 break;
             case C2:
                 // TODO
@@ -76,20 +86,25 @@ public class ManageDocumentsController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
 
-
         switch (caseData.getManageDocument().getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
-                caseDetails.getData().put(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY,
+                List<Element<ManageDocumentBundle>> updatedFurtherEvidenceDocuments =
                     manageDocumentService.setDateTimeUploadedOnManageDocumentCollection(
-                        caseData.getFurtherEvidenceDocumentsTEMP(), caseDataBefore.getFurtherEvidenceDocumentsTEMP()));
+                        caseData.getFurtherEvidenceDocumentsTEMP(), caseDataBefore.getFurtherEvidenceDocumentsTEMP());
+
+                caseDetails.getData().put(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY,
+                    updatedFurtherEvidenceDocuments);
+
                 manageDocumentService.buildFurtherEvidenceCollection(caseDetails);
 
                 caseDetails.getData().put(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, null);
                 break;
             case CORRESPONDENCE:
-                caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY,
+                List<Element<ManageDocumentBundle>> updatedCorrespondenceDocuments =
                     manageDocumentService.setDateTimeUploadedOnManageDocumentCollection(
-                        caseData.getCorrespondenceDocuments(), caseDataBefore.getCorrespondenceDocuments()));
+                    caseData.getCorrespondenceDocuments(), caseDataBefore.getCorrespondenceDocuments());
+
+                caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, updatedCorrespondenceDocuments);
                 break;
             case C2:
                 // TODO

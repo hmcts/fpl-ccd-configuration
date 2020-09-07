@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.getHearingBookingByUUID;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
 public class ManageDocumentService {
@@ -52,12 +52,39 @@ public class ManageDocumentService {
         }
     }
 
-    public void initialiseManageDocumentBundleCollection(CaseDetails caseDetails, String collectionKey) {
-        if (caseDetails.getData().get(collectionKey) == null) {
-            List<Element<ManageDocumentBundle>> documentBundle = wrapElements(ManageDocumentBundle.builder()
-                .build());
-            caseDetails.getData().put(collectionKey, documentBundle);
+    public List<Element<ManageDocumentBundle>> initialiseFurtherDocumentBundleCollection(CaseDetails caseDetails) {
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        if (caseData.getManageDocument().isDocumentRelatedToHearing()
+            && !caseData.getHearingFurtherEvidenceDocuments().isEmpty()) {
+            UUID selectedHearingCode = mapper.convertValue(caseDetails.getData().get(MANAGE_DOCUMENTS_HEARING_LIST_KEY),
+                UUID.class);
+
+            if (caseData.documentBundleContainsHearingId(selectedHearingCode)) {
+                for (int i = 0; i < caseData.getHearingFurtherEvidenceDocuments().size(); i++) {
+                    Element<HearingFurtherEvidenceBundle> currentHearingEvidenceBundle
+                        = caseData.getHearingFurtherEvidenceDocuments().get(i);
+
+                    if (selectedHearingCode.equals(currentHearingEvidenceBundle.getId())) {
+                        return currentHearingEvidenceBundle.getValue().getManageDocumentBundle();
+                    }
+                }
+            }
+
+        } else if (caseData.getFurtherEvidenceDocuments() != null) {
+            return caseData.getFurtherEvidenceDocuments();
         }
+
+        return initialiseManageDocumentBundleCollection(null);
+    }
+
+    public List<Element<ManageDocumentBundle>> initialiseManageDocumentBundleCollection(
+        List<Element<ManageDocumentBundle>> manageDocumentBundleListCollection) {
+        if (manageDocumentBundleListCollection == null || manageDocumentBundleListCollection.isEmpty()) {
+            return List.of(element(ManageDocumentBundle.builder().build()));
+        }
+
+        return manageDocumentBundleListCollection;
     }
 
     public void buildFurtherEvidenceCollection(CaseDetails caseDetails) {
