@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class ValidateDocumentBundleService {
+public class ValidateSupportingEvidenceBundleService {
     private final ValidateGroupService validatorService;
 
     public <T> List<String> validateBundle(List<T> documentBundle) {
