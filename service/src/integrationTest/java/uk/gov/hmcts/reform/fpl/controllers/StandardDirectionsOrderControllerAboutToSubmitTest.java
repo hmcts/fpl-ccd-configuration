@@ -13,6 +13,8 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
+import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
+import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -27,10 +29,14 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
+import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -38,6 +44,7 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
@@ -49,6 +56,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
@@ -76,6 +84,12 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
     @MockBean
     private UploadDocumentService uploadDocumentService;
 
+    @MockBean
+    private IdamClient idamClient;
+
+    @MockBean
+    private DocumentSealingService sealingService;
+
     @Captor
     private ArgumentCaptor<String> fileName;
 
@@ -93,7 +107,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
 
     @Test
     void shouldPopulateHiddenCCDFieldsInStandardDirectionOrderToPersistData() {
-        CaseDetails caseDetails = validCaseDetails();
+        CaseDetails caseDetails = validCaseDetailsForServiceRoute(false);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
@@ -128,12 +142,85 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
     }
 
     @Test
-    void shouldUpdateStateWhenOrderIsSealed() {
-        CaseDetails caseDetails = validCaseDetails();
+    void shouldPopulateStandardDirectionOrderObjectFromUploadRoute() {
+        DocumentReference order = DocumentReference.builder().filename("order.pdf").build();
+
+        given(idamClient.getUserInfo(anyString())).willReturn(UserInfo.builder().name("adam").build());
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+            validCaseDetailsForUploadRoute(order, DRAFT)
+        );
+
+        CaseData data = mapper.convertValue(response.getData(), CaseData.class);
+
+        StandardDirectionOrder expected = StandardDirectionOrder.builder()
+            .dateOfUpload(now().toLocalDate())
+            .uploader("adam")
+            .orderStatus(DRAFT)
+            .orderDoc(order)
+            .build();
+
+        assertThat(data.getStandardDirectionOrder()).isEqualTo(expected);
+    }
+
+    @Test
+    void shouldUpdateStateWhenOrderIsSealedThroughServiceRouteAndRemoveRouter() {
+        CaseDetails caseDetails = validCaseDetailsForServiceRoute(true);
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
 
-        assertThat(response.getData()).extracting("state").isEqualTo("PREPARE_FOR_HEARING");
+        assertThat(response.getData())
+            .containsEntry("state", "PREPARE_FOR_HEARING")
+            .doesNotContainKey("sdoRouter");
+    }
+
+    @Test
+    void shouldUpdateStateWhenOrderIsSealedThroughUploadRouteAndRemoveRouter() throws Exception {
+        DocumentReference document = DocumentReference.builder().filename("final.pdf").build();
+        CaseDetails caseDetails = validCaseDetailsForUploadRoute(document, SEALED);
+
+        given(idamClient.getUserInfo(anyString())).willReturn(UserInfo.builder().name("adam").build());
+        given(sealingService.sealDocument(document)).willReturn(document);
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
+
+        assertThat(response.getData())
+            .containsEntry("state", "PREPARE_FOR_HEARING")
+            .doesNotContainKey("sdoRouter");
+    }
+
+    @Test
+    void shouldRemoveTemporaryFields() {
+        DocumentReference order = DocumentReference.builder().filename("order.pdf").build();
+
+        given(idamClient.getUserInfo(anyString())).willReturn(UserInfo.builder().name("adam").build());
+
+        CaseDetails caseDetails = validCaseDetailsForUploadRoute(order, DRAFT);
+        Map<String, Object> dataMap = new HashMap<>(caseDetails.getData());
+
+        // dummy data
+        dataMap.putAll(Map.of(
+            "dateOfIssue", dateNow(),
+            "preparedSDO", DocumentReference.builder().build(),
+            "currentSDO", DocumentReference.builder().build(),
+            "replacementSDO", DocumentReference.builder().build(),
+            "useServiceRoute", "",
+            "useUploadRoute", "YES"
+        ));
+
+        caseDetails.setData(dataMap);
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
+
+        assertThat(response.getData()).doesNotContainKeys(
+            "judgeAndLegalAdvisor",
+            "dateOfIssue",
+            "preparedSDO",
+            "currentSDO",
+            "replacementSDO",
+            "useServiceRoute",
+            "useUploadRoute"
+        );
     }
 
     private void assertThatDirectionsArePlacedBackIntoCaseDetailsWithValues(CaseData caseData) {
@@ -150,29 +237,45 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
         assertThat(unwrapElements(caseData.getCourtDirections())).containsOnly(fullyPopulatedDirection(COURT));
     }
 
-    private CaseDetails validCaseDetails() {
-        JudgeAndLegalAdvisor legalAdvisorWithAllocatedJudge = JudgeAndLegalAdvisor.builder()
-            .useAllocatedJudge("Yes")
-            .legalAdvisorName("Chris Newport")
-            .build();
+    private CaseDetails validCaseDetailsForServiceRoute(boolean withRouter) {
+        ImmutableMap.Builder<String, Object> data = directionsWithShowHideValuesRemoved()
+            .put("dateOfIssue", dateNow())
+            .put("standardDirectionOrder", StandardDirectionOrder.builder().orderStatus(SEALED).build())
+            .putAll(buildJudgeAndLegalAdvisorDetails())
+            .put(HEARING_DETAILS_KEY, wrapElements(HearingBooking.builder()
+                .startDate(HEARING_START_DATE)
+                .endDate(HEARING_END_DATE)
+                .venue("EXAMPLE")
+                .build()))
+            .put("caseLocalAuthority", "example")
+            .put("dateSubmitted", dateNow())
+            .put("applicants", getApplicant());
 
-        Judge allocatedJudge = Judge.builder().judgeTitle(MAGISTRATES).judgeFullName("John Walker").build();
+        if (withRouter) {
+            data.put("sdoRouter", SDORoute.SERVICE);
+        }
 
         return CaseDetails.builder()
-            .data(directionsWithShowHideValuesRemoved()
-                .put("dateOfIssue", dateNow())
-                .put("standardDirectionOrder", StandardDirectionOrder.builder().orderStatus(SEALED).build())
-                .put("judgeAndLegalAdvisor", legalAdvisorWithAllocatedJudge)
-                .put("allocatedJudge", allocatedJudge)
-                .put(HEARING_DETAILS_KEY, wrapElements(HearingBooking.builder()
-                    .startDate(HEARING_START_DATE)
-                    .endDate(HEARING_END_DATE)
-                    .venue("EXAMPLE")
-                    .build()))
-                .put("caseLocalAuthority", "example")
-                .put("dateSubmitted", dateNow())
-                .put("applicants", getApplicant())
+            .data(data.build())
+            .build();
+    }
+
+    private CaseDetails validCaseDetailsForUploadRoute(DocumentReference document, OrderStatus status) {
+        ImmutableMap.Builder<String, Object> data = ImmutableMap.<String, Object>builder()
+            .putAll(buildJudgeAndLegalAdvisorDetails())
+            .put(HEARING_DETAILS_KEY, wrapElements(HearingBooking.builder()
+                .startDate(HEARING_START_DATE)
+                .endDate(HEARING_END_DATE)
+                .venue("EXAMPLE")
+                .build()))
+            .put("standardDirectionOrder", StandardDirectionOrder.builder()
+                .orderStatus(status)
+                .orderDoc(document)
                 .build())
+            .put("sdoRouter", SDORoute.UPLOAD);
+
+        return CaseDetails.builder()
+            .data(data.build())
             .build();
     }
 
@@ -201,6 +304,20 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
             .caseTypeId(CASE_TYPE)
             .data(data)
             .build();
+    }
+
+    private Map<String, Object> buildJudgeAndLegalAdvisorDetails() {
+        JudgeAndLegalAdvisor legalAdvisorWithAllocatedJudge = JudgeAndLegalAdvisor.builder()
+            .useAllocatedJudge("Yes")
+            .legalAdvisorName("Chris Newport")
+            .build();
+
+        Judge allocatedJudge = Judge.builder().judgeTitle(MAGISTRATES).judgeFullName("John Walker").build();
+
+        return Map.of(
+            "judgeAndLegalAdvisor", legalAdvisorWithAllocatedJudge,
+            "allocatedJudge", allocatedJudge
+        );
     }
 
     private ImmutableMap.Builder<String, Object> directionsWithShowHideValuesRemoved() {
