@@ -32,12 +32,7 @@ module.exports = {
     await I.addAnotherElementToCollection();
     I.fillField(this.fields.supportingDocuments.name, c2SupportingDocuments.name);
     I.fillField(this.fields.supportingDocuments.notes, c2SupportingDocuments.notes);
-    I.fillField(this.fields.supportingDocuments.dateAndTime.day, c2SupportingDocuments.dateAndTime.day);
-    I.fillField(this.fields.supportingDocuments.dateAndTime.month, c2SupportingDocuments.dateAndTime.month);
-    I.fillField(this.fields.supportingDocuments.dateAndTime.year, c2SupportingDocuments.dateAndTime.year);
-    I.fillField(this.fields.supportingDocuments.dateAndTime.second, c2SupportingDocuments.dateAndTime.second);
-    I.fillField(this.fields.supportingDocuments.dateAndTime.minute, c2SupportingDocuments.dateAndTime.minute);
-    I.fillField(this.fields.supportingDocuments.dateAndTime.hour, c2SupportingDocuments.dateAndTime.hour);
+    I.fillDate(c2SupportingDocuments.date, this.fields.supportingDocuments.dateAndTime);
     I.attachFile(this.fields.supportingDocuments.document, c2SupportingDocuments.document);
   },
 

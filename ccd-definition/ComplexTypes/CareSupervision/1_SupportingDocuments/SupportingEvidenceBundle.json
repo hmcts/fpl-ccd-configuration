@@ -5,7 +5,7 @@
     "ListElementCode": "name",
     "FieldType": "Text",
     "ElementLabel": "Document name",
-    "HintText": "TODO Try and make this more generic so we can reuse the same object",
+    "HintText": "Give the document a meaningful name, for example form C100 or C1A.",
     "SecurityClassification": "Public"
   },
   {
