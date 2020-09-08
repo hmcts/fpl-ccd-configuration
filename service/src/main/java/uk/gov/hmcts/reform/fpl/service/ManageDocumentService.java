@@ -109,8 +109,8 @@ public class ManageDocumentService {
             } else if (caseData.documentBundleContainsHearingId(selectedHearingCode)) {
                 hearingFurtherEvidenceDocuments = caseData.getHearingFurtherEvidenceDocuments().stream()
                     .filter(element -> element.getId().equals(selectedHearingCode))
-                    .peek(element -> element.getValue().getSupportingEvidenceBundle()
-                        .addAll(caseData.getFurtherEvidenceDocumentsTEMP()))
+                    .peek(element ->
+                        element.getValue().setSupportingEvidenceBundle(caseData.getFurtherEvidenceDocumentsTEMP()))
                     .collect(Collectors.toList());
             } else {
                 Element<HearingFurtherEvidenceBundle> hearingFurtherEvidenceBundleElement =

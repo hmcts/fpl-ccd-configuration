@@ -73,7 +73,7 @@ public class ManageDocumentsControllerMidEventTest extends AbstractControllerTes
         CaseDetails caseDetails = buildCaseDetails(data);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails,
-            "initialise-manage-documents-collections");
+            "initialise-manage-document-collections");
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
@@ -103,7 +103,7 @@ public class ManageDocumentsControllerMidEventTest extends AbstractControllerTes
         CaseDetails caseDetails = buildCaseDetails(data);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails,
-            "initialise-manage-documents-collections");
+            "initialise-manage-document-collections");
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
         assertThat(caseData.getCorrespondenceDocuments()).isEqualTo(correspondenceDocuments);
