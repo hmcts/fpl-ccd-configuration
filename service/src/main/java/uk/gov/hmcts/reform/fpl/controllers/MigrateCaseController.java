@@ -13,13 +13,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 
-import java.util.List;
 import java.util.Map;
-
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 @Api
 @RestController
@@ -35,19 +30,8 @@ public class MigrateCaseController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (defaultIfNull(caseData.getFamilyManCaseNumber(), "").equals("SA20C50019")) {
-            List<Element<Child>> children = caseData.getChildren1();
-
-            for (Element<Child> child : children) {
-                child.getValue().setFinalOrderIssued(null);
-                child.getValue().setFinalOrderIssuedType(null);
-            }
-
-            caseData.getOrderCollection().remove(1);
-            data.put("orderCollection", caseData.getOrderCollection());
-            data.put("children1", children);
+        if ("SA20C50004".equals(caseData.getFamilyManCaseNumber())) {
             data.put("state", State.CASE_MANAGEMENT.getValue());
-            data.remove("closeCaseTabField");
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
