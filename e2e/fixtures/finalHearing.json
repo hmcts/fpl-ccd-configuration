@@ -335,11 +335,7 @@
       {
         "id": "749f29dc-c200-4377-9e12-a5b4bad631b3",
         "value": {
-          "order":{
-            "document_url":"http://dm-store:8080/documents/7196dcc4-dd17-49ba-9924-7480b91e620e",
-            "document_filename":"mockFile.pdf",
-            "document_binary_url":"http://dm-store:8080/documents/7196dcc4-dd17-49ba-9924-7480b91e620e/binary"
-          },
+          "order":"TO BE FILLED WITH VALID DATA",
           "status": "APPROVED",
           "hearing": "Case management hearing, 1 January 2020",
           "dateSent": "2020-08-27",
