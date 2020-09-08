@@ -10,5 +10,5 @@ import java.util.List;
 @Builder
 public class HearingFurtherEvidenceBundle {
     private final String hearingName;
-    private final List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle;
+    private List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle;
 }
