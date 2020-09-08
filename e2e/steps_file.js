@@ -101,6 +101,10 @@ module.exports = function () {
       }
     },
 
+    seeInEventHistoryDetails(field, fieldValue) {
+      this.seeElement(locate(`//table[@class="EventLogDetails"]//span[text()="${field}"]/../..//span[text()="${fieldValue}"]`));
+    },
+
     tabFieldSelector(pathToField) {
       let path = [].concat(pathToField);
       let fieldName = path.splice(-1, 1)[0];
