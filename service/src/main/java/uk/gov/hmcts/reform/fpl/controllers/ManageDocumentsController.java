@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.service.SupportingEvidenceValidatorService;
 import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 
 @Api
@@ -36,7 +37,7 @@ public class ManageDocumentsController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData().put("manageDocumentsHearingList", caseData.buildDynamicHearingList());
+        caseDetails.getData().put(MANAGE_DOCUMENTS_HEARING_LIST_KEY, caseData.buildDynamicHearingList());
 
         // TODO
         // Populate C2 supporting list
@@ -46,7 +47,7 @@ public class ManageDocumentsController {
             .build();
     }
 
-    @PostMapping("/initialise-manage-documents-collections/mid-event")
+    @PostMapping("/initialise-manage-document-collections/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
@@ -80,6 +81,10 @@ public class ManageDocumentsController {
             .data(caseDetails.getData())
             .build();
     }
+
+    // TODO
+    // Refactor the below to just make use of the one mid event (hopefully possible)
+    // Currently have multiple to support differing collection heading and hint text
 
     @PostMapping("/validate-further-evidence/mid-event")
     public AboutToStartOrSubmitCallbackResponse validateFurtherEvidenceDocuments(
@@ -126,9 +131,16 @@ public class ManageDocumentsController {
 
         switch (caseData.getManageDocument().getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
+
+                // TODO
+                // Reconsider how we make sure object exists on caseData before
+                List<Element<SupportingEvidenceBundle>> previousFurtherEvidenceDocuments
+                    = caseDataBefore.getFurtherEvidenceDocumentsTEMP() != null
+                    ? caseDataBefore.getFurtherEvidenceDocumentsTEMP() : List.of();
+
                 List<Element<SupportingEvidenceBundle>> updatedFurtherEvidenceDocuments =
                     manageDocumentService.setDateTimeUploadedOnManageDocumentCollection(
-                        caseData.getFurtherEvidenceDocumentsTEMP(), caseDataBefore.getFurtherEvidenceDocumentsTEMP());
+                        caseData.getFurtherEvidenceDocumentsTEMP(), previousFurtherEvidenceDocuments);
 
                 caseDetails.getData().put(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY,
                     updatedFurtherEvidenceDocuments);
@@ -138,9 +150,16 @@ public class ManageDocumentsController {
                 caseDetails.getData().put(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, null);
                 break;
             case CORRESPONDENCE:
+
+                // TODO
+                // Reconsider how we make sure object exists on caseData before
+                List<Element<SupportingEvidenceBundle>> previousCorrespondenceDocuments
+                    = caseDataBefore.getCorrespondenceDocuments() != null
+                    ? caseDataBefore.getCorrespondenceDocuments() : List.of();
+
                 List<Element<SupportingEvidenceBundle>> updatedCorrespondenceDocuments =
                     manageDocumentService.setDateTimeUploadedOnManageDocumentCollection(
-                    caseData.getCorrespondenceDocuments(), caseDataBefore.getCorrespondenceDocuments());
+                        caseData.getCorrespondenceDocuments(), previousCorrespondenceDocuments);
 
                 caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, updatedCorrespondenceDocuments);
                 break;
