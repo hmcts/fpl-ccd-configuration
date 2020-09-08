@@ -98,7 +98,7 @@ public class ManageDocumentsController {
             .build();
     }
 
-    @PostMapping("/validate-corresponding-documents/mid-event")
+    @PostMapping("/validate-correspondence-documents/mid-event")
     public AboutToStartOrSubmitCallbackResponse validateCorrespondingDocuments(
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
