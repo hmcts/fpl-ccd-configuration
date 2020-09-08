@@ -480,7 +480,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadOtherCourtAdminDocuments-PREPARE_FOR_HEARING",
     "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "CRU"
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1040,7 +1040,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadOtherCourtAdminDocuments-PREPARE_FOR_HEARING",
     "UserRole": "caseworker-publiclaw-judiciary",
-    "CRUD": "CRU"
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
