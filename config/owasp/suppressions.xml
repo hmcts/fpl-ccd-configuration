@@ -13,16 +13,4 @@
     <gav regex="true">^org\.springframework\.security:.*$</gav>
     <cve>CVE-2018-1258</cve>
   </suppress>
-  <suppress>
-    <notes>
-      <![CDATA[
-        file name: launchdarkly-java-server-sdk-5.0.3.jar (shaded: org.yaml:snakeyaml:1.19)
-        The Alias feature in SnakeYAML 1.18 allows entity expansion during a load operation,
-        a related issue to CVE-2003-1564.
-      ]]>
-    </notes>
-    <packageUrl regex="true">^pkg:maven\/org\.yaml\/snakeyaml@.*$</packageUrl>
-    <cpe>cpe:/a:snakeyaml_project:snakeyaml</cpe>
-    <cve>CVE-2017-18640</cve>
-  </suppress>
 </suppressions>
