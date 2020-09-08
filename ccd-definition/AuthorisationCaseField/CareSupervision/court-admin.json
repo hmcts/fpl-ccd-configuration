@@ -1126,21 +1126,21 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "furtherEvidenceDocumentsTEMP",
     "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "furtherEvidenceDocuments",
     "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearingFurtherEvidenceDocuments",
     "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",

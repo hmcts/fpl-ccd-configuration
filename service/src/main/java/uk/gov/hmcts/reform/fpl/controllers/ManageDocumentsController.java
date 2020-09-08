@@ -47,7 +47,7 @@ public class ManageDocumentsController {
             .build();
     }
 
-    @PostMapping("/initialise-manage-documents-collections/mid-event")
+    @PostMapping("/initialise-manage-document-collections/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);

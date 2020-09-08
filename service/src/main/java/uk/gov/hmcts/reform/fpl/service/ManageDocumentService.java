@@ -56,6 +56,7 @@ public class ManageDocumentService {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (caseData.getManageDocument().isDocumentRelatedToHearing()
+            && caseData.getHearingFurtherEvidenceDocuments() != null
             && !caseData.getHearingFurtherEvidenceDocuments().isEmpty()) {
             DynamicList dynamicList = mapper.convertValue(caseDetails.getData().get(MANAGE_DOCUMENTS_HEARING_LIST_KEY),
                 DynamicList.class);
