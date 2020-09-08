@@ -1,7 +1,7 @@
 const { I } = inject();
 const money = require('../../helpers/money_helper');
 const c2SupportingDocuments = require('../../fixtures/testData/c2SupportingDocuments.js');
-
+const supportingDocumentsFragment = require('../../fragments/supportingDocuments.js');
 module.exports = {
   fields: {
     uploadC2: '#temporaryC2Document_document',
@@ -13,20 +13,9 @@ module.exports = {
     pbaNumber: '#temporaryC2Document_pbaNumber',
     clientCode: '#temporaryC2Document_clientCode',
     customerReference: '#temporaryC2Document_fileReference',
-    supportingDocuments: {
-      name: '#temporaryC2Document_supportingEvidenceBundle_0_name',
-      notes: '#temporaryC2Document_supportingEvidenceBundle_0_notes',
-      dateAndTime: {
-        day: '#temporaryC2Document_supportingEvidenceBundle_0_dateTimeReceived-day',
-        month: '#temporaryC2Document_supportingEvidenceBundle_0_dateTimeReceived-month',
-        year: '#temporaryC2Document_supportingEvidenceBundle_0_dateTimeReceived-year',
-        hour: '#temporaryC2Document_supportingEvidenceBundle_0_dateTimeReceived-hour',
-        minute: '#temporaryC2Document_supportingEvidenceBundle_0_dateTimeReceived-minute',
-        second: '#temporaryC2Document_supportingEvidenceBundle_0_dateTimeReceived-second',
-      },
-      document: '#temporaryC2Document_supportingEvidenceBundle_0_document',
-    },
+    supportingDocuments: supportingDocumentsFragment.supportingDocuments(0, 'temporaryC2Document'),
   },
+
   applicationTypePrefix: '#c2ApplicationType_type-',
 
   selectApplicationType(type) {
