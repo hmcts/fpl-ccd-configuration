@@ -172,7 +172,7 @@ Scenario('Gatekeeper uploads draft standard directions', async (I, caseViewPage,
   I.see('Draft gatekeeping order');
   I.seeInTab(['Gatekeeping order', 'File'], 'mockFile.pdf');
   I.seeInTab(['Gatekeeping order', 'Date uploaded'], dateFormat('d mmm yyyy'));
-  I.seeInTab(['Gatekeeping order', 'Uploaded by'], 'gatekeeper-only@mailnesia.com (gatekeeper)');
+  I.seeInTab(['Gatekeeping order', 'Uploaded by'], 'Uploaded by'); // Asserting row is there, data in local and aat are different
 });
 
 Scenario('Gatekeeper uploads final standard directions', async (I, caseViewPage, draftStandardDirectionsEventPage) => {
