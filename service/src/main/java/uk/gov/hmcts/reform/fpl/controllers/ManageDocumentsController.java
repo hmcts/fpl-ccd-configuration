@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ManageDocumentService;
+import uk.gov.hmcts.reform.fpl.service.SupportingEvidenceValidatorService;
 
 import java.util.List;
 
@@ -28,6 +29,7 @@ import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.TEMP_FURTHER
 public class ManageDocumentsController {
     private final ObjectMapper mapper;
     private final ManageDocumentService manageDocumentService;
+    private final SupportingEvidenceValidatorService supportingEvidenceValidatorService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -44,7 +46,7 @@ public class ManageDocumentsController {
             .build();
     }
 
-    @PostMapping("/mid-event")
+    @PostMapping("/initialise-manage-documents-collections/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
@@ -76,6 +78,42 @@ public class ManageDocumentsController {
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
+            .build();
+    }
+
+    @PostMapping("/validate-further-evidence/mid-event")
+    public AboutToStartOrSubmitCallbackResponse validateFurtherEvidenceDocuments(
+        @RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetails.getData())
+            .errors(supportingEvidenceValidatorService.validate(caseData.getFurtherEvidenceDocumentsTEMP()))
+            .build();
+    }
+
+    @PostMapping("/validate-corresponding-documents/mid-event")
+    public AboutToStartOrSubmitCallbackResponse validateCorrespondingDocuments(
+        @RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetails.getData())
+            .errors(supportingEvidenceValidatorService.validate(caseData.getCorrespondenceDocuments()))
+            .build();
+    }
+
+    @PostMapping("/validate-c2-supporting-documents/mid-event")
+    public AboutToStartOrSubmitCallbackResponse validateC2SupportingDocuments(
+        @RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetails.getData())
+            .errors(supportingEvidenceValidatorService.validate(caseData.getC2SupportingDocuments()))
             .build();
     }
 

@@ -10,7 +10,7 @@ module.exports = {
         c2: '#manageDocument_type-C2'
       },
 
-      supportingDocuments: {
+      supportingEvidenceDocuments: {
         name: `#${supportingDocumentType}_${index}_name`,
         notes: `#${supportingDocumentType}_${index}_notes`,
         dateAndTime: {
