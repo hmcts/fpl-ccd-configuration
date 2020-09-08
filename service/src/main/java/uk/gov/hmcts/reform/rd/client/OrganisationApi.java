@@ -19,7 +19,8 @@ public interface OrganisationApi {
     OrganisationUsers findUsersByOrganisation(
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
-        @RequestParam(value = "status") Status status
+        @RequestParam(value = "status") Status status,
+        @RequestParam(value = "returnRoles") Boolean returnRoles
     );
 
     @GetMapping("/refdata/external/v1/organisations/users/accountId")

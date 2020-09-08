@@ -2,17 +2,11 @@ package uk.gov.hmcts.reform.fpl.utils;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,23 +15,18 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookingsFromInitialDate;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { EmailNotificationHelper.class, HearingBookingService.class,
-    FixedTimeConfiguration.class})
 class EmailNotificationHelperTest {
-
-    @Autowired
-    private Time time;
-
-    @Autowired
-    private EmailNotificationHelper helper;
 
     @Test
     void subjectLineShouldBeEmptyWhenNoRespondentOrCaseNumberEmpty() {
-        String subjectLine = helper.buildSubjectLine(CaseData.builder().build());
+        CaseData data = CaseData.builder()
+            .build();
+        String subjectLine = buildSubjectLine(data.getFamilyManCaseNumber(), data.getRespondents1());
         assertThat(subjectLine).isEmpty();
     }
 
@@ -49,7 +38,7 @@ class EmailNotificationHelperTest {
             .build();
 
         String expectedSubjectLine = "Jones, FamilyManCaseNumber";
-        String subjectLine = helper.buildSubjectLine(caseData);
+        String subjectLine = buildSubjectLine(caseData.getFamilyManCaseNumber(), caseData.getRespondents1());
         assertThat(subjectLine).isEqualTo(expectedSubjectLine);
     }
 
@@ -60,7 +49,7 @@ class EmailNotificationHelperTest {
             .build();
 
         String expectedSubjectLine = "Jones";
-        String subjectLine = helper.buildSubjectLine(caseData);
+        String subjectLine = buildSubjectLine(caseData.getFamilyManCaseNumber(), caseData.getRespondents1());
         assertThat(subjectLine).isEqualTo(expectedSubjectLine);
     }
 
@@ -105,25 +94,27 @@ class EmailNotificationHelperTest {
             .build();
 
         String expectedSubjectLine = "FamilyManCaseNumber-With-Empty-Lastname";
-        String subjectLine = helper.buildSubjectLine(caseData);
+        String subjectLine = buildSubjectLine(caseData.getFamilyManCaseNumber(), caseData.getRespondents1());
         assertThat(subjectLine).isEqualTo(expectedSubjectLine);
     }
 
     @Test
     void subjectLineShouldBeSuffixedWithHearingDate() {
-        final LocalDateTime dateInTenMonths = time.now().plusMonths(10);
+        final LocalDateTime futureDate = LocalDateTime.of(2022, 05, 23, 0, 0, 0);
         List<Element<HearingBooking>> hearingBookingsFromInitialDate =
-            createHearingBookingsFromInitialDate(dateInTenMonths);
+            createHearingBookingsFromInitialDate(futureDate);
         CaseData caseData = CaseData.builder()
             .respondents1(createRespondents())
             .hearingDetails(hearingBookingsFromInitialDate)
             .familyManCaseNumber("FamilyManCaseNumber")
             .build();
 
-        String expectedSubjectLine = "Jones, FamilyManCaseNumber, hearing "
-            + formatLocalDateTimeBaseUsingFormat(dateInTenMonths, "d MMM yyyy");
-        String returnedSubjectLine = helper.buildSubjectLineWithHearingBookingDateSuffix(caseData,
-            caseData.getHearingDetails());
+        HearingBooking hearingBooking = unwrapElements(caseData.getHearingDetails()).get(2);
+
+        String expectedSubjectLine = "Jones, FamilyManCaseNumber, hearing 23 May 2022";
+        String returnedSubjectLine = buildSubjectLineWithHearingBookingDateSuffix(caseData
+                .getFamilyManCaseNumber(),
+            caseData.getRespondents1(), hearingBooking);
         assertThat(returnedSubjectLine).isEqualTo(expectedSubjectLine);
     }
 
@@ -136,14 +127,14 @@ class EmailNotificationHelperTest {
             .build();
 
         String expectedSubjectLine = "Jones, FamilyManCaseNumber";
-        String returnedSubjectLine = helper.buildSubjectLineWithHearingBookingDateSuffix(caseData,
-            caseData.getHearingDetails());
+        String returnedSubjectLine = buildSubjectLineWithHearingBookingDateSuffix(caseData
+            .getFamilyManCaseNumber(), caseData.getRespondents1(), null);
         assertThat(returnedSubjectLine).isEqualTo(expectedSubjectLine);
     }
 
     @Test
     void shouldNotAddHearingDateWhenNoFutureHearings() {
-        LocalDateTime pastDate = time.now().minusYears(10);
+        LocalDateTime pastDate = LocalDateTime.now().minusYears(10);
         List<Element<HearingBooking>> hearingBookings = createHearingBookingsFromInitialDate(pastDate);
         CaseData caseData = CaseData.builder()
             .respondents1(createRespondents())
@@ -152,7 +143,8 @@ class EmailNotificationHelperTest {
             .build();
 
         String expected = "Jones, FamilyManCaseNumber";
-        String actual = helper.buildSubjectLineWithHearingBookingDateSuffix(caseData, caseData.getHearingDetails());
+        String actual = buildSubjectLineWithHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
+            caseData.getRespondents1(), null);
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -160,21 +152,21 @@ class EmailNotificationHelperTest {
     @Test
     void shouldFormatUrlCorrectlyWhenBaseUrlAndCaseIdProvided() {
         String formattedUrl = formatCaseUrl("http://testurl", 123L);
-        String expectedUrl = "http://testurl/case/PUBLICLAW/CARE_SUPERVISION_EPO/123";
+        String expectedUrl = "http://testurl/cases/case-details/123";
         assertThat(formattedUrl).isEqualTo(expectedUrl);
     }
 
     @Test
     void shouldFormatUrlCorrectlyWhenBaseUrlCaseIdAndTabProvided() {
         String formattedUrl = formatCaseUrl("http://testurl", 123L, "tab1");
-        String expectedUrl = "http://testurl/case/PUBLICLAW/CARE_SUPERVISION_EPO/123#tab1";
+        String expectedUrl = "http://testurl/cases/case-details/123#tab1";
         assertThat(formattedUrl).isEqualTo(expectedUrl);
     }
 
     @Test
     void shouldFormatUrlCorrectlyWhenBaseUrlCaseIdAndTabIsEmpty() {
         String formattedUrl = formatCaseUrl("http://testurl", 123L, "");
-        String expectedUrl = "http://testurl/case/PUBLICLAW/CARE_SUPERVISION_EPO/123";
+        String expectedUrl = "http://testurl/cases/case-details/123";
         assertThat(formattedUrl).isEqualTo(expectedUrl);
     }
 }

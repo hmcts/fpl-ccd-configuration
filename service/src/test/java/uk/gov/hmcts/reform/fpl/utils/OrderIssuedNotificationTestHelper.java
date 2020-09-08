@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -31,7 +32,9 @@ public class OrderIssuedNotificationTestHelper {
 
     public static Map<String, Object> getExpectedCaseUrlParameters(String orderType, boolean withCallout) {
         String fileContent = new String(Base64.encodeBase64(PDF), ISO_8859_1);
-        JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
+        JSONObject jsonFileObject = new JSONObject()
+            .put("file", fileContent)
+            .put("is_csv", false);
 
         return Map.of(
             "orderType", orderType.toLowerCase(),
@@ -44,13 +47,27 @@ public class OrderIssuedNotificationTestHelper {
 
     public static Map<String, Object> getExpectedParametersForRepresentatives(String orderType, boolean withCallout) {
         String fileContent = new String(Base64.encodeBase64(PDF), ISO_8859_1);
-        JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
+        JSONObject jsonFileObject = new JSONObject()
+            .put("file", fileContent)
+            .put("is_csv", false);
 
         return Map.of("orderType", orderType.toLowerCase(),
             "respondentLastName", "Jones",
             "courtName", EXAMPLE_COURT,
             "callout", withCallout ? callout : "",
             "documentLink", jsonFileObject);
+    }
+
+    public static AllocatedJudgeTemplateForGeneratedOrder getExpectedAllocatedJudgeParameters() {
+        AllocatedJudgeTemplateForGeneratedOrder allocatedJudgeTemplate = new AllocatedJudgeTemplateForGeneratedOrder();
+        allocatedJudgeTemplate.setOrderType("blank order (c21)");
+        allocatedJudgeTemplate.setCallout(callout);
+        allocatedJudgeTemplate.setRespondentLastName("Jones");
+        allocatedJudgeTemplate.setJudgeTitle("Deputy District Judge");
+        allocatedJudgeTemplate.setJudgeName("Scott");
+        allocatedJudgeTemplate.setCaseUrl("http://fake-url/cases/case-details/12345");
+
+        return allocatedJudgeTemplate;
     }
 
     public static List<Element<Representative>> buildRepresentatives() {

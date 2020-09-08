@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.launchdarkly.client.LDClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -16,9 +15,10 @@ import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
-import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -26,11 +26,12 @@ import java.util.List;
 import static java.util.Map.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
+import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
@@ -43,13 +44,10 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
 
     @MockBean
-    private UserDetailsService userDetailsService;
+    private IdamClient idamClient;
 
     @MockBean
     private FeeService feeService;
-
-    @MockBean
-    private LDClient ldClient;
 
     @MockBean
     private CaseSubmissionService caseSubmissionService;
@@ -65,7 +63,7 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
 
     @BeforeEach
     void mocking() {
-        given(userDetailsService.getUserName()).willReturn("Emma Taylor");
+        given(idamClient.getUserInfo(USER_AUTH_TOKEN)).willReturn(UserInfo.builder().name("Emma Taylor").build());
         given(caseSubmissionService.generateSubmittedFormPDF(any(), eq(true)))
             .willReturn(document);
         given(uploadDocumentService.uploadPDF(DOCUMENT_CONTENT, "2313.pdf"))
@@ -85,17 +83,17 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldAddAmountToPayFieldWhenFeatureToggleIsTrue() {
+    void shouldAddAmountToPayFieldToAnOpenedCase() {
         Orders orders = Orders.builder().orderType(List.of(OrderType.CARE_ORDER)).build();
         FeesData feesData = FeesData.builder()
             .totalAmount(BigDecimal.valueOf(123))
             .build();
 
-        givenPaymentToggle(true);
         given(feeService.getFeesDataForOrders(orders)).willReturn(feesData);
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
             .data(of("orders", orders))
+            .state(OPEN.getValue())
             .build());
 
         assertThat(response.getData()).containsEntry("amountToPay", "12300");
@@ -103,24 +101,12 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldNotAddAmountToPayFieldWhenFeatureToggleIsFalse() {
-        givenPaymentToggle(false);
-
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
-            .data(of())
-            .build());
-
-        verify(feeService, never()).getFeesDataForOrders(any());
-        assertThat(response.getData()).doesNotContainKeys("amountToPay", "displayAmountToPay");
-    }
-
-    @Test
-    void shouldNotDisplayAmountToPayFieldWhenErrorIsThrown() {
-        givenPaymentToggle(true);
+    void shouldNotDisplayAmountToPayFieldToAnOpenedCaseWhenErrorIsThrown() {
         given(feeService.getFeesDataForOrders(any())).willThrow(new FeeRegisterException(300, "duplicate", null));
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
             .data(of())
+            .state(OPEN.getValue())
             .build());
 
         assertThat(response.getData()).doesNotContainKey("amountToPay");
@@ -128,7 +114,20 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
     }
 
     @Test
+    void shouldNotDisplayAmountToPayFieldWhenCaseIsInReturnedState() {
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
+            .data(of())
+            .state(RETURNED.getValue())
+            .build());
+
+        verify(feeService, never()).getFeesDataForOrders(any());
+        assertThat(response.getData()).doesNotContainKeys("amountToPay", "displayAmountToPay");
+    }
+
+    @Test
     void shouldHaveDraftApplicationDocumentInResponse() {
+        given(feeService.getFeesDataForOrders(any())).willThrow(new FeeRegisterException(300, "duplicate", null));
+
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(populatedCaseDetails());
 
         assertThat(callbackResponse.getData())
@@ -137,10 +136,6 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
                     "document_filename", "file.pdf",
                     "document_binary_url",
                     "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary"));
-    }
-
-    private void givenPaymentToggle(boolean enabled) {
-        given(ldClient.boolVariation(eq("FNP"), any(), anyBoolean())).willReturn(enabled);
     }
 
     @Nested

@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
 import com.google.common.base.Strings;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import static java.lang.String.format;
 import static java.time.LocalDate.now;
@@ -14,8 +14,8 @@ public class SubmittedFormFilenameHelper {
         // NO-OP
     }
 
-    public static String buildFileName(final CaseDetails caseDetails, final boolean isDraft) {
-        String caseName = Strings.nullToEmpty((String) caseDetails.getData().get("caseName")).trim();
+    public static String buildFileName(final CaseData caseData, final boolean isDraft) {
+        String caseName = Strings.nullToEmpty(caseData.getCaseName()).trim();
 
         if (isDraft) {
             return format("draft_%s", format(C110A.getDocumentTitle(),
@@ -26,6 +26,6 @@ public class SubmittedFormFilenameHelper {
             return caseName.replaceAll("\\s", "_") + ".pdf";
         }
 
-        return caseDetails.getId() + ".pdf";
+        return caseData.getId() + ".pdf";
     }
 }

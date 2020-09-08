@@ -5,6 +5,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.DocumentStatus;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
@@ -19,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.Directions;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.NextHearing;
-import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -81,6 +82,7 @@ public class CaseDataGeneratorHelper {
 
     public static HearingBooking createHearingBooking(LocalDateTime startDate, LocalDateTime endDate) {
         return HearingBooking.builder()
+            .type(HearingType.CASE_MANAGEMENT)
             .startDate(startDate)
             .venue("Venue")
             .endDate(endDate)
@@ -89,6 +91,21 @@ public class CaseDataGeneratorHelper {
                 .judgeLastName("Law")
                 .legalAdvisorName("Peter Parker")
                 .build())
+            .noticeOfHearing(DocumentReference.builder()
+                .filename("fileName")
+                .binaryUrl("binary_url")
+                .url("www.url.com")
+                .build())
+            .build();
+    }
+
+    public static HearingBooking createHearingBooking(LocalDateTime startDate,
+                                                      LocalDateTime endDate,
+                                                      HearingType hearingType,
+                                                      UUID cmoID) {
+        return createHearingBooking(startDate, endDate).toBuilder()
+            .type(hearingType)
+            .caseManagementOrderId(cmoID)
             .build();
     }
 
@@ -161,8 +178,8 @@ public class CaseDataGeneratorHelper {
         );
     }
 
-    public static Order createStandardDirectionOrders(LocalDateTime today, OrderStatus status) {
-        return Order.builder()
+    public static StandardDirectionOrder createStandardDirectionOrders(LocalDateTime today, OrderStatus status) {
+        return StandardDirectionOrder.builder()
             .dateOfIssue("29 November 2019")
             .directions(wrapElements(Direction.builder()
                     .directionType("Test SDO type 1")
@@ -230,58 +247,48 @@ public class CaseDataGeneratorHelper {
                 .telephone(TELEPHONE)
                 .address(address())
                 .build())
-            .additionalOthers(ImmutableList.of(
-                Element.<Other>builder()
-                    .value(Other.builder()
-                        .birthPlace("Craigavon")
-                        .DOB("02/02/05")
-                        .gender("Female")
-                        .name("Sarah Simpson")
-                        .telephone(TELEPHONE)
-                        .address(address())
-                        .build())
-                    .build()
-            )).build();
+            .additionalOthers(ElementUtils.wrapElements(Other.builder()
+                .birthPlace("Craigavon")
+                .DOB("02/02/05")
+                .gender("Female")
+                .name("Sarah Simpson")
+                .telephone(TELEPHONE)
+                .address(address())
+                .build()))
+            .build();
     }
 
     public static List<Element<GeneratedOrder>> createOrders(DocumentReference lastOrderDocumentReference) {
         final String orderType = "Blank order (C21)";
-        return ImmutableList.of(
-            Element.<GeneratedOrder>builder()
-                .value(GeneratedOrder.builder()
-                    .type(orderType)
-                    .title("Example Order")
-                    .details(
-                        "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
-                    .date(formatLocalDateTimeBaseUsingFormat(LocalDateTime.now().plusDays(57), TIME_DATE))
-                    .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Peter Parker",
-                        "Judy", null, HER_HONOUR_JUDGE))
-                    .build())
+        return ElementUtils.wrapElements(
+            GeneratedOrder.builder()
+                .type(orderType)
+                .title("Example Order")
+                .details(
+                    "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
+                .date(formatLocalDateTimeBaseUsingFormat(LocalDateTime.now().plusDays(57), TIME_DATE))
+                .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Peter Parker",
+                    "Judy", null, HER_HONOUR_JUDGE))
                 .build(),
-            Element.<GeneratedOrder>builder()
-                .id(UUID.randomUUID())
-                .value(GeneratedOrder.builder()
-                    .type(orderType)
-                    .title("Winter is here")
-                    .details("Westeros")
-                    .date(formatLocalDateTimeBaseUsingFormat(LocalDateTime.now().plusDays(59), TIME_DATE))
-                    .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Baratheon",
-                        "Tyrion Lannister", "Lannister", HIS_HONOUR_JUDGE))
-                    .document(createDocumentReference(randomUUID().toString()))
-                    .build())
+            GeneratedOrder.builder()
+                .type(orderType)
+                .title("Winter is here")
+                .details("Westeros")
+                .date(formatLocalDateTimeBaseUsingFormat(LocalDateTime.now().plusDays(59), TIME_DATE))
+                .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Baratheon",
+                    "Tyrion Lannister", "Lannister", HIS_HONOUR_JUDGE))
+                .document(createDocumentReference(randomUUID().toString()))
                 .build(),
-            Element.<GeneratedOrder>builder()
-                .id(UUID.randomUUID())
-                .value(GeneratedOrder.builder()
-                    .type(orderType)
-                    .title("Black Sails")
-                    .details("Long John Silver")
-                    .date(formatLocalDateTimeBaseUsingFormat(LocalDateTime.now().plusDays(60), TIME_DATE))
-                    .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Edward Teach",
-                        "Captain Flint", "Scott", DEPUTY_DISTRICT_JUDGE))
-                    .document(lastOrderDocumentReference)
-                    .build())
-                .build());
+            GeneratedOrder.builder()
+                .type(orderType)
+                .title("Black Sails")
+                .details("Long John Silver")
+                .date(formatLocalDateTimeBaseUsingFormat(LocalDateTime.now().plusDays(60), TIME_DATE))
+                .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Edward Teach",
+                    "Captain Flint", "Scott", DEPUTY_DISTRICT_JUDGE))
+                .document(lastOrderDocumentReference)
+                .build()
+        );
     }
 
     public static List<Element<HearingBooking>> createHearingBookings(final LocalDateTime startDate,

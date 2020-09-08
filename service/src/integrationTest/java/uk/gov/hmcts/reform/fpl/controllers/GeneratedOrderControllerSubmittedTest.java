@@ -25,9 +25,9 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
@@ -38,13 +38,13 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespon
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.buildRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedCaseUrlParameters;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(GeneratedOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
 class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
-    private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
     private static final String DIGITAL_SERVED_REPRESENTATIVE_ADDRESS = "paul@example.com";
     private static final String EMAIL_SERVED_REPRESENTATIVE_ADDRESS = "bill@example.com";
@@ -52,8 +52,8 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
     private static final String CTSC_EMAIL_ADDRESS = "FamilyPublicLaw+ctsc@gmail.com";
     private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
     private static final String CASE_ID = "12345";
-    private static final String SEND_DOCUMENT_EVENT = "internal-change:SEND_DOCUMENT";
-    private static final byte[] PDF = {1, 2, 3, 4, 5};
+    private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
+    private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 
     private final DocumentReference lastOrderDocumentReference = DocumentReference.builder()
         .filename("C21 3.pdf")
@@ -79,7 +79,7 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
     @BeforeEach
     void init() {
         dateIn3Months = now().plusMonths(3);
-        given(documentDownloadService.downloadDocument(anyString())).willReturn(PDF);
+        given(documentDownloadService.downloadDocument(anyString())).willReturn(DOCUMENT_CONTENT);
     }
 
     @AfterEach
@@ -101,27 +101,26 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES),
             eq(EMAIL_SERVED_REPRESENTATIVE_ADDRESS),
             eqJson(getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true)),
-            eq(CASE_ID));
+            eq(NOTIFICATION_REFERENCE));
 
         verify(notificationClient).sendEmail(
             eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
             eq(DIGITAL_SERVED_REPRESENTATIVE_ADDRESS),
             eqJson(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true)),
-            eq(CASE_ID));
+            eq(NOTIFICATION_REFERENCE));
 
         verify(notificationClient).sendEmail(
             eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
             eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             eqJson(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true)),
-            eq(CASE_ID));
+            eq(NOTIFICATION_REFERENCE));
 
         verify(notificationClient).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
             eq(ADMIN_EMAIL_ADDRESS),
             eqJson(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true)),
-            eq(CASE_ID));
+            eq(NOTIFICATION_REFERENCE));
 
-        verifyZeroInteractions(notificationClient);
         verifySendDocumentEventTriggered();
     }
 
@@ -136,7 +135,7 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
             eq(CTSC_EMAIL_ADDRESS),
             eqJson(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true)),
-            eq(CASE_ID));
+            eq(NOTIFICATION_REFERENCE));
 
         verify(notificationClient, never()).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
@@ -159,7 +158,7 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
     private ImmutableMap.Builder<String, Object> getCommonCaseData() {
         Map<String, Object> caseData = Map.of(
             "orderCollection", createOrders(lastOrderDocumentReference),
-            "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
+            "caseLocalAuthority", DEFAULT_LA,
             "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER,
             "respondents1", createRespondents(),
             "hearingDetails", createHearingBookings(dateIn3Months, dateIn3Months.plusHours(4))

@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisTemplateDataGeneration;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 import uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper;
@@ -29,7 +30,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 public class NoticeOfProceedingsTemplateDataGenerationService
     extends DocmosisTemplateDataGeneration<DocmosisNoticeOfProceeding> {
 
-    private final HearingBookingService hearingBookingService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final HearingVenueLookUpService hearingVenueLookUpService;
     private final CaseDataExtractionService caseDataExtractionService;
@@ -38,8 +38,7 @@ public class NoticeOfProceedingsTemplateDataGenerationService
     @Override
     public DocmosisNoticeOfProceeding getTemplateData(CaseData caseData) {
 
-        HearingBooking prioritisedHearingBooking = hearingBookingService
-            .getMostUrgentHearingBooking(caseData.getHearingDetails());
+        HearingBooking prioritisedHearingBooking = caseData.getMostUrgentHearingBookingAfter(time.now());
         HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(prioritisedHearingBooking);
 
         return DocmosisNoticeOfProceeding.builder()

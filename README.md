@@ -97,6 +97,10 @@ PARALLEL_CHUNKS=1 yarn test --grep '@create-case-with-mandatory-sections-only'
 
 Note: Case number will be printed to the console while tests run e.g. `Application draft #1571-7550-7484-8512 has been created`.
 
+## Running E2E against remote environment
+```$bash
+proxy="http://proxyout.reform.hmcts.net:8080" URL="https://manage-case.aat.platform.hmcts.net" IDAM_API_URL="https://idam-api.aat.platform.hmcts.net" CASE_SERVICE_URL="http://fpl-case-service-aat.service.core-compute-aat.internal" DM_STORE_URL="http://dm-store-aat.service.core-compute-aat.internal" yarn test
+```
 ## Service:
 See [fpl-service](service/README.md) for more information.
 
@@ -104,6 +108,13 @@ See [fpl-service](service/README.md) for more information.
 Some external dependencies need to be stubbed (i.e. professional reference data). 
 Stubbing is configured in fpla-docker repository
 
+## App insight (optional)
+To connect local environment to azure app insight: 
+- set APPINSIGHTS_INSTRUMENTATIONKEY env variable (value can be found in env vault under name AppInsightsInstrumentationKey) 
+- add env variable JAVA_TOOL_OPTIONS=-javaagent:<PATH_TO_PROJECT>/fpl-ccd-configuration/lib/applicationinsights-agent-2.6.1.jar
+
+To connect preview env to azure app insight:
+- add AppInsightsInstrumentationKey under java.keyVaults.fpla.secrets in charts/fpl-case-service/values.preview.template.yaml
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.

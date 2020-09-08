@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Others;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
@@ -28,10 +29,18 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEM
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.enums.Event.DRAFT_CASE_MANAGEMENT_ORDER;
 
+/**
+ * Manages the endpoints for the old draft-cmo event. To be removed once we have fully migrated away from the old CMO
+ * stuff.
+ *
+ * @deprecated to be replaced in FPLA-1915
+ */
 @Api
 @RestController
 @RequestMapping("/callback/draft-cmo")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@Deprecated(since = "FPLA-1915")
+@SuppressWarnings("java:S1133") // Remove once deprecations dealt with
 public class DraftCMOController {
     private final ObjectMapper mapper;
     private final CaseManagementOrderService caseManagementOrderService;
@@ -51,9 +60,9 @@ public class DraftCMOController {
             caseDetails.getData().putAll(caseManagementOrder.getCCDFields());
         }
 
-        caseDetails.getData().put(HEARING_DATE_LIST.getKey(),
-            caseManagementOrderService.getHearingDateDynamicList(caseData, caseManagementOrder));
+        DynamicList hearingList = caseManagementOrderService.getHearingDateDynamicList(caseData, caseManagementOrder);
 
+        caseDetails.getData().put(HEARING_DATE_LIST.getKey(), hearingList);
         caseDetails.getData().put("respondents_label", getRespondentsLabel(caseData));
         caseDetails.getData().put("others_label", getOthersLabel(caseData));
 
@@ -103,7 +112,7 @@ public class DraftCMOController {
             callbackRequest.getCaseDetails().getJurisdiction(),
             callbackRequest.getCaseDetails().getCaseTypeId(),
             callbackRequest.getCaseDetails().getId(),
-            "internal-change:CMO_PROGRESSION"
+            "internal-change-CMO_PROGRESSION"
         );
     }
 

@@ -25,6 +25,10 @@ module.exports = {
     judgeAndLegalAdvisor.enterJudgeLastName(judgeLastName, 'noticeOfProceedings_');
   },
 
+  enterJudgeEmailAddress(judgeEmailAddress) {
+    judgeAndLegalAdvisor.enterJudgeEmailAddress(judgeEmailAddress, 'noticeOfProceedings_');
+  },
+
   enterLegalAdvisorName(legalAdvisorName) {
     judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName, 'noticeOfProceedings_');
   },

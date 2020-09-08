@@ -75,7 +75,8 @@ public class PrepareDirectionsForUsersService {
                     caseDetails.getData().put(assignee.toCustomDirectionField(), cafcassDirections);
 
                     break;
-                default: break;
+                default:
+                    break;
             }
         });
     }
@@ -151,9 +152,9 @@ public class PrepareDirectionsForUsersService {
      * @param directions  a list of directions.
      * @param caseDetails the caseDetails to be updated.
      */
-    public void addAssigneeDirectionKeyValuePairsToCaseData(DirectionAssignee assignee,
-                                                            List<Element<Direction>> directions,
-                                                            CaseDetails caseDetails) {
+    public void addAssigneeDirectionsToCaseDetails(DirectionAssignee assignee,
+                                                   List<Element<Direction>> directions,
+                                                   CaseDetails caseDetails) {
         List<Element<Direction>> directionsWithResponse = extractPartyResponse(assignee, directions);
 
         if (assignee.equals(COURT)) {

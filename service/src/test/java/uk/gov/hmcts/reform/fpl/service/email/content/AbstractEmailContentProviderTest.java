@@ -7,6 +7,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
+import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -23,7 +24,7 @@ public abstract class AbstractEmailContentProviderTest {
     static final String UI_URL = "http://fake-url";
     static final String COURT_NAME = "Family Court";
 
-    String caseUrl(String caseId) {
+    protected String caseUrl(String caseId) {
         return formatCaseUrl(UI_URL, Long.valueOf(caseId));
     }
 
@@ -32,6 +33,9 @@ public abstract class AbstractEmailContentProviderTest {
 
     @MockBean
     FeatureToggleService featureToggleService;
+
+    @MockBean
+    DocumentDownloadService documentDownloadService;
 
     @BeforeEach
     void initCaseUrlService() {

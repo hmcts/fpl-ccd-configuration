@@ -57,9 +57,9 @@
     "ID": "C2DocumentBundleComplexType",
     "CaseEventID": "uploadC2",
     "CaseFieldID": "temporaryC2Document",
-    "ListElementCode": "document",
-    "EventElementLabel": "Upload a file",
-    "FieldDisplayOrder": 6,
+    "ListElementCode": "description",
+    "EventElementLabel": "Notes",
+    "FieldDisplayOrder": 7,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -67,9 +67,9 @@
     "ID": "C2DocumentBundleComplexType",
     "CaseEventID": "uploadC2",
     "CaseFieldID": "temporaryC2Document",
-    "ListElementCode": "description",
-    "EventElementLabel": "Description",
-    "FieldDisplayOrder": 7,
+    "ListElementCode": "document",
+    "EventElementLabel": "Upload a file",
+    "FieldDisplayOrder": 6,
     "DisplayContext": "MANDATORY"
   }
 ]

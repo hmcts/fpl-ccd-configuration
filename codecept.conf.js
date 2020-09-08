@@ -38,6 +38,7 @@ exports.config = {
     loginPage: './e2e/pages/login.page.js',
     caseListPage: './e2e/pages/caseList.page.js',
     caseViewPage: './e2e/pages/caseView.page.js',
+    paymentHistoryPage: './e2e/pages/paymentHistory.page.js',
     eventSummaryPage: './e2e/pages/eventSummary.page.js',
     openApplicationEventPage: './e2e/pages/events/openApplicationEvent.page.js',
     deleteApplicationEventPage: './e2e/pages/events/deleteApplicationEvent.page.js',
@@ -69,7 +70,6 @@ exports.config = {
     uploadC2DocumentsEventPage: './e2e/pages/events/uploadC2DocumentsEvent.page.js',
     draftStandardDirectionsEventPage: './e2e/pages/events/draftStandardDirectionsEvent.page.js',
     createOrderEventPage: './e2e/pages/events/createOrderEvent.page.js',
-    draftCaseManagementOrderEventPage: './e2e/pages/events/draftCaseManagementOrderEvent.page.js',
     complyWithDirectionsEventPage: './e2e/pages/events/complyWithDirectionsEvent.page.js',
     complyOnBehalfOfOthersEventPage: './e2e/pages/events/complyOnBehalfOfOthersEvent.page.js',
     actionCaseManagementOrderEventPage: './e2e/pages/events/actionCaseManagementOrderEvent.page.js',
@@ -80,6 +80,11 @@ exports.config = {
     addNoteEventPage: './e2e/pages/events/addNoteEvent.page.js',
     addExpertReportEventPage: './e2e/pages/events/addExpertReportEvent.page.js',
     addExtend26WeekTimelineEventPage: './e2e/pages/events/addExtend26WeekTimelineEvent.page.js',
+    closeTheCaseEventPage: './e2e/pages/events/closeTheCase.page.js',
+    returnApplicationEventPage: './e2e/pages/events/returnApplicationEvent.page.js',
+    uploadCaseManagementOrderEventPage: './e2e/pages/events/uploadCaseManagementOrderEvent.page.js',
+    reviewAgreedCaseManagementOrderEventPage: './e2e/pages/events/reviewAgreedCaseManagementOrderEvent.page.js',
+    removeOrderEventPage: './e2e/pages/events/removeOrderEvent.page.js',
   },
   plugins: {
     autoDelay: {

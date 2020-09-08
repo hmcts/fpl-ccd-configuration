@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -47,19 +46,19 @@ import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDo
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class})
+@ContextConfiguration(classes = {CaseConverter.class, JacksonAutoConfiguration.class})
 class CaseManagementOrderProgressionServiceTest {
     private static final LocalDateTime NOW = LocalDateTime.now();
     private static final UUID UUID = randomUUID();
+
+    @Autowired
+    private CaseConverter caseConverter;
 
     @Autowired
     private ObjectMapper mapper;
 
     @Mock
     private ApplicationEventPublisher applicationEventPublisher;
-
-    @Mock
-    private RequestData requestData;
 
     private CaseManagementOrderProgressionService service;
 
@@ -68,7 +67,7 @@ class CaseManagementOrderProgressionServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new CaseManagementOrderProgressionService(mapper, applicationEventPublisher, requestData,
+        service = new CaseManagementOrderProgressionService(caseConverter, applicationEventPublisher,
             documentDownloadService);
     }
 
@@ -81,7 +80,7 @@ class CaseManagementOrderProgressionServiceTest {
 
         service.handleCaseManagementOrderProgression(caseDetails, DRAFT_CASE_MANAGEMENT_ORDER.getId());
 
-        CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData updatedCaseData = caseConverter.convert(caseDetails);
 
         assertThat(updatedCaseData.getCaseManagementOrder()).isEqualTo(caseData.getCaseManagementOrder().toBuilder()
             .status(SEND_TO_JUDGE).build());
@@ -96,7 +95,7 @@ class CaseManagementOrderProgressionServiceTest {
 
         service.handleCaseManagementOrderProgression(caseDetails, DRAFT_CASE_MANAGEMENT_ORDER.getId());
 
-        CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData updatedCaseData = caseConverter.convert(caseDetails);
 
         assertThat(updatedCaseData.getCaseManagementOrder()).isEqualTo(caseData.getCaseManagementOrder());
         assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_SHARED.getKey())).isNotNull();
@@ -113,7 +112,7 @@ class CaseManagementOrderProgressionServiceTest {
 
         service.handleCaseManagementOrderProgression(caseDetails, DRAFT_CASE_MANAGEMENT_ORDER.getId());
 
-        CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData updatedCaseData = caseConverter.convert(caseDetails);
 
         assertThat(updatedCaseData.getCaseManagementOrder()).isEqualTo(caseData.getCaseManagementOrder());
         assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_SHARED.getKey())).isNull();
@@ -129,7 +128,7 @@ class CaseManagementOrderProgressionServiceTest {
 
         service.handleCaseManagementOrderProgression(caseDetails, ACTION_CASE_MANAGEMENT_ORDER.getId());
 
-        CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData updatedCaseData = caseConverter.convert(caseDetails);
 
         assertThat(updatedCaseData.getServedCaseManagementOrders()).hasSize(1);
         assertThat(updatedCaseData.getServedCaseManagementOrders().get(0).getValue())
@@ -150,7 +149,7 @@ class CaseManagementOrderProgressionServiceTest {
 
         service.handleCaseManagementOrderProgression(caseDetails, ACTION_CASE_MANAGEMENT_ORDER.getId());
 
-        CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData updatedCaseData = caseConverter.convert(caseDetails);
 
         assertThat(updatedCaseData.getServedCaseManagementOrders()).hasSize(2);
         assertThat(updatedCaseData.getServedCaseManagementOrders().get(0).getValue())
@@ -165,7 +164,8 @@ class CaseManagementOrderProgressionServiceTest {
 
         service.handleCaseManagementOrderProgression(caseDetails, ACTION_CASE_MANAGEMENT_ORDER.getId());
 
-        CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData updatedCaseData = caseConverter.convert(caseDetails);
+        ;
 
         assertThat(updatedCaseData.getCaseManagementOrder())
             .isEqualTo(caseData.getCaseManagementOrder().toBuilder().status(CMOStatus.SELF_REVIEW).build());
@@ -180,7 +180,8 @@ class CaseManagementOrderProgressionServiceTest {
 
         service.handleCaseManagementOrderProgression(caseDetails, ACTION_CASE_MANAGEMENT_ORDER.getId());
 
-        CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData updatedCaseData = caseConverter.convert(caseDetails);
+        ;
 
         assertThat(updatedCaseData.getCaseManagementOrder()).isEqualTo(caseData.getCaseManagementOrder());
         assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey())).isNull();

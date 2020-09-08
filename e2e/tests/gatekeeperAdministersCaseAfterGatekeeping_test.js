@@ -24,6 +24,26 @@ Scenario('Gatekeeper notifies another gatekeeper with a link to the case', async
   I.seeEventSubmissionConfirmation(config.administrationActions.notifyGatekeeper);
 });
 
+Scenario('Gatekeeper adds allocated judge', async (I, caseViewPage, allocatedJudgeEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
+  await allocatedJudgeEventPage.enterAllocatedJudge('Moley', 'moley@example.com');
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.allocatedJudge);
+  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+  I.seeInTab(['Allocated Judge', 'Judge or magistrate\'s title'], 'Her Honour Judge');
+  I.seeInTab(['Allocated Judge', 'Last name'], 'Moley');
+  I.seeInTab(['Allocated Judge', 'Email Address'], 'moley@example.com');
+
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+
+  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+  I.seeInTab(['Allocated Judge', 'Judge or magistrate\'s title'], 'Her Honour Judge');
+  I.seeInTab(['Allocated Judge', 'Last name'], 'Moley');
+  I.dontSeeInTab(['Allocated Judge', 'Email Address']);
+
+  await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
+});
+
 Scenario('Gatekeeper make allocation decision based on proposal', async (I, caseViewPage, enterAllocationDecisionEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterAllocationDecision);
   enterAllocationDecisionEventPage.selectCorrectLevelOfJudge('Yes');
@@ -49,12 +69,16 @@ Scenario('Gatekeeper enters hearing details and submits', async (I, caseViewPage
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);
   await addHearingBookingDetailsEventPage.enterJudge(hearingDetails[1].judgeAndLegalAdvisor);
   await addHearingBookingDetailsEventPage.enterLegalAdvisor(hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
-  await I.completeEvent('Save and continue', {summary: 'summary', description: 'description'});
+  await I.retryUntilExists(() => I.click('Continue'), '#newHearingSelector_newHearingSelector');
+  addHearingBookingDetailsEventPage.sendNoticeOfHearing('No');
+  addHearingBookingDetailsEventPage.sendNoticeOfHearing('No', 1);
+  await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.addHearingBookingDetails);
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
 
   let startDate = dateToString(hearingDetails[0].startDate);
   let endDate = dateToString(hearingDetails[0].endDate);
+
   I.seeInTab(['Hearing 1', 'Type of hearing'], hearingDetails[0].caseManagement);
   I.seeInTab(['Hearing 1', 'Venue'], hearingDetails[0].venue);
   I.seeInTab(['Hearing 1', 'Start date and time'], dateFormat(startDate, 'd mmm yyyy, h:MM:ss TT'));
@@ -124,9 +148,7 @@ Scenario('Gatekeeper submits final version of standard directions', async (I, ca
     config.administrationActions.amendRespondents,
     config.administrationActions.amendOther,
     config.administrationActions.amendInternationalElement,
-    config.administrationActions.amendOtherProceedings,
     config.administrationActions.amendAttendingHearing,
-    config.applicationActions.uploadDocuments,
   ]);
   caseViewPage.checkActionsAreNotAvailable([
     config.applicationActions.enterAllocationDecision,

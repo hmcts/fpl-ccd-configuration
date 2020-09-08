@@ -8,12 +8,14 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -41,13 +43,16 @@ public class DocumentSenderService {
         List<SentDocument> sentDocuments = new ArrayList<>();
         byte[] mainDocumentBinary = documentDownloadService.downloadDocument(mainDocument.getBinaryUrl());
         var mainDocumentCopy = uploadDocument(mainDocumentBinary, mainDocument.getFilename());
+        String mainDocumentEncoded = Base64.getEncoder().encodeToString(mainDocumentBinary);
         for (Representative representative : representativesServedByPost) {
             byte[] coverDocument = docmosisCoverDocumentsService.createCoverDocuments(familyManCaseNumber,
                 caseId,
                 representative).getBytes();
 
+            String coverDocumentEncoded = Base64.getEncoder().encodeToString(coverDocument);
+
             SendLetterResponse response = sendLetterApi.sendLetter(authTokenGenerator.generate(),
-                new LetterWithPdfsRequest(List.of(coverDocument, mainDocumentBinary),
+                new LetterWithPdfsRequest(List.of(coverDocumentEncoded, mainDocumentEncoded),
                     SEND_LETTER_TYPE,
                     Map.of("caseId", caseId, "documentName", mainDocument.getFilename())));
 

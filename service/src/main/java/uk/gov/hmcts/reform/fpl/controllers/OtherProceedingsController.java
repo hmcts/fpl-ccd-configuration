@@ -18,7 +18,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 @Api
 @RestController
 @RequestMapping("callback/enter-other-proceedings")
-public class OtherProceedingsController {
+public class OtherProceedingsController extends CallbackController {
     private static final String ERROR_MESSAGE = "You must say if there are any other proceedings relevant to this case";
 
     @SuppressWarnings("unchecked")
@@ -34,9 +34,6 @@ public class OtherProceedingsController {
             validationErrors.add(ERROR_MESSAGE);
         }
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .errors(validationErrors)
-            .build();
+        return respond(caseDetails, validationErrors);
     }
 }

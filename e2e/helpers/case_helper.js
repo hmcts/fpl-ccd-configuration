@@ -1,30 +1,32 @@
-const axios = require('axios');
+/*global process*/
 const config = require('../config');
+const fetch = require('node-fetch');
+const HttpsProxyAgent = require('https-proxy-agent');
+const HttpProxyAgent = require('http-proxy-agent');
 
-const normalizeCaseId = caseId => caseId.replace(/\D/g, '');
+const proxy = process.env.proxy || process.env.http_proxy || process.env.https_proxy;
+
+const getAgent = function (url) {
+  if(proxy){
+    return url.startsWith('https:') ? new HttpsProxyAgent(proxy) : new HttpProxyAgent(proxy);
+  }
+};
+
+const post = async (url, data, headers) => {
+  return fetch(url, {
+    method: 'POST',
+    body: JSON.stringify(data),
+    headers: headers,
+    agent: getAgent(url),
+  });
+};
+
 const documentData = filename => {
   return {
     document_url: `${config.dmStoreUrl}/documents/fakeUrl`,
     document_filename: filename,
     document_binary_url: `${config.dmStoreUrl}/documents/fakeUrl/binary`,
   };
-};
-
-const populateWithData = async (caseId, data) => {
-  updateCaseDataWithTodaysDateTime(data.caseData);
-  updateCaseDataWithDocuments(data.caseData);
-
-  const authToken = await getAuthToken();
-  await axios.post(`${config.fplServiceUrl}/testing-support/case/populate/${normalizeCaseId(caseId)}`, data,
-    {
-      headers: {
-        'Authorization': `Bearer ${authToken}`,
-      },
-    }).catch(e => {
-    console.log('Update case request failed:');
-    console.log(e.response.data);
-    throw e;
-  });
 };
 
 const updateCaseDataWithTodaysDateTime = (caseData) => {
@@ -44,21 +46,37 @@ const updateCaseDataWithDocuments = (caseData) => {
   if (caseData.standardDirectionOrder) {
     caseData.standardDirectionOrder.orderDoc = documentData('sdo.pdf');
   }
+  if (caseData.orderCollection) {
+    for (const order of caseData.orderCollection) {
+      order.value.document = documentData(order.value.type + '.pdf');
+    }
+  }
+};
+
+const populateWithData = async (caseId, data) => {
+  updateCaseDataWithTodaysDateTime(data.caseData);
+  updateCaseDataWithDocuments(data.caseData);
+
+  const authToken = await getAuthToken();
+  const url = `${config.fplServiceUrl}/testing-support/case/populate/${caseId}`;
+  const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${authToken}`,
+  };
+
+  return post(url, data, headers);
 };
 
 const getAuthToken = async () => {
-  const response = await axios.post(`${config.idamApiUrl}/loginUser?username=${config.systemUpdateUser.email}&password=${config.systemUpdateUser.password}`, {},
-    {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-    }).catch(e => {
-    console.log('IDAM call for auth token failed:');
-    console.log(e.response.data);
-    throw e;
-  });
+  const url = `${config.idamApiUrl}/loginUser?username=${config.systemUpdateUser.email}&password=${config.systemUpdateUser.password}`;
+  const data = {};
+  const headers = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+  };
 
-  return response.data.access_token;
+  return post(url, data, headers)
+    .then(response => response.json())
+    .then(data => data.access_token);
 };
 
 module.exports = {

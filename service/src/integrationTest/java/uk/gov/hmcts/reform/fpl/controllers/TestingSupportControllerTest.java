@@ -49,7 +49,7 @@ class TestingSupportControllerTest {
         Exception thrownException = assertThrows(NestedServletException.class,
             () -> makePostRequest(Map.of("state", "NOT_A_REAL_STATE")));
 
-        assertThat(thrownException.getMessage()).contains("No enum constant");
+        assertThat(thrownException.getMessage()).contains("Unable to map NOT_A_REAL_STATE to a case state");
     }
 
     @ParameterizedTest

@@ -1,12 +1,19 @@
 package uk.gov.hmcts.reform.fpl.config.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
@@ -18,10 +25,54 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListValueCode;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 public class ElementUtilsTest {
+
+    @Nested
+    @ExtendWith(SpringExtension.class)
+    @ContextConfiguration(classes = {JacksonAutoConfiguration.class})
+    class DynamicListValueCode {
+        // The default construction of the object mapper cannot convert dynamic lists due to not being able to find a
+        // creator
+        //    Cannot construct instance of `uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList` (no Creators,
+        //    like default constructor, exist): cannot deserialize from Object value (no delegate- or property-based
+        //    Creator)
+        // Using the mapper provided by the JacksonAutoConfiguration.class can though
+        @Autowired
+        private ObjectMapper mapper;
+
+        @Test
+        void shouldReturnUuidWhenStringIsPassed() {
+            UUID testId = UUID.randomUUID();
+            UUID valueCode = getDynamicListValueCode(testId.toString(), mapper);
+
+            assertThat(valueCode).isEqualTo(testId);
+        }
+
+        @Test
+        void shouldReturnUuidWhenMapRepresentationOfDynamicListPassed() {
+            UUID selectedID = UUID.randomUUID();
+
+            Map<String, Object> dynamicListAsMap = Map.of(
+                "value", Map.of(
+                    "code", selectedID.toString(),
+                    "label", "selected label"
+                ),
+                "list_items", List.of(Map.of(
+                    "code", selectedID.toString(),
+                    "label", "selected label"
+                    )
+                )
+            );
+
+            UUID valueCode = getDynamicListValueCode(dynamicListAsMap, mapper);
+
+            assertThat(valueCode).isEqualTo(selectedID);
+        }
+    }
 
     @Nested
     class AsDynamicList {
@@ -81,7 +132,7 @@ public class ElementUtilsTest {
         void shouldReturnPreselectedDynamicListOfAllElements() {
             UUID selectedElementId = element2.getId();
 
-            DynamicList elementsList = asDynamicList(List.of(element1, element2), selectedElementId, 
+            DynamicList elementsList = asDynamicList(List.of(element1, element2), selectedElementId,
                 labelProducer);
 
             DynamicList expectedElementsList = DynamicList.builder()
@@ -200,6 +251,27 @@ public class ElementUtilsTest {
         @Test
         void shouldWrapNonNullObjectsWithElement() {
             assertThat(wrapElements("First", null)).containsExactly(element1);
+        }
+    }
+
+    @Nested
+    class WrapListOfElements {
+
+        @Test
+        void shouldWrapAllObjectsWithElement() {
+            List<String> elements = List.of("First", "Second");
+            assertThat(wrapElements(elements)).extracting(Element::getValue).isEqualTo(elements);
+        }
+
+        @Test
+        void shouldReturnEmptyElementListIfNoObjectsToWrap() {
+            assertThat(wrapElements(emptyList())).isEmpty();
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenListOfElementsIsNull() {
+            List<String> elements = null;
+            assertThat(wrapElements(elements)).isEmpty();
         }
     }
 

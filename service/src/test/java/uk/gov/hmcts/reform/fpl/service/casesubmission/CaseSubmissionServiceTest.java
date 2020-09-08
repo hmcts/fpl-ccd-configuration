@@ -10,12 +10,14 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
-import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.CaseSubmissionGenerationService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -24,13 +26,13 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C110A;
 import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisCaseSubmission;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {CaseSubmissionService.class, JacksonAutoConfiguration.class})
-public class CaseSubmissionServiceTest {
-    private static final byte[] PDF = {1, 2, 3, 4, 5};
+class CaseSubmissionServiceTest {
+    private static final byte[] PDF = TestDataHelper.DOCUMENT_CONTENT;
 
     @MockBean
     private UploadDocumentService uploadDocumentService;
@@ -39,7 +41,7 @@ public class CaseSubmissionServiceTest {
     private DocmosisDocumentGeneratorService documentGeneratorService;
 
     @MockBean
-    private CaseSubmissionTemplateDataGenerationService templateDataGenerationService;
+    private CaseSubmissionGenerationService templateDataGenerationService;
 
     @Captor
     private ArgumentCaptor<DocmosisCaseSubmission> caseSubmissionDataCaptor;
@@ -47,7 +49,7 @@ public class CaseSubmissionServiceTest {
     @Autowired
     private CaseSubmissionService caseSubmissionService;
 
-    private CaseDetails givenCaseDetails;
+    private CaseData givenCaseData;
     private DocmosisCaseSubmission expectedCaseSubmission;
 
     @BeforeEach
@@ -60,12 +62,12 @@ public class CaseSubmissionServiceTest {
 
         given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document());
 
-        givenCaseDetails = populatedCaseDetails();
+        givenCaseData = populatedCaseData();
     }
 
     @Test
     void shouldGenerateCaseSubmissionDocumentSuccessfully() {
-        caseSubmissionService.generateSubmittedFormPDF(givenCaseDetails, false);
+        caseSubmissionService.generateSubmittedFormPDF(givenCaseData, false);
 
         verify(documentGeneratorService).generateDocmosisDocument(caseSubmissionDataCaptor.capture(), eq(C110A));
         DocmosisCaseSubmission caseSubmission = caseSubmissionDataCaptor.getValue();

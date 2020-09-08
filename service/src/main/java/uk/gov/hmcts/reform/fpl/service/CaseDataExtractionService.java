@@ -34,7 +34,6 @@ import static java.time.format.FormatStyle.LONG;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.StringUtils.lowerCase;
 import static org.apache.commons.lang3.StringUtils.trim;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Display.Due.BY;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
@@ -50,11 +49,11 @@ public class CaseDataExtractionService {
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final HearingVenueLookUpService hearingVenueLookUpService;
 
-    String getCourtName(String localAuthority) {
+    public String getCourtName(String localAuthority) {
         return hmctsCourtLookupConfiguration.getCourt(localAuthority).getName();
     }
 
-    String getHearingTime(HearingBooking hearingBooking) {
+    public String getHearingTime(HearingBooking hearingBooking) {
         String hearingTime;
         final LocalDateTime startDate = hearingBooking.getStartDate();
         final LocalDateTime endDate = hearingBooking.getEndDate();
@@ -70,10 +69,11 @@ public class CaseDataExtractionService {
         return hearingTime;
     }
 
-    Optional<String> getHearingDateIfHearingsOnSameDay(HearingBooking hearingBooking) {
+    public Optional<String> getHearingDateIfHearingsOnSameDay(HearingBooking hearingBooking) {
         String hearingDate = null;
 
-        // If they aren't on the same date return nothing
+        // If they are on same day, then return formatted date
+        // and If they aren't on the same day, then return nothing
         if (hearingBooking.hasDatesOnSameDay()) {
             hearingDate = formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG);
         }
@@ -81,55 +81,57 @@ public class CaseDataExtractionService {
         return Optional.ofNullable(hearingDate);
     }
 
-    List<DocmosisChild> getChildrenDetails(List<Element<Child>> children) {
+    public List<DocmosisChild> getChildrenDetails(List<Element<Child>> children) {
         return children.stream()
             .map(element -> element.getValue().getParty())
             .map(this::buildChild)
+            .distinct()
             .collect(toList());
     }
 
-    String getApplicantName(List<Element<Applicant>> applicants) {
+    public String getApplicantName(List<Element<Applicant>> applicants) {
         Applicant applicant = applicants.get(0).getValue();
         return ofNullable(applicant.getParty())
             .map(ApplicantParty::getOrganisationName)
             .orElse("");
     }
 
-    List<DocmosisRespondent> getRespondentsNameAndRelationship(List<Element<Respondent>> respondents) {
+    public List<DocmosisRespondent> getRespondentsNameAndRelationship(List<Element<Respondent>> respondents) {
         return respondents.stream()
             .map(element -> element.getValue().getParty())
             .map(this::buildRespondent)
             .collect(toList());
     }
 
-    String extractPrehearingAttendance(HearingBooking booking) {
+    public String extractPrehearingAttendance(HearingBooking booking) {
         LocalDateTime time = calculatePrehearingAttendance(booking.getStartDate());
 
         return booking.hasDatesOnSameDay() ? formatTime(time) : formatDateTimeWithYear(time);
     }
 
-    DocmosisJudgeAndLegalAdvisor getJudgeAndLegalAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+    public DocmosisJudgeAndLegalAdvisor getJudgeAndLegalAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
         return DocmosisJudgeAndLegalAdvisor.builder()
             .judgeTitleAndName(formatJudgeTitleAndName(judgeAndLegalAdvisor))
             .legalAdvisorName(getLegalAdvisorName(judgeAndLegalAdvisor))
             .build();
     }
 
-    DocmosisJudge getAllocatedJudge(JudgeAndLegalAdvisor allocatedJudge) {
+    public DocmosisJudge getAllocatedJudge(JudgeAndLegalAdvisor allocatedJudge) {
         return DocmosisJudge.builder()
             .judgeTitleAndName(formatJudgeTitleAndName(allocatedJudge))
             .build();
     }
 
-    DocmosisHearingBooking getHearingBookingData(HearingBooking hearingBooking, String value) {
+    public DocmosisHearingBooking getHearingBookingData(HearingBooking hearingBooking, String value) {
         return ofNullable(hearingBooking).map(this::buildHearingBooking).orElse(getHearingBookingWithDefault(value));
     }
 
-    DocmosisDirection.Builder baseDirection(Direction direction, int index) {
+    public DocmosisDirection.Builder baseDirection(Direction direction, int index) {
         return baseDirection(direction, index, emptyList());
     }
 
-    DocmosisDirection.Builder baseDirection(Direction direction, int index, List<DirectionConfiguration> config) {
+    public DocmosisDirection.Builder baseDirection(Direction direction, int index,
+                                                   List<DirectionConfiguration> config) {
         return DocmosisDirection.builder()
             .assignee(direction.getAssignee())
             .title(formatTitle(index, direction, config))
@@ -156,11 +158,17 @@ public class CaseDataExtractionService {
             }
         }
 
-        // create direction display title for docmosis in format "index. directionTitle (by / on) date"
-        return format("%d. %s %s %s", index, direction.getDirectionType(), lowerCase(config.due.toString()),
-            ofNullable(direction.getDateToBeCompletedBy())
-                .map(date -> formatLocalDateTimeBaseUsingFormat(date, config.pattern))
-                .orElse("unknown"));
+        // create direction display title for docmosis in format "index. directionTitle [(by / on) date]"
+        return format("%d. %s %s", index, direction.getDirectionType(),
+            formatTitleDate(direction.getDateToBeCompletedBy(), config.pattern, config.due)).trim();
+    }
+
+    private String formatTitleDate(LocalDateTime date, String pattern, Display.Due due) {
+        if (date == null) {
+            return "";
+        }
+
+        return due.toString().toLowerCase() + " " + formatLocalDateTimeBaseUsingFormat(date, pattern);
     }
 
     private DocmosisHearingBooking buildHearingBooking(HearingBooking hearing) {
@@ -198,7 +206,9 @@ public class CaseDataExtractionService {
         return DocmosisChild.builder()
             .name(child.getFullName())
             .gender(child.getGender())
-            .dateOfBirth(formatLocalDateToString(child.getDateOfBirth(), LONG))
+            .dateOfBirth(ofNullable(child.getDateOfBirth())
+                .map(dob -> formatLocalDateToString(child.getDateOfBirth(), LONG))
+                .orElse(null))
             .build();
     }
 

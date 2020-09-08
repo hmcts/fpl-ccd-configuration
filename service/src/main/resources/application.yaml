@@ -32,7 +32,7 @@ fees-register:
       event: general application
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: without-notice
+      keyword: ${FEES_REGISTER_C2_WITHOUT_NOTICE_KEYWORD:GeneralAppWithoutNotice}
       service: other
     C2_WITH_NOTICE:
       channel: default
@@ -114,7 +114,7 @@ scheduler:
   datasourceConf:
     name: schedulerDataSource
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${SCHEDULER_DB_HOST:localhost}:${SCHEDULER_DB_PORT:5050}/${SCHEDULER_DB_NAME:fpl_scheduler}
+    url: jdbc:postgresql://${SCHEDULER_DB_HOST:localhost}:${SCHEDULER_DB_PORT:5050}/${SCHEDULER_DB_NAME:fpl_scheduler}?gssEncMode=disable
     username: ${SCHEDULER_DB_USER:fpl_scheduler}
     password: ${SCHEDULER_DB_PASSWORD:fpl_scheduler}
   quartzConf:
@@ -137,6 +137,15 @@ scheduler:
 testing:
   support:
     enabled: ${TESTING_SUPPORT_ENABLED:false}
+
+# Actual survey will be injected through flux for prod
+survey:
+  url:
+    caseSubmission: 'https://www.smartsurvey.co.uk/s/preview/FamilyPublicLaw/44945E4F1F8CBEE3E10D79A4CED903'
+
+resources:
+  images:
+    baseUrl: 'https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/'
 ---
 
 spring:
@@ -208,17 +217,15 @@ manage-case:
     base:
       url: http://fake-url
 
-ccd:
-  ui:
-    base:
-      url: http://fake-url
-
 fees-register:
   api:
     url: http://fake-fees-register-api
 
+retry:
+  delay: 50
 
 fpl:
+  env: 'localhost'
   local_authority_codes_forbidden_case_submission: FPLA
   local_authority_email_to_code:
     mapping: 'example.gov.uk=>example'
@@ -246,16 +253,6 @@ robotics:
 security:
   anonymousPaths:
   authorisedServices:
-
-feature:
-  toggle:
-    robotics:
-      case-number:
-        notification:
-          enabled: true
-      support:
-        api:
-          enabled: true
 
 scheduler:
   enabled: false
@@ -344,11 +341,6 @@ manage-case:
     base:
       url: http://localhost:3333
 
-ccd:
-  ui:
-    base:
-      url: http://localhost:3451
-
 bankHolidays:
   api:
     url: http://localhost:8765
@@ -372,21 +364,12 @@ fpl:
     username: 'fpl-system-update@mailnesia.com'
     password: 'Password12'
   ctsc_inbox: 'FamilyPublicLaw+ctsc@gmail.com'
+  env: 'localhost'
 
 robotics:
   notification:
     sender: sender@example.com
     recipient: FamilyPublicLaw+robotics@gmail.com
-
-feature:
-  toggle:
-    robotics:
-      case-number:
-        notification:
-          enabled: true
-      support:
-        api:
-          enabled: true
 
 scheduler:
   enabled: false

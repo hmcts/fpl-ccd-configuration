@@ -33,10 +33,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -77,6 +79,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
     private static final String CTSC_ADMIN_INBOX = "FamilyPublicLaw+ctsc@gmail.com";
     private static final byte[] PDF = {1, 2, 3, 4, 5};
     private static final Long CASE_ID = 12345L;
+    private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 
     private LocalDateTime futureDate;
 
@@ -118,8 +121,8 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         assertResponseDataContainsExpectedFields(responseData, caseDataBefore);
 
         verify(notificationClient).sendEmail(
-            CMO_REJECTED_BY_JUDGE_TEMPLATE, LOCAL_AUTHORITY_EMAIL_ADDRESS,
-            expectedJudgeRejectedNotificationParameters(), CASE_ID.toString());
+            eq(CMO_REJECTED_BY_JUDGE_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            anyMap(), eq(NOTIFICATION_REFERENCE));
     }
 
     @Test
@@ -136,8 +139,8 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
         postAboutToSubmitEvent(buildCallbackRequest(caseDetails, ACTION_CASE_MANAGEMENT_ORDER));
 
         verify(notificationClient, never()).sendEmail(
-            CMO_REJECTED_BY_JUDGE_TEMPLATE, LOCAL_AUTHORITY_EMAIL_ADDRESS,
-            expectedJudgeRejectedNotificationParameters(), CASE_ID.toString());
+            eq(CMO_REJECTED_BY_JUDGE_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            anyMap(), eq(CASE_ID.toString()));
     }
 
     @Test
@@ -170,13 +173,13 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
             eq(CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE),
             eq("robert@example.com"),
             eqJson(expectedReviewByRepresentativesNotificationParameters(DIGITAL_SERVICE)),
-            eq(CASE_ID.toString()));
+            eq(NOTIFICATION_REFERENCE));
 
         verify(notificationClient).sendEmail(
             eq(CMO_READY_FOR_PARTY_REVIEW_NOTIFICATION_TEMPLATE),
             eq("charlie@example.com"),
             eqJson(expectedReviewByRepresentativesNotificationParameters(EMAIL)),
-            eq(CASE_ID.toString()));
+            eq(NOTIFICATION_REFERENCE));
     }
 
     @Test
@@ -189,11 +192,11 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
         verify(notificationClient).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, HMCTS_ADMIN_INBOX,
-            expectedCMODraftCompleteNotificationParameters(), CASE_ID.toString());
+            expectedCMODraftCompleteNotificationParameters(), NOTIFICATION_REFERENCE);
 
         verify(notificationClient, never()).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, CTSC_ADMIN_INBOX,
-            expectedCMODraftCompleteNotificationParameters(), CASE_ID.toString());
+            expectedCMODraftCompleteNotificationParameters(), NOTIFICATION_REFERENCE);
     }
 
     @Test
@@ -206,11 +209,11 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
         verify(notificationClient, never()).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, HMCTS_ADMIN_INBOX,
-            expectedCMODraftCompleteNotificationParameters(), CASE_ID.toString());
+            expectedCMODraftCompleteNotificationParameters(), NOTIFICATION_REFERENCE);
 
         verify(notificationClient).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, CTSC_ADMIN_INBOX,
-            expectedCMODraftCompleteNotificationParameters(), CASE_ID.toString());
+            expectedCMODraftCompleteNotificationParameters(), NOTIFICATION_REFERENCE);
     }
 
     @Test
@@ -241,7 +244,9 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
     private Map<String, Object> expectedReviewByRepresentativesNotificationParameters(
         RepresentativeServingPreferences servingPreference) {
         String fileContent = new String(Base64.encodeBase64(PDF), ISO_8859_1);
-        JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
+        JSONObject jsonFileObject = new JSONObject()
+            .put("file", fileContent)
+            .put("is_csv", false);
 
         final String hearingDate = formatLocalDateTimeBaseUsingFormat(futureDate, DATE_SHORT_MONTH);
         final String subjectLine = "Jones, SACCCCCCCC5676576567, hearing " + hearingDate;
@@ -255,12 +260,6 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
             .build();
     }
 
-    private Map<String, Object> expectedJudgeRejectedNotificationParameters() {
-        return new HashMap<>(commonNotificationParameters()
-            .put("requestedChanges", "Please make this change XYZ")
-            .build());
-    }
-
     private Map<String, Object> expectedCMODraftCompleteNotificationParameters() {
         return new HashMap<>(
             commonNotificationParameters()
@@ -272,7 +271,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
 
     private ImmutableMap.Builder<String, Object> commonNotificationParameters() {
         String hearingDate = formatLocalDateTimeBaseUsingFormat(futureDate, DATE_SHORT_MONTH);
-        String subjectLine = String.format("Jones, %s, hearing %s", FAMILY_MAN_CASE_NUMBER, hearingDate);
+        String subjectLine = format("Jones, %s, hearing %s", FAMILY_MAN_CASE_NUMBER, hearingDate);
 
         return ImmutableMap.<String, Object>builder()
             .put("subjectLineWithHearingDate", subjectLine)
@@ -289,6 +288,7 @@ class CaseManagementOrderProgressionControllerTest extends AbstractControllerTes
                 .type(actionType)
                 .build())
             .directions(emptyList())
+            .recitals(emptyList())
             .build();
     }
 

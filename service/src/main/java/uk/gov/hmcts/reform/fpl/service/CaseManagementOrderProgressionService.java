@@ -1,11 +1,9 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForJudgeReviewEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderReadyForPartyReviewEvent;
@@ -13,7 +11,6 @@ import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 import java.util.List;
 
@@ -26,22 +23,23 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.NEXT_HEARING
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SERVED_CASE_MANAGEMENT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.DRAFT_CASE_MANAGEMENT_ORDER;
 
+/**
+ * Service manging the flow of CMO objects between judge and LA.
+ *
+ * @deprecated to be removed with {@link CaseManagementOrder}
+ */
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@Deprecated(since = "FPLA-1915")
+@SuppressWarnings("java:S1133") // Remove once deprecations dealt with
 public class CaseManagementOrderProgressionService {
-    //TODO: better CCD ids for the below:
-    // sharedDraftCMODocument -> sharedCaseManagementOrderDocument
-    // caseManagementOrder -> draftCaseManagementOrder_LOCAL_AUTHORITY
-    // cmoToAction -> draftCaseManagementOrder_JUDICIARY
-    // requires changes in CCD definition. Decided not in scope of 24. FPLA-1478
 
-    private final ObjectMapper mapper;
+    private final CaseConverter caseConverter;
     private final ApplicationEventPublisher applicationEventPublisher;
-    private final RequestData requestData;
     private final DocumentDownloadService documentDownloadService;
 
     public void handleCaseManagementOrderProgression(CaseDetails caseDetails, String eventId) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = caseConverter.convert(caseDetails);
 
         if (DRAFT_CASE_MANAGEMENT_ORDER.getId().equals(eventId)) {
             progressDraftCaseManagementOrder(caseDetails, caseData.getCaseManagementOrder());
@@ -55,12 +53,12 @@ public class CaseManagementOrderProgressionService {
             case SEND_TO_JUDGE:
                 caseDetails.getData().put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
                 caseDetails.getData().remove(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey());
-                publishReadyForJudgeReviewEvent(caseDetails, requestData);
+                publishReadyForJudgeReviewEvent(caseDetails);
                 caseDetails.getData().remove(NEXT_HEARING_DATE_LIST.getKey());
                 break;
             case PARTIES_REVIEW:
                 caseDetails.getData().put(CASE_MANAGEMENT_ORDER_SHARED.getKey(), order.getOrderDoc());
-                publishReadyForPartyReviewEvent(caseDetails, requestData);
+                publishReadyForPartyReviewEvent(caseDetails);
                 break;
             case SELF_REVIEW:
                 caseDetails.getData().remove(CASE_MANAGEMENT_ORDER_SHARED.getKey());
@@ -84,7 +82,14 @@ public class CaseManagementOrderProgressionService {
                 caseDetails.getData().put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), updatedOrder);
                 caseDetails.getData().remove(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey());
 
-                sendChangesRequestedNotificationToLocalAuthority(caseDetails);
+                //Changes made so that updated CaseManagementOrderRejectedEvent can be reused in new controller
+                //This service is deprecated and will be deleted once new interim CMO is toggled on
+                uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder cmo =
+                    uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.builder()
+                        .order(updatedOrder.getOrderDoc())
+                        .hearing(updatedOrder.getHearingDate())
+                        .requestedChanges(updatedOrder.getAction().getChangeRequestedByJudge()).build();
+                sendChangesRequestedNotificationToLocalAuthority(caseDetails, cmo);
                 break;
             case SELF_REVIEW:
                 break;
@@ -101,25 +106,23 @@ public class CaseManagementOrderProgressionService {
         return orders;
     }
 
-    private void publishReadyForJudgeReviewEvent(CaseDetails caseDetails, RequestData requestData) {
-        CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
-
-        applicationEventPublisher.publishEvent(new CaseManagementOrderReadyForJudgeReviewEvent(callbackRequest,
-            requestData));
+    private void publishReadyForJudgeReviewEvent(CaseDetails caseDetails) {
+        CaseData caseData = caseConverter.convert(caseDetails);
+        applicationEventPublisher.publishEvent(new CaseManagementOrderReadyForJudgeReviewEvent(caseData));
     }
 
-    private void publishReadyForPartyReviewEvent(CaseDetails caseDetails, RequestData requestData) {
-        CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+    private void publishReadyForPartyReviewEvent(CaseDetails caseDetails) {
+        CaseData caseData = caseConverter.convert(caseDetails);
 
-        applicationEventPublisher.publishEvent(new CaseManagementOrderReadyForPartyReviewEvent(callbackRequest,
-            requestData,
+        applicationEventPublisher.publishEvent(new CaseManagementOrderReadyForPartyReviewEvent(caseData,
             documentDownloadService.downloadDocument(caseData.getSharedDraftCMODocument().getBinaryUrl())));
     }
 
-    private void sendChangesRequestedNotificationToLocalAuthority(CaseDetails caseDetails) {
+    @Deprecated
+    private void sendChangesRequestedNotificationToLocalAuthority(
+        CaseDetails caseDetails,
+        uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder cmo) {
         applicationEventPublisher.publishEvent(
-            new CaseManagementOrderRejectedEvent(CallbackRequest.builder().caseDetails(caseDetails).build(),
-                requestData));
+            new CaseManagementOrderRejectedEvent(caseConverter.convert(caseDetails), cmo));
     }
 }

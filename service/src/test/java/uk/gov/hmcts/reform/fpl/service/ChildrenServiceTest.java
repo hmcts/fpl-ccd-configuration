@@ -1,118 +1,315 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.Address;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
-import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
 
-@ExtendWith(SpringExtension.class)
 class ChildrenServiceTest {
 
     private final ChildrenService service = new ChildrenService();
 
     @Test
     void shouldBuildExpectedLabelWhenEmptyList() {
-        String label = service.getChildrenLabel(List.of());
+        String label = service.getChildrenLabel(List.of(), false);
         assertThat(label).isEqualTo("No children in the case");
     }
 
     @Test
     void shouldBuildExpectedLabelWhenPopulatedList() {
-        String label = service.getChildrenLabel(List.of(childWithConfidentialFields(randomUUID())));
+        String label = service.getChildrenLabel(List.of(childWithConfidentialFields(randomUUID())), false);
         assertThat(label).isEqualTo("Child 1: James\n");
     }
 
     @Test
-    void shouldPopulateCaseDataMapWithYesWhenThereAre2OrMoreChildren() {
-        List<Element<Child>> children = new ArrayList<>();
-        children.add(childWithConfidentialFields(randomUUID()));
-        children.add(childWithConfidentialFields(randomUUID()));
+    void shouldBuildExpectedLabelWhenPopulatedListAndFinalOrderIssuedOnChild() {
+        List<Element<Child>> children = List.of(childWithConfidentialFields(randomUUID()),
+            childWithFinalOrderIssued("Jack", "Hill"));
+        String label = service.getChildrenLabel(children, true);
+        assertThat(label).isEqualTo("Child 1: James\nChild 2: Jack Hill - Care order issued\n");
+    }
 
-        CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
-        service.addPageShowToCaseDetails(caseDetails, children);
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldReturnFalseWhenListEmptyOrNull(List<Element<Child>> list) {
+        boolean result = service.allChildrenHaveFinalOrder(list);
 
-        assertThat(caseDetails.getData()).extracting("pageShow").isEqualTo("Yes");
+        assertThat(result).isFalse();
     }
 
     @Test
-    void shouldPopulateCaseDataMapWithNoWhenThereIsOneChild() {
-        List<Element<Child>> children = new ArrayList<>();
-        children.add(childWithConfidentialFields(randomUUID()));
+    void shouldReturnFalseWhenAtLeastOneChildDoesNotHaveFinalOrder() {
+        List<Element<Child>> children = List.of(childWithFinalOrderIssued(), childWithoutFinalOrderIssued());
 
-        CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
-        service.addPageShowToCaseDetails(caseDetails, children);
+        boolean result = service.allChildrenHaveFinalOrder(children);
 
-        assertThat(caseDetails.getData()).extracting("pageShow").isEqualTo("No");
+        assertThat(result).isFalse();
     }
 
     @Test
-    void shouldPopulateCaseDataMapWithNoWhenThereIsEmptyList() {
-        List<Element<Child>> children = new ArrayList<>();
+    void shouldReturnTrueWhenAllChildrenHaveFinalOrder() {
+        List<Element<Child>> children = List.of(childWithFinalOrderIssued(), childWithFinalOrderIssued());
 
-        CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
-        service.addPageShowToCaseDetails(caseDetails, children);
+        boolean result = service.allChildrenHaveFinalOrder(children);
 
-        assertThat(caseDetails.getData()).extracting("pageShow").isEqualTo("No");
+        assertThat(result).isTrue();
     }
 
     @Test
     void shouldUpdateFinalOrderIssuedWhenAppliesToAllChildren() {
-        List<Element<Child>> result = service.updateFinalOrderIssued(List.of(testChild(), testChild()),
-            "Yes", null);
+        List<Element<Child>> result = service.updateFinalOrderIssued(CARE_ORDER, testChildren(), "Yes", null, null);
 
         assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
-            .containsExactly("Yes", "Yes");
+            .containsExactly("Yes", "Yes", "Yes");
+
+        assertThat(result).extracting(element -> element.getValue().getFinalOrderIssuedType())
+            .containsExactly("Care order", "Care order", "Care order");
     }
 
     @Test
     void shouldUpdateFinalOrderIssuedWhenAppliesToSelectedChildren() {
-        List<Element<Child>> children = List.of(testChild(), testChild(), testChild());
+        List<Element<Child>> children = testChildren();
 
-        ChildSelector childSelector = ChildSelector.builder()
-            .childCount("1")
+        Selector childSelector = Selector.builder()
+            .count("1")
             .selected(List.of(1))
             .build();
 
-        List<Element<Child>> result = service.updateFinalOrderIssued(children, "No", childSelector);
+        List<Element<Child>> result = service.updateFinalOrderIssued(CARE_ORDER,
+            children, "No", childSelector, null);
 
         assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
             .containsExactly("No", "Yes", "No");
+
+        assertThat(result).extracting(element -> element.getValue().getFinalOrderIssuedType())
+            .containsExactly(null, "Care order", null);
     }
 
     @Test
-    void shouldUpdateFinalOrderIssuedWhenAppliesToSelectedChildrenAndAlreadyIssuedForOtherChild() {
-        List<Element<Child>> children = List.of(childWithFinalOrderIssued("No"), childWithFinalOrderIssued("Yes"),
-            childWithFinalOrderIssued("No"), childWithFinalOrderIssued("No"));
+    void shouldUpdateFinalOrderIssuedWhenAppliesToSelectedChildrenAndAlreadyIssuedForOtherChildren() {
+        List<Element<Child>> children = List.of(childWithoutFinalOrderIssued(),
+            childWithFinalOrderIssued(),
+            childWithoutFinalOrderIssued(), childWithoutFinalOrderIssued(), childWithoutFinalOrderIssued());
 
-        ChildSelector childSelector = ChildSelector.builder()
-            .childCount("4")
-            .selected(List.of(0,2))
+        Selector childSelector = Selector.builder()
+            .count("5")
+            .selected(List.of(0, 2))
             .build();
 
-        List<Element<Child>> result = service.updateFinalOrderIssued(children, "No", childSelector);
+        List<Element<Child>> result = service.updateFinalOrderIssued(CARE_ORDER,
+            children, "No", childSelector, null);
 
         assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
-            .containsExactly("Yes", "Yes", "Yes", "No");
+            .containsExactly("Yes", "Yes", "Yes", "No", "No");
+
+        assertThat(result).extracting(element -> element.getValue().getFinalOrderIssuedType())
+            .containsExactly("Care order", "Care order", "Care order", null, null);
     }
 
+    @Test
+    void shouldUpdateFinalOrderIssuedWhenAppliesToSelectedChildrenAndOneRemainingChild() {
+        List<Element<Child>> children = List.of(childWithFinalOrderIssued(),
+            childWithoutFinalOrderIssued(),
+            childWithFinalOrderIssued());
+
+        List<Element<Child>> result = service.updateFinalOrderIssued(SUPERVISION_ORDER,
+            children, "No", null, "1");
+
+        assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
+            .containsExactly("Yes", "Yes", "Yes");
+
+        assertThat(result).extracting(element -> element.getValue().getFinalOrderIssuedType())
+            .containsExactly("Care order", "Supervision order", "Care order");
+    }
+
+    @Test
+    void shouldGetRemainingChildIndexWhenOneRemainingChild() {
+        List<Element<Child>> children = List.of(childWithFinalOrderIssued(),
+            childWithoutFinalOrderIssued(),
+            childWithFinalOrderIssued());
+
+        Optional<Integer> result = service.getRemainingChildIndex(children);
+
+        assertThat(result.isPresent()).isTrue();
+        assertThat(result.get()).isEqualTo(1);
+    }
+
+    @Test
+    void shouldNotGetRemainingChildIndexWhenNoRemainingChild() {
+        List<Element<Child>> children = List.of(childWithFinalOrderIssued(), childWithFinalOrderIssued());
+
+        Optional<Integer> result = service.getRemainingChildIndex(children);
+
+        assertThat(result.isPresent()).isFalse();
+    }
+
+    @Test
+    void shouldNotGetRemainingChildIndexWhenMoreThanOneRemainingChild() {
+        List<Element<Child>> children = List.of(childWithFinalOrderIssued(), childWithoutFinalOrderIssued(),
+            childWithFinalOrderIssued(), childWithoutFinalOrderIssued());
+
+        Optional<Integer> result = service.getRemainingChildIndex(children);
+
+        assertThat(result.isPresent()).isFalse();
+    }
+
+    @Test
+    void shouldReturnNameOfChildWhenAChildDoesNotHaveFinalOrderIssued() {
+        List<Element<Child>> children = List.of(childWithFinalOrderIssued("Paul", "Chuckle"),
+            childWithoutFinalOrderIssued("Barry", "Chuckle"));
+
+        String childrenNames = service.getRemainingChildrenNames(children);
+
+        assertThat(childrenNames).isEqualTo("Barry Chuckle");
+    }
+
+    @Test
+    void shouldReturnEmptyStringWhenAllChildrenHaveFinalOrderIssued() {
+        List<Element<Child>> children = List.of(childWithFinalOrderIssued("Paul", "Chuckle"),
+            childWithFinalOrderIssued("Barry", "Chuckle"));
+
+        String childrenNames = service.getRemainingChildrenNames(children);
+
+        assertThat(childrenNames).isEmpty();
+    }
+
+    @Test
+    void shouldReturnChildNameWhenChildHasFinalOrderIssued() {
+        List<Element<Child>> children = List.of(childWithFinalOrderIssued("Paul", "Chuckle"),
+            childWithoutFinalOrderIssued("Barry", "Chuckle"));
+
+        String childrenNames = service.getFinalOrderIssuedChildrenNames(children);
+
+        assertThat(childrenNames).isEqualTo("Paul Chuckle - Care order issued");
+    }
+
+    @Test
+    void shouldReturnEmptyStringWhenNoChildrenHaveFinalOrderIssued() {
+        List<Element<Child>> children = List.of(
+            childWithoutFinalOrderIssued("Paul", "Chuckle"),
+            childWithoutFinalOrderIssued("Barry", "Chuckle"));
+
+        String childrenNames = service.getFinalOrderIssuedChildrenNames(children);
+
+        assertThat(childrenNames).isEmpty();
+    }
+
+    @Nested
+    class IndexesOfChildrenWithFinalOrderIssued {
+
+        @Test
+        void shouldReturnEmptyListWhenNoChildren() {
+            CaseData caseData = CaseData.builder().build();
+
+            List<Integer> indexes = service.getIndexesOfChildrenWithFinalOrderIssued(caseData);
+
+            assertThat(indexes).isEmpty();
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenNoChildrenWithFinalOrderIssued() {
+            CaseData caseData = CaseData.builder()
+                .children1(List.of(childWithoutFinalOrderIssued(), childWithoutFinalOrderIssued()))
+                .build();
+
+            List<Integer> indexes = service.getIndexesOfChildrenWithFinalOrderIssued(caseData);
+
+            assertThat(indexes).isEmpty();
+        }
+
+        @Test
+        void shouldReturnIndexesOfChildrenWithFinalOrderIssued() {
+            CaseData caseData = CaseData.builder()
+                .children1(List.of(childWithFinalOrderIssued(), childWithoutFinalOrderIssued(),
+                    childWithFinalOrderIssued()))
+                .build();
+
+            List<Integer> indexes = service.getIndexesOfChildrenWithFinalOrderIssued(caseData);
+
+            assertThat(indexes).containsExactly(0, 2);
+        }
+    }
+
+    @Nested
+    class SelectedChildren {
+
+        @Test
+        void shouldReturnAllChildrenWhenOrderAppliesToAllChildren() {
+            CaseData caseData = CaseData.builder()
+                .children1(List.of(testChild(), testChild()))
+                .orderAppliesToAllChildren("Yes")
+                .build();
+
+            List<Element<Child>> selectedChildren = service.getSelectedChildren(caseData);
+
+            assertThat(selectedChildren).isEqualTo(caseData.getAllChildren());
+        }
+
+        @Test
+        void shouldReturnAllChildrenWhenNoSpecifiedIfOrderApplyToAllChildren() {
+            CaseData caseData = CaseData.builder()
+                .children1(List.of(testChild(), testChild()))
+                .orderAppliesToAllChildren(null)
+                .build();
+
+            List<Element<Child>> selectedChildren = service.getSelectedChildren(caseData);
+
+            assertThat(selectedChildren).isEqualTo(caseData.getAllChildren());
+        }
+
+        @Test
+        void shouldReturnSelectedChildrenOnly() {
+            Integer selectedChild = 1;
+            CaseData caseData = CaseData.builder()
+                .children1(List.of(testChild(), testChild(), testChild()))
+                .childSelector(Selector.builder().selected(List.of(selectedChild)).build())
+                .orderAppliesToAllChildren("No")
+                .build();
+
+            List<Element<Child>> selectedChildren = service.getSelectedChildren(caseData);
+
+            assertThat(selectedChildren).containsExactly(caseData.getAllChildren().get(selectedChild));
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenNoChildrenSelected() {
+            CaseData caseData = CaseData.builder()
+                .children1(List.of(testChild(), testChild()))
+                .childSelector(Selector.builder().selected(emptyList()).build())
+                .orderAppliesToAllChildren("No")
+                .build();
+
+            List<Element<Child>> selectedChildren = service.getSelectedChildren(caseData);
+
+            assertThat(selectedChildren).isEmpty();
+        }
+    }
 
     private Element<Child> childWithConfidentialFields(UUID id) {
         return element(id, Child.builder()
@@ -126,13 +323,32 @@ class ChildrenServiceTest {
             .build());
     }
 
-    private Element<Child> childWithFinalOrderIssued(String finalOrderIssued) {
+    private static Element<Child> childWithoutFinalOrderIssued(String firstName, String lastName) {
+        return childWithFinalOrderIssued(firstName, lastName, null);
+    }
+
+    private static Element<Child> childWithoutFinalOrderIssued() {
+        return childWithFinalOrderIssued(randomAlphanumeric(10), randomAlphanumeric(10), null);
+    }
+
+    private static Element<Child> childWithFinalOrderIssued() {
+        return childWithFinalOrderIssued(randomAlphanumeric(10), randomAlphanumeric(10), CARE_ORDER);
+    }
+
+    private static Element<Child> childWithFinalOrderIssued(String firstName, String lastName) {
+        return childWithFinalOrderIssued(firstName, lastName, CARE_ORDER);
+    }
+
+    private static Element<Child> childWithFinalOrderIssued(String firstName, String lastName,
+                                                            GeneratedOrderType orderType) {
         return element(Child.builder()
-            .finalOrderIssued(finalOrderIssued)
             .party(ChildParty.builder()
-                .firstName(randomAlphanumeric(10))
-                .lastName(randomAlphanumeric(10))
+                .firstName(firstName)
+                .lastName(lastName)
                 .build())
+            .finalOrderIssued(ofNullable(orderType).map(o -> YES).orElse(NO).getValue())
+            .finalOrderIssuedType(ofNullable(orderType).map(GeneratedOrderType::getLabel).orElse(null))
             .build());
     }
+
 }

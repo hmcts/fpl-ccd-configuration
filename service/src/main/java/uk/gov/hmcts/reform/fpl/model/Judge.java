@@ -1,42 +1,33 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang.StringUtils;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.model.common.AbstractJudge;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 import java.util.Objects;
 
-import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
-import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.OTHER;
-
 @Data
-@Builder
-@AllArgsConstructor
-public class Judge {
+@EqualsAndHashCode(callSuper = true)
+public class Judge extends AbstractJudge {
     private final JudgeOrMagistrateTitle judgeTitle;
     private final String otherTitle;
     private final String judgeLastName;
     private final String judgeFullName;
     private final String judgeEmailAddress;
 
-    @JsonIgnore
-    public String getJudgeOrMagistrateTitle() {
-        if (judgeTitle == OTHER) {
-            return otherTitle;
-        }
-        return judgeTitle.getLabel();
-    }
-
-    @JsonIgnore
-    public String getJudgeName() {
-        if (judgeTitle == MAGISTRATES) {
-            return judgeFullName;
-        }
-        return judgeLastName;
+    @Builder(toBuilder = true)
+    private Judge(JudgeOrMagistrateTitle judgeTitle, String otherTitle, String judgeLastName,
+                 String judgeFullName, String judgeEmailAddress) {
+        super(judgeTitle, otherTitle, judgeLastName, judgeFullName);
+        this.judgeTitle = judgeTitle;
+        this.otherTitle = otherTitle;
+        this.judgeLastName = judgeLastName;
+        this.judgeFullName = judgeFullName;
+        this.judgeEmailAddress = judgeEmailAddress;
     }
 
     public boolean hasEqualJudgeFields(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {

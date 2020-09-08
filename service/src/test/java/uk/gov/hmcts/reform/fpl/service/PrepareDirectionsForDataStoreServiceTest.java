@@ -13,8 +13,11 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
-import uk.gov.hmcts.reform.fpl.model.Order;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,15 +39,20 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
 class PrepareDirectionsForDataStoreServiceTest {
+    private static final String AUTH_TOKEN = "Bearer token";
 
     @MockBean
-    private UserDetailsService userDetailsService;
+    private IdamClient idamClient;
+
+    @MockBean
+    private RequestData requestData;
 
     private PrepareDirectionsForDataStoreService service;
 
     @BeforeEach
     void setUp() {
-        service = new PrepareDirectionsForDataStoreService(userDetailsService, new CommonDirectionService());
+        service = new PrepareDirectionsForDataStoreService(idamClient, new CommonDirectionService(), requestData);
+        given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(UserInfo.builder().name("Emma Taylor").build());
     }
 
     @Test
@@ -314,7 +322,8 @@ class PrepareDirectionsForDataStoreServiceTest {
 
         @BeforeEach
         void initValues() {
-            given(userDetailsService.getUserName()).willReturn("Emma Taylor");
+            given(requestData.authorisation()).willReturn(AUTH_TOKEN);
+            given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(UserInfo.builder().name("Emma Taylor").build());
 
             directionId = randomUUID();
             responseId = randomUUID();
@@ -322,7 +331,7 @@ class PrepareDirectionsForDataStoreServiceTest {
 
         @Test
         void shouldAddCafcassResponseWhenValidResponseMadeByCourt() {
-            Order sdo = orderWithCafcassDirection();
+            StandardDirectionOrder sdo = orderWithCafcassDirection();
             List<Element<Direction>> directionWithResponse = directionWithCafcassResponse();
 
             CaseData caseData = CaseData.builder()
@@ -355,6 +364,7 @@ class PrepareDirectionsForDataStoreServiceTest {
             List<Element<DirectionResponse>> expectedResponses = List.of(element(responseId,
                 response.directionId(directionId)
                     .assignee(COURT)
+                    .responder("Emma Taylor")
                     .build()));
 
             service.addComplyOnBehalfResponsesToDirectionsInOrder(caseData, COMPLY_ON_BEHALF_COURT);
@@ -418,8 +428,8 @@ class PrepareDirectionsForDataStoreServiceTest {
                 .build()));
         }
 
-        private Order orderWithCafcassDirection() {
-            return Order.builder()
+        private StandardDirectionOrder orderWithCafcassDirection() {
+            return StandardDirectionOrder.builder()
                 .directions(List.of(element(directionId, Direction.builder()
                     .directionType("example direction")
                     .assignee(CAFCASS)
@@ -431,7 +441,7 @@ class PrepareDirectionsForDataStoreServiceTest {
         private CaseData prepareCaseData(Direction.DirectionBuilder direction,
                                          List<Element<DirectionResponse>> responses) {
             return CaseData.builder()
-                .standardDirectionOrder(Order.builder()
+                .standardDirectionOrder(StandardDirectionOrder.builder()
                     .directions(List.of(element(directionId, direction.build())))
                     .build())
                 .otherPartiesDirectionsCustom(

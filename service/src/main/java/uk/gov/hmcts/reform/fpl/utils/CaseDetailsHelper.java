@@ -2,6 +2,11 @@ package uk.gov.hmcts.reform.fpl.utils;
 
 import com.google.common.base.Splitter;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.State;
+
+import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
+import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
+import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
 
 public class CaseDetailsHelper {
     private CaseDetailsHelper() {
@@ -22,5 +27,21 @@ public class CaseDetailsHelper {
         for (String field : fields) {
             caseDetails.getData().remove(field);
         }
+    }
+
+    public static boolean isInOpenState(CaseDetails caseDetails) {
+        return isInState(caseDetails, OPEN);
+    }
+
+    public static boolean isInReturnedState(CaseDetails caseDetails) {
+        return isInState(caseDetails, RETURNED);
+    }
+
+    public static boolean isInGatekeepingState(CaseDetails caseDetails) {
+        return isInState(caseDetails, GATEKEEPING);
+    }
+
+    private static boolean isInState(CaseDetails caseDetails, State state) {
+        return state.getValue().equals(caseDetails.getState());
     }
 }

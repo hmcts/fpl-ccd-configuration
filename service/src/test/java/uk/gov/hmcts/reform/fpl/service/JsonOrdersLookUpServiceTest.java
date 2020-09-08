@@ -13,8 +13,6 @@ import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
 
-import java.io.IOException;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
@@ -35,7 +33,7 @@ class JsonOrdersLookUpServiceTest {
     }
 
     @Test
-    void shouldPopulateOrderDefinitionForStandardDirectionOrder() throws IOException {
+    void shouldPopulateOrderDefinitionForStandardDirectionOrder() {
         OrderDefinition expectedOrderDefinition = OrderDefinition.builder()
             .type("standardDirectionOrder")
             .language(ENGLISH)
@@ -50,6 +48,7 @@ class JsonOrdersLookUpServiceTest {
                         .templateDateFormat("d MMMM yyyy 'at' h:mma")
                         .directionRemovable(false)
                         .showDateOnly(true)
+                        .delta("0")
                         .build())
                     .build(),
                 DirectionConfiguration.builder()
@@ -61,6 +60,8 @@ class JsonOrdersLookUpServiceTest {
                         .templateDateFormat("h:mma, d MMMM yyyy")
                         .directionRemovable(false)
                         .showDateOnly(false)
+                        .delta("-3")
+                        .time("12:00:00")
                         .build())
                     .build(),
                 DirectionConfiguration.builder()
@@ -72,6 +73,8 @@ class JsonOrdersLookUpServiceTest {
                         .templateDateFormat("h:mma, d MMMM yyyy")
                         .directionRemovable(true)
                         .showDateOnly(false)
+                        .delta("-2")
+                        .time("16:00:00")
                         .build())
                     .build()))
             .build();

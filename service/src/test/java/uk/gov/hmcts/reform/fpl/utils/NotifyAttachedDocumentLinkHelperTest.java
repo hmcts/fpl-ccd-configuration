@@ -21,7 +21,9 @@ public class NotifyAttachedDocumentLinkHelperTest {
         byte[] documentContentstAsByte = nextBytes(20);
         String documentContent = new String(Base64.encodeBase64(documentContentstAsByte), ISO_8859_1);
 
-        JSONObject expectedDocumentLink = new JSONObject().put("file", documentContent);
+        JSONObject expectedDocumentLink = new JSONObject()
+            .put("file", documentContent)
+            .put("is_csv", false);
 
         Optional<JSONObject> generatedDocumentLink = generateAttachedDocumentLink(documentContentstAsByte);
         assertEquals(generatedDocumentLink.get(), expectedDocumentLink, true);

@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import net.logstash.logback.encoder.org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +53,7 @@ class CaseDataExtractionServiceTest {
     private CaseDataExtractionService service;
 
     @Test
-    void shouldReturnTheFormattedDateWhenStartAndEndDateAreNotTheSame() {
+    void shouldReturnAnEmptyStringWhenStartAndEndDateAreNotTheSame() {
         hearingBooking = createHearingBookingWithTimesOnDifferentDays();
 
         Optional<String> hearingDate = service.getHearingDateIfHearingsOnSameDay(hearingBooking);
@@ -62,7 +62,7 @@ class CaseDataExtractionServiceTest {
     }
 
     @Test
-    void shouldReturnAnEmptyStringWhenStartAndEndDateAreTheSame() {
+    void shouldReturnTheFormattedDateWhenStartAndEndDateAreTheSame() {
         hearingBooking = createHearingBookingWithTimesOnSameDay();
 
         Optional<String> hearingDate = service.getHearingDateIfHearingsOnSameDay(hearingBooking);
@@ -126,6 +126,23 @@ class CaseDataExtractionServiceTest {
             .name("John Smith")
             .gender("Male")
             .dateOfBirth("1 January 2020")
+            .build();
+
+        assertThat(service.getChildrenDetails(listChildren)).containsOnly(expectedChild);
+    }
+
+    @Test
+    void shouldReturnChildrenDetailsWhenPopulatedChildrenDoesNotHaveDob() {
+        List<Element<Child>> listChildren = wrapElements(Child.builder()
+            .party(ChildParty.builder()
+                .firstName("John")
+                .lastName("Smith")
+                .build())
+            .build());
+
+        DocmosisChild expectedChild = DocmosisChild.builder()
+            .name("John Smith")
+            .dateOfBirth(null)
             .build();
 
         assertThat(service.getChildrenDetails(listChildren)).containsOnly(expectedChild);
@@ -268,7 +285,7 @@ class CaseDataExtractionServiceTest {
         assertThat(service.baseDirection(direction, 1))
             .isEqualToComparingFieldByField(DocmosisDirection.builder()
                 .assignee(DirectionAssignee.LOCAL_AUTHORITY)
-                .title("1. Example title by unknown")
+                .title("1. Example title")
                 .body("Example description"));
     }
 

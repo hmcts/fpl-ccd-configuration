@@ -30,7 +30,7 @@ public class TestingSupportController {
 
     @PostMapping("/testing-support/case/populate/{caseId}")
     public void populateCase(@PathVariable("caseId") Long caseId, @RequestBody Map<String, Object> requestBody) {
-        State state = State.valueOf(requestBody.get("state").toString());
+        State state = State.fromValue(requestBody.get("state").toString());
         Map<String, Object> caseData = (Map<String, Object>) requestBody.get("caseData");
 
         try {

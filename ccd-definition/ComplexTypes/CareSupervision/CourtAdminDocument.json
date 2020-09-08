@@ -1,0 +1,19 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CourtAdminDocument",
+    "ListElementCode": "documentTitle",
+    "FieldType": "Text",
+    "ElementLabel": "Document name",
+    "HintText": "Give the document a descriptive name. For example, 'Parenting assessment' or 'Paediatric report'",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CourtAdminDocument",
+    "ListElementCode": "document",
+    "FieldType": "Document",
+    "ElementLabel": "Upload a file",
+    "SecurityClassification": "Public"
+  }
+]

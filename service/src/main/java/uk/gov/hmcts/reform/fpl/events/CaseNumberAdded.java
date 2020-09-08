@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.fpl.events;
 
-import lombok.Value;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 
-@Value
+@Getter
+@RequiredArgsConstructor
 public class CaseNumberAdded {
-    private CaseDetails caseDetails;
+    private final CaseData caseData;
 }

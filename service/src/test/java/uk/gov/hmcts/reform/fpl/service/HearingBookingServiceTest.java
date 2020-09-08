@@ -7,6 +7,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
@@ -15,10 +17,16 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
+import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,6 +35,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -36,7 +45,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {HearingBookingService.class, FixedTimeConfiguration.class})
+@ContextConfiguration(classes = {HearingBookingService.class, FixedTimeConfiguration.class,
+    JacksonAutoConfiguration.class, LookupTestConfig.class, EmailNotificationHelper.class,
+    CaseDataExtractionService.class, NoticeOfHearingGenerationService.class, HearingVenueLookUpService.class
+})
 class HearingBookingServiceTest {
     private static final UUID[] HEARING_IDS = {randomUUID(), randomUUID(), randomUUID(), randomUUID()};
 
@@ -48,6 +60,12 @@ class HearingBookingServiceTest {
 
     private LocalDateTime futureDate;
     private LocalDateTime pastDate;
+
+    @MockBean
+    private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
+
+    @MockBean
+    private UploadDocumentService uploadDocumentService;
 
     @BeforeEach
     void setUp() {
@@ -100,7 +118,7 @@ class HearingBookingServiceTest {
     }
 
     @Nested
-    class GetPastHearings {
+    class PastHearings {
 
         @Test
         void shouldReturnEmptyListWhenNoHearingsHaveBeenCreated() {
@@ -139,6 +157,30 @@ class HearingBookingServiceTest {
 
             assertThat(service.getPastHearings(hearingBookings)).isEqualTo(List.of(pastHearingBooking));
         }
+
+        @Test
+        void shouldRemovePastHearingsWhenPastHearingsExist() {
+            List<Element<HearingBooking>> hearingBooking = newArrayList(hearingElementWithStartDate(-5));
+            service.removePastHearings(hearingBooking);
+            assertThat(hearingBooking).isEmpty();
+        }
+
+        @Test
+        void shouldNotRemovePastHearingsWhenNoPastHearingsExist() {
+            Element<HearingBooking> hearingBookingElement = hearingElementWithStartDate(5);
+            List<Element<HearingBooking>> hearingBooking = newArrayList(hearingBookingElement);
+            List<Element<HearingBooking>> expectedHearing = newArrayList(hearingBookingElement);
+
+            service.removePastHearings(hearingBooking);
+            assertThat(hearingBooking).isEqualTo(expectedHearing);
+        }
+
+        @Test
+        void shouldNotRemovePastHearingsWhenNoHearingsExist() {
+            List<Element<HearingBooking>> hearingBooking = emptyList();
+            service.removePastHearings(hearingBooking);
+            assertThat(hearingBooking).isEmpty();
+        }
     }
 
     @Nested
@@ -150,6 +192,13 @@ class HearingBookingServiceTest {
 
             assertThat(service.combineHearingDetails(futureHearingBooking, emptyList()))
                 .isEqualTo(futureHearingBooking);
+        }
+
+        @Test
+        void shouldNotAddElementWithSameIdToList() {
+            List<Element<HearingBooking>> hearingBooking = List.of(hearingElementWithStartDate(0));
+
+            assertThat(service.combineHearingDetails(hearingBooking, hearingBooking)).isEqualTo(hearingBooking);
         }
 
         @Test
@@ -234,6 +283,7 @@ class HearingBookingServiceTest {
 
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = updatedHearingBookings.get(0).getValue().getJudgeAndLegalAdvisor();
 
+        assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isEqualTo(YES.getValue());
         assertThat(judgeAndLegalAdvisor.getJudgeTitle()).isEqualTo(null);
         assertThat(judgeAndLegalAdvisor.getJudgeLastName()).isEqualTo(null);
         assertThat(judgeAndLegalAdvisor.getLegalAdvisorName()).isEqualTo("Joe Bloggs");
@@ -249,9 +299,54 @@ class HearingBookingServiceTest {
 
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = updatedHearingBookings.get(0).getValue().getJudgeAndLegalAdvisor();
 
+        assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isEqualTo(NO.getValue());
         assertThat(judgeAndLegalAdvisor.getJudgeTitle()).isEqualTo(HIS_HONOUR_JUDGE);
         assertThat(judgeAndLegalAdvisor.getJudgeLastName()).isEqualTo("Richards");
         assertThat(judgeAndLegalAdvisor.getLegalAdvisorName()).isEqualTo("Joe Bloggs");
+    }
+
+    @Nested
+    class GetNewHearings {
+        private List<Element<HearingBooking>> oldHearingBookings;
+        private List<Element<HearingBooking>> newHearingBookings;
+
+        @BeforeEach
+        void setUp() {
+            oldHearingBookings = createHearingBookings();
+            newHearingBookings = addNewHearingToExistingHearingBookings();
+        }
+
+        @Test
+        void shouldReturnListWithMoreThanOneHearingBookingsWhenThereIsNewHearing() {
+            assertThat(service.getNewHearings(newHearingBookings, oldHearingBookings).size()).isNotZero();
+        }
+
+        @Test
+        void shouldReturnListWithZeroHearingBookingsWhenThereIsNoNewHearing() {
+
+            assertThat(service.getNewHearings(oldHearingBookings, oldHearingBookings).size()).isZero();
+        }
+    }
+
+    @Nested
+    class GetSelectedHearings {
+
+        @Test
+        void shouldReturnSelectedHearings() {
+            List<Element<HearingBooking>> hearingBookings = createHearingBookings();
+            Selector selector = Selector.builder().selected(List.of(1)).build();
+
+            assertThat(service.getSelectedHearings(selector, hearingBookings).size()).isEqualTo(1);
+            assertThat(service.getSelectedHearings(selector, hearingBookings).get(0).getValue().getType())
+                .isEqualTo(CASE_MANAGEMENT);
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenNoHearings() {
+            Selector selector = Selector.builder().selected(List.of(1)).build();
+
+            assertThat(service.getSelectedHearings(selector, emptyList())).isEmpty();
+        }
     }
 
     private Judge buildAllocatedJudge() {
@@ -273,12 +368,19 @@ class HearingBookingServiceTest {
     }
 
     private List<Element<HearingBooking>> createHearingBookings() {
-        return List.of(
+        return new ArrayList<>(List.of(
             element(HEARING_IDS[0], createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))),
             element(HEARING_IDS[1], createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3))),
             element(HEARING_IDS[2], createHearingBooking(futureDate, futureDate.plusDays(1))),
             element(HEARING_IDS[3], createHearingBooking(pastDate, pastDate.plusDays(1)))
-        );
+        ));
+    }
+
+    private List<Element<HearingBooking>> addNewHearingToExistingHearingBookings() {
+        List<Element<HearingBooking>> listOfHearingBookings = createHearingBookings();
+        listOfHearingBookings.add(
+            element(randomUUID(), createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))));
+        return listOfHearingBookings;
     }
 
     private Element<HearingBooking> hearingElementWithStartDate(int daysFromToday) {

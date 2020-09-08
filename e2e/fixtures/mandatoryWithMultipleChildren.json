@@ -39,6 +39,28 @@
             "dateOfBirth": "2016-09-02"
           }
         }
+      },
+      {
+        "id": "d56b23ee-ca80-42cc-bf9f-2e65cec00985",
+        "value": {
+          "party": {
+            "gender": "Boy",
+            "lastName": "Black",
+            "firstName": "William",
+            "dateOfBirth": "2017-10-01"
+          }
+        }
+      },
+      {
+        "id": "2135caa3-62d1-4692-99a9-3524397c6b05",
+        "value": {
+          "party": {
+            "gender": "Girl",
+            "lastName": "Black",
+            "firstName": "Sarah",
+            "dateOfBirth": "2010-05-02"
+          }
+        }
       }
     ],
     "solicitor": {
@@ -67,7 +89,7 @@
             "partyId": "a77f0692-60c8-44e1-aae7-f067851bbc89",
             "jobTitle": "Legal adviser",
             "partyType": "ORGANISATION",
-            "pbaNumber": "PBA1234567",
+            "pbaNumber": "PBA0082848",
             "clientCode": "8888",
             "mobileNumber": {
               "telephoneNumber": "07000000000"

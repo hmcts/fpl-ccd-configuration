@@ -8,6 +8,8 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.util.List;
 import java.util.Map;
@@ -28,13 +30,16 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
  */
 @Service
 public class PrepareDirectionsForDataStoreService {
-    private final UserDetailsService userDetailsService;
     private final CommonDirectionService directionService;
+    private final IdamClient idamClient;
+    private final RequestData requestData;
 
-    public PrepareDirectionsForDataStoreService(UserDetailsService userDetailsService,
-                                                CommonDirectionService directionService) {
-        this.userDetailsService = userDetailsService;
+    public PrepareDirectionsForDataStoreService(IdamClient idamClient,
+                                                CommonDirectionService directionService,
+                                                RequestData requestData) {
+        this.idamClient = idamClient;
         this.directionService = directionService;
+        this.requestData = requestData;
     }
 
     /**
@@ -51,13 +56,16 @@ public class PrepareDirectionsForDataStoreService {
                 .filter(element -> hasSameDirectionType(elementToAddValue, element))
                 .forEach(element -> {
                     Direction direction = elementToAddValue.getValue();
+                    Direction value = element.getValue();
 
-                    direction.setReadOnly(element.getValue().getReadOnly());
-                    direction.setDirectionRemovable(element.getValue().getDirectionRemovable());
-                    direction.setAssignee(defaultIfNull(direction.getAssignee(), element.getValue().getAssignee()));
+                    direction.setReadOnly(value.getReadOnly());
+                    direction.setDirectionRemovable(value.getDirectionRemovable());
+                    direction.setAssignee(defaultIfNull(direction.getAssignee(), value.getAssignee()));
+                    direction.setDateToBeCompletedBy(
+                        defaultIfNull(direction.getDateToBeCompletedBy(), value.getDateToBeCompletedBy()));
 
-                    if (!element.getValue().getReadOnly().equals("No")) {
-                        direction.setDirectionText(element.getValue().getDirectionText());
+                    if (!value.getReadOnly().equals("No")) {
+                        direction.setDirectionText(value.getDirectionText());
                     }
                 }));
     }
@@ -82,6 +90,20 @@ public class PrepareDirectionsForDataStoreService {
             }));
     }
 
+    /**
+     * Adds responses from a map of directions to their assignees to a list of directions.
+     *
+     * @param directionsMap a map of assignees and their directions containing responses.
+     * @param directions    a list of directions to add responses to.
+     */
+    public void addResponsesToDirections(Map<DirectionAssignee, List<Element<Direction>>> directionsMap,
+                                         List<Element<Direction>> directions) {
+        directionsMap.forEach(this::addHiddenValuesToResponseForAssignee);
+        List<DirectionResponse> responses = directionService.getResponses(directionsMap);
+
+        addResponsesToDirections(responses, directions);
+    }
+
     private boolean responseExists(DirectionResponse response, Element<DirectionResponse> element) {
         return isNotEmpty(element.getValue()) && element.getValue().getAssignee().equals(response.getAssignee())
             && respondingOnBehalfIsEqual(response, element);
@@ -93,16 +115,15 @@ public class PrepareDirectionsForDataStoreService {
     }
 
     /**
-     * Adds responses to directions in standard direction order {@link uk.gov.hmcts.reform.fpl.model.Order}.
+     * Adds responses to directions.
      *
      * @param caseData caseData containing custom role collections and standard directions order.
      */
-    public void addComplyOnBehalfResponsesToDirectionsInOrder(CaseData caseData,
-                                                              ComplyOnBehalfEvent eventId) {
+    public void addComplyOnBehalfResponsesToDirectionsInOrder(CaseData caseData, ComplyOnBehalfEvent eventId) {
         Map<DirectionAssignee, List<Element<Direction>>> customDirectionsMap =
-            directionService.collectCustomDirectionsToMap(caseData);
+            directionService.customDirectionsToMap(caseData);
 
-        List<Element<Direction>> directionsToComplyWith = directionService.getDirectionsToComplyWith(caseData);
+        List<Element<Direction>> directionsToComplyWith = caseData.getDirectionsToComplyWith();
 
         customDirectionsMap.forEach((assignee, directions) -> {
             switch (assignee) {
@@ -132,12 +153,12 @@ public class PrepareDirectionsForDataStoreService {
                     addResponseElementsToDirections(otherResponses, directionsToComplyWith);
 
                     break;
-                default: break;
+                default:
+                    break;
             }
         });
     }
 
-    //TODO: refactor of addCourtAssigneeAndDirectionId would remove dependency on eventId. FPLA-1485
     private List<Element<DirectionResponse>> addValuesToListResponses(List<Element<Direction>> directions,
                                                                       ComplyOnBehalfEvent eventId,
                                                                       DirectionAssignee assignee) {
@@ -158,25 +179,8 @@ public class PrepareDirectionsForDataStoreService {
                                                             UUID id,
                                                             Element<DirectionResponse> response,
                                                             DirectionAssignee assignee) {
-        if (event == COMPLY_ON_BEHALF_COURT) {
-            return addCourtAssigneeAndDirectionId(id, response);
-        }
-        return addResponderAssigneeAndDirectionId(response, assignee, id);
-    }
-
-    //TODO: if name of user complying for court is added then this can be merged with logic from method below. FPLA-1485
-    private Element<DirectionResponse> addCourtAssigneeAndDirectionId(UUID id, Element<DirectionResponse> element) {
-        return element(element.getId(), element.getValue().toBuilder()
-            .assignee(COURT)
-            .directionId(id)
-            .build());
-    }
-
-    private Element<DirectionResponse> addResponderAssigneeAndDirectionId(Element<DirectionResponse> response,
-                                                                          DirectionAssignee assignee,
-                                                                          UUID id) {
         return element(response.getId(), response.getValue().toBuilder()
-            .assignee(assignee)
+            .assignee(event == COMPLY_ON_BEHALF_COURT ? COURT : assignee)
             .responder(getUsername(response))
             .directionId(id)
             .build());
@@ -184,7 +188,7 @@ public class PrepareDirectionsForDataStoreService {
 
     private String getUsername(Element<DirectionResponse> element) {
         if (isEmpty(element.getValue().getResponder())) {
-            return userDetailsService.getUserName();
+            return idamClient.getUserInfo(requestData.authorisation()).getName();
         }
         return element.getValue().getResponder();
     }

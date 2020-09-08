@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.exceptions.EmptyFileException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.idam.client.IdamApi;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import static java.lang.String.join;
@@ -40,7 +40,7 @@ public class DocumentDownloadServiceTest {
     private AuthTokenGenerator authTokenGenerator;
 
     @Mock
-    private IdamApi idamApi;
+    private IdamClient idamClient;
 
     @Mock
     private RequestData requestData;
@@ -64,13 +64,13 @@ public class DocumentDownloadServiceTest {
             .build();
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
-        given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(userInfo);
+        given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(userInfo);
         given(requestData.authorisation()).willReturn(AUTH_TOKEN);
         given(requestData.userId()).willReturn(USER_ID);
 
         documentDownloadService = new DocumentDownloadService(authTokenGenerator,
             documentDownloadClient,
-            idamApi,
+            idamClient,
             requestData);
     }
 

@@ -4,23 +4,22 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ContextConfiguration(classes = {LocalAuthorityEmailContentProvider.class, LookupTestConfig.class,
-    HearingBookingService.class, FixedTimeConfiguration.class
+@ContextConfiguration(classes = {
+    LocalAuthorityEmailContentProvider.class,
+    LookupTestConfig.class,
+    FixedTimeConfiguration.class
 })
 class LocalAuthorityEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
@@ -32,14 +31,13 @@ class LocalAuthorityEmailContentProviderTest extends AbstractEmailContentProvide
         Map<String, Object> expectedMap = standardDirectionTemplateParameters();
 
         assertThat(localAuthorityEmailContentProvider
-            .buildLocalAuthorityStandardDirectionOrderIssuedNotification(populatedCaseDetails(),
-                LOCAL_AUTHORITY_CODE)).isEqualTo(expectedMap);
+            .buildLocalAuthorityStandardDirectionOrderIssuedNotification(populatedCaseData())).isEqualTo(expectedMap);
     }
 
     @Test
     void shouldReturnExpectedMapWithNullSDODetails() {
         assertThat(localAuthorityEmailContentProvider
-            .buildLocalAuthorityStandardDirectionOrderIssuedNotification(caseDetails(), LOCAL_AUTHORITY_CODE))
+            .buildLocalAuthorityStandardDirectionOrderIssuedNotification(getCaseData()))
             .isEqualTo(emptyTemplateParameters());
     }
 
@@ -47,7 +45,7 @@ class LocalAuthorityEmailContentProviderTest extends AbstractEmailContentProvide
         return ImmutableMap.<String, Object>builder()
             .put("title", LOCAL_AUTHORITY_NAME)
             .put("familyManCaseNumber", "12345,")
-            .put("leadRespondentsName", "Smith,")
+            .put("leadRespondentsName", "Smith")
             .put("hearingDate", "1 January 2020")
             .put("reference", CASE_REFERENCE)
             .put("caseUrl", caseUrl(CASE_REFERENCE))
@@ -59,18 +57,20 @@ class LocalAuthorityEmailContentProviderTest extends AbstractEmailContentProvide
             .put("title", LOCAL_AUTHORITY_NAME)
             .put("familyManCaseNumber", "")
             .put("hearingDate", "")
-            .put("leadRespondentsName", "Moley,")
+            .put("leadRespondentsName", "Moley")
             .put("reference", "1")
-            .put("caseUrl", String.format("http://fake-url/case/%s/%s/%s", JURISDICTION, CASE_TYPE, 1L))
+            .put("caseUrl", String.format("http://fake-url/cases/case-details/%s", 1L))
             .build();
     }
 
-    private CaseDetails caseDetails() {
-        return CaseDetails.builder()
+    private CaseData getCaseData() {
+        return CaseData.builder()
             .id(1L)
-            .data(Map.of("respondents1", wrapElements(Respondent.builder()
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .respondents1(wrapElements(Respondent.builder()
                 .party(RespondentParty.builder().lastName("Moley").build())
-                .build())))
+                .build()))
             .build();
+
     }
 }

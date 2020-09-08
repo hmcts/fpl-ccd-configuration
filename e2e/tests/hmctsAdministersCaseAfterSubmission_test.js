@@ -1,6 +1,12 @@
 const config = require('../config.js');
 const hearingDetails = require('../fixtures/hearingTypeDetails.js');
-const orders = require('../fixtures/orders.js');
+const blankOrder = require('../fixtures/orders/blankOrder.js');
+const interimSuperVisionOrder = require('../fixtures/orders/interimSupervision.js');
+const finalSuperVisionOrder = require('../fixtures/orders/finalSupervisionOrder.js');
+const emergencyProtectionOrder = require('../fixtures/orders/emergencyProtectionOrder.js');
+const interimCareOrder = require('../fixtures/orders/interimCareOrder.js');
+const finalCareOrder = require('../fixtures/orders/finalCareOrder.js');
+const dischargeOfCareOrder = require('../fixtures/orders/dischargeOfCareOrder.js');
 const orderFunctions = require('../helpers/generated_order_helper');
 const representatives = require('../fixtures/representatives.js');
 const c2Payment = require('../fixtures/c2Payment.js');
@@ -72,7 +78,7 @@ Scenario('HMCTS admin uploads standard directions with other documents', async (
   await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
   uploadStandardDirectionsDocumentEventPage.uploadStandardDirections(config.testFile);
   uploadStandardDirectionsDocumentEventPage.uploadAdditionalDocuments(config.testFile);
-  await I.completeEvent('Save and continue');
+  await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.see('mockFile.txt');
@@ -82,32 +88,40 @@ Scenario('HMCTS admin uploads standard directions with other documents', async (
   I.seeInTab(['Other documents 2', 'Upload a file'], 'mockFile.txt');
 });
 
-Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage, uploadC2DocumentsEventPage) => {
+Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage, uploadC2DocumentsEventPage, paymentHistoryPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.uploadC2Documents);
   uploadC2DocumentsEventPage.selectApplicationType('WITH_NOTICE');
   await I.retryUntilExists(() => I.click('Continue'), '#temporaryC2Document_document');
+  const feeToPay = await uploadC2DocumentsEventPage.getFeeToPay();
   uploadC2DocumentsEventPage.usePbaPayment();
   uploadC2DocumentsEventPage.enterPbaPaymentDetails(c2Payment);
   uploadC2DocumentsEventPage.uploadC2Document(config.testFile, 'Rachel Zane C2');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.uploadC2Documents);
-  await caseViewPage.goToNewActions(config.administrationActions.uploadC2Documents);
+
+  caseViewPage.selectTab(caseViewPage.tabs.paymentHistory);
+  paymentHistoryPage.checkPayment(feeToPay, c2Payment.pbaNumber);
+
+  caseViewPage.selectTab(caseViewPage.tabs.c2);
+  I.seeInTab(['C2 Application 1', 'File'], 'mockFile.txt');
+  I.seeInTab(['C2 Application 1', 'Notes'], 'Rachel Zane C2');
+  I.seeInTab(['C2 Application 1', 'Paid with PBA'], 'Yes');
+  I.seeInTab(['C2 Application 1', 'Payment by account (PBA) number'], c2Payment.pbaNumber);
+  I.seeInTab(['C2 Application 1', 'Client code'], c2Payment.clientCode);
+  I.seeInTab(['C2 Application 1', 'Customer reference'], c2Payment.customerReference);
+
+  await I.startEventViaHyperlink('Upload a new C2 application');
+  
   uploadC2DocumentsEventPage.selectApplicationType('WITHOUT_NOTICE');
   await I.retryUntilExists(() => I.click('Continue'), '#temporaryC2Document_document');
   uploadC2DocumentsEventPage.usePbaPayment(false);
   uploadC2DocumentsEventPage.uploadC2Document(config.testFile, 'Jessica Pearson C2');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.uploadC2Documents);
-  caseViewPage.selectTab(caseViewPage.tabs.documents);
-  I.seeInTab(['C2 Application 1', 'Upload a file'], 'mockFile.txt');
-  I.seeInTab(['C2 Application 1', 'Description'], 'Rachel Zane C2');
-  I.seeInTab(['C2 Application 1', 'Are you using PBA to pay?'], 'Yes');
-  I.seeInTab(['C2 Application 1', 'Payment by account (PBA) number'], 'PBA0082848');
-  I.seeInTab(['C2 Application 1', 'Client code'], '8888');
-  I.seeInTab(['C2 Application 1', 'Customer reference'], 'Example reference');
-  I.seeInTab(['C2 Application 2', 'Upload a file'], 'mockFile.txt');
-  I.seeInTab(['C2 Application 2', 'Description'], 'Jessica Pearson C2');
-  I.seeInTab(['C2 Application 2', 'Are you using PBA to pay?'], 'No');
+  caseViewPage.selectTab(caseViewPage.tabs.c2);
+  I.seeInTab(['C2 Application 2', 'File'], 'mockFile.txt');
+  I.seeInTab(['C2 Application 2', 'Notes'], 'Jessica Pearson C2');
+  I.seeInTab(['C2 Application 2', 'Paid with PBA'], 'No');
 });
 
 Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
@@ -119,7 +133,10 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);
   await addHearingBookingDetailsEventPage.enterJudge(hearingDetails[1].judgeAndLegalAdvisor);
   await addHearingBookingDetailsEventPage.enterLegalAdvisor(hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
-  await I.completeEvent('Save and continue', {summary: 'summary', description: 'description'});
+  await I.retryUntilExists(() => I.click('Continue'), '#newHearingSelector_newHearingSelector');
+  addHearingBookingDetailsEventPage.sendNoticeOfHearing(hearingDetails[0].sendNoticeOfHearing);
+  addHearingBookingDetailsEventPage.sendNoticeOfHearing(hearingDetails[1].sendNoticeOfHearing, 1);
+  await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.addHearingBookingDetails);
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
 
@@ -134,6 +151,7 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   I.seeInTab(['Hearing 1', 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], 'Her Honour Judge');
   I.seeInTab(['Hearing 1', 'Judge and Justices\' Legal Adviser', 'Last name'], 'Moley');
   I.seeInTab(['Hearing 1', 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name'], hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
+  I.seeInTab(['Hearing 1', 'Notice of hearing'], `Notice_of_hearing_${dateFormat(submittedAt, 'ddmmmm')}.pdf`);
 
   startDate = dateToString(hearingDetails[1].startDate);
   endDate = dateToString(hearingDetails[1].endDate);
@@ -201,16 +219,32 @@ Scenario('HMCTS admin revoke case access from representative', async (I, caseVie
   I.see('No cases found.');
 });
 
-Scenario('HMCTS admin creates multiple orders for the case', async (I, caseViewPage, createOrderEventPage) => {
-  for (let i = 0; i < orders.length; i++) {
-    const order = orders[i];
-    await caseViewPage.goToNewActions(config.administrationActions.createOrder);
-    const defaultIssuedDate = new Date();
-    await orderFunctions.createOrder(I, createOrderEventPage, order);
-    I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
-    await orderFunctions.assertOrder(I, caseViewPage, order, i + 1, defaultIssuedDate);
-    await orderFunctions.assertOrderSentToParty(I, caseViewPage, representatives.servedByPost.fullName, order, i + 1);
-  }
+Scenario('HMCTS admin creates blank order', async (I, caseViewPage, createOrderEventPage) => {
+  await verifyOrderCreation(I, caseViewPage, createOrderEventPage, blankOrder);
+});
+
+Scenario('HMCTS admin creates interim supervision order', async (I, caseViewPage, createOrderEventPage) => {
+  await verifyOrderCreation(I, caseViewPage, createOrderEventPage, interimSuperVisionOrder);
+});
+
+Scenario('HMCTS admin creates final supervision order', async (I, caseViewPage, createOrderEventPage) => {
+  await verifyOrderCreation(I, caseViewPage, createOrderEventPage, finalSuperVisionOrder);
+});
+
+Scenario('HMCTS admin creates emergency protection order', async (I, caseViewPage, createOrderEventPage) => {
+  await verifyOrderCreation(I, caseViewPage, createOrderEventPage, emergencyProtectionOrder);
+});
+
+Scenario('HMCTS admin creates interim care order', async (I, caseViewPage, createOrderEventPage) => {
+  await verifyOrderCreation(I, caseViewPage, createOrderEventPage, interimCareOrder);
+});
+
+Scenario('HMCTS admin creates final care order', async (I, caseViewPage, createOrderEventPage) => {
+  await verifyOrderCreation(I, caseViewPage, createOrderEventPage, finalCareOrder);
+});
+
+Scenario('HMCTS admin creates discharge of care order', async (I, caseViewPage, createOrderEventPage) => {
+  await verifyOrderCreation(I, caseViewPage, createOrderEventPage, dischargeOfCareOrder);
 });
 
 Scenario('HMCTS admin creates notice of proceedings documents', async (I, caseViewPage, createNoticeOfProceedingsEventPage) => {
@@ -220,12 +254,33 @@ Scenario('HMCTS admin creates notice of proceedings documents', async (I, caseVi
   createNoticeOfProceedingsEventPage.useAlternateJudge();
   createNoticeOfProceedingsEventPage.selectJudgeTitle();
   createNoticeOfProceedingsEventPage.enterJudgeLastName('Sarah Simpson');
+  createNoticeOfProceedingsEventPage.enterJudgeEmailAddress('test@test.com');
   createNoticeOfProceedingsEventPage.enterLegalAdvisorName('Ian Watson');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.createNoticeOfProceedings);
-  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  caseViewPage.selectTab(caseViewPage.tabs.hearings);
   I.seeInTab(['Notice of proceedings 1', 'File name'], 'Notice_of_proceedings_c6.pdf');
   I.seeInTab(['Notice of proceedings 2', 'File name'], 'Notice_of_proceedings_c6a.pdf');
+});
+
+Scenario('HMCTS admin creates notice of proceedings documents with allocated judge', async (I, caseViewPage, createNoticeOfProceedingsEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.createNoticeOfProceedings);
+  await createNoticeOfProceedingsEventPage.checkC6();
+  await createNoticeOfProceedingsEventPage.useAllocatedJudge();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.createNoticeOfProceedings);
+  await caseViewPage.goToNewActions(config.administrationActions.createNoticeOfProceedings);
+  await createNoticeOfProceedingsEventPage.checkC6A();
+  await createNoticeOfProceedingsEventPage.useAlternateJudge();
+  await createNoticeOfProceedingsEventPage.selectJudgeTitle();
+  await createNoticeOfProceedingsEventPage.enterJudgeLastName('Sarah Simpson');
+  await createNoticeOfProceedingsEventPage.enterJudgeEmailAddress('test@test.com');
+  await createNoticeOfProceedingsEventPage.enterLegalAdvisorName('Ian Watson');
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.createNoticeOfProceedings);
+  caseViewPage.selectTab(caseViewPage.tabs.hearings);
+  I.seeInTab(['Notice of proceedings 1', 'File name'], 'Notice_of_proceedings_c6a.pdf');
+  I.seeInTab(['Notice of proceedings 2', 'File name'], 'Notice_of_proceedings_c6.pdf');
 });
 
 Scenario('HMCTS admin handles supplementary evidence', async (I, caseListPage, caseViewPage, handleSupplementaryEvidenceEventPage) => {
@@ -268,13 +323,6 @@ Scenario('HMCTS admin adds a note to the case', async (I, caseViewPage, addNoteE
   I.seeInTab(['Note 1', 'Note'], note);
 });
 
-Scenario('HMCTS admin update FamilyMan reference number after sending case to gatekeeper', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage) => {
-  await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
-  enterFamilyManCaseNumberEventPage.enterCaseID('updatedmockcaseID');
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.addFamilyManCaseNumber);
-});
-
 Scenario('HMCTS admin adds expert report log', async (I, caseViewPage, loginPage, addExpertReportEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addExpertReportLog);
   addExpertReportEventPage.addExpertReportLog(expertReportLog[0]);
@@ -286,3 +334,38 @@ Scenario('HMCTS admin adds expert report log', async (I, caseViewPage, loginPage
   I.seeInTab(['Report 1', 'Has it been approved?'], 'Yes');
   I.seeInTab(['Report 1', 'Date approved'], '2 Apr 2020');
 });
+
+Scenario('HMCTS admin makes 26-week case extension', async (I, caseViewPage, addExtend26WeekTimelineEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.extend26WeekTimeline);
+  addExtend26WeekTimelineEventPage.selectEightWeekExtensionTime();
+  addExtend26WeekTimelineEventPage.selectTimetableForChildExtensionReason();
+  addExtend26WeekTimelineEventPage.addExtensionComment('Comment');
+  I.click('Continue');
+  addExtend26WeekTimelineEventPage.addCaseExtensionTimeConfirmation();
+  addExtend26WeekTimelineEventPage.addCaseExtensionDate();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.extend26WeekTimeline);
+  caseViewPage.selectTab(caseViewPage.tabs.overview);
+  I.see('10 Oct 2030');
+  I.see('Timetable for child');
+  I.see('Comment');
+});
+
+Scenario('HMCTS admin closes the case', async (I, caseViewPage, closeTheCaseEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.closeTheCase);
+  closeTheCaseEventPage.closeCase({day: 12, month: 3, year: 2020}, true, closeTheCaseEventPage.fields.radioGroup.partialReason.options.deprivation);
+  await I.completeEvent('Submit');
+  I.seeEventSubmissionConfirmation(config.administrationActions.closeTheCase);
+  caseViewPage.selectTab(caseViewPage.tabs.overview);
+  I.seeInTab(['Close the case', 'Date'], '12 Mar 2020');
+  I.seeInTab(['Close the case', 'Reason'], 'Deprivation of liberty');
+});
+
+const verifyOrderCreation = async function(I, caseViewPage, createOrderEventPage, order){
+  await caseViewPage.goToNewActions(config.administrationActions.createOrder);
+  const defaultIssuedDate = new Date();
+  await orderFunctions.createOrder(I, createOrderEventPage, order);
+  I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
+  await orderFunctions.assertOrder(I, caseViewPage, order, defaultIssuedDate);
+  await orderFunctions.assertOrderSentToParty(I, caseViewPage, representatives.servedByPost.fullName, order);
+};

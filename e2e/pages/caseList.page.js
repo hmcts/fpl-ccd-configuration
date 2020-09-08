@@ -1,11 +1,15 @@
 const {I} = inject();
+const config = require('../config');
 
 module.exports = {
 
   fields: {
+    jurisdiction: '#wb-jurisdiction',
+    caseType: '#wb-case-type',
     caseState: '#wb-case-state',
     evidenceHandled: '#evidenceHandled-Yes',
     evidenceNotHandled: '#evidenceHandled-No',
+    caseName: '#caseName',
     search: 'Apply',
     caseList: 'Case list',
   },
@@ -20,6 +24,8 @@ module.exports = {
   },
 
   searchForCasesWithHandledEvidences(submittedAt) {
+    I.selectOption(this.fields.jurisdiction, config.definition.jurisdictionFullDesc);
+    I.selectOption(this.fields.caseType, config.definition.caseTypeFullDesc);
     I.waitForElement(this.fields.evidenceHandled);
     I.fillDate(submittedAt);
     I.click(this.fields.evidenceHandled);
@@ -28,6 +34,14 @@ module.exports = {
 
   searchForCasesWithUnhandledEvidences() {
     I.click(this.fields.evidenceNotHandled);
+    I.click(this.fields.search);
+  },
+
+  searchForCasesWithName(caseName, state='Any') {
+    I.selectOption(this.fields.jurisdiction, config.definition.jurisdictionFullDesc);
+    I.selectOption(this.fields.caseType, config.definition.caseTypeFullDesc);
+    I.selectOption(this.fields.caseState, state);
+    I.fillField(this.fields.caseName, caseName);
     I.click(this.fields.search);
   },
 

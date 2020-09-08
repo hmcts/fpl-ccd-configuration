@@ -35,9 +35,16 @@ module.exports = {
     childSelector: {
       id: '#childSelector_childSelector',
       selector: function (index) {
-        return `#childSelector_child${index}`;
+        return `#childSelector_option${index}`;
       },
       selectorText: 'Yes',
+    },
+    careOrderSelector: {
+      id: '#careOrderSelector_careOrderSelector',
+      selector: function (index) {
+        return `#careOrderSelector_option${index}`;
+      },
+      selectorText: 'Discharge order',
     },
     allChildren: {
       id: '#orderAppliesToAllChildren',
@@ -66,6 +73,13 @@ module.exports = {
       },
     },
     judgeAndLegalAdvisorTitleId: '#judgeAndLegalAdvisor_judgeTitle',
+    closeCase: {
+      id: '#closeCaseFromOrder',
+      options: {
+        yes: '#closeCaseFromOrder-Yes',
+        no: '#closeCaseFromOrder-No',
+      },
+    },
   },
 
   selectType(type, subtype) {
@@ -83,9 +97,11 @@ module.exports = {
     I.fillField(this.fields.details, orders[0].details);
   },
 
-  enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName, judgeTitle = judgeAndLegalAdvisor.fields.judgeTitleRadioGroup.herHonourJudge) {
+  enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName, judgeTitle = judgeAndLegalAdvisor.fields.judgeTitleRadioGroup.herHonourJudge,
+    judgeEmailAddress) {
     judgeAndLegalAdvisor.selectJudgeTitle('', judgeTitle);
     judgeAndLegalAdvisor.enterJudgeLastName(judgeLastName);
+    judgeAndLegalAdvisor.enterJudgeEmailAddress(judgeEmailAddress);
     judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName);
   },
 
@@ -153,7 +169,7 @@ module.exports = {
   },
 
   async selectAndEnterNamedDate(date) {
-    within(this.fields.interimEndDate.id, () => {
+    await within(this.fields.interimEndDate.id, () => {
       I.click(locate('label').withText(this.fields.interimEndDate.options.namedDate));
     });
     I.click(this.fields.interimEndDate.options.namedDate);
@@ -170,6 +186,14 @@ module.exports = {
     }
   },
 
+  async selectCareOrder(careOrders = []) {
+    for (let order of careOrders) {
+      within(this.fields.careOrderSelector.selector(order), () => {
+        I.click(locate('label').withText(this.fields.careOrderSelector.selectorText));
+      });
+    }
+  },
+
   async useAllChildren() {
     within(this.fields.allChildren.id, () => {
       I.click(locate('label').withText(this.fields.allChildren.options.yes));
@@ -180,5 +204,13 @@ module.exports = {
     within(this.fields.allChildren.id, () => {
       I.click(locate('label').withText(this.fields.allChildren.options.no));
     });
+  },
+
+  closeCaseFromOrder(closeCase) {
+    if (closeCase) {
+      I.click(this.fields.closeCase.options.yes);
+    } else {
+      I.click(this.fields.closeCase.options.no);
+    }
   },
 };

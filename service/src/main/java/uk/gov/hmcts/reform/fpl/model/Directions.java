@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Arrays.stream;
+import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparingInt;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.groupingBy;
@@ -49,8 +51,14 @@ public class Directions {
     }
 
     @JsonIgnore
-    public static Map<DirectionAssignee, List<Element<Direction>>> getMapping(List<Element<Direction>> directions) {
-        return directions.stream().collect(groupingBy(element -> element.getValue().getAssignee()));
+    public static Map<DirectionAssignee, List<Element<Direction>>> getAssigneeToDirectionMapping(
+        List<Element<Direction>> directions) {
+        Map<DirectionAssignee, List<Element<Direction>>> map = directions.stream()
+            .collect(groupingBy(element -> element.getValue().getAssignee()));
+
+        stream(DirectionAssignee.values()).forEach(assignee -> map.putIfAbsent(assignee, new ArrayList<>()));
+
+        return map;
     }
 
     boolean containsDirections() {
@@ -85,7 +93,7 @@ public class Directions {
     }
 
     private List<Element<Direction>> assignDirections(List<Element<Direction>> directions, DirectionAssignee assignee) {
-        return ofNullable(directions).map(values -> addAssignee(values, assignee)).orElse(null);
+        return ofNullable(directions).map(values -> addAssignee(values, assignee)).orElse(emptyList());
     }
 
     private List<Element<Direction>> addAssignee(List<Element<Direction>> directions, DirectionAssignee assignee) {

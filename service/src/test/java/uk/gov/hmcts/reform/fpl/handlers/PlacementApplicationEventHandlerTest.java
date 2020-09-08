@@ -1,17 +1,15 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import com.google.common.collect.ImmutableMap;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.PlacementApplicationContentProvider;
@@ -22,18 +20,15 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.appendSendToCtscOnCallback;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {PlacementApplicationEventHandler.class, JacksonAutoConfiguration.class,
-    LookupTestConfig.class, HmctsAdminNotificationHandler.class})
-public class PlacementApplicationEventHandlerTest {
-    @MockBean
-    private RequestData requestData;
+@SpringBootTest(classes = {PlacementApplicationEventHandler.class, LookupTestConfig.class,
+    HmctsAdminNotificationHandler.class})
+class PlacementApplicationEventHandlerTest {
 
     @MockBean
     private NotificationService notificationService;
@@ -46,42 +41,43 @@ public class PlacementApplicationEventHandlerTest {
 
     @Test
     void shouldNotifyHmctsAdminOfPlacementApplicationUploadWhenCtscIsDiabled() {
-        CallbackRequest callbackRequest = callbackRequest();
-        CaseDetails caseDetails = callbackRequest().getCaseDetails();
+        CaseData caseData = caseData();
 
         final Map<String, Object> expectedParameters = getExpectedPlacementNotificationParameters();
 
-        given(placementApplicationContentProvider.buildPlacementApplicationNotificationParameters(caseDetails))
+        given(placementApplicationContentProvider.buildPlacementApplicationNotificationParameters(caseData))
             .willReturn(expectedParameters);
 
         placementApplicationEventHandler.notifyAdminOfPlacementApplicationUpload(
-            new PlacementApplicationEvent(callbackRequest, requestData));
+            new PlacementApplicationEvent(caseData));
 
         verify(notificationService).sendEmail(
-            NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
+            PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
             COURT_EMAIL_ADDRESS,
             expectedParameters,
             "12345");
     }
 
     @Test
-    void shouldNotifyCtscAdminOfPlacementApplicationUploadWhenCtscIsEnabled() throws Exception {
-        CallbackRequest callbackRequest = appendSendToCtscOnCallback();
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+    void shouldNotifyCtscAdminOfPlacementApplicationUploadWhenCtscIsEnabled() {
+        CaseData caseData = CaseData.builder()
+            .id(RandomUtils.nextLong())
+            .sendToCtsc("Yes")
+            .build();
 
         final Map<String, Object> expectedParameters = getExpectedPlacementNotificationParameters();
 
-        given(placementApplicationContentProvider.buildPlacementApplicationNotificationParameters(caseDetails))
+        given(placementApplicationContentProvider.buildPlacementApplicationNotificationParameters(caseData))
             .willReturn(expectedParameters);
 
         placementApplicationEventHandler.notifyAdminOfPlacementApplicationUpload(
-            new PlacementApplicationEvent(callbackRequest, requestData));
+            new PlacementApplicationEvent(caseData));
 
         verify(notificationService).sendEmail(
-            NEW_PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
+            PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
             CTSC_INBOX,
             expectedParameters,
-            "12345");
+            caseData.getId().toString());
     }
 
     private Map<String, Object> getExpectedPlacementNotificationParameters() {

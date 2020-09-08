@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.email.content.base;
 
 import com.google.common.collect.ImmutableMap;
-import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 
 import java.time.format.FormatStyle;
 
@@ -13,10 +11,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 
 public abstract class StandardDirectionOrderContent extends AbstractEmailContentProvider {
 
-    @Autowired
-    private HearingBookingService hearingBookingService;
-
-    protected ImmutableMap.Builder<String, Object> getSDOPersonalisationBuilder(Long caseId, CaseData caseData) {
+    protected ImmutableMap.Builder<String, Object> getSDOPersonalisationBuilder(CaseData caseData) {
         return ImmutableMap.<String, Object>builder()
             .put("familyManCaseNumber",
                 isNull(caseData.getFamilyManCaseNumber()) ? "" : caseData.getFamilyManCaseNumber() + ",")
@@ -24,14 +19,14 @@ public abstract class StandardDirectionOrderContent extends AbstractEmailContent
                 .get(0)
                 .getValue()
                 .getParty()
-                .getLastName()) + ",")
+                .getLastName()))
             .put("hearingDate", getHearingBooking(caseData))
-            .put("reference", String.valueOf(caseId))
-            .put("caseUrl", getCaseUrl(caseId));
+            .put("reference", String.valueOf(caseData.getId()))
+            .put("caseUrl", getCaseUrl(caseData.getId()));
     }
 
     private String getHearingBooking(CaseData data) {
-        return hearingBookingService.getFirstHearing(data.getHearingDetails())
+        return data.getFirstHearing()
             .map(hearing -> formatLocalDateToString(hearing.getStartDate().toLocalDate(), FormatStyle.LONG))
             .orElse("");
     }

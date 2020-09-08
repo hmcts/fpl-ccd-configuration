@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -9,10 +10,15 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -30,6 +36,9 @@ abstract class AbstractControllerTest {
 
     @Autowired
     ObjectMapper mapper;
+
+    @Autowired
+    CaseConverter caseConverter;
 
     @Autowired
     private Time time;
@@ -70,6 +79,10 @@ abstract class AbstractControllerTest {
 
     AboutToStartOrSubmitCallbackResponse postAboutToStartEvent(String filename) {
         return postAboutToStartEvent(filename, SC_OK);
+    }
+
+    AboutToStartOrSubmitCallbackResponse postAboutToStartEvent(CaseData caseData) {
+        return postAboutToStartEvent(asCaseDetails(caseData), SC_OK);
     }
 
     AboutToStartOrSubmitCallbackResponse postMidEvent(byte[] data, int expectedStatus) {
@@ -126,6 +139,10 @@ abstract class AbstractControllerTest {
         return postMidEvent(toCallbackRequest(caseDetails), expectedStatus, additionalPath);
     }
 
+    AboutToStartOrSubmitCallbackResponse postMidEvent(CaseData caseData, String additionalPath) {
+        return postMidEvent(asCaseDetails(caseData), SC_OK, additionalPath);
+    }
+
     AboutToStartOrSubmitCallbackResponse postMidEvent(CaseDetails caseDetails, String additionalPath) {
         return postMidEvent(caseDetails, SC_OK, additionalPath);
     }
@@ -158,6 +175,10 @@ abstract class AbstractControllerTest {
         return postAboutToSubmitEvent(toCallbackRequest(caseDetails), expectedStatus);
     }
 
+    AboutToStartOrSubmitCallbackResponse postAboutToSubmitEvent(CaseData caseData) {
+        return postAboutToSubmitEvent(asCaseDetails(caseData), SC_OK);
+    }
+
     AboutToStartOrSubmitCallbackResponse postAboutToSubmitEvent(CaseDetails caseDetails) {
         return postAboutToSubmitEvent(caseDetails, SC_OK);
     }
@@ -170,36 +191,49 @@ abstract class AbstractControllerTest {
         return postAboutToSubmitEvent(readBytes(filename), SC_OK);
     }
 
-    AboutToStartOrSubmitCallbackResponse postSubmittedEvent(byte[] data, int expectedStatus) {
-        return postEvent(String.format("/callback/%s/submitted", eventName), data, expectedStatus);
+    SubmittedCallbackResponse postSubmittedEvent(byte[] data, int expectedStatus) {
+        return postEvent(String.format("/callback/%s/submitted", eventName), data, expectedStatus,
+            SubmittedCallbackResponse.class);
     }
 
-    AboutToStartOrSubmitCallbackResponse postSubmittedEvent(byte[] data) {
+    SubmittedCallbackResponse postSubmittedEvent(byte[] data) {
         return postSubmittedEvent(data, SC_OK);
     }
 
-    AboutToStartOrSubmitCallbackResponse postSubmittedEvent(CallbackRequest callbackRequest, int expectedStatus) {
+    SubmittedCallbackResponse postSubmittedEvent(CallbackRequest callbackRequest, int expectedStatus) {
         return postSubmittedEvent(toBytes(callbackRequest), expectedStatus);
     }
 
-    AboutToStartOrSubmitCallbackResponse postSubmittedEvent(CallbackRequest callbackRequest) {
+    SubmittedCallbackResponse postSubmittedEvent(CallbackRequest callbackRequest) {
         return postSubmittedEvent(callbackRequest, SC_OK);
     }
 
-    AboutToStartOrSubmitCallbackResponse postSubmittedEvent(CaseDetails caseDetails, int expectedStatus) {
+    SubmittedCallbackResponse postSubmittedEvent(CaseDetails caseDetails, int expectedStatus) {
         return postSubmittedEvent(toCallbackRequest(caseDetails), expectedStatus);
     }
 
-    AboutToStartOrSubmitCallbackResponse postSubmittedEvent(CaseDetails caseDetails) {
+    SubmittedCallbackResponse postSubmittedEvent(CaseDetails caseDetails) {
         return postSubmittedEvent(caseDetails, SC_OK);
     }
 
-    AboutToStartOrSubmitCallbackResponse postSubmittedEvent(String filename, int expectedStatus) {
+    SubmittedCallbackResponse postSubmittedEvent(String filename, int expectedStatus) {
         return postSubmittedEvent(readBytes(filename), expectedStatus);
     }
 
-    AboutToStartOrSubmitCallbackResponse postSubmittedEvent(String filename) {
+    SubmittedCallbackResponse postSubmittedEvent(String filename) {
         return postSubmittedEvent(filename, SC_OK);
+    }
+
+    CaseData extractCaseData(AboutToStartOrSubmitCallbackResponse response) {
+        return mapper.convertValue(response.getData(), CaseData.class);
+    }
+
+    CaseDetails asCaseDetails(CaseData caseData) {
+        return CaseDetails.builder()
+            .id(caseData.getId())
+            .state(Optional.ofNullable(caseData.getState()).map(State::getValue).orElse(null))
+            .data(mapper.convertValue(caseData, new TypeReference<>() {}))
+            .build();
     }
 
     LocalDateTime now() {
@@ -211,6 +245,10 @@ abstract class AbstractControllerTest {
     }
 
     private AboutToStartOrSubmitCallbackResponse postEvent(String path, byte[] data, int expectedStatus) {
+        return postEvent(path, data, expectedStatus, AboutToStartOrSubmitCallbackResponse.class);
+    }
+
+    private <T> T postEvent(String path, byte[] data, int expectedStatus, Class<T> responseType) {
         try {
             MvcResult response = mockMvc
                 .perform(post(path)
@@ -224,7 +262,7 @@ abstract class AbstractControllerTest {
             byte[] responseBody = response.getResponse().getContentAsByteArray();
 
             if (responseBody.length > 0) {
-                return mapper.readValue(responseBody, AboutToStartOrSubmitCallbackResponse.class);
+                return mapper.readValue(responseBody, responseType);
             } else {
                 return null;
             }

@@ -1,10 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.sendtogatekeeper.NotifyGatekeeperTemplate;
@@ -17,21 +15,18 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class GatekeeperEmailContentProvider extends SharedNotifyContentProvider {
     private final LocalAuthorityNameLookupConfiguration config;
-    private final ObjectMapper mapper;
 
 
-    public NotifyGatekeeperTemplate buildGatekeeperNotification(CaseDetails caseDetails,
-                                                                String localAuthorityCode) {
+    public NotifyGatekeeperTemplate buildGatekeeperNotification(CaseData caseData) {
 
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         NotifyGatekeeperTemplate template = super.buildNotifyTemplate(new NotifyGatekeeperTemplate(),
-            caseDetails.getId(),
+            caseData.getId(),
             caseData.getOrders(),
             caseData.getHearing(),
             caseData.getRespondents1());
 
-        template.setLocalAuthority(config.getLocalAuthorityName(localAuthorityCode));
+        template.setLocalAuthority(config.getLocalAuthorityName(caseData.getCaseLocalAuthority()));
 
         return template;
     }
