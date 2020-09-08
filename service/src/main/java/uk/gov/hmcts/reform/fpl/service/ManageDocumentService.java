@@ -57,8 +57,10 @@ public class ManageDocumentService {
 
         if (caseData.getManageDocument().isDocumentRelatedToHearing()
             && !caseData.getHearingFurtherEvidenceDocuments().isEmpty()) {
-            UUID selectedHearingCode = mapper.convertValue(caseDetails.getData().get(MANAGE_DOCUMENTS_HEARING_LIST_KEY),
-                UUID.class);
+            DynamicList dynamicList = mapper.convertValue(caseDetails.getData().get(MANAGE_DOCUMENTS_HEARING_LIST_KEY),
+                DynamicList.class);
+
+            UUID selectedHearingCode = dynamicList.getValueCode();
 
             if (caseData.documentBundleContainsHearingId(selectedHearingCode)) {
                 for (int i = 0; i < caseData.getHearingFurtherEvidenceDocuments().size(); i++) {

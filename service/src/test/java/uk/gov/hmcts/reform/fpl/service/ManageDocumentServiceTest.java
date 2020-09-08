@@ -90,7 +90,8 @@ public class ManageDocumentServiceTest {
 
         assertThat(caseDetails.getData().get(MANAGE_DOCUMENTS_HEARING_LIST_KEY))
             .isEqualTo(expectedDynamicList);
-        assertThat(caseDetails.getData().get(MANAGE_DOCUMENTS_HEARING_LABEL_KEY));
+        assertThat(caseDetails.getData().get(MANAGE_DOCUMENTS_HEARING_LABEL_KEY))
+            .isEqualTo(selectedHearingBooking.toLabel(DATE));
     }
 
     @Test
@@ -144,11 +145,12 @@ public class ManageDocumentServiceTest {
     void shouldReturnHearingEvidenceCollectionWhenFurtherEvidenceIsRelatedToHearingWithExistingEntryInCollection() {
         List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
         UUID hearingId = UUID.randomUUID();
-        HearingBooking hearingBooking = buildFinalHearingBooking();
+        List<Element<HearingBooking>> hearingBookings = List.of(element(hearingId, buildFinalHearingBooking()));
 
         Map<String, Object> data = new HashMap<>(Map.of(
-            "hearingDetails", List.of(element(hearingId, hearingBooking)),
-            "manageDocumentsHearingList", hearingId,
+            "hearingDetails", hearingBookings,
+            "manageDocumentsHearingList", ElementUtils
+                .asDynamicList(hearingBookings, hearingId, hearingBooking -> hearingBooking.toLabel(DATE)),
             HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, List.of(
                 element(hearingId, HearingFurtherEvidenceBundle.builder()
                     .supportingEvidenceBundle(furtherEvidenceBundle)
