@@ -19,6 +19,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -46,6 +47,7 @@ public class ManageDocumentsControllerAboutToStartTest extends AbstractControlle
             mapper.convertValue(response.getData().get(MANAGE_DOCUMENTS_HEARING_LIST_KEY), DynamicList.class);
 
         assertThat(hearingList).isEqualTo(expectedDynamicList);
+        assertThat(response.getData().get(MANAGE_DOCUMENT_KEY)).isNull();
     }
 
     private HearingBooking hearing(LocalDateTime startDate) {
