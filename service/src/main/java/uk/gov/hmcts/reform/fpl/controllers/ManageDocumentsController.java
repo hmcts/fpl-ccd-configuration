@@ -131,9 +131,16 @@ public class ManageDocumentsController {
 
         switch (caseData.getManageDocument().getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
+
+                // TODO
+                // Reconsider how we make sure object exists on caseData before
+                List<Element<SupportingEvidenceBundle>> previousFurtherEvidenceDocuments
+                    = caseDataBefore.getFurtherEvidenceDocumentsTEMP() != null
+                    ? caseDataBefore.getFurtherEvidenceDocumentsTEMP() : List.of();
+
                 List<Element<SupportingEvidenceBundle>> updatedFurtherEvidenceDocuments =
                     manageDocumentService.setDateTimeUploadedOnManageDocumentCollection(
-                        caseData.getFurtherEvidenceDocumentsTEMP(), caseDataBefore.getFurtherEvidenceDocumentsTEMP());
+                        caseData.getFurtherEvidenceDocumentsTEMP(), previousFurtherEvidenceDocuments);
 
                 caseDetails.getData().put(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY,
                     updatedFurtherEvidenceDocuments);
@@ -143,9 +150,16 @@ public class ManageDocumentsController {
                 caseDetails.getData().put(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, null);
                 break;
             case CORRESPONDENCE:
+
+                // TODO
+                // Reconsider how we make sure object exists on caseData before
+                List<Element<SupportingEvidenceBundle>> previousCorrespondenceDocuments
+                    = caseDataBefore.getCorrespondenceDocuments() != null
+                    ? caseDataBefore.getCorrespondenceDocuments() : List.of();
+
                 List<Element<SupportingEvidenceBundle>> updatedCorrespondenceDocuments =
                     manageDocumentService.setDateTimeUploadedOnManageDocumentCollection(
-                    caseData.getCorrespondenceDocuments(), caseDataBefore.getCorrespondenceDocuments());
+                        caseData.getCorrespondenceDocuments(), previousCorrespondenceDocuments);
 
                 caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, updatedCorrespondenceDocuments);
                 break;
