@@ -472,5 +472,19 @@
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/action-cmo/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/action-cmo/submitted",
     "EndButtonLabel": "Save and continue"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "uploadStandardDirections",
+    "Name": "Upload documents",
+    "Description": "Upload standard directions",
+    "DisplayOrder": 13,
+    "PreConditionState(s)": "Submitted;Gatekeeping",
+    "PostConditionState": "*",
+    "SecurityClassification": "Public",
+    "ShowSummary": "N",
+    "ShowEventNotes": "Y",
+    "EndButtonLabel": "Save and continue"
   }
 ]
