@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -11,14 +10,11 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
-import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static java.util.List.of;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 
@@ -27,10 +23,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
     LocalValidatorFactoryBean.class, FixedTimeConfiguration.class})
 public class SupportingEvidenceValidatorServiceTest {
 
-    private static final String VALIDATION_ERROR = "Error 1";
-
-    @MockBean
-    private ValidateGroupService validateGroupService;
+    private static final String ERROR_MESSAGE = "Date of time received cannot be in the future";
 
     @Autowired
     private Time time;
@@ -39,50 +32,36 @@ public class SupportingEvidenceValidatorServiceTest {
     private SupportingEvidenceValidatorService supportingEvidenceValidatorService;
 
     @Test
-    void shouldReturnNoValidationErrorsWhenDatesOnSupportingEvidenceBundleAreInTheFuture() {
-        LocalDateTime futureDate = time.now().plusDays(2);
-        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle = buildSupportingEvidenceBundle(futureDate);
-
-        when(validateGroupService.validateGroup(supportingEvidenceBundle, DateOfIssueGroup.class))
-            .thenReturn(List.of());
-
+    void shouldNotReturnValidationErrorIfSupportingEvidenceBundleDateAndTimeReceivedIsInThePast() {
+        LocalDateTime yesterday = time.now().minusDays(1);
+        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle = buildSupportingEvidenceBundle(yesterday);
         List<String> validationErrors = supportingEvidenceValidatorService.validate(supportingEvidenceBundle);
 
         assertThat(validationErrors).isEmpty();
     }
 
     @Test
-    void shouldReturnValidationErrorsWhenDatesOnSupportingEvidenceBundleAreInThePast() {
-        LocalDateTime pastDate = time.now().minusDays(2);
-        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle = buildSupportingEvidenceBundle(pastDate);
-
-        when(validateGroupService.validateGroup(supportingEvidenceBundle, DateOfIssueGroup.class))
-            .thenReturn(of(VALIDATION_ERROR));
-
+    void shouldNotReturnValidationErrorIfSupportingEvidenceBundleDateAndTimeReceivedIsInThePresent() {
+        LocalDateTime today = time.now();
+        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle = buildSupportingEvidenceBundle(today);
         List<String> validationErrors = supportingEvidenceValidatorService.validate(supportingEvidenceBundle);
 
-        assertThat(validationErrors).containsExactly(VALIDATION_ERROR);
+        assertThat(validationErrors).isEmpty();
     }
 
     @Test
-    void shouldReturnValidationErrorsWhenNoDatesAreSetOnSupportingEvidenceBundle() {
-        SupportingEvidenceBundle supportingEvidenceBundle = SupportingEvidenceBundle.builder().build();
-        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundleList
-            = List.of(element(supportingEvidenceBundle));
+    void shouldReturnValidationErrorIfSupportingEvidenceBundleDateAndTimeReceivedIsInTheFuture() {
+        LocalDateTime futureDate = time.now().plusDays(2);
+        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle = buildSupportingEvidenceBundle(futureDate);
+        List<String> validationErrors = supportingEvidenceValidatorService.validate(supportingEvidenceBundle);
 
-        when(validateGroupService.validateGroup(supportingEvidenceBundle, DateOfIssueGroup.class))
-            .thenReturn(of(VALIDATION_ERROR));
-
-        List<String> validationErrors = supportingEvidenceValidatorService.validate(supportingEvidenceBundleList);
-
-        assertThat(validationErrors).containsExactly(VALIDATION_ERROR);
+        assertThat(validationErrors).containsExactly(ERROR_MESSAGE);
     }
 
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle(LocalDateTime dateTimeReceived) {
         return List.of(
             element(SupportingEvidenceBundle.builder()
-                .dateTimeReceived(time.now().minusDays(2))
-                .build())
-        );
+                .dateTimeReceived(dateTimeReceived)
+                .build()));
     }
 }
