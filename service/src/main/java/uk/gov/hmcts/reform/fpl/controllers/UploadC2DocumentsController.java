@@ -105,6 +105,7 @@ public class UploadC2DocumentsController extends CallbackController {
         return respond(caseDetails, errors);
     }
 
+    //TODO: Remove below endpoint when above validate midpoint is live in prod
     @PostMapping("/validate-pba-number/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleValidatePbaNumberMidEvent(
         @RequestBody CallbackRequest callbackRequest) {

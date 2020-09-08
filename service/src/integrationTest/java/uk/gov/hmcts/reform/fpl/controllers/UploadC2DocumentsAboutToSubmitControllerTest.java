@@ -74,16 +74,23 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
         C2DocumentBundle existingC2Document = caseData.getC2DocumentBundle().get(0).getValue();
+        C2DocumentBundle updatedExistingC2Document = existingC2Document.toBuilder()
+            .supportingEvidenceBundle(wrapElements(createSupportingEvidenceBundle()))
+            .build();
+
         C2DocumentBundle appendedC2Document = caseData.getC2DocumentBundle().get(1).getValue();
+        C2DocumentBundle updatedAppendedC2Document = appendedC2Document.toBuilder()
+            .supportingEvidenceBundle(wrapElements(createSupportingEvidenceBundle()))
+            .build();
 
         String expectedDateTime = formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME);
 
-        assertThat(appendedC2Document.getUploadedDateTime()).isEqualTo(expectedDateTime);
-        assertC2BundleDocument(existingC2Document, "C2 document one");
-        assertC2BundleDocument(appendedC2Document, "C2 document two");
+        assertThat(updatedAppendedC2Document.getUploadedDateTime()).isEqualTo(expectedDateTime);
+        assertC2BundleDocument(updatedExistingC2Document, "C2 document one");
+        assertC2BundleDocument(updatedAppendedC2Document, "C2 document two");
         assertThat(caseData.getTemporaryC2Document()).isNull();
         assertThat(caseData.getC2DocumentBundle()).hasSize(2);
-        assertThat(appendedC2Document.getAuthor()).isEqualTo(USER_NAME);
+        assertThat(updatedAppendedC2Document.getAuthor()).isEqualTo(USER_NAME);
     }
 
     private void assertC2BundleDocument(C2DocumentBundle documentBundle, String description) {
@@ -95,11 +102,10 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
         assertThat(documentBundle.getDescription()).isEqualTo(description);
 
         List<SupportingEvidenceBundle> supportingBundle = unwrapElements(documentBundle.getSupportingEvidenceBundle());
-        if (!supportingBundle.isEmpty()) {
-            SupportingEvidenceBundle supportingEvidenceBundle = supportingBundle.get(0);
-            assertThat(supportingEvidenceBundle.getName()).isEqualTo("Supporting document");
-            assertThat(supportingEvidenceBundle.getNotes()).isEqualTo("Document notes");
-        }
+
+        SupportingEvidenceBundle supportingEvidenceBundle = supportingBundle.get(0);
+        assertThat(supportingEvidenceBundle.getName()).isEqualTo("Supporting document");
+        assertThat(supportingEvidenceBundle.getNotes()).isEqualTo("Document notes");
     }
 
     private Map<String, Object> createTemporaryC2Document() {
