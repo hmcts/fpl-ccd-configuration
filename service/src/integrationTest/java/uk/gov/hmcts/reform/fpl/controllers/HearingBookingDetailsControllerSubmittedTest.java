@@ -279,10 +279,10 @@ class HearingBookingDetailsControllerSubmittedTest extends AbstractControllerTes
     }
 
     private Direction buildDirection(String text) {
-        return Direction.builder().directionText(text).responses(List.of()).build();
+        return Direction.builder().directionText(text).build();
     }
 
     private Direction buildDirection(String text, LocalDateTime dateTime) {
-        return Direction.builder().directionText(text).responses(List.of()).dateToBeCompletedBy(dateTime).build();
+        return Direction.builder().directionText(text).dateToBeCompletedBy(dateTime).build();
     }
 }
