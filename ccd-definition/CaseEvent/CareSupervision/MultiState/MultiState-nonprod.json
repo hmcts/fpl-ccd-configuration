@@ -6,7 +6,7 @@
     "Name": "Manage documents",
     "Description": "Manage documents",
     "DisplayOrder": 12,
-    "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING;ISSUE_RESOLUTION;FINAL_HEARING",
+    "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING;ISSUE_RESOLUTION;FINAL_HEARING;CLOSED",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
