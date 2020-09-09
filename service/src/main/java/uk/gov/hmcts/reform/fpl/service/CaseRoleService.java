@@ -36,7 +36,6 @@ public class CaseRoleService {
         log.info("User {} granted {} to case {}", user, roles, caseId);
     }
 
-    @Async
     @Retryable(value = {GrantCaseAccessException.class},
         backoff = @Backoff(delayExpression = "#{${retry.delay:1000}}"),
         label = "share a case")
