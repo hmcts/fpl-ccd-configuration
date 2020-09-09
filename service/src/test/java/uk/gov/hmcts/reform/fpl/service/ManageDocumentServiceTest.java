@@ -37,8 +37,6 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
-import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LABEL_KEY;
-import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
@@ -74,23 +72,24 @@ public class ManageDocumentServiceTest {
             element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))),
             element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3))),
             element(createHearingBooking(futureDate, futureDate.plusDays(1))),
-            Element.<HearingBooking>builder().id(selectHearingId).value(selectedHearingBooking).build());
+            element(selectHearingId, selectedHearingBooking)
+        );
 
-        Map<String, Object> data = new HashMap<>(Map.of(
-            MANAGE_DOCUMENTS_HEARING_LIST_KEY, selectHearingId,
-            "hearingDetails", hearingBookings,
-            MANAGE_DOCUMENT_KEY, buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue())));
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsHearingList(selectHearingId.toString())
+            .hearingDetails(hearingBookings)
+            .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue()))
+            .build();
 
-        CaseDetails caseDetails = CaseDetails.builder().data(data).build();
-        manageDocumentService.initialiseHearingListAndLabel(caseDetails);
+        Map<String, Object> listAndLabel = manageDocumentService.initialiseHearingListAndLabel(caseData);
 
-        DynamicList expectedDynamicList = ElementUtils
-            .asDynamicList(hearingBookings, selectHearingId, hearingBooking -> hearingBooking.toLabel(DATE));
+        DynamicList expectedDynamicList = ElementUtils.asDynamicList(
+            hearingBookings, selectHearingId, hearingBooking -> hearingBooking.toLabel(DATE)
+        );
 
-        assertThat(caseDetails.getData().get(MANAGE_DOCUMENTS_HEARING_LIST_KEY))
-            .isEqualTo(expectedDynamicList);
-        assertThat(caseDetails.getData().get(MANAGE_DOCUMENTS_HEARING_LABEL_KEY))
-            .isEqualTo(selectedHearingBooking.toLabel(DATE));
+        assertThat(listAndLabel)
+            .extracting("manageDocumentsHearingList", "manageDocumentsHearingLabel")
+            .containsExactly(expectedDynamicList, selectedHearingBooking.toLabel(DATE));
     }
 
     @Test
@@ -168,11 +167,11 @@ public class ManageDocumentServiceTest {
         LocalDateTime yesterday = time.now().minusDays(1);
         List<Element<SupportingEvidenceBundle>> correspondingDocuments = buildSupportingEvidenceBundle();
         correspondingDocuments.add(element(SupportingEvidenceBundle.builder()
-                .dateTimeUploaded(yesterday)
-                .build()));
+            .dateTimeUploaded(yesterday)
+            .build()));
 
         List<Element<SupportingEvidenceBundle>> updatedCorrespondingDocuments
-            = manageDocumentService.setDateTimeUploadedOnSupporingEvidene(correspondingDocuments, List.of());
+            = manageDocumentService.setDateTimeUploadedOnSupportingEvidence(correspondingDocuments, List.of());
 
         List<SupportingEvidenceBundle> supportingEvidenceBundle = unwrapElements(updatedCorrespondingDocuments);
 
@@ -200,7 +199,7 @@ public class ManageDocumentServiceTest {
                 .build()));
 
         List<Element<SupportingEvidenceBundle>> updatedCorrespondingDocuments
-            = manageDocumentService.setDateTimeUploadedOnSupporingEvidene(currentCorrespondingDocuments,
+            = manageDocumentService.setDateTimeUploadedOnSupportingEvidence(currentCorrespondingDocuments,
             previousCorrespondingDocuments);
 
         List<SupportingEvidenceBundle> supportingEvidenceBundle = unwrapElements(updatedCorrespondingDocuments);

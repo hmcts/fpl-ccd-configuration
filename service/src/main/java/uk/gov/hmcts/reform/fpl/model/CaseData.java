@@ -591,6 +591,8 @@ public class CaseData {
     private final List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocuments;
     private final List<Element<SupportingEvidenceBundle>> c2SupportingDocuments;
+    private final Object manageDocumentsHearingList;
+    private final Object manageDocumentsSupportingC2List;
 
     public boolean documentBundleContainsHearingId(UUID hearingId) {
         return hearingFurtherEvidenceDocuments.stream()

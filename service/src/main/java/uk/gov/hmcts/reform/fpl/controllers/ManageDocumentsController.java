@@ -57,7 +57,7 @@ public class ManageDocumentsController {
 
         switch (caseData.getManageDocument().getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
-                manageDocumentService.initialiseHearingListAndLabel(caseDetails);
+                caseDetails.getData().putAll(manageDocumentService.initialiseHearingListAndLabel(caseData));
 
                 List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments =
                     manageDocumentService.getFurtherEvidenceCollection(caseDetails);
@@ -130,7 +130,7 @@ public class ManageDocumentsController {
                     = getPreviousSupportingEvidenceBundle(caseDataBefore.getFurtherEvidenceDocumentsTEMP());
 
                 List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments =
-                    manageDocumentService.setDateTimeUploadedOnSupporingEvidene(
+                    manageDocumentService.setDateTimeUploadedOnSupportingEvidence(
                         caseData.getFurtherEvidenceDocumentsTEMP(), previousFurtherEvidenceDocuments);
 
                 caseDetails.getData().put(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, furtherEvidenceDocuments);
@@ -141,7 +141,7 @@ public class ManageDocumentsController {
                     = getPreviousSupportingEvidenceBundle(caseDataBefore.getCorrespondenceDocuments());
 
                 List<Element<SupportingEvidenceBundle>> updatedCorrespondenceDocuments =
-                    manageDocumentService.setDateTimeUploadedOnSupporingEvidene(
+                    manageDocumentService.setDateTimeUploadedOnSupportingEvidence(
                         caseData.getCorrespondenceDocuments(), previousCorrespondenceDocuments);
 
                 caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, updatedCorrespondenceDocuments);

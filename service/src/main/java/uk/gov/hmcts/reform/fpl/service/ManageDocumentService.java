@@ -12,13 +12,16 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.getHearingBookingByUUID;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListValueCode;
 
 @Service
 public class ManageDocumentService {
@@ -40,18 +43,18 @@ public class ManageDocumentService {
         this.time = time;
     }
 
-    public void initialiseHearingListAndLabel(CaseDetails caseDetails) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+    public Map<String, Object> initialiseHearingListAndLabel(CaseData caseData) {
+        Map<String, Object> listAndLabel = new HashMap<>();
 
         if (caseData.getManageDocument().isDocumentRelatedToHearing()) {
-            UUID selectedHearingCode = mapper.convertValue(caseDetails.getData().get(MANAGE_DOCUMENTS_HEARING_LIST_KEY),
-                UUID.class);
+            UUID selectedHearingCode = getDynamicListValueCode(caseData.getManageDocumentsHearingList(), mapper);
             HearingBooking hearingBooking = getHearingBookingByUUID(caseData.getHearingDetails(), selectedHearingCode);
 
-            caseDetails.getData().put(MANAGE_DOCUMENTS_HEARING_LABEL_KEY, hearingBooking.toLabel(DATE));
-            caseDetails.getData().put(MANAGE_DOCUMENTS_HEARING_LIST_KEY,
-                caseData.buildDynamicHearingList(selectedHearingCode));
+            listAndLabel.put(MANAGE_DOCUMENTS_HEARING_LABEL_KEY, hearingBooking.toLabel(DATE));
+            listAndLabel.put(MANAGE_DOCUMENTS_HEARING_LIST_KEY, caseData.buildDynamicHearingList(selectedHearingCode));
         }
+
+        return listAndLabel;
     }
 
     public List<Element<SupportingEvidenceBundle>> getFurtherEvidenceCollection(CaseDetails caseDetails) {
@@ -131,7 +134,7 @@ public class ManageDocumentService {
         }
     }
 
-    public List<Element<SupportingEvidenceBundle>> setDateTimeUploadedOnSupporingEvidene(
+    public List<Element<SupportingEvidenceBundle>> setDateTimeUploadedOnSupportingEvidence(
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle,
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundleBefore) {
 
@@ -156,12 +159,10 @@ public class ManageDocumentService {
     private Element<HearingFurtherEvidenceBundle> buildHearingSupportingEvidenceBundle(
         UUID hearingId, HearingBooking hearingBooking,
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle) {
-        return Element.<HearingFurtherEvidenceBundle>builder()
-            .id(hearingId)
-            .value(HearingFurtherEvidenceBundle.builder()
-                .hearingName(hearingBooking.toLabel(DATE))
-                .supportingEvidenceBundle(supportingEvidenceBundle)
-                .build())
-            .build();
+
+        return element(hearingId, HearingFurtherEvidenceBundle.builder()
+            .hearingName(hearingBooking.toLabel(DATE))
+            .supportingEvidenceBundle(supportingEvidenceBundle)
+            .build());
     }
 }
