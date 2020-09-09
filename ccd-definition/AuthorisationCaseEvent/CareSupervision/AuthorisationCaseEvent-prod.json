@@ -529,7 +529,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "limitedUploadDocuments",
     "UserRole": "[SOLICITOR]",
-    "CRUD": "R"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -942,7 +942,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "limitedUploadDocuments",
     "UserRole": "[CAFCASSSOLICITOR]",
-    "CRUD": "R"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1202,34 +1202,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadDocuments-CLOSED",
-    "UserRole": "caseworker-publiclaw-judiciary",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadDocuments-CLOSED",
-    "UserRole": "[LASOLICITOR]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadDocuments-CLOSED",
-    "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadDocuments-CLOSED",
-    "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "amendOtherProceedings",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "R"
@@ -1314,29 +1286,30 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "manageDocuments",
-    "UserRole": "caseworker-publiclaw-judiciary",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "manageDocuments",
+    "CaseEventID": "uploadDocuments-CLOSED",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "manageDocuments",
+    "CaseEventID": "uploadDocuments-CLOSED",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "uploadDocuments-CLOSED",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "manageDocuments",
+    "CaseEventID": "uploadDocuments-CLOSED",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "R"
   }
+
 ]
