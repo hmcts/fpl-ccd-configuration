@@ -9,10 +9,8 @@ Feature('Gatekeeper uploads standard directions order');
 BeforeSuite(async (I) => {
   caseId = await I.submitNewCaseWithData(gatekeeping);
 
-  await I.signIn(config.gateKeeperUser);
+  await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
 });
-
-Before(async I => await I.navigateToCaseDetails(caseId));
 
 Scenario('Gatekeeper uploads draft standard directions', async (I, caseViewPage, draftStandardDirectionsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
