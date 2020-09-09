@@ -449,6 +449,16 @@ class CaseDataTest {
     }
 
     @Test
+    void shouldSerialiseDirectionsObjectToIndividualDirections() throws JsonProcessingException {
+        UUID id = randomUUID();
+
+        String serialised = mapper.writeValueAsString(caseDataWithPopulatedDirections(id));
+
+        Stream.of(DirectionAssignee.values())
+            .forEach(assignee -> JSONAssert.assertEquals(getExpectedString(assignee, id), serialised, false));
+    }
+
+    @Test
     void shouldReturnTrueWhenAllocatedJudgeExists() {
         CaseData caseData = CaseData.builder().allocatedJudge(Judge.builder()
             .judgeFullName("Test Judge")
@@ -624,6 +634,6 @@ class CaseDataTest {
         String key = assignee.toCaseManagementOrderDirectionField();
 
         return format("{\"%s\": [{\"id\":\"%s\",\"value\":{\"directionType\":\"title\",\"assignee\":\"%s\","
-            + "\"readOnly\":\"No\",\"custom\":\"Yes\",\"responses\":[]}}]}", key, id, assignee.toString());
+            + "\"readOnly\":\"No\",\"custom\":\"Yes\"}}]}", key, id, assignee.toString());
     }
 }

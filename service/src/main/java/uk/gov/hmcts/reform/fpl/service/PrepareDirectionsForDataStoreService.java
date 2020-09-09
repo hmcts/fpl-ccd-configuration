@@ -9,13 +9,10 @@ import java.util.List;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 /**
- * Contains methods for persisting hidden values and adding responses to directions.
+ * Contains methods for persisting hidden values.
  */
 @Service
 public class PrepareDirectionsForDataStoreService {
-
-    public PrepareDirectionsForDataStoreService() {
-    }
 
     /**
      * Adds values that would otherwise be lost in CCD to directions.
