@@ -124,10 +124,6 @@ Scenario('Gatekeeper drafts standard directions', async (I, caseViewPage, draftS
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   I.seeInTab(['Gatekeeping order', 'File'], 'draft-standard-directions-order.pdf');
   I.seeInTab(['Gatekeeping order', 'Date of issue'], dateFormat(today, 'd mmmm yyyy'));
-  I.seeInTab(['Directions 1', 'Title'], 'Request permission for expert evidence');
-  I.seeInTab(['Directions 1', 'Description'], 'Your request must be in line with Family Procedure Rules part 25 and Practice Direction 25C. Give other parties a list of names of suitable experts.');
-  I.seeInTab(['Directions 1', 'For'], 'All parties');
-  I.seeInTab(['Directions 1', 'Due date and time'], '1 Jan 2050, 12:00:00 PM');
 });
 
 Scenario('Gatekeeper submits final version of standard directions', async (I, caseViewPage, draftStandardDirectionsEventPage) => {
