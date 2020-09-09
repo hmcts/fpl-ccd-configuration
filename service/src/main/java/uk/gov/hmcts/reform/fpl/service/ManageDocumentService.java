@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -24,9 +25,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListValueCode;
 
 @Service
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class ManageDocumentService {
-    private ObjectMapper mapper;
-    private Time time;
+    private final ObjectMapper mapper;
+    private final Time time;
 
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_KEY = "correspondenceDocuments";
     public static final String TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY = "furtherEvidenceDocumentsTEMP";
@@ -36,12 +38,6 @@ public class ManageDocumentService {
     public static final String SUPPORTING_C2_LIST_KEY = "manageDocumentsSupportingC2List";
     public static final String MANAGE_DOCUMENTS_HEARING_LABEL_KEY = "manageDocumentsHearingLabel";
     public static final String MANAGE_DOCUMENT_KEY = "manageDocument";
-
-    @Autowired
-    public ManageDocumentService(ObjectMapper objectMapper, Time time) {
-        this.mapper = objectMapper;
-        this.time = time;
-    }
 
     public Map<String, Object> initialiseHearingListAndLabel(CaseData caseData) {
         Map<String, Object> listAndLabel = new HashMap<>();
@@ -57,24 +53,20 @@ public class ManageDocumentService {
         return listAndLabel;
     }
 
-    public List<Element<SupportingEvidenceBundle>> getFurtherEvidenceCollection(CaseDetails caseDetails) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+    public List<Element<SupportingEvidenceBundle>> getFurtherEvidenceCollection(CaseData caseData) {
 
         if (caseData.getManageDocument().isDocumentRelatedToHearing()
             && caseData.getHearingFurtherEvidenceDocuments() != null
             && !caseData.getHearingFurtherEvidenceDocuments().isEmpty()) {
-            DynamicList dynamicList = mapper.convertValue(caseDetails.getData().get(MANAGE_DOCUMENTS_HEARING_LIST_KEY),
-                DynamicList.class);
 
-            UUID selectedHearingCode = dynamicList.getValueCode();
+            UUID selectedHearingCode = getDynamicListValueCode(caseData.getManageDocumentsHearingList(), mapper);
 
             if (caseData.documentBundleContainsHearingId(selectedHearingCode)) {
                 for (int i = 0; i < caseData.getHearingFurtherEvidenceDocuments().size(); i++) {
-                    Element<HearingFurtherEvidenceBundle> currentHearingEvidenceBundle
-                        = caseData.getHearingFurtherEvidenceDocuments().get(i);
+                    Element<HearingFurtherEvidenceBundle> bundle = caseData.getHearingFurtherEvidenceDocuments().get(i);
 
-                    if (selectedHearingCode.equals(currentHearingEvidenceBundle.getId())) {
-                        return currentHearingEvidenceBundle.getValue().getSupportingEvidenceBundle();
+                    if (selectedHearingCode.equals(bundle.getId())) {
+                        return bundle.getValue().getSupportingEvidenceBundle();
                     }
                 }
             }

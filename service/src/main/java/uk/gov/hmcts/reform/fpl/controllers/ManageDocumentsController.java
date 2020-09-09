@@ -60,7 +60,7 @@ public class ManageDocumentsController {
                 caseDetails.getData().putAll(manageDocumentService.initialiseHearingListAndLabel(caseData));
 
                 List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments =
-                    manageDocumentService.getFurtherEvidenceCollection(caseDetails);
+                    manageDocumentService.getFurtherEvidenceCollection(caseData);
 
                 caseDetails.getData().put(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, furtherEvidenceDocuments);
                 break;

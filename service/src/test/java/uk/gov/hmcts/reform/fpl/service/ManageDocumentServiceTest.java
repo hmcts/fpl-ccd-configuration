@@ -35,12 +35,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -112,12 +112,12 @@ public class ManageDocumentServiceTest {
 
     @Test
     void shouldReturnEmptyCollectionWhenFurtherEvidenceIsNotRelatedToHearingAndCollectionIsNotPresent() {
-        Map<String, Object> data = new HashMap<>(Map.of(
-            MANAGE_DOCUMENT_KEY, buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, NO.getValue())));
+        CaseData caseData = CaseData.builder()
+            .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, NO.getValue()))
+            .build();
 
-        CaseDetails caseDetails = CaseDetails.builder().data(data).build();
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundleCollection =
-            manageDocumentService.getFurtherEvidenceCollection(caseDetails);
+            manageDocumentService.getFurtherEvidenceCollection(caseData);
 
         assertThat(supportingEvidenceBundleCollection).isNotEmpty();
         assertThat(supportingEvidenceBundleCollection.get(0).getValue())
@@ -128,13 +128,13 @@ public class ManageDocumentServiceTest {
     void shouldReturnFurtherEvidenceCollectionWhenFurtherEvidenceIsNotRelatedToHearingAndCollectionIsPresent() {
         List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
 
-        Map<String, Object> data = new HashMap<>(Map.of(
-            FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, furtherEvidenceBundle,
-            MANAGE_DOCUMENT_KEY, buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, NO.getValue())));
+        CaseData caseData = CaseData.builder()
+            .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, NO.getValue()))
+            .furtherEvidenceDocuments(furtherEvidenceBundle)
+            .build();
 
-        CaseDetails caseDetails = CaseDetails.builder().data(data).build();
         List<Element<SupportingEvidenceBundle>> furtherDocumentBundleCollection =
-            manageDocumentService.getFurtherEvidenceCollection(caseDetails);
+            manageDocumentService.getFurtherEvidenceCollection(caseData);
 
         assertThat(furtherDocumentBundleCollection).isEqualTo(furtherEvidenceBundle);
     }
@@ -145,19 +145,20 @@ public class ManageDocumentServiceTest {
         UUID hearingId = UUID.randomUUID();
         List<Element<HearingBooking>> hearingBookings = List.of(element(hearingId, buildFinalHearingBooking()));
 
-        Map<String, Object> data = new HashMap<>(Map.of(
-            "hearingDetails", hearingBookings,
-            "manageDocumentsHearingList", ElementUtils
-                .asDynamicList(hearingBookings, hearingId, hearingBooking -> hearingBooking.toLabel(DATE)),
-            HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, List.of(
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(hearingBookings)
+            .manageDocumentsHearingList(asDynamicList(hearingBookings, hearingId, hearing -> hearing.toLabel(DATE)))
+            .hearingFurtherEvidenceDocuments(List.of(
                 element(hearingId, HearingFurtherEvidenceBundle.builder()
                     .supportingEvidenceBundle(furtherEvidenceBundle)
-                    .build())),
-            MANAGE_DOCUMENT_KEY, buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue())));
+                    .build()
+                )
+            ))
+            .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue()))
+            .build();
 
-        CaseDetails caseDetails = CaseDetails.builder().data(data).build();
         List<Element<SupportingEvidenceBundle>> furtherDocumentBundleCollection =
-            manageDocumentService.getFurtherEvidenceCollection(caseDetails);
+            manageDocumentService.getFurtherEvidenceCollection(caseData);
 
         assertThat(furtherDocumentBundleCollection).isEqualTo(furtherEvidenceBundle);
     }
