@@ -113,6 +113,7 @@ module.exports = {
     addExpertReportLog: 'Log expert report',
     closeTheCase: 'Close the case',
     returnApplication: 'Return application',
+    manageDocuments: 'Manage documents',
   },
   // files
   testFile: './e2e/fixtures/mockFile.txt',

@@ -1690,7 +1690,7 @@
     "ID": "hearingFurtherEvidenceDocuments",
     "FieldType": "Collection",
     "FieldTypeParameter": "HearingFurtherEvidenceBundle",
-    "Label": "Upload C2 documents for:",
+    "Label": "Further evidence documents, hearing",
     "SecurityClassification": "Public"
   },
   {

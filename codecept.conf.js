@@ -61,7 +61,6 @@ exports.config = {
     enterAttendingHearingEventPage: './e2e/pages/events/enterAttendingHearingEvent.page.js',
     uploadDocumentsEventPage: './e2e/pages/events/uploadDocumentsEvent.page.js',
     enterFamilyManCaseNumberEventPage: './e2e/pages/events/enterFamilyManCaseNumberEvent.page.js',
-    uploadStandardDirectionsDocumentEventPage: './e2e/pages/events/uploadStandardDirectionsDocumentEvent.page.js',
     sendCaseToGatekeeperEventPage: './e2e/pages/events/sendCaseToGatekeeperEvent.page.js',
     notifyGatekeeperEventPage: './e2e/pages/events/sendCaseToGatekeeperEvent.page.js',
     createNoticeOfProceedingsEventPage: './e2e/pages/events/createNoticeOfProceedingsEvent.page.js',
@@ -83,7 +82,8 @@ exports.config = {
     closeTheCaseEventPage: './e2e/pages/events/closeTheCase.page.js',
     returnApplicationEventPage: './e2e/pages/events/returnApplicationEvent.page.js',
     uploadCaseManagementOrderEventPage: './e2e/pages/events/uploadCaseManagementOrderEvent.page.js',
-    reviewAgreedCaseManagementOrderEventPage: './e2e/pages/events/reviewAgreedCaseManagementOrderEvent.page.js'
+    reviewAgreedCaseManagementOrderEventPage: './e2e/pages/events/reviewAgreedCaseManagementOrderEvent.page.js',
+    manageDocumentsEventPage: './e2e/pages/events/manageDocumentsEvent.page.js'
   },
   plugins: {
     autoDelay: {
