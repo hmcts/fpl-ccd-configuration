@@ -120,7 +120,7 @@ withPipeline(type, product, component) {
     sh """
       eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
       ./fpla-docker/bin/add-roles.sh
-      ./bin/import-ccd-definition.sh
+      ./bin/import-ccd-definition.sh -e *-nonprod.json
     """
 
     env.DM_STORE_URL="http://dm-store-aat.service.core-compute-aat.internal"
