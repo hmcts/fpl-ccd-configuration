@@ -88,8 +88,6 @@ module.exports = {
     deleteApplication: 'Delete an application',
     uploadCMO: 'Send agreed CMO to judge',
     reviewAgreedCmo: 'Review agreed CMO',
-    complyWithDirections: 'Comply with directions',
-    complyOnBehalfOf: 'Comply on behalf of others',
     allocatedJudge: 'Allocated Judge',
     extend26WeekTimeline: 'Extend 26-week timeline',
   },
