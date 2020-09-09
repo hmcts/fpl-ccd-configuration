@@ -32,7 +32,6 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -176,14 +175,15 @@ public class UploadC2DocumentsController extends CallbackController {
         List<SupportingEvidenceBundle> updatedSupportingEvidenceBundle =
             unwrapElements(caseData.getTemporaryC2Document().getSupportingEvidenceBundle())
                 .stream()
-                .map(supportingEvidence -> supportingEvidence.toBuilder().dateTimeUploaded(LocalDateTime.now()).build())
+                .map(supportingEvidence -> supportingEvidence.toBuilder().dateTimeUploaded(time.now()).build())
                 .collect(Collectors.toList());
 
         var c2DocumentBundleBuilder = caseData.getTemporaryC2Document().toBuilder()
             .author(idamClient.getUserInfo(requestData.authorisation()).getName())
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
             .supportingEvidenceBundle(
-                isEmpty(updatedSupportingEvidenceBundle) ? wrapElements(updatedSupportingEvidenceBundle) : null);
+                //TODO: Below empty check can be removed when supporting documents is toggled on in prod
+                !isEmpty(updatedSupportingEvidenceBundle) ? wrapElements(updatedSupportingEvidenceBundle) : null);
 
         c2DocumentBundleBuilder.type(caseData.getC2ApplicationType().get("type"));
 

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import io.jsonwebtoken.lang.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -13,11 +14,11 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
-import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +30,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(UploadC2DocumentsController.class)
@@ -36,9 +38,13 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTest {
     private static final String USER_NAME = "Emma Taylor";
     private static final Long CASE_ID = 12345L;
+    private static final DocumentReference document = testDocumentReference();
 
     @MockBean
     private IdamClient idamClient;
+
+    @Autowired
+    private Time time;
 
     UploadC2DocumentsAboutToSubmitControllerTest() {
         super("upload-c2");
@@ -64,6 +70,7 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
         assertThat(caseData.getTemporaryC2Document()).isNull();
         assertThat(caseData.getC2DocumentBundle()).hasSize(1);
         assertC2BundleDocument(uploadedC2DocumentBundle, "Test description");
+        assertSupportingEvidenceBundle(uploadedC2DocumentBundle);
         assertThat(uploadedC2DocumentBundle.getAuthor()).isEqualTo(USER_NAME);
     }
 
@@ -75,23 +82,17 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
         C2DocumentBundle existingC2Document = caseData.getC2DocumentBundle().get(0).getValue();
-        C2DocumentBundle updatedExistingC2Document = existingC2Document.toBuilder()
-            .supportingEvidenceBundle(wrapElements(createSupportingEvidenceBundle()))
-            .build();
 
         C2DocumentBundle appendedC2Document = caseData.getC2DocumentBundle().get(1).getValue();
-        C2DocumentBundle updatedAppendedC2Document = appendedC2Document.toBuilder()
-            .supportingEvidenceBundle(wrapElements(createSupportingEvidenceBundle()))
-            .build();
 
         String expectedDateTime = formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME);
 
-        assertThat(updatedAppendedC2Document.getUploadedDateTime()).isEqualTo(expectedDateTime);
-        assertC2BundleDocument(updatedExistingC2Document, "C2 document one");
-        assertC2BundleDocument(updatedAppendedC2Document, "C2 document two");
+        assertThat(appendedC2Document.getUploadedDateTime()).isEqualTo(expectedDateTime);
+        assertC2BundleDocument(existingC2Document, "C2 document one");
+        assertC2BundleDocument(appendedC2Document, "C2 document two");
         assertThat(caseData.getTemporaryC2Document()).isNull();
         assertThat(caseData.getC2DocumentBundle()).hasSize(2);
-        assertThat(updatedAppendedC2Document.getAuthor()).isEqualTo(USER_NAME);
+        assertThat(appendedC2Document.getAuthor()).isEqualTo(USER_NAME);
     }
 
     private void assertC2BundleDocument(C2DocumentBundle documentBundle, String description) {
@@ -101,13 +102,27 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
         assertThat(documentBundle.getDocument().getFilename()).isEqualTo(document.originalDocumentName);
         assertThat(documentBundle.getDocument().getBinaryUrl()).isEqualTo(document.links.binary.href);
         assertThat(documentBundle.getDescription()).isEqualTo(description);
+    }
 
-        List<SupportingEvidenceBundle> supportingBundle = unwrapElements(documentBundle.getSupportingEvidenceBundle());
+    private void assertSupportingEvidenceBundle(C2DocumentBundle documentBundle) {
+        List<SupportingEvidenceBundle> supportingEvidenceBundle =
+            unwrapElements(documentBundle.getSupportingEvidenceBundle());
 
-        if (!Collections.isEmpty(supportingBundle)) {
-            SupportingEvidenceBundle supportingEvidenceBundle = supportingBundle.get(0);
-            assertThat(supportingEvidenceBundle.getName()).isEqualTo("Supporting document");
-            assertThat(supportingEvidenceBundle.getNotes()).isEqualTo("Document notes");
+        if (!Collections.isEmpty(supportingEvidenceBundle)) {
+            assertThat(supportingEvidenceBundle).first()
+                .extracting(
+                    SupportingEvidenceBundle::getName,
+                    SupportingEvidenceBundle::getNotes,
+                    SupportingEvidenceBundle::getDateTimeReceived,
+                    SupportingEvidenceBundle::getDateTimeUploaded,
+                    SupportingEvidenceBundle::getDocument
+                ).containsExactly(
+                "Supporting document",
+                "Document notes",
+                time.now().minusDays(1),
+                time.now(),
+                document
+            );
         }
     }
 
@@ -138,9 +153,9 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
         return SupportingEvidenceBundle.builder()
             .name("Supporting document")
             .notes("Document notes")
-            .dateTimeReceived(LocalDateTime.now().minusDays(1))
-            .dateTimeUploaded(LocalDateTime.now())
-            .document(TestDataHelper.testDocumentReference())
+            .dateTimeReceived(time.now().minusDays(1))
+            .dateTimeUploaded(time.now())
+            .document(document)
             .build();
     }
 }
