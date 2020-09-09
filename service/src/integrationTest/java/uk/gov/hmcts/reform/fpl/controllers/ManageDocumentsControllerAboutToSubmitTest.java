@@ -29,6 +29,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -37,7 +38,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @WebMvcTest(ManageDocumentsController.class)
 @OverrideAutoConfiguration(enabled = true)
 public class ManageDocumentsControllerAboutToSubmitTest extends AbstractControllerTest {
-    private static final String MANAGE_DOCUMENT_KEY = "manageDocument";
 
     ManageDocumentsControllerAboutToSubmitTest() {
         super("manage-documents");
@@ -91,6 +91,8 @@ public class ManageDocumentsControllerAboutToSubmitTest extends AbstractControll
 
         assertThat(caseData.getFurtherEvidenceDocuments()).isEqualTo(furtherEvidenceBundle);
         assertThat(caseData.getFurtherEvidenceDocumentsTEMP()).isNull();
+        assertThat(caseData.getManageDocument()).isNull();
+
     }
 
     @Test
@@ -110,6 +112,7 @@ public class ManageDocumentsControllerAboutToSubmitTest extends AbstractControll
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
         assertThat(caseData.getCorrespondenceDocuments()).isEqualTo(furtherEvidenceBundle);
+        assertThat(caseData.getManageDocument()).isNull();
     }
 
     private CaseDetails buildCaseDetails(Map<String, Object> caseData) {

@@ -21,6 +21,7 @@ import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 
 @Api
@@ -168,6 +169,8 @@ public class ManageDocumentsController {
                 // Populate data for case type is C2
                 break;
         }
+
+        caseDetails.getData().remove(MANAGE_DOCUMENT_KEY);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

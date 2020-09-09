@@ -31,6 +31,7 @@ public class ManageDocumentService {
     public static final String HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY = "hearingFurtherEvidenceDocuments";
     public static final String MANAGE_DOCUMENTS_HEARING_LIST_KEY = "manageDocumentsHearingList";
     public static final String MANAGE_DOCUMENTS_HEARING_LABEL_KEY = "manageDocumentsHearingLabel";
+    public static final String MANAGE_DOCUMENT_KEY = "manageDocument";
 
     @Autowired
     public ManageDocumentService(ObjectMapper objectMapper, Time time) {
