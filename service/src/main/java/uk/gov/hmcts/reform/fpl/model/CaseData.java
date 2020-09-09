@@ -627,7 +627,7 @@ public class CaseData {
     @JsonIgnore
     public Optional<HearingBooking> getNextHearingAfterCmo(UUID cmoID) {
         LocalDateTime currentCmoStartDate = unwrapElements(hearingDetails).stream()
-            .filter(hearingBooking -> hearingBooking.getCaseManagementOrderId().equals(cmoID))
+            .filter(hearingBooking -> cmoID.equals(hearingBooking.getCaseManagementOrderId()))
             .map(HearingBooking::getStartDate)
             .findAny()
             .orElseThrow(() -> new IllegalArgumentException("Failed to find hearing matching cmo id " + cmoID));

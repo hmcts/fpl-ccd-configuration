@@ -39,7 +39,7 @@ withNightlyPipeline(type, product, component) {
 
   enableSecurityScan()
   enableMutationTest()
-  enableFullFunctionalTest()
+  enableFullFunctionalTest(60)
 
   after('mutationTest') {
     withSonarQubeEnv('SonarQube') {
