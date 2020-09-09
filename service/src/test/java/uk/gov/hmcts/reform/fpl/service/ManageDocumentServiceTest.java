@@ -66,7 +66,7 @@ public class ManageDocumentServiceTest {
     }
 
     @Test
-    void shouldFullyPopulateFurtherEvidenceFields() {
+    void shouldPopulateHearingListAndLabel() {
         UUID selectHearingId = randomUUID();
         HearingBooking selectedHearingBooking = createHearingBooking(futureDate, futureDate.plusDays(3));
 
@@ -82,7 +82,7 @@ public class ManageDocumentServiceTest {
             MANAGE_DOCUMENT_KEY, buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue())));
 
         CaseDetails caseDetails = CaseDetails.builder().data(data).build();
-        manageDocumentService.initialiseFurtherEvidenceFields(caseDetails);
+        manageDocumentService.initialiseHearingListAndLabel(caseDetails);
 
         DynamicList expectedDynamicList = ElementUtils
             .asDynamicList(hearingBookings, selectHearingId, hearingBooking -> hearingBooking.toLabel(DATE));
@@ -97,7 +97,7 @@ public class ManageDocumentServiceTest {
     void shouldExpandSupportingEvidenceCollectionWhenEmpty() {
         List<Element<SupportingEvidenceBundle>> emptySupportingEvidenceCollection = List.of();
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundleCollection
-            = manageDocumentService.initialiseSupportingEvidenceBundleCollection(emptySupportingEvidenceCollection);
+            = manageDocumentService.getSupportingEvidenceBundle(emptySupportingEvidenceCollection);
 
         assertThat(supportingEvidenceBundleCollection).isNotEmpty();
     }
@@ -106,7 +106,7 @@ public class ManageDocumentServiceTest {
     void shouldPersistExistingSupportingEvidenceBundleWhenExists() {
         List<Element<SupportingEvidenceBundle>> supportEvidenceBundle = buildSupportingEvidenceBundle();
         List<Element<SupportingEvidenceBundle>> updatedSupportEvidenceBundle =
-            manageDocumentService.initialiseSupportingEvidenceBundleCollection(supportEvidenceBundle);
+            manageDocumentService.getSupportingEvidenceBundle(supportEvidenceBundle);
 
         assertThat(updatedSupportEvidenceBundle).isEqualTo(supportEvidenceBundle);
     }
@@ -118,7 +118,7 @@ public class ManageDocumentServiceTest {
 
         CaseDetails caseDetails = CaseDetails.builder().data(data).build();
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundleCollection =
-            manageDocumentService.initialiseFurtherDocumentBundleCollection(caseDetails);
+            manageDocumentService.getFurtherEvidenceCollection(caseDetails);
 
         assertThat(supportingEvidenceBundleCollection).isNotEmpty();
         assertThat(supportingEvidenceBundleCollection.get(0).getValue())
@@ -135,7 +135,7 @@ public class ManageDocumentServiceTest {
 
         CaseDetails caseDetails = CaseDetails.builder().data(data).build();
         List<Element<SupportingEvidenceBundle>> furtherDocumentBundleCollection =
-            manageDocumentService.initialiseFurtherDocumentBundleCollection(caseDetails);
+            manageDocumentService.getFurtherEvidenceCollection(caseDetails);
 
         assertThat(furtherDocumentBundleCollection).isEqualTo(furtherEvidenceBundle);
     }
@@ -158,7 +158,7 @@ public class ManageDocumentServiceTest {
 
         CaseDetails caseDetails = CaseDetails.builder().data(data).build();
         List<Element<SupportingEvidenceBundle>> furtherDocumentBundleCollection =
-            manageDocumentService.initialiseFurtherDocumentBundleCollection(caseDetails);
+            manageDocumentService.getFurtherEvidenceCollection(caseDetails);
 
         assertThat(furtherDocumentBundleCollection).isEqualTo(furtherEvidenceBundle);
     }
@@ -172,8 +172,7 @@ public class ManageDocumentServiceTest {
                 .build()));
 
         List<Element<SupportingEvidenceBundle>> updatedCorrespondingDocuments
-            = manageDocumentService.setDateTimeUploadedOnManageDocumentCollection(correspondingDocuments,
-            List.of());
+            = manageDocumentService.setDateTimeUploadedOnSupporingEvidene(correspondingDocuments, List.of());
 
         List<SupportingEvidenceBundle> supportingEvidenceBundle = unwrapElements(updatedCorrespondingDocuments);
 
@@ -201,7 +200,7 @@ public class ManageDocumentServiceTest {
                 .build()));
 
         List<Element<SupportingEvidenceBundle>> updatedCorrespondingDocuments
-            = manageDocumentService.setDateTimeUploadedOnManageDocumentCollection(currentCorrespondingDocuments,
+            = manageDocumentService.setDateTimeUploadedOnSupporingEvidene(currentCorrespondingDocuments,
             previousCorrespondingDocuments);
 
         List<SupportingEvidenceBundle> supportingEvidenceBundle = unwrapElements(updatedCorrespondingDocuments);
@@ -226,7 +225,7 @@ public class ManageDocumentServiceTest {
             MANAGE_DOCUMENT_KEY, buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue())));
 
         CaseDetails caseDetails = CaseDetails.builder().data(data).build();
-        manageDocumentService.buildFurtherEvidenceCollection(caseDetails);
+        manageDocumentService.buildFinalFurtherEvidenceCollection(caseDetails);
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceBundle =
@@ -262,7 +261,7 @@ public class ManageDocumentServiceTest {
             MANAGE_DOCUMENT_KEY, buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue())));
 
         CaseDetails caseDetails = CaseDetails.builder().data(data).build();
-        manageDocumentService.buildFurtherEvidenceCollection(caseDetails);
+        manageDocumentService.buildFinalFurtherEvidenceCollection(caseDetails);
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceBundle =
@@ -297,7 +296,7 @@ public class ManageDocumentServiceTest {
             MANAGE_DOCUMENT_KEY, buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue())));
 
         CaseDetails caseDetails = CaseDetails.builder().data(data).build();
-        manageDocumentService.buildFurtherEvidenceCollection(caseDetails);
+        manageDocumentService.buildFinalFurtherEvidenceCollection(caseDetails);
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceBundle =
@@ -319,7 +318,7 @@ public class ManageDocumentServiceTest {
             MANAGE_DOCUMENT_KEY, buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, NO.getValue())));
 
         CaseDetails caseDetails = CaseDetails.builder().data(data).build();
-        manageDocumentService.buildFurtherEvidenceCollection(caseDetails);
+        manageDocumentService.buildFinalFurtherEvidenceCollection(caseDetails);
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         List<Element<SupportingEvidenceBundle>> evidenceBundle = caseData.getFurtherEvidenceDocuments();
