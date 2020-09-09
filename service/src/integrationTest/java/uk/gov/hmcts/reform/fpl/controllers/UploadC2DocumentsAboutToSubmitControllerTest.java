@@ -104,7 +104,7 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
 
         List<SupportingEvidenceBundle> supportingBundle = unwrapElements(documentBundle.getSupportingEvidenceBundle());
 
-        if(!Collections.isEmpty(supportingBundle)) {
+        if (!Collections.isEmpty(supportingBundle)) {
             SupportingEvidenceBundle supportingEvidenceBundle = supportingBundle.get(0);
             assertThat(supportingEvidenceBundle.getName()).isEqualTo("Supporting document");
             assertThat(supportingEvidenceBundle.getNotes()).isEqualTo("Document notes");
