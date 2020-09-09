@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import io.jsonwebtoken.lang.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,6 +92,7 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
         assertThat(caseData.getTemporaryC2Document()).isNull();
         assertThat(caseData.getC2DocumentBundle()).hasSize(2);
         assertThat(appendedC2Document.getAuthor()).isEqualTo(USER_NAME);
+        assertThat(appendedC2Document.getSupportingEvidenceBundle()).isNull();
     }
 
     private void assertC2BundleDocument(C2DocumentBundle documentBundle, String description) {
@@ -108,22 +108,20 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
         List<SupportingEvidenceBundle> supportingEvidenceBundle =
             unwrapElements(documentBundle.getSupportingEvidenceBundle());
 
-        if (!Collections.isEmpty(supportingEvidenceBundle)) {
-            assertThat(supportingEvidenceBundle).first()
-                .extracting(
-                    SupportingEvidenceBundle::getName,
-                    SupportingEvidenceBundle::getNotes,
-                    SupportingEvidenceBundle::getDateTimeReceived,
-                    SupportingEvidenceBundle::getDateTimeUploaded,
-                    SupportingEvidenceBundle::getDocument
-                ).containsExactly(
-                "Supporting document",
-                "Document notes",
-                time.now().minusDays(1),
-                time.now(),
-                document
-            );
-        }
+        assertThat(supportingEvidenceBundle).first()
+            .extracting(
+                SupportingEvidenceBundle::getName,
+                SupportingEvidenceBundle::getNotes,
+                SupportingEvidenceBundle::getDateTimeReceived,
+                SupportingEvidenceBundle::getDateTimeUploaded,
+                SupportingEvidenceBundle::getDocument
+            ).containsExactly(
+            "Supporting document",
+            "Document notes",
+            time.now().minusDays(1),
+            time.now(),
+            document
+        );
     }
 
     private Map<String, Object> createTemporaryC2Document() {
