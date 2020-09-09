@@ -70,8 +70,6 @@ exports.config = {
     uploadC2DocumentsEventPage: './e2e/pages/events/uploadC2DocumentsEvent.page.js',
     draftStandardDirectionsEventPage: './e2e/pages/events/draftStandardDirectionsEvent.page.js',
     createOrderEventPage: './e2e/pages/events/createOrderEvent.page.js',
-    complyWithDirectionsEventPage: './e2e/pages/events/complyWithDirectionsEvent.page.js',
-    complyOnBehalfOfOthersEventPage: './e2e/pages/events/complyOnBehalfOfOthersEvent.page.js',
     actionCaseManagementOrderEventPage: './e2e/pages/events/actionCaseManagementOrderEvent.page.js',
     placementEventPage: './e2e/pages/events/placementEvent.page.js',
     allocatedJudgeEventPage: './e2e/pages/events/enterAllocatedJudgeEvent.page.js',
