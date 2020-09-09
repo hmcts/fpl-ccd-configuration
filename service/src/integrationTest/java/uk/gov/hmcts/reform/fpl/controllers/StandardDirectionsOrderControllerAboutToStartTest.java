@@ -76,7 +76,7 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractControll
 
     @Test
     void shouldPopulateCurrentSDOFieldWithDocumentFromSDOWhenRouterIsUpload() {
-        CaseDetails caseDetails = buildCaseDetailsWithDocument();
+        CaseDetails caseDetails = buildCaseDetailsWithUploadedDocument();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
 
@@ -98,7 +98,7 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractControll
 
     @Test
     void shouldPopulateUploadRoutingPageConditionVariableWhenRouterIsUpload() {
-        CaseDetails caseDetails = buildCaseDetailsWithDocument();
+        CaseDetails caseDetails = buildCaseDetailsWithUploadedDocument();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
 
@@ -115,7 +115,7 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractControll
         return buildCaseDetails(date, null, route);
     }
 
-    private CaseDetails buildCaseDetailsWithDocument() {
+    private CaseDetails buildCaseDetailsWithUploadedDocument() {
         return buildCaseDetails(null, SDO, UPLOAD);
     }
 

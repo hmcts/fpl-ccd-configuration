@@ -107,7 +107,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
 
     @Test
     void shouldPopulateHiddenCCDFieldsInStandardDirectionOrderToPersistData() {
-        CaseDetails caseDetails = validCaseDetailsForServiceRoute(false);
+        CaseDetails caseDetails = validSealedCaseDetailsForServiceRoute(false);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
@@ -165,7 +165,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
 
     @Test
     void shouldUpdateStateWhenOrderIsSealedThroughServiceRouteAndRemoveRouter() {
-        CaseDetails caseDetails = validCaseDetailsForServiceRoute(true);
+        CaseDetails caseDetails = validSealedCaseDetailsForServiceRoute(true);
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
 
@@ -237,7 +237,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
         assertThat(unwrapElements(caseData.getCourtDirections())).containsOnly(fullyPopulatedDirection(COURT));
     }
 
-    private CaseDetails validCaseDetailsForServiceRoute(boolean withRouter) {
+    private CaseDetails validSealedCaseDetailsForServiceRoute(boolean withRouter) {
         ImmutableMap.Builder<String, Object> data = directionsWithShowHideValuesRemoved()
             .put("dateOfIssue", dateNow())
             .put("standardDirectionOrder", StandardDirectionOrder.builder().orderStatus(SEALED).build())
