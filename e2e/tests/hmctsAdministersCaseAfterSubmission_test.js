@@ -14,6 +14,7 @@ const expertReportLog = require('../fixtures/expertReportLog.js');
 const dateFormat = require('dateformat');
 const dateToString = require('../helpers/date_to_string_helper');
 const mandatoryWithMultipleChildren = require('../fixtures/mandatoryWithMultipleChildren.json');
+const supportingEvidenceDocuments = require('../fixtures/supportingEvidenceDocuments.js');
 
 let caseId;
 let submittedAt;
@@ -74,18 +75,27 @@ Scenario('HMCTS admin amends children, respondents, others, international elemen
     summaryText, descriptionText);
 });
 
-Scenario('HMCTS admin uploads standard directions with other documents', async (I, caseViewPage, uploadStandardDirectionsDocumentEventPage) => {
-  await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
-  uploadStandardDirectionsDocumentEventPage.uploadStandardDirections(config.testFile);
-  uploadStandardDirectionsDocumentEventPage.uploadAdditionalDocuments(config.testFile);
+Scenario('HMCTS admin uploads correspondence documents', async (I, caseViewPage, manageDocumentsEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
+  manageDocumentsEventPage.setSupportingEvidenceDocumentType('correspondenceDocuments');
+  await manageDocumentsEventPage.selectCorrespondence();
+  await I.retryUntilExists(() => I.click('Continue'), '#correspondenceDocuments');
+  await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[0]);
+  await I.addAnotherElementToCollection();
+  await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[1]);
   await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
-  I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
-  caseViewPage.selectTab(caseViewPage.tabs.documents);
-  I.see('mockFile.txt');
-  I.seeInTab(['Other documents 1', 'Document name'], 'Document 1');
-  I.seeInTab(['Other documents 1', 'Upload a file'], 'mockFile.txt');
-  I.seeInTab(['Other documents 2', 'Document name'], 'Document 2');
-  I.seeInTab(['Other documents 2', 'Upload a file'], 'mockFile.txt');
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageDocuments);
+  caseViewPage.selectTab(caseViewPage.tabs.correspondence);
+  I.seeInTab(['Correspondence document 1', 'Document name'], 'Email to say evidence will be late');
+  I.seeInTab(['Correspondence document 1', 'Notes'], 'Evidence will be late');
+  I.seeInTab(['Correspondence document 1', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
+  I.seeInTab(['Correspondence document 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
+  I.seeInTab(['Correspondence document 1', 'Upload document'], 'mockFile.txt');
+  I.seeInTab(['Correspondence document 2', 'Document name'], 'Email with evidence attached');
+  I.seeInTab(['Correspondence document 2', 'Notes'], 'Case evidence included');
+  I.seeInTab(['Correspondence document 2', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
+  I.seeInTab(['Correspondence document 2', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
+  I.seeInTab(['Correspondence document 2', 'Upload document'], 'mockFile.txt');
 });
 
 Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage, uploadC2DocumentsEventPage, paymentHistoryPage) => {
@@ -172,6 +182,32 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   I.seeInTab(['Hearing 2', 'Judge and Justices\' Legal Adviser', 'Title'], hearingDetails[1].judgeAndLegalAdvisor.otherTitle);
   I.seeInTab(['Hearing 2', 'Judge and Justices\' Legal Adviser', 'Last name'], hearingDetails[1].judgeAndLegalAdvisor.judgeLastName);
   I.seeInTab(['Hearing 2', 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name'], hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
+});
+
+Scenario('HMCTS admin uploads further hearing evidence documents', async (I, caseViewPage, manageDocumentsEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
+  manageDocumentsEventPage.setSupportingEvidenceDocumentType('furtherEvidenceDocumentsTEMP');
+  await manageDocumentsEventPage.selectFurtherEvidence();
+  await manageDocumentsEventPage.selectFurtherEvidenceIsRelatedToHearing();
+  await manageDocumentsEventPage.selectHearing('1 January 2050');
+  await I.retryUntilExists(() => I.click('Continue'), '#furtherEvidenceDocumentsTEMP');
+  await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[0]);
+  await I.addAnotherElementToCollection();
+  await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[1]);
+  await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageDocuments);
+  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  I.seeInTab(['Further evidence documents, hearing 1', 'Hearing'], 'Case management hearing, 1 January 2050');
+  I.seeInTab(['Further evidence documents, hearing 1', 'Documents 1', 'Document name'], 'Email to say evidence will be late');
+  I.seeInTab(['Further evidence documents, hearing 1', 'Documents 1', 'Notes'], 'Evidence will be late');
+  I.seeInTab(['Further evidence documents, hearing 1', 'Documents 1', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
+  I.seeInTab(['Further evidence documents, hearing 1', 'Documents 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
+  I.seeInTab(['Further evidence documents, hearing 1', 'Documents 1', 'Upload document'], 'mockFile.txt');
+  I.seeInTab(['Further evidence documents, hearing 1', 'Documents 2', 'Document name'], 'Email with evidence attached');
+  I.seeInTab(['Further evidence documents, hearing 1', 'Documents 2', 'Notes'], 'Case evidence included');
+  I.seeInTab(['Further evidence documents, hearing 1', 'Documents 2', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
+  I.seeInTab(['Further evidence documents, hearing 1', 'Documents 2', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
+  I.seeInTab(['Further evidence documents, hearing 1', 'Documents 2', 'Upload document'], 'mockFile.txt');
 });
 
 Scenario('HMCTS admin share case with representatives', async (I, caseViewPage, enterRepresentativesEventPage) => {

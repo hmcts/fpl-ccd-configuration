@@ -39,7 +39,7 @@ public class ManageDocumentService {
         this.time = time;
     }
 
-    public void initialiseFurtherEvidenceFields(CaseDetails caseDetails) {
+    public void initialiseHearingListAndLabel(CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (caseData.getManageDocument().isDocumentRelatedToHearing()) {
@@ -53,7 +53,7 @@ public class ManageDocumentService {
         }
     }
 
-    public List<Element<SupportingEvidenceBundle>> initialiseFurtherDocumentBundleCollection(CaseDetails caseDetails) {
+    public List<Element<SupportingEvidenceBundle>> getFurtherEvidenceCollection(CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (caseData.getManageDocument().isDocumentRelatedToHearing()
@@ -79,10 +79,10 @@ public class ManageDocumentService {
             return caseData.getFurtherEvidenceDocuments();
         }
 
-        return initialiseSupportingEvidenceBundleCollection(null);
+        return getSupportingEvidenceBundle(null);
     }
 
-    public List<Element<SupportingEvidenceBundle>> initialiseSupportingEvidenceBundleCollection(
+    public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle(
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundleList) {
         if (supportingEvidenceBundleList == null || supportingEvidenceBundleList.isEmpty()) {
             return List.of(element(SupportingEvidenceBundle.builder().build()));
@@ -91,7 +91,7 @@ public class ManageDocumentService {
         return supportingEvidenceBundleList;
     }
 
-    public void buildFurtherEvidenceCollection(CaseDetails caseDetails) {
+    public void buildFinalFurtherEvidenceCollection(CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
@@ -130,7 +130,7 @@ public class ManageDocumentService {
         }
     }
 
-    public List<Element<SupportingEvidenceBundle>> setDateTimeUploadedOnManageDocumentCollection(
+    public List<Element<SupportingEvidenceBundle>> setDateTimeUploadedOnSupporingEvidene(
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle,
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundleBefore) {
 

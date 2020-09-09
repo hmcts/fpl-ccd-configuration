@@ -53,22 +53,18 @@ public class ManageDocumentsController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        // TODO
-        // Validate date and time inputted
-
         switch (caseData.getManageDocument().getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
-                manageDocumentService.initialiseFurtherEvidenceFields(caseDetails);
+                manageDocumentService.initialiseHearingListAndLabel(caseDetails);
 
                 List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments =
-                    manageDocumentService.initialiseFurtherDocumentBundleCollection(caseDetails);
+                    manageDocumentService.getFurtherEvidenceCollection(caseDetails);
 
                 caseDetails.getData().put(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, furtherEvidenceDocuments);
                 break;
             case CORRESPONDENCE:
                 List<Element<SupportingEvidenceBundle>> correspondenceDocuments =
-                    manageDocumentService.initialiseSupportingEvidenceBundleCollection(
-                        caseData.getCorrespondenceDocuments());
+                    manageDocumentService.getSupportingEvidenceBundle(caseData.getCorrespondenceDocuments());
 
                 caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, correspondenceDocuments);
                 break;
@@ -82,10 +78,6 @@ public class ManageDocumentsController {
             .data(caseDetails.getData())
             .build();
     }
-
-    // TODO
-    // Refactor the below to just make use of the one mid event (hopefully possible)
-    // Currently have multiple to support differing collection heading and hint text
 
     @PostMapping("/validate-further-evidence/mid-event")
     public AboutToStartOrSubmitCallbackResponse validateFurtherEvidenceDocuments(
@@ -132,34 +124,22 @@ public class ManageDocumentsController {
 
         switch (caseData.getManageDocument().getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
-
-                // TODO
-                // Reconsider how we make sure object exists on caseData before
                 List<Element<SupportingEvidenceBundle>> previousFurtherEvidenceDocuments
-                    = caseDataBefore.getFurtherEvidenceDocumentsTEMP() != null
-                    ? caseDataBefore.getFurtherEvidenceDocumentsTEMP() : List.of();
+                    = getPreviousSupportingEvidenceBundle(caseDataBefore.getFurtherEvidenceDocumentsTEMP());
 
-                List<Element<SupportingEvidenceBundle>> updatedFurtherEvidenceDocuments =
-                    manageDocumentService.setDateTimeUploadedOnManageDocumentCollection(
+                List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments =
+                    manageDocumentService.setDateTimeUploadedOnSupporingEvidene(
                         caseData.getFurtherEvidenceDocumentsTEMP(), previousFurtherEvidenceDocuments);
 
-                caseDetails.getData().put(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY,
-                    updatedFurtherEvidenceDocuments);
-
-                manageDocumentService.buildFurtherEvidenceCollection(caseDetails);
-
-                caseDetails.getData().put(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, null);
+                caseDetails.getData().put(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, furtherEvidenceDocuments);
+                manageDocumentService.buildFinalFurtherEvidenceCollection(caseDetails);
                 break;
             case CORRESPONDENCE:
-
-                // TODO
-                // Reconsider how we make sure object exists on caseData before
                 List<Element<SupportingEvidenceBundle>> previousCorrespondenceDocuments
-                    = caseDataBefore.getCorrespondenceDocuments() != null
-                    ? caseDataBefore.getCorrespondenceDocuments() : List.of();
+                    = getPreviousSupportingEvidenceBundle(caseDataBefore.getCorrespondenceDocuments());
 
                 List<Element<SupportingEvidenceBundle>> updatedCorrespondenceDocuments =
-                    manageDocumentService.setDateTimeUploadedOnManageDocumentCollection(
+                    manageDocumentService.setDateTimeUploadedOnSupporingEvidene(
                         caseData.getCorrespondenceDocuments(), previousCorrespondenceDocuments);
 
                 caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, updatedCorrespondenceDocuments);
@@ -170,10 +150,16 @@ public class ManageDocumentsController {
                 break;
         }
 
+        caseDetails.getData().put(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, null);
         caseDetails.getData().remove(MANAGE_DOCUMENT_KEY);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
+    }
+
+    private List<Element<SupportingEvidenceBundle>> getPreviousSupportingEvidenceBundle(
+        List<Element<SupportingEvidenceBundle>> previousSupportingEvidenceBundle) {
+        return previousSupportingEvidenceBundle != null ? previousSupportingEvidenceBundle : List.of();
     }
 }
