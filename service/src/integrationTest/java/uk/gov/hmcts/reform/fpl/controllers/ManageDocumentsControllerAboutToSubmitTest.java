@@ -70,7 +70,7 @@ public class ManageDocumentsControllerAboutToSubmitTest extends AbstractControll
         assertThat(caseData.getHearingFurtherEvidenceDocuments().get(0).getValue()
             .getSupportingEvidenceBundle()).isEqualTo(furtherEvidenceBundle);
 
-        assertThat(caseData.getFurtherEvidenceDocumentsTEMP()).isNull();
+        assertThat(caseData.getFurtherEvidenceDocumentsTEMP()).isEmpty();
     }
 
     @Test
@@ -90,9 +90,8 @@ public class ManageDocumentsControllerAboutToSubmitTest extends AbstractControll
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
         assertThat(caseData.getFurtherEvidenceDocuments()).isEqualTo(furtherEvidenceBundle);
-        assertThat(caseData.getFurtherEvidenceDocumentsTEMP()).isNull();
+        assertThat(caseData.getFurtherEvidenceDocumentsTEMP()).isEmpty();
         assertThat(caseData.getManageDocument()).isNull();
-
     }
 
     @Test

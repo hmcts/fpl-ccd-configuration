@@ -88,9 +88,9 @@ public class ManageDocumentService {
     public List<Element<HearingFurtherEvidenceBundle>> buildHearingFurtherEvidenceCollection(
         CaseData caseData, List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle) {
 
-        List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceBundle =
-            caseData.getHearingFurtherEvidenceDocuments();
+        List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceBundle;
 
+        hearingFurtherEvidenceBundle = caseData.getHearingFurtherEvidenceDocuments();
         UUID selectedHearingCode = getDynamicListValueCode(caseData.getManageDocumentsHearingList(), mapper);
         HearingBooking hearingBooking = getHearingBookingByUUID(caseData.getHearingDetails(), selectedHearingCode);
 

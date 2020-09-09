@@ -594,6 +594,14 @@ public class CaseData {
     private final Object manageDocumentsHearingList;
     private final Object manageDocumentsSupportingC2List;
 
+    public List<Element<SupportingEvidenceBundle>> getFurtherEvidenceDocumentsTEMP() {
+        return defaultIfNull(furtherEvidenceDocumentsTEMP, new ArrayList<>());
+    }
+
+    public List<Element<SupportingEvidenceBundle>> getCorrespondenceDocuments() {
+        return defaultIfNull(correspondenceDocuments, new ArrayList<>());
+    }
+
     public List<Element<HearingFurtherEvidenceBundle>> getHearingFurtherEvidenceDocuments() {
         return defaultIfNull(hearingFurtherEvidenceDocuments, new ArrayList<>());
     }
