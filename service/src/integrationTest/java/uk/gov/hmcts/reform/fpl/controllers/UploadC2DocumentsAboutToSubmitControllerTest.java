@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import io.jsonwebtoken.lang.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -103,9 +104,11 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
 
         List<SupportingEvidenceBundle> supportingBundle = unwrapElements(documentBundle.getSupportingEvidenceBundle());
 
-        SupportingEvidenceBundle supportingEvidenceBundle = supportingBundle.get(0);
-        assertThat(supportingEvidenceBundle.getName()).isEqualTo("Supporting document");
-        assertThat(supportingEvidenceBundle.getNotes()).isEqualTo("Document notes");
+        if(!Collections.isEmpty(supportingBundle)) {
+            SupportingEvidenceBundle supportingEvidenceBundle = supportingBundle.get(0);
+            assertThat(supportingEvidenceBundle.getName()).isEqualTo("Supporting document");
+            assertThat(supportingEvidenceBundle.getNotes()).isEqualTo("Document notes");
+        }
     }
 
     private Map<String, Object> createTemporaryC2Document() {

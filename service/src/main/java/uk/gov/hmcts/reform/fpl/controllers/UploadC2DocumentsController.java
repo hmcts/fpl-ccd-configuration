@@ -40,6 +40,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static io.jsonwebtoken.lang.Collections.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -182,7 +183,7 @@ public class UploadC2DocumentsController extends CallbackController {
             .author(idamClient.getUserInfo(requestData.authorisation()).getName())
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
             .supportingEvidenceBundle(
-                updatedSupportingEvidenceBundle.size() > 0 ? wrapElements(updatedSupportingEvidenceBundle) : null);
+                isEmpty(updatedSupportingEvidenceBundle) ? wrapElements(updatedSupportingEvidenceBundle) : null);
 
         c2DocumentBundleBuilder.type(caseData.getC2ApplicationType().get("type"));
 
