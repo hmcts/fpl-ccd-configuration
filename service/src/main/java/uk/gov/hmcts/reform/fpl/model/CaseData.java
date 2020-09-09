@@ -55,6 +55,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 import javax.validation.Valid;
 import javax.validation.constraints.Future;
@@ -241,6 +242,15 @@ public class CaseData {
             .map(c2DocumentBundles -> c2DocumentBundles.get(c2DocumentBundles.size() - 1))
             .findFirst()
             .orElse(null);
+    }
+
+    public DynamicList buildC2DocumentDynamicList(UUID selected) {
+        AtomicInteger i = new AtomicInteger(1);
+        return asDynamicList(c2DocumentBundle, selected, documentBundle -> "Application " + i.getAndIncrement() + ": ");
+    }
+
+    public DynamicList buildC2DocumentDynamicList() {
+        return buildC2DocumentDynamicList(null);
     }
 
     private final Map<String, C2ApplicationType> c2ApplicationType;

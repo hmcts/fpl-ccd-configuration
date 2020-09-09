@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -651,23 +652,61 @@ class CaseDataTest {
 
         @Test
         void shouldBuildDynamicHearingListWithSelectorPropertyFromHearingDetails() {
-            UUID selectHearingId = randomUUID();
+            UUID selectedHearingId = randomUUID();
 
             List<Element<HearingBooking>> hearingBookings = List.of(
                 element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))),
                 element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3))),
                 element(createHearingBooking(futureDate, futureDate.plusDays(1))),
                 Element.<HearingBooking>builder()
-                    .id(selectHearingId)
+                    .id(selectedHearingId)
                     .value(createHearingBooking(futureDate, futureDate.plusDays(3)))
                     .build());
 
             CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
             DynamicList expectedDynamicList = ElementUtils
-                .asDynamicList(hearingBookings, selectHearingId, hearingBooking -> hearingBooking.toLabel(DATE));
+                .asDynamicList(hearingBookings, selectedHearingId, hearingBooking -> hearingBooking.toLabel(DATE));
 
-            assertThat(caseData.buildDynamicHearingList(selectHearingId))
+            assertThat(caseData.buildDynamicHearingList(selectedHearingId))
                 .isEqualTo(expectedDynamicList);
+        }
+    }
+
+    @Nested
+    class BuildDynamicC2DocumentBundleList {
+        @Test
+        void shouldBuildDynamicC2DocumentBundleListFromC2Documents() {
+            List<Element<C2DocumentBundle>> c2DocumentBundle = List.of(
+                element(buildC2DocumentBundle(futureDate.plusDays(2))),
+                element(buildC2DocumentBundle(futureDate.plusDays(1))));
+
+            CaseData caseData = CaseData.builder().c2DocumentBundle(c2DocumentBundle).build();
+            AtomicInteger i = new AtomicInteger(1);
+            DynamicList expectedDynamicList = ElementUtils
+                .asDynamicList(c2DocumentBundle, null, documentBundle
+                    -> "Application " + i.getAndIncrement() + ": ");
+
+            assertThat(caseData.buildC2DocumentDynamicList()).isEqualTo(expectedDynamicList);
+        }
+
+        @Test
+        void shouldBuildDynamicHearingListWithSelectorPropertyFromHearingDetails() {
+            UUID selectedC2Id = randomUUID();
+
+            List<Element<C2DocumentBundle>> c2DocumentBundle = List.of(
+                element(buildC2DocumentBundle(futureDate.plusDays(2))),
+                element(buildC2DocumentBundle(futureDate.plusDays(1))),
+                Element.<C2DocumentBundle>builder()
+                    .id(selectedC2Id)
+                    .value(buildC2DocumentBundle(futureDate.plusDays(5))).build());
+
+            CaseData caseData = CaseData.builder().c2DocumentBundle(c2DocumentBundle).build();
+            AtomicInteger i = new AtomicInteger(1);
+            DynamicList expectedDynamicList = ElementUtils
+                .asDynamicList(c2DocumentBundle, null, documentBundle
+                    -> "Application " + i.getAndIncrement() + ": ");
+
+            assertThat(caseData.buildC2DocumentDynamicList()).isEqualTo(expectedDynamicList);
         }
     }
 
@@ -745,5 +784,9 @@ class CaseDataTest {
 
         return format("{\"%s\": [{\"id\":\"%s\",\"value\":{\"directionType\":\"title\",\"assignee\":\"%s\","
             + "\"readOnly\":\"No\",\"custom\":\"Yes\",\"responses\":[]}}]}", key, id, assignee.toString());
+    }
+
+    private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {
+        return C2DocumentBundle.builder().uploadedDateTime(dateTime.toString()).build();
     }
 }

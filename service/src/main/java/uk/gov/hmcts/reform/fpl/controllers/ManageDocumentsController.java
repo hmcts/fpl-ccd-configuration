@@ -22,6 +22,7 @@ import java.util.List;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENT_KEY;
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 
 @Api
@@ -40,8 +41,9 @@ public class ManageDocumentsController {
 
         caseDetails.getData().put(MANAGE_DOCUMENTS_HEARING_LIST_KEY, caseData.buildDynamicHearingList());
 
-        // TODO
-        // Populate C2 supporting list
+        if (hasC2DocumentBundle(caseData)) {
+            caseDetails.getData().put(SUPPORTING_C2_LIST_KEY, caseData.buildC2DocumentDynamicList());
+        }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -161,5 +163,9 @@ public class ManageDocumentsController {
     private List<Element<SupportingEvidenceBundle>> getPreviousSupportingEvidenceBundle(
         List<Element<SupportingEvidenceBundle>> previousSupportingEvidenceBundle) {
         return previousSupportingEvidenceBundle != null ? previousSupportingEvidenceBundle : List.of();
+    }
+
+    private boolean hasC2DocumentBundle(CaseData caseData) {
+        return caseData.getC2DocumentBundle() != null && !caseData.getC2DocumentBundle().isEmpty();
     }
 }
