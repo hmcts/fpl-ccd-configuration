@@ -128,7 +128,7 @@ Scenario('Gatekeeper drafts standard directions', async (I, caseViewPage, draftS
   I.seeInTab(['Directions 1', 'Description'], 'Your request must be in line with Family Procedure Rules part 25 and Practice Direction 25C. Give other parties a list of names of suitable experts.');
   I.seeInTab(['Directions 1', 'For'], 'All parties');
   I.seeInTab(['Directions 1', 'Due date and time'], '1 Jan 2050, 12:00:00 PM');
-}).retry(2); // Retry on error, this should help with the data altered outside of transaction issue
+});
 
 Scenario('Gatekeeper submits final version of standard directions', async (I, caseViewPage, draftStandardDirectionsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
