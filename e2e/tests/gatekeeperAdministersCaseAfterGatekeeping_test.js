@@ -4,7 +4,6 @@ const directions = require('../fixtures/directions.js');
 const dateFormat = require('dateformat');
 const dateToString = require('../helpers/date_to_string_helper');
 const gatekeepingNoHearingDetails = require('../fixtures/gatekeepingNoHearingDetails.json');
-const gatekeeping = require('../fixtures/gatekeeping.json');
 
 let caseId;
 
@@ -156,34 +155,4 @@ Scenario('Gatekeeper submits final version of standard directions', async (I, ca
     config.applicationActions.enterAllocationDecision,
     config.administrationActions.draftStandardDirections,
   ]);
-});
-
-Scenario('Gatekeeper uploads draft standard directions', async (I, caseViewPage, draftStandardDirectionsEventPage) => {
-  caseId = await I.submitNewCaseWithData(gatekeeping);
-  await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
-
-  await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
-  await draftStandardDirectionsEventPage.createSDOThroughUpload();
-  await draftStandardDirectionsEventPage.uploadPreparedSDO(config.testNonEmptyPdfFile);
-  await draftStandardDirectionsEventPage.markAsDraft();
-  await I.completeEvent('Save and continue');
-
-  caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
-  I.see('Draft gatekeeping order');
-  I.seeInTab(['Gatekeeping order', 'File'], 'mockFile.pdf');
-  I.seeInTab(['Gatekeeping order', 'Date uploaded'], dateFormat('d mmm yyyy'));
-  I.seeInTab(['Gatekeeping order', 'Uploaded by'], 'Uploaded by'); // Asserting row is there, data in local and aat are different
-});
-
-Scenario('Gatekeeper uploads final standard directions', async (I, caseViewPage, draftStandardDirectionsEventPage) => {
-  await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
-  I.see('mockFile.pdf');
-  await draftStandardDirectionsEventPage.uploadReplacementSDO(config.testNonEmptyWordFile);
-  await draftStandardDirectionsEventPage.markAsFinal();
-  await I.completeEvent('Save and continue');
-
-  caseViewPage.selectTab(caseViewPage.tabs.orders);
-  I.seeInTab(['Gatekeeping order', 'File'], 'mockFile.pdf');
-  I.seeInTab(['Gatekeeping order', 'Date uploaded'], dateFormat('d mmm yyyy'));
-  I.seeInTab(['Gatekeeping order', 'Uploaded by'], 'Uploaded by'); // Asserting row is there, data in local and aat are different
 });
