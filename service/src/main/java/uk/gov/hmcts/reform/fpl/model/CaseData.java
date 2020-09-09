@@ -594,8 +594,12 @@ public class CaseData {
     private final Object manageDocumentsHearingList;
     private final Object manageDocumentsSupportingC2List;
 
+    public List<Element<HearingFurtherEvidenceBundle>> getHearingFurtherEvidenceDocuments() {
+        return defaultIfNull(hearingFurtherEvidenceDocuments, new ArrayList<>());
+    }
+
     public boolean documentBundleContainsHearingId(UUID hearingId) {
-        return hearingFurtherEvidenceDocuments.stream()
+        return getHearingFurtherEvidenceDocuments().stream()
             .anyMatch(element -> element.getId().equals(hearingId));
     }
 

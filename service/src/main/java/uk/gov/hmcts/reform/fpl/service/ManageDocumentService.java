@@ -4,13 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.HashMap;
@@ -87,42 +85,27 @@ public class ManageDocumentService {
         return supportingEvidenceBundleList;
     }
 
-    public void buildFinalFurtherEvidenceCollection(CaseDetails caseDetails) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+    public List<Element<HearingFurtherEvidenceBundle>> buildHearingFurtherEvidenceCollection(
+        CaseData caseData, List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle) {
 
-        List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
+        List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceBundle =
+            caseData.getHearingFurtherEvidenceDocuments();
 
-        if (caseData.getManageDocument().isDocumentRelatedToHearing()) {
-            DynamicList hearingList = mapper.convertValue(caseDetails.getData().get(MANAGE_DOCUMENTS_HEARING_LIST_KEY),
-                DynamicList.class);
+        UUID selectedHearingCode = getDynamicListValueCode(caseData.getManageDocumentsHearingList(), mapper);
+        HearingBooking hearingBooking = getHearingBookingByUUID(caseData.getHearingDetails(), selectedHearingCode);
 
-            UUID selectedHearingCode = hearingList.getValue().getCode();
-            HearingBooking hearingBooking = getHearingBookingByUUID(caseData.getHearingDetails(), selectedHearingCode);
-
-            if (caseData.getHearingFurtherEvidenceDocuments() == null) {
-                hearingFurtherEvidenceDocuments = List.of(
-                    buildHearingSupportingEvidenceBundle(selectedHearingCode, hearingBooking,
-                        caseData.getFurtherEvidenceDocumentsTEMP()));
-            } else if (caseData.documentBundleContainsHearingId(selectedHearingCode)) {
-                hearingFurtherEvidenceDocuments = caseData.getHearingFurtherEvidenceDocuments().stream()
-                    .filter(element -> element.getId().equals(selectedHearingCode))
-                    .peek(element ->
-                        element.getValue().setSupportingEvidenceBundle(caseData.getFurtherEvidenceDocumentsTEMP()))
-                    .collect(Collectors.toList());
-            } else {
-                Element<HearingFurtherEvidenceBundle> hearingFurtherEvidenceBundleElement =
-                    buildHearingSupportingEvidenceBundle(selectedHearingCode, hearingBooking,
-                        caseData.getFurtherEvidenceDocumentsTEMP());
-
-                caseData.getHearingFurtherEvidenceDocuments().add(hearingFurtherEvidenceBundleElement);
-                hearingFurtherEvidenceDocuments = caseData.getHearingFurtherEvidenceDocuments();
-            }
-
-            caseDetails.getData().put(HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY,
-                hearingFurtherEvidenceDocuments);
+        if (caseData.documentBundleContainsHearingId(selectedHearingCode)) {
+            return hearingFurtherEvidenceBundle.stream()
+                .filter(element -> element.getId().equals(selectedHearingCode))
+                .peek(element -> element.getValue().setSupportingEvidenceBundle(supportingEvidenceBundle))
+                .collect(Collectors.toList());
         } else {
-            caseDetails.getData().put(FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY,
-                caseData.getFurtherEvidenceDocumentsTEMP());
+            hearingFurtherEvidenceBundle.add(buildHearingSupportingEvidenceBundle(
+                selectedHearingCode,
+                hearingBooking,
+                supportingEvidenceBundle
+            ));
+            return hearingFurtherEvidenceBundle;
         }
     }
 

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -8,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -25,7 +23,7 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -35,9 +33,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
-import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENT_KEY;
-import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
@@ -46,20 +41,20 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, FixedTimeConfiguration.class})
+@ContextConfiguration(classes = {
+    JacksonAutoConfiguration.class, FixedTimeConfiguration.class, ManageDocumentService.class
+})
 public class ManageDocumentServiceTest {
-    @Autowired
-    private ObjectMapper mapper;
-
     @Autowired
     private Time time;
 
+    @Autowired
     private ManageDocumentService manageDocumentService;
+
     private LocalDateTime futureDate;
 
     @BeforeEach
     void before() {
-        manageDocumentService = new ManageDocumentService(mapper, time);
         futureDate = time.now().plusDays(1);
     }
 
@@ -214,22 +209,14 @@ public class ManageDocumentServiceTest {
         UUID hearingId = UUID.randomUUID();
         HearingBooking hearingBooking = buildFinalHearingBooking();
 
-        Map<String, Object> data = new HashMap<>(Map.of(
-            "hearingDetails", List.of(element(hearingId, hearingBooking)),
-            "manageDocumentsHearingList", DynamicList.builder()
-                .value(DynamicListElement.builder()
-                    .code(hearingId)
-                    .build())
-                .build(),
-            TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, furtherEvidenceBundle,
-            MANAGE_DOCUMENT_KEY, buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue())));
-
-        CaseDetails caseDetails = CaseDetails.builder().data(data).build();
-        manageDocumentService.buildFinalFurtherEvidenceCollection(caseDetails);
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(List.of(element(hearingId, hearingBooking)))
+            .manageDocumentsHearingList(buildDynamicList(hearingId))
+            .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue()))
+            .build();
 
         List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceBundle =
-            caseData.getHearingFurtherEvidenceDocuments();
+            manageDocumentService.buildHearingFurtherEvidenceCollection(caseData, furtherEvidenceBundle);
 
         Element<HearingFurtherEvidenceBundle> furtherEvidenceBundleElement = hearingFurtherEvidenceBundle.get(0);
 
@@ -245,27 +232,20 @@ public class ManageDocumentServiceTest {
         UUID hearingId = UUID.randomUUID();
         HearingBooking hearingBooking = buildFinalHearingBooking();
 
-        Map<String, Object> data = new HashMap<>(Map.of(
-            "hearingDetails", List.of(element(hearingId, hearingBooking)),
-            "manageDocumentsHearingList", DynamicList.builder()
-                .value(DynamicListElement.builder()
-                    .code(hearingId)
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(List.of(element(hearingId, hearingBooking)))
+            .manageDocumentsHearingList(buildDynamicList(hearingId))
+            .hearingFurtherEvidenceDocuments(List.of(element(
+                hearingId,
+                HearingFurtherEvidenceBundle.builder()
+                    .supportingEvidenceBundle(List.of(element(SupportingEvidenceBundle.builder().build())))
                     .build())
-                .build(),
-            HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, List.of(
-                element(hearingId, HearingFurtherEvidenceBundle.builder()
-                    .supportingEvidenceBundle(List.of(
-                        element(SupportingEvidenceBundle.builder().build())))
-                    .build())),
-            TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, furtherEvidenceBundle,
-            MANAGE_DOCUMENT_KEY, buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue())));
-
-        CaseDetails caseDetails = CaseDetails.builder().data(data).build();
-        manageDocumentService.buildFinalFurtherEvidenceCollection(caseDetails);
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+            ))
+            .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue()))
+            .build();
 
         List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceBundle =
-            caseData.getHearingFurtherEvidenceDocuments();
+            manageDocumentService.buildHearingFurtherEvidenceCollection(caseData, furtherEvidenceBundle);
 
         Element<HearingFurtherEvidenceBundle> furtherEvidenceBundleElement = hearingFurtherEvidenceBundle.get(0);
         Element<SupportingEvidenceBundle> supportingEvidenceBundleElement
@@ -280,27 +260,20 @@ public class ManageDocumentServiceTest {
         UUID hearingId = UUID.randomUUID();
         HearingBooking hearingBooking = buildFinalHearingBooking();
 
-        Map<String, Object> data = new HashMap<>(Map.of(
-            "hearingDetails", List.of(element(hearingId, hearingBooking)),
-            "manageDocumentsHearingList", DynamicList.builder()
-                .value(DynamicListElement.builder()
-                    .code(hearingId)
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(List.of(element(hearingId, hearingBooking)))
+            .manageDocumentsHearingList(buildDynamicList(hearingId))
+            .hearingFurtherEvidenceDocuments(new ArrayList<>(List.of(element(
+                randomUUID(),
+                HearingFurtherEvidenceBundle.builder()
+                    .supportingEvidenceBundle(List.of(element(SupportingEvidenceBundle.builder().build())))
                     .build())
-                .build(),
-            HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, List.of(
-                element(UUID.randomUUID(), HearingFurtherEvidenceBundle.builder()
-                    .supportingEvidenceBundle(List.of(
-                        element(SupportingEvidenceBundle.builder().build())))
-                    .build())),
-            TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, supportingEvidenceBundle,
-            MANAGE_DOCUMENT_KEY, buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue())));
-
-        CaseDetails caseDetails = CaseDetails.builder().data(data).build();
-        manageDocumentService.buildFinalFurtherEvidenceCollection(caseDetails);
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+            )))
+            .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue()))
+            .build();
 
         List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceBundle =
-            caseData.getHearingFurtherEvidenceDocuments();
+            manageDocumentService.buildHearingFurtherEvidenceCollection(caseData, supportingEvidenceBundle);
 
         Element<HearingFurtherEvidenceBundle> furtherEvidenceBundleElement = hearingFurtherEvidenceBundle.get(1);
 
@@ -310,37 +283,26 @@ public class ManageDocumentServiceTest {
             .isEqualTo(supportingEvidenceBundle);
     }
 
-    @Test
-    void shouldAppendToFurtherEvidenceBundleIfUnrelatedToAHearing() {
-        List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
-        Map<String, Object> data = new HashMap<>(Map.of(
-            TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, furtherEvidenceBundle,
-            MANAGE_DOCUMENT_KEY, buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, NO.getValue())));
-
-        CaseDetails caseDetails = CaseDetails.builder().data(data).build();
-        manageDocumentService.buildFinalFurtherEvidenceCollection(caseDetails);
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
-        List<Element<SupportingEvidenceBundle>> evidenceBundle = caseData.getFurtherEvidenceDocuments();
-        assertThat(evidenceBundle).isEqualTo(furtherEvidenceBundle);
-    }
-
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
         return wrapElements(SupportingEvidenceBundle.builder().name("test").build());
     }
 
-    private ManageDocument buildManagementDocument(ManageDocumentType type) {
-        return ManageDocument.builder().type(type).build();
-    }
-
     private ManageDocument buildManagementDocument(ManageDocumentType type, String isRelatedToHearing) {
-        return buildManagementDocument(type).toBuilder().relatedToHearing(isRelatedToHearing).build();
+        return ManageDocument.builder().type(type).relatedToHearing(isRelatedToHearing).build();
     }
 
     private HearingBooking buildFinalHearingBooking() {
         return HearingBooking.builder()
             .type(HearingType.FINAL)
             .startDate(time.now())
+            .build();
+    }
+
+    private DynamicList buildDynamicList(UUID selectedId) {
+        return DynamicList.builder()
+            .value(DynamicListElement.builder()
+                .code(selectedId)
+                .build())
             .build();
     }
 }

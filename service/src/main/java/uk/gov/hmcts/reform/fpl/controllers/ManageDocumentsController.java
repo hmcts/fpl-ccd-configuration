@@ -20,6 +20,8 @@ import uk.gov.hmcts.reform.fpl.service.SupportingEvidenceValidatorService;
 import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
@@ -126,15 +128,23 @@ public class ManageDocumentsController {
 
         switch (caseData.getManageDocument().getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
-                List<Element<SupportingEvidenceBundle>> previousFurtherEvidenceDocuments
-                    = getPreviousSupportingEvidenceBundle(caseDataBefore.getFurtherEvidenceDocumentsTEMP());
+                List<Element<SupportingEvidenceBundle>> previousBundle = getPreviousSupportingEvidenceBundle(
+                    caseDataBefore.getFurtherEvidenceDocumentsTEMP()
+                );
 
-                List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments =
+                List<Element<SupportingEvidenceBundle>> currentBundle =
                     manageDocumentService.setDateTimeUploadedOnSupportingEvidence(
-                        caseData.getFurtherEvidenceDocumentsTEMP(), previousFurtherEvidenceDocuments);
+                        caseData.getFurtherEvidenceDocumentsTEMP(), previousBundle
+                    );
 
-                caseDetails.getData().put(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, furtherEvidenceDocuments);
-                manageDocumentService.buildFinalFurtherEvidenceCollection(caseDetails);
+                if (caseData.getManageDocument().isDocumentRelatedToHearing()) {
+                    caseDetails.getData().put(
+                        HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY,
+                        manageDocumentService.buildHearingFurtherEvidenceCollection(caseData, currentBundle)
+                    );
+                } else {
+                    caseDetails.getData().put(FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, currentBundle);
+                }
                 break;
             case CORRESPONDENCE:
                 List<Element<SupportingEvidenceBundle>> previousCorrespondenceDocuments
