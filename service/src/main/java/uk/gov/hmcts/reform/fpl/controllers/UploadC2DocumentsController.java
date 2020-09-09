@@ -181,7 +181,8 @@ public class UploadC2DocumentsController extends CallbackController {
         var c2DocumentBundleBuilder = caseData.getTemporaryC2Document().toBuilder()
             .author(idamClient.getUserInfo(requestData.authorisation()).getName())
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
-            .supportingEvidenceBundle(wrapElements(updatedSupportingEvidenceBundle));
+            .supportingEvidenceBundle(
+                updatedSupportingEvidenceBundle.size() > 0 ? wrapElements(updatedSupportingEvidenceBundle) : null);
 
         c2DocumentBundleBuilder.type(caseData.getC2ApplicationType().get("type"));
 
