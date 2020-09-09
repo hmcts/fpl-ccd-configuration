@@ -529,7 +529,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "limitedUploadDocuments",
     "UserRole": "[SOLICITOR]",
-    "CRUD": "R"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -942,7 +942,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "limitedUploadDocuments",
     "UserRole": "[CAFCASSSOLICITOR]",
-    "CRUD": "R"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
