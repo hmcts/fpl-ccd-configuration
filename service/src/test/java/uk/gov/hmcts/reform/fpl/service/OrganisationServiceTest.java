@@ -17,12 +17,16 @@ import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
 import uk.gov.hmcts.reform.fpl.exceptions.UserOrganisationLookupException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
+import uk.gov.hmcts.reform.rd.model.AddCaseAssignedUserRolesRequest;
+import uk.gov.hmcts.reform.rd.model.AddCaseAssignedUserRolesResponse;
+import uk.gov.hmcts.reform.rd.model.CaseAssignedUserRoleWithOrganisation;
 import uk.gov.hmcts.reform.rd.model.ContactInformation;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 import uk.gov.hmcts.reform.rd.model.OrganisationUser;
 import uk.gov.hmcts.reform.rd.model.OrganisationUsers;
 import uk.gov.hmcts.reform.rd.model.Status;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -179,9 +183,7 @@ class OrganisationServiceTest {
     void shouldReturnEmptyOrganisationBuilderWhenOrganisationNotFound() {
         when(organisationApi.findOrganisationById(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID))
             .thenThrow(new FeignException.NotFound("Organisation not found", REQUEST, new byte[] {}));
-
         Organisation organisation = organisationService.findOrganisation();
-
         assertThat(organisation).isEqualTo(EMPTY_ORGANISATION);
     }
 
@@ -192,6 +194,34 @@ class OrganisationServiceTest {
 
         assertThatThrownBy(() -> organisationApi.findOrganisationById(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID))
             .isInstanceOf(FeignException.NotFound.class);
+    }
+
+    @Test
+    void shouldAddCaseUserRole() {
+        AddCaseAssignedUserRolesResponse response = organisationApi.addCaseUserRoles(AUTH_TOKEN_ID,
+                                                                                    SERVICE_AUTH_TOKEN_ID,
+                                                                                    buildCaseRoleRequest());
+
+        AddCaseAssignedUserRolesResponse testResponse = organisationService.addCaseUserRoles("12345");
+        assertThat(response).isEqualTo(testResponse);
+    }
+
+    private AddCaseAssignedUserRolesRequest buildCaseRoleRequest() {
+
+        List<CaseAssignedUserRoleWithOrganisation> organisations = new ArrayList<>();
+        CaseAssignedUserRoleWithOrganisation org = new CaseAssignedUserRoleWithOrganisation();
+        org.setOrganisationId("12345");
+        organisations.add(org);
+        AddCaseAssignedUserRolesRequest addCaseRequest = new AddCaseAssignedUserRolesRequest();
+        addCaseRequest.setCaseAssignedUserRoles(organisations);
+        return addCaseRequest;
+    }
+
+    private AddCaseAssignedUserRolesResponse buildCaseRoleErrorResponse() {
+
+        AddCaseAssignedUserRolesResponse addCaseResponse = new AddCaseAssignedUserRolesResponse();
+        addCaseResponse.setStatus("Error");
+        return addCaseResponse;
     }
 
     private static Organisation buildOrganisation() {

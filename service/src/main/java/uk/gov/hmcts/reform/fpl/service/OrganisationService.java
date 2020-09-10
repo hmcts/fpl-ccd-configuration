@@ -14,10 +14,14 @@ import uk.gov.hmcts.reform.fpl.exceptions.UserOrganisationLookupException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.utils.MaskHelper;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
+import uk.gov.hmcts.reform.rd.model.AddCaseAssignedUserRolesRequest;
+import uk.gov.hmcts.reform.rd.model.AddCaseAssignedUserRolesResponse;
+import uk.gov.hmcts.reform.rd.model.CaseAssignedUserRoleWithOrganisation;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 import uk.gov.hmcts.reform.rd.model.OrganisationUser;
 import uk.gov.hmcts.reform.rd.model.Status;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -91,6 +95,27 @@ public class OrganisationService {
         } catch (FeignException ex) {
             log.error("Could not find the associated organisation from reference data", ex);
             return Organisation.builder().build();
+        }
+    }
+
+    public AddCaseAssignedUserRolesResponse addCaseUserRoles(String organisationId) {
+        try {
+            List<CaseAssignedUserRoleWithOrganisation> organisations = new ArrayList<>();
+            CaseAssignedUserRoleWithOrganisation org = new CaseAssignedUserRoleWithOrganisation();
+            org.setOrganisationId(organisationId);
+            organisations.add(org);
+            AddCaseAssignedUserRolesRequest addCaseRequest = new AddCaseAssignedUserRolesRequest();
+            addCaseRequest.setCaseAssignedUserRoles(organisations);
+
+            return organisationApi.addCaseUserRoles(requestData.authorisation(),
+                authTokenGenerator.generate(), addCaseRequest);
+
+        } catch (FeignException ex) {
+            log.error("Could not find the case users for associated organisation from reference data", ex);
+            String statusMessage = ex.getMessage();
+            AddCaseAssignedUserRolesResponse addCaseResponse = new AddCaseAssignedUserRolesResponse();
+            addCaseResponse.setStatus(statusMessage);
+            return addCaseResponse;
         }
     }
 }
