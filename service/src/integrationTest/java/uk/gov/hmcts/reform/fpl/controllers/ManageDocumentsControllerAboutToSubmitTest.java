@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -13,17 +14,21 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.C2;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -31,6 +36,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -42,6 +48,9 @@ public class ManageDocumentsControllerAboutToSubmitTest extends AbstractControll
     ManageDocumentsControllerAboutToSubmitTest() {
         super("manage-documents");
     }
+
+    @Autowired
+    private Time time;
 
     @Test
     void shouldPopulateHearingFurtherDocumentsCollection() {
@@ -115,9 +124,35 @@ public class ManageDocumentsControllerAboutToSubmitTest extends AbstractControll
 
     @Test
     void shouldPopulateC2DocumentBundleCollection() {
-        // TODO
-        // Test needed to assert c2 document bundle is built
-        // Should just be able to re-use the majority of what is done in the equiv service test
+        UUID selectedC2DocumentId = UUID.randomUUID();
+        C2DocumentBundle selectedC2DocumentBundle = buildC2DocumentBundle(time.now().plusDays(2));
+        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle = buildSupportingEvidenceBundle(time.now().plusDays(3));
+
+        List<Element<C2DocumentBundle>> c2DocumentBundleList = List.of(
+            element(buildC2DocumentBundle(time.now().plusDays(2))),
+            element(selectedC2DocumentId, selectedC2DocumentBundle),
+            element(buildC2DocumentBundle(time.now().plusDays(2))));
+
+        AtomicInteger i = new AtomicInteger(1);
+        DynamicList expectedC2DocumentsDynamicList = asDynamicList(c2DocumentBundleList, selectedC2DocumentId,
+            documentBundle -> documentBundle.toLabel(i.getAndIncrement()));
+
+        Map<String, Object> data = new HashMap<>(Map.of(
+            "c2DocumentBundle", c2DocumentBundleList,
+            "manageDocumentsSupportingC2List", expectedC2DocumentsDynamicList,
+            "c2SupportingDocuments", supportingEvidenceBundle,
+            MANAGE_DOCUMENT_KEY, buildManagementDocument(C2)));
+
+        CallbackRequest callbackRequest = CallbackRequest.builder()
+            .caseDetailsBefore(buildCaseDetails(Map.of()))
+            .caseDetails(buildCaseDetails(data))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        assertThat(caseData.getC2DocumentBundle().get(0)).isEqualTo(c2DocumentBundleList.get(0));
+        assertExpectedFieldsAreRemoved(caseData);
     }
 
     private CaseDetails buildCaseDetails(Map<String, Object> caseData) {
@@ -152,5 +187,16 @@ public class ManageDocumentsControllerAboutToSubmitTest extends AbstractControll
         assertThat(caseData.getC2SupportingDocuments()).isNull();
         assertThat(caseData.getManageDocumentsHearingList()).isNull();
         assertThat(caseData.getManageDocumentsSupportingC2List()).isNull();
+    }
+
+    private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {
+        return C2DocumentBundle.builder().uploadedDateTime(dateTime.toString()).build();
+    }
+
+    private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle(LocalDateTime localDateTime) {
+        return wrapElements(SupportingEvidenceBundle.builder()
+            .name("test")
+            .dateTimeUploaded(localDateTime)
+            .build());
     }
 }
