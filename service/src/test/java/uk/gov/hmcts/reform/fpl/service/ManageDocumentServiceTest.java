@@ -304,13 +304,12 @@ public class ManageDocumentServiceTest {
             element(selectedC2DocumentId, buildC2DocumentBundle(tomorrow)),
             element(buildC2DocumentBundle(time.now().plusDays(2))));
 
-        Map<String, Object> data = new HashMap<>(Map.of(
-            "c2DocumentBundle", c2DocumentBundle,
-            SUPPORTING_C2_LIST_KEY, selectedC2DocumentId));
+        CaseData caseData = CaseData.builder()
+            .c2DocumentBundle(c2DocumentBundle)
+            .manageDocumentsSupportingC2List(selectedC2DocumentId)
+            .build();
 
-        CaseDetails caseDetails = CaseDetails.builder().data(data).build();
-
-        manageDocumentService.initialiseC2DocumentListAndLabel(caseDetails);
+        Map<String, Object> listAndLabel = manageDocumentService.initialiseC2DocumentListAndLabel(caseData);
 
         AtomicInteger i = new AtomicInteger(1);
         DynamicList expectedC2DocumentsDynamicList = ElementUtils
@@ -320,9 +319,9 @@ public class ManageDocumentServiceTest {
         DynamicList dynamicC2DocumentList = mapper.convertValue(caseDetails.getData().get(SUPPORTING_C2_LIST_KEY),
             DynamicList.class);
 
-        assertThat(dynamicC2DocumentList).isEqualTo(expectedC2DocumentsDynamicList);
-        assertThat(caseDetails.getData().get(SUPPORTING_C2_LABEL)).isEqualTo(
-            String.format("Application 2: %s", tomorrow.toString()));
+        assertThat(listAndLabel)
+            .extracting("manageDocumentsHearingList", "manageDocumentsHearingLabel")
+            .containsExactly(expectedDynamicList, selectedHearingBooking.toLabel(DATE));
     }
 
     @Test
