@@ -600,9 +600,23 @@ public class CaseData {
     private final List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocuments;
     private final List<Element<SupportingEvidenceBundle>> c2SupportingDocuments;
+    private final Object manageDocumentsHearingList;
+    private final Object manageDocumentsSupportingC2List;
+
+    public List<Element<SupportingEvidenceBundle>> getFurtherEvidenceDocumentsTEMP() {
+        return defaultIfNull(furtherEvidenceDocumentsTEMP, new ArrayList<>());
+    }
+
+    public List<Element<SupportingEvidenceBundle>> getCorrespondenceDocuments() {
+        return defaultIfNull(correspondenceDocuments, new ArrayList<>());
+    }
+
+    public List<Element<HearingFurtherEvidenceBundle>> getHearingFurtherEvidenceDocuments() {
+        return defaultIfNull(hearingFurtherEvidenceDocuments, new ArrayList<>());
+    }
 
     public boolean documentBundleContainsHearingId(UUID hearingId) {
-        return hearingFurtherEvidenceDocuments.stream()
+        return getHearingFurtherEvidenceDocuments().stream()
             .anyMatch(element -> element.getId().equals(hearingId));
     }
 

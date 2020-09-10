@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -22,6 +23,8 @@ import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.C2_SUPPORTING_DOCUMENTS_COLLECTION;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
@@ -59,14 +62,20 @@ public class ManageDocumentsController {
 
         switch (caseData.getManageDocument().getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
-                manageDocumentService.initialiseHearingListAndLabel(caseDetails);
+                caseDetails.getData().putAll(manageDocumentService.initialiseHearingListAndLabel(caseData));
 
-                caseDetails.getData().put(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY,
-                    manageDocumentService.getFurtherEvidenceCollection(caseDetails));
+                List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments;
+                furtherEvidenceDocuments = manageDocumentService.getFurtherEvidenceCollection(caseData);
+
+                caseDetails.getData().put(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, furtherEvidenceDocuments);
                 break;
             case CORRESPONDENCE:
-                caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY,
-                    manageDocumentService.getSupportingEvidenceBundle(caseData.getCorrespondenceDocuments()));
+                List<Element<SupportingEvidenceBundle>> correspondenceDocuments;
+                correspondenceDocuments = manageDocumentService.getSupportingEvidenceBundle(
+                    caseData.getCorrespondenceDocuments()
+                );
+
+                caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, correspondenceDocuments);
                 break;
             case C2:
                 manageDocumentService.initialiseC2DocumentListAndLabel(caseDetails);
@@ -124,25 +133,30 @@ public class ManageDocumentsController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
 
-        switch (caseData.getManageDocument().getType()) {
+        ManageDocument manageDocument = caseData.getManageDocument();
+        switch (manageDocument.getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
-                List<Element<SupportingEvidenceBundle>> previousFurtherEvidenceDocuments
-                    = getPreviousSupportingEvidenceBundle(caseDataBefore.getFurtherEvidenceDocumentsTEMP());
+                List<Element<SupportingEvidenceBundle>> currentBundle;
 
-                List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments =
-                    manageDocumentService.setDateTimeUploadedOnSupporingEvidene(
-                        caseData.getFurtherEvidenceDocumentsTEMP(), previousFurtherEvidenceDocuments);
+                currentBundle = manageDocumentService.setDateTimeUploadedOnSupportingEvidence(
+                    caseData.getFurtherEvidenceDocumentsTEMP(), caseDataBefore.getFurtherEvidenceDocumentsTEMP()
+                );
 
-                caseDetails.getData().put(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, furtherEvidenceDocuments);
-                manageDocumentService.buildFinalFurtherEvidenceCollection(caseDetails);
+                if (manageDocument.isDocumentRelatedToHearing()) {
+                    caseDetails.getData().put(
+                        HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY,
+                        manageDocumentService.buildHearingFurtherEvidenceCollection(caseData, currentBundle)
+                    );
+                } else {
+                    caseDetails.getData().put(FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, currentBundle);
+                }
                 break;
             case CORRESPONDENCE:
-                List<Element<SupportingEvidenceBundle>> previousCorrespondenceDocuments
-                    = getPreviousSupportingEvidenceBundle(caseDataBefore.getCorrespondenceDocuments());
+                List<Element<SupportingEvidenceBundle>> updatedCorrespondenceDocuments;
 
-                List<Element<SupportingEvidenceBundle>> updatedCorrespondenceDocuments =
-                    manageDocumentService.setDateTimeUploadedOnSupporingEvidene(
-                        caseData.getCorrespondenceDocuments(), previousCorrespondenceDocuments);
+                updatedCorrespondenceDocuments = manageDocumentService.setDateTimeUploadedOnSupportingEvidence(
+                    caseData.getCorrespondenceDocuments(), caseDataBefore.getCorrespondenceDocuments()
+                );
 
                 caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, updatedCorrespondenceDocuments);
                 break;
@@ -160,11 +174,6 @@ public class ManageDocumentsController {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
-    }
-
-    private List<Element<SupportingEvidenceBundle>> getPreviousSupportingEvidenceBundle(
-        List<Element<SupportingEvidenceBundle>> previousSupportingEvidenceBundle) {
-        return previousSupportingEvidenceBundle != null ? previousSupportingEvidenceBundle : List.of();
     }
 
     private boolean hasC2DocumentBundle(CaseData caseData) {
