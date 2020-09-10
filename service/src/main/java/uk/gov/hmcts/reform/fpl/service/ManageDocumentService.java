@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -24,6 +25,7 @@ import java.util.stream.IntStream;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.getHearingBookingByUUID;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListValueCode;
 
 @Service
@@ -76,23 +78,19 @@ public class ManageDocumentService {
     }
 
     public List<Element<SupportingEvidenceBundle>> getFurtherEvidenceCollection(CaseData caseData) {
+        if (caseData.getManageDocument().isDocumentRelatedToHearing()) {
+            List<Element<HearingFurtherEvidenceBundle>> bundles = caseData.getHearingFurtherEvidenceDocuments();
+            if (!bundles.isEmpty()) {
+                UUID selectedHearingCode = getDynamicListValueCode(caseData.getManageDocumentsHearingList(), mapper);
 
-        if (caseData.getManageDocument().isDocumentRelatedToHearing()
-            && caseData.getHearingFurtherEvidenceDocuments() != null
-            && !caseData.getHearingFurtherEvidenceDocuments().isEmpty()) {
+                Optional<Element<HearingFurtherEvidenceBundle>> bundle = findElement(
+                    selectedHearingCode, bundles
+                );
 
-            UUID selectedHearingCode = getDynamicListValueCode(caseData.getManageDocumentsHearingList(), mapper);
-
-            if (caseData.documentBundleContainsHearingId(selectedHearingCode)) {
-                for (int i = 0; i < caseData.getHearingFurtherEvidenceDocuments().size(); i++) {
-                    Element<HearingFurtherEvidenceBundle> bundle = caseData.getHearingFurtherEvidenceDocuments().get(i);
-
-                    if (selectedHearingCode.equals(bundle.getId())) {
-                        return bundle.getValue().getSupportingEvidenceBundle();
-                    }
+                if (bundle.isPresent()) {
+                    return bundle.get().getValue().getSupportingEvidenceBundle();
                 }
             }
-
         } else if (caseData.getFurtherEvidenceDocuments() != null) {
             return caseData.getFurtherEvidenceDocuments();
         }
