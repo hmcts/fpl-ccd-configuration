@@ -126,22 +126,22 @@ public class ReviewCMOService {
     }
 
     public State getStateBasedOnNextHearing(CaseData caseData, UUID cmoID) {
-        Optional<HearingBooking> nextHearingBooking = caseData.getNextHearingAfterCmo(cmoID);
         State currentState = caseData.getState();
+        if (featureToggleService.isNewCaseStateModelEnabled()) {
+            Optional<HearingBooking> nextHearingBooking = caseData.getNextHearingAfterCmo(cmoID);
 
-        if (featureToggleService.isNewCaseStateModelEnabled()
-            && nextHearingBooking.isPresent()
-            && caseData.getReviewCMODecision().hasReviewOutcomeOf(SEND_TO_ALL_PARTIES)) {
-            switch (nextHearingBooking.get().getType()) {
-                case ISSUE_RESOLUTION:
-                    return State.ISSUE_RESOLUTION;
-                case FINAL:
-                    return State.FINAL_HEARING;
-                default:
-                    return currentState;
+            if (nextHearingBooking.isPresent()
+                && caseData.getReviewCMODecision().hasReviewOutcomeOf(SEND_TO_ALL_PARTIES)) {
+                switch (nextHearingBooking.get().getType()) {
+                    case ISSUE_RESOLUTION:
+                        return State.ISSUE_RESOLUTION;
+                    case FINAL:
+                        return State.FINAL_HEARING;
+                    default:
+                        return currentState;
+                }
             }
         }
-
         return currentState;
     }
 

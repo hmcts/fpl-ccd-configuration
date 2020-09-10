@@ -1,29 +1,29 @@
 variable "subscription" {}
 
 variable "product" {
-  type = "string"
+  type = string
 }
 
 variable "component" {
-  type = "string"
+  type = string
 }
 
 variable "location" {
-  type    = "string"
+  type    = string
   default = "UK South"
 }
 
 variable "location_db" {
-  type    = "string"
+  type    = string
   default = "UK South"
 }
 
 variable "env" {
-  type = "string"
+  type = string
 }
 
 variable "common_tags" {
-  type = "map"
+  type = map
 }
 
 variable "tenant_id" {
@@ -39,7 +39,7 @@ variable "managed_identity_object_id" {
 }
 
 variable "appinsights_location" {
-  type        = "string"
+  type        = string
   default     = "West Europe"
   description = "Location for Application Insights"
 }

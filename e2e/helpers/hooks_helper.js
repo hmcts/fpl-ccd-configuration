@@ -3,7 +3,10 @@ const recorder = require('codeceptjs').recorder;
 
 module.exports = class HooksHelpers extends Helper {
   _test(test) {
-    test.retries(parseInt(process.env.TEST_RETRIES || '0'));
+    const retries = parseInt(process.env.TEST_RETRIES || '-1');
+    if (retries !== -1 || test.retries() === -1) {
+      test.retries(retries);
+    }
   }
 
   _beforeSuite() {
