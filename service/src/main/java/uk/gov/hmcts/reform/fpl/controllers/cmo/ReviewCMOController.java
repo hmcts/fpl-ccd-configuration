@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers.cmo;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.service.cmo.ReviewCMOService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 
 import java.util.List;
-import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
@@ -34,9 +33,8 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 @RestController
 @RequestMapping("/callback/review-cmo")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class ReviewCMOController {
+public class ReviewCMOController extends CallbackController {
 
-    private final ObjectMapper mapper;
     private final ReviewCMOService reviewCMOService;
     private final DocumentConversionService documentConversionService;
     private final DocumentSealingService documentSealingService;
@@ -45,47 +43,39 @@ public class ReviewCMOController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        Map<String, Object> data = caseDetails.getData();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = getCaseData(caseDetails);
 
-        data.remove("reviewCMODecision");
+        caseDetails.getData().remove("reviewCMODecision");
+        caseDetails.getData().putAll(reviewCMOService.getPageDisplayControls(caseData));
 
-        data.putAll(reviewCMOService.getPageDisplayControls(caseData));
-
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .build();
+        return respond(caseDetails);
     }
 
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        Map<String, Object> data = caseDetails.getData();
-        CaseData caseData = mapper.convertValue(data, CaseData.class);
+        CaseData caseData = getCaseData(caseDetails);
 
         Element<CaseManagementOrder> selectedCMO = reviewCMOService.getSelectedCMO(caseData);
 
-        data.put("reviewCMODecision", ReviewDecision.builder()
+        caseDetails.getData().put("reviewCMODecision", ReviewDecision.builder()
             .hearing(selectedCMO.getValue().getHearing())
             .document(selectedCMO.getValue().getOrder())
             .build());
 
         if (!(caseData.getCmoToReviewList() instanceof DynamicList)) {
             // reconstruct dynamic list
-            data.put("cmoToReviewList", reviewCMOService.buildDynamicList(caseData));
+            caseDetails.getData().put("cmoToReviewList", reviewCMOService.buildDynamicList(caseData));
         }
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .build();
+        return respond(caseDetails);
     }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest)
         throws Exception {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        Map<String, Object> data = caseDetails.getData();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = getCaseData(caseDetails);
 
         List<Element<CaseManagementOrder>> cmosReadyForApproval = reviewCMOService.getCMOsReadyForApproval(caseData);
 
@@ -107,27 +97,25 @@ public class ReviewCMOController {
                 List<Element<CaseManagementOrder>> sealedCMOs = caseData.getSealedCMOs();
                 sealedCMOs.add(cmoToSeal);
 
-                data.put("sealedCMOs", sealedCMOs);
-                data.put("state", reviewCMOService.getStateBasedOnNextHearing(caseData, cmo.getId()));
+                caseDetails.getData().put("sealedCMOs", sealedCMOs);
+                caseDetails.getData().put("state", reviewCMOService.getStateBasedOnNextHearing(caseData, cmo.getId()));
             } else {
                 cmo.getValue().setStatus(RETURNED);
                 cmo.getValue().setRequestedChanges(caseData.getReviewCMODecision().getChangesRequestedByJudge());
             }
 
-            data.put("draftUploadedCMOs", caseData.getDraftUploadedCMOs());
-            data.remove("numDraftCMOs");
-            data.remove("cmoToReviewList");
+            caseDetails.getData().put("draftUploadedCMOs", caseData.getDraftUploadedCMOs());
+            caseDetails.getData().remove("numDraftCMOs");
+            caseDetails.getData().remove("cmoToReviewList");
         }
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .build();
+        return respond(caseDetails);
     }
 
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
-        CaseData caseDataBefore = mapper.convertValue(callbackRequest.getCaseDetailsBefore().getData(), CaseData.class);
-        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
+        CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
+        CaseData caseData = getCaseData(callbackRequest);
 
         //Checks caseDataBefore as caseData has been modified by this point
         List<Element<CaseManagementOrder>> cmosReadyForApproval = reviewCMOService.getCMOsReadyForApproval(
@@ -137,7 +125,7 @@ public class ReviewCMOController {
             if (!JUDGE_REQUESTED_CHANGES.equals(caseData.getReviewCMODecision().getDecision())) {
                 CaseManagementOrder sealed = reviewCMOService.getLatestSealedCMO(caseData);
 
-                eventPublisher.publishEvent(new CaseManagementOrderIssuedEvent(callbackRequest, sealed));
+                publishEvent(new CaseManagementOrderIssuedEvent(caseData, sealed));
             } else {
                 List<Element<CaseManagementOrder>> draftCMOsBefore = caseDataBefore.getDraftUploadedCMOs();
                 List<Element<CaseManagementOrder>> draftCMOs = caseData.getDraftUploadedCMOs();
@@ -146,7 +134,7 @@ public class ReviewCMOController {
                 draftCMOs.removeAll(draftCMOsBefore);
                 CaseManagementOrder cmoToReturn = draftCMOs.get(0).getValue();
 
-                eventPublisher.publishEvent(new CaseManagementOrderRejectedEvent(callbackRequest, cmoToReturn));
+                publishEvent(new CaseManagementOrderRejectedEvent(caseData, cmoToReturn));
             }
         }
     }

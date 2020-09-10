@@ -54,7 +54,7 @@ public class RoboticsDataService {
     private final ObjectMapper objectMapper;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
-    public RoboticsData prepareRoboticsData(final CaseData caseData, final Long caseId) {
+    public RoboticsData prepareRoboticsData(final CaseData caseData) {
         return RoboticsData.builder()
             .caseNumber(caseData.getFamilyManCaseNumber())
             .applicationType(deriveApplicationType(caseData.getOrders()))
@@ -70,7 +70,7 @@ public class RoboticsDataService {
             .issueDate(formatDate(caseData.getDateSubmitted(), "dd-MM-yyyy"))
             .applicant(populateApplicant(caseData.getAllApplicants()))
             .owningCourt(toInt(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getCourtCode()))
-            .caseId(caseId)
+            .caseId(caseData.getId())
             .build();
     }
 

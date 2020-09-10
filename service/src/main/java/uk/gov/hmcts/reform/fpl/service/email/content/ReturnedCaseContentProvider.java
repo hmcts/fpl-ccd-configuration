@@ -1,10 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
@@ -18,20 +16,15 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ReturnedCaseContentProvider extends AbstractEmailContentProvider {
-    private final ObjectMapper mapper;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookup;
 
-    public ReturnedCaseTemplate parametersWithCaseUrl(CaseDetails caseDetails) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
+    public ReturnedCaseTemplate parametersWithCaseUrl(CaseData caseData) {
         return templateData(caseData)
-            .caseUrl(getCaseUrl(caseDetails.getId()))
+            .caseUrl(getCaseUrl(caseData.getId()))
             .build();
     }
 
-    public ReturnedCaseTemplate parametersWithApplicationLink(CaseDetails caseDetails) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
+    public ReturnedCaseTemplate parametersWithApplicationLink(CaseData caseData) {
         return templateData(caseData)
             .applicationDocumentUrl(linkToAttachedDocument(caseData.getSubmittedForm()))
             .build();

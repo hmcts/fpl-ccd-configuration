@@ -116,7 +116,7 @@ class CaseDataTest {
         private CaseData buildCaseData(List<Element<Direction>> sdoDirections,
                                        List<Element<CaseManagementOrder>> cmoDirections) {
             return CaseData.builder()
-                .standardDirectionOrder(Order.builder().directions(sdoDirections).build())
+                .standardDirectionOrder(StandardDirectionOrder.builder().directions(sdoDirections).build())
                 .servedCaseManagementOrders(cmoDirections)
                 .build();
         }
@@ -587,11 +587,10 @@ class CaseDataTest {
                 ISSUE_RESOLUTION, UUID.randomUUID());
 
             List<Element<HearingBooking>> hearingBookings = List.of(
+                element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3), CASE_MANAGEMENT, null)),
                 element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6), FINAL, cmoID)),
-                element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3), CASE_MANAGEMENT,
-                    UUID.randomUUID())),
-                element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, UUID.randomUUID())),
-                element(nextHearing));
+                element(nextHearing),
+                element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, null)));
 
             CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
             Optional<HearingBooking> nextHearingBooking = caseData.getNextHearingAfterCmo(cmoID);

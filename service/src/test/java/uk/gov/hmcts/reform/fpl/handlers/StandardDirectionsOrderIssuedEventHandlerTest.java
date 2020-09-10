@@ -1,18 +1,17 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import com.google.common.collect.ImmutableMap;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
-import uk.gov.hmcts.reform.fpl.model.Order;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForSDO;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
@@ -39,13 +38,11 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_NAME;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {StandardDirectionsOrderIssuedEventHandler.class, JacksonAutoConfiguration.class,
-    LookupTestConfig.class})
-public class StandardDirectionsOrderIssuedEventHandlerTest {
-    private static CallbackRequest callbackRequest = callbackRequest();
+@SpringBootTest(classes = {StandardDirectionsOrderIssuedEventHandler.class, LookupTestConfig.class})
+class StandardDirectionsOrderIssuedEventHandlerTest {
 
     @MockBean
     private FeatureToggleService featureToggleService;
@@ -75,15 +72,16 @@ public class StandardDirectionsOrderIssuedEventHandlerTest {
     void shouldNotifyCafcassOfIssuedStandardDirectionsOrder() {
         final Map<String, Object> expectedParameters = getStandardDirectionTemplateParameters();
 
+        CaseData caseData = caseData();
+
         given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
             .willReturn(new CafcassLookupConfiguration.Cafcass(CAFCASS_NAME, CAFCASS_EMAIL_ADDRESS));
 
-        given(cafcassEmailContentProviderSDOIssued.buildCafcassStandardDirectionOrderIssuedNotification(
-            callbackRequest.getCaseDetails(),
-            LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
+        given(cafcassEmailContentProviderSDOIssued.buildCafcassStandardDirectionOrderIssuedNotification(caseData))
+            .willReturn(expectedParameters);
 
         standardDirectionsOrderIssuedEventHandler.notifyCafcassOfIssuedStandardDirectionsOrder(
-            new StandardDirectionsOrderIssuedEvent(callbackRequest));
+            new StandardDirectionsOrderIssuedEvent(caseData));
 
         verify(notificationService).sendEmail(
             STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE,
@@ -95,17 +93,16 @@ public class StandardDirectionsOrderIssuedEventHandlerTest {
     @Test
     void shouldNotifyLocalAuthorityOfIssuedStandardDirectionsOrder() {
         final Map<String, Object> expectedParameters = getStandardDirectionTemplateParameters();
-
-        given(localAuthorityEmailContentProvider.buildLocalAuthorityStandardDirectionOrderIssuedNotification(
-            callbackRequest.getCaseDetails(),
-            LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
+        CaseData caseData = caseData();
+        given(localAuthorityEmailContentProvider.buildLocalAuthorityStandardDirectionOrderIssuedNotification(caseData))
+            .willReturn(expectedParameters);
 
         given(
-            inboxLookupService.getNotificationRecipientEmail(callbackRequest.getCaseDetails(), LOCAL_AUTHORITY_CODE))
+            inboxLookupService.getNotificationRecipientEmail(caseData))
             .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
 
         standardDirectionsOrderIssuedEventHandler.notifyLocalAuthorityOfIssuedStandardDirectionsOrder(
-            new StandardDirectionsOrderIssuedEvent(callbackRequest));
+            new StandardDirectionsOrderIssuedEvent(caseData));
 
         verify(notificationService).sendEmail(
             STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, LOCAL_AUTHORITY_EMAIL_ADDRESS, expectedParameters,
@@ -116,13 +113,15 @@ public class StandardDirectionsOrderIssuedEventHandlerTest {
     void shouldNotifyAllocatedJudgeOfIssuedStandardDirectionsOrderWhenNotificationEnabled() {
         final AllocatedJudgeTemplateForSDO expectedParameters = getAllocatedJudgeSDOTemplateParameters();
 
+        final CaseData caseData = caseData();
+
         given(featureToggleService.isAllocatedJudgeNotificationEnabled(SDO)).willReturn(true);
 
-        given(standardDirectionOrderIssuedEmailContentProvider.buildNotificationParametersForAllocatedJudge(
-            callbackRequest.getCaseDetails())).willReturn(expectedParameters);
+        given(standardDirectionOrderIssuedEmailContentProvider.buildNotificationParametersForAllocatedJudge(caseData))
+            .willReturn(expectedParameters);
 
         standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(
-            new StandardDirectionsOrderIssuedEvent(callbackRequest));
+            new StandardDirectionsOrderIssuedEvent(caseData));
 
         verify(notificationService).sendEmail(
             STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE, ALLOCATED_JUDGE_EMAIL_ADDRESS, expectedParameters,
@@ -132,14 +131,15 @@ public class StandardDirectionsOrderIssuedEventHandlerTest {
     @Test
     void shouldNotNotifyAllocatedJudgeOfIssuedStandardDirectionsOrderWhenNotificationDisabled() {
         final AllocatedJudgeTemplateForSDO expectedParameters = getAllocatedJudgeSDOTemplateParameters();
+        final CaseData caseData = caseData();
 
         given(featureToggleService.isAllocatedJudgeNotificationEnabled(SDO)).willReturn(false);
 
-        given(standardDirectionOrderIssuedEmailContentProvider.buildNotificationParametersForAllocatedJudge(
-            callbackRequest.getCaseDetails())).willReturn(expectedParameters);
+        given(standardDirectionOrderIssuedEmailContentProvider.buildNotificationParametersForAllocatedJudge(caseData))
+            .willReturn(expectedParameters);
 
         standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(
-            new StandardDirectionsOrderIssuedEvent(callbackRequest));
+            new StandardDirectionsOrderIssuedEvent(caseData));
 
         verify(notificationService, never()).sendEmail(any(), any(), anyMap(), any());
     }
@@ -148,20 +148,18 @@ public class StandardDirectionsOrderIssuedEventHandlerTest {
     void shouldNotNotifyAllocatedJudgeOfIssuedStandardDirectionsOrderWhenJudgeNotAllocated() {
         final AllocatedJudgeTemplateForSDO expectedParameters = getAllocatedJudgeSDOTemplateParameters();
 
-        CallbackRequest callbackRequest = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(111L)
-                .data(ImmutableMap.of("standardDirectionOrder", Order.builder().build()))
-                .build())
+        final CaseData caseData = CaseData.builder()
+            .id(RandomUtils.nextLong())
+            .standardDirectionOrder(StandardDirectionOrder.builder().build())
             .build();
 
         given(featureToggleService.isAllocatedJudgeNotificationEnabled(SDO)).willReturn(true);
 
-        given(standardDirectionOrderIssuedEmailContentProvider.buildNotificationParametersForAllocatedJudge(
-            callbackRequest.getCaseDetails())).willReturn(expectedParameters);
+        given(standardDirectionOrderIssuedEmailContentProvider.buildNotificationParametersForAllocatedJudge(caseData))
+            .willReturn(expectedParameters);
 
         standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(
-            new StandardDirectionsOrderIssuedEvent(callbackRequest));
+            new StandardDirectionsOrderIssuedEvent(caseData));
 
         verify(notificationService, never()).sendEmail(any(), any(), anyMap(), any());
     }

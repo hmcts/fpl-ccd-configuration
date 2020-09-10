@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
-import uk.gov.hmcts.reform.fpl.model.event.EventData;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 
@@ -19,15 +19,15 @@ public class IssuedOrderAdminNotificationHandler {
     private final HmctsAdminNotificationHandler adminNotificationHandler;
     private final OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
 
-    public void sendToAdmin(final EventData eventData,
+    public void sendToAdmin(final CaseData caseData,
                             final byte[] documentContents,
                             final IssuedOrderType issuedOrderType) {
         Map<String, Object> parameters = orderIssuedEmailContentProvider.buildParametersWithCaseUrl(
-            eventData.getCaseDetails(), eventData.getLocalAuthorityCode(), documentContents, issuedOrderType);
+            caseData, documentContents, issuedOrderType);
 
-        String email = adminNotificationHandler.getHmctsAdminEmail(eventData);
+        String email = adminNotificationHandler.getHmctsAdminEmail(caseData);
 
         notificationService.sendEmail(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN, email, parameters,
-            Long.toString(eventData.getCaseDetails().getId()));
+            caseData.getId().toString());
     }
 }

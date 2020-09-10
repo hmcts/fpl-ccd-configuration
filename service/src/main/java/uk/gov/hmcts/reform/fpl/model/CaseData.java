@@ -87,6 +87,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @HasDocumentsIncludedInSwet(groups = UploadDocumentsGroup.class)
 @SuppressWarnings({"java:S1874", "java:S1133"}) // Remove once deprecations dealt with
 public class CaseData {
+    private final Long id;
     private final State state;
     @NotBlank(message = "Enter a case name")
     private final String caseName;
@@ -161,7 +162,7 @@ public class CaseData {
     }
 
     private final List<Element<Placement>> placements;
-    private final Order standardDirectionOrder;
+    private final StandardDirectionOrder standardDirectionOrder;
 
     @NotNull(message = "You need to enter the allocated judge.",
         groups = {SealedSDOGroup.class, HearingBookingDetailsGroup.class})
@@ -293,6 +294,14 @@ public class CaseData {
 
     public List<Element<GeneratedOrder>> getOrderCollection() {
         return orderCollection != null ? orderCollection : new ArrayList<>();
+    }
+
+    private final Object removableOrderList;
+    private final String reasonToRemoveOrder;
+    private final List<Element<GeneratedOrder>> hiddenOrders;
+
+    public List<Element<GeneratedOrder>> getHiddenOrders() {
+        return defaultIfNull(hiddenOrders, new ArrayList<>());
     }
 
     /**
@@ -684,7 +693,7 @@ public class CaseData {
     @JsonIgnore
     public Optional<HearingBooking> getNextHearingAfterCmo(UUID cmoID) {
         LocalDateTime currentCmoStartDate = unwrapElements(hearingDetails).stream()
-            .filter(hearingBooking -> hearingBooking.getCaseManagementOrderId().equals(cmoID))
+            .filter(hearingBooking -> cmoID.equals(hearingBooking.getCaseManagementOrderId()))
             .map(HearingBooking::getStartDate)
             .findAny()
             .orElseThrow(() -> new IllegalArgumentException("Failed to find hearing matching cmo id " + cmoID));
@@ -693,6 +702,9 @@ public class CaseData {
             .filter(hearingBooking -> hearingBooking.getStartDate().isAfter(currentCmoStartDate))
             .min(comparing(HearingBooking::getStartDate));
     }
+
+    private String sendToCtsc;
+    private String displayAmountToPay;
 
     public DynamicList buildDynamicHearingList() {
         return buildDynamicHearingList(null);

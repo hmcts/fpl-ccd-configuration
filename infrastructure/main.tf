@@ -1,5 +1,6 @@
 provider "azurerm" {
-  version = "=1.44.0"
+  version = "=2.26.0"
+  features {}
 }
 
 resource "azurerm_resource_group" "rg" {
@@ -13,7 +14,7 @@ resource "azurerm_application_insights" "appinsights" {
   name                = "${var.product}-${var.component}-appinsights-${var.env}"
   location            = "${var.appinsights_location}"
   resource_group_name = "${azurerm_resource_group.rg.name}"
-  application_type    = "Web"
+  application_type    = "web"
 
   tags = "${var.common_tags}"
 }
@@ -26,7 +27,7 @@ resource "azurerm_key_vault_secret" "AZURE_APPINSGHTS_KEY" {
 }
 
 module "key-vault" {
-  source                  = "git@github.com:hmcts/cnp-module-key-vault?ref=master"
+  source                  = "git@github.com:hmcts/cnp-module-key-vault?ref=azurermv2"
   name                    = "fpl-${var.env}"
   product                 = "${var.product}"
   env                     = "${var.env}"
@@ -56,11 +57,11 @@ module "fpl-scheduler-db" {
 
 data "azurerm_key_vault_secret" "fpl_support_email_secret" {
   name      = "${var.product}-support-email"
-  vault_uri = "${module.key-vault.key_vault_uri}"
+  key_vault_id = "${module.key-vault.key_vault_id}"
 }
 
 resource "azurerm_key_vault_secret" "scheduler-db-password" {
   name      = "scheduler-db-password"
   value     = "${module.fpl-scheduler-db.postgresql_password}"
-  vault_uri = "${module.key-vault.key_vault_uri}"
+  key_vault_id = "${module.key-vault.key_vault_id}"
 }

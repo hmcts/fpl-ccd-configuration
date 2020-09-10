@@ -38,7 +38,7 @@
     "Description": "Draft standard directions",
     "DisplayOrder": 9,
     "PreConditionState(s)": "Gatekeeping",
-    "PostConditionState": "Gatekeeping",
+    "PostConditionState": "*",
     "SecurityClassification": "Public",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/draft-standard-directions/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/draft-standard-directions/about-to-submit",
