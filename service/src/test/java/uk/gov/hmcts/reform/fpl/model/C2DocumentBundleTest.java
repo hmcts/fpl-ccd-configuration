@@ -12,7 +12,7 @@ class C2DocumentBundleTest {
             .uploadedDateTime("1st June 2019")
             .build();
 
-        String label = c2DocumentBundle.toLabel("1");
+        String label = c2DocumentBundle.toLabel(1);
 
         assertThat(label).isEqualTo("Application 1: 1st June 2019");
     }

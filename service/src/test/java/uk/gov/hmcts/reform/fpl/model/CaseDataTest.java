@@ -658,10 +658,8 @@ class CaseDataTest {
                 element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))),
                 element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3))),
                 element(createHearingBooking(futureDate, futureDate.plusDays(1))),
-                Element.<HearingBooking>builder()
-                    .id(selectedHearingId)
-                    .value(createHearingBooking(futureDate, futureDate.plusDays(3)))
-                    .build());
+                element(selectedHearingId, createHearingBooking(futureDate, futureDate.plusDays(3)))
+            );
 
             CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
             DynamicList expectedDynamicList = ElementUtils
@@ -678,13 +676,14 @@ class CaseDataTest {
         void shouldBuildDynamicC2DocumentBundleListFromC2Documents() {
             List<Element<C2DocumentBundle>> c2DocumentBundle = List.of(
                 element(buildC2DocumentBundle(futureDate.plusDays(2))),
-                element(buildC2DocumentBundle(futureDate.plusDays(1))));
+                element(buildC2DocumentBundle(futureDate.plusDays(1)))
+            );
 
             CaseData caseData = CaseData.builder().c2DocumentBundle(c2DocumentBundle).build();
             AtomicInteger i = new AtomicInteger(1);
             DynamicList expectedDynamicList = ElementUtils
                 .asDynamicList(c2DocumentBundle, null, documentBundle ->
-                    documentBundle.toLabel(i.toString()));
+                    documentBundle.toLabel(i.getAndIncrement()));
 
             assertThat(caseData.buildC2DocumentDynamicList()).isEqualTo(expectedDynamicList);
         }
@@ -696,15 +695,14 @@ class CaseDataTest {
             List<Element<C2DocumentBundle>> c2DocumentBundle = List.of(
                 element(buildC2DocumentBundle(futureDate.plusDays(2))),
                 element(buildC2DocumentBundle(futureDate.plusDays(1))),
-                Element.<C2DocumentBundle>builder()
-                    .id(selectedC2Id)
-                    .value(buildC2DocumentBundle(futureDate.plusDays(5))).build());
+                element(selectedC2Id, buildC2DocumentBundle(futureDate.plusDays(5)))
+            );
 
             CaseData caseData = CaseData.builder().c2DocumentBundle(c2DocumentBundle).build();
             AtomicInteger i = new AtomicInteger(1);
             DynamicList expectedDynamicList = ElementUtils
                 .asDynamicList(c2DocumentBundle, null, documentBundle ->
-                    documentBundle.toLabel(i.toString()));
+                    documentBundle.toLabel(i.getAndIncrement()));
 
             assertThat(caseData.buildC2DocumentDynamicList()).isEqualTo(expectedDynamicList);
         }

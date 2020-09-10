@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
@@ -39,7 +37,6 @@ import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.C2_SUPPORTING_DOCUMENTS_COLLECTION;
-import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.SUPPORTING_C2_LABEL;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -53,8 +50,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     JacksonAutoConfiguration.class, FixedTimeConfiguration.class, ManageDocumentService.class
 })
 public class ManageDocumentServiceTest {
-    @Autowired
-    private ObjectMapper mapper;
 
     @Autowired
     private Time time;
@@ -89,7 +84,7 @@ public class ManageDocumentServiceTest {
 
         Map<String, Object> listAndLabel = manageDocumentService.initialiseHearingListAndLabel(caseData);
 
-        DynamicList expectedDynamicList = ElementUtils.asDynamicList(
+        DynamicList expectedDynamicList = asDynamicList(
             hearingBookings, selectHearingId, hearingBooking -> hearingBooking.toLabel(DATE)
         );
 
@@ -298,30 +293,29 @@ public class ManageDocumentServiceTest {
     void shouldPopulateC2SupportingDocumentsListAndLabel() {
         UUID selectedC2DocumentId = UUID.randomUUID();
         LocalDateTime tomorrow = time.now().plusDays(1);
+        C2DocumentBundle selectedC2Document = buildC2DocumentBundle(tomorrow);
 
         List<Element<C2DocumentBundle>> c2DocumentBundle = List.of(
             element(buildC2DocumentBundle(time.now().plusDays(2))),
-            element(selectedC2DocumentId, buildC2DocumentBundle(tomorrow)),
-            element(buildC2DocumentBundle(time.now().plusDays(2))));
+            element(selectedC2DocumentId, selectedC2Document),
+            element(buildC2DocumentBundle(time.now().plusDays(2)))
+        );
 
         CaseData caseData = CaseData.builder()
             .c2DocumentBundle(c2DocumentBundle)
-            .manageDocumentsSupportingC2List(selectedC2DocumentId)
+            .manageDocumentsSupportingC2List(buildDynamicList(selectedC2DocumentId))
             .build();
 
         Map<String, Object> listAndLabel = manageDocumentService.initialiseC2DocumentListAndLabel(caseData);
 
         AtomicInteger i = new AtomicInteger(1);
-        DynamicList expectedC2DocumentsDynamicList = ElementUtils
-            .asDynamicList(c2DocumentBundle, selectedC2DocumentId, documentBundle
-                -> documentBundle.toLabel(i.toString()));
+        DynamicList expectedC2DocumentsDynamicList = asDynamicList(c2DocumentBundle, selectedC2DocumentId,
+            documentBundle -> documentBundle.toLabel(i.getAndIncrement()));
 
-        DynamicList dynamicC2DocumentList = mapper.convertValue(caseDetails.getData().get(SUPPORTING_C2_LIST_KEY),
-            DynamicList.class);
 
         assertThat(listAndLabel)
-            .extracting("manageDocumentsHearingList", "manageDocumentsHearingLabel")
-            .containsExactly(expectedDynamicList, selectedHearingBooking.toLabel(DATE));
+            .extracting("manageDocumentsSupportingC2List", "manageDocumentsSupportingC2Label")
+            .containsExactly(expectedC2DocumentsDynamicList, selectedC2Document.toLabel(2));
     }
 
     @Test
@@ -337,9 +331,8 @@ public class ManageDocumentServiceTest {
             element(buildC2DocumentBundle(time.now().plusDays(2))));
 
         AtomicInteger i = new AtomicInteger(1);
-        DynamicList expectedC2DocumentsDynamicList = ElementUtils
-            .asDynamicList(c2DocumentBundleList, selectedC2DocumentId, documentBundle ->
-                documentBundle.toLabel(i.toString()));
+        DynamicList expectedC2DocumentsDynamicList = asDynamicList(c2DocumentBundleList, selectedC2DocumentId,
+            documentBundle -> documentBundle.toLabel(i.getAndIncrement()));
 
         Map<String, Object> data = new HashMap<>(Map.of(
             "c2DocumentBundle", c2DocumentBundleList,
@@ -363,9 +356,8 @@ public class ManageDocumentServiceTest {
             element(buildC2DocumentBundle(time.now().plusDays(2))));
 
         AtomicInteger i = new AtomicInteger(1);
-        DynamicList expectedC2DocumentsDynamicList = ElementUtils
-            .asDynamicList(c2DocumentBundleList, selectedC2DocumentId, documentBundle ->
-                documentBundle.toLabel(i.toString()));
+        DynamicList expectedC2DocumentsDynamicList = asDynamicList(c2DocumentBundleList, selectedC2DocumentId,
+            documentBundle -> documentBundle.toLabel(i.getAndIncrement()));
 
         Map<String, Object> data = new HashMap<>(Map.of(
             "c2DocumentBundle", c2DocumentBundleList,
@@ -394,9 +386,8 @@ public class ManageDocumentServiceTest {
             element(buildC2DocumentBundle(time.now().plusDays(2))));
 
         AtomicInteger i = new AtomicInteger(1);
-        DynamicList expectedC2DocumentsDynamicList = ElementUtils
-            .asDynamicList(c2DocumentBundleList, selectedC2DocumentId, documentBundle ->
-                documentBundle.toLabel(i.toString()));
+        DynamicList expectedC2DocumentsDynamicList = asDynamicList(c2DocumentBundleList, selectedC2DocumentId,
+            documentBundle -> documentBundle.toLabel(i.getAndIncrement()));
 
         Map<String, Object> data = new HashMap<>(Map.of(
             "c2DocumentBundle", c2DocumentBundleList,

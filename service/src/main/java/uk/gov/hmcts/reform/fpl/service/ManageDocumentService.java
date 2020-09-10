@@ -61,12 +61,13 @@ public class ManageDocumentService {
         Map<String, Object> listAndLabel = new HashMap<>();
 
         UUID selectedC2DocumentCode = getDynamicListValueCode(caseData.getManageDocumentsSupportingC2List(), mapper);
+        List<Element<C2DocumentBundle>> c2DocumentBundle = caseData.getC2DocumentBundle();
 
-        IntStream.range(0, caseData.getC2DocumentBundle().size())
-            .filter(index -> caseData.getC2DocumentBundle().get(index).getId().equals(selectedC2DocumentCode))
+        IntStream.range(0, c2DocumentBundle.size())
+            .filter(index -> c2DocumentBundle.get(index).getId().equals(selectedC2DocumentCode))
             .findFirst()
-            .ifPresent(index -> listAndLabel.put(SUPPORTING_C2_LABEL, String.format("Application %s: %s",
-                index + 1, caseData.getC2DocumentBundle().get(index).getValue().getUploadedDateTime())));
+            .ifPresent(index -> listAndLabel.put(SUPPORTING_C2_LABEL,
+                c2DocumentBundle.get(index).getValue().toLabel(index + 1)));
 
         listAndLabel.put(SUPPORTING_C2_LIST_KEY, caseData.buildC2DocumentDynamicList(selectedC2DocumentCode));
 
