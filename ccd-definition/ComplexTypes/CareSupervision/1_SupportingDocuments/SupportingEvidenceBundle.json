@@ -1,0 +1,44 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SupportingEvidenceBundle",
+    "ListElementCode": "name",
+    "FieldType": "Text",
+    "ElementLabel": "Document name",
+    "HintText": "Give the document a meaningful name, for example form C100 or C1A.",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SupportingEvidenceBundle",
+    "ListElementCode": "notes",
+    "FieldType": "TextArea",
+    "ElementLabel": "Notes",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SupportingEvidenceBundle",
+    "ListElementCode": "dateTimeReceived",
+    "FieldType": "DateTime",
+    "ElementLabel": "Date and time received",
+    "HintText": "For example, 31 3 2016  2 30 00",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SupportingEvidenceBundle",
+    "ListElementCode": "dateTimeUploaded",
+    "FieldType": "DateTime",
+    "ElementLabel": "Date and time uploaded",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SupportingEvidenceBundle",
+    "ListElementCode": "document",
+    "FieldType": "Document",
+    "ElementLabel": "Upload document",
+    "SecurityClassification": "Public"
+  }
+]

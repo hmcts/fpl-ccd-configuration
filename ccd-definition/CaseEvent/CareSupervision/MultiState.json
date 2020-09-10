@@ -185,8 +185,8 @@
     "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING;ISSUE_RESOLUTION;FINAL_HEARING;CLOSED",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
-    "ShowEventNotes": "N",
+    "ShowSummary": "Y",
+    "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-c2/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-c2/submitted"
