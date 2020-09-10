@@ -221,17 +221,17 @@ Scenario('HMCTS admin uploads further hearing evidence documents', async (I, cas
   await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
   I.seeEventSubmissionConfirmation(config.administrationActions.manageDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
-  I.seeInTab(['Further evidence documents, hearing 1', 'Hearing'], 'Case management hearing, 1 January 2050');
-  I.seeInTab(['Further evidence documents, hearing 1', 'Documents 1', 'Document name'], 'Email to say evidence will be late');
-  I.seeInTab(['Further evidence documents, hearing 1', 'Documents 1', 'Notes'], 'Evidence will be late');
-  I.seeInTab(['Further evidence documents, hearing 1', 'Documents 1', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
-  I.seeInTab(['Further evidence documents, hearing 1', 'Documents 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeInTab(['Further evidence documents, hearing 1', 'Documents 1', 'Upload document'], 'mockFile.txt');
-  I.seeInTab(['Further evidence documents, hearing 1', 'Documents 2', 'Document name'], 'Email with evidence attached');
-  I.seeInTab(['Further evidence documents, hearing 1', 'Documents 2', 'Notes'], 'Case evidence included');
-  I.seeInTab(['Further evidence documents, hearing 1', 'Documents 2', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
-  I.seeInTab(['Further evidence documents, hearing 1', 'Documents 2', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeInTab(['Further evidence documents, hearing 1', 'Documents 2', 'Upload document'], 'mockFile.txt');
+  I.seeInTab(['Further evidence documents 1', 'Hearing'], 'Case management hearing, 1 January 2050');
+  I.seeInTab(['Further evidence documents 1', 'Documents 1', 'Document name'], 'Email to say evidence will be late');
+  I.seeInTab(['Further evidence documents 1', 'Documents 1', 'Notes'], 'Evidence will be late');
+  I.seeInTab(['Further evidence documents 1', 'Documents 1', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
+  I.seeInTab(['Further evidence documents 1', 'Documents 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
+  I.seeInTab(['Further evidence documents 1', 'Documents 1', 'Upload document'], 'mockFile.txt');
+  I.seeInTab(['Further evidence documents 1', 'Documents 2', 'Document name'], 'Email with evidence attached');
+  I.seeInTab(['Further evidence documents 1', 'Documents 2', 'Notes'], 'Case evidence included');
+  I.seeInTab(['Further evidence documents 1', 'Documents 2', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
+  I.seeInTab(['Further evidence documents 1', 'Documents 2', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
+  I.seeInTab(['Further evidence documents 1', 'Documents 2', 'Upload document'], 'mockFile.txt');
 });
 
 Scenario('HMCTS admin share case with representatives', async (I, caseViewPage, enterRepresentativesEventPage) => {

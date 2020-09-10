@@ -1706,7 +1706,7 @@
     "ID": "hearingFurtherEvidenceDocuments",
     "FieldType": "Collection",
     "FieldTypeParameter": "HearingFurtherEvidenceBundle",
-    "Label": "Further evidence documents, hearing",
+    "Label": "Further evidence documents",
     "SecurityClassification": "Public"
   },
   {
