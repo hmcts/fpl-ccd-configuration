@@ -114,7 +114,7 @@
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "SDORoutes",
     "Label": "What do you want to do?",
-    "HintText": "You can upload the final order to send to all parties now, or upload and save it.",
+    "HintText": "You can upload the final order to send to all parties now, or just upload it and save.",
     "SecurityClassification": "Public"
   },
   {
