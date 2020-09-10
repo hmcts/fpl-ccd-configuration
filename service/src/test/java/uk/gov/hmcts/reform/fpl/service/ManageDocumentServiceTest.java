@@ -37,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.C2_SUPPORTING_DOCUMENTS_COLLECTION;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LABEL_KEY;
@@ -365,7 +366,7 @@ public class ManageDocumentServiceTest {
         UUID selectedC2DocumentId = UUID.randomUUID();
         List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
 
-        List<Element<C2DocumentBundle>> c2DocumentBundle = List.of(
+        List<Element<C2DocumentBundle>> c2DocumentBundleList = List.of(
             element(buildC2DocumentBundle(time.now().plusDays(2))),
             element(selectedC2DocumentId, C2DocumentBundle.builder()
                 .supportingEvidenceBundle(furtherEvidenceBundle)
@@ -374,11 +375,11 @@ public class ManageDocumentServiceTest {
 
         AtomicInteger i = new AtomicInteger(1);
         DynamicList expectedC2DocumentsDynamicList = ElementUtils
-            .asDynamicList(c2DocumentBundle, selectedC2DocumentId, documentBundle ->
+            .asDynamicList(c2DocumentBundleList, selectedC2DocumentId, documentBundle ->
                 documentBundle.toLabel(i.toString()));
 
         Map<String, Object> data = new HashMap<>(Map.of(
-            "c2DocumentBundle", c2DocumentBundle,
+            "c2DocumentBundle", c2DocumentBundleList,
             SUPPORTING_C2_LIST_KEY, expectedC2DocumentsDynamicList));
 
         CaseDetails caseDetails = CaseDetails.builder().data(data).build();
@@ -393,18 +394,18 @@ public class ManageDocumentServiceTest {
     void shouldGetEmptyC2DocumentEvidenceBundleWhenParentSelectedFromDynamicListButEvidenceBundleIsEmpty() {
         UUID selectedC2DocumentId = UUID.randomUUID();
 
-        List<Element<C2DocumentBundle>> c2DocumentBundle = List.of(
+        List<Element<C2DocumentBundle>> c2DocumentBundleList = List.of(
             element(buildC2DocumentBundle(time.now().plusDays(2))),
             element(selectedC2DocumentId, buildC2DocumentBundle(time.now().plusDays(2))),
             element(buildC2DocumentBundle(time.now().plusDays(2))));
 
         AtomicInteger i = new AtomicInteger(1);
         DynamicList expectedC2DocumentsDynamicList = ElementUtils
-            .asDynamicList(c2DocumentBundle, selectedC2DocumentId, documentBundle
-                -> "Application " + i.getAndIncrement() + ": ");
+            .asDynamicList(c2DocumentBundleList, selectedC2DocumentId, documentBundle ->
+                documentBundle.toLabel(i.toString()));
 
         Map<String, Object> data = new HashMap<>(Map.of(
-            "c2DocumentBundle", c2DocumentBundle,
+            "c2DocumentBundle", c2DocumentBundleList,
             SUPPORTING_C2_LIST_KEY, expectedC2DocumentsDynamicList));
 
         CaseDetails caseDetails = CaseDetails.builder().data(data).build();
@@ -415,8 +416,55 @@ public class ManageDocumentServiceTest {
         assertThat(c2SupportingEvidenceBundle.get(0).getValue()).isEqualTo(SupportingEvidenceBundle.builder().build());
     }
 
+    @Test
+    void shouldReturnUpdatedC2DocumentBundleWithUpdatedSupportingEvidenceEntry() {
+        // TODO
+        // Test does not assert that old c2 documents are still present
+
+        UUID selectedC2DocumentId = UUID.randomUUID();
+        C2DocumentBundle selectedC2DocumentBundle = buildC2DocumentBundle(time.now().plusDays(2));
+        List<Element<SupportingEvidenceBundle>> newSupportingEvidenceBundle = buildSupportingEvidenceBundle(time.now());
+
+        List<Element<C2DocumentBundle>> c2DocumentBundleList = List.of(
+            element(buildC2DocumentBundle(time.now().plusDays(2))),
+            element(selectedC2DocumentId, selectedC2DocumentBundle),
+            element(buildC2DocumentBundle(time.now().plusDays(2))));
+
+        AtomicInteger i = new AtomicInteger(1);
+        DynamicList expectedC2DocumentsDynamicList = ElementUtils
+            .asDynamicList(c2DocumentBundleList, selectedC2DocumentId, documentBundle ->
+                documentBundle.toLabel(i.toString()));
+
+        Map<String, Object> data = new HashMap<>(Map.of(
+            "c2DocumentBundle", c2DocumentBundleList,
+            C2_SUPPORTING_DOCUMENTS_COLLECTION, newSupportingEvidenceBundle,
+            SUPPORTING_C2_LIST_KEY, expectedC2DocumentsDynamicList));
+
+        CaseDetails caseDetails = CaseDetails.builder().data(data).build();
+        List<Element<C2DocumentBundle>> updatedC2DocumentBundle =
+            manageDocumentService.buildFinalC2SupportingDocuments(caseDetails);
+
+        List<Element<SupportingEvidenceBundle>> updatedC2EvidenceBundlers
+            = updatedC2DocumentBundle.get(1).getValue().getSupportingEvidenceBundle();
+
+        assertThat(updatedC2EvidenceBundlers).isEqualTo(newSupportingEvidenceBundle);
+    }
+
+    @Test
+    void shouldNotUpdatePreviousSupportingEvidenceEntryWhenNoUpdatesWhereMade() {
+        // TODO
+        // Test should assert that dates on old c2 documents are kept as they where
+    }
+
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
         return wrapElements(SupportingEvidenceBundle.builder().name("test").build());
+    }
+
+    private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle(LocalDateTime localDateTime) {
+        return wrapElements(SupportingEvidenceBundle.builder()
+            .name("test")
+            .dateTimeUploaded(localDateTime)
+            .build());
     }
 
     private ManageDocument buildManagementDocument(ManageDocumentType type) {

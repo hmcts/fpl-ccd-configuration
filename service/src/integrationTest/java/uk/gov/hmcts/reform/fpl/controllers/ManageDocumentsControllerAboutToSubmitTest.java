@@ -115,6 +115,13 @@ public class ManageDocumentsControllerAboutToSubmitTest extends AbstractControll
         assertThat(caseData.getManageDocument()).isNull();
     }
 
+    @Test
+    void shouldPopulateC2DocumentBundleCollection() {
+        // TODO
+        // Test needed to assert c2 document bundle is built
+        // Should just be able to re-use the majority of what is done in the equiv service test
+    }
+
     private CaseDetails buildCaseDetails(Map<String, Object> caseData) {
         return CaseDetails.builder().data(caseData).build();
     }

@@ -168,8 +168,7 @@ public class ManageDocumentService {
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle,
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundleBefore) {
 
-        if (!supportingEvidenceBundle.equals(supportingEvidenceBundleBefore)
-            && supportingEvidenceBundle.size() == supportingEvidenceBundleBefore.size()) {
+        if (isMatchingSupportingEvidenceCollection(supportingEvidenceBundle, supportingEvidenceBundleBefore)) {
             for (int i = 0; i < supportingEvidenceBundle.size(); i++) {
                 if (!supportingEvidenceBundle.get(i).getValue().getDocument()
                     .equals(supportingEvidenceBundleBefore.get(i).getValue().getDocument())) {
@@ -186,6 +185,25 @@ public class ManageDocumentService {
             }).collect(Collectors.toList());
     }
 
+    public List<Element<C2DocumentBundle>> buildFinalC2SupportingDocuments(CaseDetails caseDetails) {
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        DynamicList dynamicC2DocumentsList = mapper.convertValue(caseDetails.getData().get(SUPPORTING_C2_LIST_KEY),
+            DynamicList.class);
+
+        C2DocumentBundle c2DocumentBundle =
+            caseData.getC2DocumentBundleByUUID(dynamicC2DocumentsList.getValueCode());
+
+        List<Element<SupportingEvidenceBundle>> updatedCorrespondenceDocuments = setDateTimeUploadedOnSupporingEvidene(
+            caseData.getC2SupportingDocuments(), c2DocumentBundle.getSupportingEvidenceBundle());
+
+        return caseData.getC2DocumentBundle().stream()
+            .peek(c2DocumentBundleElement -> {
+                if (dynamicC2DocumentsList.getValue().getCode().equals(c2DocumentBundleElement.getId())) {
+                    c2DocumentBundleElement.getValue().setSupportingEvidenceBundle(updatedCorrespondenceDocuments);
+                }
+            }).collect(Collectors.toList());
+    }
+
     private Element<HearingFurtherEvidenceBundle> buildHearingSupportingEvidenceBundle(
         UUID hearingId, HearingBooking hearingBooking,
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle) {
@@ -196,5 +214,11 @@ public class ManageDocumentService {
                 .supportingEvidenceBundle(supportingEvidenceBundle)
                 .build())
             .build();
+    }
+
+    private boolean isMatchingSupportingEvidenceCollection(List<Element<SupportingEvidenceBundle>> currentCollection,
+                                                           List<Element<SupportingEvidenceBundle>> previousCollection) {
+        return currentCollection != null && previousCollection != null && !currentCollection.equals(previousCollection)
+            && currentCollection.size() == previousCollection.size();
     }
 }

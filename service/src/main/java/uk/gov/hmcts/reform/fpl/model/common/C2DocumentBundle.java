@@ -22,7 +22,7 @@ public class C2DocumentBundle {
     private final String description;
     private final String uploadedDateTime;
     private final String author;
-    private final List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle;
+    private List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle;
 
     public String toLabel(String applicationIndex) {
         return format("Application %s: %s", applicationIndex, uploadedDateTime);
