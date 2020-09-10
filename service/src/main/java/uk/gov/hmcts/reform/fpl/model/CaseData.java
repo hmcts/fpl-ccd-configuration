@@ -255,7 +255,7 @@ public class CaseData {
 
     public DynamicList buildC2DocumentDynamicList(UUID selected) {
         AtomicInteger i = new AtomicInteger(1);
-        return asDynamicList(c2DocumentBundle, selected, documentBundle -> documentBundle.toLabel(i.toString()));
+        return asDynamicList(c2DocumentBundle, selected, documentBundle -> documentBundle.toLabel(i.getAndIncrement()));
     }
 
     public DynamicList buildC2DocumentDynamicList() {

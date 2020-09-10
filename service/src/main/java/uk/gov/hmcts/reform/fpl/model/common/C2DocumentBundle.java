@@ -24,7 +24,7 @@ public class C2DocumentBundle {
     private final String author;
     private List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle;
 
-    public String toLabel(String applicationIndex) {
-        return format("Application %s: %s", applicationIndex, uploadedDateTime);
+    public String toLabel(int index) {
+        return format("Application %d: %s", index, uploadedDateTime);
     }
 }
