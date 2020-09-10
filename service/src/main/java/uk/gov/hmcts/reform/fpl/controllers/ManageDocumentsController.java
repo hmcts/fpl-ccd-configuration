@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.SupportingEvidenceValidatorService;
@@ -160,8 +161,10 @@ public class ManageDocumentsController {
                 caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, updatedCorrespondenceDocuments);
                 break;
             case C2:
-                // TODO
-                // Populate data for case type is C2
+                List<Element<C2DocumentBundle>> updatedC2Documents =
+                    manageDocumentService.buildFinalC2SupportingDocuments(caseDetails);
+
+                caseDetails.getData().put("c2DocumentBundle", updatedC2Documents);
                 break;
         }
 
