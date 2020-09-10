@@ -36,7 +36,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.C2_SUPPORTING_DOCUMENTS_COLLECTION;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -373,9 +372,6 @@ public class ManageDocumentServiceTest {
 
     @Test
     void shouldReturnUpdatedC2DocumentBundleWithUpdatedSupportingEvidenceEntry() {
-        // TODO
-        // Test does not assert that old c2 documents are still present
-
         UUID selectedC2DocumentId = UUID.randomUUID();
         C2DocumentBundle selectedC2DocumentBundle = buildC2DocumentBundle(time.now().plusDays(2));
         List<Element<SupportingEvidenceBundle>> newSupportingEvidenceBundle = buildSupportingEvidenceBundle(time.now());
@@ -391,17 +387,20 @@ public class ManageDocumentServiceTest {
 
         Map<String, Object> data = new HashMap<>(Map.of(
             "c2DocumentBundle", c2DocumentBundleList,
-            C2_SUPPORTING_DOCUMENTS_COLLECTION, newSupportingEvidenceBundle,
-            SUPPORTING_C2_LIST_KEY, expectedC2DocumentsDynamicList));
+            "c2SupportingDocuments", newSupportingEvidenceBundle,
+            "manageDocumentsSupportingC2List", expectedC2DocumentsDynamicList));
 
         CaseDetails caseDetails = CaseDetails.builder().data(data).build();
+
         List<Element<C2DocumentBundle>> updatedC2DocumentBundle =
             manageDocumentService.buildFinalC2SupportingDocuments(caseDetails);
 
-        List<Element<SupportingEvidenceBundle>> updatedC2EvidenceBundlers
+        List<Element<SupportingEvidenceBundle>> updatedC2EvidenceBundle
             = updatedC2DocumentBundle.get(1).getValue().getSupportingEvidenceBundle();
 
-        assertThat(updatedC2EvidenceBundlers).isEqualTo(newSupportingEvidenceBundle);
+        assertThat(updatedC2EvidenceBundle).isEqualTo(newSupportingEvidenceBundle);
+        assertThat(updatedC2DocumentBundle.get(0)).isEqualTo(c2DocumentBundleList.get(0));
+        assertThat(updatedC2DocumentBundle.get(2)).isEqualTo(c2DocumentBundleList.get(2));
     }
 
     @Test
