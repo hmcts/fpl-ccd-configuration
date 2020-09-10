@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.getHearingBookingByUUID;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -29,9 +31,11 @@ public class ManageDocumentService {
     public static final String TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY = "furtherEvidenceDocumentsTEMP";
     public static final String FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY = "furtherEvidenceDocuments";
     public static final String HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY = "hearingFurtherEvidenceDocuments";
+    public static final String C2_SUPPORTING_DOCUMENTS_COLLECTION = "c2SupportingDocuments";
     public static final String MANAGE_DOCUMENTS_HEARING_LIST_KEY = "manageDocumentsHearingList";
     public static final String SUPPORTING_C2_LIST_KEY = "manageDocumentsSupportingC2List";
     public static final String MANAGE_DOCUMENTS_HEARING_LABEL_KEY = "manageDocumentsHearingLabel";
+    public static final String SUPPORTING_C2_LABEL = "manageDocumentsSupportingC2Label";
     public static final String MANAGE_DOCUMENT_KEY = "manageDocument";
 
     @Autowired
@@ -52,6 +56,20 @@ public class ManageDocumentService {
             caseDetails.getData().put(MANAGE_DOCUMENTS_HEARING_LIST_KEY,
                 caseData.buildDynamicHearingList(selectedHearingCode));
         }
+    }
+
+    public void initialiseC2DocumentListAndLabel(CaseDetails caseDetails) {
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        UUID selectedC2DocumentCode = mapper.convertValue(caseDetails.getData().get(SUPPORTING_C2_LIST_KEY),
+            UUID.class);
+
+        IntStream.range(0, caseData.getC2DocumentBundle().size())
+            .filter(index -> caseData.getC2DocumentBundle().get(index).getId().equals(selectedC2DocumentCode))
+            .findFirst()
+            .ifPresent(index -> caseDetails.getData().put(SUPPORTING_C2_LABEL, String.format("Application %s: %s",
+                index + 1, caseData.getC2DocumentBundle().get(index).getValue().getUploadedDateTime())));
+
+        caseDetails.getData().put(SUPPORTING_C2_LIST_KEY, caseData.buildC2DocumentDynamicList(selectedC2DocumentCode));
     }
 
     public List<Element<SupportingEvidenceBundle>> getFurtherEvidenceCollection(CaseDetails caseDetails) {
@@ -78,6 +96,21 @@ public class ManageDocumentService {
 
         } else if (caseData.getFurtherEvidenceDocuments() != null) {
             return caseData.getFurtherEvidenceDocuments();
+        }
+
+        return getSupportingEvidenceBundle(null);
+    }
+
+    public List<Element<SupportingEvidenceBundle>> getC2SupportingEvidenceBundle(CaseDetails caseDetails) {
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        DynamicList dynamicC2DocumentsList = mapper.convertValue(caseDetails.getData().get(SUPPORTING_C2_LIST_KEY),
+            DynamicList.class);
+
+        C2DocumentBundle c2DocumentBundle =
+            caseData.getC2DocumentBundleByUUID(dynamicC2DocumentsList.getValueCode());
+
+        if (c2DocumentBundle.getSupportingEvidenceBundle() != null) {
+            return c2DocumentBundle.getSupportingEvidenceBundle();
         }
 
         return getSupportingEvidenceBundle(null);

@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.SupportingEvidenceValidatorService;
 
 import java.util.List;
 
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.C2_SUPPORTING_DOCUMENTS_COLLECTION;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENT_KEY;
@@ -59,20 +60,18 @@ public class ManageDocumentsController {
             case FURTHER_EVIDENCE_DOCUMENTS:
                 manageDocumentService.initialiseHearingListAndLabel(caseDetails);
 
-                List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments =
-                    manageDocumentService.getFurtherEvidenceCollection(caseDetails);
-
-                caseDetails.getData().put(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, furtherEvidenceDocuments);
+                caseDetails.getData().put(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY,
+                    manageDocumentService.getFurtherEvidenceCollection(caseDetails));
                 break;
             case CORRESPONDENCE:
-                List<Element<SupportingEvidenceBundle>> correspondenceDocuments =
-                    manageDocumentService.getSupportingEvidenceBundle(caseData.getCorrespondenceDocuments());
-
-                caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, correspondenceDocuments);
+                caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY,
+                    manageDocumentService.getSupportingEvidenceBundle(caseData.getCorrespondenceDocuments()));
                 break;
             case C2:
-                // TODO
-                // Populate data for case type is C2
+                manageDocumentService.initialiseC2DocumentListAndLabel(caseDetails);
+
+                caseDetails.getData().put(C2_SUPPORTING_DOCUMENTS_COLLECTION,
+                    manageDocumentService.getC2SupportingEvidenceBundle(caseDetails));
                 break;
         }
 

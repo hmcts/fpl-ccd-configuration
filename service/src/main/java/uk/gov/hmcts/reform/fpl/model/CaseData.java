@@ -244,9 +244,18 @@ public class CaseData {
             .orElse(null);
     }
 
+    @JsonIgnore
+    public C2DocumentBundle getC2DocumentBundleByUUID(UUID elementId) {
+        return c2DocumentBundle.stream()
+            .filter(c2DocumentBundleElement -> c2DocumentBundleElement.getId().equals(elementId))
+            .map(Element::getValue)
+            .findFirst()
+            .orElse(null);
+    }
+
     public DynamicList buildC2DocumentDynamicList(UUID selected) {
         AtomicInteger i = new AtomicInteger(1);
-        return asDynamicList(c2DocumentBundle, selected, documentBundle -> "Application " + i.getAndIncrement() + ": ");
+        return asDynamicList(c2DocumentBundle, selected, documentBundle -> documentBundle.toLabel(i.toString()));
     }
 
     public DynamicList buildC2DocumentDynamicList() {
