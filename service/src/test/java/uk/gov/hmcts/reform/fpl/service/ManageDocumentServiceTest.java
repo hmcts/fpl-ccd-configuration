@@ -405,8 +405,37 @@ public class ManageDocumentServiceTest {
 
     @Test
     void shouldNotUpdatePreviousSupportingEvidenceEntryWhenNoUpdatesWhereMade() {
-        // TODO
-        // Test should assert that dates on old c2 documents are kept as they where
+        UUID selectedC2DocumentId = UUID.randomUUID();
+        C2DocumentBundle selectedC2DocumentBundle = buildC2DocumentBundle(time.now().plusDays(2));
+        List<Element<SupportingEvidenceBundle>> newSupportingEvidenceBundle = buildSupportingEvidenceBundle(time.now());
+
+        List<Element<C2DocumentBundle>> c2DocumentBundleList = List.of(
+            element(buildC2DocumentBundle(time.now().plusDays(2), buildSupportingEvidenceBundle(time.now().plusDays(2)))),
+            element(selectedC2DocumentId, selectedC2DocumentBundle),
+            element(buildC2DocumentBundle(time.now().plusDays(2), buildSupportingEvidenceBundle(time.now().plusDays(2)))));
+
+        AtomicInteger i = new AtomicInteger(1);
+        DynamicList expectedC2DocumentsDynamicList = asDynamicList(c2DocumentBundleList, selectedC2DocumentId,
+            documentBundle -> documentBundle.toLabel(i.getAndIncrement()));
+
+        Map<String, Object> data = new HashMap<>(Map.of(
+            "c2DocumentBundle", c2DocumentBundleList,
+            "c2SupportingDocuments", newSupportingEvidenceBundle,
+            "manageDocumentsSupportingC2List", expectedC2DocumentsDynamicList));
+
+        CaseDetails caseDetails = CaseDetails.builder().data(data).build();
+
+        List<Element<C2DocumentBundle>> updatedC2DocumentBundle =
+            manageDocumentService.buildFinalC2SupportingDocuments(caseDetails);
+
+        LocalDateTime firstC2DocumentUploadTime = unwrapElements(updatedC2DocumentBundle).get(0).getSupportingEvidenceBundle().get(0).getValue().getDateTimeUploaded();
+        LocalDateTime expectedFirstC2DocumentUploadTime = c2DocumentBundleList.get(0).getValue().getSupportingEvidenceBundle().get(0).getValue().getDateTimeUploaded();
+
+        LocalDateTime thirdC2DocumentUploadTime = updatedC2DocumentBundle.get(2).getValue().getSupportingEvidenceBundle().get(0).getValue().getDateTimeUploaded();
+        LocalDateTime expectedThirdC2DocumentUploadTime = c2DocumentBundleList.get(2).getValue().getSupportingEvidenceBundle().get(0).getValue().getDateTimeUploaded();
+
+        assertThat(firstC2DocumentUploadTime).isEqualTo(expectedFirstC2DocumentUploadTime);
+        assertThat(thirdC2DocumentUploadTime).isEqualTo(expectedThirdC2DocumentUploadTime);
     }
 
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
@@ -433,6 +462,13 @@ public class ManageDocumentServiceTest {
 
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {
         return C2DocumentBundle.builder().uploadedDateTime(dateTime.toString()).build();
+    }
+
+    private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime, List<Element<SupportingEvidenceBundle>>
+        supportingEvidenceBundle) {
+        return C2DocumentBundle.builder().uploadedDateTime(dateTime.toString())
+            .supportingEvidenceBundle(supportingEvidenceBundle)
+            .build();
     }
 
     private DynamicList buildDynamicList(UUID selectedId) {
