@@ -1,10 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service.casesubmission;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -18,21 +16,19 @@ import static uk.gov.hmcts.reform.fpl.utils.SubmittedFormFilenameHelper.buildFil
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class CaseSubmissionService  {
+public class CaseSubmissionService {
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
     private final CaseSubmissionGenerationService documentGenerationService;
-    private final ObjectMapper mapper;
 
-    public Document generateSubmittedFormPDF(final CaseDetails caseDetails, final boolean isDraft) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+    public Document generateSubmittedFormPDF(final CaseData caseData, final boolean isDraft) {
         DocmosisCaseSubmission submittedCase = documentGenerationService.getTemplateData(caseData);
 
-        documentGenerationService.populateCaseNumber(submittedCase, caseDetails.getId());
+        documentGenerationService.populateCaseNumber(submittedCase, caseData.getId());
         documentGenerationService.populateDraftWaterOrCourtSeal(submittedCase, isDraft);
 
         DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(submittedCase, C110A);
 
-        return uploadDocumentService.uploadPDF(document.getBytes(), buildFileName(caseDetails, isDraft));
+        return uploadDocumentService.uploadPDF(document.getBytes(), buildFileName(caseData, isDraft));
     }
 }

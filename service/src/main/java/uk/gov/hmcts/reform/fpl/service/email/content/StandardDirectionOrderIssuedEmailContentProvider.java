@@ -1,11 +1,9 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -27,15 +25,12 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class StandardDirectionOrderIssuedEmailContentProvider extends StandardDirectionOrderContent {
-    private final ObjectMapper mapper;
     private final CaseDataExtractionService caseDataExtractionService;
     @Value("${manage-case.ui.base.url}")
     private String xuiBaseUrl;
 
-    public AllocatedJudgeTemplateForSDO buildNotificationParametersForAllocatedJudge(CaseDetails caseDetails) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        Map<String, Object> commonSDOParameters = super.getSDOPersonalisationBuilder(
-            caseDetails.getId(), caseData).build();
+    public AllocatedJudgeTemplateForSDO buildNotificationParametersForAllocatedJudge(CaseData caseData) {
+        Map<String, Object> commonSDOParameters = super.getSDOPersonalisationBuilder(caseData).build();
 
         AllocatedJudgeTemplateForSDO allocatedJudgeTemplate = new AllocatedJudgeTemplateForSDO();
         allocatedJudgeTemplate.setFamilyManCaseNumber(commonSDOParameters.get("familyManCaseNumber").toString());
@@ -54,8 +49,7 @@ public class StandardDirectionOrderIssuedEmailContentProvider extends StandardDi
 
     //Clean up private method logic when hearing needs list is improved (remove 'none' option, make others optional)
     //FPLA-2144
-    public CTSCTemplateForSDO buildNotificationParametersForCTSC(CaseDetails caseDetails) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+    public CTSCTemplateForSDO buildNotificationParametersForCTSC(CaseData caseData) {
 
         HearingBooking hearing = caseData.getFirstHearing().orElseThrow(NoHearingBookingException::new);
 
@@ -67,7 +61,7 @@ public class StandardDirectionOrderIssuedEmailContentProvider extends StandardDi
         ctscTemplateForSDO.setShowDetailsLabel(getShowDetailsLabel(hearing));
         ctscTemplateForSDO.setHearingNeeds(hearing.buildHearingNeedsList());
         ctscTemplateForSDO.setHearingNeedsDetails(getHearingNeedsDetails(hearing));
-        ctscTemplateForSDO.setCaseUrl(getCaseUrl(caseDetails.getId()));
+        ctscTemplateForSDO.setCaseUrl(getCaseUrl(caseData.getId()));
         ctscTemplateForSDO.setDocumentLink(concatUrlAndMostRecentUploadedDocumentPath(xuiBaseUrl,
             caseData.getStandardDirectionOrder().getOrderDoc().getBinaryUrl()));
 

@@ -1,19 +1,13 @@
 package uk.gov.hmcts.reform.fpl.events;
 
-import lombok.EqualsAndHashCode;
-import lombok.Generated;
-import lombok.Value;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 
-@Value
-@Generated
-@EqualsAndHashCode(callSuper = true)
-public class CaseManagementOrderRejectedEvent extends CallbackEvent {
+@Getter
+@RequiredArgsConstructor
+public class CaseManagementOrderRejectedEvent {
+    private final CaseData caseData;
     private final CaseManagementOrder cmo;
-
-    public CaseManagementOrderRejectedEvent(CallbackRequest callbackRequest, CaseManagementOrder cmo) {
-        super(callbackRequest);
-        this.cmo = cmo;
-    }
 }

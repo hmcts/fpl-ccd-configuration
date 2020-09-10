@@ -11,7 +11,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 
 public abstract class StandardDirectionOrderContent extends AbstractEmailContentProvider {
 
-    protected ImmutableMap.Builder<String, Object> getSDOPersonalisationBuilder(Long caseId, CaseData caseData) {
+    protected ImmutableMap.Builder<String, Object> getSDOPersonalisationBuilder(CaseData caseData) {
         return ImmutableMap.<String, Object>builder()
             .put("familyManCaseNumber",
                 isNull(caseData.getFamilyManCaseNumber()) ? "" : caseData.getFamilyManCaseNumber() + ",")
@@ -21,8 +21,8 @@ public abstract class StandardDirectionOrderContent extends AbstractEmailContent
                 .getParty()
                 .getLastName()))
             .put("hearingDate", getHearingBooking(caseData))
-            .put("reference", String.valueOf(caseId))
-            .put("caseUrl", getCaseUrl(caseId));
+            .put("reference", String.valueOf(caseData.getId()))
+            .put("caseUrl", getCaseUrl(caseData.getId()));
     }
 
     private String getHearingBooking(CaseData data) {

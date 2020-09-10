@@ -106,6 +106,8 @@ Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage,
   uploadC2DocumentsEventPage.usePbaPayment();
   uploadC2DocumentsEventPage.enterPbaPaymentDetails(c2Payment);
   uploadC2DocumentsEventPage.uploadC2Document(config.testFile, 'Rachel Zane C2');
+  await uploadC2DocumentsEventPage.uploadC2SupportingDocument();
+
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.uploadC2Documents);
 
@@ -119,9 +121,14 @@ Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage,
   I.seeInTab(['C2 Application 1', 'Payment by account (PBA) number'], c2Payment.pbaNumber);
   I.seeInTab(['C2 Application 1', 'Client code'], c2Payment.clientCode);
   I.seeInTab(['C2 Application 1', 'Customer reference'], c2Payment.customerReference);
+  I.seeInTab(['C2 Application 1', 'Document name'], 'C2 supporting document');
+  I.seeInTab(['C2 Application 1', 'Notes'], 'C2 supporting document');
+  I.seeInTab(['C2 Application 1', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
+  I.seeInTab(['C2 Application 1', 'Document name'], 'This is a note about supporting doc');
+  I.seeInTab(['C2 Application 1', 'Upload document'], 'mockFile.txt');
 
   await I.startEventViaHyperlink('Upload a new C2 application');
-  
+
   uploadC2DocumentsEventPage.selectApplicationType('WITHOUT_NOTICE');
   await I.retryUntilExists(() => I.click('Continue'), '#temporaryC2Document_document');
   uploadC2DocumentsEventPage.usePbaPayment(false);
@@ -138,11 +145,11 @@ Scenario('HMCTS admin edits supporting evidence document on C2 application', asy
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
   manageDocumentsEventPage.setSupportingEvidenceDocumentType('c2SupportingDocuments');
   await manageDocumentsEventPage.selectC2SupportingDocuments();
-  await manageDocumentsEventPage.selectC2Document(1, dateFormat(submittedAt, 'd mmm yyyy'));
+  await manageDocumentsEventPage.selectC2Document(1, dateFormat(submittedAt, 'd mmmm yyyy, h:MMtt'));
   await I.retryUntilExists(() => I.click('Continue'), '#c2SupportingDocuments');
   await manageDocumentsEventPage.enterDocumentName('Updated document name');
   await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
-  I.seeEventSubmissionConfirmation(config.administrationActions.uploadC2Documents);
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.c2);
   I.seeInTab(['C2 Application 1', 'Document name'], 'Updated document name');
   I.seeInTab(['C2 Application 1', 'Notes'], 'C2 supporting document');

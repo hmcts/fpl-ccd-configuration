@@ -1,11 +1,9 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
@@ -51,12 +50,10 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInReturnedState;
 @RestController
 @RequestMapping("/callback/case-submission")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class CaseSubmissionController {
+public class CaseSubmissionController extends CallbackController {
     private static final String DISPLAY_AMOUNT_TO_PAY = "displayAmountToPay";
     private static final String CONSENT_TEMPLATE = "I, %s, believe that the facts stated in this application are true.";
     private final CaseSubmissionService caseSubmissionService;
-    private final ApplicationEventPublisher applicationEventPublisher;
-    private final ObjectMapper mapper;
     private final RestrictionsConfiguration restrictionsConfiguration;
     private final FeeService feeService;
     private final FeatureToggleService featureToggleService;
@@ -68,15 +65,15 @@ public class CaseSubmissionController {
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
-            @RequestBody CallbackRequest callbackRequest) {
+        @RequestBody CallbackRequest callbackRequest) {
 
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
-        CaseData caseData = mapper.convertValue(data, CaseData.class);
+        CaseData caseData = getCaseData(caseDetails);
 
         data.remove(DISPLAY_AMOUNT_TO_PAY);
 
-        Document document = caseSubmissionService.generateSubmittedFormPDF(caseDetails, true);
+        Document document = caseSubmissionService.generateSubmittedFormPDF(caseData, true);
         data.put("draftApplicationDocument", buildFromDocument(document));
 
         List<String> errors = validate(caseData);
@@ -97,17 +94,14 @@ public class CaseSubmissionController {
             data.put("submissionConsentLabel", label);
         }
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(data)
-                .errors(errors)
-                .build();
+        return respond(caseDetails, errors);
     }
 
     private List<String> validate(CaseData caseData) {
         List<String> errors = new ArrayList<>();
 
         if (restrictionsConfiguration.getLocalAuthorityCodesForbiddenCaseSubmission()
-                .contains(caseData.getCaseLocalAuthority())) {
+            .contains(caseData.getCaseLocalAuthority())) {
             errors.add("Test local authority cannot submit cases");
         }
 
@@ -116,21 +110,18 @@ public class CaseSubmissionController {
 
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = getCaseData(callbackRequest);
         final List<String> errors = caseSubmissionChecker.validate(caseData);
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(caseDetails.getData())
-                .errors(errors)
-                .build();
+        return respond(callbackRequest.getCaseDetails(), errors);
     }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
 
-        Document document = caseSubmissionService.generateSubmittedFormPDF(caseDetails, false);
+        Document document = caseSubmissionService.generateSubmittedFormPDF(caseData, false);
 
         ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
 
@@ -139,33 +130,31 @@ public class CaseSubmissionController {
         data.put("dateSubmitted", DateTimeFormatter.ISO_LOCAL_DATE.format(zonedDateTime));
         data.put("sendToCtsc", setSendToCtsc(data.get("caseLocalAuthority").toString()).getValue());
         data.put("submittedForm", ImmutableMap.<String, String>builder()
-                .put("document_url", document.links.self.href)
-                .put("document_binary_url", document.links.binary.href)
-                .put("document_filename", document.originalDocumentName)
-                .build());
+            .put("document_url", document.links.self.href)
+            .put("document_binary_url", document.links.binary.href)
+            .put("document_filename", document.originalDocumentName)
+            .build());
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(data)
-                .build();
+        return respond(caseDetails);
     }
 
     @PostMapping("/submitted")
     public SubmittedCallbackResponse handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        if (isInOpenState(callbackRequest.getCaseDetailsBefore())) {
-            applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest));
-            applicationEventPublisher.publishEvent(new CaseDataChanged(callbackRequest));
+        CaseData caseData = getCaseData(callbackRequest);
+        CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
+        if (caseDataBefore.getState() == OPEN) {
+            publishEvent(new SubmittedCaseEvent(caseData, caseDataBefore));
+            publishEvent(new CaseDataChanged(caseData));
         } else if (isInReturnedState(callbackRequest.getCaseDetailsBefore())) {
-            applicationEventPublisher.publishEvent(new AmendedReturnedCaseEvent(callbackRequest));
+            publishEvent(new AmendedReturnedCaseEvent(caseData));
         }
 
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         MarkdownData markdownData = markdownService.getMarkdownData(caseData.getCaseName());
 
         return SubmittedCallbackResponse.builder()
-                .confirmationHeader(markdownData.getHeader())
-                .confirmationBody(markdownData.getBody())
-                .build();
+            .confirmationHeader(markdownData.getHeader())
+            .confirmationBody(markdownData.getBody())
+            .build();
     }
 
     private YesNo setSendToCtsc(String caseLocalAuthority) {

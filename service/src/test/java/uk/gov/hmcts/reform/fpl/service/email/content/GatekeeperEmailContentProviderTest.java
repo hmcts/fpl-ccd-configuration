@@ -1,24 +1,22 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.notify.sendtogatekeeper.NotifyGatekeeperTemplate;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
 
 @ContextConfiguration(classes = {GatekeeperEmailContentProvider.class, LookupTestConfig.class})
 class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTest {
@@ -43,8 +41,8 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
         gatekeeperNotificationTemplate.setReference(CASE_REFERENCE);
         gatekeeperNotificationTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
 
-        assertThat(gatekeeperEmailContentProvider.buildGatekeeperNotification(populatedCaseDetails(),
-            LOCAL_AUTHORITY_CODE)).isEqualToComparingFieldByField(gatekeeperNotificationTemplate);
+        assertThat(gatekeeperEmailContentProvider.buildGatekeeperNotification(populatedCaseData()))
+            .isEqualToComparingFieldByField(gatekeeperNotificationTemplate);
     }
 
     @Test
@@ -63,14 +61,14 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
         gatekeeperNotificationTemplate.setReference("123");
         gatekeeperNotificationTemplate.setCaseUrl(caseUrl("123"));
 
-        Map<String, Object> caseData = ImmutableMap.of(
-            "orders", Orders.builder().orderType(List.of(CARE_ORDER))
-                .build());
+        CaseData caseData = CaseData.builder()
+            .id(123L)
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .orders(Orders.builder().orderType(List.of(CARE_ORDER)).build())
+            .build();
 
-        CaseDetails caseDetails = buildCaseDetails(caseData);
-
-        assertThat(gatekeeperEmailContentProvider.buildGatekeeperNotification(caseDetails,
-            LOCAL_AUTHORITY_CODE)).isEqualToComparingFieldByField(gatekeeperNotificationTemplate);
+        assertThat(gatekeeperEmailContentProvider.buildGatekeeperNotification(caseData))
+            .isEqualToComparingFieldByField(gatekeeperNotificationTemplate);
     }
 
     @Test
@@ -89,16 +87,17 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
         gatekeeperNotificationTemplate.setReference("123");
         gatekeeperNotificationTemplate.setCaseUrl(caseUrl("123"));
 
-        Map<String, Object> caseData = ImmutableMap.of(
-            "orders", Orders.builder().orderType(List.of(CARE_ORDER)).build(),
-            "hearing", Hearing.builder()
-                    .timeFrame("Two days")
-                .build());
+        CaseData caseData = CaseData.builder()
+            .id(123L)
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .orders(Orders.builder().orderType(List.of(CARE_ORDER)).build())
+            .hearing(Hearing.builder()
+                .timeFrame("Two days")
+                .build())
+            .build();
 
-        CaseDetails caseDetails = buildCaseDetails(caseData);
-
-        assertThat(gatekeeperEmailContentProvider.buildGatekeeperNotification(caseDetails,
-            LOCAL_AUTHORITY_CODE)).isEqualToComparingFieldByField(gatekeeperNotificationTemplate);
+        assertThat(gatekeeperEmailContentProvider.buildGatekeeperNotification(caseData))
+            .isEqualToComparingFieldByField(gatekeeperNotificationTemplate);
     }
 
     @Test
@@ -123,12 +122,5 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
             "JohnSmith@gmail.com");
 
         assertThat(formattedMessage).isEmpty();
-    }
-
-    private CaseDetails buildCaseDetails(Map<String, Object> data) {
-        return CaseDetails.builder()
-            .id(123L)
-            .data(data)
-            .build();
     }
 }

@@ -5,9 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.model.event.EventData;
-
-import java.util.Map;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
@@ -17,17 +15,11 @@ public class HmctsAdminNotificationHandler {
     private final CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
-    public String getHmctsAdminEmail(final EventData eventData) {
-        String ctscValue = getCtscValue(eventData.getCaseDetails().getData());
-
-        if (YES.getValue().equals(ctscValue)) {
+    public String getHmctsAdminEmail(final CaseData caseData) {
+        if (YES.getValue().equals(caseData.getSendToCtsc())) {
             return ctscEmailLookupConfiguration.getEmail();
         }
 
-        return hmctsCourtLookupConfiguration.getCourt(eventData.getLocalAuthorityCode()).getEmail();
-    }
-
-    private String getCtscValue(final Map<String, Object> caseData) {
-        return caseData.get("sendToCtsc") != null ? caseData.get("sendToCtsc").toString() : "No";
+        return hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getEmail();
     }
 }

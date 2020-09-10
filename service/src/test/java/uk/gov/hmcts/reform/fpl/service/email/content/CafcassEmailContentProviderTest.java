@@ -1,13 +1,12 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
@@ -22,7 +21,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
@@ -65,11 +64,10 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
             .map(JSONObject::toMap)
             .orElse(null));
 
-        CaseDetails caseDetails = populatedCaseDetails(
-            Map.of("applicationBinaryUrl", applicationDocument.getBinaryUrl()));
+        CaseData caseData = populatedCaseData(Map.of("applicationBinaryUrl", applicationDocument.getBinaryUrl()));
 
-        assertThat(cafcassEmailContentProvider.buildCafcassSubmissionNotification(caseDetails,
-            LOCAL_AUTHORITY_CODE)).isEqualToComparingFieldByField(cafcassSubmissionTemplate);
+        assertThat(cafcassEmailContentProvider.buildCafcassSubmissionNotification(caseData))
+            .isEqualToComparingFieldByField(cafcassSubmissionTemplate);
     }
 
     @Test
@@ -90,18 +88,18 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
         cafcassSubmissionTemplate.setDocumentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
             .map(JSONObject::toMap).orElse(null));
 
-        assertThat(cafcassEmailContentProvider.buildCafcassSubmissionNotification(buildCaseDetails(applicationDocument),
-            LOCAL_AUTHORITY_CODE)).isEqualToComparingFieldByField(cafcassSubmissionTemplate);
+        assertThat(cafcassEmailContentProvider.buildCafcassSubmissionNotification(buildCaseData(applicationDocument)))
+            .isEqualToComparingFieldByField(cafcassSubmissionTemplate);
     }
 
-    private CaseDetails buildCaseDetails(DocumentReference applicationDocument) {
-        return CaseDetails.builder()
+    private CaseData buildCaseData(DocumentReference applicationDocument) {
+        return CaseData.builder()
             .id(123L)
-            .data(ImmutableMap.of(
-                "submittedForm", applicationDocument,
-                "orders", Orders.builder()
-                    .orderType(List.of(CARE_ORDER))
-                    .build()))
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .submittedForm(applicationDocument)
+            .orders(Orders.builder()
+                .orderType(List.of(CARE_ORDER))
+                .build())
             .build();
     }
 }

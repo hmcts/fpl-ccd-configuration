@@ -58,7 +58,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerT
             .documentTitle(C6_DOCUMENT_TITLE)
             .build();
 
-        CaseData caseData = mapper.convertValue(callbackRequest().getCaseDetails().getData(), CaseData.class);
+        CaseData caseData = caseConverter.convert(callbackRequest().getCaseDetails());
 
         DocmosisNoticeOfProceeding templateData = createTemplatePlaceholders();
 

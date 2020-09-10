@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
@@ -31,8 +30,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.NA
 @RestController
 @RequestMapping("/callback/validate-order")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class ValidateOrderController {
-    private final ObjectMapper mapper;
+public class ValidateOrderController extends CallbackController {
     private final ValidateGroupService validateGroupService;
 
     @PostMapping("/date-of-issue/mid-event")
@@ -40,19 +38,16 @@ public class ValidateOrderController {
         @RequestBody CallbackRequest callbackRequest) {
 
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = getCaseData(caseDetails);
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .errors(validateGroupService.validateGroup(caseData, DateOfIssueGroup.class))
-            .build();
+        return respond(caseDetails, validateGroupService.validateGroup(caseData, DateOfIssueGroup.class));
     }
 
     @PostMapping("/address/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEventValidateAddress(
         @RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = getCaseData(caseDetails);
 
         List<String> errors = List.of();
 
@@ -60,18 +55,14 @@ public class ValidateOrderController {
             errors = validateGroupService.validateGroup(caseData, EPOAddressGroup.class);
         }
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .errors(errors)
-            .build();
+        return respond(caseDetails, errors);
     }
 
     @PostMapping("/child-selector/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEventValidateChildren(
         @RequestBody CallbackRequest callbackRequest) {
 
-        final CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        final CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = getCaseData(callbackRequest);
 
         List<String> errors = new ArrayList<>();
 
@@ -80,18 +71,14 @@ public class ValidateOrderController {
             errors.add("Select the children included in the order.");
         }
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .errors(errors)
-            .build();
+        return respond(callbackRequest.getCaseDetails(), errors);
     }
 
     @PostMapping("/interim-end-date/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEventValidateInterimEndDate(
         @RequestBody CallbackRequest callbackRequest) {
 
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = getCaseData(callbackRequest);
         final InterimEndDate interimEndDate = caseData.getInterimEndDate();
 
         List<String> errors = List.of();
@@ -100,38 +87,28 @@ public class ValidateOrderController {
             errors = validateGroupService.validateGroup(interimEndDate, InterimEndDateGroup.class);
         }
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .errors(errors)
-            .build();
+        return respond(callbackRequest.getCaseDetails(), errors);
     }
 
     @PostMapping("/epo-end-date/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEventValidateEPOEndDate(
         @RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = getCaseData(callbackrequest);
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .errors(validateGroupService.validateGroup(caseData, EPOEndDateGroup.class))
-            .build();
+        return respond(caseDetails, validateGroupService.validateGroup(caseData, EPOEndDateGroup.class));
     }
 
     @PostMapping("/care-orders-selection/mid-event")
     public AboutToStartOrSubmitCallbackResponse validateDischargedOrders(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = getCaseData(callbackRequest);
         List<String> errors = new ArrayList<>();
 
         if (isEmpty(caseData.getCareOrderSelector()) || isEmpty(caseData.getCareOrderSelector().getSelected())) {
             errors.add("Select care orders to be discharged.");
         }
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .errors(errors)
-            .build();
+        return respond(callbackRequest.getCaseDetails(), errors);
     }
 
 }

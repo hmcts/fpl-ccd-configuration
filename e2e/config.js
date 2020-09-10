@@ -31,6 +31,10 @@ module.exports = {
     email: 'hmcts-admin@example.com',
     password: process.env.CA_USER_PASSWORD || defaultPassword,
   },
+  hmctsSuperUser: {
+    email: 'hmcts-superuser@mailnesia.com',
+    password: process.env.SUPER_USER_PASSWORD || defaultPassword,
+  },
   cafcassUser: {
     email: 'cafcass@example.com',
     password: process.env.CAFCASS_USER_PASSWORD || defaultPassword,
@@ -84,8 +88,6 @@ module.exports = {
     deleteApplication: 'Delete an application',
     uploadCMO: 'Send agreed CMO to judge',
     reviewAgreedCmo: 'Review agreed CMO',
-    complyWithDirections: 'Comply with directions',
-    complyOnBehalfOf: 'Comply on behalf of others',
     allocatedJudge: 'Allocated Judge',
     extend26WeekTimeline: 'Extend 26-week timeline',
   },
@@ -114,6 +116,9 @@ module.exports = {
     closeTheCase: 'Close the case',
     returnApplication: 'Return application',
     manageDocuments: 'Manage documents',
+  },
+  superUserActions: {
+    removeOrder: 'Remove an order',
   },
   // files
   testFile: './e2e/fixtures/mockFile.txt',

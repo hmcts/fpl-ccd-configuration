@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplat
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.getExpectedAllocatedJudgeNotificationParameters;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 
 @ContextConfiguration(classes = {AllocatedJudgeContentProvider.class})
 class AllocatedJudgeContentProviderTest extends AbstractEmailContentProviderTest {
@@ -19,7 +19,7 @@ class AllocatedJudgeContentProviderTest extends AbstractEmailContentProviderTest
     void shouldBuildAllocatedJudgeNotificationWithExpectedParameters() {
         final AllocatedJudgeTemplate expectedParameters = getExpectedAllocatedJudgeNotificationParameters();
 
-        assertThat(allocatedJudgeContentProvider.buildNotificationParameters(
-            callbackRequest().getCaseDetails())).isEqualToComparingFieldByField(expectedParameters);
+        assertThat(allocatedJudgeContentProvider.buildNotificationParameters(caseData()))
+            .isEqualToComparingFieldByField(expectedParameters);
     }
 }

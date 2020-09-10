@@ -60,7 +60,7 @@ module.exports = {
     const elementIndex = await this.getActiveElementIndex();
     const type = this.getSupportingEvidenceDocumentType();
     I.waitForElement(this.fields(elementIndex, type).c2DocumentsList);
-    I.selectOption(this.fields(elementIndex, type).c2DocumentsList, `Application ${index}, ${uploadedDateTime}`);
+    I.selectOption(this.fields(elementIndex, type).c2DocumentsList, `Application ${index}: ${uploadedDateTime}`);
   },
 
   async enterDocumentName(documentName) {
