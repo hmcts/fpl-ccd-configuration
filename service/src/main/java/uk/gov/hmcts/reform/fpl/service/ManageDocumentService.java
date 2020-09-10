@@ -57,18 +57,20 @@ public class ManageDocumentService {
         return listAndLabel;
     }
 
-    public void initialiseC2DocumentListAndLabel(CaseDetails caseDetails) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        UUID selectedC2DocumentCode = mapper.convertValue(caseDetails.getData().get(SUPPORTING_C2_LIST_KEY),
-            UUID.class);
+    public Map<String, Object> initialiseC2DocumentListAndLabel(CaseData caseData) {
+        Map<String, Object> listAndLabel = new HashMap<>();
+
+        UUID selectedC2DocumentCode = getDynamicListValueCode(caseData.getManageDocumentsSupportingC2List(), mapper);
 
         IntStream.range(0, caseData.getC2DocumentBundle().size())
             .filter(index -> caseData.getC2DocumentBundle().get(index).getId().equals(selectedC2DocumentCode))
             .findFirst()
-            .ifPresent(index -> caseDetails.getData().put(SUPPORTING_C2_LABEL, String.format("Application %s: %s",
+            .ifPresent(index -> listAndLabel.put(SUPPORTING_C2_LABEL, String.format("Application %s: %s",
                 index + 1, caseData.getC2DocumentBundle().get(index).getValue().getUploadedDateTime())));
 
-        caseDetails.getData().put(SUPPORTING_C2_LIST_KEY, caseData.buildC2DocumentDynamicList(selectedC2DocumentCode));
+        listAndLabel.put(SUPPORTING_C2_LIST_KEY, caseData.buildC2DocumentDynamicList(selectedC2DocumentCode));
+
+        return listAndLabel;
     }
 
     public List<Element<SupportingEvidenceBundle>> getFurtherEvidenceCollection(CaseData caseData) {

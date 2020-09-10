@@ -78,7 +78,7 @@ public class ManageDocumentsController {
                 caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, correspondenceDocuments);
                 break;
             case C2:
-                manageDocumentService.initialiseC2DocumentListAndLabel(caseDetails);
+                caseDetails.getData().putAll(manageDocumentService.initialiseC2DocumentListAndLabel(caseData));
 
                 caseDetails.getData().put(C2_SUPPORTING_DOCUMENTS_COLLECTION,
                     manageDocumentService.getC2SupportingEvidenceBundle(caseDetails));
