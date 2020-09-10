@@ -683,8 +683,8 @@ class CaseDataTest {
             CaseData caseData = CaseData.builder().c2DocumentBundle(c2DocumentBundle).build();
             AtomicInteger i = new AtomicInteger(1);
             DynamicList expectedDynamicList = ElementUtils
-                .asDynamicList(c2DocumentBundle, null, documentBundle
-                    -> "Application " + i.getAndIncrement() + ": ");
+                .asDynamicList(c2DocumentBundle, null, documentBundle ->
+                    documentBundle.toLabel(i.toString()));
 
             assertThat(caseData.buildC2DocumentDynamicList()).isEqualTo(expectedDynamicList);
         }
@@ -703,8 +703,8 @@ class CaseDataTest {
             CaseData caseData = CaseData.builder().c2DocumentBundle(c2DocumentBundle).build();
             AtomicInteger i = new AtomicInteger(1);
             DynamicList expectedDynamicList = ElementUtils
-                .asDynamicList(c2DocumentBundle, null, documentBundle
-                    -> "Application " + i.getAndIncrement() + ": ");
+                .asDynamicList(c2DocumentBundle, null, documentBundle ->
+                    documentBundle.toLabel(i.toString()));
 
             assertThat(caseData.buildC2DocumentDynamicList()).isEqualTo(expectedDynamicList);
         }
@@ -736,6 +736,34 @@ class CaseDataTest {
                 .build();
 
             assertThat(caseData.documentBundleContainsHearingId(hearingId)).isFalse();
+        }
+    }
+
+    @Nested
+    class GetC2DocumentBundleByUUID {
+        @Test
+        void shouldReturnC2DocumentBundleWhenIdMatches() {
+            UUID elementId = UUID.randomUUID();
+            C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder().author("Test").build();
+            List<Element<C2DocumentBundle>> c2DocumentBundles = List.of(
+                element(elementId, c2DocumentBundle),
+                element(C2DocumentBundle.builder().build()));
+
+            CaseData caseData = CaseData.builder().c2DocumentBundle(c2DocumentBundles).build();
+
+            assertThat(caseData.getC2DocumentBundleByUUID(elementId)).isEqualTo(c2DocumentBundle);
+        }
+
+        @Test
+        void shouldReturnNullWhenIdDoNotMatch() {
+            UUID elementId = UUID.randomUUID();
+            List<Element<C2DocumentBundle>> c2DocumentBundles = List.of(
+                element(C2DocumentBundle.builder().build()),
+                element(C2DocumentBundle.builder().build()));
+
+            CaseData caseData = CaseData.builder().c2DocumentBundle(c2DocumentBundles).build();
+
+            assertThat(caseData.getC2DocumentBundleByUUID(elementId)).isNull();
         }
     }
 

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -14,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -24,15 +27,21 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENT_KEY;
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.SUPPORTING_C2_LABEL;
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
@@ -45,6 +54,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     JacksonAutoConfiguration.class, FixedTimeConfiguration.class, ManageDocumentService.class
 })
 public class ManageDocumentServiceTest {
+    @Autowired
+    private ObjectMapper mapper;
+
     @Autowired
     private Time time;
 
@@ -283,6 +295,92 @@ public class ManageDocumentServiceTest {
             .isEqualTo(supportingEvidenceBundle);
     }
 
+    @Test
+    void shouldPopulateC2SupportingDocumentsListAndLabel() {
+        UUID selectedC2DocumentId = UUID.randomUUID();
+        LocalDateTime tomorrow = time.now().plusDays(1);
+
+        List<Element<C2DocumentBundle>> c2DocumentBundle = List.of(
+            element(buildC2DocumentBundle(time.now().plusDays(2))),
+            element(selectedC2DocumentId, buildC2DocumentBundle(tomorrow)),
+            element(buildC2DocumentBundle(time.now().plusDays(2))));
+
+        Map<String, Object> data = new HashMap<>(Map.of(
+            "c2DocumentBundle", c2DocumentBundle,
+            SUPPORTING_C2_LIST_KEY, selectedC2DocumentId));
+
+        CaseDetails caseDetails = CaseDetails.builder().data(data).build();
+
+        manageDocumentService.initialiseC2DocumentListAndLabel(caseDetails);
+
+        AtomicInteger i = new AtomicInteger(1);
+        DynamicList expectedC2DocumentsDynamicList = ElementUtils
+            .asDynamicList(c2DocumentBundle, selectedC2DocumentId, documentBundle
+                -> documentBundle.toLabel(i.toString()));
+
+        DynamicList dynamicC2DocumentList = mapper.convertValue(caseDetails.getData().get(SUPPORTING_C2_LIST_KEY),
+            DynamicList.class);
+
+        assertThat(dynamicC2DocumentList).isEqualTo(expectedC2DocumentsDynamicList);
+        assertThat(caseDetails.getData().get(SUPPORTING_C2_LABEL)).isEqualTo(
+            String.format("Application 2: %s", tomorrow.toString()));
+    }
+
+    @Test
+    void shouldGetSelectedC2DocumentEvidenceBundleWhenParentC2SelectedFromDynamicList() {
+        UUID selectedC2DocumentId = UUID.randomUUID();
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
+
+        List<Element<C2DocumentBundle>> c2DocumentBundle = List.of(
+            element(buildC2DocumentBundle(time.now().plusDays(2))),
+            element(selectedC2DocumentId, C2DocumentBundle.builder()
+                .supportingEvidenceBundle(furtherEvidenceBundle)
+                .build()),
+            element(buildC2DocumentBundle(time.now().plusDays(2))));
+
+        AtomicInteger i = new AtomicInteger(1);
+        DynamicList expectedC2DocumentsDynamicList = ElementUtils
+            .asDynamicList(c2DocumentBundle, selectedC2DocumentId, documentBundle ->
+                documentBundle.toLabel(i.toString()));
+
+        Map<String, Object> data = new HashMap<>(Map.of(
+            "c2DocumentBundle", c2DocumentBundle,
+            SUPPORTING_C2_LIST_KEY, expectedC2DocumentsDynamicList));
+
+        CaseDetails caseDetails = CaseDetails.builder().data(data).build();
+
+        List<Element<SupportingEvidenceBundle>> c2SupportingEvidenceBundle =
+            manageDocumentService.getC2SupportingEvidenceBundle(caseDetails);
+
+        assertThat(c2SupportingEvidenceBundle).isEqualTo(furtherEvidenceBundle);
+    }
+
+    @Test
+    void shouldGetEmptyC2DocumentEvidenceBundleWhenParentSelectedFromDynamicListButEvidenceBundleIsEmpty() {
+        UUID selectedC2DocumentId = UUID.randomUUID();
+
+        List<Element<C2DocumentBundle>> c2DocumentBundle = List.of(
+            element(buildC2DocumentBundle(time.now().plusDays(2))),
+            element(selectedC2DocumentId, buildC2DocumentBundle(time.now().plusDays(2))),
+            element(buildC2DocumentBundle(time.now().plusDays(2))));
+
+        AtomicInteger i = new AtomicInteger(1);
+        DynamicList expectedC2DocumentsDynamicList = ElementUtils
+            .asDynamicList(c2DocumentBundle, selectedC2DocumentId, documentBundle
+                -> "Application " + i.getAndIncrement() + ": ");
+
+        Map<String, Object> data = new HashMap<>(Map.of(
+            "c2DocumentBundle", c2DocumentBundle,
+            SUPPORTING_C2_LIST_KEY, expectedC2DocumentsDynamicList));
+
+        CaseDetails caseDetails = CaseDetails.builder().data(data).build();
+
+        List<Element<SupportingEvidenceBundle>> c2SupportingEvidenceBundle =
+            manageDocumentService.getC2SupportingEvidenceBundle(caseDetails);
+
+        assertThat(c2SupportingEvidenceBundle.get(0).getValue()).isEqualTo(SupportingEvidenceBundle.builder().build());
+    }
+
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
         return wrapElements(SupportingEvidenceBundle.builder().name("test").build());
     }
@@ -296,6 +394,10 @@ public class ManageDocumentServiceTest {
             .type(HearingType.FINAL)
             .startDate(time.now())
             .build();
+    }
+
+    private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {
+        return C2DocumentBundle.builder().uploadedDateTime(dateTime.toString()).build();
     }
 
     private DynamicList buildDynamicList(UUID selectedId) {

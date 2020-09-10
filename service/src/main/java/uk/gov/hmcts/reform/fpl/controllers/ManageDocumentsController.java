@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.service.SupportingEvidenceValidatorService;
 
 import java.util.List;
 
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.C2_SUPPORTING_DOCUMENTS_COLLECTION;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
@@ -76,8 +77,10 @@ public class ManageDocumentsController {
                 caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, correspondenceDocuments);
                 break;
             case C2:
-                // TODO
-                // Populate data for case type is C2
+                manageDocumentService.initialiseC2DocumentListAndLabel(caseDetails);
+
+                caseDetails.getData().put(C2_SUPPORTING_DOCUMENTS_COLLECTION,
+                    manageDocumentService.getC2SupportingEvidenceBundle(caseDetails));
                 break;
         }
 

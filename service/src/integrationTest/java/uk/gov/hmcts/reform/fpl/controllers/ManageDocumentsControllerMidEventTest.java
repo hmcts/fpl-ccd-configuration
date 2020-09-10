@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -24,6 +25,7 @@ import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.C2;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -32,6 +34,7 @@ import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.HEARING_FURT
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LABEL_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENT_KEY;
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -110,6 +113,34 @@ public class ManageDocumentsControllerMidEventTest extends AbstractControllerTes
     }
 
     @Test
+    void shouldInitialiseC2SupportingDocuments() {
+        UUID selectedC2DocumentId = UUID.randomUUID();
+        LocalDateTime today = LocalDateTime.now();
+
+        List<Element<SupportingEvidenceBundle>> c2EvidenceDocuments = buildSupportingEvidenceBundle();
+
+        List<Element<C2DocumentBundle>> c2DocumentBundle = List.of(
+            element(buildC2DocumentBundle(today.plusDays(2))),
+            element(selectedC2DocumentId, C2DocumentBundle.builder()
+                .supportingEvidenceBundle(c2EvidenceDocuments)
+                .build()),
+            element(buildC2DocumentBundle(today.plusDays(2))));
+
+        Map<String, Object> data = new HashMap<>(Map.of(
+            "c2DocumentBundle", c2DocumentBundle,
+            MANAGE_DOCUMENT_KEY, buildManagementDocument(C2),
+            SUPPORTING_C2_LIST_KEY, selectedC2DocumentId));
+
+        CaseDetails caseDetails = buildCaseDetails(data);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails,
+            "initialise-manage-document-collections");
+
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        assertThat(caseData.getC2SupportingDocuments()).isEqualTo(c2EvidenceDocuments);
+    }
+
+    @Test
     void shouldReturnValidationErrorsIfSupportingEvidenceDateTimeReceivedIsInTheFuture() {
         LocalDateTime futureDate = LocalDateTime.now().plusDays(1);
         CaseDetails caseDetails = buildCaseDetailsWithSupportingEvidenceBundle(futureDate);
@@ -150,5 +181,9 @@ public class ManageDocumentsControllerMidEventTest extends AbstractControllerTes
 
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
         return wrapElements(SupportingEvidenceBundle.builder().name("test").build());
+    }
+
+    private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {
+        return C2DocumentBundle.builder().uploadedDateTime(dateTime.toString()).build();
     }
 }
