@@ -14,7 +14,11 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
+import java.time.LocalDate;
+
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFromStringUsingFormat;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -24,6 +28,16 @@ public class StandardDirectionsOrderService {
     private final Time time;
     private final IdamClient idamClient;
     private final RequestData requestData;
+
+    public LocalDate generateDateOfIssue(StandardDirectionOrder order) {
+        LocalDate dateOfIssue = time.now().toLocalDate();
+
+        if (order != null && order.getDateOfIssue() != null) {
+            dateOfIssue = parseLocalDateFromStringUsingFormat(order.getDateOfIssue(), DATE);
+        }
+
+        return dateOfIssue;
+    }
 
     public StandardDirectionOrder buildTemporarySDO(CaseData caseData) {
         DocumentReference document = caseData.getPreparedSDO();

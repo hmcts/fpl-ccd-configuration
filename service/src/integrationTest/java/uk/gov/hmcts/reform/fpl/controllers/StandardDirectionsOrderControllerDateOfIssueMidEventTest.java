@@ -8,10 +8,12 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
+import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -42,6 +44,38 @@ class StandardDirectionsOrderControllerDateOfIssueMidEventTest extends AbstractC
 
     StandardDirectionsOrderControllerDateOfIssueMidEventTest() {
         super("draft-standard-directions");
+    }
+
+    @Nested
+    class DateOfIssuePopulation {
+        @Test
+        void shouldPopulateDateOfIssue() {
+            CaseData caseData = CaseData.builder()
+                .sdoRouter(SDORoute.SERVICE)
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postMidEvent(
+                asCaseDetails(caseData), "populate-date-of-issue"
+            );
+
+            CaseData responseData = mapper.convertValue(response.getData(), CaseData.class);
+
+            assertThat(responseData.getDateOfIssue()).isEqualTo(now().toLocalDate());
+        }
+
+        @Test
+        void shouldRemoveEmptyPreparedStandardDirectionOrderDocumentIfPresent() {
+            CaseData caseData = CaseData.builder()
+                .preparedSDO(DocumentReference.builder().build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postMidEvent(
+                asCaseDetails(caseData), "populate-date-of-issue"
+            );
+
+            assertThat(response.getData()).isNotEmpty()
+                .doesNotContainKey("preparedSDO");
+        }
     }
 
     @Nested

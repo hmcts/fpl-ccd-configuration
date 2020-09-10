@@ -52,6 +52,24 @@ class StandardDirectionsOrderServiceTest {
     }
 
     @Test
+    void shouldPullDateFromStandardDirectionOrderWhenPresent() {
+        StandardDirectionOrder order = StandardDirectionOrder.builder()
+            .dateOfIssue("22 March 2020")
+            .build();
+
+        LocalDate dateOfIssue = service.generateDateOfIssue(order);
+
+        assertThat(dateOfIssue).isEqualTo(LocalDate.of(2020, 3, 22));
+    }
+
+    @Test
+    void shouldSetDateOfIssueToCurrentDateWhenStandardDirectionOrderDoesNotHaveDateOfIssue() {
+        LocalDate dateOfIssue = service.generateDateOfIssue(null);
+
+        assertThat(dateOfIssue).isEqualTo(TIME.now().toLocalDate());
+    }
+
+    @Test
     void shouldUsePreparedSDOForTemporaryStandardDirectionOrder() {
         CaseData caseData = CaseData.builder()
             .preparedSDO(PDF_DOC)

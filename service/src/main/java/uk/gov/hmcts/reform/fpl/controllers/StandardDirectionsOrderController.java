@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
@@ -33,10 +34,8 @@ import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.StandardDirectionOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.sdo.StandardDirectionsOrderService;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -53,7 +52,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFromStringUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.prepareJudgeFields;
@@ -72,7 +70,6 @@ public class StandardDirectionsOrderController extends CallbackController {
     private final PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService;
     private final OrderValidationService orderValidationService;
     private final HearingBookingService hearingBookingService;
-    private final Time time;
     private final ValidateGroupService validateGroupService;
     private final StandardDirectionsService standardDirectionsService;
     private final StandardDirectionsOrderService sdoService;
@@ -87,14 +84,9 @@ public class StandardDirectionsOrderController extends CallbackController {
         StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
         SDORoute sdoRouter = caseData.getSdoRouter();
 
+        // contents of the if can be moved into service case of switch statement when new sdo flow is live
         if (sdoRouter == null || SERVICE == sdoRouter) {
-            LocalDate dateOfIssue = time.now().toLocalDate();
-
-            if (standardDirectionOrder != null && standardDirectionOrder.getDateOfIssue() != null) {
-                dateOfIssue = parseLocalDateFromStringUsingFormat(standardDirectionOrder.getDateOfIssue(), DATE);
-            }
-
-            data.put("dateOfIssue", dateOfIssue);
+            data.put("dateOfIssue", sdoService.generateDateOfIssue(standardDirectionOrder));
         }
 
         if (sdoRouter != null && standardDirectionOrder != null) {
@@ -109,6 +101,25 @@ public class StandardDirectionsOrderController extends CallbackController {
                 default:
                     throw new IllegalStateException("Unexpected value: " + sdoRouter);
             }
+        }
+
+        return respond(caseDetails);
+    }
+
+    @PostMapping("/populate-date-of-issue/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleMidEventPopulateIssueDate(@RequestBody CallbackRequest request) {
+        CaseDetails caseDetails = request.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+        Map<String, Object> data = caseDetails.getData();
+
+        if (caseData.getSdoRouter() == SERVICE) {
+            data.put("dateOfIssue", sdoService.generateDateOfIssue(caseData.getStandardDirectionOrder()));
+        }
+
+        // see RDM-9147
+        DocumentReference preparedSDO = caseData.getPreparedSDO();
+        if (preparedSDO != null && preparedSDO.isEmpty()) {
+            data.remove("preparedSDO");
         }
 
         return respond(caseDetails);
