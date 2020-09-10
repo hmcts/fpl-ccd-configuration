@@ -13,11 +13,11 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +41,9 @@ class UploadC2DocumentsServiceTest {
     @Autowired
     private UploadC2DocumentsService service;
 
+    @Autowired
+    private Time time;
+
     @MockBean
     private IdamClient idamClient;
 
@@ -56,8 +59,7 @@ class UploadC2DocumentsServiceTest {
 
         List<C2DocumentBundle> listOfC2Bundle = unwrapElements(list);
 
-        assertThat(listOfC2Bundle).first()
-            .isEqualToComparingFieldByField(createC2DocumentBundle());
+        assertThat(listOfC2Bundle).first().isEqualToComparingFieldByField(createC2DocumentBundle());
     }
 
     @Test
@@ -88,7 +90,7 @@ class UploadC2DocumentsServiceTest {
         return SupportingEvidenceBundle.builder()
             .name("Supporting document")
             .notes("Document notes")
-            .dateTimeReceived(LocalDateTime.now().plusDays(1))
+            .dateTimeReceived(time.now().plusDays(1))
             .build();
     }
 
