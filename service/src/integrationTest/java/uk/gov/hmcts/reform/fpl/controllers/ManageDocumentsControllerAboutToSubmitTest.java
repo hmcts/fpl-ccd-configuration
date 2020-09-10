@@ -70,7 +70,7 @@ public class ManageDocumentsControllerAboutToSubmitTest extends AbstractControll
         assertThat(caseData.getHearingFurtherEvidenceDocuments().get(0).getValue()
             .getSupportingEvidenceBundle()).isEqualTo(furtherEvidenceBundle);
 
-        assertThat(caseData.getFurtherEvidenceDocumentsTEMP()).isEmpty();
+        assertExpectedFieldsAreRemoved(caseData);
     }
 
     @Test
@@ -90,8 +90,7 @@ public class ManageDocumentsControllerAboutToSubmitTest extends AbstractControll
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
         assertThat(caseData.getFurtherEvidenceDocuments()).isEqualTo(furtherEvidenceBundle);
-        assertThat(caseData.getFurtherEvidenceDocumentsTEMP()).isEmpty();
-        assertThat(caseData.getManageDocument()).isNull();
+        assertExpectedFieldsAreRemoved(caseData);
     }
 
     @Test
@@ -111,7 +110,7 @@ public class ManageDocumentsControllerAboutToSubmitTest extends AbstractControll
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
         assertThat(caseData.getCorrespondenceDocuments()).isEqualTo(furtherEvidenceBundle);
-        assertThat(caseData.getManageDocument()).isNull();
+        assertExpectedFieldsAreRemoved(caseData);
     }
 
     @Test
@@ -145,5 +144,13 @@ public class ManageDocumentsControllerAboutToSubmitTest extends AbstractControll
             .dateTimeUploaded(LocalDateTime.now())
             .name("test")
             .build());
+    }
+
+    private void assertExpectedFieldsAreRemoved(CaseData caseData) {
+        assertThat(caseData.getFurtherEvidenceDocumentsTEMP()).isEmpty();
+        assertThat(caseData.getManageDocument()).isNull();
+        assertThat(caseData.getC2SupportingDocuments()).isNull();
+        assertThat(caseData.getManageDocumentsHearingList()).isNull();
+        assertThat(caseData.getManageDocumentsSupportingC2List()).isNull();
     }
 }

@@ -236,6 +236,11 @@ public class CaseData {
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
 
     @JsonIgnore
+    public boolean hasC2DocumentBundle() {
+        return c2DocumentBundle != null && !c2DocumentBundle.isEmpty();
+    }
+
+    @JsonIgnore
     public C2DocumentBundle getLastC2DocumentBundle() {
         return Stream.of(ElementUtils.unwrapElements(c2DocumentBundle))
             .filter(list -> !list.isEmpty())
@@ -592,8 +597,6 @@ public class CaseData {
     private final String deprivationOfLiberty;
     private final String closeCaseFromOrder;
 
-    // FPLA-2001
-    // note: also includes manageDocumentsHearingLabel and manageDocumentsSupportingC2Label
     private final ManageDocument manageDocument;
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsTEMP;
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments;
