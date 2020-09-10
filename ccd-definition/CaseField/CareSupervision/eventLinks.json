@@ -1,0 +1,18 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "draftSDOLinkOrdersTab",
+    "FieldType": "Label",
+    "Label": "[Add the gatekeeping order](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/draftSDO)\n\nThis is also known as the initial or standard directions order",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "draftSDOLinkDraftOrdersTab",
+    "FieldType": "Label",
+    "Label": "[Send or replace this order](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/draftSDO)",
+    "SecurityClassification": "Public"
+  }
+]
