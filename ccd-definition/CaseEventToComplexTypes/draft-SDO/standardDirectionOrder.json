@@ -15,8 +15,8 @@
     "CaseEventID": "draftSDO",
     "CaseFieldID": "standardDirectionOrder",
     "ListElementCode": "orderStatus",
-    "EventElementLabel": "Is this the final version?",
     "FieldDisplayOrder": 2,
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "standardDirectionOrder.orderDoc!=\"SHOW ME\""
   }
 ]
