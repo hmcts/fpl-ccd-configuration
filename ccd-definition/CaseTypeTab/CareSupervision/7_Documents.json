@@ -135,7 +135,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
-    "TabLabel": "Further evidence documents",
+    "TabLabel": "Documents",
     "TabDisplayOrder": 7,
     "CaseFieldID": "hearingFurtherEvidenceDocuments",
     "TabFieldDisplayOrder": 16
@@ -145,7 +145,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
-    "TabLabel": "Further evidence documents",
+    "TabLabel": "Documents",
     "TabDisplayOrder": 7,
     "CaseFieldID": "furtherEvidenceDocuments",
     "TabFieldDisplayOrder": 17
