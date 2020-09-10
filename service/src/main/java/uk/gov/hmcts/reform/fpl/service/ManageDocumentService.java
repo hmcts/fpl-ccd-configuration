@@ -148,7 +148,7 @@ public class ManageDocumentService {
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle,
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundleBefore) {
 
-        if (isMatchingSupportingEvidenceCollection(supportingEvidenceBundle, supportingEvidenceBundleBefore)) {
+        if (supportingEvidenceCollectionIsModified(supportingEvidenceBundle, supportingEvidenceBundleBefore)) {
             for (int i = 0; i < supportingEvidenceBundle.size(); i++) {
                 if (!supportingEvidenceBundle.get(i).getValue().getDocument()
                     .equals(supportingEvidenceBundleBefore.get(i).getValue().getDocument())) {
@@ -195,7 +195,7 @@ public class ManageDocumentService {
             .build());
     }
 
-    private boolean isMatchingSupportingEvidenceCollection(List<Element<SupportingEvidenceBundle>> currentCollection,
+    private boolean supportingEvidenceCollectionIsModified(List<Element<SupportingEvidenceBundle>> currentCollection,
                                                            List<Element<SupportingEvidenceBundle>> previousCollection) {
         return currentCollection != null && previousCollection != null && !currentCollection.equals(previousCollection)
             && currentCollection.size() == previousCollection.size();
