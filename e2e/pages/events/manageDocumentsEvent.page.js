@@ -14,6 +14,7 @@ module.exports = {
         no: '#manageDocument_relatedToHearing-No',
       },
       hearingList: '#manageDocumentsHearingList',
+      c2DocumentsList: '#manageDocumentsSupportingC2List',
       supportingEvidenceDocuments: {
         name: `#${supportingDocumentType}_${index}_name`,
         notes: `#${supportingDocumentType}_${index}_notes`,
@@ -53,6 +54,13 @@ module.exports = {
     const type = this.getSupportingEvidenceDocumentType();
     I.waitForElement(this.fields(elementIndex, type).hearingList);
     I.selectOption(this.fields(elementIndex, type).hearingList, `Case management hearing, ${hearingDate}`);
+  },
+
+  async selectC2Document(index, uploadedDateTime) {
+    const elementIndex = await this.getActiveElementIndex();
+    const type = this.getSupportingEvidenceDocumentType();
+    I.waitForElement(this.fields(elementIndex, type).c2DocumentsList);
+    I.selectOption(this.fields(elementIndex, type).c2DocumentsList, `Application ${index}, ${uploadedDateTime}`);
   },
 
   async enterDocumentName(documentName) {

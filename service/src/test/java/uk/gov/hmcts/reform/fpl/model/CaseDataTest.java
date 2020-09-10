@@ -765,6 +765,32 @@ class CaseDataTest {
         }
     }
 
+    @Nested
+    class HasC2DocumentBundle {
+        @Test
+        void shouldReturnTrueIfC2DocumentBundleIsPresentOnCaseDataAndNotEmpty() {
+            List<Element<C2DocumentBundle>> c2DocumentBundles = List.of(
+                element(C2DocumentBundle.builder().build()),
+                element(C2DocumentBundle.builder().build()));
+
+            CaseData caseData = CaseData.builder().c2DocumentBundle(c2DocumentBundles).build();
+
+            assertThat(caseData.hasC2DocumentBundle()).isTrue();
+        }
+
+        @Test
+        void shouldReturnFalseIfC2DocumentBundleIsPresentOnCaseDataButIsEmpty() {
+            CaseData caseData = CaseData.builder().c2DocumentBundle(List.of()).build();
+            assertThat(caseData.hasC2DocumentBundle()).isFalse();
+        }
+
+        @Test
+        void shouldReturnFalseIfC2DocumentBundleIsNotPresentOnCaseData() {
+            CaseData caseData = CaseData.builder().build();
+            assertThat(caseData.hasC2DocumentBundle()).isFalse();
+        }
+    }
+
     private String buildJsonDirections(UUID id) throws JsonProcessingException {
         List<Element<Direction>> directions = List.of(element(id, Direction.builder().directionType("title").build()));
         String directionString = mapper.writeValueAsString(directions);

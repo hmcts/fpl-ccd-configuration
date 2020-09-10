@@ -55,7 +55,7 @@ public class ManageDocumentsControllerAboutToStartTest extends AbstractControlle
         AtomicInteger i = new AtomicInteger(1);
         DynamicList expectedC2DocumentsDynamicList = ElementUtils
             .asDynamicList(c2DocumentBundle, null, documentBundle ->
-                documentBundle.toLabel(i.toString()));
+                documentBundle.toLabel(i.getAndIncrement()));
 
         DynamicList hearingDynamicList =
             mapper.convertValue(response.getData().get(MANAGE_DOCUMENTS_HEARING_LIST_KEY), DynamicList.class);

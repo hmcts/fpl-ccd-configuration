@@ -134,6 +134,23 @@ Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage,
   I.seeInTab(['C2 Application 2', 'Paid with PBA'], 'No');
 });
 
+Scenario('HMCTS admin edits supporting evidence document on C2 application', async(I, caseViewPage, loginPage, manageDocumentsEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
+  manageDocumentsEventPage.setSupportingEvidenceDocumentType('c2SupportingDocuments');
+  await manageDocumentsEventPage.selectC2SupportingDocuments();
+  await manageDocumentsEventPage.selectC2Document(1, dateFormat(submittedAt, 'd mmm yyyy'));
+  await I.retryUntilExists(() => I.click('Continue'), '#c2SupportingDocuments');
+  await manageDocumentsEventPage.enterDocumentName('Updated document name');
+  await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
+  I.seeEventSubmissionConfirmation(config.administrationActions.uploadC2Documents);
+  caseViewPage.selectTab(caseViewPage.tabs.c2);
+  I.seeInTab(['C2 Application 1', 'Document name'], 'Updated document name');
+  I.seeInTab(['C2 Application 1', 'Notes'], 'C2 supporting document');
+  I.seeInTab(['C2 Application 1', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
+  I.seeInTab(['C2 Application 1', 'Document name'], 'This is a note about supporting doc');
+  I.seeInTab(['C2 Application 1', 'Upload document'], 'mockFile.txt');
+});
+
 Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
