@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -14,10 +15,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
-import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserInfo;
+import uk.gov.hmcts.reform.fpl.service.SystemUserService;
 
 import java.util.List;
 import java.util.Map;
@@ -37,23 +36,19 @@ class CoreCaseDataServiceTest {
     private long caseId = 1L;
 
     @Mock
-    private SystemUpdateUserConfiguration userConfig;
+    private SystemUserService systemUserService;
     @Mock
     private AuthTokenGenerator authTokenGenerator;
     @Mock
-    private IdamClient idamClient;
-    @Mock
     private CoreCaseDataApi coreCaseDataApi;
-
     @Mock
     private RequestData requestData;
 
+    @InjectMocks
     private CoreCaseDataService service;
 
     @BeforeEach
     void setup() {
-        service = new CoreCaseDataService(userConfig, authTokenGenerator, idamClient, coreCaseDataApi, requestData);
-
         when(authTokenGenerator.generate()).thenReturn(serviceAuthToken);
     }
 
@@ -65,10 +60,8 @@ class CoreCaseDataServiceTest {
 
         @BeforeEach
         void setUp() {
-            when(idamClient.getUserInfo(userAuthToken))
-                .thenReturn(UserInfo.builder().uid(userId).build());
-            when(idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword()))
-                .thenReturn(userAuthToken);
+            when(systemUserService.getId()).thenReturn(userId);
+            when(systemUserService.getAccessToken()).thenReturn(userAuthToken);
 
             when(coreCaseDataApi.startEventForCaseWorker(userAuthToken, serviceAuthToken, userId, JURISDICTION,
                 CASE_TYPE, Long.toString(caseId), eventId))
@@ -131,14 +124,14 @@ class CoreCaseDataServiceTest {
         List<CaseDetails> cases = List.of(CaseDetails.builder().id(RandomUtils.nextLong()).build());
         SearchResult searchResult = SearchResult.builder().cases(cases).build();
 
-        when(idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword())).thenReturn(userAuthToken);
+        when(systemUserService.getAccessToken()).thenReturn(userAuthToken);
         when(coreCaseDataApi.searchCases(userAuthToken, serviceAuthToken, caseType, query)).thenReturn(searchResult);
 
         List<CaseDetails> casesFound = service.searchCases(caseType, query);
 
         assertThat(casesFound).isEqualTo(cases);
         verify(coreCaseDataApi).searchCases(userAuthToken, serviceAuthToken, caseType, query);
-        verify(idamClient).getAccessToken(userConfig.getUserName(), userConfig.getPassword());
+        verify(systemUserService).getAccessToken();
     }
 
     private StartEventResponse buildStartEventResponse(String eventId, String eventToken) {

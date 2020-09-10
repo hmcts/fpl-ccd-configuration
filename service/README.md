@@ -129,7 +129,8 @@ Custom configuration parameters:
 |feature.toggle.robotics.case-number.notification.enabled|ENV|Determines if JSON file should be send to robotics when Family Man case number is added to the case'
 |feature.toggle.robotics.support.api.enabled|ENV|Enables API to retrigger robotics notification for particular case|
 |appinsights.instrumentationkey|SECRET|Key used to connect to Azure AppInsights|
-
+|cache.system-user.id|ENV|system user id cache in [duration](https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html#parse-java.lang.CharSequence-]) format. 
+|cache.system-user.token|ENV|system user access token cache in [duration](https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html#parse-java.lang.CharSequence-]) format. Must be shorter than 8h
 Notes:
 * When using env variables '.', '-' are replaced with '_', i.e. `idam.s2s-auth.url` is configured as ENV var: IDAM_S2S_AUTH_URL
 * Secrets are stored in the appropriate Azure Key vault. As mentioned above name of the secrets to property name can be found in [this file](src/main/resources/bootstrap.yaml)

@@ -6,15 +6,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseUserApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseUser;
-import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.exceptions.GrantCaseAccessException;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.util.Set;
 
@@ -48,7 +45,7 @@ class CaseRoleServiceTest {
     private static final Set<CaseRole> CASE_ROLES = Set.of(LASOLICITOR, CREATOR);
 
     @Mock
-    private IdamClient idam;
+    private SystemUserService systemUserService;
 
     @Mock
     private CaseUserApi caseUser;
@@ -59,15 +56,12 @@ class CaseRoleServiceTest {
     @Mock
     private OrganisationService organisationService;
 
-    @Spy
-    private SystemUpdateUserConfiguration userConfig = new SystemUpdateUserConfiguration("SYS", "SYSPASS");
-
     @InjectMocks
     private CaseRoleService caseRoleService;
 
     @BeforeEach
     void setup() {
-        given(idam.getAccessToken(userConfig.getUserName(), userConfig.getPassword())).willReturn(AUTH_TOKEN);
+        given(systemUserService.getAccessToken()).willReturn(AUTH_TOKEN);
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
     }
 
@@ -157,7 +151,7 @@ class CaseRoleServiceTest {
             when(organisationService.findUserIdsInSameOrganisation(LOCAL_AUTHORITY))
                 .thenReturn(Set.of(USER_1_ID, USER_2_ID));
 
-            doThrow(new RuntimeException()).when(idam).getAccessToken(any(), any());
+            doThrow(new RuntimeException()).when(systemUserService).getAccessToken();
 
             GrantCaseAccessException expectedException =
                 new GrantCaseAccessException(CASE_ID, Set.of(USER_1_ID, USER_2_ID), CASE_ROLES);

@@ -9,9 +9,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
-import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.fpl.service.SystemUserService;
 
 import java.util.List;
 import java.util.Map;
@@ -21,9 +20,8 @@ import static java.util.Collections.emptyMap;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CoreCaseDataService {
-    private final SystemUpdateUserConfiguration userConfig;
+    private final SystemUserService systemUserService;
     private final AuthTokenGenerator authTokenGenerator;
-    private final IdamClient idamClient;
     private final CoreCaseDataApi coreCaseDataApi;
     private final RequestData requestData;
 
@@ -36,8 +34,9 @@ public class CoreCaseDataService {
                              Long caseId,
                              String eventName,
                              Map<String, Object> eventData) {
-        String userToken = idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
-        String systemUpdateUserId = idamClient.getUserInfo(userToken).getUid();
+
+        String userToken = systemUserService.getAccessToken();
+        String systemUpdateUserId = systemUserService.getId();
 
         StartEventResponse startEventResponse = coreCaseDataApi.startEventForCaseWorker(
             userToken,
@@ -72,9 +71,7 @@ public class CoreCaseDataService {
     }
 
     public List<CaseDetails> searchCases(String caseType, String query) {
-        String userToken = idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
-
-        return coreCaseDataApi.searchCases(userToken, authTokenGenerator.generate(), caseType, query)
-            .getCases();
+        return coreCaseDataApi
+            .searchCases(systemUserService.getAccessToken(), authTokenGenerator.generate(), caseType, query).getCases();
     }
 }

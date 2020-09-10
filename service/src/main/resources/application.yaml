@@ -1,6 +1,11 @@
 server:
   port: 4000
 
+cache:
+  system_user:
+    access_token: PT2H
+    id: PT2H
+
 management:
   endpoints:
     web:

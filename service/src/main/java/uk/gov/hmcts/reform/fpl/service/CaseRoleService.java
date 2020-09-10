@@ -11,10 +11,8 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseUserApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseUser;
-import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.exceptions.GrantCaseAccessException;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.util.Set;
 
@@ -25,10 +23,9 @@ import static java.util.stream.Collectors.toSet;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseRoleService {
 
-    private final IdamClient idam;
     private final CaseUserApi caseUser;
+    private final SystemUserService systemUserService;
     private final AuthTokenGenerator authTokenGenerator;
-    private final SystemUpdateUserConfiguration userConfig;
     private final OrganisationService organisationService;
 
     public void grantAccessToUser(String caseId, String user, Set<CaseRole> roles) {
@@ -52,7 +49,7 @@ public class CaseRoleService {
         final Set<String> usersGrantedAccess = Sets.newConcurrentHashSet();
 
         try {
-            final String userToken = idam.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
+            final String userToken = systemUserService.getAccessToken();
             final String serviceToken = authTokenGenerator.generate();
             final Set<String> caseRoles = roles.stream()
                 .map(CaseRole::formattedName)
