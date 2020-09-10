@@ -126,7 +126,8 @@ public class ManageDocumentsControllerAboutToSubmitTest extends AbstractControll
     void shouldPopulateC2DocumentBundleCollection() {
         UUID selectedC2DocumentId = UUID.randomUUID();
         C2DocumentBundle selectedC2DocumentBundle = buildC2DocumentBundle(time.now().plusDays(2));
-        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle = buildSupportingEvidenceBundle(time.now().plusDays(3));
+        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle
+            = buildSupportingEvidenceBundle(time.now().plusDays(3));
 
         List<Element<C2DocumentBundle>> c2DocumentBundleList = List.of(
             element(buildC2DocumentBundle(time.now().plusDays(2))),
@@ -181,6 +182,13 @@ public class ManageDocumentsControllerAboutToSubmitTest extends AbstractControll
             .build());
     }
 
+    private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle(LocalDateTime localDateTime) {
+        return wrapElements(SupportingEvidenceBundle.builder()
+            .name("test")
+            .dateTimeUploaded(localDateTime)
+            .build());
+    }
+
     private void assertExpectedFieldsAreRemoved(CaseData caseData) {
         assertThat(caseData.getFurtherEvidenceDocumentsTEMP()).isEmpty();
         assertThat(caseData.getManageDocument()).isNull();
@@ -191,12 +199,5 @@ public class ManageDocumentsControllerAboutToSubmitTest extends AbstractControll
 
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {
         return C2DocumentBundle.builder().uploadedDateTime(dateTime.toString()).build();
-    }
-
-    private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle(LocalDateTime localDateTime) {
-        return wrapElements(SupportingEvidenceBundle.builder()
-            .name("test")
-            .dateTimeUploaded(localDateTime)
-            .build());
     }
 }

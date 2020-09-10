@@ -410,9 +410,11 @@ public class ManageDocumentServiceTest {
         List<Element<SupportingEvidenceBundle>> newSupportingEvidenceBundle = buildSupportingEvidenceBundle(time.now());
 
         List<Element<C2DocumentBundle>> c2DocumentBundleList = List.of(
-            element(buildC2DocumentBundle(time.now().plusDays(2), buildSupportingEvidenceBundle(time.now().plusDays(2)))),
+            element(buildC2DocumentBundle(time.now().plusDays(2),
+                buildSupportingEvidenceBundle(time.now().plusDays(2)))),
             element(selectedC2DocumentId, selectedC2DocumentBundle),
-            element(buildC2DocumentBundle(time.now().plusDays(2), buildSupportingEvidenceBundle(time.now().plusDays(2)))));
+            element(buildC2DocumentBundle(time.now().plusDays(2),
+                buildSupportingEvidenceBundle(time.now().plusDays(2)))));
 
         AtomicInteger i = new AtomicInteger(1);
         DynamicList expectedC2DocumentsDynamicList = asDynamicList(c2DocumentBundleList, selectedC2DocumentId,
@@ -428,11 +430,19 @@ public class ManageDocumentServiceTest {
         List<Element<C2DocumentBundle>> updatedC2DocumentBundle =
             manageDocumentService.buildFinalC2SupportingDocuments(caseDetails);
 
-        LocalDateTime firstC2DocumentUploadTime = unwrapElements(updatedC2DocumentBundle).get(0).getSupportingEvidenceBundle().get(0).getValue().getDateTimeUploaded();
-        LocalDateTime expectedFirstC2DocumentUploadTime = c2DocumentBundleList.get(0).getValue().getSupportingEvidenceBundle().get(0).getValue().getDateTimeUploaded();
+        LocalDateTime firstC2DocumentUploadTime =
+            unwrapElements(updatedC2DocumentBundle).get(0).getSupportingEvidenceBundle()
+                .get(0).getValue().getDateTimeUploaded();
+        LocalDateTime expectedFirstC2DocumentUploadTime
+            = c2DocumentBundleList.get(0).getValue().getSupportingEvidenceBundle()
+            .get(0).getValue().getDateTimeUploaded();
 
-        LocalDateTime thirdC2DocumentUploadTime = updatedC2DocumentBundle.get(2).getValue().getSupportingEvidenceBundle().get(0).getValue().getDateTimeUploaded();
-        LocalDateTime expectedThirdC2DocumentUploadTime = c2DocumentBundleList.get(2).getValue().getSupportingEvidenceBundle().get(0).getValue().getDateTimeUploaded();
+        LocalDateTime thirdC2DocumentUploadTime
+            = updatedC2DocumentBundle.get(2).getValue().getSupportingEvidenceBundle()
+            .get(0).getValue().getDateTimeUploaded();
+        LocalDateTime expectedThirdC2DocumentUploadTime
+            = c2DocumentBundleList.get(2).getValue().getSupportingEvidenceBundle()
+            .get(0).getValue().getDateTimeUploaded();
 
         assertThat(firstC2DocumentUploadTime).isEqualTo(expectedFirstC2DocumentUploadTime);
         assertThat(thirdC2DocumentUploadTime).isEqualTo(expectedThirdC2DocumentUploadTime);
