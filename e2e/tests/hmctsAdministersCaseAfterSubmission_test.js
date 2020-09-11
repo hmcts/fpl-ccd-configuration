@@ -96,6 +96,8 @@ Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage,
   uploadC2DocumentsEventPage.usePbaPayment();
   uploadC2DocumentsEventPage.enterPbaPaymentDetails(c2Payment);
   uploadC2DocumentsEventPage.uploadC2Document(config.testFile, 'Rachel Zane C2');
+  await uploadC2DocumentsEventPage.uploadC2SupportingDocument();
+
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.uploadC2Documents);
 
@@ -109,9 +111,14 @@ Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage,
   I.seeInTab(['C2 Application 1', 'Payment by account (PBA) number'], c2Payment.pbaNumber);
   I.seeInTab(['C2 Application 1', 'Client code'], c2Payment.clientCode);
   I.seeInTab(['C2 Application 1', 'Customer reference'], c2Payment.customerReference);
+  I.seeInTab(['C2 Application 1', 'Document name'], 'C2 supporting document');
+  I.seeInTab(['C2 Application 1', 'Notes'], 'C2 supporting document');
+  I.seeInTab(['C2 Application 1', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
+  I.seeInTab(['C2 Application 1', 'Document name'], 'This is a note about supporting doc');
+  I.seeInTab(['C2 Application 1', 'Upload document'], 'mockFile.txt');
 
   await I.startEventViaHyperlink('Upload a new C2 application');
-  
+
   uploadC2DocumentsEventPage.selectApplicationType('WITHOUT_NOTICE');
   await I.retryUntilExists(() => I.click('Continue'), '#temporaryC2Document_document');
   uploadC2DocumentsEventPage.usePbaPayment(false);
