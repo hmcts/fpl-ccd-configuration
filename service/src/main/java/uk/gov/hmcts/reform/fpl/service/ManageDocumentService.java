@@ -152,14 +152,14 @@ public class ManageDocumentService {
         HearingBooking hearingBooking = getHearingBookingByUUID(caseData.getHearingDetails(), selectedHearingCode);
 
         if (caseData.documentBundleContainsHearingId(selectedHearingCode)) {
-            List<Element<HearingFurtherEvidenceBundle>> list = new ArrayList<>();
+            List<Element<HearingFurtherEvidenceBundle>> updateEvidenceBundles = new ArrayList<>();
             for (Element<HearingFurtherEvidenceBundle> element : hearingFurtherEvidenceBundle) {
                 if (element.getId().equals(selectedHearingCode)) {
                     element.getValue().setSupportingEvidenceBundle(supportingEvidenceBundle);
                 }
-                list.add(element);
+                updateEvidenceBundles.add(element);
             }
-            return list;
+            return updateEvidenceBundles;
         } else {
             hearingFurtherEvidenceBundle.add(buildHearingSupportingEvidenceBundle(
                 selectedHearingCode,
@@ -191,14 +191,14 @@ public class ManageDocumentService {
             ));
         }
 
-        List<Element<SupportingEvidenceBundle>> list = new ArrayList<>();
+        List<Element<SupportingEvidenceBundle>> updatedBundles = new ArrayList<>();
         for (Element<SupportingEvidenceBundle> supportingEvidenceBundleElement : supportingEvidenceBundle) {
             if (supportingEvidenceBundleElement.getValue().getDateTimeUploaded() == null) {
                 supportingEvidenceBundleElement.getValue().setDateTimeUploaded(time.now());
             }
-            list.add(supportingEvidenceBundleElement);
+            updatedBundles.add(supportingEvidenceBundleElement);
         }
-        return list;
+        return updatedBundles;
     }
 
     public List<Element<C2DocumentBundle>> buildFinalC2SupportingDocuments(CaseData caseData) {
@@ -210,14 +210,14 @@ public class ManageDocumentService {
             setDateTimeUploadedOnSupportingEvidence(caseData.getC2SupportingDocuments(),
                 c2DocumentBundle.getSupportingEvidenceBundle());
 
-        List<Element<C2DocumentBundle>> list = new ArrayList<>();
+        List<Element<C2DocumentBundle>> updatedC2Bundles = new ArrayList<>();
         for (Element<C2DocumentBundle> c2DocumentBundleElement : caseData.getC2DocumentBundle()) {
             if (selected.equals(c2DocumentBundleElement.getId())) {
                 c2DocumentBundleElement.getValue().setSupportingEvidenceBundle(updatedCorrespondenceDocuments);
             }
-            list.add(c2DocumentBundleElement);
+            updatedC2Bundles.add(c2DocumentBundleElement);
         }
-        return list;
+        return updatedC2Bundles;
     }
 
     private Element<HearingFurtherEvidenceBundle> buildHearingSupportingEvidenceBundle(
