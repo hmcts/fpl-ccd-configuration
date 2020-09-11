@@ -123,10 +123,9 @@ public class ManageDocumentsController extends CallbackController {
         ManageDocument manageDocument = caseData.getManageDocument();
         switch (manageDocument.getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
-                List<Element<SupportingEvidenceBundle>> currentBundle;
-
-                currentBundle = manageDocumentService.setDateTimeUploadedOnSupportingEvidence(
-                    caseData.getFurtherEvidenceDocumentsTEMP(), caseDataBefore.getFurtherEvidenceDocumentsTEMP()
+                List<Element<SupportingEvidenceBundle>> currentBundle = manageDocumentService
+                    .setDateTimeUploadedOnSupportingEvidence(caseData.getFurtherEvidenceDocumentsTEMP(),
+                        caseDataBefore.getFurtherEvidenceDocumentsTEMP()
                 );
 
                 if (manageDocument.isDocumentRelatedToHearing()) {
@@ -139,18 +138,16 @@ public class ManageDocumentsController extends CallbackController {
                 }
                 break;
             case CORRESPONDENCE:
-                List<Element<SupportingEvidenceBundle>> updatedCorrespondenceDocuments;
-
-                updatedCorrespondenceDocuments = manageDocumentService.setDateTimeUploadedOnSupportingEvidence(
-                    caseData.getCorrespondenceDocuments(), caseDataBefore.getCorrespondenceDocuments()
+                List<Element<SupportingEvidenceBundle>> updatedCorrespondenceDocuments = manageDocumentService
+                    .setDateTimeUploadedOnSupportingEvidence(caseData.getCorrespondenceDocuments(),
+                        caseDataBefore.getCorrespondenceDocuments()
                 );
 
                 caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, updatedCorrespondenceDocuments);
                 break;
             case C2:
-                List<Element<C2DocumentBundle>> updatedC2Documents;
-
-                updatedC2Documents = manageDocumentService.buildFinalC2SupportingDocuments(caseData);
+                List<Element<C2DocumentBundle>> updatedC2Documents = manageDocumentService
+                    .buildFinalC2SupportingDocuments(caseData);
 
                 caseDetails.getData().put(C2_DOCUMENTS_COLLECTION_KEY, updatedC2Documents);
                 break;
