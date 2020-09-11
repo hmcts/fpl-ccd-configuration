@@ -30,13 +30,13 @@ public class CaseService {
     public void addUser(String caseId, String userId, Set<CaseRole> caseRoles) {
         Set<String> formattedCaseRoles = caseRoles.stream().map(CaseRole::formattedName).collect(Collectors.toSet());
         CaseUser caseUser = new CaseUser(userId, formattedCaseRoles);
-        log.info("Grant case roles {} to case {}", formattedCaseRoles, caseId);
+        log.info("Grant case roles {} to user {} for case {}", formattedCaseRoles, userId, caseId);
         caseUserApi.updateCaseRolesForUser(
-                requestData.authorisation(),
-                authTokenGenerator.generate(),
-                caseId,
-                userId,
-                caseUser);
-        log.info("Roles {} granted to case {}", formattedCaseRoles, caseId);
+            requestData.authorisation(),
+            authTokenGenerator.generate(),
+            caseId,
+            userId,
+            caseUser);
+        log.info("Roles {} granted to user {} for case {}", formattedCaseRoles, userId, caseId);
     }
 }
