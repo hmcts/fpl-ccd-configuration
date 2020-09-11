@@ -570,7 +570,7 @@ Scenario('local authority submits after giving consent @create-case-with-mandato
   I.see('New_case_name.pdf');
 });
 
-Scenario('HMCTS admin check the payment @create-case-with-mandatory-sections-only', async (I, caseViewPage, paymentHistoryPage) => {
+Scenario('HMCTS admin check the payment', async (I, caseViewPage, paymentHistoryPage) => {
   caseViewPage.checkTabIsNotPresent(caseViewPage.tabs.startApplication);
   caseViewPage.checkTabIsNotPresent(caseViewPage.tabs.viewApplication);
 
