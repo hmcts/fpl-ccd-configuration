@@ -22,7 +22,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "uploadDocuments-CLOSED",
     "Name": "Documents",
-    "Description": "Manage documents",
+    "Description": "Upload documents",
     "DisplayOrder": 12,
     "PreConditionState(s)": "CLOSED",
     "PostConditionState": "CLOSED",
@@ -30,8 +30,6 @@
     "ShowSummary": "Y",
     "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue",
-    "Comment": "Recreated due to differing permissions in this state compared to other states",
-    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documents/about-to-start",
-    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documents/about-to-submit"
+    "Comment": "Recreated due to differing permissions in this state compared to other states"
   }
 ]
