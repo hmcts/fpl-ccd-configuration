@@ -223,6 +223,10 @@ module.exports = function () {
       return caseId;
     },
 
+    async getCase(caseId) {
+      return caseHelper.getCaseData(caseId);
+    },
+
     /**
      * Retries defined action util element described by the locator is present. If element is not present
      * after 4 tries (run + 3 retries) this step throws an error.

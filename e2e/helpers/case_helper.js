@@ -32,6 +32,14 @@ const post = async (url, data, headers, retry = 2, backoff = 500) => {
   });
 };
 
+const get = async (url, headers) => {
+  return fetch(url, {
+    method: 'GET',
+    headers: headers,
+    agent: getAgent(url),
+  });
+};
+
 const documentData = filename => {
   return {
     document_url: `${config.dmStoreUrl}/documents/fakeUrl`,
@@ -83,6 +91,17 @@ const populateWithData = async (caseId, data) => {
   return post(url, data, headers);
 };
 
+const getCaseData = async (caseId) => {
+  const authToken = await getAuthToken();
+  const url = `${config.fplServiceUrl}/testing-support/case/${caseId}`;
+  const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${authToken}`,
+  };
+
+  return get(url, headers).then(res => res.json());
+};
+
 const getAuthToken = async () => {
   const url = `${config.idamApiUrl}/loginUser?username=${config.systemUpdateUser.email}&password=${config.systemUpdateUser.password}`;
   const data = {};
@@ -97,4 +116,5 @@ const getAuthToken = async () => {
 
 module.exports = {
   populateWithData,
+  getCaseData,
 };

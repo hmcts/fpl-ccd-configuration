@@ -6,10 +6,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
@@ -43,5 +45,10 @@ public class TestingSupportController {
             log.error(String.format("Populate case event failed: %s", e.contentUTF8()));
             throw e;
         }
+    }
+
+    @GetMapping("/testing-support/case/{caseId}")
+    public CaseDetails getCase(@PathVariable("caseId") String caseId) {
+        return coreCaseDataService.findCaseDetailsById(caseId);
     }
 }

@@ -300,6 +300,7 @@ declare namespace CodeceptJS {
     say(msg: string) : void,
     retryStep(opts: string) : void,
     submitNewCaseWithData(data?: object): Promise<string>
+    getCase(caseId: string): Promise<string>
     addAnotherElementToCollection(): void,
     removeElementFromCollection(): void,
     retryUntilExists(action: Function, locator: string) : void,
