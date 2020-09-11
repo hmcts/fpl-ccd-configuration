@@ -18,6 +18,7 @@ const supportingEvidenceDocuments = require('../fixtures/supportingEvidenceDocum
 
 let caseId;
 let submittedAt;
+let dateTimeOfC2Submission;
 
 Feature('Case administration after submission');
 
@@ -107,7 +108,7 @@ Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage,
   uploadC2DocumentsEventPage.enterPbaPaymentDetails(c2Payment);
   uploadC2DocumentsEventPage.uploadC2Document(config.testFile, 'Rachel Zane C2');
   await uploadC2DocumentsEventPage.uploadC2SupportingDocument();
-
+  dateTimeOfC2Submission = dateFormat(submittedAt, 'd mmmm yyyy, h:MMtt');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.uploadC2Documents);
 
@@ -145,7 +146,7 @@ Scenario('HMCTS admin edits supporting evidence document on C2 application', asy
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
   manageDocumentsEventPage.setSupportingEvidenceDocumentType('c2SupportingDocuments');
   await manageDocumentsEventPage.selectC2SupportingDocuments();
-  await manageDocumentsEventPage.selectC2Document(1, dateFormat(submittedAt, 'd mmmm yyyy, h:MMtt'));
+  await manageDocumentsEventPage.selectC2Document(1, dateTimeOfC2Submission);
   await I.retryUntilExists(() => I.click('Continue'), '#c2SupportingDocuments');
   await manageDocumentsEventPage.enterDocumentName('Updated document name');
   await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
