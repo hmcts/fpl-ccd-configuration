@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,27 +37,24 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFie
 @RestController
 @RequestMapping("/callback/manage-documents")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class ManageDocumentsController {
-    private final ObjectMapper mapper;
+public class ManageDocumentsController extends CallbackController {
     private final ManageDocumentService manageDocumentService;
     private final SupportingEvidenceValidatorService supportingEvidenceValidatorService;
 
     @PostMapping("/about-to-start")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
+        CaseDetails caseDetails = request.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
 
         caseDetails.getData().putAll(manageDocumentService.initialiseManageDocumentEvent(caseData));
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .build();
+        return respond(caseDetails);
     }
 
     @PostMapping("/initialise-manage-document-collections/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest request) {
+        CaseDetails caseDetails = request.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
 
         switch (caseData.getManageDocument().getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
@@ -85,55 +81,44 @@ public class ManageDocumentsController {
                 break;
         }
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .build();
+        return respond(caseDetails);
     }
 
     @PostMapping("/validate-further-evidence/mid-event")
-    public AboutToStartOrSubmitCallbackResponse validateFurtherEvidenceDocuments(
-        @RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+    public AboutToStartOrSubmitCallbackResponse validateFurtherEvidenceDocuments(@RequestBody CallbackRequest request) {
+        CaseDetails caseDetails = request.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .errors(supportingEvidenceValidatorService.validate(caseData.getFurtherEvidenceDocumentsTEMP()))
-            .build();
+        List<String> errors = supportingEvidenceValidatorService.validate(caseData.getFurtherEvidenceDocumentsTEMP());
+
+        return respond(caseDetails, errors);
     }
 
     @PostMapping("/validate-correspondence-documents/mid-event")
-    public AboutToStartOrSubmitCallbackResponse validateCorrespondingDocuments(
-        @RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+    public AboutToStartOrSubmitCallbackResponse validateCorrespondingDocuments(@RequestBody CallbackRequest request) {
+        CaseDetails caseDetails = request.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
 
-        System.out.println(caseData.getCorrespondenceDocuments());
+        List<String> errors = supportingEvidenceValidatorService.validate(caseData.getCorrespondenceDocuments());
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .errors(supportingEvidenceValidatorService.validate(caseData.getCorrespondenceDocuments()))
-            .build();
+        return respond(caseDetails, errors);
     }
 
     @PostMapping("/validate-c2-supporting-documents/mid-event")
-    public AboutToStartOrSubmitCallbackResponse validateC2SupportingDocuments(
-        @RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+    public AboutToStartOrSubmitCallbackResponse validateC2SupportingDocuments(@RequestBody CallbackRequest request) {
+        CaseDetails caseDetails = request.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .errors(supportingEvidenceValidatorService.validate(caseData.getC2SupportingDocuments()))
-            .build();
+        List<String> errors = supportingEvidenceValidatorService.validate(caseData.getC2SupportingDocuments());
+
+        return respond(caseDetails, errors);
     }
 
     @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(@RequestBody CallbackRequest request) {
+        CaseDetails caseDetails = request.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+        CaseData caseDataBefore = getCaseDataBefore(request);
 
         ManageDocument manageDocument = caseData.getManageDocument();
         switch (manageDocument.getType()) {
@@ -175,8 +160,6 @@ public class ManageDocumentsController {
             C2_SUPPORTING_DOCUMENTS_COLLECTION, MANAGE_DOCUMENTS_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY,
             MANAGE_DOCUMENTS_HEARING_LABEL_KEY, SUPPORTING_C2_LABEL);
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .build();
+        return respond(caseDetails);
     }
 }
