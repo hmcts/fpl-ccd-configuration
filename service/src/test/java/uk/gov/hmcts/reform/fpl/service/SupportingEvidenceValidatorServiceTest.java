@@ -21,7 +21,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {SupportingEvidenceValidatorService.class, ValidateGroupService.class,
     LocalValidatorFactoryBean.class, FixedTimeConfiguration.class})
-public class SupportingEvidenceValidatorServiceTest {
+class SupportingEvidenceValidatorServiceTest {
 
     private static final String ERROR_MESSAGE = "Date of time received cannot be in the future";
 
