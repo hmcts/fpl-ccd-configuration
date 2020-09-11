@@ -555,7 +555,7 @@ Scenario('local authority tries to submit without giving consent', async (I, cas
   I.seeInCurrentUrl('/submitApplication');
 });
 
-let feeToPay = '2050'; //Need to remember this between tests.. default in case the test below fails
+let feeToPay = '2055'; //Need to remember this between tests.. default in case the test below fails
 
 Scenario('local authority submits after giving consent @create-case-with-mandatory-sections-only', async (I, caseViewPage, submitApplicationEventPage) => {
   await caseViewPage.startTask(config.applicationActions.submitCase);
