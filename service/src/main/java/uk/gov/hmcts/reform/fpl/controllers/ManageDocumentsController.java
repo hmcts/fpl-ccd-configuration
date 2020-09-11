@@ -108,8 +108,6 @@ public class ManageDocumentsController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        System.out.println(caseData.getCorrespondenceDocuments());
-
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .errors(supportingEvidenceValidatorService.validate(caseData.getCorrespondenceDocuments()))

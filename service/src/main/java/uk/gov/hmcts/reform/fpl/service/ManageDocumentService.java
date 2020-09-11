@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -198,12 +197,14 @@ public class ManageDocumentService {
             ));
         }
 
-        return supportingEvidenceBundle.stream()
-            .peek(supportingEvidenceBundleElement -> {
-                if (supportingEvidenceBundleElement.getValue().getDateTimeUploaded() == null) {
-                    supportingEvidenceBundleElement.getValue().setDateTimeUploaded(time.now());
-                }
-            }).collect(Collectors.toList());
+        List<Element<SupportingEvidenceBundle>> list = new ArrayList<>();
+        for (Element<SupportingEvidenceBundle> supportingEvidenceBundleElement : supportingEvidenceBundle) {
+            if (supportingEvidenceBundleElement.getValue().getDateTimeUploaded() == null) {
+                supportingEvidenceBundleElement.getValue().setDateTimeUploaded(time.now());
+            }
+            list.add(supportingEvidenceBundleElement);
+        }
+        return list;
     }
 
     public List<Element<C2DocumentBundle>> buildFinalC2SupportingDocuments(CaseData caseData) {

@@ -299,12 +299,13 @@ class ManageDocumentServiceTest {
         CaseData caseData = CaseData.builder()
             .hearingDetails(List.of(element(hearingId, hearingBooking)))
             .manageDocumentsHearingList(buildDynamicList(hearingId))
-            .hearingFurtherEvidenceDocuments(List.of(element(
-                hearingId,
-                HearingFurtherEvidenceBundle.builder()
+            .hearingFurtherEvidenceDocuments(List.of(
+                element(hearingId, HearingFurtherEvidenceBundle.builder()
                     .supportingEvidenceBundle(List.of(element(SupportingEvidenceBundle.builder().build())))
-                    .build())
-            ))
+                    .build()),
+                element(HearingFurtherEvidenceBundle.builder()
+                    .supportingEvidenceBundle(List.of(element(SupportingEvidenceBundle.builder().build())))
+                    .build())))
             .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue()))
             .build();
 
@@ -316,6 +317,7 @@ class ManageDocumentServiceTest {
             = furtherEvidenceBundleElement.getValue().getSupportingEvidenceBundle().get(0);
 
         assertThat(supportingEvidenceBundleElement).isEqualTo(furtherEvidenceBundle.get(0));
+        assertThat(hearingFurtherEvidenceBundle.size()).isEqualTo(2);
     }
 
     @Test
@@ -327,9 +329,8 @@ class ManageDocumentServiceTest {
         CaseData caseData = CaseData.builder()
             .hearingDetails(List.of(element(hearingId, hearingBooking)))
             .manageDocumentsHearingList(buildDynamicList(hearingId))
-            .hearingFurtherEvidenceDocuments(new ArrayList<>(List.of(element(
-                randomUUID(),
-                HearingFurtherEvidenceBundle.builder()
+            .hearingFurtherEvidenceDocuments(new ArrayList<>(List.of(
+                element(randomUUID(), HearingFurtherEvidenceBundle.builder()
                     .supportingEvidenceBundle(List.of(element(SupportingEvidenceBundle.builder().build())))
                     .build())
             )))
