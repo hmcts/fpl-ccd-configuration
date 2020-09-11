@@ -213,7 +213,7 @@ class ManageDocumentServiceTest {
     }
 
     @Test
-    void shouldSetDateTimeUploadedToNewCorrespondenceCollectionItems() {
+    void shouldSetDateTimeUploadedOnNewCorrespondenceSupportingEvidenceItems() {
         LocalDateTime yesterday = time.now().minusDays(1);
         List<Element<SupportingEvidenceBundle>> correspondingDocuments = buildSupportingEvidenceBundle();
         correspondingDocuments.add(element(SupportingEvidenceBundle.builder()
