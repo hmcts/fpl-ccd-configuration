@@ -15,9 +15,6 @@ import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 @Getter
 public enum Event {
 
-    DRAFT_CASE_MANAGEMENT_ORDER("draftCMO", "Draft CMO", List.of(CASE_MANAGEMENT)),
-    ACTION_CASE_MANAGEMENT_ORDER("actionCMO", "Action CMO", List.of(CASE_MANAGEMENT)),
-
     ORDERS_SOUGHT("ordersNeeded", "Orders and directions sought", List.of(OPEN)),
     HEARING_URGENCY("hearingNeeded", "Hearing urgency", List.of(OPEN, RETURNED)),
     GROUNDS("enterGrounds", "Grounds for the application", List.of(OPEN, RETURNED)),
