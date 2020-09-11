@@ -29,11 +29,6 @@ BeforeSuite(async (I) => {
 
 Before(async I => await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId));
 
-Scenario('HMCTS admin confirms payment', async (I, caseViewPage) => {
-  caseViewPage.selectTab(caseViewPage.tabs.paymentHistory);
-  I.see('Processed payments'); // Test to pass AAT, to make better
-});
-
 Scenario('HMCTS admin enters FamilyMan reference number', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
   enterFamilyManCaseNumberEventPage.enterCaseID();

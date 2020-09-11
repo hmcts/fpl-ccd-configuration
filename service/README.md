@@ -136,7 +136,6 @@ Notes:
 
 ## Application Mappings
 
-
 ### Email domain to Local Authority code
 
 Example:
