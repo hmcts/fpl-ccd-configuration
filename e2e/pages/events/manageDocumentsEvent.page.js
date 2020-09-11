@@ -1,4 +1,5 @@
 const { I } = inject();
+const supportingDocumentsFragment = require('../../fragments/supportingDocuments.js');
 
 module.exports = {
   supportingDocumentType: '',
@@ -15,12 +16,7 @@ module.exports = {
       },
       hearingList: '#manageDocumentsHearingList',
       c2DocumentsList: '#manageDocumentsSupportingC2List',
-      supportingEvidenceDocuments: {
-        name: `#${supportingDocumentType}_${index}_name`,
-        notes: `#${supportingDocumentType}_${index}_notes`,
-        dateAndTime: `#${supportingDocumentType}_${index}_dateTimeReceived`,
-        document: `#${supportingDocumentType}_${index}_document`,
-      },
+      supportingDocuments: supportingDocumentsFragment.supportingDocuments(index, supportingDocumentType),
     };
   },
 
@@ -66,25 +62,25 @@ module.exports = {
   async enterDocumentName(documentName) {
     const elementIndex = await this.getActiveElementIndex();
     const type = this.getSupportingEvidenceDocumentType();
-    I.fillField(this.fields(elementIndex, type).supportingEvidenceDocuments.name, documentName);
+    I.fillField(this.fields(elementIndex, type).supportingDocuments.name, documentName);
   },
 
   async enterDocumentNotes(notes) {
     const elementIndex = await this.getActiveElementIndex();
     const type = this.getSupportingEvidenceDocumentType();
-    I.fillField(this.fields(elementIndex, type).supportingEvidenceDocuments.notes, notes);
+    I.fillField(this.fields(elementIndex, type).supportingDocuments.notes, notes);
   },
 
   async enterDateAndTimeReceived(dateAndTime) {
     const elementIndex = await this.getActiveElementIndex();
     const type = this.getSupportingEvidenceDocumentType();
-    I.fillDateAndTime(dateAndTime, this.fields(elementIndex, type).supportingEvidenceDocuments.dateAndTime);
+    I.fillDateAndTime(dateAndTime, this.fields(elementIndex, type).supportingDocuments.dateAndTime);
   },
 
   async uploadDocument(document) {
     const elementIndex = await this.getActiveElementIndex();
     const type = this.getSupportingEvidenceDocumentType();
-    I.attachFile(this.fields(elementIndex, type).supportingEvidenceDocuments.document, document);
+    I.attachFile(this.fields(elementIndex, type).supportingDocuments.document, document);
   },
 
   async uploadSupportingEvidenceDocument(supportingEvidenceDocument) {
