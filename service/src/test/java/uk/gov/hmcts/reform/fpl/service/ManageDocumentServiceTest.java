@@ -482,9 +482,9 @@ class ManageDocumentServiceTest {
         List<Element<C2DocumentBundle>> updatedC2DocumentBundle =
             manageDocumentService.buildFinalC2SupportingDocuments(caseData);
 
-        LocalDateTime firstC2DocumentUploadTime =
-            unwrapElements(updatedC2DocumentBundle).get(0).getSupportingEvidenceBundle()
-                .get(0).getValue().getDateTimeUploaded();
+        LocalDateTime firstC2DocumentUploadTime = updatedC2DocumentBundle.get(0).getValue()
+            .getSupportingEvidenceBundle().get(0).getValue()
+            .getDateTimeUploaded();
 
         LocalDateTime thirdC2DocumentUploadTime = updatedC2DocumentBundle.get(2).getValue()
             .getSupportingEvidenceBundle().get(0).getValue()
