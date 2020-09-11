@@ -261,7 +261,6 @@ class ManageDocumentServiceTest {
 
         List<SupportingEvidenceBundle> supportingEvidenceBundle = unwrapElements(updatedCorrespondingDocuments);
 
-//        assertThat(supportingEvidenceBundle.get(0).getDateTimeUploaded()).isEqualTo(time.now());
         assertThat(supportingEvidenceBundle).hasSize(2)
             .first()
             .extracting(SupportingEvidenceBundle::getDateTimeReceived)
