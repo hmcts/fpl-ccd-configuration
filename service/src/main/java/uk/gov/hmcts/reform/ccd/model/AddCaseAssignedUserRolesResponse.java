@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.rd.model;
+package uk.gov.hmcts.reform.ccd.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

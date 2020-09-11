@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.rd.model;
+package uk.gov.hmcts.reform.ccd.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,4 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CaseAssignedUserRoleWithOrganisation {
     private String organisationId;
+    private String caseDataId;
+    private String userId;
+    private String caseRole;
 }
