@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -25,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -213,7 +211,7 @@ class ManageDocumentServiceTest {
     }
 
     @Test
-    void shouldSetDateTimeUploadedToNewCorrespondenceCollectionItems() {
+    void shouldSetDateTimeUploadedOnNewCorrespondenceSupportingEvidenceItems() {
         LocalDateTime yesterday = time.now().minusDays(1);
         List<Element<SupportingEvidenceBundle>> correspondingDocuments = buildSupportingEvidenceBundle();
         correspondingDocuments.add(element(SupportingEvidenceBundle.builder()
@@ -381,24 +379,22 @@ class ManageDocumentServiceTest {
         List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
 
         List<Element<C2DocumentBundle>> c2DocumentBundleList = List.of(
-            element(buildC2DocumentBundle(futureDate.plusDays(2))),
+            element(buildC2DocumentBundle(futureDate)),
             element(selectedC2DocumentId, C2DocumentBundle.builder()
                 .supportingEvidenceBundle(furtherEvidenceBundle)
                 .build()),
-            element(buildC2DocumentBundle(futureDate.plusDays(2))));
+            element(buildC2DocumentBundle(futureDate))
+        );
 
-        AtomicInteger i = new AtomicInteger(1);
-        DynamicList expectedC2DocumentsDynamicList = asDynamicList(c2DocumentBundleList, selectedC2DocumentId,
-            documentBundle -> documentBundle.toLabel(i.getAndIncrement()));
+        DynamicList expectedC2DocumentsDynamicList = buildDynamicList(selectedC2DocumentId);
 
-        Map<String, Object> data = new HashMap<>(Map.of(
-            "c2DocumentBundle", c2DocumentBundleList,
-            SUPPORTING_C2_LIST_KEY, expectedC2DocumentsDynamicList));
-
-        CaseDetails caseDetails = CaseDetails.builder().data(data).build();
+        CaseData caseData = CaseData.builder()
+            .c2DocumentBundle(c2DocumentBundleList)
+            .manageDocumentsSupportingC2List(expectedC2DocumentsDynamicList)
+            .build();
 
         List<Element<SupportingEvidenceBundle>> c2SupportingEvidenceBundle =
-            manageDocumentService.getC2SupportingEvidenceBundle(caseDetails);
+            manageDocumentService.getC2SupportingEvidenceBundle(caseData);
 
         assertThat(c2SupportingEvidenceBundle).isEqualTo(furtherEvidenceBundle);
     }
@@ -408,22 +404,20 @@ class ManageDocumentServiceTest {
         UUID selectedC2DocumentId = UUID.randomUUID();
 
         List<Element<C2DocumentBundle>> c2DocumentBundleList = List.of(
-            element(buildC2DocumentBundle(futureDate.plusDays(2))),
-            element(selectedC2DocumentId, buildC2DocumentBundle(futureDate.plusDays(2))),
-            element(buildC2DocumentBundle(futureDate.plusDays(2))));
+            element(buildC2DocumentBundle(futureDate)),
+            element(selectedC2DocumentId, buildC2DocumentBundle(futureDate)),
+            element(buildC2DocumentBundle(futureDate))
+        );
 
-        AtomicInteger i = new AtomicInteger(1);
-        DynamicList expectedC2DocumentsDynamicList = asDynamicList(c2DocumentBundleList, selectedC2DocumentId,
-            documentBundle -> documentBundle.toLabel(i.getAndIncrement()));
+        DynamicList expectedC2DocumentsDynamicList = buildDynamicList(selectedC2DocumentId);
 
-        Map<String, Object> data = new HashMap<>(Map.of(
-            "c2DocumentBundle", c2DocumentBundleList,
-            SUPPORTING_C2_LIST_KEY, expectedC2DocumentsDynamicList));
-
-        CaseDetails caseDetails = CaseDetails.builder().data(data).build();
+        CaseData caseData = CaseData.builder()
+            .c2DocumentBundle(c2DocumentBundleList)
+            .manageDocumentsSupportingC2List(expectedC2DocumentsDynamicList)
+            .build();
 
         List<Element<SupportingEvidenceBundle>> c2SupportingEvidenceBundle =
-            manageDocumentService.getC2SupportingEvidenceBundle(caseDetails);
+            manageDocumentService.getC2SupportingEvidenceBundle(caseData);
 
         assertThat(c2SupportingEvidenceBundle.get(0).getValue()).isEqualTo(SupportingEvidenceBundle.builder().build());
     }
