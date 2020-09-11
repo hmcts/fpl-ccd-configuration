@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -49,17 +48,7 @@ public class ManageDocumentsController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData().put(MANAGE_DOCUMENTS_HEARING_LIST_KEY, caseData.buildDynamicHearingList());
-
-        ManageDocument manageDocument = ManageDocument.builder()
-            .hasHearings(caseData.getHearingDetails().isEmpty() ? YesNo.NO.getValue() : YesNo.YES.getValue())
-            .build();
-
-        caseDetails.getData().put(MANAGE_DOCUMENT_KEY, manageDocument);
-
-        if (caseData.hasC2DocumentBundle()) {
-            caseDetails.getData().put(SUPPORTING_C2_LIST_KEY, caseData.buildC2DocumentDynamicList());
-        }
+        caseDetails.getData().putAll(manageDocumentService.initialiseManageDocumentEvent(caseData));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

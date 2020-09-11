@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -20,7 +21,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -63,8 +66,14 @@ public class ManageDocumentsControllerAboutToStartTest extends AbstractControlle
         DynamicList c2DocumentDynamicList =
             mapper.convertValue(response.getData().get(SUPPORTING_C2_LIST_KEY), DynamicList.class);
 
+        ManageDocument actualManageDocument =
+            mapper.convertValue(response.getData().get(MANAGE_DOCUMENT_KEY), ManageDocument.class);
+
+        ManageDocument expectedManageDocument = ManageDocument.builder().hasHearings(YES.getValue()).build();
+
         assertThat(hearingDynamicList).isEqualTo(expectedHearingDynamicList);
         assertThat(c2DocumentDynamicList).isEqualTo(expectedC2DocumentsDynamicList);
+        assertThat(actualManageDocument).isEqualTo(expectedManageDocument);
     }
 
     private HearingBooking hearing(LocalDateTime startDate) {

@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -22,6 +23,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.getHearingBookingByUUID;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -45,6 +48,28 @@ public class ManageDocumentService {
     public static final String MANAGE_DOCUMENTS_HEARING_LABEL_KEY = "manageDocumentsHearingLabel";
     public static final String SUPPORTING_C2_LABEL = "manageDocumentsSupportingC2Label";
     public static final String MANAGE_DOCUMENT_KEY = "manageDocument";
+
+    public Map<String, Object> initialiseManageDocumentEvent(CaseData caseData) {
+        Map<String, Object> listAndLabel = new HashMap<>();
+        String hasHearings;
+
+        if (caseData.getHearingDetails() != null && !caseData.getHearingDetails().isEmpty()) {
+            listAndLabel.put(MANAGE_DOCUMENTS_HEARING_LIST_KEY, caseData.buildDynamicHearingList());
+            hasHearings = YES.getValue();
+        } else {
+            hasHearings = NO.getValue();
+        }
+
+        ManageDocument manageDocument = ManageDocument.builder().hasHearings(hasHearings).build();
+
+        if (caseData.hasC2DocumentBundle()) {
+            listAndLabel.put(SUPPORTING_C2_LIST_KEY, caseData.buildC2DocumentDynamicList());
+        }
+
+        listAndLabel.put(MANAGE_DOCUMENT_KEY, manageDocument);
+
+        return listAndLabel;
+    }
 
     public Map<String, Object> initialiseHearingListAndLabel(CaseData caseData) {
         Map<String, Object> listAndLabel = new HashMap<>();
