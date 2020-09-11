@@ -263,7 +263,7 @@ class ManageDocumentServiceTest {
 
         assertThat(supportingEvidenceBundle).hasSize(2)
             .first()
-            .extracting(SupportingEvidenceBundle::getDateTimeReceived)
+            .extracting(SupportingEvidenceBundle::getDateTimeUploaded)
             .isEqualTo(time.now());
     }
 
