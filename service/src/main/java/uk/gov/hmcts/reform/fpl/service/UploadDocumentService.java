@@ -71,7 +71,7 @@ public class UploadDocumentService {
                 documentPath
             );
         } catch (Exception e) {
-            throw new DocumentException("Unable to get document metadata");
+            throw new DocumentException();
         }
     }
 }

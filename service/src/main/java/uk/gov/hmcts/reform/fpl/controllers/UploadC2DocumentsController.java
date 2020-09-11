@@ -26,12 +26,14 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.UploadC2DocumentsService;
+import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +68,7 @@ public class UploadC2DocumentsController extends CallbackController {
     private final Time time;
     private final RequestData requestData;
     private final UploadC2DocumentsService uploadC2DocumentsService;
+    private final UploadDocumentService uploadDocumentService;
 
     @PostMapping("/get-fee/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
@@ -172,14 +175,18 @@ public class UploadC2DocumentsController extends CallbackController {
         List<Element<C2DocumentBundle>> c2DocumentBundle = defaultIfNull(caseData.getC2DocumentBundle(),
             Lists.newArrayList());
 
+        String path = URI.create(caseData.getTemporaryC2Document().getDocument().getUrl()).getPath();
+
         List<SupportingEvidenceBundle> updatedSupportingEvidenceBundle =
             unwrapElements(caseData.getTemporaryC2Document().getSupportingEvidenceBundle())
                 .stream()
-                .map(supportingEvidence -> supportingEvidence.toBuilder().dateTimeUploaded(time.now()).build())
+                .map(supportingEvidence -> supportingEvidence.toBuilder()
+                    .uploadedBy(uploadDocumentService.getUploadedDocumentUserInfo(caseData.getTemporaryC2Document().getDocument().getUrl()))
+                    .dateTimeUploaded(time.now()).build())
                 .collect(Collectors.toList());
 
         var c2DocumentBundleBuilder = caseData.getTemporaryC2Document().toBuilder()
-            .author(idamClient.getUserInfo(requestData.authorisation()).getName())
+            .author(uploadDocumentService.getUploadedDocumentUserInfo(caseData.getTemporaryC2Document().getDocument().getBinaryUrl()))
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
             .supportingEvidenceBundle(
                 //TODO: Below empty check can be removed when supporting documents is toggled on in prod
