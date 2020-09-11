@@ -159,10 +159,14 @@ public class ManageDocumentService {
         HearingBooking hearingBooking = getHearingBookingByUUID(caseData.getHearingDetails(), selectedHearingCode);
 
         if (caseData.documentBundleContainsHearingId(selectedHearingCode)) {
-            return hearingFurtherEvidenceBundle.stream()
-                .filter(element -> element.getId().equals(selectedHearingCode))
-                .peek(element -> element.getValue().setSupportingEvidenceBundle(supportingEvidenceBundle))
-                .collect(Collectors.toList());
+            List<Element<HearingFurtherEvidenceBundle>> list = new ArrayList<>();
+            for (Element<HearingFurtherEvidenceBundle> element : hearingFurtherEvidenceBundle) {
+                if (element.getId().equals(selectedHearingCode)) {
+                    element.getValue().setSupportingEvidenceBundle(supportingEvidenceBundle);
+                }
+                list.add(element);
+            }
+            return list;
         } else {
             hearingFurtherEvidenceBundle.add(buildHearingSupportingEvidenceBundle(
                 selectedHearingCode,
@@ -214,12 +218,14 @@ public class ManageDocumentService {
             setDateTimeUploadedOnSupportingEvidence(caseData.getC2SupportingDocuments(),
                 c2DocumentBundle.getSupportingEvidenceBundle());
 
-        return caseData.getC2DocumentBundle().stream()
-            .peek(c2DocumentBundleElement -> {
-                if (selected.equals(c2DocumentBundleElement.getId())) {
-                    c2DocumentBundleElement.getValue().setSupportingEvidenceBundle(updatedCorrespondenceDocuments);
-                }
-            }).collect(Collectors.toList());
+        List<Element<C2DocumentBundle>> list = new ArrayList<>();
+        for (Element<C2DocumentBundle> c2DocumentBundleElement : caseData.getC2DocumentBundle()) {
+            if (selected.equals(c2DocumentBundleElement.getId())) {
+                c2DocumentBundleElement.getValue().setSupportingEvidenceBundle(updatedCorrespondenceDocuments);
+            }
+            list.add(c2DocumentBundleElement);
+        }
+        return list;
     }
 
     private Element<HearingFurtherEvidenceBundle> buildHearingSupportingEvidenceBundle(
