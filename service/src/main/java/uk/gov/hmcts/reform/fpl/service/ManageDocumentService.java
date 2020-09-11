@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
@@ -12,7 +11,6 @@ import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.ArrayList;
@@ -125,13 +123,9 @@ public class ManageDocumentService {
         return getSupportingEvidenceBundle(null);
     }
 
-    public List<Element<SupportingEvidenceBundle>> getC2SupportingEvidenceBundle(CaseDetails caseDetails) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        DynamicList dynamicC2DocumentsList = mapper.convertValue(caseDetails.getData().get(SUPPORTING_C2_LIST_KEY),
-            DynamicList.class);
-
-        C2DocumentBundle c2DocumentBundle =
-            caseData.getC2DocumentBundleByUUID(dynamicC2DocumentsList.getValueCode());
+    public List<Element<SupportingEvidenceBundle>> getC2SupportingEvidenceBundle(CaseData caseData) {
+        UUID selectedC2 = getDynamicListValueCode(caseData.getManageDocumentsSupportingC2List(), mapper);
+        C2DocumentBundle c2DocumentBundle = caseData.getC2DocumentBundleByUUID(selectedC2);
 
         if (c2DocumentBundle.getSupportingEvidenceBundle() != null) {
             return c2DocumentBundle.getSupportingEvidenceBundle();
