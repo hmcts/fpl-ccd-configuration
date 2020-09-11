@@ -12,12 +12,23 @@ const getAgent = function (url) {
   }
 };
 
-const post = async (url, data, headers) => {
+const wait = duration => new Promise(resolve => setTimeout(resolve, duration));
+
+const post = async (url, data, headers, retry = 2, backoff = 500) => {
   return fetch(url, {
     method: 'POST',
     body: JSON.stringify(data),
     headers: headers,
     agent: getAgent(url),
+  }).then(res => {
+    if (res.ok) {
+      return res;
+    } else {
+      if (retry > 0) {
+        return wait(backoff).then(() => post(url, data, headers, retry - 1, backoff * 1.5));
+      }
+      throw {message: `POST ${url} failed with ${res.status}`};
+    }
   });
 };
 
