@@ -50,7 +50,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ContextConfiguration(classes = {
     JacksonAutoConfiguration.class, FixedTimeConfiguration.class, ManageDocumentService.class
 })
-public class ManageDocumentServiceTest {
+class ManageDocumentServiceTest {
 
     @Autowired
     private Time time;

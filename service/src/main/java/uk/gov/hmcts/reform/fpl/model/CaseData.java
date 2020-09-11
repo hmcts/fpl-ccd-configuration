@@ -715,6 +715,6 @@ public class CaseData {
     }
 
     public DynamicList buildDynamicHearingList(UUID selected) {
-        return asDynamicList(getHearingDetails(), selected, hearing -> hearing.toLabel(DATE));
+        return asDynamicList(getHearingDetails(), selected, hearingBooking -> hearingBooking.toLabel(DATE));
     }
 }

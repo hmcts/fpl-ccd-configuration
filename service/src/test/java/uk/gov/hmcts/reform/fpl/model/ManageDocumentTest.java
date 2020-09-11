@@ -10,19 +10,19 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 class ManageDocumentTest {
 
     @Test
-    public void shouldReturnTrueIfManageDocumentIsRelatedToHearing() {
+    void shouldReturnTrueIfManageDocumentIsRelatedToHearing() {
         ManageDocument manageDocument = buildManageDocument(YES);
         assertThat(manageDocument.isDocumentRelatedToHearing()).isTrue();
     }
 
     @Test
-    public void shouldReturnFalseIfManageDocumentIsNotRelatedToHearing() {
+    void shouldReturnFalseIfManageDocumentIsNotRelatedToHearing() {
         ManageDocument manageDocument = buildManageDocument(NO);
         assertThat(manageDocument.isDocumentRelatedToHearing()).isFalse();
     }
 
     @Test
-    public void shouldReturnFalseIfManageDocumentIsEmpty() {
+    void shouldReturnFalseIfManageDocumentIsEmpty() {
         ManageDocument manageDocument = ManageDocument.builder().build();
         assertThat(manageDocument.isDocumentRelatedToHearing()).isFalse();
     }
