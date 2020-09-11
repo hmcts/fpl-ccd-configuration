@@ -108,6 +108,8 @@ public class ManageDocumentsController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
+        System.out.println(caseData.getCorrespondenceDocuments());
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .errors(supportingEvidenceValidatorService.validate(caseData.getCorrespondenceDocuments()))
@@ -163,7 +165,7 @@ public class ManageDocumentsController {
             case C2:
                 List<Element<C2DocumentBundle>> updatedC2Documents;
 
-                updatedC2Documents = manageDocumentService.buildFinalC2SupportingDocuments(caseDetails);
+                updatedC2Documents = manageDocumentService.buildFinalC2SupportingDocuments(caseData);
 
                 caseDetails.getData().put(C2_DOCUMENTS_COLLECTION_KEY, updatedC2Documents);
                 break;
