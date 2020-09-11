@@ -52,11 +52,12 @@ module.exports = {
     I.selectOption(this.fields(elementIndex, type).hearingList, `Case management hearing, ${hearingDate}`);
   },
 
-  async selectC2Document(index, uploadedDateTime) {
+  async select2FromDropdown() {
     const elementIndex = await this.getActiveElementIndex();
     const type = this.getSupportingEvidenceDocumentType();
+    const dropdownLabel = await I.grabTextFrom(`${this.fields(elementIndex, type).c2DocumentsList} option:nth-child(2)`);
     I.waitForElement(this.fields(elementIndex, type).c2DocumentsList);
-    I.selectOption(this.fields(elementIndex, type).c2DocumentsList, `Application ${index}: ${uploadedDateTime}`);
+    I.selectOption(this.fields(elementIndex, type).c2DocumentsList, dropdownLabel);
   },
 
   async enterDocumentName(documentName) {
