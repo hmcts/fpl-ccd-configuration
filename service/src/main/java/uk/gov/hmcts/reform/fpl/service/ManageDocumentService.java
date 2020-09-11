@@ -15,9 +15,11 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -175,13 +177,21 @@ public class ManageDocumentService {
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle,
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundleBefore) {
 
-        if (isSupportingEvidenceCollectionModified(supportingEvidenceBundle, supportingEvidenceBundleBefore)) {
-            for (int i = 0; i < supportingEvidenceBundle.size(); i++) {
-                if (!supportingEvidenceBundle.get(i).getValue().getDocument()
-                    .equals(supportingEvidenceBundleBefore.get(i).getValue().getDocument())) {
-                    supportingEvidenceBundle.get(i).getValue().setDateTimeUploaded(time.now());
-                }
+        if (!Objects.equals(supportingEvidenceBundle, supportingEvidenceBundleBefore)) {
+            List<Element<SupportingEvidenceBundle>> altered = new ArrayList<>(supportingEvidenceBundle);
+
+            // Could be null in the case of C2 supporting documents
+            if (supportingEvidenceBundleBefore != null) {
+                altered.removeAll(supportingEvidenceBundleBefore);
             }
+
+            altered.forEach(bundle -> findElement(bundle.getId(), supportingEvidenceBundleBefore).ifPresent(
+                previousVersion -> {
+                    if (!previousVersion.getValue().getDocument().equals(bundle.getValue().getDocument())) {
+                        bundle.getValue().setDateTimeUploaded(time.now());
+                    }
+                }
+            ));
         }
 
         return supportingEvidenceBundle.stream()
@@ -196,9 +206,9 @@ public class ManageDocumentService {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         DynamicList dynamicC2DocumentsList = mapper.convertValue(caseDetails.getData().get(SUPPORTING_C2_LIST_KEY),
             DynamicList.class);
+        UUID selected = dynamicC2DocumentsList.getValueCode();
 
-        C2DocumentBundle c2DocumentBundle =
-            caseData.getC2DocumentBundleByUUID(dynamicC2DocumentsList.getValueCode());
+        C2DocumentBundle c2DocumentBundle = caseData.getC2DocumentBundleByUUID(selected);
 
         List<Element<SupportingEvidenceBundle>> updatedCorrespondenceDocuments =
             setDateTimeUploadedOnSupportingEvidence(caseData.getC2SupportingDocuments(),
@@ -206,7 +216,7 @@ public class ManageDocumentService {
 
         return caseData.getC2DocumentBundle().stream()
             .peek(c2DocumentBundleElement -> {
-                if (dynamicC2DocumentsList.getValue().getCode().equals(c2DocumentBundleElement.getId())) {
+                if (selected.equals(c2DocumentBundleElement.getId())) {
                     c2DocumentBundleElement.getValue().setSupportingEvidenceBundle(updatedCorrespondenceDocuments);
                 }
             }).collect(Collectors.toList());
@@ -220,11 +230,5 @@ public class ManageDocumentService {
             .hearingName(hearingBooking.toLabel(DATE))
             .supportingEvidenceBundle(supportingEvidenceBundle)
             .build());
-    }
-
-    private boolean isSupportingEvidenceCollectionModified(List<Element<SupportingEvidenceBundle>> currentCollection,
-                                                           List<Element<SupportingEvidenceBundle>> previousCollection) {
-        return currentCollection != null && previousCollection != null && !currentCollection.equals(previousCollection)
-            && currentCollection.size() == previousCollection.size();
     }
 }

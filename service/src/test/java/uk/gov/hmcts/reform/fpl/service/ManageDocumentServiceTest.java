@@ -233,20 +233,27 @@ class ManageDocumentServiceTest {
     void shouldSetNewDateTimeUploadedOnOverwriteOfPreviousDocumentUpload() {
         LocalDateTime yesterday = time.now().minusDays(1);
 
+        UUID updatedId = UUID.randomUUID();
+
         List<Element<SupportingEvidenceBundle>> previousCorrespondingDocuments = List.of(
-            element(SupportingEvidenceBundle.builder()
+            element(updatedId, SupportingEvidenceBundle.builder()
                 .dateTimeUploaded(yesterday)
-                .document(DocumentReference.builder()
-                    .filename("Previous")
-                    .build())
-                .build()));
+                .document(DocumentReference.builder().filename("Previous").build())
+                .build()
+            )
+        );
 
         List<Element<SupportingEvidenceBundle>> currentCorrespondingDocuments = List.of(
+            element(updatedId, SupportingEvidenceBundle.builder()
+                .dateTimeUploaded(yesterday)
+                .document(DocumentReference.builder().filename("override").build())
+                .build()
+            ),
             element(SupportingEvidenceBundle.builder()
-                .document(DocumentReference.builder()
-                    .filename("Previous")
-                    .build())
-                .build()));
+                .document(DocumentReference.builder().filename("new").build())
+                .build()
+            )
+        );
 
         List<Element<SupportingEvidenceBundle>> updatedCorrespondingDocuments
             = manageDocumentService.setDateTimeUploadedOnSupportingEvidence(currentCorrespondingDocuments,
@@ -254,7 +261,11 @@ class ManageDocumentServiceTest {
 
         List<SupportingEvidenceBundle> supportingEvidenceBundle = unwrapElements(updatedCorrespondingDocuments);
 
-        assertThat(supportingEvidenceBundle.get(0).getDateTimeUploaded()).isEqualTo(time.now());
+//        assertThat(supportingEvidenceBundle.get(0).getDateTimeUploaded()).isEqualTo(time.now());
+        assertThat(supportingEvidenceBundle).hasSize(2)
+            .first()
+            .extracting(SupportingEvidenceBundle::getDateTimeReceived)
+            .isEqualTo(time.now());
     }
 
     @Test
