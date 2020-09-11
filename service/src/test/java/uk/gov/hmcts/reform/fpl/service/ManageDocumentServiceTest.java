@@ -64,7 +64,7 @@ class ManageDocumentServiceTest {
     }
 
     @Test
-    void shouldPopulateEventExpectedFieldsWhenHearingAndC2DocumentBundleDetailsArePresentOnCaseData() {
+    void shouldPopulateFieldsWhenHearingAndC2DocumentBundleDetailsArePresentOnCaseData() {
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))),
             element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3))),
@@ -263,6 +263,46 @@ class ManageDocumentServiceTest {
             .first()
             .extracting(SupportingEvidenceBundle::getDateTimeUploaded)
             .isEqualTo(time.now());
+    }
+
+    @Test
+    void shouldPersistUploadedDateTimeWhenDocumentReferenceDoesNotDifferBetweenOldAndNewSupportingEvidence() {
+        LocalDateTime yesterday = time.now().minusDays(1);
+
+        UUID updatedId = UUID.randomUUID();
+
+        DocumentReference previousDocument = DocumentReference.builder().filename("Previous").build();
+
+        List<Element<SupportingEvidenceBundle>> previousCorrespondingDocuments = List.of(
+            element(updatedId, SupportingEvidenceBundle.builder()
+                .dateTimeUploaded(yesterday)
+                .document(previousDocument)
+                .build()
+            )
+        );
+
+        List<Element<SupportingEvidenceBundle>> currentCorrespondingDocuments = List.of(
+            element(updatedId, SupportingEvidenceBundle.builder()
+                .dateTimeUploaded(yesterday)
+                .document(previousDocument)
+                .build()
+            ),
+            element(SupportingEvidenceBundle.builder()
+                .document(DocumentReference.builder().filename("new").build())
+                .build()
+            )
+        );
+
+        List<Element<SupportingEvidenceBundle>> updatedCorrespondingDocuments
+            = manageDocumentService.setDateTimeUploadedOnSupportingEvidence(currentCorrespondingDocuments,
+            previousCorrespondingDocuments);
+
+        List<SupportingEvidenceBundle> supportingEvidenceBundle = unwrapElements(updatedCorrespondingDocuments);
+
+        assertThat(supportingEvidenceBundle).hasSize(2)
+            .first()
+            .extracting(SupportingEvidenceBundle::getDateTimeUploaded)
+            .isEqualTo(yesterday);
     }
 
     @Test
