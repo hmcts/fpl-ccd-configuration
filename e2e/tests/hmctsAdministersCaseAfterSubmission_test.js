@@ -18,6 +18,7 @@ const supportingEvidenceDocuments = require('../fixtures/supportingEvidenceDocum
 
 let caseId;
 let submittedAt;
+let c2SubmittedDateTime;
 
 Feature('Case administration after submission');
 
@@ -98,7 +99,7 @@ Scenario('HMCTS admin uploads correspondence documents', async (I, caseViewPage,
   I.seeInTab(['Correspondence document 2', 'Upload document'], 'mockFile.txt');
 });
 
-Scenario('@f', async (I, caseViewPage, uploadC2DocumentsEventPage, paymentHistoryPage) => {
+Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage, uploadC2DocumentsEventPage, paymentHistoryPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.uploadC2Documents);
   uploadC2DocumentsEventPage.selectApplicationType('WITH_NOTICE');
   await I.retryUntilExists(() => I.click('Continue'), '#temporaryC2Document_document');
@@ -108,6 +109,7 @@ Scenario('@f', async (I, caseViewPage, uploadC2DocumentsEventPage, paymentHistor
   uploadC2DocumentsEventPage.uploadC2Document(config.testFile, 'Rachel Zane C2');
   await uploadC2DocumentsEventPage.uploadC2SupportingDocument();
   await I.completeEvent('Save and continue');
+  c2SubmittedDateTime = dateFormat(submittedAt, 'd mmmm yyyy, h:MMtt');
   I.seeEventSubmissionConfirmation(config.administrationActions.uploadC2Documents);
 
   caseViewPage.selectTab(caseViewPage.tabs.paymentHistory);
@@ -140,11 +142,11 @@ Scenario('@f', async (I, caseViewPage, uploadC2DocumentsEventPage, paymentHistor
   I.seeInTab(['C2 Application 2', 'Paid with PBA'], 'No');
 });
 
-Scenario('@f', async(I, caseViewPage, loginPage, manageDocumentsEventPage) => {
+Scenario('HMCTS admin edits supporting evidence document on C2 application', async(I, caseViewPage, loginPage, manageDocumentsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
   manageDocumentsEventPage.setSupportingEvidenceDocumentType('c2SupportingDocuments');
   await manageDocumentsEventPage.selectC2SupportingDocuments();
-  await manageDocumentsEventPage.selectC2Document(1, dateFormat(submittedAt, 'd mmmm yyyy, h:MMtt'));
+  await manageDocumentsEventPage.selectC2Document(1, c2SubmittedDateTime);
   await I.retryUntilExists(() => I.click('Continue'), '#c2SupportingDocuments');
   await manageDocumentsEventPage.enterDocumentName('Updated document name');
   await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
