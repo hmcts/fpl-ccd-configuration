@@ -206,11 +206,8 @@ public class ManageDocumentService {
             }).collect(Collectors.toList());
     }
 
-    public List<Element<C2DocumentBundle>> buildFinalC2SupportingDocuments(CaseDetails caseDetails) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        DynamicList dynamicC2DocumentsList = mapper.convertValue(caseDetails.getData().get(SUPPORTING_C2_LIST_KEY),
-            DynamicList.class);
-        UUID selected = dynamicC2DocumentsList.getValueCode();
+    public List<Element<C2DocumentBundle>> buildFinalC2SupportingDocuments(CaseData caseData) {
+        UUID selected = getDynamicListValueCode(caseData.getManageDocumentsSupportingC2List(), mapper);
 
         C2DocumentBundle c2DocumentBundle = caseData.getC2DocumentBundleByUUID(selected);
 
