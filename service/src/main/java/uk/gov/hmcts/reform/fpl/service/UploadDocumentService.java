@@ -7,12 +7,14 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.document.DocumentMetadataDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.document.domain.UploadResponse;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
+import uk.gov.hmcts.reform.fpl.exceptions.DocumentException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
@@ -28,6 +30,7 @@ public class UploadDocumentService {
     private final RequestData requestData;
     private final IdamClient idamClient;
     private final SystemUpdateUserConfiguration userConfig;
+    private final DocumentMetadataDownloadClientApi documentMetadataDownloadClient;
 
     public Document uploadPDF(byte[] pdf, String fileName) {
         MultipartFile file = new InMemoryMultipartFile("files", fileName, MediaType.APPLICATION_PDF_VALUE, pdf);
@@ -45,12 +48,30 @@ public class UploadDocumentService {
         return document;
     }
 
-    public String getUploadedDocumentUserInfo() {
+    public String getUploadedDocumentUserInfo(String documentPath) {
         String userToken = idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
-        UserDetails userDetails = idamClient.getUserByUserId(userToken, requestData.userId());
+        Document document = getDocumentMetadata(documentPath, userToken);
 
+        UserDetails userDetails = idamClient.getUserByUserId(userToken, document.createdBy);
         boolean isHMCTSUser = userDetails.getRoles().stream().anyMatch(UserRole::isHMCTSUser);
 
         return isHMCTSUser ? "HMCTS": userDetails.getEmail();
+    }
+
+    public Document getDocumentMetadata(String documentPath, String userToken) {
+        try {
+            UserDetails userDetails = idamClient.getUserByUserId(userToken, requestData.userId());
+            String userRoles = String.join(",", userDetails.getRoles());
+
+            return documentMetadataDownloadClient.getDocumentMetadata(
+                userToken,
+                authTokenGenerator.generate(),
+                userRoles,
+                userDetails.getId(),
+                documentPath
+            );
+        } catch (Exception e) {
+            throw new DocumentException("Unable to get document metadata");
+        }
     }
 }
