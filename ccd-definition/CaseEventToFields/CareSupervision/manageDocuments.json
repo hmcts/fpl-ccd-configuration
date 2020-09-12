@@ -50,7 +50,8 @@
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
     "PageShowCondition": "manageDocument.type=\"FURTHER_EVIDENCE_DOCUMENTS\"",
-    "FieldShowCondition": "manageDocument.relatedToHearing=\"Yes\""
+    "FieldShowCondition": "manageDocument.relatedToHearing=\"Yes\"",
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documents/validate-further-evidence/mid-event"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -62,8 +63,7 @@
     "PageID": "FurtherEvidenceDocuments",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
-    "ShowSummaryChangeOption": "Y",
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documents/validate-further-evidence/mid-event"
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
