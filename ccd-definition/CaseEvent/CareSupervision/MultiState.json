@@ -629,7 +629,7 @@
     "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING;ISSUE_RESOLUTION;FINAL_HEARING;CLOSED",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
+    "ShowSummary": "Y",
     "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue",
     "Comment": "Recreated due to differing permissions in this state compared to other states",
