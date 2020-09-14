@@ -240,7 +240,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldSetPageShowToYesWhenToggleIsEnabled() {
-        given(featureToggleService.isMigrateToManageOrgWarningPageEnabled(anyString())).willReturn(true);
+        given(featureToggleService.isBlockCasesForLocalAuthoritiesNotOnboardedEnabled(anyString())).willReturn(true);
 
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("caseName", "title"))
@@ -253,7 +253,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldNotSetPageShowWhenToggleIsDisabled() {
-        given(featureToggleService.isMigrateToManageOrgWarningPageEnabled(anyString())).willReturn(false);
+        given(featureToggleService.isBlockCasesForLocalAuthoritiesNotOnboardedEnabled(anyString())).willReturn(false);
 
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("caseName", "title"))
@@ -266,7 +266,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldRemovePageShowOnAboutToSubmit() {
-        given(featureToggleService.isMigrateToManageOrgWarningPageEnabled(anyString())).willReturn(false);
+        given(featureToggleService.isBlockCasesForLocalAuthoritiesNotOnboardedEnabled(anyString())).willReturn(false);
 
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("caseName", "title", PAGE_SHOW, "YES"))

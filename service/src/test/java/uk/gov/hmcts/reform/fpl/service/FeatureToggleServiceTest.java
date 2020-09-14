@@ -163,11 +163,11 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsMigrateToManageOrgWarningPageEnabled(Boolean toggleState) {
+    void shouldMakeCorrectCallForIsBlockCasesForLocalAuthoritiesNotOnboardedEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
-        assertThat(service.isMigrateToManageOrgWarningPageEnabled("test name")).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(eq("migrate-to-manage-org-warning-page"), any(LDUser.class), eq(false));
+        assertThat(service.isBlockCasesForLocalAuthoritiesNotOnboardedEnabled("test name")).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(eq("block-cases-for-local-authorities-not-onboarded"), any(LDUser.class), eq(false));
     }
 
     private static Stream<Arguments> userAttributesTestSource() {

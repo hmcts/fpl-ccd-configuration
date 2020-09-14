@@ -16,7 +16,10 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityUserService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityValidationService;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Api
@@ -26,24 +29,25 @@ import java.util.Map;
 public class CaseInitiationController extends CallbackController {
     private final LocalAuthorityService localAuthorityNameService;
     private final LocalAuthorityUserService localAuthorityUserService;
+    private final LocalAuthorityValidationService localAuthorityOnboardedValidationService;
 
     private final FeatureToggleService featureToggleService;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
 
-    @PostMapping("/about-to-start")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
+    @PostMapping("/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(
         @RequestBody CallbackRequest callbackrequest) {
         String caseLocalAuthority = localAuthorityNameService.getLocalAuthorityCode();
         String localAuthorityName = localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseLocalAuthority);
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
 
-        Map<String, Object> data = caseDetails.getData();
+        List<String> errors = new ArrayList<>();
 
-        if (featureToggleService.isMigrateToManageOrgWarningPageEnabled(localAuthorityName)) {
-            data.put("pageShow", "YES");
+        if (featureToggleService.isBlockCasesForLocalAuthoritiesNotOnboardedEnabled(localAuthorityName)) {
+            errors = localAuthorityOnboardedValidationService.validateIfLaIsOnboarded(caseLocalAuthority);
         }
 
-        return respond(caseDetails);
+        return respond(caseDetails, errors);
     }
 
     @PostMapping("/about-to-submit")
@@ -57,7 +61,10 @@ public class CaseInitiationController extends CallbackController {
 
         data.remove("pageShow");
 
-        return respond(caseDetails);
+        List<String> errors = localAuthorityOnboardedValidationService.validateLaIsOnboarded(caseLocalAuthority);
+        System.out.println("stsrting");
+
+        return respond(caseDetails, errors);
     }
 
     @PostMapping("/submitted")
