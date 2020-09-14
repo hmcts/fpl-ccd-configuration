@@ -9,18 +9,17 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.util.Collections.emptyList;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UploadC2DocumentsService {
 
-    private final ValidateSupportingEvidenceBundleService validateSupportingEvidenceBundleService;
+    private final SupportingEvidenceValidatorService validateSupportingEvidenceBundleService;
 
     public List<String> validate(C2DocumentBundle c2DocumentBundle) {
         return Optional.ofNullable(c2DocumentBundle)
-            .map(c2Bundle -> unwrapElements(c2Bundle.getSupportingEvidenceBundle()))
-            .map(validateSupportingEvidenceBundleService::validateBundle)
+            .map(C2DocumentBundle::getSupportingEvidenceBundle)
+            .map(validateSupportingEvidenceBundleService::validate)
             .orElse(emptyList());
     }
 }
