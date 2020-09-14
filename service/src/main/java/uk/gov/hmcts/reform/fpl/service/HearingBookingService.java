@@ -82,7 +82,7 @@ public class HearingBookingService {
             .min(comparing(HearingBooking::getStartDate));
     }
 
-    public HearingBooking getHearingBookingByUUID(List<Element<HearingBooking>> hearingDetails, UUID elementId) {
+    public static HearingBooking getHearingBookingByUUID(List<Element<HearingBooking>> hearingDetails, UUID elementId) {
         return hearingDetails.stream()
             .filter(hearingBookingElement -> hearingBookingElement.getId().equals(elementId))
             .map(Element::getValue)

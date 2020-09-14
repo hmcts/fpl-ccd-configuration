@@ -3,10 +3,10 @@ module.exports = {
 
   supportingDocuments (index, document) {
     return {
-      name: `#${document}_supportingEvidenceBundle_${index}_name`,
-      notes: `#${document}_supportingEvidenceBundle_${index}_notes`,
-      dateAndTime: `#${document}_supportingEvidenceBundle_${index}_dateTimeReceived`,
-      document: `#${document}_supportingEvidenceBundle_${index}_document`,
+      name: `#${document}_${index}_name`,
+      notes: `#${document}_${index}_notes`,
+      dateAndTime: `#${document}_${index}_dateTimeReceived`,
+      document: `#${document}_${index}_document`,
     };
   },
 };

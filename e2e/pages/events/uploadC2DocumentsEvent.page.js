@@ -13,7 +13,7 @@ module.exports = {
     pbaNumber: '#temporaryC2Document_pbaNumber',
     clientCode: '#temporaryC2Document_clientCode',
     customerReference: '#temporaryC2Document_fileReference',
-    supportingDocuments: supportingDocumentsFragment.supportingDocuments(0, 'temporaryC2Document'),
+    supportingDocuments: supportingDocumentsFragment.supportingDocuments(0, 'temporaryC2Document_supportingEvidenceBundle'),
   },
 
   applicationTypePrefix: '#c2ApplicationType_type-',
