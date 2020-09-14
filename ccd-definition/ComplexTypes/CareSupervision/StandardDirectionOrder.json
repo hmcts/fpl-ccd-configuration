@@ -26,11 +26,28 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "StandardDirectionOrder",
+    "ListElementCode": "dateOfUpload",
+    "FieldType": "Date",
+    "ElementLabel": "Date uploaded",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "ListElementCode": "uploader",
+    "FieldType": "Text",
+    "ElementLabel": "Uploaded by",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
     "ListElementCode": "directions",
     "FieldType": "Collection",
     "ElementLabel": "Directions",
     "FieldTypeParameter": "Direction",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "orderStatus=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -39,7 +56,8 @@
     "FieldType": "FixedRadioList",
     "ElementLabel": "Is this the final version?",
     "FieldTypeParameter": "OrderStatus",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "directions=\"DO NOT SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",

@@ -19,6 +19,8 @@ module.exports = {
   },
 
   changeStateFilter(desiredState) {
+    I.selectOption(this.fields.jurisdiction, config.definition.jurisdictionFullDesc);
+    I.selectOption(this.fields.caseType, config.definition.caseTypeFullDesc);
     I.selectOption(this.fields.caseState, desiredState);
     I.click(this.fields.search);
   },

@@ -62,6 +62,12 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "OCC",
+    "ListElement": "Oxford County Council"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "LCC",
     "ListElement": "Liverpool County Council"
   },
@@ -100,5 +106,11 @@
     "ID": "AuthorityFixedList",
     "ListElementCode": "FPLA",
     "ListElement": "FPLA team"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "NCC",
+    "ListElement": "Newcastle City Council"
   }
 ]
