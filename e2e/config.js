@@ -115,6 +115,7 @@ module.exports = {
     addExpertReportLog: 'Log expert report',
     closeTheCase: 'Close the case',
     returnApplication: 'Return application',
+    manageDocuments: 'Manage documents',
   },
   superUserActions: {
     removeOrder: 'Remove an order',
