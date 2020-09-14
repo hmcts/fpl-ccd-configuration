@@ -92,6 +92,7 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
         assertThat(caseData.getTemporaryC2Document()).isNull();
         assertThat(caseData.getC2DocumentBundle()).hasSize(2);
         assertThat(appendedC2Document.getAuthor()).isEqualTo(USER_NAME);
+        assertThat(appendedC2Document.getSupportingEvidenceBundle()).isNull();
     }
 
     private void assertC2BundleDocument(C2DocumentBundle documentBundle, String description) {

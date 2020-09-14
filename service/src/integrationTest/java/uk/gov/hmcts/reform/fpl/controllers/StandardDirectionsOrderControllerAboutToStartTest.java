@@ -30,6 +30,33 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractControll
     }
 
     @Test
+    void shouldPopulateDateOfIssueWithTodayWhenNoDatePreviouslyEntered() {
+        CaseDetails caseDetails = buildCaseDetailsWithDateOfIssue(null);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
+
+        assertThat(callbackResponse.getData().get("dateOfIssue")).isEqualTo(dateNow().toString());
+    }
+
+    @Test
+    void shouldPopulateDateOfIssueWithPreviouslyEnteredDate() {
+        CaseDetails caseDetails = buildCaseDetailsWithDateOfIssue("20 March 2020");
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
+
+        assertThat(callbackResponse.getData().get("dateOfIssue")).isEqualTo(LocalDate.of(2020, 3, 20).toString());
+    }
+
+    @Test
+    void shouldPopulateDateOfIssueWithPreviouslyEnteredDateWhenRouterIsNull() {
+        CaseDetails caseDetails = buildCaseDetailsWithDateOfIssueAndRoute("20 March 2020", null);
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
+
+        assertThat(response.getData().get("dateOfIssue")).isEqualTo(LocalDate.of(2020, 3, 20).toString());
+    }
+
+    @Test
     void shouldPopulateDateOfIssueWithPreviouslyEnteredDateWhenRouterIsService() {
         CaseDetails caseDetails = buildCaseDetailsWithDateOfIssueAndRoute("20 March 2020", SERVICE);
 
@@ -78,6 +105,10 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractControll
         assertThat(response.getData())
             .doesNotContainKey("useServiceRoute")
             .containsEntry("useUploadRoute", "YES");
+    }
+
+    private CaseDetails buildCaseDetailsWithDateOfIssue(String date) {
+        return buildCaseDetails(date, null, null);
     }
 
     private CaseDetails buildCaseDetailsWithDateOfIssueAndRoute(String date, SDORoute route) {

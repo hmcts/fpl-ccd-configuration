@@ -39,6 +39,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static io.jsonwebtoken.lang.Collections.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -104,6 +105,19 @@ public class UploadC2DocumentsController extends CallbackController {
         return respond(caseDetails, errors);
     }
 
+    //TODO: Remove below endpoint when above validate midpoint is live in prod
+    @PostMapping("/validate-pba-number/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleValidatePbaNumberMidEvent(
+        @RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        var updatedTemporaryC2Document = pbaNumberService.update(caseData.getTemporaryC2Document());
+        caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, updatedTemporaryC2Document);
+
+        return respond(caseDetails, pbaNumberService.validate(updatedTemporaryC2Document));
+    }
+
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
         @RequestBody CallbackRequest callbackRequest) {
@@ -167,7 +181,9 @@ public class UploadC2DocumentsController extends CallbackController {
         var c2DocumentBundleBuilder = caseData.getTemporaryC2Document().toBuilder()
             .author(idamClient.getUserInfo(requestData.authorisation()).getName())
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
-            .supportingEvidenceBundle(wrapElements(updatedSupportingEvidenceBundle));
+            .supportingEvidenceBundle(
+                //TODO: Below empty check can be removed when supporting documents is toggled on in prod
+                !isEmpty(updatedSupportingEvidenceBundle) ? wrapElements(updatedSupportingEvidenceBundle) : null);
 
         c2DocumentBundleBuilder.type(caseData.getC2ApplicationType().get("type"));
 
