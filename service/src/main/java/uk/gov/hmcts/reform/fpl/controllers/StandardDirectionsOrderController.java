@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.DocumentService;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.OrderValidationService;
 import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForDataStoreService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
@@ -40,7 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
@@ -69,7 +67,6 @@ public class StandardDirectionsOrderController extends CallbackController {
     private final CoreCaseDataService coreCaseDataService;
     private final PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService;
     private final OrderValidationService orderValidationService;
-    private final HearingBookingService hearingBookingService;
     private final ValidateGroupService validateGroupService;
     private final StandardDirectionsService standardDirectionsService;
     private final StandardDirectionsOrderService sdoService;
@@ -136,7 +133,7 @@ public class StandardDirectionsOrderController extends CallbackController {
             return respond(caseDetails, errors);
         }
 
-        String hearingDate = getFirstHearingStartDate(caseData.getHearingDetails());
+        String hearingDate = getFirstHearingStartDate(caseData);
 
         Stream.of(DirectionAssignee.values()).forEach(assignee ->
             caseDetails.getData().put(assignee.toHearingDateField(), hearingDate));
@@ -168,7 +165,7 @@ public class StandardDirectionsOrderController extends CallbackController {
             .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
             .build();
 
-        persistHiddenValues(getFirstHearing(caseData.getHearingDetails()), order.getDirections());
+        persistHiddenValues(caseData.getFirstHearing().orElse(null), order.getDirections());
 
         CaseData updated = caseData.toBuilder().standardDirectionOrder(order).build();
 
@@ -219,7 +216,7 @@ public class StandardDirectionsOrderController extends CallbackController {
             //combine all directions from collections
             List<Element<Direction>> combinedDirections = commonDirectionService.combineAllDirections(caseData);
 
-            persistHiddenValues(getFirstHearing(caseData.getHearingDetails()), combinedDirections);
+            persistHiddenValues(caseData.getFirstHearing().orElse(null), combinedDirections);
 
             //place directions with hidden values back into case details
             Map<DirectionAssignee, List<Element<Direction>>> directions = sortDirectionsByAssignee(combinedDirections);
@@ -300,17 +297,10 @@ public class StandardDirectionsOrderController extends CallbackController {
         return judgeAndLegalAdvisor;
     }
 
-    private String getFirstHearingStartDate(List<Element<HearingBooking>> hearings) {
-        return ofNullable(getFirstHearing(hearings))
+    private String getFirstHearingStartDate(CaseData caseData) {
+        return caseData.getFirstHearing()
             .map(hearing -> formatLocalDateTimeBaseUsingFormat(hearing.getStartDate(), DATE_TIME))
             .orElse("Please enter a hearing date");
-    }
-
-    // TODO: 02/09/2020 Remove this method as part of FPLA-1486
-    //  there is an identical method in case data
-    //  this would remove the hearing booking service from the controller
-    private HearingBooking getFirstHearing(List<Element<HearingBooking>> hearingBookings) {
-        return hearingBookingService.getFirstHearing(hearingBookings).orElse(null);
     }
 
     private Map<DirectionAssignee, List<Element<Direction>>> sortDirectionsByAssignee(List<Element<Direction>> list) {
