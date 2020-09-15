@@ -1,0 +1,19 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingFurtherEvidenceBundle",
+    "ListElementCode": "hearingName",
+    "FieldType": "Text",
+    "ElementLabel": "Hearing",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingFurtherEvidenceBundle",
+    "ListElementCode": "supportingEvidenceBundle",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "ElementLabel": "Documents",
+    "SecurityClassification": "Public"
+  }
+]

@@ -56,6 +56,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 import javax.validation.Valid;
 import javax.validation.constraints.Future;
@@ -78,6 +79,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Data
@@ -239,12 +241,35 @@ public class CaseData {
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
 
     @JsonIgnore
+    public boolean hasC2DocumentBundle() {
+        return c2DocumentBundle != null && !c2DocumentBundle.isEmpty();
+    }
+
+    @JsonIgnore
     public C2DocumentBundle getLastC2DocumentBundle() {
         return Stream.of(ElementUtils.unwrapElements(c2DocumentBundle))
             .filter(list -> !list.isEmpty())
             .map(c2DocumentBundles -> c2DocumentBundles.get(c2DocumentBundles.size() - 1))
             .findFirst()
             .orElse(null);
+    }
+
+    @JsonIgnore
+    public C2DocumentBundle getC2DocumentBundleByUUID(UUID elementId) {
+        return c2DocumentBundle.stream()
+            .filter(c2DocumentBundleElement -> c2DocumentBundleElement.getId().equals(elementId))
+            .map(Element::getValue)
+            .findFirst()
+            .orElse(null);
+    }
+
+    public DynamicList buildC2DocumentDynamicList(UUID selected) {
+        AtomicInteger i = new AtomicInteger(1);
+        return asDynamicList(c2DocumentBundle, selected, documentBundle -> documentBundle.toLabel(i.getAndIncrement()));
+    }
+
+    public DynamicList buildC2DocumentDynamicList() {
+        return buildC2DocumentDynamicList(null);
     }
 
     private final Map<String, C2ApplicationType> c2ApplicationType;
@@ -585,6 +610,32 @@ public class CaseData {
     private final String deprivationOfLiberty;
     private final String closeCaseFromOrder;
 
+    private final ManageDocument manageDocument;
+    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsTEMP;
+    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments;
+    private final List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
+    private final List<Element<SupportingEvidenceBundle>> correspondenceDocuments;
+    private final List<Element<SupportingEvidenceBundle>> c2SupportingDocuments;
+    private final Object manageDocumentsHearingList;
+    private final Object manageDocumentsSupportingC2List;
+
+    public List<Element<SupportingEvidenceBundle>> getFurtherEvidenceDocumentsTEMP() {
+        return defaultIfNull(furtherEvidenceDocumentsTEMP, new ArrayList<>());
+    }
+
+    public List<Element<SupportingEvidenceBundle>> getCorrespondenceDocuments() {
+        return defaultIfNull(correspondenceDocuments, new ArrayList<>());
+    }
+
+    public List<Element<HearingFurtherEvidenceBundle>> getHearingFurtherEvidenceDocuments() {
+        return defaultIfNull(hearingFurtherEvidenceDocuments, new ArrayList<>());
+    }
+
+    public boolean documentBundleContainsHearingId(UUID hearingId) {
+        return getHearingFurtherEvidenceDocuments().stream()
+            .anyMatch(element -> element.getId().equals(hearingId));
+    }
+
     @JsonIgnore
     public boolean isClosedFromOrder() {
         return YES.getValue().equals(closeCaseFromOrder);
@@ -658,4 +709,12 @@ public class CaseData {
 
     private String sendToCtsc;
     private String displayAmountToPay;
+
+    public DynamicList buildDynamicHearingList() {
+        return buildDynamicHearingList(null);
+    }
+
+    public DynamicList buildDynamicHearingList(UUID selected) {
+        return asDynamicList(getHearingDetails(), selected, hearingBooking -> hearingBooking.toLabel(DATE));
+    }
 }

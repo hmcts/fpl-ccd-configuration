@@ -17,7 +17,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
     UploadC2DocumentsService.class,
-    ValidateSupportingEvidenceBundleService.class,
+    SupportingEvidenceValidatorService.class,
     ValidateGroupService.class,
     LocalValidatorFactoryBean.class
 })
@@ -29,7 +29,7 @@ class UploadC2DocumentsServiceTest {
 
     @Test
     void shouldReturnErrorsWhenTheDateOfIssueIsInFuture() {
-        assertThat(service.validate(createC2DocumentBundle()).toArray()).contains(ERROR_MESSAGE);
+        assertThat(service.validate(createC2DocumentBundle())).contains(ERROR_MESSAGE);
     }
 
     @Test

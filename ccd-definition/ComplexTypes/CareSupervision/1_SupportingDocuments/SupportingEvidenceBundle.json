@@ -5,7 +5,6 @@
     "ListElementCode": "name",
     "FieldType": "Text",
     "ElementLabel": "Document name",
-    "HintText": "Give the document a meaningful name, for example form C100 or C1A.",
     "SecurityClassification": "Public"
   },
   {
