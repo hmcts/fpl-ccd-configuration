@@ -46,7 +46,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @WebMvcTest(ManageDocumentsController.class)
 @OverrideAutoConfiguration(enabled = true)
 public class ManageDocumentsControllerMidEventTest extends AbstractControllerTest {
-    private static final String ERROR_MESSAGE = "Date of time received cannot be in the future";
+    private static final String ERROR_MESSAGE = "Date cannot be in the future";
 
     ManageDocumentsControllerMidEventTest() {
         super("manage-documents");
