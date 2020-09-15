@@ -130,6 +130,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "editFamilyManCaseNumber",
     "UserRole": "caseworker-publiclaw-superuser",
-    "CRUD": "R"
+    "CRUD": "CRU"
   }
 ]
