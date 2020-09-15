@@ -7,7 +7,7 @@
     "Description": "Add case number",
     "DisplayOrder": 5,
     "PreConditionState(s)": "Submitted",
-    "PostConditionState": "*",
+    "PostConditionState": "Submitted",
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "N",
