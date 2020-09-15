@@ -1047,7 +1047,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c2SupportingDocuments",
     "UserRole": "caseworker-publiclaw-judiciary",
-    "CRUD": "CRUD
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
