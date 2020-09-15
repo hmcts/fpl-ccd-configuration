@@ -1,5 +1,5 @@
 {
-  "state": "SUBMITTED",
+  "state": "Gatekeeping",
   "caseData": {
     "caseName": "e2e test case",
     "familyManCaseNumber": "mockCaseID",
