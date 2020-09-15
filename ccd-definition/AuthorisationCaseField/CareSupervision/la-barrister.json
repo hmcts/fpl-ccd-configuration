@@ -418,5 +418,33 @@
     "CaseFieldID": "displayAmountToPay",
     "UserRole": "[LABARRISTER]",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "furtherEvidenceDocuments",
+    "UserRole": "[LABARRISTER]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingFurtherEvidenceDocuments",
+    "UserRole": "[LABARRISTER]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "correspondenceDocuments",
+    "UserRole": "[LABARRISTER]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "c2SupportingDocuments",
+    "UserRole": "[LABARRISTER]",
+    "CRUD": "R"
   }
 ]
