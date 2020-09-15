@@ -23,7 +23,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
     LocalValidatorFactoryBean.class, FixedTimeConfiguration.class})
 class SupportingEvidenceValidatorServiceTest {
 
-    private static final String ERROR_MESSAGE = "Date of time received cannot be in the future";
+    private static final String ERROR_MESSAGE = "Date cannot be in the future";
 
     @Autowired
     private Time time;
