@@ -11,11 +11,7 @@ import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.document.domain.UploadResponse;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
-import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import static com.google.common.collect.Lists.newArrayList;
 
@@ -26,8 +22,6 @@ public class UploadDocumentService {
     private final AuthTokenGenerator authTokenGenerator;
     private final DocumentUploadClientApi documentUploadClient;
     private final RequestData requestData;
-    private final IdamClient idamClient;
-    private final SystemUpdateUserConfiguration userConfig;
 
     public Document uploadPDF(byte[] pdf, String fileName) {
         MultipartFile file = new InMemoryMultipartFile("files", fileName, MediaType.APPLICATION_PDF_VALUE, pdf);
@@ -43,14 +37,5 @@ public class UploadDocumentService {
         log.debug("Document upload resulted with links: {}, {}", document.links.self.href, document.links.binary.href);
 
         return document;
-    }
-
-    public String getUploadedDocumentUserInfo() {
-        String userToken = idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
-        UserDetails userDetails = idamClient.getUserByUserId(userToken, requestData.userId());
-
-        boolean isHMCTSUser = userDetails.getRoles().stream().anyMatch(UserRole::isHMCTSUser);
-
-        return isHMCTSUser ? "HMCTS": userDetails.getEmail();
     }
 }

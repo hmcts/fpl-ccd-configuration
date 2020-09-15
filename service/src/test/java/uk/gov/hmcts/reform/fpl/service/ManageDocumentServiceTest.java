@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +22,11 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -31,6 +34,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -528,6 +533,66 @@ class ManageDocumentServiceTest {
         assertThat(firstC2DocumentUploadTime).isEqualTo(uploadDateTime);
         assertThat(thirdC2DocumentUploadTime).isEqualTo(uploadDateTime);
     }
+
+//    @Nested
+//    class TestUploadedDocumentUserInfo {
+//
+//        @BeforeEach
+//        void setup() {
+//            when(idamClient.getAccessToken(eq(USER_NAME), eq(PASSWORD))).thenReturn(AUTH_TOKEN);
+//        }
+//
+//        @Test
+//        void shouldReturnUploadedDocumentUserInfoForUserWithHMCTSRole() {
+//            when(idamClient.getUserByUserId(eq(AUTH_TOKEN), eq(USER_ID))).thenReturn(createUserDetailsWithHMCTSRole());
+//
+//            assertThat(uploadDocumentService.getUploadedDocumentUserInfo()).isEqualTo("HMCTS");
+//        }
+//
+//        @Test
+//        void shouldReturnUploadedDocumentUserInfoForUserWithNonHMCTSRole() {
+//            when(idamClient.getUserByUserId(eq(AUTH_TOKEN), eq(USER_ID))).thenReturn(createUserDetailsWithNonHMCTSRole());
+//
+//            assertThat(uploadDocumentService.getUploadedDocumentUserInfo()).isEqualTo("steve.hudson@gov.uk");
+//        }
+//
+//        @Test
+//        void shouldReturnUploadedDocumentUserInfoForUserWithHMCTSAndNonHMCTSRole() {
+//            when(idamClient.getUserByUserId(eq(AUTH_TOKEN), eq(USER_ID))).thenReturn(createUserDetailsWithHMCTSAndNonHMCTSRole());
+//
+//            assertThat(uploadDocumentService.getUploadedDocumentUserInfo()).isEqualTo("HMCTS");
+//        }
+//
+//        private UserDetails createUserDetailsWithHMCTSRole() {
+//            return UserDetails.builder()
+//                .id(USER_ID)
+//                .surname("Hudson")
+//                .forename("Steve")
+//                .email("steve.hudson@gov.uk")
+//                .roles(Arrays.asList("caseworker-publiclaw-courtadmin", "caseworker-publiclaw-judiciary"))
+//                .build();
+//        }
+//
+//        private UserDetails createUserDetailsWithNonHMCTSRole() {
+//            return UserDetails.builder()
+//                .id(USER_ID)
+//                .surname("Hudson")
+//                .forename("Steve")
+//                .email("steve.hudson@gov.uk")
+//                .roles(Arrays.asList("caseworker-publiclaw-solicitor", "caseworker-publiclaw-cafcass"))
+//                .build();
+//        }
+//
+//        private UserDetails createUserDetailsWithHMCTSAndNonHMCTSRole() {
+//            return UserDetails.builder()
+//                .id(USER_ID)
+//                .surname("Hudson")
+//                .forename("Steve")
+//                .email("steve.hudson@gov.uk")
+//                .roles(Arrays.asList("caseworker-publiclaw-solicitor", "caseworker-publiclaw-cafcass", "caseworker-publiclaw-superuser"))
+//                .build();
+//        }
+//    }
 
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
         return wrapElements(SupportingEvidenceBundle.builder().name("test").build());
