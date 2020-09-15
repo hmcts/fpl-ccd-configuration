@@ -6,7 +6,7 @@
     "Name": "Add case number",
     "Description": "Add case number",
     "DisplayOrder": 5,
-    "PreConditionState(s)": "Gatekeeping;PREPARE_FOR_HEARING;ISSUE_RESOLUTION;FINAL_HEARING",
+    "PreConditionState(s)": "Gatekeeping;PREPARE_FOR_HEARING;ISSUE_RESOLUTION;FINAL_HEARING;CLOSED",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "ShowSummary": "N",
