@@ -22,6 +22,7 @@ module.exports = {
     overview: 'Overview',
     viewApplication: 'View application',
     startApplication: 'Start application',
+    correspondence: 'Correspondence',
   },
   actionsDropdown: '.ccd-dropdown',
   goButton: 'Go',

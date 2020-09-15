@@ -169,7 +169,7 @@ module.exports = function () {
       }
     },
 
-    async fillDateAndTime(date, sectionId = 'form') {
+    fillDateAndTime(date, sectionId = 'form') {
       if (date instanceof Date) {
         date = {day: date.getDate(), month: date.getMonth() + 1, year: date.getFullYear(),
           hour: date.getHours(), minute: date.getMinutes(), second: date.getSeconds(),
