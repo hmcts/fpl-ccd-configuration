@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "addFamilyManCaseNumber-superuser",
+    "ID": "editFamilyManCaseNumber",
     "Name": "Add case number",
     "Description": "Add case number",
     "DisplayOrder": 5,
