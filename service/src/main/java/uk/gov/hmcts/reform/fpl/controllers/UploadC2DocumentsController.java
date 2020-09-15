@@ -26,14 +26,12 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.UploadC2DocumentsService;
-import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +39,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static io.jsonwebtoken.lang.Collections.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -68,7 +65,6 @@ public class UploadC2DocumentsController extends CallbackController {
     private final Time time;
     private final RequestData requestData;
     private final UploadC2DocumentsService uploadC2DocumentsService;
-    private final UploadDocumentService uploadDocumentService;
 
     @PostMapping("/get-fee/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
@@ -106,19 +102,6 @@ public class UploadC2DocumentsController extends CallbackController {
         errors.addAll(uploadC2DocumentsService.validate(updatedTemporaryC2Document));
 
         return respond(caseDetails, errors);
-    }
-
-    //TODO: Remove below endpoint when above validate midpoint is live in prod
-    @PostMapping("/validate-pba-number/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleValidatePbaNumberMidEvent(
-        @RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
-
-        var updatedTemporaryC2Document = pbaNumberService.update(caseData.getTemporaryC2Document());
-        caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, updatedTemporaryC2Document);
-
-        return respond(caseDetails, pbaNumberService.validate(updatedTemporaryC2Document));
     }
 
     @PostMapping("/about-to-submit")
@@ -175,22 +158,16 @@ public class UploadC2DocumentsController extends CallbackController {
         List<Element<C2DocumentBundle>> c2DocumentBundle = defaultIfNull(caseData.getC2DocumentBundle(),
             Lists.newArrayList());
 
-        String path = URI.create(caseData.getTemporaryC2Document().getDocument().getUrl()).getPath();
-
         List<SupportingEvidenceBundle> updatedSupportingEvidenceBundle =
             unwrapElements(caseData.getTemporaryC2Document().getSupportingEvidenceBundle())
                 .stream()
-                .map(supportingEvidence -> supportingEvidence.toBuilder()
-                    .uploadedBy(uploadDocumentService.getUploadedDocumentUserInfo(caseData.getTemporaryC2Document().getDocument().getUrl()))
-                    .dateTimeUploaded(time.now()).build())
+                .map(supportingEvidence -> supportingEvidence.toBuilder().dateTimeUploaded(time.now()).build())
                 .collect(Collectors.toList());
 
         var c2DocumentBundleBuilder = caseData.getTemporaryC2Document().toBuilder()
-            .author(uploadDocumentService.getUploadedDocumentUserInfo(caseData.getTemporaryC2Document().getDocument().getBinaryUrl()))
+            .author(idamClient.getUserInfo(requestData.authorisation()).getName())
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
-            .supportingEvidenceBundle(
-                //TODO: Below empty check can be removed when supporting documents is toggled on in prod
-                !isEmpty(updatedSupportingEvidenceBundle) ? wrapElements(updatedSupportingEvidenceBundle) : null);
+            .supportingEvidenceBundle(wrapElements(updatedSupportingEvidenceBundle));
 
         c2DocumentBundleBuilder.type(caseData.getC2ApplicationType().get("type"));
 
