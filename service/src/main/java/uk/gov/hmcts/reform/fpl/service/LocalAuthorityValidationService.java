@@ -13,13 +13,16 @@ import java.util.Set;
 public class LocalAuthorityValidationService {
     private final OrganisationService organisationService;
 
-    public List<String> validateIfLaIsOnboarded(final String localAuthorityName, String currentUser) {
+    public List<String> validateIfLaIsOnboarded(final String localAuthorityCode, String currentUser) {
         List<String> errors = new ArrayList<>();
 
-        Set<String> users = organisationService.findUserIdsInSameOrganisation(localAuthorityName);
+        Set<String> users = organisationService.findUserIdsInSameOrganisation(localAuthorityCode);
+
+        System.out.println("current user is " + currentUser + "user is" + users);
 
         if(!users.contains(currentUser)) {
-            errors.add("You can't create a case as you are not onboarded");
+            errors.add("Register for an account");
+            errors.add("You cannot start an online application until you’re fully registered.");
         }
 
         return errors;
