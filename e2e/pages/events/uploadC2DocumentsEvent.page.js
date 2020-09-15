@@ -1,6 +1,7 @@
 const { I } = inject();
 const money = require('../../helpers/money_helper');
-
+const c2SupportingDocuments = require('../../fixtures/testData/c2SupportingDocuments.js');
+const supportingDocumentsFragment = require('../../fragments/supportingDocuments.js');
 module.exports = {
   fields: {
     uploadC2: '#temporaryC2Document_document',
@@ -12,7 +13,9 @@ module.exports = {
     pbaNumber: '#temporaryC2Document_pbaNumber',
     clientCode: '#temporaryC2Document_clientCode',
     customerReference: '#temporaryC2Document_fileReference',
+    supportingDocuments: supportingDocumentsFragment.supportingDocuments(0, 'temporaryC2Document_supportingEvidenceBundle'),
   },
+
   applicationTypePrefix: '#c2ApplicationType_type-',
 
   selectApplicationType(type) {
@@ -22,6 +25,15 @@ module.exports = {
   uploadC2Document(file, description) {
     I.attachFile(this.fields.uploadC2, file);
     I.fillField(this.fields.description, description);
+  },
+
+  async uploadC2SupportingDocument() {
+
+    await I.addAnotherElementToCollection();
+    I.fillField(this.fields.supportingDocuments.name, c2SupportingDocuments.name);
+    I.fillField(this.fields.supportingDocuments.notes, c2SupportingDocuments.notes);
+    I.fillDateAndTime(c2SupportingDocuments.date, this.fields.supportingDocuments.dateAndTime);
+    I.attachFile(this.fields.supportingDocuments.document, c2SupportingDocuments.document);
   },
 
   usePbaPayment(usePbaPayment=true) {

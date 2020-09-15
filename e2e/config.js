@@ -106,7 +106,7 @@ module.exports = {
     createNoticeOfProceedings: 'Create notice of proceedings',
     addStatementOfService: 'Add statement of service (c9)',
     uploadC2Documents: 'Upload a C2',
-    draftStandardDirections: 'Draft standard directions',
+    draftStandardDirections: 'Add the gatekeeping order',
     createOrder: 'Create an order',
     placement: 'Placement',
     handleSupplementaryEvidence: 'Handle supplementary evidence',
@@ -115,6 +115,7 @@ module.exports = {
     addExpertReportLog: 'Log expert report',
     closeTheCase: 'Close the case',
     returnApplication: 'Return application',
+    manageDocuments: 'Manage documents',
   },
   superUserActions: {
     removeOrder: 'Remove an order',
