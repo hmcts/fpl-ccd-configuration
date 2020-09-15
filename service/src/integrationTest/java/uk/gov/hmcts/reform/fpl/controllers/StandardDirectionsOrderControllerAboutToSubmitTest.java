@@ -107,7 +107,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
 
     @Test
     void shouldPopulateHiddenCCDFieldsInStandardDirectionOrderToPersistData() {
-        CaseDetails caseDetails = validSealedCaseDetailsForServiceRoute(false);
+        CaseDetails caseDetails = validSealedCaseDetailsForServiceRoute();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
@@ -165,7 +165,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
 
     @Test
     void shouldUpdateStateWhenOrderIsSealedThroughServiceRouteAndRemoveRouter() {
-        CaseDetails caseDetails = validSealedCaseDetailsForServiceRoute(true);
+        CaseDetails caseDetails = validSealedCaseDetailsForServiceRoute();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
 
@@ -237,7 +237,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
         assertThat(unwrapElements(caseData.getCourtDirections())).containsOnly(fullyPopulatedDirection(COURT));
     }
 
-    private CaseDetails validSealedCaseDetailsForServiceRoute(boolean withRouter) {
+    private CaseDetails validSealedCaseDetailsForServiceRoute() {
         ImmutableMap.Builder<String, Object> data = directionsWithShowHideValuesRemoved()
             .put("dateOfIssue", dateNow())
             .put("standardDirectionOrder", StandardDirectionOrder.builder().orderStatus(SEALED).build())
@@ -249,11 +249,8 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
                 .build()))
             .put("caseLocalAuthority", "example")
             .put("dateSubmitted", dateNow())
-            .put("applicants", getApplicant());
-
-        if (withRouter) {
-            data.put("sdoRouter", SDORoute.SERVICE);
-        }
+            .put("applicants", getApplicant())
+            .put("sdoRouter", SDORoute.SERVICE);
 
         return CaseDetails.builder()
             .data(data.build())
