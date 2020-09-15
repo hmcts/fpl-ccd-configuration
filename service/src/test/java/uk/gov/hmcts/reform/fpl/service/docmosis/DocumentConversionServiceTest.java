@@ -102,6 +102,33 @@ class DocumentConversionServiceTest {
         assertThat(converted).isEqualTo(convertedDocumentReference);
     }
 
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldConvertNonPdfDocumentBinariesToPdfDocumentBinaries() {
+        final String fileName = "cmo.docx";
+        final String newFileName = "cmo.pdf";
+        byte[] inputDocumentBinaries = TestDataHelper.testDocumentBinaries();
+        byte[] convertedDocumentBinaries = readBytes("documents/document.pdf");
+
+        when(restTemplate.exchange(
+            eq(String.format("%s/rs/convert", configuration.getUrl())),
+            eq(HttpMethod.POST),
+            any(),
+            eq(byte[].class)))
+            .thenReturn(new ResponseEntity(convertedDocumentBinaries, HttpStatus.OK));
+
+        byte[] actualConvertedDocumentBytes
+            = documentConversionService.convertDocument(inputDocumentBinaries, fileName, newFileName);
+
+        verify(restTemplate).exchange(
+            String.format("%s/rs/convert", configuration.getUrl()),
+            HttpMethod.POST,
+            getExpectedPayload(inputDocumentBinaries, fileName, newFileName),
+            byte[].class);
+
+        assertThat(actualConvertedDocumentBytes).isEqualTo(convertedDocumentBinaries);
+    }
+
     private HttpEntity getExpectedPayload(byte[] fileToBeConverted, String oldFilename, String newFilename) {
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MULTIPART_FORM_DATA);

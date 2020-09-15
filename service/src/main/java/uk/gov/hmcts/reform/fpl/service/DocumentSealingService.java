@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -9,12 +10,14 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import static org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode.APPEND;
 import static org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject.createFromByteArray;
+import static uk.gov.hmcts.reform.fpl.enums.DocumentExtension.PDF;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
@@ -32,6 +35,23 @@ public class DocumentSealingService {
 
     private final DocumentDownloadService documentDownloadService;
     private final UploadDocumentService uploadDocumentService;
+    private final DocumentConversionService documentConversionService;
+
+    public DocumentReference sealAndUploadDocument(DocumentReference document) throws Exception {
+        byte[] documentContents = documentDownloadService.downloadDocument(document.getBinaryUrl());
+        String newFileName = document.getFilename();
+
+        if (!document.hasExtensionTypeOf(PDF)) {
+            newFileName = FilenameUtils.removeExtension(document.getFilename()).concat("." + PDF.getLabel());
+
+            documentContents = documentConversionService.convertDocument(documentContents,
+                document.getFilename(), newFileName);
+        }
+
+        documentContents = sealDocument(documentContents);
+
+        return buildFromDocument(uploadDocumentService.uploadPDF(documentContents, newFileName));
+    }
 
     public DocumentReference sealDocument(DocumentReference document) throws Exception {
         byte[] documentContent = documentDownloadService.downloadDocument(document.getBinaryUrl());

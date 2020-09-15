@@ -46,7 +46,7 @@ public class DocumentConversionService {
         }
     }
 
-    private byte[] convertDocument(byte[] binaries, String oldName, String newName) {
+    public byte[] convertDocument(byte[] binaries, String oldName, String newName) {
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MULTIPART_FORM_DATA);
 

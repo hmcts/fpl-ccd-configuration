@@ -48,6 +48,10 @@ public class TestDataHelper {
             .build();
     }
 
+    public static DocumentReference testDocumentReference(String fileName) {
+        return testDocumentReference().toBuilder().filename(fileName).build();
+    }
+
     public static Document testDocument() {
         final Document.Link binaryLink = new Document.Link();
         binaryLink.href = randomAlphanumeric(10);

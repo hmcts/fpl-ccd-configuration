@@ -9,10 +9,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
@@ -32,6 +34,9 @@ class DocumentSealingServiceTest {
     @Mock
     private UploadDocumentService uploadDocumentService;
 
+    @Mock
+    private DocumentConversionService documentConversionService;
+
     @InjectMocks
     private DocumentSealingService documentSealingService;
 
@@ -46,14 +51,63 @@ class DocumentSealingServiceTest {
         when(documentDownloadService.downloadDocument(inputDocumentReference.getBinaryUrl()))
                 .thenReturn(inputDocumentBinaries);
 
-        when(uploadDocumentService.uploadPDF(any(), any()))
-                .thenReturn(sealedDocument);
-
+        when(uploadDocumentService.uploadPDF(any(), any())).thenReturn(sealedDocument);
 
         final DocumentReference actualSealedDocumentReference = documentSealingService
                 .sealDocument(inputDocumentReference);
         verify(uploadDocumentService)
-                .uploadPDF(actualDocumentBinaries.capture(), eq(inputDocumentReference.getFilename()));
+            .uploadPDF(actualDocumentBinaries.capture(), eq(inputDocumentReference.getFilename()));
+        assertThat(actualSealedDocumentReference).isEqualTo(sealedDocumentReference);
+        assertThat(actualDocumentBinaries.getValue()).isEqualTo(expectedSealedDocumentBinaries);
+    }
+
+    @Test
+    void shouldSealAndUploadDocumentWithFileExtensionConversion() throws Exception {
+        final String fileName = "test.doc";
+        final String newFileName = "test.pdf";
+        final byte[] inputDocumentBinaries = readBytes("documents/document.pdf");
+        final byte[] expectedSealedDocumentBinaries = readBytes("documents/document-sealed.pdf");
+        final Document sealedDocument = testDocument();
+        final DocumentReference inputDocumentReference = testDocumentReference(fileName);
+        final DocumentReference sealedDocumentReference = buildFromDocument(sealedDocument);
+
+        when(documentDownloadService.downloadDocument(inputDocumentReference.getBinaryUrl()))
+            .thenReturn(inputDocumentBinaries);
+
+        when(documentConversionService.convertDocument(inputDocumentBinaries,
+            fileName, newFileName)).thenReturn(inputDocumentBinaries);
+
+        when(uploadDocumentService.uploadPDF(any(), any())).thenReturn(sealedDocument);
+
+        final DocumentReference actualSealedDocumentReference = documentSealingService
+            .sealAndUploadDocument(inputDocumentReference);
+
+        verify(uploadDocumentService).uploadPDF(actualDocumentBinaries.capture(), eq(newFileName));
+        assertThat(actualSealedDocumentReference).isEqualTo(sealedDocumentReference);
+        assertThat(actualDocumentBinaries.getValue()).isEqualTo(expectedSealedDocumentBinaries);
+    }
+
+    @Test
+    void shouldSealAndUploadDocumentWithoutFileExtensionConversion() throws Exception {
+        final String fileName = "test.pdf";
+        final byte[] inputDocumentBinaries = readBytes("documents/document.pdf");
+        final byte[] expectedSealedDocumentBinaries = readBytes("documents/document-sealed.pdf");
+        final Document sealedDocument = testDocument();
+        final DocumentReference inputDocumentReference = testDocumentReference(fileName);
+        final DocumentReference sealedDocumentReference = buildFromDocument(sealedDocument);
+
+        when(documentDownloadService.downloadDocument(inputDocumentReference.getBinaryUrl()))
+            .thenReturn(inputDocumentBinaries);
+
+        when(uploadDocumentService.uploadPDF(any(), any())).thenReturn(sealedDocument);
+
+        final DocumentReference actualSealedDocumentReference = documentSealingService
+            .sealAndUploadDocument(inputDocumentReference);
+
+        verify(documentConversionService, never()).convertDocument(any(), any(), any());
+
+        verify(uploadDocumentService)
+            .uploadPDF(actualDocumentBinaries.capture(), eq(inputDocumentReference.getFilename()));
         assertThat(actualSealedDocumentReference).isEqualTo(sealedDocumentReference);
         assertThat(actualDocumentBinaries.getValue()).isEqualTo(expectedSealedDocumentBinaries);
     }
