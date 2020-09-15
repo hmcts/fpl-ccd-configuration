@@ -80,7 +80,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @HasDocumentsIncludedInSwet(groups = UploadDocumentsGroup.class)
-@SuppressWarnings( {"java:S1874", "java:S1133"}) // Remove once deprecations dealt with
+@SuppressWarnings({"java:S1874", "java:S1133"}) // Remove once deprecations dealt with
 public class CaseData {
     private final Long id;
     private final State state;
