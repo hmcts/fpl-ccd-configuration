@@ -224,7 +224,7 @@ public class ManageDocumentService {
         return updatedC2Bundles;
     }
 
-    public String getUploadedDocumentUserInfo(String authorisation) {
+    public String getUploadedDocumentUserDetails(String authorisation) {
         UserDetails userDetails = idamClient.getUserDetails(authorisation);
 
         boolean isHMCTSUser = userDetails.getRoles().stream().anyMatch(UserRole::isHMCTSUser);

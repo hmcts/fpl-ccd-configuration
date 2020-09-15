@@ -157,7 +157,7 @@ public class UploadC2DocumentsController extends CallbackController {
     private List<Element<C2DocumentBundle>> buildC2DocumentBundle(CaseData caseData) {
         List<Element<C2DocumentBundle>> c2DocumentBundle = defaultIfNull(caseData.getC2DocumentBundle(),
             Lists.newArrayList());
-        String uploadedBy = manageDocumentService.getUploadedDocumentUserInfo(requestData.authorisation());
+        String uploadedBy = manageDocumentService.getUploadedDocumentUserDetails(requestData.authorisation());
 
         List<SupportingEvidenceBundle> updatedSupportingEvidenceBundle =
             unwrapElements(caseData.getTemporaryC2Document().getSupportingEvidenceBundle())

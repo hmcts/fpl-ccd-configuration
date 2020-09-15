@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
@@ -54,6 +56,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     JacksonAutoConfiguration.class, FixedTimeConfiguration.class, ManageDocumentService.class
 })
 class ManageDocumentServiceTest {
+    private static final String AUTH_TOKEN = "token";
+    private static final String USER_ID = "1";
 
     @Autowired
     private Time time;
@@ -62,6 +66,9 @@ class ManageDocumentServiceTest {
     private ManageDocumentService manageDocumentService;
 
     private LocalDateTime futureDate;
+
+    @MockBean
+    private IdamClient idamClient;
 
     @BeforeEach
     void before() {
@@ -534,65 +541,57 @@ class ManageDocumentServiceTest {
         assertThat(thirdC2DocumentUploadTime).isEqualTo(uploadDateTime);
     }
 
-//    @Nested
-//    class TestUploadedDocumentUserInfo {
-//
-//        @BeforeEach
-//        void setup() {
-//            when(idamClient.getAccessToken(eq(USER_NAME), eq(PASSWORD))).thenReturn(AUTH_TOKEN);
-//        }
-//
-//        @Test
-//        void shouldReturnUploadedDocumentUserInfoForUserWithHMCTSRole() {
-//            when(idamClient.getUserByUserId(eq(AUTH_TOKEN), eq(USER_ID))).thenReturn(createUserDetailsWithHMCTSRole());
-//
-//            assertThat(uploadDocumentService.getUploadedDocumentUserInfo()).isEqualTo("HMCTS");
-//        }
-//
-//        @Test
-//        void shouldReturnUploadedDocumentUserInfoForUserWithNonHMCTSRole() {
-//            when(idamClient.getUserByUserId(eq(AUTH_TOKEN), eq(USER_ID))).thenReturn(createUserDetailsWithNonHMCTSRole());
-//
-//            assertThat(uploadDocumentService.getUploadedDocumentUserInfo()).isEqualTo("steve.hudson@gov.uk");
-//        }
-//
-//        @Test
-//        void shouldReturnUploadedDocumentUserInfoForUserWithHMCTSAndNonHMCTSRole() {
-//            when(idamClient.getUserByUserId(eq(AUTH_TOKEN), eq(USER_ID))).thenReturn(createUserDetailsWithHMCTSAndNonHMCTSRole());
-//
-//            assertThat(uploadDocumentService.getUploadedDocumentUserInfo()).isEqualTo("HMCTS");
-//        }
-//
-//        private UserDetails createUserDetailsWithHMCTSRole() {
-//            return UserDetails.builder()
-//                .id(USER_ID)
-//                .surname("Hudson")
-//                .forename("Steve")
-//                .email("steve.hudson@gov.uk")
-//                .roles(Arrays.asList("caseworker-publiclaw-courtadmin", "caseworker-publiclaw-judiciary"))
-//                .build();
-//        }
-//
-//        private UserDetails createUserDetailsWithNonHMCTSRole() {
-//            return UserDetails.builder()
-//                .id(USER_ID)
-//                .surname("Hudson")
-//                .forename("Steve")
-//                .email("steve.hudson@gov.uk")
-//                .roles(Arrays.asList("caseworker-publiclaw-solicitor", "caseworker-publiclaw-cafcass"))
-//                .build();
-//        }
-//
-//        private UserDetails createUserDetailsWithHMCTSAndNonHMCTSRole() {
-//            return UserDetails.builder()
-//                .id(USER_ID)
-//                .surname("Hudson")
-//                .forename("Steve")
-//                .email("steve.hudson@gov.uk")
-//                .roles(Arrays.asList("caseworker-publiclaw-solicitor", "caseworker-publiclaw-cafcass", "caseworker-publiclaw-superuser"))
-//                .build();
-//        }
-//    }
+    @Nested
+    class TestUploadedDocumentUserDetails {
+
+        @Test
+        void shouldReturnUploadedDocumentUserInfoForUserWithHMCTSRole() {
+            when(idamClient.getUserDetails(eq(AUTH_TOKEN))).thenReturn(createUserDetailsWithHMCTSRole());
+            assertThat(manageDocumentService.getUploadedDocumentUserDetails(AUTH_TOKEN)).isEqualTo("HMCTS");
+        }
+
+        @Test
+        void shouldReturnUploadedDocumentUserInfoForUserWithNonHMCTSRole() {
+            when(idamClient.getUserDetails(eq(AUTH_TOKEN))).thenReturn(createUserDetailsWithNonHMCTSRole());
+            assertThat(manageDocumentService.getUploadedDocumentUserDetails(AUTH_TOKEN)).isEqualTo("steve.hudson@gov.uk");
+        }
+
+        @Test
+        void shouldReturnUploadedDocumentUserInfoForUserWithHMCTSAndNonHMCTSRole() {
+            when(idamClient.getUserDetails(eq(AUTH_TOKEN))).thenReturn(createUserDetailsWithHMCTSAndNonHMCTSRole());
+            assertThat(manageDocumentService.getUploadedDocumentUserDetails(AUTH_TOKEN)).isEqualTo("HMCTS");
+        }
+
+        private UserDetails createUserDetailsWithHMCTSRole() {
+            return UserDetails.builder()
+                .id(USER_ID)
+                .surname("Hudson")
+                .forename("Steve")
+                .email("steve.hudson@gov.uk")
+                .roles(Arrays.asList("caseworker-publiclaw-courtadmin", "caseworker-publiclaw-judiciary"))
+                .build();
+        }
+
+        private UserDetails createUserDetailsWithNonHMCTSRole() {
+            return UserDetails.builder()
+                .id(USER_ID)
+                .surname("Hudson")
+                .forename("Steve")
+                .email("steve.hudson@gov.uk")
+                .roles(Arrays.asList("caseworker-publiclaw-solicitor", "caseworker-publiclaw-cafcass"))
+                .build();
+        }
+
+        private UserDetails createUserDetailsWithHMCTSAndNonHMCTSRole() {
+            return UserDetails.builder()
+                .id(USER_ID)
+                .surname("Hudson")
+                .forename("Steve")
+                .email("steve.hudson@gov.uk")
+                .roles(Arrays.asList("caseworker-publiclaw-solicitor", "caseworker-publiclaw-cafcass", "caseworker-publiclaw-superuser"))
+                .build();
+        }
+    }
 
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
         return wrapElements(SupportingEvidenceBundle.builder().name("test").build());
