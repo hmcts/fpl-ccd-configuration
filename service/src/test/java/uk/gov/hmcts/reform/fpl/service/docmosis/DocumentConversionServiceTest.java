@@ -15,11 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
-import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import static com.google.common.net.HttpHeaders.CONTENT_DISPOSITION;
@@ -27,25 +23,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
-import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentConversionServiceTest {
 
     @Mock
     private RestTemplate restTemplate;
-
-    @Mock
-    private DocumentDownloadService documentDownloadService;
-
-    @Mock
-    private UploadDocumentService uploadDocumentService;
 
     @Spy
     private DocmosisConfiguration configuration = new DocmosisConfiguration("baseUrl", "accessKey");
@@ -54,52 +40,28 @@ class DocumentConversionServiceTest {
     private DocumentConversionService documentConversionService;
 
     @Test
-    void shouldReturnSameDocumentIfItIsPdf() {
-        final DocumentReference inputDocumentReference = DocumentReference.builder()
-                .filename("cmo.pdf")
-                .build();
-
-        final DocumentReference converted = documentConversionService.convertToPdf(inputDocumentReference);
-
-        assertThat(converted).isEqualTo(inputDocumentReference);
-
-        verifyNoInteractions(documentDownloadService);
-        verifyNoInteractions(uploadDocumentService);
-        verifyNoMoreInteractions(restTemplate);
-    }
-
-    @Test
     @SuppressWarnings("unchecked")
-    void shouldConvertNonPdfDocumentToPdf() {
+    void shouldReturnSameDocumentBytesIfItIsPdf() {
         final String fileName = "cmo.docx";
-        final String newFileName = "cmo.pdf";
         byte[] inputDocumentBinaries = TestDataHelper.testDocumentBinaries();
-        byte[] convertedDocumentBinaries = readBytes("documents/document.pdf");
-        final Document convertedDocument = testDocument();
-        final DocumentReference convertedDocumentReference = buildFromDocument(convertedDocument);
-        final DocumentReference inputDocumentReference = DocumentReference.builder().filename(fileName).build();
-
-        when(documentDownloadService.downloadDocument(inputDocumentReference.getBinaryUrl()))
-                .thenReturn(inputDocumentBinaries);
-
-        when(uploadDocumentService.uploadPDF(any(), any())).thenReturn(convertedDocument);
 
         when(restTemplate.exchange(
-                eq(String.format("%s/rs/convert", configuration.getUrl())),
-                eq(HttpMethod.POST),
-                any(),
-                eq(byte[].class)))
-                .thenReturn(new ResponseEntity(convertedDocumentBinaries, HttpStatus.OK));
+            eq(String.format("%s/rs/convert", configuration.getUrl())),
+            eq(HttpMethod.POST),
+            any(),
+            eq(byte[].class)))
+            .thenReturn(new ResponseEntity(inputDocumentBinaries, HttpStatus.OK));
 
-        DocumentReference converted = documentConversionService.convertToPdf(inputDocumentReference);
+        byte[] actualConvertedDocumentBytes
+            = documentConversionService.convertDocument(inputDocumentBinaries, fileName, fileName);
 
         verify(restTemplate).exchange(
-                String.format("%s/rs/convert", configuration.getUrl()),
-                HttpMethod.POST,
-                getExpectedPayload(inputDocumentBinaries, fileName, newFileName),
-                byte[].class);
+            String.format("%s/rs/convert", configuration.getUrl()),
+            HttpMethod.POST,
+            getExpectedPayload(inputDocumentBinaries, fileName, fileName),
+            byte[].class);
 
-        assertThat(converted).isEqualTo(convertedDocumentReference);
+        assertThat(actualConvertedDocumentBytes).isEqualTo(inputDocumentBinaries);
     }
 
     @Test

@@ -48,7 +48,7 @@ class StandardDirectionsOrderServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new StandardDirectionsOrderService(conversionService, sealingService, TIME, idamClient, requestData);
+        service = new StandardDirectionsOrderService(sealingService, TIME, idamClient, requestData);
     }
 
     @Test
@@ -127,13 +127,12 @@ class StandardDirectionsOrderServiceTest {
         );
 
         assertThat(builtOrder).isEqualTo(expectedOrder);
-        verify(sealingService, never()).sealDocument(any(DocumentReference.class));
-        verify(conversionService, never()).convertToPdf(any(DocumentReference.class));
+        verify(sealingService, never()).sealAndUploadDocument(any(DocumentReference.class));
+        verify(conversionService, never()).convertDocument(any(), any(), any());
     }
 
     @Test
     void shouldSealDocumentWhenSDOIsToBeSealed() throws Exception {
-        given(conversionService.convertToPdf(PDF_DOC)).willCallRealMethod();
         mockSealingService();
         mockIdamAndRequestData();
 
@@ -147,21 +146,19 @@ class StandardDirectionsOrderServiceTest {
 
         assertThat(builtOrder).isEqualTo(expectedOrder);
 
-        verify(sealingService).sealDocument(PDF_DOC);
+        verify(sealingService).sealAndUploadDocument(PDF_DOC);
     }
 
     @Test
     void shouldConvertWordDocumentAndSealWhenSDOIsSetToSeal() throws Exception {
-        given(conversionService.convertToPdf(WORD_DOC)).willReturn(PDF_DOC);
-        mockSealingService();
-        mockIdamAndRequestData();
-
         StandardDirectionOrder order = buildStandardDirectionOrder(WORD_DOC, SEALED);
 
-        service.buildOrderFromUpload(order);
+        given(sealingService.sealAndUploadDocument(WORD_DOC)).willReturn(SEALED_DOC);
+        mockIdamAndRequestData();
 
-        verify(conversionService).convertToPdf(WORD_DOC);
-        verify(sealingService).sealDocument(PDF_DOC);
+        StandardDirectionOrder standardDirectionOrder = service.buildOrderFromUpload(order);
+
+        assertThat(standardDirectionOrder.orderDoc).isEqualTo(SEALED_DOC);
     }
 
     private StandardDirectionOrder buildStandardDirectionOrder(DocumentReference document, OrderStatus status) {
@@ -184,6 +181,6 @@ class StandardDirectionsOrderServiceTest {
     }
 
     private void mockSealingService() throws Exception {
-        given(sealingService.sealDocument(PDF_DOC)).willReturn(SEALED_DOC);
+        given(sealingService.sealAndUploadDocument(PDF_DOC)).willReturn(SEALED_DOC);
     }
 }

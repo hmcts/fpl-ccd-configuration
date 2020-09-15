@@ -53,13 +53,6 @@ public class DocumentSealingService {
         return buildFromDocument(uploadDocumentService.uploadPDF(documentContents, newFileName));
     }
 
-    public DocumentReference sealDocument(DocumentReference document) throws Exception {
-        byte[] documentContent = documentDownloadService.downloadDocument(document.getBinaryUrl());
-        byte[] sealedDocument = sealDocument(documentContent);
-
-        return buildFromDocument(uploadDocumentService.uploadPDF(sealedDocument, document.getFilename()));
-    }
-
     private static byte[] sealDocument(byte[] binaries) throws Exception {
         byte[] seal = readBytes(SEAL);
 
@@ -90,5 +83,4 @@ public class DocumentSealingService {
     private static int mm2pt(int mm) {
         return Math.round(POINTS_PER_MM * mm);
     }
-
 }

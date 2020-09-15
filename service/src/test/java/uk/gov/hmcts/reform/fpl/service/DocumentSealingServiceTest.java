@@ -41,27 +41,6 @@ class DocumentSealingServiceTest {
     private DocumentSealingService documentSealingService;
 
     @Test
-    void shouldSealDocument() throws Exception {
-        final byte[] inputDocumentBinaries = readBytes("documents/document.pdf");
-        final byte[] expectedSealedDocumentBinaries = readBytes("documents/document-sealed.pdf");
-        final Document sealedDocument = testDocument();
-        final DocumentReference inputDocumentReference = testDocumentReference();
-        final DocumentReference sealedDocumentReference = buildFromDocument(sealedDocument);
-
-        when(documentDownloadService.downloadDocument(inputDocumentReference.getBinaryUrl()))
-                .thenReturn(inputDocumentBinaries);
-
-        when(uploadDocumentService.uploadPDF(any(), any())).thenReturn(sealedDocument);
-
-        final DocumentReference actualSealedDocumentReference = documentSealingService
-                .sealDocument(inputDocumentReference);
-        verify(uploadDocumentService)
-            .uploadPDF(actualDocumentBinaries.capture(), eq(inputDocumentReference.getFilename()));
-        assertThat(actualSealedDocumentReference).isEqualTo(sealedDocumentReference);
-        assertThat(actualDocumentBinaries.getValue()).isEqualTo(expectedSealedDocumentBinaries);
-    }
-
-    @Test
     void shouldSealAndUploadDocumentWithFileExtensionConversion() throws Exception {
         final String fileName = "test.doc";
         final String newFileName = "test.pdf";

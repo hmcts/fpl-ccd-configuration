@@ -180,7 +180,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
         CaseDetails caseDetails = validCaseDetailsForUploadRoute(document, SEALED);
 
         given(idamClient.getUserInfo(anyString())).willReturn(UserInfo.builder().name("adam").build());
-        given(sealingService.sealDocument(document)).willReturn(document);
+        given(sealingService.sealAndUploadDocument(document)).willReturn(document);
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
 

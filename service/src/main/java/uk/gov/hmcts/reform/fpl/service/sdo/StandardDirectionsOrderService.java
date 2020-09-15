@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
-import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
@@ -23,7 +22,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFr
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class StandardDirectionsOrderService {
-    private final DocumentConversionService conversionService;
     private final DocumentSealingService sealingService;
     private final Time time;
     private final IdamClient idamClient;
@@ -69,7 +67,6 @@ public class StandardDirectionsOrderService {
         if (status != OrderStatus.SEALED) {
             return document;
         }
-        DocumentReference pdf = conversionService.convertToPdf(document);
-        return sealingService.sealDocument(pdf);
+        return sealingService.sealAndUploadDocument(document);
     }
 }
