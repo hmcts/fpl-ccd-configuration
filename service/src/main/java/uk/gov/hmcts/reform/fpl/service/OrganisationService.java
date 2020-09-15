@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.rd.model.Organisation;
 import uk.gov.hmcts.reform.rd.model.OrganisationUser;
 import uk.gov.hmcts.reform.rd.model.Status;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -45,7 +46,8 @@ public class OrganisationService {
         } catch (FeignException prdFailureException) {
             log.error("Request for users in same organisation failed", prdFailureException);
         }
-        return useLocalMapping(localAuthorityCode);
+        //return useLocalMapping(localAuthorityCode);
+        return Collections.emptySet();
     }
 
     private Set<String> useLocalMapping(String localAuthorityCode) {

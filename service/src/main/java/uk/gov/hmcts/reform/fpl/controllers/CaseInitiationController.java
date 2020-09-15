@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityUserService;
@@ -34,17 +35,20 @@ public class CaseInitiationController extends CallbackController {
     private final FeatureToggleService featureToggleService;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
 
+    private final RequestData requestData;
+
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(
         @RequestBody CallbackRequest callbackrequest) {
         String caseLocalAuthority = localAuthorityNameService.getLocalAuthorityCode();
         String localAuthorityName = localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseLocalAuthority);
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        String currentUser = requestData.userId();
 
         List<String> errors = new ArrayList<>();
 
         if (featureToggleService.isBlockCasesForLocalAuthoritiesNotOnboardedEnabled(localAuthorityName)) {
-            errors = localAuthorityOnboardedValidationService.validateIfLaIsOnboarded(caseLocalAuthority);
+            errors = localAuthorityOnboardedValidationService.validateIfLaIsOnboarded(caseLocalAuthority, currentUser);
         }
 
         return respond(caseDetails, errors);
@@ -61,10 +65,7 @@ public class CaseInitiationController extends CallbackController {
 
         data.remove("pageShow");
 
-        List<String> errors = localAuthorityOnboardedValidationService.validateLaIsOnboarded(caseLocalAuthority);
-        System.out.println("stsrting");
-
-        return respond(caseDetails, errors);
+        return respond(caseDetails);
     }
 
     @PostMapping("/submitted")
