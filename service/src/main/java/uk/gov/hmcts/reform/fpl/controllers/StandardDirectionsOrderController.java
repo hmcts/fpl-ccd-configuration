@@ -81,11 +81,6 @@ public class StandardDirectionsOrderController extends CallbackController {
         StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
         SDORoute sdoRouter = caseData.getSdoRouter();
 
-        // contents of the if can be moved into service case of switch statement when new sdo flow is live
-        if (sdoRouter == null || SERVICE == sdoRouter) {
-            data.put("dateOfIssue", sdoService.generateDateOfIssue(standardDirectionOrder));
-        }
-
         if (sdoRouter != null && standardDirectionOrder != null) {
             switch (sdoRouter) {
                 case UPLOAD:
@@ -93,6 +88,7 @@ public class StandardDirectionsOrderController extends CallbackController {
                     data.put("useUploadRoute", YES);
                     break;
                 case SERVICE:
+                    data.put("dateOfIssue", sdoService.generateDateOfIssue(standardDirectionOrder));
                     data.put("useServiceRoute", YES);
                     break;
                 default:
@@ -151,7 +147,7 @@ public class StandardDirectionsOrderController extends CallbackController {
         return respond(caseDetails);
     }
 
-    @PostMapping({"/mid-event", "/service-route/mid-event"})
+    @PostMapping("/service-route/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
@@ -206,7 +202,7 @@ public class StandardDirectionsOrderController extends CallbackController {
 
         StandardDirectionOrder order;
         SDORoute sdoRouter = caseData.getSdoRouter();
-        if (sdoRouter == null || SERVICE == sdoRouter) { // null check can be removed when toggled on
+        if (SERVICE == sdoRouter) {
             JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
                 caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()
             );
