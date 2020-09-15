@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -103,7 +102,7 @@ class StandardDirectionsServiceTest {
     private Direction[] expectedDirections(LocalDate date) {
         Optional<LocalDate> hearingDate = ofNullable(date);
 
-        return new Direction[]{Direction.builder()
+        return new Direction[] {Direction.builder()
             .assignee(ALL_PARTIES)
             .directionType(DIRECTION_TYPE_1)
             .directionText(DIRECTION_TEXT_1)
@@ -111,7 +110,6 @@ class StandardDirectionsServiceTest {
             .directionRemovable("No")
             .directionNeeded("Yes")
             .dateToBeCompletedBy(hearingDate.map(LocalDate::atStartOfDay).orElse(null))
-            .responses(emptyList())
             .build(),
             Direction.builder()
                 .assignee(LOCAL_AUTHORITY)
@@ -121,7 +119,6 @@ class StandardDirectionsServiceTest {
                 .directionRemovable("No")
                 .directionNeeded("Yes")
                 .dateToBeCompletedBy(hearingDate.map(x -> x.minusDays(3).atTime(12, 0, 0)).orElse(null))
-                .responses(emptyList())
                 .build(),
             Direction.builder()
                 .assignee(LOCAL_AUTHORITY)
@@ -131,7 +128,6 @@ class StandardDirectionsServiceTest {
                 .directionRemovable("Yes")
                 .directionNeeded("Yes")
                 .dateToBeCompletedBy(hearingDate.map(x -> x.minusDays(2).atTime(16, 0, 0)).orElse(null))
-                .responses(emptyList())
                 .build()};
     }
 }
