@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -17,11 +16,18 @@ import static com.google.common.collect.Lists.newArrayList;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UploadDocumentService {
     private final AuthTokenGenerator authTokenGenerator;
     private final DocumentUploadClientApi documentUploadClient;
     private final RequestData requestData;
+
+    @Autowired
+    public UploadDocumentService(AuthTokenGenerator authTokenGenerator, DocumentUploadClientApi documentUploadClient,
+                                 RequestData requestData) {
+        this.authTokenGenerator = authTokenGenerator;
+        this.documentUploadClient = documentUploadClient;
+        this.requestData = requestData;
+    }
 
     public Document uploadPDF(byte[] pdf, String fileName) {
         MultipartFile file = new InMemoryMultipartFile("files", fileName, MediaType.APPLICATION_PDF_VALUE, pdf);
