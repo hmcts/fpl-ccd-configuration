@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
@@ -38,7 +39,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 
-@ActiveProfiles("integration-test")
+@ActiveProfiles(profiles = {"integration-test", "feature-toggle"})
 @WebMvcTest(CaseSubmissionController.class)
 @OverrideAutoConfiguration(enabled = true)
 class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
@@ -48,6 +49,9 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
 
     @MockBean
     private FeeService feeService;
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     @MockBean
     private CaseSubmissionService caseSubmissionService;
@@ -68,6 +72,8 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
             .willReturn(document);
         given(uploadDocumentService.uploadPDF(DOCUMENT_CONTENT, "2313.pdf"))
             .willReturn(document);
+        given(featureToggleService.isRestrictedFromCaseSubmission("FPLA"))
+            .willReturn(true);
     }
 
     @Test
@@ -147,7 +153,9 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
             AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
             assertThat(callbackResponse.getData()).containsEntry("caseLocalAuthority", "FPLA");
-            assertThat(callbackResponse.getErrors()).contains("You cannot submit this application online yet. Ask your FPL administrator for your local authority’s enrolment date");
+            assertThat(callbackResponse.getErrors()).contains(
+                "You cannot submit this application online yet. Ask your FPL administrator for your local authority’s" +
+                    " enrolment date");
         }
 
         @Test
