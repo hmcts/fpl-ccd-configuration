@@ -270,15 +270,15 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldPopulateErrorsWhenValidationFails() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("caseName", "title",
-                "caseLocalAuthority", "example"))
-            .build();
-
         List<String> expectedErrors = new ArrayList<>();
         expectedErrors.add("Register for an account");
         expectedErrors.add("You cannot start an online application until you’re fully registered.");
         expectedErrors.add("Press the back button on your browser to access the link.");
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("caseName", "title",
+                "caseLocalAuthority", "example"))
+            .build();
 
         given(featureToggleService.isBlockCasesForLocalAuthoritiesNotOnboardedEnabled(anyString())).willReturn(true);
 

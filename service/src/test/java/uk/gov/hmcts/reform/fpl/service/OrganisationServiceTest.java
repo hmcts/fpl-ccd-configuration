@@ -75,23 +75,23 @@ class OrganisationServiceTest {
     }
 
     @Test
-    void shouldReturnUsersFromLocalAuthorityMappingWhenTheyDoNotExistInRefData() {
+    void shouldReturnEmptyListWhenOrganisationDoesNotExistInRefData() {
         when(organisationApi.findUsersByOrganisation(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, Status.ACTIVE, false))
             .thenThrow(new FeignException.NotFound(EMPTY, REQUEST, new byte[]{}));
 
         Set<String> usersIdsWithinSaLa = organisationService.findUserIdsInSameOrganisation("SA");
 
-        assertThat(usersIdsWithinSaLa).containsExactlyInAnyOrder("1", "2", "3");
+        assertThat(usersIdsWithinSaLa).isEmpty();
     }
 
     @Test
-    void shouldReturnUsersFromLocalAuthorityMappingWhenRefDataFailsForReasonOtherThanUserNotRegistered() {
+    void shouldReturnAnEmptyListWhenRefDataFailsForReasonOtherThanUserNotRegistered() {
         when(organisationApi.findUsersByOrganisation(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, Status.ACTIVE, false))
             .thenThrow(new FeignException.InternalServerError(EMPTY, REQUEST, new byte[]{}));
 
         Set<String> usersIdsWithinSaLa = organisationService.findUserIdsInSameOrganisation("SA");
 
-        assertThat(usersIdsWithinSaLa).containsExactlyInAnyOrder("1", "2", "3");
+        assertThat(usersIdsWithinSaLa).isEmpty();
     }
 
     @Test

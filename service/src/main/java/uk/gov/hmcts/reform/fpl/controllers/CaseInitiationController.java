@@ -51,7 +51,7 @@ public class CaseInitiationController extends CallbackController {
             List<String> errors;
             errors = localAuthorityOnboardedValidationService.validateIfLaIsOnboarded(caseLocalAuthority, currentUser);
 
-            if(!errors.isEmpty()){
+            if (!errors.isEmpty()) {
                 data.put("pageShow", "YES");
             }
         }

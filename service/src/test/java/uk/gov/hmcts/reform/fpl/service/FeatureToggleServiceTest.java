@@ -167,7 +167,8 @@ class FeatureToggleServiceTest {
         givenToggle(toggleState);
 
         assertThat(service.isBlockCasesForLocalAuthoritiesNotOnboardedEnabled("test name")).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(eq("block-cases-for-local-authorities-not-onboarded"), any(LDUser.class), eq(false));
+        verify(ldClient).boolVariation(eq("block-cases-for-local-authorities-not-onboarded"),
+            any(LDUser.class), eq(false));
     }
 
     private static Stream<Arguments> userAttributesTestSource() {

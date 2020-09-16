@@ -8,9 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityCodeException;
 import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
-import uk.gov.hmcts.reform.fpl.exceptions.UserOrganisationLookupException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.utils.MaskHelper;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
@@ -18,12 +16,11 @@ import uk.gov.hmcts.reform.rd.model.Organisation;
 import uk.gov.hmcts.reform.rd.model.OrganisationUser;
 import uk.gov.hmcts.reform.rd.model.Status;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static java.lang.String.format;
+import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
 import static uk.gov.hmcts.reform.fpl.utils.MaskHelper.maskEmail;
@@ -46,18 +43,7 @@ public class OrganisationService {
         } catch (FeignException prdFailureException) {
             log.error("Request for users in same organisation failed", prdFailureException);
         }
-        //return useLocalMapping(localAuthorityCode);
-        return Collections.emptySet();
-    }
-
-    private Set<String> useLocalMapping(String localAuthorityCode) {
-        try {
-            return Set.copyOf(getUsersFromSameOrganisationBasedOnAppConfig(localAuthorityCode));
-        } catch (UnknownLocalAuthorityCodeException exception) {
-            throw new UserOrganisationLookupException(
-                format("Can't find users for %s local authority", localAuthorityCode), exception
-            );
-        }
+        return emptySet();
     }
 
     private List<String> getUsersFromSameOrganisationBasedOnAppConfig(String localAuthorityCode) {
