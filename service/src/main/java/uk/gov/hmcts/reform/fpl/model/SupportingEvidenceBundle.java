@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.validation.interfaces.time.DateNotInFuture;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.time.PastOrPresentDate;
 
 import java.time.LocalDateTime;
 
@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 public class SupportingEvidenceBundle {
     private final String name;
     private final String notes;
-    @DateNotInFuture()
+    @PastOrPresentDate(message = "Date received cannot be in the future")
     private final LocalDateTime dateTimeReceived;
     private LocalDateTime dateTimeUploaded;
     private final DocumentReference document;

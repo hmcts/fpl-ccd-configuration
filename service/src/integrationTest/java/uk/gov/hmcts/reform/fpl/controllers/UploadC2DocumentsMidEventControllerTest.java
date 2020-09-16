@@ -30,7 +30,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @WebMvcTest(UploadC2DocumentsController.class)
 @OverrideAutoConfiguration(enabled = true)
 class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
-    private static final String ERROR_MESSAGE = "Date cannot be in the future";
+    private static final String ERROR_MESSAGE = "Date received cannot be in the future";
 
     @MockBean
     private FeeService feeService;
