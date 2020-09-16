@@ -16,7 +16,7 @@ import static org.mockito.BDDMockito.given;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {LocalAuthorityValidationService.class, OrganisationService.class})
-public class LocalAuthorityValidationServiceTest {
+class LocalAuthorityValidationServiceTest {
 
     @Autowired
     private LocalAuthorityValidationService validationService;

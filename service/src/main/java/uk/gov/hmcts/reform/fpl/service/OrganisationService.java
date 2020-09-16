@@ -46,10 +46,6 @@ public class OrganisationService {
         return emptySet();
     }
 
-    private List<String> getUsersFromSameOrganisationBasedOnAppConfig(String localAuthorityCode) {
-        return localAuthorityUserLookupConfiguration.getUserIds(localAuthorityCode);
-    }
-
     private List<String> getUsersFromSameOrganisationBasedOnReferenceData(String authorisation) {
         return organisationApi
             .findUsersByOrganisation(authorisation, authTokenGenerator.generate(), Status.ACTIVE, false)
