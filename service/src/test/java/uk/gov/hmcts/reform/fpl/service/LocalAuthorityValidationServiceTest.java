@@ -7,6 +7,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -33,5 +34,22 @@ public class LocalAuthorityValidationServiceTest {
         final List<String> validationErrors = validationService.validateIfLaIsOnboarded(localAuthorityCode, userId);
 
         assertThat(validationErrors).isEmpty();
+    }
+
+    @Test
+    void shouldNotValidateWhenLaHasNotBeenOnboarded() {
+        String localAuthorityCode = "SA";
+        String userId = "a3850cb6-36ce-4612-b8c0-da00d57f1537";
+
+        given(organisationService.findUserIdsInSameOrganisation(localAuthorityCode)).willReturn(Set.of(""));
+
+        List<String> errors = new ArrayList<>();
+        errors.add("Register for an account");
+        errors.add("You cannot start an online application until you’re fully registered.");
+        errors.add("Press the back button on your browser to access the link.");
+
+        final List<String> validationErrors = validationService.validateIfLaIsOnboarded(localAuthorityCode, userId);
+
+        assertThat(validationErrors).isEqualTo(errors);
     }
 }
