@@ -18,11 +18,10 @@ public class LocalAuthorityValidationService {
 
         Set<String> users = organisationService.findUserIdsInSameOrganisation(localAuthorityCode);
 
-        System.out.println("current user is " + currentUser + "user is" + users);
-
         if(!users.contains(currentUser)) {
             errors.add("Register for an account");
             errors.add("You cannot start an online application until you’re fully registered.");
+            errors.add("Press the back button on your browser to access the link.");
         }
 
         return errors;

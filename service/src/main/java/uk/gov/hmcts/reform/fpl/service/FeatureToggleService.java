@@ -57,7 +57,7 @@ public class FeatureToggleService {
 
     public boolean isBlockCasesForLocalAuthoritiesNotOnboardedEnabled(String localAuthorityName) {
         return ldClient.boolVariation("block-cases-for-local-authorities-not-onboarded",
-            createLDUser(Map.of("localAuthorityName", LDValue.of(localAuthorityName))), true);
+            createLDUser(Map.of("localAuthorityName", LDValue.of(localAuthorityName))), false);
     }
 
     private LDUser createLDUser() {

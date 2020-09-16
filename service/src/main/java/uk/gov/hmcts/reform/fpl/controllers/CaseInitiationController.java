@@ -44,10 +44,18 @@ public class CaseInitiationController extends CallbackController {
         String localAuthorityName = localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseLocalAuthority);
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
 
+        String currentUser = requestData.userId();
+
+        List<String> errors = new ArrayList<>();
+
         Map<String, Object> data = caseDetails.getData();
 
         if (featureToggleService.isBlockCasesForLocalAuthoritiesNotOnboardedEnabled(localAuthorityName)) {
-            data.put("pageShow", "YES");
+            errors = localAuthorityOnboardedValidationService.validateIfLaIsOnboarded(caseLocalAuthority, currentUser);
+
+            if(!errors.isEmpty()){
+                data.put("pageShow", "YES");
+            }
         }
 
         return respond(caseDetails);
