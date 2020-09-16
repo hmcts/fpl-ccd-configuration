@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.GrantCaseAccessException;
 import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityCodeException;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityValidationService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
@@ -31,6 +32,7 @@ import uk.gov.hmcts.reform.rd.model.OrganisationUser;
 import uk.gov.hmcts.reform.rd.model.OrganisationUsers;
 import uk.gov.hmcts.reform.rd.model.Status;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -78,6 +80,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
     private static final String CASE_ID = "12345";
     private static final Set<String> CASE_ROLES = Set.of("[LASOLICITOR]", "[CREATOR]");
     private static final String PAGE_SHOW = "pageShow";
+    private static final String LOCAL_AUTHORITY_CODE = "example";
 
     @MockBean
     private LocalAuthorityUserLookupConfiguration localAuthorityUserLookupConfiguration;
@@ -102,6 +105,9 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
     @MockBean
     private FeatureToggleService featureToggleService;
+
+    @MockBean
+    private LocalAuthorityValidationService localAuthorityValidationService;
 
     @Autowired
     private SystemUpdateUserConfiguration userConfig;
@@ -138,21 +144,6 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
         assertThat(callbackResponse.getData())
             .containsEntry("caseName", "title")
             .containsEntry("caseLocalAuthority", "example");
-    }
-
-    @Test
-    void shouldPopulateErrorsInResponseWhenDomainNameIsNotFound() {
-        AboutToStartOrSubmitCallbackResponse expectedResponse = AboutToStartOrSubmitCallbackResponse.builder()
-            .errors(List.of("The email address was not linked to a known Local Authority"))
-            .build();
-
-        given(client.getUserInfo(USER_AUTH_TOKEN))
-            .willReturn(UserInfo.builder().sub("user@email.gov.uk").build());
-
-        AboutToStartOrSubmitCallbackResponse actualResponse = postAboutToSubmitEvent(
-            "core-case-data-store-api/empty-case-details.json");
-
-        assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     @Test
@@ -275,6 +266,28 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
         assertNull(callbackResponse.getData().get(PAGE_SHOW));
+    }
+
+    @Test
+    void shouldPopulateErrorsWhenValidationFails() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("caseName", "title",
+                "caseLocalAuthority", "example"))
+            .build();
+
+        List<String> expectedErrors = new ArrayList<>();
+        expectedErrors.add("Register for an account");
+        expectedErrors.add("You cannot start an online application until you’re fully registered.");
+        expectedErrors.add("Press the back button on your browser to access the link.");
+
+        given(featureToggleService.isBlockCasesForLocalAuthoritiesNotOnboardedEnabled(anyString())).willReturn(true);
+
+        given(localAuthorityValidationService.validateIfLaIsOnboarded(LOCAL_AUTHORITY_CODE, USER_ID))
+            .willReturn(expectedErrors);
+
+        AboutToStartOrSubmitCallbackResponse actualResponse = postMidEvent(caseDetails);
+
+        assertThat(actualResponse.getErrors()).isEqualTo(expectedErrors);
     }
 
     private void verifyGrantCaseRoleAttempts(List<String> users, int attempts) {
