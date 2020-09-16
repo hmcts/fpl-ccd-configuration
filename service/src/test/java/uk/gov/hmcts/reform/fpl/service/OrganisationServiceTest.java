@@ -14,7 +14,6 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
-import uk.gov.hmcts.reform.fpl.exceptions.UserOrganisationLookupException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.ContactInformation;
@@ -30,6 +29,7 @@ import java.util.Set;
 
 import static feign.Request.HttpMethod.GET;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Collections.emptySet;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -111,9 +111,8 @@ class OrganisationServiceTest {
         when(organisationApi.findUsersByOrganisation(any(), any(), any(), any()))
             .thenThrow(new FeignException.Forbidden("No organisation", REQUEST, new byte[]{}));
 
-        assertThatThrownBy(() -> organisationService.findUserIdsInSameOrganisation("AN"))
-            .isInstanceOf(UserOrganisationLookupException.class)
-            .hasMessage("Can't find users for AN local authority");
+        assertThat(organisationService.findUserIdsInSameOrganisation("AN"))
+            .isEqualTo(emptySet());
     }
 
     private OrganisationUsers prepareUsersForAnOrganisation() {
