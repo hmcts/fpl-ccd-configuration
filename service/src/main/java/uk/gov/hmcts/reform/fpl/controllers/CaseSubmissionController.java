@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.config.RestrictionsConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.AmendedReturnedCaseEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
@@ -54,7 +53,6 @@ public class CaseSubmissionController extends CallbackController {
     private static final String DISPLAY_AMOUNT_TO_PAY = "displayAmountToPay";
     private static final String CONSENT_TEMPLATE = "I, %s, believe that the facts stated in this application are true.";
     private final CaseSubmissionService caseSubmissionService;
-    private final RestrictionsConfiguration restrictionsConfiguration;
     private final FeeService feeService;
     private final FeatureToggleService featureToggleService;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
@@ -100,9 +98,9 @@ public class CaseSubmissionController extends CallbackController {
     private List<String> validate(CaseData caseData) {
         List<String> errors = new ArrayList<>();
 
-        if (restrictionsConfiguration.getLocalAuthorityCodesForbiddenCaseSubmission()
-            .contains(caseData.getCaseLocalAuthority())) {
-            errors.add("Test local authority cannot submit cases");
+        if (featureToggleService.isRestrictedFromCaseSubmission(caseData.getCaseLocalAuthority())) {
+            errors.add("You cannot submit this application online yet."
+                + " Ask your FPL administrator for your local authority’s enrolment date");
         }
 
         return errors;

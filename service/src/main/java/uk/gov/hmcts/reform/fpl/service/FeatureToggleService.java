@@ -60,6 +60,11 @@ public class FeatureToggleService {
             createLDUser(Map.of("localAuthorityName", LDValue.of(localAuthorityName))), false);
     }
 
+    public boolean isRestrictedFromCaseSubmission(String localAuthorityName) {
+        return ldClient.boolVariation("restrict-case-submission",
+            createLDUser(Map.of("localAuthorityName", LDValue.of(localAuthorityName))), false);
+    }
+
     private LDUser createLDUser() {
         return createLDUser(Map.of());
     }

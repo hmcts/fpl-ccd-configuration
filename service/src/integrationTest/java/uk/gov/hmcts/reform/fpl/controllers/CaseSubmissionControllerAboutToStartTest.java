@@ -147,7 +147,7 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
             AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
             assertThat(callbackResponse.getData()).containsEntry("caseLocalAuthority", "FPLA");
-            assertThat(callbackResponse.getErrors()).contains("Test local authority cannot submit cases");
+            assertThat(callbackResponse.getErrors()).contains("You cannot submit this application online yet. Ask your FPL administrator for your local authority’s enrolment date");
         }
 
         @Test
