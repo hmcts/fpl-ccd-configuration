@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
@@ -39,6 +40,7 @@ public class ManageDocumentService {
     private final ObjectMapper mapper;
     private final Time time;
     private final IdamClient idamClient;
+    private final RequestData requestData;
 
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_KEY = "correspondenceDocuments";
     public static final String C2_DOCUMENTS_COLLECTION_KEY = "c2DocumentBundle";
@@ -189,7 +191,11 @@ public class ManageDocumentService {
             altered.forEach(bundle -> findElement(bundle.getId(), supportingEvidenceBundleBefore).ifPresent(
                 previousVersion -> {
                     if (!previousVersion.getValue().getDocument().equals(bundle.getValue().getDocument())) {
+
+                        String uploadedBy = getUploadedDocumentUserDetails(requestData.authorisation());
+
                         bundle.getValue().setDateTimeUploaded(time.now());
+                        bundle.getValue().setUploadedBy(uploadedBy);
                     }
                 }
             ));
@@ -229,7 +235,7 @@ public class ManageDocumentService {
 
         boolean isHMCTSUser = userDetails.getRoles().stream().anyMatch(UserRole::isHMCTSUser);
 
-        return isHMCTSUser ? "HMCTS": userDetails.getEmail();
+        return isHMCTSUser ? "HMCTS" : userDetails.getEmail();
     }
 
     private Element<HearingFurtherEvidenceBundle> buildHearingSupportingEvidenceBundle(

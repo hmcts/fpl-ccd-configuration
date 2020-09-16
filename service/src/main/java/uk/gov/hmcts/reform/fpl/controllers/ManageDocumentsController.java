@@ -125,7 +125,7 @@ public class ManageDocumentsController extends CallbackController {
             case FURTHER_EVIDENCE_DOCUMENTS:
                 List<Element<SupportingEvidenceBundle>> currentBundle = manageDocumentService
                     .setDateTimeUploadedOnSupportingEvidence(caseData.getFurtherEvidenceDocumentsTEMP(),
-                        caseDataBefore.getFurtherEvidenceDocumentsTEMP()
+                        caseDataBefore.getFurtherEvidenceDocuments()
                 );
 
                 if (manageDocument.isDocumentRelatedToHearing()) {
