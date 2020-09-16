@@ -83,9 +83,7 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldSealPDFAndAddToSealedCMOsListWhenJudgeApprovesOrder() throws Exception {
-        DocumentReference sealedDocument = testDocumentReference();
-
-        given(documentSealingService.sealAndUploadDocument((cmo.getOrder()))).willReturn(sealedDocument);
+        given(documentSealingService.sealDocument((cmo.getOrder()))).willReturn(sealedDocument);
 
         UUID cmoId = UUID.randomUUID();
 
@@ -113,7 +111,7 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
     @Test
     void shouldUpdateStateToIssueResolutionWhenNextHearingTypeIsIssueResolutionAndCmoDecisionIsSendToAllParties()
         throws Exception {
-        given(documentSealingService.sealAndUploadDocument(convertedDocument)).willReturn(sealedDocument);
+        given(documentSealingService.sealDocument(convertedDocument)).willReturn(sealedDocument);
         given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
 
         UUID cmoId = UUID.randomUUID();
@@ -132,7 +130,7 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
     @Test
     void shouldUpdateStateToFinalHearingWhenNextHearingTypeIsFinalAndCmoDecisionIsSendToAllParties()
         throws Exception {
-        given(documentSealingService.sealAndUploadDocument(convertedDocument)).willReturn(sealedDocument);
+        given(documentSealingService.sealDocument(convertedDocument)).willReturn(sealedDocument);
         given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
 
         UUID cmoId = UUID.randomUUID();

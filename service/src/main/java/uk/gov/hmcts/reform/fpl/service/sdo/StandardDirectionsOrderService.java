@@ -67,6 +67,6 @@ public class StandardDirectionsOrderService {
         if (status != OrderStatus.SEALED) {
             return document;
         }
-        return sealingService.sealAndUploadDocument(document);
+        return sealingService.sealDocument(document);
     }
 }

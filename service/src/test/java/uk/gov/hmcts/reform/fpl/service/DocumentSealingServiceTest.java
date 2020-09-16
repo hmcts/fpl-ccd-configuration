@@ -41,7 +41,7 @@ class DocumentSealingServiceTest {
     private DocumentSealingService documentSealingService;
 
     @Test
-    void shouldSealAndUploadDocumentWithFileExtensionConversion() throws Exception {
+    void shouldSealAndUploadDocumentWithFileConversion() throws Exception {
         final String fileName = "test.doc";
         final String newFileName = "test.pdf";
         final byte[] inputDocumentBinaries = readBytes("documents/document.pdf");
@@ -59,7 +59,7 @@ class DocumentSealingServiceTest {
         when(uploadDocumentService.uploadPDF(any(), any())).thenReturn(sealedDocument);
 
         final DocumentReference actualSealedDocumentReference = documentSealingService
-            .sealAndUploadDocument(inputDocumentReference);
+            .sealDocument(inputDocumentReference);
 
         verify(uploadDocumentService).uploadPDF(actualDocumentBinaries.capture(), eq(newFileName));
         assertThat(actualSealedDocumentReference).isEqualTo(sealedDocumentReference);
@@ -67,7 +67,7 @@ class DocumentSealingServiceTest {
     }
 
     @Test
-    void shouldSealAndUploadDocumentWithoutFileExtensionConversion() throws Exception {
+    void shouldSealAndUploadDocumentWithoutFileConversion() throws Exception {
         final String fileName = "test.pdf";
         final byte[] inputDocumentBinaries = readBytes("documents/document.pdf");
         final byte[] expectedSealedDocumentBinaries = readBytes("documents/document-sealed.pdf");
@@ -81,7 +81,7 @@ class DocumentSealingServiceTest {
         when(uploadDocumentService.uploadPDF(any(), any())).thenReturn(sealedDocument);
 
         final DocumentReference actualSealedDocumentReference = documentSealingService
-            .sealAndUploadDocument(inputDocumentReference);
+            .sealDocument(inputDocumentReference);
 
         verify(documentConversionService, never()).convertDocument(any(), any(), any());
 

@@ -85,8 +85,7 @@ public class ReviewCMOController extends CallbackController {
 
                 caseData.getDraftUploadedCMOs().remove(cmo);
 
-                cmoToSeal.getValue().setOrder(documentSealingService.sealAndUploadDocument(
-                    cmoToSeal.getValue().getOrder()));
+                cmoToSeal.getValue().setOrder(documentSealingService.sealDocument(cmoToSeal.getValue().getOrder()));
 
                 List<Element<CaseManagementOrder>> sealedCMOs = caseData.getSealedCMOs();
                 sealedCMOs.add(cmoToSeal);

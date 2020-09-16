@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.DocumentExtension.PDF;
 
 class DocumentReferenceTest {
     @Test
@@ -36,14 +35,14 @@ class DocumentReferenceTest {
 
     @Test
     void shouldReturnTrueWhenFilenameExtensionIncludesExpectedExtension() {
-        DocumentReference documentReference = buildDocumentReferenceWithExtension(PDF.getLabel());
-        assertThat(documentReference.hasExtensionTypeOf(PDF)).isTrue();
+        DocumentReference documentReference = buildDocumentReferenceWithExtension("pdf");
+        assertThat(documentReference.hasExtensionTypeOf("pdf")).isTrue();
     }
 
     @Test
     void shouldReturnFalseWhenFilenameExtensionDoesNotIncludeExpectedExtension() {
         DocumentReference documentReference = buildDocumentReferenceWithExtension("doc");
-        assertThat(documentReference.hasExtensionTypeOf(PDF)).isFalse();
+        assertThat(documentReference.hasExtensionTypeOf("pdf")).isFalse();
     }
 
     private DocumentReference buildDocumentReferenceWithExtension(String documentExtension) {

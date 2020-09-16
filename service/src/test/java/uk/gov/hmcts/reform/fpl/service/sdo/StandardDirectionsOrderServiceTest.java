@@ -127,7 +127,7 @@ class StandardDirectionsOrderServiceTest {
         );
 
         assertThat(builtOrder).isEqualTo(expectedOrder);
-        verify(sealingService, never()).sealAndUploadDocument(any(DocumentReference.class));
+        verify(sealingService, never()).sealDocument(any(DocumentReference.class));
         verify(conversionService, never()).convertDocument(any(), any(), any());
     }
 
@@ -146,14 +146,14 @@ class StandardDirectionsOrderServiceTest {
 
         assertThat(builtOrder).isEqualTo(expectedOrder);
 
-        verify(sealingService).sealAndUploadDocument(PDF_DOC);
+        verify(sealingService).sealDocument(PDF_DOC);
     }
 
     @Test
     void shouldConvertWordDocumentAndSealWhenSDOIsSetToSeal() throws Exception {
         StandardDirectionOrder order = buildStandardDirectionOrder(WORD_DOC, SEALED);
 
-        given(sealingService.sealAndUploadDocument(WORD_DOC)).willReturn(SEALED_DOC);
+        given(sealingService.sealDocument(WORD_DOC)).willReturn(SEALED_DOC);
         mockIdamAndRequestData();
 
         StandardDirectionOrder standardDirectionOrder = service.buildOrderFromUpload(order);
@@ -181,6 +181,6 @@ class StandardDirectionsOrderServiceTest {
     }
 
     private void mockSealingService() throws Exception {
-        given(sealingService.sealAndUploadDocument(PDF_DOC)).willReturn(SEALED_DOC);
+        given(sealingService.sealDocument(PDF_DOC)).willReturn(SEALED_DOC);
     }
 }

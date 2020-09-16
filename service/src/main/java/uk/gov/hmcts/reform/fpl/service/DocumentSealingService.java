@@ -17,7 +17,6 @@ import java.io.IOException;
 
 import static org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode.APPEND;
 import static org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject.createFromByteArray;
-import static uk.gov.hmcts.reform.fpl.enums.DocumentExtension.PDF;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
@@ -26,6 +25,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 public class DocumentSealingService {
 
     private static final String SEAL = "static_data/familycourtseal.png";
+    private static final String PDF = "pdf";
     private static final float POINTS_PER_INCH = 72;
     private static final float POINTS_PER_MM = 1 / (10 * 2.54f) * POINTS_PER_INCH;
     private static final int SEAL_HEIGHT = mm2pt(25);
@@ -37,20 +37,20 @@ public class DocumentSealingService {
     private final UploadDocumentService uploadDocumentService;
     private final DocumentConversionService documentConversionService;
 
-    public DocumentReference sealAndUploadDocument(DocumentReference document) throws Exception {
+    public DocumentReference sealDocument(DocumentReference document) throws Exception {
         byte[] documentContents = documentDownloadService.downloadDocument(document.getBinaryUrl());
-        String newFileName = document.getFilename();
+        String newFilename = document.getFilename();
 
         if (!document.hasExtensionTypeOf(PDF)) {
-            newFileName = FilenameUtils.removeExtension(document.getFilename()).concat("." + PDF.getLabel());
+            newFilename = FilenameUtils.removeExtension(document.getFilename()).concat("." + PDF);
 
             documentContents = documentConversionService.convertDocument(documentContents,
-                document.getFilename(), newFileName);
+                document.getFilename(), newFilename);
         }
 
         documentContents = sealDocument(documentContents);
 
-        return buildFromDocument(uploadDocumentService.uploadPDF(documentContents, newFileName));
+        return buildFromDocument(uploadDocumentService.uploadPDF(documentContents, newFilename));
     }
 
     private static byte[] sealDocument(byte[] binaries) throws Exception {
