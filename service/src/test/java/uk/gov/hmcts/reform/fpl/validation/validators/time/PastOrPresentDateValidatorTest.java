@@ -38,4 +38,15 @@ class PastOrPresentDateValidatorTest extends TimeValidatorTest {
 
         assertThat(violations).isEmpty();
     }
+
+    @Test
+    void shouldNotReturnErrorsWhenDateIsNull() {
+        SupportingEvidenceBundle evidence = SupportingEvidenceBundle.builder()
+            .dateTimeReceived(null)
+            .build();
+
+        final List<String> violations = validate(evidence);
+
+        assertThat(violations).isEmpty();
+    }
 }

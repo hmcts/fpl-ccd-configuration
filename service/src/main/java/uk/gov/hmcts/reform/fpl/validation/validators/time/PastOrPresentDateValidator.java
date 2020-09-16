@@ -16,6 +16,9 @@ public class PastOrPresentDateValidator implements ConstraintValidator<PastOrPre
 
     @Override
     public boolean isValid(LocalDateTime localDateTime, ConstraintValidatorContext context) {
+        if (localDateTime == null) {
+            return true;
+        }
         return !localDateTime.toLocalDate().isAfter(time.now().toLocalDate());
     }
 }
