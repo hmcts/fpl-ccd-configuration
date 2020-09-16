@@ -25,13 +25,24 @@ class PastOrPresentDateValidatorTest extends TimeValidatorTest {
 
         final List<String> violations = validate(evidence);
 
-        assertThat(violations).hasSize(1).containsOnly("Date received cannot be in the future");
+        assertThat(violations).containsOnly("Date received cannot be in the future");
     }
 
     @Test
     void shouldNotReturnAnErrorWhenDateIsToday() {
         SupportingEvidenceBundle evidence = SupportingEvidenceBundle.builder()
             .dateTimeReceived(time.now())
+            .build();
+
+        final List<String> violations = validate(evidence);
+
+        assertThat(violations).isEmpty();
+    }
+
+    @Test
+    void shouldNotReturnAnErrorWhenDateIsInPast() {
+        SupportingEvidenceBundle evidence = SupportingEvidenceBundle.builder()
+            .dateTimeReceived(time.now().minusDays(2))
             .build();
 
         final List<String> violations = validate(evidence);
