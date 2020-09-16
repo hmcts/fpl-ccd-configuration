@@ -11,6 +11,7 @@
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-initiation/about-to-submit",
     "RetriesTimeoutURLAboutToSubmitEvent": "1,2,3,4,5",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-initiation/submitted",
+    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-initiation/about-to-start",
     "RetriesTimeoutURLSubmittedEvent": "1,2,3,4,5",
     "RetriesTimeoutAboutToStartEvent": "1,2,3,4,5",
     "ShowSummary": "N",
