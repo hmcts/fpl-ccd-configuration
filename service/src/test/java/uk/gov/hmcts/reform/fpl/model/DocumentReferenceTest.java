@@ -32,20 +32,4 @@ class DocumentReferenceTest {
 
         assertThat(documentReference.isEmpty()).isFalse();
     }
-
-    @Test
-    void shouldReturnTrueWhenFilenameExtensionIncludesExpectedExtension() {
-        DocumentReference documentReference = buildDocumentReferenceWithExtension("pdf");
-        assertThat(documentReference.hasExtensionTypeOf("pdf")).isTrue();
-    }
-
-    @Test
-    void shouldReturnFalseWhenFilenameExtensionDoesNotIncludeExpectedExtension() {
-        DocumentReference documentReference = buildDocumentReferenceWithExtension("doc");
-        assertThat(documentReference.hasExtensionTypeOf("pdf")).isFalse();
-    }
-
-    private DocumentReference buildDocumentReferenceWithExtension(String documentExtension) {
-        return DocumentReference.builder().filename("test." + documentExtension).build();
-    }
 }

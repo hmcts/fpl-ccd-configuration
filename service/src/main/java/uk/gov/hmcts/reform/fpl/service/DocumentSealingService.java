@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -18,6 +17,8 @@ import java.io.IOException;
 import static org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode.APPEND;
 import static org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject.createFromByteArray;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
+import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasExtension;
+import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.updateExtension;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
 @Service
@@ -33,19 +34,15 @@ public class DocumentSealingService {
     private static final int MARGIN_TOP = mm2pt(30);
     private static final int MARGIN_RIGHT = mm2pt(30);
 
-    private final DocumentDownloadService documentDownloadService;
     private final UploadDocumentService uploadDocumentService;
     private final DocumentConversionService documentConversionService;
 
     public DocumentReference sealDocument(DocumentReference document) throws Exception {
-        byte[] documentContents = documentDownloadService.downloadDocument(document.getBinaryUrl());
+        byte[] documentContents = documentConversionService.convertToPdf(document);
         String newFilename = document.getFilename();
 
-        if (!document.hasExtensionTypeOf(PDF)) {
-            newFilename = FilenameUtils.removeExtension(document.getFilename()).concat("." + PDF);
-
-            documentContents = documentConversionService.convertDocument(documentContents,
-                document.getFilename(), newFilename);
+        if (!hasExtension(document, PDF)) {
+            newFilename = updateExtension(document.getFilename(), PDF);
         }
 
         documentContents = sealDocument(documentContents);

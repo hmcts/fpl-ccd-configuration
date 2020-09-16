@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
-import org.apache.commons.io.FilenameUtils;
 import uk.gov.hmcts.reform.document.domain.Document;
 
 @Data
@@ -28,10 +27,5 @@ public class DocumentReference {
     @JsonIgnore
     public boolean isEmpty() {
         return url == null && filename == null && binaryUrl == null;
-    }
-
-    @JsonIgnore
-    public boolean hasExtensionTypeOf(String documentExtension) {
-        return documentExtension.equals(FilenameUtils.getExtension(filename));
     }
 }

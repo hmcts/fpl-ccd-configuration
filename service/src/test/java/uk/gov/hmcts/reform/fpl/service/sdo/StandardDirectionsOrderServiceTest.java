@@ -128,7 +128,7 @@ class StandardDirectionsOrderServiceTest {
 
         assertThat(builtOrder).isEqualTo(expectedOrder);
         verify(sealingService, never()).sealDocument(any(DocumentReference.class));
-        verify(conversionService, never()).convertDocument(any(), any(), any());
+        verify(conversionService, never()).convertToPdf(any());
     }
 
     @Test

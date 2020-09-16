@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
@@ -27,9 +26,6 @@ class DocumentSealingServiceTest {
 
     @Captor
     private ArgumentCaptor<byte[]> actualDocumentBinaries;
-
-    @Mock
-    private DocumentDownloadService documentDownloadService;
 
     @Mock
     private UploadDocumentService uploadDocumentService;
@@ -50,12 +46,7 @@ class DocumentSealingServiceTest {
         final DocumentReference inputDocumentReference = testDocumentReference(fileName);
         final DocumentReference sealedDocumentReference = buildFromDocument(sealedDocument);
 
-        when(documentDownloadService.downloadDocument(inputDocumentReference.getBinaryUrl()))
-            .thenReturn(inputDocumentBinaries);
-
-        when(documentConversionService.convertDocument(inputDocumentBinaries,
-            fileName, newFileName)).thenReturn(inputDocumentBinaries);
-
+        when(documentConversionService.convertToPdf(inputDocumentReference)).thenReturn(inputDocumentBinaries);
         when(uploadDocumentService.uploadPDF(any(), any())).thenReturn(sealedDocument);
 
         final DocumentReference actualSealedDocumentReference = documentSealingService
@@ -75,15 +66,11 @@ class DocumentSealingServiceTest {
         final DocumentReference inputDocumentReference = testDocumentReference(fileName);
         final DocumentReference sealedDocumentReference = buildFromDocument(sealedDocument);
 
-        when(documentDownloadService.downloadDocument(inputDocumentReference.getBinaryUrl()))
-            .thenReturn(inputDocumentBinaries);
-
+        when(documentConversionService.convertToPdf(inputDocumentReference)).thenReturn(inputDocumentBinaries);
         when(uploadDocumentService.uploadPDF(any(), any())).thenReturn(sealedDocument);
 
         final DocumentReference actualSealedDocumentReference = documentSealingService
             .sealDocument(inputDocumentReference);
-
-        verify(documentConversionService, never()).convertDocument(any(), any(), any());
 
         verify(uploadDocumentService)
             .uploadPDF(actualDocumentBinaries.capture(), eq(inputDocumentReference.getFilename()));

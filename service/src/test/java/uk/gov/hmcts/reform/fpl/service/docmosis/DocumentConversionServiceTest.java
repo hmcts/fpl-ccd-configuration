@@ -15,7 +15,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import static com.google.common.net.HttpHeaders.CONTENT_DISPOSITION;
@@ -23,15 +26,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
+import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentConversionServiceTest {
 
     @Mock
     private RestTemplate restTemplate;
+
+    @Mock
+    private DocumentDownloadService documentDownloadService;
 
     @Spy
     private DocmosisConfiguration configuration = new DocmosisConfiguration("baseUrl", "accessKey");
@@ -40,37 +49,34 @@ class DocumentConversionServiceTest {
     private DocumentConversionService documentConversionService;
 
     @Test
-    @SuppressWarnings("unchecked")
-    void shouldReturnSameDocumentBytesIfItIsPdf() {
-        final String fileName = "cmo.docx";
+    void shouldReturnSameDocumentIfItIsPdf() {
         byte[] inputDocumentBinaries = TestDataHelper.testDocumentBinaries();
+        final DocumentReference inputDocumentReference = DocumentReference.builder()
+            .filename("cmo.pdf")
+            .build();
 
-        when(restTemplate.exchange(
-            eq(String.format("%s/rs/convert", configuration.getUrl())),
-            eq(HttpMethod.POST),
-            any(),
-            eq(byte[].class)))
-            .thenReturn(new ResponseEntity(inputDocumentBinaries, HttpStatus.OK));
+        when(documentDownloadService.downloadDocument(inputDocumentReference.getBinaryUrl()))
+            .thenReturn(inputDocumentBinaries);
 
-        byte[] actualConvertedDocumentBytes
-            = documentConversionService.convertDocument(inputDocumentBinaries, fileName, fileName);
+        final byte[] converted = documentConversionService.convertToPdf(inputDocumentReference);
 
-        verify(restTemplate).exchange(
-            String.format("%s/rs/convert", configuration.getUrl()),
-            HttpMethod.POST,
-            getExpectedPayload(inputDocumentBinaries, fileName, fileName),
-            byte[].class);
-
-        assertThat(actualConvertedDocumentBytes).isEqualTo(inputDocumentBinaries);
+        assertThat(converted).isEqualTo(inputDocumentBinaries);
+        verifyNoMoreInteractions(restTemplate);
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    void shouldConvertNonPdfDocumentBinariesToPdfDocumentBinaries() {
+    void shouldConvertNonPdfDocumentToPdf() {
         final String fileName = "cmo.docx";
         final String newFileName = "cmo.pdf";
         byte[] inputDocumentBinaries = TestDataHelper.testDocumentBinaries();
         byte[] convertedDocumentBinaries = readBytes("documents/document.pdf");
+        final Document convertedDocument = testDocument();
+        final DocumentReference convertedDocumentReference = buildFromDocument(convertedDocument);
+        final DocumentReference inputDocumentReference = DocumentReference.builder().filename(fileName).build();
+
+        when(documentDownloadService.downloadDocument(inputDocumentReference.getBinaryUrl()))
+            .thenReturn(inputDocumentBinaries);
 
         when(restTemplate.exchange(
             eq(String.format("%s/rs/convert", configuration.getUrl())),
@@ -79,8 +85,7 @@ class DocumentConversionServiceTest {
             eq(byte[].class)))
             .thenReturn(new ResponseEntity(convertedDocumentBinaries, HttpStatus.OK));
 
-        byte[] actualConvertedDocumentBytes
-            = documentConversionService.convertDocument(inputDocumentBinaries, fileName, newFileName);
+        byte[] converted = documentConversionService.convertToPdf(inputDocumentReference);
 
         verify(restTemplate).exchange(
             String.format("%s/rs/convert", configuration.getUrl()),
@@ -88,7 +93,7 @@ class DocumentConversionServiceTest {
             getExpectedPayload(inputDocumentBinaries, fileName, newFileName),
             byte[].class);
 
-        assertThat(actualConvertedDocumentBytes).isEqualTo(convertedDocumentBinaries);
+        assertThat(converted).isEqualTo(convertedDocumentBinaries);
     }
 
     private HttpEntity getExpectedPayload(byte[] fileToBeConverted, String oldFilename, String newFilename) {
@@ -96,10 +101,10 @@ class DocumentConversionServiceTest {
         headers.setContentType(MULTIPART_FORM_DATA);
 
         final ContentDisposition contentDisposition = ContentDisposition
-                .builder("form-data")
-                .name("file")
-                .filename(oldFilename)
-                .build();
+            .builder("form-data")
+            .name("file")
+            .filename(oldFilename)
+            .build();
 
         final MultiValueMap<String, String> fileMap = new LinkedMultiValueMap<>();
         fileMap.add(CONTENT_DISPOSITION, contentDisposition.toString());
