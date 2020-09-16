@@ -149,7 +149,7 @@ Scenario('HMCTS admin edits supporting evidence document on C2 application', asy
   I.seeInTab(['C2 Application 1', 'Notes'], 'C2 supporting document');
   I.seeInTab(['C2 Application 1', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
   I.seeInTab(['C2 Application 1', 'Document name'], 'This is a note about supporting doc');
-  I.seeInTab(['C2 Application 1', 'FIle'], 'mockFile.txt');
+  I.seeInTab(['C2 Application 1', 'File'], 'mockFile.txt');
 });
 
 Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
