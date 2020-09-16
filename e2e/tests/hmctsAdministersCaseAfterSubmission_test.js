@@ -85,7 +85,7 @@ Scenario('HMCTS admin uploads correspondence documents', async (I, caseViewPage,
   I.seeInTab(['Correspondence document 1', 'Notes'], 'Evidence will be late');
   I.seeInTab(['Correspondence document 1', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
   I.seeInTab(['Correspondence document 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeInTab(['Correspondence document 1', 'Upload document'], 'mockFile.txt');
+  I.seeInTab(['Correspondence document 1', 'File'], 'mockFile.txt');
   I.seeInTab(['Correspondence document 2', 'Document name'], 'Email with evidence attached');
   I.seeInTab(['Correspondence document 2', 'Notes'], 'Case evidence included');
   I.seeInTab(['Correspondence document 2', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
