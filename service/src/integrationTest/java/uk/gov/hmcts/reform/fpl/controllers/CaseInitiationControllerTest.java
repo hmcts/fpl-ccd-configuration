@@ -134,16 +134,18 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldAddCaseLocalAuthorityToCaseData() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("caseName", "title"))
+    void shouldPopulateErrorsInResponseWhenDomainNameIsNotFound() {
+        AboutToStartOrSubmitCallbackResponse expectedResponse = AboutToStartOrSubmitCallbackResponse.builder()
+            .errors(List.of("The email address was not linked to a known Local Authority"))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
+        given(client.getUserInfo(USER_AUTH_TOKEN))
+            .willReturn(UserInfo.builder().sub("user@email.gov.uk").build());
 
-        assertThat(callbackResponse.getData())
-            .containsEntry("caseName", "title")
-            .containsEntry("caseLocalAuthority", "example");
+        AboutToStartOrSubmitCallbackResponse actualResponse = postAboutToSubmitEvent(
+            "core-case-data-store-api/empty-case-details.json");
+
+        assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     @Test
@@ -268,6 +270,19 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
         AboutToStartOrSubmitCallbackResponse actualResponse = postMidEvent(caseDetails);
 
         assertThat(actualResponse.getErrors()).isEqualTo(expectedErrors);
+    }
+
+    @Test
+    void shouldAddCaseLocalAuthorityToCaseData() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("caseName", "title"))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
+
+        assertThat(callbackResponse.getData())
+            .containsEntry("caseName", "title")
+            .containsEntry("caseLocalAuthority", "example");
     }
 
     private void verifyGrantCaseRoleAttempts(List<String> users, int attempts) {
