@@ -159,31 +159,6 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void updateCaseRolesShouldBeCalledForEachFromCustomUserMappingIfOrganisationNotInPRD() {
-        givenPRDWillFail();
-
-        final CallbackRequest request = getCase(LA_NOT_IN_PRD_CODE);
-
-        postSubmittedEvent(request);
-
-        verifyGrantCaseRoleAttempts(LA_NOT_IN_PRD_USER_IDS);
-        verifyTaskListUpdated(request.getCaseDetails());
-    }
-
-    @Test
-    void updateCaseRolesShouldBeCalledOnlyForCaseCreatorIfOrganisationNotInPRDAndNoCustomUserMapping() {
-        givenPRDWillFail();
-
-        final CallbackRequest request = getCase(LA_IN_PRD_CODE);
-
-        postSubmittedEvent(request);
-
-        verifyUsersFetchFromPrd(3);
-        verifyGrantCaseRoleAttempts(List.of(CALLER_ID));
-        verifyTaskListUpdated(request.getCaseDetails());
-    }
-
-    @Test
     void shouldRetryPRDCallOnFailure() {
         givenPRDWillAnswer(
             invocation -> {
@@ -230,12 +205,17 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldSetPageShowToYesWhenToggleIsEnabled() {
+    void shouldSetPageShowToYesWhenToggleIsEnabledAndValidationHasFailed() {
         given(featureToggleService.isBlockCasesForLocalAuthoritiesNotOnboardedEnabled(anyString())).willReturn(true);
 
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("caseName", "title"))
             .build();
+
+        List<String> errors = new ArrayList<>();
+        errors.add("This is an error");
+
+        given(localAuthorityValidationService.validateIfLaIsOnboarded(any(), any())).willReturn(errors);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
