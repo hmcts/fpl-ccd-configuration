@@ -8,9 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 
@@ -26,12 +24,9 @@ public class UploadDocumentsService {
         List<Element<DocumentSocialWorkOther>> listOfCurrentDocs = caseDataCurrent.getOtherSocialWorkDocuments();
         List<Element<DocumentSocialWorkOther>> listOfOldDocs = caseDataBefore.getOtherSocialWorkDocuments();
 
-        List<Element<DocumentSocialWorkOther>> listOfChangedDocs = new ArrayList<>(listOfCurrentDocs);
-        if (!Objects.equals(listOfCurrentDocs, listOfOldDocs)) {
-            listOfChangedDocs.removeAll(listOfOldDocs);
-        }
-
-        listOfChangedDocs.forEach(doc -> findElement(doc.getId(), listOfOldDocs)
+        listOfCurrentDocs.stream()
+            .filter(doc -> !listOfOldDocs.contains(doc))
+            .forEach(doc -> findElement(doc.getId(), listOfOldDocs)
             .ifPresent(e -> {
                 if (!e.getValue().getTypeOfDocument().equals(doc.getValue().getTypeOfDocument())) {
                     setUpdatedByAndDateTime(doc);
