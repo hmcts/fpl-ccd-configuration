@@ -1,0 +1,20 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "documents_socialWorkOther",
+    "ListElementCode": "documentTitle",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "documents_socialWorkOther",
+    "ListElementCode": "typeOfDocument",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
+  }
+]

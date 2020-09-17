@@ -1,12 +1,10 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
@@ -23,12 +21,9 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -36,8 +31,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -56,8 +49,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     JacksonAutoConfiguration.class, FixedTimeConfiguration.class, ManageDocumentService.class
 })
 class ManageDocumentServiceTest {
-    private static final String AUTH_TOKEN = "token";
-    private static final String USER_ID = "1";
 
     @Autowired
     private Time time;
@@ -66,9 +57,6 @@ class ManageDocumentServiceTest {
     private ManageDocumentService manageDocumentService;
 
     private LocalDateTime futureDate;
-
-    @MockBean
-    private IdamClient idamClient;
 
     @BeforeEach
     void before() {
@@ -539,58 +527,6 @@ class ManageDocumentServiceTest {
 
         assertThat(firstC2DocumentUploadTime).isEqualTo(uploadDateTime);
         assertThat(thirdC2DocumentUploadTime).isEqualTo(uploadDateTime);
-    }
-
-    @Nested
-    class TestUploadedDocumentUserDetails {
-
-        @Test
-        void shouldReturnUploadedDocumentUserInfoForUserWithHMCTSRole() {
-            when(idamClient.getUserDetails(eq(AUTH_TOKEN))).thenReturn(createUserDetailsWithHMCTSRole());
-            assertThat(manageDocumentService.getUploadedDocumentUserDetails(AUTH_TOKEN)).isEqualTo("HMCTS");
-        }
-
-        @Test
-        void shouldReturnUploadedDocumentUserInfoForUserWithNonHMCTSRole() {
-            when(idamClient.getUserDetails(eq(AUTH_TOKEN))).thenReturn(createUserDetailsWithNonHMCTSRole());
-            assertThat(manageDocumentService.getUploadedDocumentUserDetails(AUTH_TOKEN)).isEqualTo("steve.hudson@gov.uk");
-        }
-
-        @Test
-        void shouldReturnUploadedDocumentUserInfoForUserWithHMCTSAndNonHMCTSRole() {
-            when(idamClient.getUserDetails(eq(AUTH_TOKEN))).thenReturn(createUserDetailsWithHMCTSAndNonHMCTSRole());
-            assertThat(manageDocumentService.getUploadedDocumentUserDetails(AUTH_TOKEN)).isEqualTo("HMCTS");
-        }
-
-        private UserDetails createUserDetailsWithHMCTSRole() {
-            return UserDetails.builder()
-                .id(USER_ID)
-                .surname("Hudson")
-                .forename("Steve")
-                .email("steve.hudson@gov.uk")
-                .roles(Arrays.asList("caseworker-publiclaw-courtadmin", "caseworker-publiclaw-judiciary"))
-                .build();
-        }
-
-        private UserDetails createUserDetailsWithNonHMCTSRole() {
-            return UserDetails.builder()
-                .id(USER_ID)
-                .surname("Hudson")
-                .forename("Steve")
-                .email("steve.hudson@gov.uk")
-                .roles(Arrays.asList("caseworker-publiclaw-solicitor", "caseworker-publiclaw-cafcass"))
-                .build();
-        }
-
-        private UserDetails createUserDetailsWithHMCTSAndNonHMCTSRole() {
-            return UserDetails.builder()
-                .id(USER_ID)
-                .surname("Hudson")
-                .forename("Steve")
-                .email("steve.hudson@gov.uk")
-                .roles(Arrays.asList("caseworker-publiclaw-solicitor", "caseworker-publiclaw-cafcass", "caseworker-publiclaw-superuser"))
-                .build();
-        }
     }
 
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {

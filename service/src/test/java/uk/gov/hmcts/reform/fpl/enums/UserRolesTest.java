@@ -10,7 +10,7 @@ import static uk.gov.hmcts.reform.fpl.enums.UserRole.GATEKEEPER;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
-import static uk.gov.hmcts.reform.fpl.enums.UserRole.isHMCTSUser;
+import static uk.gov.hmcts.reform.fpl.enums.UserRole.isHmctsUser;
 
 public class UserRolesTest {
 
@@ -27,17 +27,17 @@ public class UserRolesTest {
     }
 
     @Test
-    public void shouldCheckIfUserIsHMCTSUser() {
-        assertThat(isHMCTSUser("caseworker-publiclaw-courtadmin")).isTrue();
-        assertThat(isHMCTSUser("caseworker-publiclaw-gatekeeper")).isTrue();
-        assertThat(isHMCTSUser("caseworker-publiclaw-superuser")).isTrue();
-        assertThat(isHMCTSUser("caseworker-publiclaw-judiciary")).isTrue();
+    public void shouldCheckIfUserIsHmctsUser() {
+        assertThat(isHmctsUser("caseworker-publiclaw-courtadmin")).isTrue();
+        assertThat(isHmctsUser("caseworker-publiclaw-gatekeeper")).isTrue();
+        assertThat(isHmctsUser("caseworker-publiclaw-superuser")).isTrue();
+        assertThat(isHmctsUser("caseworker-publiclaw-judiciary")).isTrue();
     }
 
     @Test
-    public void shouldCheckIfUserIsNotHMCTSUser() {
-        assertThat(isHMCTSUser("caseworker-publiclaw-cafcass")).isFalse();
-        assertThat(isHMCTSUser("caseworker-publiclaw-solicitor")).isFalse();
-        assertThat(isHMCTSUser("unknown")).isFalse();
+    public void shouldCheckIfUserIsNotHmctsUser() {
+        assertThat(isHmctsUser("caseworker-publiclaw-cafcass")).isFalse();
+        assertThat(isHmctsUser("caseworker-publiclaw-solicitor")).isFalse();
+        assertThat(isHmctsUser("unknown")).isFalse();
     }
 }

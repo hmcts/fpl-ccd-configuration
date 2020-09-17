@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
@@ -14,8 +13,6 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,8 +36,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListValueCode
 public class ManageDocumentService {
     private final ObjectMapper mapper;
     private final Time time;
-    private final IdamClient idamClient;
     private final RequestData requestData;
+    private final DocumentUploaderService documentUploaderService;
 
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_KEY = "correspondenceDocuments";
     public static final String C2_DOCUMENTS_COLLECTION_KEY = "c2DocumentBundle";
@@ -180,6 +177,8 @@ public class ManageDocumentService {
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle,
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundleBefore) {
 
+        String uploadedBy = documentUploaderService.getUploadedDocumentUserDetails(requestData.authorisation());
+
         if (!Objects.equals(supportingEvidenceBundle, supportingEvidenceBundleBefore)) {
             List<Element<SupportingEvidenceBundle>> altered = new ArrayList<>(supportingEvidenceBundle);
 
@@ -192,8 +191,6 @@ public class ManageDocumentService {
                 previousVersion -> {
                     if (!previousVersion.getValue().getDocument().equals(bundle.getValue().getDocument())) {
 
-                        String uploadedBy = getUploadedDocumentUserDetails(requestData.authorisation());
-
                         bundle.getValue().setDateTimeUploaded(time.now());
                         bundle.getValue().setUploadedBy(uploadedBy);
                     }
@@ -205,6 +202,7 @@ public class ManageDocumentService {
         for (Element<SupportingEvidenceBundle> supportingEvidenceBundleElement : supportingEvidenceBundle) {
             if (supportingEvidenceBundleElement.getValue().getDateTimeUploaded() == null) {
                 supportingEvidenceBundleElement.getValue().setDateTimeUploaded(time.now());
+                supportingEvidenceBundleElement.getValue().setUploadedBy(uploadedBy);
             }
             updatedBundles.add(supportingEvidenceBundleElement);
         }
@@ -228,14 +226,6 @@ public class ManageDocumentService {
             updatedC2Bundles.add(c2DocumentBundleElement);
         }
         return updatedC2Bundles;
-    }
-
-    public String getUploadedDocumentUserDetails(String authorisation) {
-        UserDetails userDetails = idamClient.getUserDetails(authorisation);
-
-        boolean isHMCTSUser = userDetails.getRoles().stream().anyMatch(UserRole::isHMCTSUser);
-
-        return isHMCTSUser ? "HMCTS" : userDetails.getEmail();
     }
 
     private Element<HearingFurtherEvidenceBundle> buildHearingSupportingEvidenceBundle(

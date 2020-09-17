@@ -12,16 +12,11 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DocumentsValidatorService;
-import uk.gov.hmcts.reform.fpl.service.ManageDocumentService;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.service.UploadDocumentsService;
 
 import java.util.List;
-import java.util.stream.Collectors;
-
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @Api
 @RestController
@@ -29,27 +24,23 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UploadDocumentsController extends CallbackController {
     private final DocumentsValidatorService documentsValidatorService;
-    private final Time time;
-    private final ManageDocumentService manageDocumentService;
-    private final RequestData requestData;
+    private final UploadDocumentsService uploadDocumentsService;
 
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
+        CaseData caseDataBefore = getCaseDataBefore(callbackrequest);
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        List<DocumentSocialWorkOther> list = unwrapElements(caseData.getOtherSocialWorkDocuments());
-        String uploadedBy = manageDocumentService.getUploadedDocumentUserDetails(requestData.authorisation());
+        List<String> errors = documentsValidatorService.validateDocuments(caseData);
 
-        list.forEach(e -> {
-            e.setDateTimeUploaded(time.now());
-            e.setUploadedBy(uploadedBy);
-        });
+        if (errors.isEmpty()) {
+            List<Element<DocumentSocialWorkOther>> listOfOtherDocs =
+                uploadDocumentsService.getOtherSocialWorkDocuments(caseDataBefore, caseData);
 
-        CaseData updatedCaseData = caseData.toBuilder()
-            .otherSocialWorkDocuments(wrapElements(list))
-            .build();
+            caseDetails.getData().put("documents_socialWorkOther", listOfOtherDocs);
+        }
 
-        return respond(caseDetails, documentsValidatorService.validateDocuments(updatedCaseData));
+        return respond(caseDetails, documentsValidatorService.validateDocuments(caseData));
     }
 }

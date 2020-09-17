@@ -22,7 +22,7 @@ public enum UserRole {
         return ImmutableList.of("caseworker", "caseworker-publiclaw", this.role);
     }
 
-    public static boolean isHMCTSUser(String userRole) {
+    public static boolean isHmctsUser(String userRole) {
         List<UserRole> hmctsRoles = ImmutableList.of(HMCTS_ADMIN, GATEKEEPER, JUDICIARY, HMCTS_SUPERUSER);
 
         return hmctsRoles.stream().anyMatch(user -> user.role.equals(userRole));
