@@ -13,8 +13,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 
 import static com.google.common.net.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
@@ -26,19 +24,15 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.updateExtension;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DocumentConversionService {
     private final RestTemplate restTemplate;
-    private final DocumentDownloadService documentDownloadService;
     private final DocmosisConfiguration configuration;
     private static final String PDF = "pdf";
 
-    public byte[] convertToPdf(DocumentReference documentReference) {
-        byte[] documentContent = documentDownloadService.downloadDocument(documentReference.getBinaryUrl());
-
-        if (!hasExtension(documentReference, PDF)) {
-            return convertDocument(documentContent, documentReference.getFilename(),
-                updateExtension(documentReference.getFilename(), PDF));
+    public byte[] convertToPdf(byte[] documentContents, String filename) {
+        if (!hasExtension(filename, PDF)) {
+            return convertDocument(documentContents, filename, updateExtension(filename, PDF));
         }
 
-        return documentContent;
+        return documentContents;
     }
 
     private byte[] convertDocument(byte[] binaries, String oldName, String newName) {

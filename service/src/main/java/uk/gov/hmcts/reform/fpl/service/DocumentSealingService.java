@@ -17,7 +17,6 @@ import java.io.IOException;
 import static org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode.APPEND;
 import static org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject.createFromByteArray;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
-import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasExtension;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.updateExtension;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
@@ -36,16 +35,14 @@ public class DocumentSealingService {
 
     private final UploadDocumentService uploadDocumentService;
     private final DocumentConversionService documentConversionService;
+    private final DocumentDownloadService documentDownloadService;
 
     public DocumentReference sealDocument(DocumentReference document) throws Exception {
-        byte[] documentContents = documentConversionService.convertToPdf(document);
-        String newFilename = document.getFilename();
-
-        if (!hasExtension(document, PDF)) {
-            newFilename = updateExtension(document.getFilename(), PDF);
-        }
-
+        byte[] documentContents = documentDownloadService.downloadDocument(document.getBinaryUrl());
+        documentContents = documentConversionService.convertToPdf(documentContents, document.getFilename());
         documentContents = sealDocument(documentContents);
+
+        String newFilename = updateExtension(document.getFilename(), PDF);
 
         return buildFromDocument(uploadDocumentService.uploadPDF(documentContents, newFilename));
     }

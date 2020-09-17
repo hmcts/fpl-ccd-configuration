@@ -33,6 +33,9 @@ class DocumentSealingServiceTest {
     @Mock
     private DocumentConversionService documentConversionService;
 
+    @Mock
+    private DocumentDownloadService documentDownloadService;
+
     @InjectMocks
     private DocumentSealingService documentSealingService;
 
@@ -46,7 +49,9 @@ class DocumentSealingServiceTest {
         final DocumentReference inputDocumentReference = testDocumentReference(fileName);
         final DocumentReference sealedDocumentReference = buildFromDocument(sealedDocument);
 
-        when(documentConversionService.convertToPdf(inputDocumentReference)).thenReturn(inputDocumentBinaries);
+        when(documentDownloadService.downloadDocument(inputDocumentReference.getBinaryUrl()))
+            .thenReturn(inputDocumentBinaries);
+        when(documentConversionService.convertToPdf(inputDocumentBinaries, fileName)).thenReturn(inputDocumentBinaries);
         when(uploadDocumentService.uploadPDF(any(), any())).thenReturn(sealedDocument);
 
         final DocumentReference actualSealedDocumentReference = documentSealingService
@@ -66,7 +71,9 @@ class DocumentSealingServiceTest {
         final DocumentReference inputDocumentReference = testDocumentReference(fileName);
         final DocumentReference sealedDocumentReference = buildFromDocument(sealedDocument);
 
-        when(documentConversionService.convertToPdf(inputDocumentReference)).thenReturn(inputDocumentBinaries);
+        when(documentDownloadService.downloadDocument(inputDocumentReference.getBinaryUrl()))
+            .thenReturn(inputDocumentBinaries);
+        when(documentConversionService.convertToPdf(inputDocumentBinaries, fileName)).thenReturn(inputDocumentBinaries);
         when(uploadDocumentService.uploadPDF(any(), any())).thenReturn(sealedDocument);
 
         final DocumentReference actualSealedDocumentReference = documentSealingService

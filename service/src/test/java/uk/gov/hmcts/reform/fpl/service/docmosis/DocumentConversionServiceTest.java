@@ -15,10 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import static com.google.common.net.HttpHeaders.CONTENT_DISPOSITION;
@@ -29,18 +27,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
-import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentConversionServiceTest {
 
     @Mock
     private RestTemplate restTemplate;
-
-    @Mock
-    private DocumentDownloadService documentDownloadService;
 
     @Spy
     private DocmosisConfiguration configuration = new DocmosisConfiguration("baseUrl", "accessKey");
@@ -55,10 +48,8 @@ class DocumentConversionServiceTest {
             .filename("cmo.pdf")
             .build();
 
-        when(documentDownloadService.downloadDocument(inputDocumentReference.getBinaryUrl()))
-            .thenReturn(inputDocumentBinaries);
-
-        final byte[] converted = documentConversionService.convertToPdf(inputDocumentReference);
+        final byte[] converted = documentConversionService.convertToPdf(inputDocumentBinaries,
+            inputDocumentReference.getFilename());
 
         assertThat(converted).isEqualTo(inputDocumentBinaries);
         verifyNoMoreInteractions(restTemplate);
@@ -71,12 +62,7 @@ class DocumentConversionServiceTest {
         final String newFileName = "cmo.pdf";
         byte[] inputDocumentBinaries = TestDataHelper.testDocumentBinaries();
         byte[] convertedDocumentBinaries = readBytes("documents/document.pdf");
-        final Document convertedDocument = testDocument();
-        final DocumentReference convertedDocumentReference = buildFromDocument(convertedDocument);
         final DocumentReference inputDocumentReference = DocumentReference.builder().filename(fileName).build();
-
-        when(documentDownloadService.downloadDocument(inputDocumentReference.getBinaryUrl()))
-            .thenReturn(inputDocumentBinaries);
 
         when(restTemplate.exchange(
             eq(String.format("%s/rs/convert", configuration.getUrl())),
@@ -85,7 +71,8 @@ class DocumentConversionServiceTest {
             eq(byte[].class)))
             .thenReturn(new ResponseEntity(convertedDocumentBinaries, HttpStatus.OK));
 
-        byte[] converted = documentConversionService.convertToPdf(inputDocumentReference);
+        byte[] converted = documentConversionService.convertToPdf(inputDocumentBinaries,
+            inputDocumentReference.getFilename());
 
         verify(restTemplate).exchange(
             String.format("%s/rs/convert", configuration.getUrl()),
