@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,11 @@ class LocalAuthorityValidationServiceTest {
 
     private static final String LOCAL_AUTHORITY_CODE = "SA";
     private static final String USER_ID = "a3850cb6-36ce-4612-b8c0-da00d57f1537";
+
+    @BeforeEach
+    void setup() {
+        given(requestData.userId()).willReturn(USER_ID);
+    }
 
     @Test
     void shouldSuccessfullyValidateWhenLaIsOnboarded() {
