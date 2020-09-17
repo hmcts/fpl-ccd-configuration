@@ -37,28 +37,6 @@ public class CaseInitiationController extends CallbackController {
 
     private final RequestData requestData;
 
-    @PostMapping("/about-to-start")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
-        @RequestBody CallbackRequest callbackrequest) {
-        String caseLocalAuthority = localAuthorityNameService.getLocalAuthorityCode();
-        String localAuthorityName = localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseLocalAuthority);
-        CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        String currentUser = requestData.userId();
-
-        Map<String, Object> data = caseDetails.getData();
-
-        if (featureToggleService.isBlockCasesForLocalAuthoritiesNotOnboardedEnabled(localAuthorityName)) {
-            List<String> errors;
-            errors = localAuthorityOnboardedValidationService.validateIfLaIsOnboarded(caseLocalAuthority, currentUser);
-
-            if (!errors.isEmpty()) {
-                data.put("pageShow", "YES");
-            }
-        }
-
-        return respond(caseDetails);
-    }
-
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(
         @RequestBody CallbackRequest callbackrequest) {

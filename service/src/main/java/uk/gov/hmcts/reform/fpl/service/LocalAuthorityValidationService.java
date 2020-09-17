@@ -19,9 +19,9 @@ public class LocalAuthorityValidationService {
         Set<String> users = organisationService.findUserIdsInSameOrganisation(localAuthorityCode);
 
         if (!users.contains(currentUser)) {
-            errors.add("Register for an account");
+            errors.add("Register for an account.");
             errors.add("You cannot start an online application until you’re fully registered.");
-            errors.add("Press the back button on your browser to access the link.");
+            errors.add("Ask your local authority’s public law administrator for help with registration.");
         }
 
         return errors;
