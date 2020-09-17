@@ -7,7 +7,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.utils.MaskHelper;
@@ -29,7 +28,6 @@ import static uk.gov.hmcts.reform.fpl.utils.MaskHelper.maskEmail;
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class OrganisationService {
-    private final LocalAuthorityUserLookupConfiguration localAuthorityUserLookupConfiguration;
     private final OrganisationApi organisationApi;
     private final AuthTokenGenerator authTokenGenerator;
     private final RequestData requestData;
