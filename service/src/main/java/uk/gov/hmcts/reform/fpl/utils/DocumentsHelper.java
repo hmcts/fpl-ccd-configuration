@@ -47,14 +47,14 @@ public class DocumentsHelper {
         return hasExtension(document.getFilename(), extension);
     }
 
-    public static boolean hasExtension(String fileName, String extension) {
-        return fileName.endsWith(extension);
+    public static boolean hasExtension(String filename, String extension) {
+        return filename.endsWith(extension);
     }
 
-    public static String updateExtension(String fileName, String newExtension) {
-        if (!hasExtension(fileName, newExtension)) {
-            return FilenameUtils.removeExtension(fileName).concat("." + newExtension);
+    public static String updateExtension(String filename, String newExtension) {
+        if (!hasExtension(filename, newExtension)) {
+            return FilenameUtils.removeExtension(filename).concat("." + newExtension);
         }
-        return fileName;
+        return filename;
     }
 }
