@@ -216,7 +216,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
         postMidEvent(caseDetails);
 
-        verify(localAuthorityValidationService, never()).validateIfLaIsOnboarded(any(), any());
+        verify(localAuthorityValidationService, never()).validateIfLaIsOnboarded(any());
     }
 
     @Test
@@ -228,7 +228,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
         given(featureToggleService.isBlockCasesForLocalAuthoritiesNotOnboardedEnabled(anyString())).willReturn(true);
 
-        given(localAuthorityValidationService.validateIfLaIsOnboarded(LOCAL_AUTHORITY_CODE, USER_ID))
+        given(localAuthorityValidationService.validateIfLaIsOnboarded(LOCAL_AUTHORITY_CODE))
             .willReturn(emptyList());
 
         AboutToStartOrSubmitCallbackResponse actualResponse = postMidEvent(caseDetails);
@@ -250,7 +250,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
         given(featureToggleService.isBlockCasesForLocalAuthoritiesNotOnboardedEnabled(anyString())).willReturn(true);
 
-        given(localAuthorityValidationService.validateIfLaIsOnboarded(LOCAL_AUTHORITY_CODE, USER_ID))
+        given(localAuthorityValidationService.validateIfLaIsOnboarded(LOCAL_AUTHORITY_CODE))
             .willReturn(expectedErrors);
 
         AboutToStartOrSubmitCallbackResponse actualResponse = postMidEvent(caseDetails);

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,9 @@ class LocalAuthorityValidationServiceTest {
     private LocalAuthorityValidationService validationService;
 
     @MockBean
+    private RequestData requestData;
+
+    @MockBean
     private OrganisationService organisationService;
 
     private static final String LOCAL_AUTHORITY_CODE = "SA";
@@ -31,7 +35,7 @@ class LocalAuthorityValidationServiceTest {
     void shouldSuccessfullyValidateWhenLaIsOnboarded() {
         given(organisationService.findUserIdsInSameOrganisation(LOCAL_AUTHORITY_CODE)).willReturn(Set.of(USER_ID));
 
-        final List<String> validationErrors = validationService.validateIfLaIsOnboarded(LOCAL_AUTHORITY_CODE, USER_ID);
+        final List<String> validationErrors = validationService.validateIfLaIsOnboarded(LOCAL_AUTHORITY_CODE);
 
         assertThat(validationErrors).isEmpty();
     }
@@ -45,7 +49,7 @@ class LocalAuthorityValidationServiceTest {
         errors.add("You cannot start an online application until you’re fully registered.");
         errors.add("Ask your local authority’s public law administrator for help with registration.");
 
-        final List<String> validationErrors = validationService.validateIfLaIsOnboarded(LOCAL_AUTHORITY_CODE, USER_ID);
+        final List<String> validationErrors = validationService.validateIfLaIsOnboarded(LOCAL_AUTHORITY_CODE);
 
         assertThat(validationErrors).isEqualTo(errors);
     }
