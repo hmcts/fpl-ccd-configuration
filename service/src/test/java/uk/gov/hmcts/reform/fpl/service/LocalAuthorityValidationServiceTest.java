@@ -41,7 +41,7 @@ class LocalAuthorityValidationServiceTest {
         given(organisationService.findUserIdsInSameOrganisation(LOCAL_AUTHORITY_CODE)).willReturn(Set.of(""));
 
         List<String> errors = new ArrayList<>();
-        errors.add("Register for an account");
+        errors.add("Register for an account.");
         errors.add("You cannot start an online application until you’re fully registered.");
         errors.add("Ask your local authority’s public law administrator for help with registration.");
 
