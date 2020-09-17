@@ -83,14 +83,14 @@ public class OrganisationService {
         }
     }
 
-    public Organisation findOrganisation() {
+    public Optional<Organisation> findOrganisation() {
         try {
-            return organisationApi.findOrganisationById(requestData.authorisation(),
-                authTokenGenerator.generate());
+            return Optional.ofNullable(organisationApi.findOrganisationById(requestData.authorisation(),
+                authTokenGenerator.generate()));
 
         } catch (FeignException ex) {
             log.error("Could not find the associated organisation from reference data", ex);
-            return Organisation.builder().build();
+            return Optional.empty();
         }
     }
 }

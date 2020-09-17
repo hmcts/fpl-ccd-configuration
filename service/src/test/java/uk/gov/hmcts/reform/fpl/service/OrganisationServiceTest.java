@@ -65,7 +65,6 @@ class OrganisationServiceTest {
     private static final String AUTH_TOKEN_ID = "Bearer authorisedBearer";
     private static final String SERVICE_AUTH_TOKEN_ID = "Bearer authorised service";
     private static final String USER_EMAIL = "test@test.com";
-    private static final Organisation EMPTY_ORGANISATION = Organisation.builder().build();
     private static final Organisation POPULATED_ORGANISATION = buildOrganisation();
 
     @BeforeEach
@@ -171,9 +170,9 @@ class OrganisationServiceTest {
         when(organisationApi.findOrganisationById(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID))
             .thenReturn(POPULATED_ORGANISATION);
 
-        Organisation actualOrganisation = organisationService.findOrganisation();
+        Optional<Organisation> actualOrganisation = organisationService.findOrganisation();
 
-        assertThat(actualOrganisation).isEqualTo(POPULATED_ORGANISATION);
+        assertThat(actualOrganisation).contains(POPULATED_ORGANISATION);
     }
 
     @Test
@@ -181,9 +180,9 @@ class OrganisationServiceTest {
         when(organisationApi.findOrganisationById(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID))
             .thenThrow(new FeignException.NotFound("Organisation not found", REQUEST, new byte[]{}));
 
-        Organisation organisation = organisationService.findOrganisation();
+        Optional<Organisation> organisation = organisationService.findOrganisation();
 
-        assertThat(organisation).isEqualTo(EMPTY_ORGANISATION);
+        assertThat(organisation).isEmpty();
     }
 
     @Test

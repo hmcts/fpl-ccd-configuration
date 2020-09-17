@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -45,7 +46,7 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setup() {
-        given(organisationService.findOrganisation()).willReturn(POPULATED_ORGANISATION);
+        given(organisationService.findOrganisation()).willReturn(Optional.of(POPULATED_ORGANISATION));
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
         given(organisationApi.findOrganisationById(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN))
             .willReturn(POPULATED_ORGANISATION);
