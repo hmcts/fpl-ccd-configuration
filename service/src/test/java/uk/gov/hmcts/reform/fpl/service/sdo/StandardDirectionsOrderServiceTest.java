@@ -20,10 +20,9 @@ import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.Constants.USER_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
@@ -127,8 +126,7 @@ class StandardDirectionsOrderServiceTest {
         );
 
         assertThat(builtOrder).isEqualTo(expectedOrder);
-        verify(sealingService, never()).sealDocument(any(DocumentReference.class));
-        verify(conversionService, never()).convertToPdf(any(), any());
+        verifyNoInteractions(conversionService, conversionService);
     }
 
     @Test
