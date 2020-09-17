@@ -70,7 +70,7 @@ ccd:
     definitionImporter:
       enabled: false
     managementWeb:
-      enabled: true
+      enabled: false
     s2s:
       enabled: false
 
