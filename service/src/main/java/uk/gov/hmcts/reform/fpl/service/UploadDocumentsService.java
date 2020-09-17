@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.ArrayList;
@@ -20,7 +19,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 public class UploadDocumentsService {
 
     private final Time time;
-    private final RequestData requestData;
     private final DocumentUploaderService documentUploaderService;
 
     public List<Element<DocumentSocialWorkOther>> getOtherSocialWorkDocuments(CaseData caseDataBefore,
@@ -50,7 +48,7 @@ public class UploadDocumentsService {
     }
 
     private void setUpdatedByAndDateTime(Element<DocumentSocialWorkOther> doc) {
-        String uploadedBy = documentUploaderService.getUploadedDocumentUserDetails(requestData.authorisation());
+        String uploadedBy = documentUploaderService.getUploadedDocumentUserDetails();
         doc.getValue().setDateTimeUploaded(time.now());
         doc.getValue().setUploadedBy(uploadedBy);
     }

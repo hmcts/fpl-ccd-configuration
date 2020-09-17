@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -26,25 +28,33 @@ class DocumentUploaderServiceTest {
     @MockBean
     private IdamClient idamClient;
 
+    @MockBean
+    private RequestData requestData;
+
     @Autowired
     private DocumentUploaderService documentUploaderService;
+
+    @BeforeEach
+    void setUp() {
+        when(requestData.authorisation()).thenReturn(AUTH_TOKEN);
+    }
 
     @Test
     void shouldReturnUploadedDocumentUserInfoForUserWithHmctsRole() {
         when(idamClient.getUserDetails(eq(AUTH_TOKEN))).thenReturn(createUserDetailsWithHmctsRole());
-        assertThat(documentUploaderService.getUploadedDocumentUserDetails(AUTH_TOKEN)).isEqualTo("HMCTS");
+        assertThat(documentUploaderService.getUploadedDocumentUserDetails()).isEqualTo("HMCTS");
     }
 
     @Test
     void shouldReturnUploadedDocumentUserInfoForUserWithNonHmctsRole() {
         when(idamClient.getUserDetails(eq(AUTH_TOKEN))).thenReturn(createUserDetailsWithNonHmctsRole());
-        assertThat(documentUploaderService.getUploadedDocumentUserDetails(AUTH_TOKEN)).isEqualTo("steve.hudson@gov.uk");
+        assertThat(documentUploaderService.getUploadedDocumentUserDetails()).isEqualTo("steve.hudson@gov.uk");
     }
 
     @Test
     void shouldReturnUploadedDocumentUserInfoForUserWithHmctsAndNonHmctsRole() {
         when(idamClient.getUserDetails(eq(AUTH_TOKEN))).thenReturn(createUserDetailsWithHmctsAndNonHmctsRole());
-        assertThat(documentUploaderService.getUploadedDocumentUserDetails(AUTH_TOKEN)).isEqualTo("HMCTS");
+        assertThat(documentUploaderService.getUploadedDocumentUserDetails()).isEqualTo("HMCTS");
     }
 
     private UserDetails createUserDetailsWithHmctsRole() {

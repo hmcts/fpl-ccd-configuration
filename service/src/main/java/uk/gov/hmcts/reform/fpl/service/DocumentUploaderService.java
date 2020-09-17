@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -12,9 +13,10 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 public class DocumentUploaderService {
 
     private final IdamClient idamClient;
+    private final RequestData requestData;
 
-    public String getUploadedDocumentUserDetails(String authorisation) {
-        UserDetails userDetails = idamClient.getUserDetails(authorisation);
+    public String getUploadedDocumentUserDetails() {
+        UserDetails userDetails = idamClient.getUserDetails(requestData.authorisation());
 
         boolean isHmctsUser = userDetails.getRoles().stream().anyMatch(UserRole::isHmctsUser);
 
