@@ -71,19 +71,6 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
         return template;
     }
 
-    public Map<String, Object> buildCMOPartyReviewParameters(final CaseData caseData,
-                                                             byte[] documentContents,
-                                                             RepresentativeServingPreferences servingPreference) {
-
-        return ImmutableMap.<String, Object>builder()
-            .put(SUBJECT_LINE, buildCallout(caseData))
-            .put(RESPONDENT_LAST_NAME, getFirstRespondentLastName(caseData.getRespondents1()))
-            .put(DIGITAL_PREFERENCE, servingPreference == DIGITAL_SERVICE ? "Yes" : "No")
-            .put(CASE_URL, servingPreference == DIGITAL_SERVICE ? getCaseUrl(caseData.getId()) : "")
-            .putAll(linkToAttachedDocument(documentContents))
-            .build();
-    }
-
     private String buildCallout(final CaseData caseData) {
         HearingBooking hearing = null;
         if (caseData.hasFutureHearing(caseData.getHearingDetails())) {
