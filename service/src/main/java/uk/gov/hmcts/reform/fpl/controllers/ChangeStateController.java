@@ -44,11 +44,11 @@ public class ChangeStateController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        if (YesNo.fromString(caseData.getChangeState()) == YesNo.YES) {
+        if (YesNo.fromString(caseData.getConfirmChangeState()) == YesNo.YES) {
             caseDetails.getData().put("state", nextState(caseData));
         }
 
-        removeTemporaryFields(caseDetails, "changeState", "nextStateLabelContent");
+        removeTemporaryFields(caseDetails, "confirmChangeState", "nextStateLabelContent");
 
         return respond(caseDetails);
     }

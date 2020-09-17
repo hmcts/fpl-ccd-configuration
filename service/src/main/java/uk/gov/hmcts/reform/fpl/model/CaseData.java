@@ -488,7 +488,7 @@ public class CaseData {
 
     private String sendToCtsc;
     private String displayAmountToPay;
-    private final String changeState;
+    private final String confirmChangeState;
 
     public DynamicList buildDynamicHearingList() {
         return buildDynamicHearingList(null);
