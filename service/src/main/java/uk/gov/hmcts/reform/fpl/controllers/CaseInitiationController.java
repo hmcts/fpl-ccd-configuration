@@ -63,8 +63,6 @@ public class CaseInitiationController extends CallbackController {
         Map<String, Object> data = caseDetails.getData();
         data.put("caseLocalAuthority", caseLocalAuthority);
 
-        data.remove("pageShow");
-
         return respond(caseDetails);
     }
 

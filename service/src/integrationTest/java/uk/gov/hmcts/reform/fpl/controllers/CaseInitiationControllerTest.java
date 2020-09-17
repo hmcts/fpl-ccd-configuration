@@ -39,9 +39,9 @@ import java.util.Set;
 
 import static feign.Request.HttpMethod.GET;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -49,6 +49,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
@@ -79,7 +80,6 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
     private static final String CASE_ID = "12345";
     private static final Set<String> CASE_ROLES = Set.of("[LASOLICITOR]", "[CREATOR]");
-    private static final String PAGE_SHOW = "pageShow";
     private static final String LOCAL_AUTHORITY_CODE = "example";
 
     @MockBean
@@ -207,51 +207,37 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldSetPageShowToYesWhenToggleIsEnabledAndValidationHasFailed() {
+    void shouldNotValidateWhenToggleIsDisabled() {
+        given(featureToggleService.isBlockCasesForLocalAuthoritiesNotOnboardedEnabled(anyString())).willReturn(false);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("caseName", "title"))
+            .build();
+
+        postMidEvent(caseDetails);
+
+        verify(localAuthorityValidationService, never()).validateIfLaIsOnboarded(any(), any());
+    }
+
+    @Test
+    void shouldNotPopulateErrorsWhenToggleIsEnabledAndValidationIsSuccessful() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("caseName", "title",
+                "caseLocalAuthority", "example"))
+            .build();
+
         given(featureToggleService.isBlockCasesForLocalAuthoritiesNotOnboardedEnabled(anyString())).willReturn(true);
 
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("caseName", "title"))
-            .build();
+        given(localAuthorityValidationService.validateIfLaIsOnboarded(LOCAL_AUTHORITY_CODE, USER_ID))
+            .willReturn(emptyList());
 
-        List<String> errors = new ArrayList<>();
-        errors.add("This is an error");
+        AboutToStartOrSubmitCallbackResponse actualResponse = postMidEvent(caseDetails);
 
-        given(localAuthorityValidationService.validateIfLaIsOnboarded(any(), any())).willReturn(errors);
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
-
-        assertThat(callbackResponse.getData().get(PAGE_SHOW)).isEqualTo("YES");
+        assertThat(actualResponse.getErrors()).isEqualTo(emptyList());
     }
 
     @Test
-    void shouldNotSetPageShowWhenToggleIsDisabled() {
-        given(featureToggleService.isBlockCasesForLocalAuthoritiesNotOnboardedEnabled(anyString())).willReturn(false);
-
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("caseName", "title"))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
-
-        assertThat(callbackResponse.getData().get(PAGE_SHOW)).isNotEqualTo("YES");
-    }
-
-    @Test
-    void shouldRemovePageShowOnAboutToSubmit() {
-        given(featureToggleService.isBlockCasesForLocalAuthoritiesNotOnboardedEnabled(anyString())).willReturn(false);
-
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("caseName", "title", PAGE_SHOW, "YES"))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
-
-        assertNull(callbackResponse.getData().get(PAGE_SHOW));
-    }
-
-    @Test
-    void shouldPopulateErrorsWhenValidationFails() {
+    void shouldPopulateErrorsWhenToggleIsEnabledAndValidationFails() {
         List<String> expectedErrors = new ArrayList<>();
         expectedErrors.add("Register for an account");
         expectedErrors.add("You cannot start an online application until you’re fully registered.");
