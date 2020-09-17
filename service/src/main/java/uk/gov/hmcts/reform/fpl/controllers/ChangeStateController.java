@@ -33,7 +33,7 @@ public class ChangeStateController extends CallbackController {
 
         caseDetails.getData().put(
             "nextStateLabelContent",
-            String.format(LABEL_CONTENT, nextState(caseData).getValue().toLowerCase())
+            String.format(LABEL_CONTENT, nextState(caseData).getLabel().toLowerCase())
         );
 
         return respond(caseDetails);
