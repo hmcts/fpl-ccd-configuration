@@ -1529,14 +1529,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "migrateToMoWarning",
-    "Label": "# Register for an account\n\nYou cannot start an online application until you’re fully registered.\n\nRegister at [https://manage-org.platform.hmcts.net/organisation](https://manage-org.platform.hmcts.net/organisation).",
-    "FieldType": "Label",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "showManageOrgWarning",
     "Label": " ",
     "FieldType": "Text",
