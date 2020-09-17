@@ -31,7 +31,6 @@ public class UploadDocumentsService {
             listOfChangedDocs.removeAll(listOfOldDocs);
         }
 
-
         listOfChangedDocs.forEach(doc -> findElement(doc.getId(), listOfOldDocs)
             .ifPresent(e -> {
                 if (!e.getValue().getTypeOfDocument().equals(doc.getValue().getTypeOfDocument())) {
