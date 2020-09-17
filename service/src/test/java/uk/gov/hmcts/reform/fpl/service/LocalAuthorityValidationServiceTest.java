@@ -43,7 +43,7 @@ class LocalAuthorityValidationServiceTest {
         List<String> errors = new ArrayList<>();
         errors.add("Register for an account");
         errors.add("You cannot start an online application until you’re fully registered.");
-        errors.add("Press the back button on your browser to access the link.");
+        errors.add("Ask your local authority’s public law administrator for help with registration.");
 
         final List<String> validationErrors = validationService.validateIfLaIsOnboarded(LOCAL_AUTHORITY_CODE, USER_ID);
 
