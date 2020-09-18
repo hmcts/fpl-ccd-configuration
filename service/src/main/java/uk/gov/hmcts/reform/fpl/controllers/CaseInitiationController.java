@@ -43,8 +43,8 @@ public class CaseInitiationController extends CallbackController {
 
         List<String> errors = new ArrayList<>();
 
-        if (featureToggleService.isBlockCasesForLocalAuthoritiesNotOnboardedEnabled(localAuthorityName)) {
-            errors = localAuthorityOnboardedValidationService.validateIfLaIsOnboarded(caseLocalAuthority);
+        if (featureToggleService.isBlockCaseCreationForUsersNotOnboardedToMOEnabled(localAuthorityName)) {
+            errors = localAuthorityOnboardedValidationService.validateIfUserIsOnboarded();
         }
 
         return respond(caseDetails, errors);

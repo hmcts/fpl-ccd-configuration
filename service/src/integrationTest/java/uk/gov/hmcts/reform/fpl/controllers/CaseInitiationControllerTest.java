@@ -208,7 +208,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldNotValidateWhenToggleIsDisabled() {
-        given(featureToggleService.isBlockCasesForLocalAuthoritiesNotOnboardedEnabled(anyString())).willReturn(false);
+        given(featureToggleService.isBlockCaseCreationForUsersNotOnboardedToMOEnabled(anyString())).willReturn(false);
 
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("caseName", "title"))
@@ -216,7 +216,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
         postMidEvent(caseDetails);
 
-        verify(localAuthorityValidationService, never()).validateIfLaIsOnboarded(any());
+        verify(localAuthorityValidationService, never()).validateIfUserIsOnboarded(any());
     }
 
     @Test
@@ -226,9 +226,9 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
                 "caseLocalAuthority", "example"))
             .build();
 
-        given(featureToggleService.isBlockCasesForLocalAuthoritiesNotOnboardedEnabled(anyString())).willReturn(true);
+        given(featureToggleService.isBlockCaseCreationForUsersNotOnboardedToMOEnabled(anyString())).willReturn(true);
 
-        given(localAuthorityValidationService.validateIfLaIsOnboarded(LOCAL_AUTHORITY_CODE))
+        given(localAuthorityValidationService.validateIfUserIsOnboarded(LOCAL_AUTHORITY_CODE))
             .willReturn(emptyList());
 
         AboutToStartOrSubmitCallbackResponse actualResponse = postMidEvent(caseDetails);
@@ -248,9 +248,9 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
                 "caseLocalAuthority", "example"))
             .build();
 
-        given(featureToggleService.isBlockCasesForLocalAuthoritiesNotOnboardedEnabled(anyString())).willReturn(true);
+        given(featureToggleService.isBlockCaseCreationForUsersNotOnboardedToMOEnabled(anyString())).willReturn(true);
 
-        given(localAuthorityValidationService.validateIfLaIsOnboarded(LOCAL_AUTHORITY_CODE))
+        given(localAuthorityValidationService.validateIfUserIsOnboarded(LOCAL_AUTHORITY_CODE))
             .willReturn(expectedErrors);
 
         AboutToStartOrSubmitCallbackResponse actualResponse = postMidEvent(caseDetails);

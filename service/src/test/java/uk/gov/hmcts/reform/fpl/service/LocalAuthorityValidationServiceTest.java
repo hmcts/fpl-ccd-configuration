@@ -41,7 +41,7 @@ class LocalAuthorityValidationServiceTest {
     void shouldSuccessfullyValidateWhenLaIsOnboarded() {
         given(organisationService.findUserIdsInSameOrganisation(LOCAL_AUTHORITY_CODE)).willReturn(Set.of(USER_ID));
 
-        final List<String> validationErrors = validationService.validateIfLaIsOnboarded(LOCAL_AUTHORITY_CODE);
+        final List<String> validationErrors = validationService.validateIfUserIsOnboarded();
 
         assertThat(validationErrors).isEmpty();
     }
@@ -55,7 +55,7 @@ class LocalAuthorityValidationServiceTest {
         errors.add("You cannot start an online application until you’re fully registered.");
         errors.add("Ask your local authority’s public law administrator for help with registration.");
 
-        final List<String> validationErrors = validationService.validateIfLaIsOnboarded(LOCAL_AUTHORITY_CODE);
+        final List<String> validationErrors = validationService.validateIfUserIsOnboarded();
 
         assertThat(validationErrors).isEqualTo(errors);
     }

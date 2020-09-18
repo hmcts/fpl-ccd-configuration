@@ -166,8 +166,8 @@ class FeatureToggleServiceTest {
     void shouldMakeCorrectCallForIsBlockCasesForLocalAuthoritiesNotOnboardedEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
-        assertThat(service.isBlockCasesForLocalAuthoritiesNotOnboardedEnabled("test name")).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(eq("block-cases-for-local-authorities-not-onboarded"),
+        assertThat(service.isBlockCaseCreationForUsersNotOnboardedToMOEnabled("test name")).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(eq("block-cases-for-users-not-onboarded-to-mo"),
             any(LDUser.class), eq(false));
     }
 
