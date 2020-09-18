@@ -23,7 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.DocumentUploaderService;
+import uk.gov.hmcts.reform.fpl.service.DocumentUploadHelper;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.UploadC2DocumentsService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
@@ -62,7 +62,7 @@ public class UploadC2DocumentsController extends CallbackController {
     private final PbaNumberService pbaNumberService;
     private final Time time;
     private final UploadC2DocumentsService uploadC2DocumentsService;
-    private final DocumentUploaderService documentUploaderService;
+    private final DocumentUploadHelper documentUploadHelper;
 
     @PostMapping("/get-fee/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
@@ -155,7 +155,7 @@ public class UploadC2DocumentsController extends CallbackController {
     private List<Element<C2DocumentBundle>> buildC2DocumentBundle(CaseData caseData) {
         List<Element<C2DocumentBundle>> c2DocumentBundle = defaultIfNull(caseData.getC2DocumentBundle(),
             Lists.newArrayList());
-        String uploadedBy = documentUploaderService.getUploadedDocumentUserDetails();
+        String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
 
         List<SupportingEvidenceBundle> updatedSupportingEvidenceBundle =
             unwrapElements(caseData.getTemporaryC2Document().getSupportingEvidenceBundle())

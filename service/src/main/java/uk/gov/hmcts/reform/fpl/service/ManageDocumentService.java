@@ -35,7 +35,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListValueCode
 public class ManageDocumentService {
     private final ObjectMapper mapper;
     private final Time time;
-    private final DocumentUploaderService documentUploaderService;
+    private final DocumentUploadHelper documentUploadHelper;
 
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_KEY = "correspondenceDocuments";
     public static final String C2_DOCUMENTS_COLLECTION_KEY = "c2DocumentBundle";
@@ -175,7 +175,7 @@ public class ManageDocumentService {
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle,
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundleBefore) {
 
-        String uploadedBy = documentUploaderService.getUploadedDocumentUserDetails();
+        String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
 
         if (!Objects.equals(supportingEvidenceBundle, supportingEvidenceBundleBefore)) {
             List<Element<SupportingEvidenceBundle>> altered = new ArrayList<>(supportingEvidenceBundle);

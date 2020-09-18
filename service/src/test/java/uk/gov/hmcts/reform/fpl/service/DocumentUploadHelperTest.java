@@ -19,9 +19,9 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    DocumentUploaderService.class
+    DocumentUploadHelper.class
 })
-class DocumentUploaderServiceTest {
+class DocumentUploadHelperTest {
     private static final String AUTH_TOKEN = "token";
     private static final String USER_ID = "1";
 
@@ -32,7 +32,7 @@ class DocumentUploaderServiceTest {
     private RequestData requestData;
 
     @Autowired
-    private DocumentUploaderService documentUploaderService;
+    private DocumentUploadHelper documentUploadHelper;
 
     @BeforeEach
     void setUp() {
@@ -42,19 +42,19 @@ class DocumentUploaderServiceTest {
     @Test
     void shouldReturnUploadedDocumentUserInfoForUserWithHmctsRole() {
         when(idamClient.getUserDetails(eq(AUTH_TOKEN))).thenReturn(createUserDetailsWithHmctsRole());
-        assertThat(documentUploaderService.getUploadedDocumentUserDetails()).isEqualTo("HMCTS");
+        assertThat(documentUploadHelper.getUploadedDocumentUserDetails()).isEqualTo("HMCTS");
     }
 
     @Test
     void shouldReturnUploadedDocumentUserInfoForUserWithNonHmctsRole() {
         when(idamClient.getUserDetails(eq(AUTH_TOKEN))).thenReturn(createUserDetailsWithNonHmctsRole());
-        assertThat(documentUploaderService.getUploadedDocumentUserDetails()).isEqualTo("steve.hudson@gov.uk");
+        assertThat(documentUploadHelper.getUploadedDocumentUserDetails()).isEqualTo("steve.hudson@gov.uk");
     }
 
     @Test
     void shouldReturnUploadedDocumentUserInfoForUserWithHmctsAndNonHmctsRole() {
         when(idamClient.getUserDetails(eq(AUTH_TOKEN))).thenReturn(createUserDetailsWithHmctsAndNonHmctsRole());
-        assertThat(documentUploaderService.getUploadedDocumentUserDetails()).isEqualTo("HMCTS");
+        assertThat(documentUploadHelper.getUploadedDocumentUserDetails()).isEqualTo("HMCTS");
     }
 
     private UserDetails createUserDetailsWithHmctsRole() {

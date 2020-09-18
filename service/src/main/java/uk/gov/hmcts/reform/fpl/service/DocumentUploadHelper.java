@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
-public class DocumentUploaderService {
+public class DocumentUploadHelper {
 
     private final IdamClient idamClient;
     private final RequestData requestData;

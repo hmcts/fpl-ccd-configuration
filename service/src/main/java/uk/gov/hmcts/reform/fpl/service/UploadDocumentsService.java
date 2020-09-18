@@ -17,7 +17,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 public class UploadDocumentsService {
 
     private final Time time;
-    private final DocumentUploaderService documentUploaderService;
+    private final DocumentUploadHelper documentUploadHelper;
 
     public List<Element<DocumentSocialWorkOther>> getOtherSocialWorkDocuments(CaseData caseDataBefore,
                                                                               CaseData caseDataCurrent) {
@@ -42,7 +42,7 @@ public class UploadDocumentsService {
     }
 
     private void setUpdatedByAndDateTime(Element<DocumentSocialWorkOther> doc) {
-        String uploadedBy = documentUploaderService.getUploadedDocumentUserDetails();
+        String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
         doc.getValue().setDateTimeUploaded(time.now());
         doc.getValue().setUploadedBy(uploadedBy);
     }
