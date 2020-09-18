@@ -3,8 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentMetaData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
@@ -19,20 +18,19 @@ public class UploadDocumentsService {
     private final Time time;
     private final DocumentUploadHelper documentUploadHelper;
 
-    public List<Element<DocumentSocialWorkOther>> getOtherSocialWorkDocuments(CaseData caseDataBefore,
-                                                                              CaseData caseDataCurrent) {
-        List<Element<DocumentSocialWorkOther>> listOfCurrentDocs = caseDataCurrent.getOtherSocialWorkDocuments();
-        List<Element<DocumentSocialWorkOther>> listOfOldDocs = caseDataBefore.getOtherSocialWorkDocuments();
+    public <T extends DocumentMetaData> List<Element<T>> setUpdatedByAndDateAndTimeForDocuments(
+        List<Element<T>> listOfCurrentDocs,
+        List<Element<T>> listOfOldDocs) {
 
         listOfCurrentDocs.stream()
             .filter(doc -> !listOfOldDocs.contains(doc))
             .forEach(doc -> findElement(doc.getId(), listOfOldDocs)
-            .ifPresent(e -> {
-                if (!e.getValue().getTypeOfDocument().equals(doc.getValue().getTypeOfDocument())) {
-                    setUpdatedByAndDateTime(doc);
-                }
-            })
-        );
+                .ifPresent(e -> {
+                    if (!e.getValue().getTypeOfDocument().equals(doc.getValue().getTypeOfDocument())) {
+                        setUpdatedByAndDateTime(doc);
+                    }
+                })
+            );
 
         listOfCurrentDocs.stream()
             .filter(doc -> doc.getValue().getDateTimeUploaded() == null)
@@ -41,7 +39,7 @@ public class UploadDocumentsService {
         return listOfCurrentDocs;
     }
 
-    private void setUpdatedByAndDateTime(Element<DocumentSocialWorkOther> doc) {
+    private <T extends DocumentMetaData> void setUpdatedByAndDateTime(Element<T> doc) {
         String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
         doc.getValue().setDateTimeUploaded(time.now());
         doc.getValue().setUploadedBy(uploadedBy);

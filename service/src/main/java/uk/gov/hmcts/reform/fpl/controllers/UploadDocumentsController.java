@@ -36,7 +36,8 @@ public class UploadDocumentsController extends CallbackController {
 
         if (errors.isEmpty()) {
             List<Element<DocumentSocialWorkOther>> listOfOtherDocs =
-                uploadDocumentsService.getOtherSocialWorkDocuments(caseDataBefore, caseData);
+                uploadDocumentsService.setUpdatedByAndDateAndTimeForDocuments(
+                    caseDataBefore.getOtherSocialWorkDocuments(), caseData.getOtherSocialWorkDocuments());
 
             caseDetails.getData().put("documents_socialWorkOther", listOfOtherDocs);
         }

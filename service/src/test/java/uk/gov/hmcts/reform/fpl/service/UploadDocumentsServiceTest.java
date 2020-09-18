@@ -13,6 +13,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -57,7 +58,10 @@ class UploadDocumentsServiceTest {
     void shouldUpdateOtherSocialWorkDocumentsListWithUpdatedDetailsAndUser(String user) {
         when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(user);
 
-        List<DocumentSocialWorkOther> list = unwrapElements(uploadDocumentsService.getOtherSocialWorkDocuments(createCaseDataWithOldDocumentSocialWorkOther(), createCaseDataWithUpdatedDocumentSocialWorkOther()));
+        List<DocumentSocialWorkOther> list = unwrapElements(
+            uploadDocumentsService.setUpdatedByAndDateAndTimeForDocuments(
+                createCaseDataWithUpdatedDocumentSocialWorkOther(),
+                createCaseDataWithOldDocumentSocialWorkOther()));
 
         assertThat(list).first()
             .extracting(DocumentSocialWorkOther::getTypeOfDocument)
@@ -82,7 +86,10 @@ class UploadDocumentsServiceTest {
     void shouldUpdateOtherSocialWorkDocumentsListWithNewDocument(String user) {
         when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(user);
 
-        List<DocumentSocialWorkOther> list = unwrapElements(uploadDocumentsService.getOtherSocialWorkDocuments(createCaseDataWithOldDocumentSocialWorkOther(), createCaseDataWithCurrentDocumentSocialWorkOther()));
+        List<DocumentSocialWorkOther> list = unwrapElements(
+            uploadDocumentsService.setUpdatedByAndDateAndTimeForDocuments(
+                createCaseDataWithCurrentDocumentSocialWorkOther(),
+                createCaseDataWithOldDocumentSocialWorkOther()));
 
         assertThat(list)
             .extracting(DocumentSocialWorkOther::getDocumentTitle)
@@ -98,7 +105,7 @@ class UploadDocumentsServiceTest {
             .containsExactly(user, user);
     }
 
-    private CaseData createCaseDataWithCurrentDocumentSocialWorkOther() {
+    private List<Element<DocumentSocialWorkOther>> createCaseDataWithCurrentDocumentSocialWorkOther() {
         return givenCaseData.toBuilder()
             .otherSocialWorkDocuments(wrapElements(DocumentSocialWorkOther.builder()
                     .documentTitle("Additional Doc 1 - changed")
@@ -112,34 +119,34 @@ class UploadDocumentsServiceTest {
                     .typeOfDocument(DocumentReference.builder()
                         .url("/test2.doc")
                         .build())
-                    .build()
-            ))
-            .build();
+                    .build()))
+            .build()
+            .getOtherSocialWorkDocuments();
     }
 
-    private CaseData createCaseDataWithOldDocumentSocialWorkOther() {
+    private List<Element<DocumentSocialWorkOther>> createCaseDataWithOldDocumentSocialWorkOther() {
         return givenCaseData.toBuilder()
             .otherSocialWorkDocuments(wrapElements(DocumentSocialWorkOther.builder()
-                    .documentTitle("Additional Doc 1")
-                    .typeOfDocument(DocumentReference.builder()
-                        .url("/test.doc")
-                        .build())
-                    .uploadedBy("OldLAUser")
-                    .build()
-            ))
-            .build();
+                .documentTitle("Additional Doc 1")
+                .typeOfDocument(DocumentReference.builder()
+                    .url("/test.doc")
+                    .build())
+                .uploadedBy("OldLAUser")
+                .build()))
+            .build()
+            .getOtherSocialWorkDocuments();
     }
 
-    private CaseData createCaseDataWithUpdatedDocumentSocialWorkOther() {
+    private List<Element<DocumentSocialWorkOther>> createCaseDataWithUpdatedDocumentSocialWorkOther() {
         return givenCaseData.toBuilder()
             .otherSocialWorkDocuments(wrapElements(DocumentSocialWorkOther.builder()
                 .documentTitle("New Additional Doc 1")
                 .typeOfDocument(DocumentReference.builder()
                     .url("/new_test.doc")
                     .build())
-                .build()
-            ))
-            .build();
+                .build()))
+            .build()
+            .getOtherSocialWorkDocuments();
     }
 
     private CaseData prepareCaseData() {
