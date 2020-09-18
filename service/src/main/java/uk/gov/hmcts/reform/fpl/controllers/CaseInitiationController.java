@@ -10,16 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityUserService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityValidationService;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 @Api
@@ -31,23 +27,12 @@ public class CaseInitiationController extends CallbackController {
     private final LocalAuthorityUserService localAuthorityUserService;
     private final LocalAuthorityValidationService localAuthorityOnboardedValidationService;
 
-    private final FeatureToggleService featureToggleService;
-    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
-
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(
         @RequestBody CallbackRequest callbackrequest) {
-        String caseLocalAuthority = localAuthorityNameService.getLocalAuthorityCode();
-        String localAuthorityName = localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseLocalAuthority);
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
 
-        List<String> errors = new ArrayList<>();
-
-        if (featureToggleService.isBlockCaseCreationForUsersNotOnboardedToMOEnabled(localAuthorityName)) {
-            errors = localAuthorityOnboardedValidationService.validateIfUserIsOnboarded();
-        }
-
-        return respond(caseDetails, errors);
+        return respond(caseDetails, localAuthorityOnboardedValidationService.validateIfUserIsOnboarded());
     }
 
     @PostMapping("/about-to-submit")

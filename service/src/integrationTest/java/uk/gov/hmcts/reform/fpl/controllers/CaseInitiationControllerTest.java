@@ -49,7 +49,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
@@ -208,15 +207,15 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldNotValidateWhenToggleIsDisabled() {
-        given(featureToggleService.isBlockCaseCreationForUsersNotOnboardedToMOEnabled(anyString())).willReturn(false);
+        given(featureToggleService.isAllowCaseCreationForUsersNotOnboardedToMOEnabled(anyString())).willReturn(false);
 
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("caseName", "title"))
             .build();
 
-        postMidEvent(caseDetails);
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseDetails);
 
-        verify(localAuthorityValidationService, never()).validateIfUserIsOnboarded(any());
+        assertThat(response.getErrors()).isEmpty();
     }
 
     @Test
@@ -226,14 +225,14 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
                 "caseLocalAuthority", "example"))
             .build();
 
-        given(featureToggleService.isBlockCaseCreationForUsersNotOnboardedToMOEnabled(anyString())).willReturn(true);
+        given(featureToggleService.isAllowCaseCreationForUsersNotOnboardedToMOEnabled(anyString())).willReturn(true);
 
-        given(localAuthorityValidationService.validateIfUserIsOnboarded(LOCAL_AUTHORITY_CODE))
+        given(localAuthorityValidationService.validateIfUserIsOnboarded())
             .willReturn(emptyList());
 
         AboutToStartOrSubmitCallbackResponse actualResponse = postMidEvent(caseDetails);
 
-        assertThat(actualResponse.getErrors()).isEqualTo(emptyList());
+        assertThat(actualResponse.getErrors().isEmpty());
     }
 
     @Test
@@ -248,10 +247,9 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
                 "caseLocalAuthority", "example"))
             .build();
 
-        given(featureToggleService.isBlockCaseCreationForUsersNotOnboardedToMOEnabled(anyString())).willReturn(true);
+        given(featureToggleService.isAllowCaseCreationForUsersNotOnboardedToMOEnabled(anyString())).willReturn(true);
 
-        given(localAuthorityValidationService.validateIfUserIsOnboarded(LOCAL_AUTHORITY_CODE))
-            .willReturn(expectedErrors);
+        given(localAuthorityValidationService.validateIfUserIsOnboarded()).willReturn(expectedErrors);
 
         AboutToStartOrSubmitCallbackResponse actualResponse = postMidEvent(caseDetails);
 
