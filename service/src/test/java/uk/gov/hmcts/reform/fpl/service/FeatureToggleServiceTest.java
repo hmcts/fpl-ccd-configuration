@@ -163,7 +163,7 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsBlockCasesForLocalAuthoritiesNotOnboardedEnabled(Boolean toggleState) {
+    void shouldMakeCorrectCallForIsAllowCaseCreationForUsersNotOnboardedToMOEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
         assertThat(service.isAllowCaseCreationForUsersNotOnboardedToMOEnabled("test name")).isEqualTo(toggleState);

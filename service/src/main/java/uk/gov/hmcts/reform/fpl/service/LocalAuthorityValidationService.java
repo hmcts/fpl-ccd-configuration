@@ -16,6 +16,7 @@ public class LocalAuthorityValidationService {
     private final FeatureToggleService featureToggleService;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final LocalAuthorityService localAuthorityNameService;
+    private final Organisation EMPTY_ORGANISATION = Organisation.builder().build();
 
     public List<String> validateIfUserIsOnboarded() {
         List<String> errors = new ArrayList<>();
@@ -24,7 +25,7 @@ public class LocalAuthorityValidationService {
 
         if (featureToggleService.isAllowCaseCreationForUsersNotOnboardedToMOEnabled(localAuthorityName) == false) {
 
-            if (organisationService.findOrganisation().equals(Organisation.builder().build())) {
+            if (organisationService.findOrganisation().equals(EMPTY_ORGANISATION)) {
                 errors.add("Register for an account.");
                 errors.add("You cannot start an online application until you’re fully registered.");
                 errors.add("Ask your local authority’s public law administrator for help with registration.");

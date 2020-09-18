@@ -56,7 +56,8 @@ class LocalAuthorityValidationServiceTest {
     }
 
     @Test
-    void shouldSuccessfullyValidateWhenUserIsOnboardedAndToggleEnabled() {
+    void shouldNotReturnErrorsWhenToggleIsDisabledAndUserIsOnboarded() {
+        given(featureToggleService.isAllowCaseCreationForUsersNotOnboardedToMOEnabled(LOCAL_AUTHORITY_NAME)).willReturn(false);
         Organisation organisation = Organisation.builder().organisationIdentifier(ORGANISATION_IDENTIFIER).build();
         given(organisationService.findOrganisation()).willReturn(organisation);
 
@@ -66,35 +67,28 @@ class LocalAuthorityValidationServiceTest {
     }
 
     @Test
-    void shouldNotValidateWhenUserHasNotBeenOnboarded() {
+    void shouldReturnErrorsWhenToggleIsDisabledAndUserHasNotBeenOnboarded() {
+        given(featureToggleService.isAllowCaseCreationForUsersNotOnboardedToMOEnabled(LOCAL_AUTHORITY_NAME))
+            .willReturn(false);
         given(organisationService.findOrganisation()).willReturn(Organisation.builder().build());
 
-        final List<String> validationErrors = validationService.validateIfUserIsOnboarded();
+        final List<String> errors = validationService.validateIfUserIsOnboarded();
 
-        assertThat(validationErrors).containsExactly(
+        verify(organisationService, times(1)).findOrganisation();
+        assertThat(errors).containsExactly(
             "Register for an account.",
             "You cannot start an online application until you’re fully registered.",
             "Ask your local authority’s public law administrator for help with registration.");
     }
 
     @Test
-    void shouldNotValidateWhenToggleIsEnabled() {
+    void shouldNotReturnErrorsWhenToggleIsEnabled() {
         given(featureToggleService.isAllowCaseCreationForUsersNotOnboardedToMOEnabled(LOCAL_AUTHORITY_NAME))
             .willReturn(true);
 
-        validationService.validateIfUserIsOnboarded();
+        List<String> errors = validationService.validateIfUserIsOnboarded();
 
         verifyNoInteractions(organisationService);
-    }
-
-    @Test
-    void shouldValidateWhenToggleIsDisabled() {
-        given(featureToggleService.isAllowCaseCreationForUsersNotOnboardedToMOEnabled(LOCAL_AUTHORITY_NAME))
-            .willReturn(false);
-        given(organisationService.findOrganisation()).willReturn(Organisation.builder().build());
-
-        validationService.validateIfUserIsOnboarded();
-
-        verify(organisationService, times(1)).findOrganisation();
+        assertThat(errors.isEmpty());
     }
 }
