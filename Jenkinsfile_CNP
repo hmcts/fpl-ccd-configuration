@@ -165,6 +165,7 @@ withPipeline(type, product, component) {
 
   after('functionalTest:preview') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/**/*'
   }
 
   before('buildinfra:demo') {
