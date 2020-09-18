@@ -56,8 +56,8 @@ public class FeatureToggleService {
     }
 
     public boolean isAllowCaseCreationForUsersNotOnboardedToMOEnabled(String localAuthorityName) {
-        return ldClient.boolVariation("block-cases-for-users-not-onboarded-to-mo",
-            createLDUser(Map.of("localAuthorityName", LDValue.of(localAuthorityName))), true);
+        return ldClient.boolVariation("allow-case-creation-for-users-not-onboarded-to-mo",
+            createLDUser(Map.of("localAuthorityName", LDValue.of(localAuthorityName))), false);
     }
 
     private LDUser createLDUser() {

@@ -51,7 +51,8 @@ class LocalAuthorityValidationServiceTest {
     void setup() {
         given(requestData.userId()).willReturn(USER_ID);
         given(localAuthorityNameService.getLocalAuthorityCode()).willReturn(LOCAL_AUTHORITY_CODE);
-        given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE)).willReturn(LOCAL_AUTHORITY_NAME);
+        given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
+            .willReturn(LOCAL_AUTHORITY_NAME);
     }
 
     @Test
@@ -78,7 +79,8 @@ class LocalAuthorityValidationServiceTest {
 
     @Test
     void shouldNotValidateWhenToggleIsEnabled() {
-        given(featureToggleService.isAllowCaseCreationForUsersNotOnboardedToMOEnabled(LOCAL_AUTHORITY_NAME)).willReturn(true);
+        given(featureToggleService.isAllowCaseCreationForUsersNotOnboardedToMOEnabled(LOCAL_AUTHORITY_NAME))
+            .willReturn(true);
 
         validationService.validateIfUserIsOnboarded();
 
@@ -87,7 +89,8 @@ class LocalAuthorityValidationServiceTest {
 
     @Test
     void shouldValidateWhenToggleIsDisabled() {
-        given(featureToggleService.isAllowCaseCreationForUsersNotOnboardedToMOEnabled(LOCAL_AUTHORITY_NAME)).willReturn(false);
+        given(featureToggleService.isAllowCaseCreationForUsersNotOnboardedToMOEnabled(LOCAL_AUTHORITY_NAME))
+            .willReturn(false);
         given(organisationService.findOrganisation()).willReturn(Organisation.builder().build());
 
         validationService.validateIfUserIsOnboarded();

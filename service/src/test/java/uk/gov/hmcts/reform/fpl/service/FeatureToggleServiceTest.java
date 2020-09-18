@@ -167,7 +167,7 @@ class FeatureToggleServiceTest {
         givenToggle(toggleState);
 
         assertThat(service.isAllowCaseCreationForUsersNotOnboardedToMOEnabled("test name")).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(eq("block-cases-for-users-not-onboarded-to-mo"),
+        verify(ldClient).boolVariation(eq("allow-case-creation-for-users-not-onboarded-to-mo"),
             any(LDUser.class), eq(false));
     }
 
