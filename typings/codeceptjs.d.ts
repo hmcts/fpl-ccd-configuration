@@ -293,6 +293,7 @@ declare namespace CodeceptJS {
     seeDocument(title: string, name: string, status?: string, reason?: string) : void,
     seeFamilyManNumber(familyManNumber: string) : void,
     seeInTab(path: string | string[], answer: string | string[]): void,
+    seeAvailableEvents(events: string[]): void
     dontSeeInTab(path: string | string[]): void,
     seeCaseInSearchResult(caseId: string | number): void
     dontSeeCaseInSearchResult(caseId: string | number): void
