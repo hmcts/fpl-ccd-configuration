@@ -22,8 +22,6 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.GrantCaseAccessException;
 import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityCodeException;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.fpl.service.LocalAuthorityValidationService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
@@ -32,20 +30,17 @@ import uk.gov.hmcts.reform.rd.model.OrganisationUser;
 import uk.gov.hmcts.reform.rd.model.OrganisationUsers;
 import uk.gov.hmcts.reform.rd.model.Status;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import static feign.Request.HttpMethod.GET;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
@@ -100,12 +95,6 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
     @MockBean
     private CoreCaseDataService coreCaseDataService;
-
-    @MockBean
-    private FeatureToggleService featureToggleService;
-
-    @MockBean
-    private LocalAuthorityValidationService localAuthorityValidationService;
 
     @Autowired
     private SystemUpdateUserConfiguration userConfig;
@@ -202,57 +191,6 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
         postSubmittedEvent(getCase(LA_NOT_IN_PRD_CODE));
 
         verifyGrantCaseRoleAttempts(LA_NOT_IN_PRD_USER_IDS, 2);
-    }
-
-    @Test
-    void shouldNotValidateWhenToggleIsDisabled() {
-        given(featureToggleService.isAllowCaseCreationForUsersNotOnboardedToMOEnabled(anyString())).willReturn(false);
-
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("caseName", "title"))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseDetails);
-
-        assertThat(response.getErrors()).isEmpty();
-    }
-
-    @Test
-    void shouldNotPopulateErrorsWhenToggleIsEnabledAndValidationIsSuccessful() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("caseName", "title",
-                "caseLocalAuthority", "example"))
-            .build();
-
-        given(featureToggleService.isAllowCaseCreationForUsersNotOnboardedToMOEnabled(anyString())).willReturn(true);
-
-        given(localAuthorityValidationService.validateIfUserIsOnboarded())
-            .willReturn(emptyList());
-
-        AboutToStartOrSubmitCallbackResponse actualResponse = postMidEvent(caseDetails);
-
-        assertThat(actualResponse.getErrors().isEmpty());
-    }
-
-    @Test
-    void shouldPopulateErrorsWhenToggleIsEnabledAndValidationFails() {
-        List<String> expectedErrors = new ArrayList<>();
-        expectedErrors.add("Register for an account");
-        expectedErrors.add("You cannot start an online application until you’re fully registered.");
-        expectedErrors.add("Press the back button on your browser to access the link.");
-
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("caseName", "title",
-                "caseLocalAuthority", "example"))
-            .build();
-
-        given(featureToggleService.isAllowCaseCreationForUsersNotOnboardedToMOEnabled(anyString())).willReturn(true);
-
-        given(localAuthorityValidationService.validateIfUserIsOnboarded()).willReturn(expectedErrors);
-
-        AboutToStartOrSubmitCallbackResponse actualResponse = postMidEvent(caseDetails);
-
-        assertThat(actualResponse.getErrors()).isEqualTo(expectedErrors);
     }
 
     @Test
