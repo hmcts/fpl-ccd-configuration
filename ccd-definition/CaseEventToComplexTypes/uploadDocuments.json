@@ -16,5 +16,149 @@
     "ListElementCode": "typeOfDocument",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "documents_socialWorkChronology_document",
+    "ListElementCode": "typeOfDocument",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "documents_socialWorkChronology_document",
+    "ListElementCode": "documentStatus",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "documents_socialWorkStatement_document",
+    "ListElementCode": "typeOfDocument",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "documents_socialWorkStatement_document",
+    "ListElementCode": "documentStatus",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "documents_socialWorkAssessment_document",
+    "ListElementCode": "typeOfDocument",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "documents_socialWorkAssessment_document",
+    "ListElementCode": "documentStatus",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "documents_socialWorkCarePlan_document",
+    "ListElementCode": "typeOfDocument",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "documents_socialWorkCarePlan_document",
+    "ListElementCode": "documentStatus",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "documents_socialWorkEvidenceTemplate_document",
+    "ListElementCode": "typeOfDocument",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "documents_socialWorkEvidenceTemplate_document",
+    "ListElementCode": "documentStatus",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "documents_threshold_document",
+    "ListElementCode": "typeOfDocument",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "documents_threshold_document",
+    "ListElementCode": "documentStatus",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "documents_checklist_document",
+    "ListElementCode": "typeOfDocument",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "documents_checklist_document",
+    "ListElementCode": "documentStatus",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "courtBundle",
+    "ListElementCode": "typeOfDocument",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "courtBundle",
+    "ListElementCode": "documentStatus",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
   }
 ]
