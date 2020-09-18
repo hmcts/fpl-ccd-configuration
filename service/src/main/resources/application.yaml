@@ -132,7 +132,8 @@ scheduler:
       cronGroup: "NIGHTLY_CRON"
       description: 'Finds upcoming hearings'
       jobClass: 'uk.gov.hmcts.reform.fpl.jobs.UpcomingHearingsFinder'
-      cron: ${UPCOMING_HEARINGS_CRON:0 0 2 ? * MON-FRI *}
+      cron: ${UPCOMING_HEARINGS_CRON:0 0/15 * ? * MON-FRI *}
+      # A frequent cron has been added to test db version, it's going to be for demo only.
 
 testing:
   support:
