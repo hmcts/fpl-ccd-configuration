@@ -36,7 +36,7 @@ Scenario('Judge makes changes to agreed CMO and seals', async (I, caseViewPage, 
   await I.retryUntilExists(() => I.click('Continue'), '#reviewCMODecision_decision');
   I.see('mockFile.docx');
   reviewAgreedCaseManagementOrderEventPage.selectMakeChangesToCmo();
-  reviewAgreedCaseManagementOrderEventPage.uploadAmendedCmo(config.testNonEmptyWordFile);
+  reviewAgreedCaseManagementOrderEventPage.uploadAmendedCmo(config.testWordFile);
   await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
   I.seeEventSubmissionConfirmation(config.applicationActions.reviewAgreedCmo);
   caseViewPage.selectTab(caseViewPage.tabs.orders);

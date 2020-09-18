@@ -8,7 +8,7 @@ const localAuthoritySendsAgreedCmo = async function (I, caseViewPage, uploadCase
     await I.retryUntilExists(() => I.click('Continue'), '#uploadedCaseManagementOrder');
   }
 
-  await uploadCaseManagementOrderEventPage.uploadCaseManagementOrder(config.testNonEmptyWordFile);
+  await uploadCaseManagementOrderEventPage.uploadCaseManagementOrder(config.testWordFile);
   await I.completeEvent('Submit');
 };
 
