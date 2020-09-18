@@ -16,5 +16,15 @@
     "ElementLabel": " ",
     "SecurityClassification": "Public",
     "FieldShowCondition": "type = \"NAMED_DATE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "InterimEndDate",
+    "ListElementCode": "endDateTime",
+    "FieldType": "DateTime",
+    "EventHintText": "Give the document a descriptive name. For example, 'Parenting assessment' or 'Paediatric report'.",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type = \"SPECIFIC_TIME_NAMED_DATE\""
   }
 ]
