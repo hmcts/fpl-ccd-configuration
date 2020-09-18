@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentMetaData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -37,6 +38,25 @@ public class UploadDocumentsService {
             .forEach(this::setUpdatedByAndDateTime);
 
         return listOfCurrentDocs;
+    }
+
+    public Document setUpdatedByAndDateAndTimeForDocuments(Document currentDoc, Document oldDoc) {
+
+        if (!currentDoc.getTypeOfDocument().equals(oldDoc.getTypeOfDocument())) {
+            return buildDocument(currentDoc);
+        } else if (currentDoc.getDateTimeUploaded() == null) {
+            return buildDocument(currentDoc);
+        }
+        return null;
+    }
+
+    private Document buildDocument(Document currentDoc) {
+        String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
+
+        return currentDoc.toBuilder()
+            .dateTimeUploaded(time.now())
+            .uploadedBy(uploadedBy)
+            .build();
     }
 
     private <T extends DocumentMetaData> void setUpdatedByAndDateTime(Element<T> doc) {

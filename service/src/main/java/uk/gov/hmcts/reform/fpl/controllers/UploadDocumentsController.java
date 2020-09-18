@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DocumentsValidatorService;
@@ -39,7 +40,13 @@ public class UploadDocumentsController extends CallbackController {
                 uploadDocumentsService.setUpdatedByAndDateAndTimeForDocuments(
                     caseDataBefore.getOtherSocialWorkDocuments(), caseData.getOtherSocialWorkDocuments());
 
+            Document socialWorkChronologyDocument =
+                uploadDocumentsService.setUpdatedByAndDateAndTimeForDocuments(
+                    caseDataBefore.getSocialWorkChronologyDocument(),
+                    caseData.getSocialWorkChronologyDocument());
+
             caseDetails.getData().put("documents_socialWorkOther", listOfOtherDocs);
+            caseDetails.getData().put("socialWorkChronologyDocument", socialWorkChronologyDocument);
         }
 
         return respond(caseDetails, documentsValidatorService.validateDocuments(caseData));

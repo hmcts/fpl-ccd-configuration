@@ -11,6 +11,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -83,6 +84,30 @@ class UploadDocumentsServiceTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"HMCTS", "someLA@la.co.uk"})
+    void shouldUpdateDocumentsListWithUpdatedDetailsAndUser(String user) {
+        when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(user);
+
+        Document list =
+            uploadDocumentsService.setUpdatedByAndDateAndTimeForDocuments(
+                createCaseDataWithUpdatedDocument(),
+                createCaseDataWithOldDocument());
+
+        assertThat(list)
+            .extracting(Document::getTypeOfDocument)
+            .extracting(DocumentReference::getUrl)
+            .isEqualTo("/new_test.doc");
+
+        assertThat(list)
+            .extracting(Document::getDateTimeUploaded)
+            .isEqualTo(time.now());
+
+        assertThat(list)
+            .extracting(Document::getUploadedBy)
+            .isEqualTo(user);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"HMCTS", "someLA@la.co.uk"})
     void shouldUpdateOtherSocialWorkDocumentsListWithNewDocument(String user) {
         when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(user);
 
@@ -147,6 +172,29 @@ class UploadDocumentsServiceTest {
                 .build()))
             .build()
             .getOtherSocialWorkDocuments();
+    }
+
+    private Document createCaseDataWithOldDocument() {
+        return givenCaseData.toBuilder()
+            .socialWorkChronologyDocument(Document.builder()
+                .typeOfDocument(DocumentReference.builder()
+                    .url("/test.doc")
+                    .build())
+                .uploadedBy("OldLAUser")
+                .build())
+            .build()
+            .getSocialWorkChronologyDocument();
+    }
+
+    private Document createCaseDataWithUpdatedDocument() {
+        return givenCaseData.toBuilder()
+            .socialWorkChronologyDocument(Document.builder()
+                .typeOfDocument(DocumentReference.builder()
+                    .url("/new_test.doc")
+                    .build())
+                .build())
+            .build()
+            .getSocialWorkChronologyDocument();
     }
 
     private CaseData prepareCaseData() {
