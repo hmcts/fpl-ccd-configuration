@@ -101,6 +101,10 @@ module.exports = function () {
       }
     },
 
+    seeFamilyManNumber(familyManNumber) {
+      this.seeElement(`//*[@class="markdown"]//h2/strong[text()='FamilyMan ID: ${familyManNumber}']`);
+    },
+
     tabFieldSelector(pathToField) {
       let path = [].concat(pathToField);
       let fieldName = path.splice(-1, 1)[0];
