@@ -57,7 +57,8 @@ class LocalAuthorityValidationServiceTest {
 
     @Test
     void shouldNotReturnErrorsWhenToggleIsDisabledAndUserIsOnboarded() {
-        given(featureToggleService.isAllowCaseCreationForUsersNotOnboardedToMOEnabled(LOCAL_AUTHORITY_NAME)).willReturn(false);
+        given(featureToggleService.isAllowCaseCreationForUsersNotOnboardedToMOEnabled(LOCAL_AUTHORITY_NAME))
+            .willReturn(false);
         Organisation organisation = Organisation.builder().organisationIdentifier(ORGANISATION_IDENTIFIER).build();
         given(organisationService.findOrganisation()).willReturn(organisation);
 

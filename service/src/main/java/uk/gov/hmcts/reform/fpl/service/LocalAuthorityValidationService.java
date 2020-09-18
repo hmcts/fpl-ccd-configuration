@@ -16,14 +16,14 @@ public class LocalAuthorityValidationService {
     private final FeatureToggleService featureToggleService;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final LocalAuthorityService localAuthorityNameService;
-    private final Organisation EMPTY_ORGANISATION = Organisation.builder().build();
+    private static final Organisation EMPTY_ORGANISATION = Organisation.builder().build();
 
     public List<String> validateIfUserIsOnboarded() {
         List<String> errors = new ArrayList<>();
         String caseLocalAuthority = localAuthorityNameService.getLocalAuthorityCode();
         String localAuthorityName = localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseLocalAuthority);
 
-        if (featureToggleService.isAllowCaseCreationForUsersNotOnboardedToMOEnabled(localAuthorityName) == false) {
+        if (!featureToggleService.isAllowCaseCreationForUsersNotOnboardedToMOEnabled(localAuthorityName)) {
 
             if (organisationService.findOrganisation().equals(EMPTY_ORGANISATION)) {
                 errors.add("Register for an account.");

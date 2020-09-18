@@ -65,6 +65,7 @@ class CaseInitiationMidEventControllerTest extends AbstractControllerTest {
         given(client.getUserInfo(USER_AUTH_TOKEN)).willReturn(
             UserInfo.builder().sub("user@example.gov.uk").build());
     }
+
     @Test
     void shouldNotPopulateErrorsWhenToggleIsEnabled() {
         CaseDetails caseDetails = CaseDetails.builder()
