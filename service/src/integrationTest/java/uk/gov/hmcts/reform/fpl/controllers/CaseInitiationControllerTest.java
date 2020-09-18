@@ -74,6 +74,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
     private static final String CASE_ID = "12345";
     private static final Set<String> CASE_ROLES = Set.of("[LASOLICITOR]", "[CREATOR]");
+    private static final String PAGE_SHOW = "pageShow";
 
     @MockBean
     private LocalAuthorityUserLookupConfiguration localAuthorityUserLookupConfiguration;
@@ -121,6 +122,19 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void shouldAddCaseLocalAuthorityToCaseData() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("caseName", "title"))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
+
+        assertThat(callbackResponse.getData())
+            .containsEntry("caseName", "title")
+            .containsEntry("caseLocalAuthority", "example");
+    }
+
+    @Test
     void shouldPopulateErrorsInResponseWhenDomainNameIsNotFound() {
         AboutToStartOrSubmitCallbackResponse expectedResponse = AboutToStartOrSubmitCallbackResponse.builder()
             .errors(List.of("The email address was not linked to a known Local Authority"))
@@ -144,6 +158,31 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
         postSubmittedEvent(request);
 
         verifyGrantCaseRoleAttempts(LA_IN_PRD_USER_IDS);
+        verifyTaskListUpdated(request.getCaseDetails());
+    }
+
+    @Test
+    void updateCaseRolesShouldBeCalledForEachFromCustomUserMappingIfOrganisationNotInPRD() {
+        givenPRDWillFail();
+
+        final CallbackRequest request = getCase(LA_NOT_IN_PRD_CODE);
+
+        postSubmittedEvent(request);
+
+        verifyGrantCaseRoleAttempts(LA_NOT_IN_PRD_USER_IDS);
+        verifyTaskListUpdated(request.getCaseDetails());
+    }
+
+    @Test
+    void updateCaseRolesShouldBeCalledOnlyForCaseCreatorIfOrganisationNotInPRDAndNoCustomUserMapping() {
+        givenPRDWillFail();
+
+        final CallbackRequest request = getCase(LA_IN_PRD_CODE);
+
+        postSubmittedEvent(request);
+
+        verifyUsersFetchFromPrd(3);
+        verifyGrantCaseRoleAttempts(List.of(CALLER_ID));
         verifyTaskListUpdated(request.getCaseDetails());
     }
 
@@ -191,44 +230,6 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
         postSubmittedEvent(getCase(LA_NOT_IN_PRD_CODE));
 
         verifyGrantCaseRoleAttempts(LA_NOT_IN_PRD_USER_IDS, 2);
-    }
-
-    @Test
-    void shouldAddCaseLocalAuthorityToCaseData() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("caseName", "title"))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
-
-        assertThat(callbackResponse.getData())
-            .containsEntry("caseName", "title")
-            .containsEntry("caseLocalAuthority", "example");
-    }
-
-    @Test
-    void updateCaseRolesShouldBeCalledForEachFromCustomUserMappingIfOrganisationNotInPRD() {
-        givenPRDWillFail();
-
-        final CallbackRequest request = getCase(LA_NOT_IN_PRD_CODE);
-
-        postSubmittedEvent(request);
-
-        verifyGrantCaseRoleAttempts(LA_NOT_IN_PRD_USER_IDS);
-        verifyTaskListUpdated(request.getCaseDetails());
-    }
-
-    @Test
-    void updateCaseRolesShouldBeCalledOnlyForCaseCreatorIfOrganisationNotInPRDAndNoCustomUserMapping() {
-        givenPRDWillFail();
-
-        final CallbackRequest request = getCase(LA_IN_PRD_CODE);
-
-        postSubmittedEvent(request);
-
-        verifyUsersFetchFromPrd(3);
-        verifyGrantCaseRoleAttempts(List.of(CALLER_ID));
-        verifyTaskListUpdated(request.getCaseDetails());
     }
 
     private void verifyGrantCaseRoleAttempts(List<String> users, int attempts) {
