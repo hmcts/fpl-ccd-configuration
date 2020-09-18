@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
+import uk.gov.hmcts.reform.fpl.exceptions.UserOrganisationLookupException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.ContactInformation;
@@ -29,7 +30,6 @@ import java.util.Set;
 
 import static feign.Request.HttpMethod.GET;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Collections.emptySet;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -75,23 +75,23 @@ class OrganisationServiceTest {
     }
 
     @Test
-    void shouldReturnEmptyListWhenOrganisationDoesNotExistInRefData() {
+    void shouldReturnUsersFromLocalAuthorityMappingWhenTheyDoNotExistInRefData() {
         when(organisationApi.findUsersByOrganisation(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, Status.ACTIVE, false))
             .thenThrow(new FeignException.NotFound(EMPTY, REQUEST, new byte[]{}));
 
         Set<String> usersIdsWithinSaLa = organisationService.findUserIdsInSameOrganisation("SA");
 
-        assertThat(usersIdsWithinSaLa).isEmpty();
+        assertThat(usersIdsWithinSaLa).containsExactlyInAnyOrder("1", "2", "3");
     }
 
     @Test
-    void shouldReturnAnEmptyListWhenRefDataFailsForReasonOtherThanUserNotRegistered() {
+    void shouldReturnUsersFromLocalAuthorityMappingWhenRefDataFailsForReasonOtherThanUserNotRegistered() {
         when(organisationApi.findUsersByOrganisation(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, Status.ACTIVE, false))
             .thenThrow(new FeignException.InternalServerError(EMPTY, REQUEST, new byte[]{}));
 
         Set<String> usersIdsWithinSaLa = organisationService.findUserIdsInSameOrganisation("SA");
 
-        assertThat(usersIdsWithinSaLa).isEmpty();
+        assertThat(usersIdsWithinSaLa).containsExactlyInAnyOrder("1", "2", "3");
     }
 
     @Test
@@ -111,8 +111,9 @@ class OrganisationServiceTest {
         when(organisationApi.findUsersByOrganisation(any(), any(), any(), any()))
             .thenThrow(new FeignException.Forbidden("No organisation", REQUEST, new byte[]{}));
 
-        assertThat(organisationService.findUserIdsInSameOrganisation("AN"))
-            .isEqualTo(emptySet());
+        assertThatThrownBy(() -> organisationService.findUserIdsInSameOrganisation("AN"))
+            .isInstanceOf(UserOrganisationLookupException.class)
+            .hasMessage("Can't find users for AN local authority");
     }
 
     private OrganisationUsers prepareUsersForAnOrganisation() {
