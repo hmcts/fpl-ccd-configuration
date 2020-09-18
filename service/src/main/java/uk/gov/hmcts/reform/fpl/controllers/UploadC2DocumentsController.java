@@ -20,20 +20,24 @@ import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
+import uk.gov.hmcts.reform.fpl.service.UploadC2DocumentsService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
@@ -41,6 +45,8 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @Api
 @Slf4j
@@ -58,6 +64,7 @@ public class UploadC2DocumentsController extends CallbackController {
     private final PbaNumberService pbaNumberService;
     private final Time time;
     private final RequestData requestData;
+    private final UploadC2DocumentsService uploadC2DocumentsService;
 
     @PostMapping("/get-fee/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
@@ -82,16 +89,19 @@ public class UploadC2DocumentsController extends CallbackController {
         return respond(caseDetails);
     }
 
-    @PostMapping("/validate-pba-number/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleValidatePbaNumberMidEvent(
+    @PostMapping("/validate/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleValidateMidEvent(
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
         var updatedTemporaryC2Document = pbaNumberService.update(caseData.getTemporaryC2Document());
         caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, updatedTemporaryC2Document);
+        List<String> errors = new ArrayList<>();
+        errors.addAll(pbaNumberService.validate(updatedTemporaryC2Document));
+        errors.addAll(uploadC2DocumentsService.validate(updatedTemporaryC2Document));
 
-        return respond(caseDetails, pbaNumberService.validate(updatedTemporaryC2Document));
+        return respond(caseDetails, errors);
     }
 
     @PostMapping("/about-to-submit")
@@ -148,9 +158,16 @@ public class UploadC2DocumentsController extends CallbackController {
         List<Element<C2DocumentBundle>> c2DocumentBundle = defaultIfNull(caseData.getC2DocumentBundle(),
             Lists.newArrayList());
 
+        List<SupportingEvidenceBundle> updatedSupportingEvidenceBundle =
+            unwrapElements(caseData.getTemporaryC2Document().getSupportingEvidenceBundle())
+                .stream()
+                .map(supportingEvidence -> supportingEvidence.toBuilder().dateTimeUploaded(time.now()).build())
+                .collect(Collectors.toList());
+
         var c2DocumentBundleBuilder = caseData.getTemporaryC2Document().toBuilder()
             .author(idamClient.getUserInfo(requestData.authorisation()).getName())
-            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME));
+            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
+            .supportingEvidenceBundle(wrapElements(updatedSupportingEvidenceBundle));
 
         c2DocumentBundleBuilder.type(caseData.getC2ApplicationType().get("type"));
 

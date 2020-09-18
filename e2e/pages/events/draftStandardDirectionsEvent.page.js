@@ -3,12 +3,41 @@ const judgeAndLegalAdvisor = require('../../fragments/judgeAndLegalAdvisor');
 const directions = require('../../fragments/directions');
 
 module.exports = {
-  staticFields: {
+  fields: {
     statusRadioGroup: {
       groupName: '#standardDirectionOrder_orderStatus',
       sealed: 'Yes, it can be sealed and sent to parties',
-      draft: 'No, I need to make changes',
+      draft: 'No, just save it on the system',
     },
+    routingRadioGroup: {
+      groupName: '#sdoRouter',
+      service: '#sdoRouter-SERVICE',
+      upload: '#sdoRouter-UPLOAD',
+    },
+    file: {
+      preparedSDO: '#preparedSDO',
+      replacementSDO: '#replacementSDO',
+    },
+  },
+
+  async createSDOThroughService() {
+    await I.click(this.fields.routingRadioGroup.service);
+    await I.retryUntilExists(() => I.click('Continue'), '#dateOfIssue_label');
+  },
+
+  async createSDOThroughUpload() {
+    await I.click(this.fields.routingRadioGroup.upload);
+    await I.retryUntilExists(() => I.click('Continue'), this.fields.file.preparedSDO);
+  },
+
+  async uploadPreparedSDO(file) {
+    await I.attachFile(this.fields.file.preparedSDO, file);
+    await I.retryUntilExists(() => I.click('Continue'), this.fields.statusRadioGroup.groupName);
+  },
+
+  async uploadReplacementSDO(file) {
+    await I.attachFile(this.fields.file.replacementSDO, file);
+    await I.retryUntilExists(() => I.click('Continue'), this.fields.statusRadioGroup.groupName);
   },
 
   async skipDateOfIssue(){
@@ -38,18 +67,18 @@ module.exports = {
     await directions.enterDate('otherPartiesDirections', direction.dueDate);
     await I.retryUntilExists(() => I.click('Continue'), '#courtDirections');
     await directions.enterDate('courtDirections', direction.dueDate);
-    await I.retryUntilExists(() => I.click('Continue'), '#standardDirectionOrder_orderStatus');
+    await I.retryUntilExists(() => I.click('Continue'), this.fields.statusRadioGroup.groupName);
   },
 
   markAsDraft() {
-    within(this.staticFields.statusRadioGroup.groupName, () => {
-      I.click(locate('label').withText(this.staticFields.statusRadioGroup.draft));
+    within(this.fields.statusRadioGroup.groupName, () => {
+      I.click(locate('label').withText(this.fields.statusRadioGroup.draft));
     });
   },
 
   markAsFinal() {
-    within(this.staticFields.statusRadioGroup.groupName, () => {
-      I.click(locate('label').withText(this.staticFields.statusRadioGroup.sealed));
+    within(this.fields.statusRadioGroup.groupName, () => {
+      I.click(locate('label').withText(this.fields.statusRadioGroup.sealed));
     });
   },
 };

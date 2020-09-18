@@ -3,8 +3,6 @@ package uk.gov.hmcts.reform.fpl.model;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
@@ -22,8 +21,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.common.Recital;
-import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
@@ -55,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 import javax.validation.Valid;
 import javax.validation.constraints.Future;
@@ -65,7 +63,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 
 import static java.time.temporal.ChronoUnit.DAYS;
-import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparing;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
@@ -73,17 +70,16 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Data
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @HasDocumentsIncludedInSwet(groups = UploadDocumentsGroup.class)
-@SuppressWarnings({"java:S1874", "java:S1133"}) // Remove once deprecations dealt with
 public class CaseData {
     private final Long id;
     private final State state;
@@ -133,34 +129,11 @@ public class CaseData {
     private final List<Element<Direction>> respondentDirections;
     private final List<Element<Direction>> respondentDirectionsCustom;
 
-    // How do we want to deal with compliance for CMO now, can we just remove the fields and just have the sdo
-    // directions.
-    @JsonIgnore
-    public List<Element<Direction>> getDirectionsToComplyWith() {
-        if (getServedCaseManagementOrders().isEmpty() && standardDirectionOrder == null) {
-            return emptyList();
-        }
-
-        if (getServedCaseManagementOrders().isEmpty()) {
-            return standardDirectionOrder.getDirections();
-        }
-
-        return servedCaseManagementOrders.get(0).getValue().getDirections();
-    }
-
-    @JsonUnwrapped
-    private Directions directionsForCaseManagementOrder;
-
-    public Directions getDirectionsForCaseManagementOrder() {
-        if (directionsForCaseManagementOrder != null && directionsForCaseManagementOrder.containsDirections()) {
-            return directionsForCaseManagementOrder;
-        }
-
-        return null;
-    }
-
     private final List<Element<Placement>> placements;
     private final StandardDirectionOrder standardDirectionOrder;
+    private SDORoute sdoRouter;
+    private final DocumentReference preparedSDO;
+    private final DocumentReference replacementSDO;
 
     @NotNull(message = "You need to enter the allocated judge.",
         groups = {SealedSDOGroup.class, HearingBookingDetailsGroup.class})
@@ -235,12 +208,35 @@ public class CaseData {
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
 
     @JsonIgnore
+    public boolean hasC2DocumentBundle() {
+        return c2DocumentBundle != null && !c2DocumentBundle.isEmpty();
+    }
+
+    @JsonIgnore
     public C2DocumentBundle getLastC2DocumentBundle() {
         return Stream.of(ElementUtils.unwrapElements(c2DocumentBundle))
             .filter(list -> !list.isEmpty())
             .map(c2DocumentBundles -> c2DocumentBundles.get(c2DocumentBundles.size() - 1))
             .findFirst()
             .orElse(null);
+    }
+
+    @JsonIgnore
+    public C2DocumentBundle getC2DocumentBundleByUUID(UUID elementId) {
+        return c2DocumentBundle.stream()
+            .filter(c2DocumentBundleElement -> c2DocumentBundleElement.getId().equals(elementId))
+            .map(Element::getValue)
+            .findFirst()
+            .orElse(null);
+    }
+
+    public DynamicList buildC2DocumentDynamicList(UUID selected) {
+        AtomicInteger i = new AtomicInteger(1);
+        return asDynamicList(c2DocumentBundle, selected, documentBundle -> documentBundle.toLabel(i.getAndIncrement()));
+    }
+
+    public DynamicList buildC2DocumentDynamicList() {
+        return buildC2DocumentDynamicList(null);
     }
 
     private final Map<String, C2ApplicationType> c2ApplicationType;
@@ -278,194 +274,6 @@ public class CaseData {
     public List<Element<GeneratedOrder>> getHiddenOrders() {
         return defaultIfNull(hiddenOrders, new ArrayList<>());
     }
-
-    /**
-     * General object for CMO. Can be either in a draft state or action state. Ignored by jackson so that custom
-     * getters and setters can be used.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @JsonIgnore
-    @Deprecated(since = "FPLA-1915")
-    private CaseManagementOrder caseManagementOrder;
-
-    /**
-     * Gets a merged cmo.
-     *
-     * @see #prepareCaseManagementOrder()
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated(since = "FPLA-1915")
-    public CaseManagementOrder getCaseManagementOrder() {
-        return prepareCaseManagementOrder();
-    }
-
-    /**
-     * Merges the current populated CMO with the individual components of the CMO.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated(since = "FPLA-1915")
-    private CaseManagementOrder prepareCaseManagementOrder() {
-        //existing order
-        Optional<CaseManagementOrder> oldOrder = ofNullable(caseManagementOrder);
-
-        //hearing date list that cmo is heard in
-        Optional<DynamicList> optionalDateList = ofNullable(cmoHearingDateList);
-        UUID idFromDynamicList = optionalDateList.map(DynamicList::getValueCode).orElse(null);
-        String hearingDate = optionalDateList.map(DynamicList::getValueLabel).orElse(null);
-
-        //schedule
-        Schedule scheduleFromOrder = oldOrder.map(CaseManagementOrder::getSchedule).orElse(null);
-
-        //recital
-        List<Element<Recital>> recitalsFromOrder = oldOrder.map(CaseManagementOrder::getRecitals).orElse(emptyList());
-
-        //directions
-        Optional<Directions> directions = ofNullable(getDirectionsForCaseManagementOrder());
-        List<Element<Direction>> orderDirections = oldOrder.map(CaseManagementOrder::getDirections).orElse(emptyList());
-
-        //date of issue
-        Optional<LocalDate> optionalDateOfIssue = ofNullable(dateOfIssue);
-        String stringDate = optionalDateOfIssue.map(date -> formatLocalDateToString(date, DATE)).orElse(null);
-
-        CaseManagementOrder preparedOrder = CaseManagementOrder.builder()
-            .id(oldOrder.map(CaseManagementOrder::getId).orElse(idFromDynamicList))
-            .hearingDate(oldOrder.map(CaseManagementOrder::getHearingDate).orElse(hearingDate))
-            .schedule(ofNullable(schedule).orElse(scheduleFromOrder))
-            .recitals(ofNullable(recitals).orElse(recitalsFromOrder))
-            .directions(directions.map(Directions::getDirectionsList).orElse(orderDirections))
-            .dateOfIssue(oldOrder.map(CaseManagementOrder::getDateOfIssue).orElse(stringDate))
-            .status(oldOrder.map(CaseManagementOrder::getStatus).orElse(null))
-            .orderDoc(oldOrder.map(CaseManagementOrder::getOrderDoc).orElse(null))
-            .action(oldOrder.map(CaseManagementOrder::getAction).orElse(null))
-            .nextHearing(oldOrder.map(CaseManagementOrder::getNextHearing).orElse(null))
-            .build();
-
-        preparedOrder.setActionWithNullDocument(orderAction);
-
-        if (preparedOrder.isSealed() && nextHearingDateList != null) {
-            preparedOrder.setNextHearingFromDynamicElement(nextHearingDateList.getValue());
-        }
-
-        return preparedOrder;
-    }
-
-    /**
-     * Populates the CCD field caseManagementOrder when the CMO is for the LA.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated(since = "FPLA-1915")
-    @JsonGetter("caseManagementOrder")
-    private CaseManagementOrder getCaseManagementOrderForLocalAuthority() {
-        if (caseManagementOrder != null && caseManagementOrder.getStatus() != SEND_TO_JUDGE) {
-            return caseManagementOrder;
-        }
-        return null;
-    }
-
-    /**
-     * Populates {@link #caseManagementOrder} with the CMO for the LA.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated(since = "FPLA-1915")
-    @JsonSetter("caseManagementOrder")
-    private void setCaseManagementOrderForLocalAuthority(CaseManagementOrder order) {
-        if (order != null) {
-            caseManagementOrder = order;
-        }
-    }
-
-    /**
-     * Populates the CCD field cmoToAction when the CMO is to be sent to judge.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated(since = "FPLA-1915")
-    @JsonGetter("cmoToAction")
-    private CaseManagementOrder getCaseManagementOrderForJudiciary() {
-        if (caseManagementOrder != null && caseManagementOrder.getStatus() == SEND_TO_JUDGE) {
-            return caseManagementOrder;
-        }
-        return null;
-    }
-
-    /**
-     * Populates {@link #caseManagementOrder} with the CMO for the judge.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated(since = "FPLA-1915")
-    @JsonSetter("cmoToAction")
-    private void setCaseManagementOrderForJudiciary(CaseManagementOrder order) {
-        if (order != null) {
-            caseManagementOrder = order;
-        }
-    }
-
-    /**
-     * Action decided by judge for CMO.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated(since = "FPLA-1915")
-    private final OrderAction orderAction;
-    /**
-     * Date list for CMO.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated(since = "FPLA-1915")
-    private final DynamicList cmoHearingDateList;
-    /**
-     * Schedule for CMO.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated(since = "FPLA-1915")
-    private final Schedule schedule;
-    /**
-     * Recitals for CMO.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated(since = "FPLA-1915")
-    private final List<Element<Recital>> recitals;
-    /**
-     * Document object for other other parties to view.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated(since = "FPLA-1915")
-    private final DocumentReference sharedDraftCMODocument;
-
-    /**
-     * All CMOs that have been served.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated(since = "FPLA-1915")
-    private final List<Element<CaseManagementOrder>> servedCaseManagementOrders;
-
-    /**
-     * Get all served CMOs returning an empty list if null.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated(since = "FPLA-1915")
-    public List<Element<CaseManagementOrder>> getServedCaseManagementOrders() {
-        return defaultIfNull(servedCaseManagementOrders, new ArrayList<>());
-    }
-
-    /**
-     * List of dates for the next hearing after the CMO.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated(since = "FPLA-1915")
-    private final DynamicList nextHearingDateList;
 
     private final Others others;
 
@@ -581,6 +389,32 @@ public class CaseData {
     private final String deprivationOfLiberty;
     private final String closeCaseFromOrder;
 
+    private final ManageDocument manageDocument;
+    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsTEMP;
+    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments;
+    private final List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
+    private final List<Element<SupportingEvidenceBundle>> correspondenceDocuments;
+    private final List<Element<SupportingEvidenceBundle>> c2SupportingDocuments;
+    private final Object manageDocumentsHearingList;
+    private final Object manageDocumentsSupportingC2List;
+
+    public List<Element<SupportingEvidenceBundle>> getFurtherEvidenceDocumentsTEMP() {
+        return defaultIfNull(furtherEvidenceDocumentsTEMP, new ArrayList<>());
+    }
+
+    public List<Element<SupportingEvidenceBundle>> getCorrespondenceDocuments() {
+        return defaultIfNull(correspondenceDocuments, new ArrayList<>());
+    }
+
+    public List<Element<HearingFurtherEvidenceBundle>> getHearingFurtherEvidenceDocuments() {
+        return defaultIfNull(hearingFurtherEvidenceDocuments, new ArrayList<>());
+    }
+
+    public boolean documentBundleContainsHearingId(UUID hearingId) {
+        return getHearingFurtherEvidenceDocuments().stream()
+            .anyMatch(element -> element.getId().equals(hearingId));
+    }
+
     @JsonIgnore
     public boolean isClosedFromOrder() {
         return YES.getValue().equals(closeCaseFromOrder);
@@ -654,4 +488,12 @@ public class CaseData {
 
     private String sendToCtsc;
     private String displayAmountToPay;
+
+    public DynamicList buildDynamicHearingList() {
+        return buildDynamicHearingList(null);
+    }
+
+    public DynamicList buildDynamicHearingList(UUID selected) {
+        return asDynamicList(getHearingDetails(), selected, hearingBooking -> hearingBooking.toLabel(DATE));
+    }
 }

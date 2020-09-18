@@ -169,6 +169,25 @@ module.exports = function () {
       }
     },
 
+    fillDateAndTime(date, sectionId = 'form') {
+      if (date instanceof Date) {
+        date = {day: date.getDate(), month: date.getMonth() + 1, year: date.getFullYear(),
+          hour: date.getHours(), minute: date.getMinutes(), second: date.getSeconds(),
+        };
+      }
+
+      if (date) {
+        return within(sectionId, () => {
+          this.fillField('Day', date.day);
+          this.fillField('Month', date.month);
+          this.fillField('Year', date.year);
+          this.fillField('Hour', date.hour);
+          this.fillField('Minute', date.minute);
+          this.fillField('Second', date.second);
+        });
+      }
+    },
+
     async addAnotherElementToCollection(collectionName) {
       const numberOfElements = await this.grabNumberOfVisibleElements('.collection-title');
       if(collectionName) {
