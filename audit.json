@@ -207,6 +207,17 @@
   "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/review-cmo/mid-event_POST": "ignore",
   "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/review-cmo/submitted_POST": "ignore",
   "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/review-cmo/about-to-submit_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/draft-standard-directions/populate-date-of-issue/mid-event_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/draft-standard-directions/service-route/mid-event_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/draft-standard-directions/upload-route/mid-event_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/manage-documents/validate-c2-supporting-documents/mid-event_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/manage-documents/validate-further-evidence/mid-event_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/manage-documents/about-to-start_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/manage-documents/initialise-manage-document-collections/mid-event_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/manage-documents/validate-correspondence-documents/mid-event_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/manage-documents/about-to-submit_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/migrate-case/about-to-submit_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://fpl-case-service-aat.service.core-compute-aat.internal/support/case/caseId/share_POST": "ignore",
   "10054_Cookie Without SameSite Attribute_http://fpl-case-service-aat.service.core-compute-aat.internal/sendRPAEmailByID/caseId_POST": "ignore",
   "10054_Cookie Without SameSite Attribute_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/enter-respondents/about-to-submit_POST": "ignore",
   "10054_Cookie Without SameSite Attribute_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/remove-order/about-to-start_POST": "ignore",
@@ -272,5 +283,6 @@
   "10010_Cookie No HttpOnly Flag_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/statement-of-service/about-to-start_POST": "ignore",
   "10010_Cookie No HttpOnly Flag_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/update-task-list/submitted_POST": "ignore",
   "10010_Cookie No HttpOnly Flag_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/upload-cmo/mid-event_POST": "ignore",
-  "10010_Cookie No HttpOnly Flag_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/upload-cmo/about-to-submit_POST": "ignore"
+  "10010_Cookie No HttpOnly Flag_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/upload-cmo/about-to-submit_POST": "ignore",
+  "10010_Cookie No HttpOnly Flag_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/upload-cmo/submitted_POST": "ignore"
 }
