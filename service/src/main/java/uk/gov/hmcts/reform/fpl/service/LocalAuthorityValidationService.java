@@ -23,13 +23,11 @@ public class LocalAuthorityValidationService {
         String caseLocalAuthority = localAuthorityNameService.getLocalAuthorityCode();
         String localAuthorityName = localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseLocalAuthority);
 
-        if (!featureToggleService.isAllowCaseCreationForUsersNotOnboardedToMOEnabled(localAuthorityName)) {
-
-            if (organisationService.findOrganisation().equals(EMPTY_ORGANISATION)) {
+        if (!featureToggleService.isAllowCaseCreationForUsersNotOnboardedToMOEnabled(localAuthorityName) &&
+            organisationService.findOrganisation().equals(EMPTY_ORGANISATION)) {
                 errors.add("Register for an account.");
                 errors.add("You cannot start an online application until you’re fully registered.");
                 errors.add("Ask your local authority’s public law administrator for help with registration.");
-            }
         }
 
         return errors;
