@@ -8,7 +8,7 @@ const loginPage = require('./pages/login.page');
 const caseListPage = require('./pages/caseList.page');
 const eventSummaryPage = require('./pages/eventSummary.page');
 const openApplicationEventPage = require('./pages/events/openApplicationEvent.page');
-const mandatorySubmissionFields = require('./fixtures/mandatorySubmissionFields.json');
+const mandatorySubmissionFields = require('./fixtures/caseData/mandatorySubmissionFields.json');
 
 const normalizeCaseId = caseId => caseId.toString().replace(/\D/g, '');
 

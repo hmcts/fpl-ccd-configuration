@@ -1,7 +1,7 @@
 const config = require('../config.js');
 const dateFormat = require('dateformat');
 const applicant = require('../fixtures/applicant.js');
-const mandatorySubmissionFields = require('../fixtures/mandatorySubmissionFields.json');
+const mandatorySubmissionFields = require('../fixtures/caseData/mandatorySubmissionFields.json');
 
 let caseId;
 

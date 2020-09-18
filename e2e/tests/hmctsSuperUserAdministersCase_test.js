@@ -1,6 +1,6 @@
 const config = require('../config.js');
 
-const orderCaseData = require('../fixtures/testData/caseDataWithOrderCollection.json');
+const orderCaseData = require('../fixtures/caseData/caseDataWithOrderCollection.json');
 const orderFunctions = require('../helpers/generated_order_helper');
 const blankOrder = require('../fixtures/orders/blankOrder.js');
 

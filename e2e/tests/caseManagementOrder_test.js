@@ -1,5 +1,5 @@
 const config = require('../config.js');
-const standardDirectionOrder = require('../fixtures/standardDirectionOrder.json');
+const standardDirectionOrder = require('../fixtures/caseData/standardDirectionOrder.json');
 const cmoHelper = require('../helpers/cmo_helper');
 const dateFormat = require('dateformat');
 

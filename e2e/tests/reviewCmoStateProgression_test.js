@@ -1,5 +1,5 @@
-const issueResolution = require('../fixtures/issueResolution.json');
-const finalHearing = require('../fixtures/finalHearing.json');
+const issueResolution = require('../fixtures/caseData/issueResolution.json');
+const finalHearing = require('../fixtures/caseData/finalHearing.json');
 const cmoHelper = require('../helpers/cmo_helper');
 
 let caseId;
