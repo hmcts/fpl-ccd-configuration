@@ -24,7 +24,7 @@ public class UploadDocumentsService {
         List<Element<T>> listOfOldDocs) {
 
         listOfCurrentDocs.stream()
-            .filter(doc -> !listOfOldDocs.contains(doc))
+            .filter(doc -> listOfOldDocs != null && !listOfOldDocs.contains(doc))
             .forEach(doc -> findElement(doc.getId(), listOfOldDocs)
                 .ifPresent(e -> {
                     if (!e.getValue().getTypeOfDocument().equals(doc.getValue().getTypeOfDocument())) {
@@ -42,7 +42,7 @@ public class UploadDocumentsService {
 
     public Document setUpdatedByAndDateAndTimeForDocuments(Document currentDoc, Document oldDoc) {
 
-        if (!currentDoc.getTypeOfDocument().equals(oldDoc.getTypeOfDocument())) {
+        if (oldDoc != null && !currentDoc.getTypeOfDocument().equals(oldDoc.getTypeOfDocument())) {
             return buildDocument(currentDoc);
         } else if (currentDoc.getDateTimeUploaded() == null) {
             return buildDocument(currentDoc);

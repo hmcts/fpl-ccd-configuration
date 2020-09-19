@@ -113,7 +113,7 @@
     "CaseEventID": "uploadDocuments",
     "CaseFieldID": "courtBundle",
     "PageFieldDisplayOrder": 10,
-    "DisplayContext": "COMPLEX",
+    "DisplayContext": "OPTIONAL",
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,

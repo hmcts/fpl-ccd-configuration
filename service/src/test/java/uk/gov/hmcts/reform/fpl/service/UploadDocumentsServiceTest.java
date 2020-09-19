@@ -84,30 +84,6 @@ class UploadDocumentsServiceTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"HMCTS", "someLA@la.co.uk"})
-    void shouldUpdateDocumentsListWithUpdatedDetailsAndUser(String user) {
-        when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(user);
-
-        Document list =
-            uploadDocumentsService.setUpdatedByAndDateAndTimeForDocuments(
-                createCaseDataWithUpdatedDocument(),
-                createCaseDataWithOldDocument());
-
-        assertThat(list)
-            .extracting(Document::getTypeOfDocument)
-            .extracting(DocumentReference::getUrl)
-            .isEqualTo("/new_test.doc");
-
-        assertThat(list)
-            .extracting(Document::getDateTimeUploaded)
-            .isEqualTo(time.now());
-
-        assertThat(list)
-            .extracting(Document::getUploadedBy)
-            .isEqualTo(user);
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"HMCTS", "someLA@la.co.uk"})
     void shouldUpdateOtherSocialWorkDocumentsListWithNewDocument(String user) {
         when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(user);
 
@@ -128,6 +104,30 @@ class UploadDocumentsServiceTest {
         assertThat(list)
             .extracting(DocumentSocialWorkOther::getUploadedBy)
             .containsExactly(user, user);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"HMCTS", "someLA@la.co.uk"})
+    void shouldUpdateDocumentWithUpdatedDetailsAndUser(String user) {
+        when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(user);
+
+        Document list =
+            uploadDocumentsService.setUpdatedByAndDateAndTimeForDocuments(
+                createCaseDataWithUpdatedDocument(),
+                createCaseDataWithOldDocument());
+
+        assertThat(list)
+            .extracting(Document::getTypeOfDocument)
+            .extracting(DocumentReference::getUrl)
+            .isEqualTo("/new_test.doc");
+
+        assertThat(list)
+            .extracting(Document::getDateTimeUploaded)
+            .isEqualTo(time.now());
+
+        assertThat(list)
+            .extracting(Document::getUploadedBy)
+            .isEqualTo(user);
     }
 
     private List<Element<DocumentSocialWorkOther>> createCaseDataWithCurrentDocumentSocialWorkOther() {
