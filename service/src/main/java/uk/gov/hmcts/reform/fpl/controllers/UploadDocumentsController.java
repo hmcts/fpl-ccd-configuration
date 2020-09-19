@@ -17,7 +17,9 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DocumentsValidatorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentsService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 
 @Api
@@ -37,13 +39,14 @@ public class UploadDocumentsController extends CallbackController {
         List<String> errors = documentsValidatorService.validateDocuments(caseData);
 
         if (errors.isEmpty()) {
-            updateCaseDetailsWithDocuments(caseDataBefore, caseDetails, caseData);
+            caseDetails.getData().putAll(updateCaseDetailsWithDocuments(caseDataBefore, caseData));
         }
 
         return respond(caseDetails, documentsValidatorService.validateDocuments(caseData));
     }
 
-    private void updateCaseDetailsWithDocuments(CaseData caseDataBefore, CaseDetails caseDetails, CaseData caseData) {
+    private Map<String, Object> updateCaseDetailsWithDocuments(CaseData caseDataBefore,
+                                                               CaseData caseData) {
         List<Element<DocumentSocialWorkOther>> listOfOtherDocs =
             uploadDocumentsService.setUpdatedByAndDateAndTimeForDocuments(
                 caseData.getOtherSocialWorkDocuments(), caseDataBefore.getOtherSocialWorkDocuments());
@@ -70,14 +73,18 @@ public class UploadDocumentsController extends CallbackController {
         Document checklistDocument = setUpdatedByAndDateForDocument
             .apply(caseData.getChecklistDocument(), caseDataBefore.getChecklistDocument());
 
-        caseDetails.getData().put("documents_socialWorkOther", listOfOtherDocs);
-        caseDetails.getData().put("documents_socialWorkChronology_document", socialWorkChronologyDocument);
-        caseDetails.getData().put("documents_socialWorkStatement_document", socialWorkStatementDocument);
-        caseDetails.getData().put("documents_socialWorkAssessment_document", socialWorkAssessmentDocument);
-        caseDetails.getData().put("documents_socialWorkCarePlan_document", socialWorkCarePlanDocument);
-        caseDetails.getData().put("documents_socialWorkEvidenceTemplate_document",
+        Map<String, Object> updatedCaseData = new HashMap<>();
+
+        updatedCaseData.put("documents_socialWorkOther", listOfOtherDocs);
+        updatedCaseData.put("documents_socialWorkChronology_document", socialWorkChronologyDocument);
+        updatedCaseData.put("documents_socialWorkStatement_document", socialWorkStatementDocument);
+        updatedCaseData.put("documents_socialWorkAssessment_document", socialWorkAssessmentDocument);
+        updatedCaseData.put("documents_socialWorkCarePlan_document", socialWorkCarePlanDocument);
+        updatedCaseData.put("documents_socialWorkEvidenceTemplate_document",
             socialWorkEvidenceTemplateDocument);
-        caseDetails.getData().put("documents_threshold_document", thresholdDocument);
-        caseDetails.getData().put("documents_checklist_document", checklistDocument);
+        updatedCaseData.put("documents_threshold_document", thresholdDocument);
+        updatedCaseData.put("documents_checklist_document", checklistDocument);
+
+        return updatedCaseData;
     }
 }
