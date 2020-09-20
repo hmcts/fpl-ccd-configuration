@@ -47,6 +47,10 @@ module.exports = {
     email: 'judiciary-only@mailnesia.com',
     password: process.env.JUDICIARY_USER_PASSWORD || defaultPassword,
   },
+  magistrateUser: {
+    email: 'magistrate@mailnesia.com',
+    password: process.env.MAGISTRATE_USER_PASSWORD || defaultPassword,
+  },
   systemUpdateUser: {
     email: process.env.SYSTEM_UPDATE_USER_USERNAME || 'fpl-system-update@mailnesia.com',
     password: process.env.SYSTEM_UPDATE_USER_PASSWORD || defaultPassword,
