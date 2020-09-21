@@ -16,13 +16,11 @@ import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ReviewCMOService;
-import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 
 import java.util.List;
 
@@ -36,7 +34,6 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 public class ReviewCMOController extends CallbackController {
 
     private final ReviewCMOService reviewCMOService;
-    private final DocumentConversionService documentConversionService;
     private final DocumentSealingService documentSealingService;
     private final ApplicationEventPublisher eventPublisher;
 
@@ -88,11 +85,7 @@ public class ReviewCMOController extends CallbackController {
 
                 caseData.getDraftUploadedCMOs().remove(cmo);
 
-                //TODO merge these actions together to improve performance FPLA-2056
-                DocumentReference convertedDocument = documentConversionService.convertToPdf(
-                    cmoToSeal.getValue().getOrder());
-                DocumentReference sealedDocument = documentSealingService.sealDocument(convertedDocument);
-                cmoToSeal.getValue().setOrder(sealedDocument);
+                cmoToSeal.getValue().setOrder(documentSealingService.sealDocument(cmoToSeal.getValue().getOrder()));
 
                 List<Element<CaseManagementOrder>> sealedCMOs = caseData.getSealedCMOs();
                 sealedCMOs.add(cmoToSeal);
