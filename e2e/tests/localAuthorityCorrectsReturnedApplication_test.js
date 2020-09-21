@@ -9,10 +9,10 @@ Feature('Local authority corrects returned application');
 
 BeforeSuite(async (I) => {
   caseId = await I.submitNewCaseWithData(mandatorySubmissionFields);
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 });
 
 Scenario('Admin returns application to the LA', async (I, caseViewPage, returnApplicationEventPage) => {
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await caseViewPage.goToNewActions(config.administrationActions.returnApplication);
   returnApplicationEventPage.selectApplicationIncorrect();
   returnApplicationEventPage.enterRejectionNote();

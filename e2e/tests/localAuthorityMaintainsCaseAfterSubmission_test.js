@@ -8,9 +8,12 @@ let caseId;
 
 Feature('Case maintenance after submission');
 
-BeforeSuite(async I => caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren));
+BeforeSuite(async I => {
+  caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
+  await I.signIn(config.swanseaLocalAuthorityUserOne);
+});
 
-Before(async I => await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId));
+Before(async I => await I.navigateToCaseDetails(caseId));
 
 Scenario('local authority uploads documents', async (I, caseViewPage, uploadDocumentsEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);

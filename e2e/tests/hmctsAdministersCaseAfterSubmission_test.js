@@ -25,10 +25,10 @@ BeforeSuite(async (I) => {
   caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
   submittedAt = new Date();
 
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await I.signIn(config.hmctsAdminUser);
 });
 
-Before(async I => await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId));
+Before(async I => await I.navigateToCaseDetails(caseId));
 
 Scenario('HMCTS admin enters FamilyMan reference number', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);

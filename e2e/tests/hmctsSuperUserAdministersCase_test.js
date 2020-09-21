@@ -8,9 +8,12 @@ Feature('Case administration by super user');
 
 let caseId;
 
-BeforeSuite(async I => caseId = await I.submitNewCaseWithData(orderCaseData));
+BeforeSuite(async I => {
+  caseId = await I.submitNewCaseWithData(orderCaseData);
+  await I.signIn(config.hmctsSuperUser);
+});
 
-Before(async I => await I.navigateToCaseDetailsAs(config.hmctsSuperUser, caseId));
+Before(async I => await I.navigateToCaseDetails(caseId));
 
 Scenario('HMCTS super user updates FamilyMan reference number', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage) => {
   I.seeFamilyManNumber('mockCaseID');
