@@ -41,8 +41,12 @@ public class TestDataHelper {
     }
 
     public static DocumentReference testDocumentReference() {
+        return testDocumentReference(randomAlphanumeric(10));
+    }
+
+    public static DocumentReference testDocumentReference(String filename) {
         return DocumentReference.builder()
-            .filename(randomAlphanumeric(10))
+            .filename(filename)
             .url(randomAlphanumeric(10))
             .binaryUrl(randomAlphanumeric(10))
             .build();
