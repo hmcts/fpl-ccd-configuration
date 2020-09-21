@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -39,7 +37,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class UploadDocumentsServiceTest {
 
     private static final String USER = "HMCTS";
-    private static final String LA_USER = "someLA@la.co.uk";
     private CaseData givenCaseData;
 
     @Autowired
@@ -89,10 +86,9 @@ class UploadDocumentsServiceTest {
                 .build());
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {USER, LA_USER})
-    void shouldUpdateOtherSocialWorkDocumentsListWithUpdatedDetailsAndUser(String user) {
-        when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(user);
+    @Test
+    void shouldUpdateOtherSocialWorkDocumentsListWithUpdatedDetailsAndUser() {
+        when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(USER);
 
         List<DocumentSocialWorkOther> list = unwrapElements(
             uploadDocumentsService.setUpdatedByAndDateAndTimeForDocuments(
@@ -112,13 +108,12 @@ class UploadDocumentsServiceTest {
             .containsExactly(
                 "New Additional Doc 1",
                 time.now(),
-                user);
+                USER);
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {USER, LA_USER})
-    void shouldUpdateOtherSocialWorkDocumentsListWithNewDocument(String user) {
-        when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(user);
+    @Test
+    void shouldUpdateOtherSocialWorkDocumentsListWithNewDocument() {
+        when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(USER);
 
         List<DocumentSocialWorkOther> list = unwrapElements(
             uploadDocumentsService.setUpdatedByAndDateAndTimeForDocuments(
@@ -136,10 +131,9 @@ class UploadDocumentsServiceTest {
             .containsExactly("/test1 - changed.doc", "/test2.doc");
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {USER, LA_USER})
-    void shouldUpdateDocumentWithUpdatedDetailsAndUser(String user) {
-        when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(user);
+    @Test
+    void shouldUpdateDocumentWithUpdatedDetailsAndUser() {
+        when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(USER);
 
         Document list =
             uploadDocumentsService.setUpdatedByAndDateAndTimeForDocuments(
@@ -157,7 +151,7 @@ class UploadDocumentsServiceTest {
                 Document::getUploadedBy)
             .containsExactly(
                 time.now(),
-                user
+                USER
             );
     }
 
