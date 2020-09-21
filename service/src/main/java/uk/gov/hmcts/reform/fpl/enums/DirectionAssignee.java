@@ -18,14 +18,6 @@ public enum DirectionAssignee {
         return value;
     }
 
-    public String toCustomDirectionField() {
-        return value.concat("Custom");
-    }
-
-    public String toCaseManagementOrderDirectionField() {
-        return value.concat("CustomCMO");
-    }
-
     public String toHearingDateField() {
         return value.concat("HearingDate");
     }
