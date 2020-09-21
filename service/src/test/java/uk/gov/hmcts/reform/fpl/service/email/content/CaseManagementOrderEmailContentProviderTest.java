@@ -1,20 +1,18 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import com.google.common.collect.ImmutableMap;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
-import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
-import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForCMO;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.RejectedCMOTemplate;
+import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -43,25 +41,11 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
     private CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
 
     @Test
-    void shouldBuildCMOIssuedCaseLinkNotificationExpectedParameters() {
-        Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
-            .put("localAuthorityNameOrRepresentativeFullName", "testName")
-            .put("caseUrl", caseUrl(CASE_REFERENCE))
-            .put("subjectLineWithHearingDate", "lastName, 11")
-            .put("reference", CASE_REFERENCE)
-            .build();
-
-        assertThat(caseManagementOrderEmailContentProvider
-            .buildCMOIssuedCaseLinkNotificationParameters(createCase(), "testName"))
-            .isEqualTo(expectedParameters);
-    }
-
-    @Test
     void shouldBuildCMOIssuedExpectedParametersWithEmptyCaseUrl() {
         given(documentDownloadService.downloadDocument(anyString())).willReturn(TestDataHelper.DOCUMENT_CONTENT);
 
         IssuedCMOTemplate expectedTemplate = new IssuedCMOTemplate();
-        final uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder cmo = buildCmo();
+        final CaseManagementOrder cmo = buildCmo();
 
         expectedTemplate.setRespondentLastName("lastName");
         expectedTemplate.setFamilyManCaseNumber("11");
@@ -81,7 +65,7 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
     void shouldBuildCMOIssuedExpectedParametersWithPopulatedCaseUrl() {
         given(documentDownloadService.downloadDocument(anyString())).willReturn(TestDataHelper.DOCUMENT_CONTENT);
 
-        final uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder cmo = buildCmo();
+        final CaseManagementOrder cmo = buildCmo();
 
         IssuedCMOTemplate expectedTemplate = new IssuedCMOTemplate();
 
@@ -100,22 +84,8 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
     }
 
     @Test
-    void shouldBuildCMOPartyReviewExpectedParameters() {
-        Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
-            .put("caseUrl", "")
-            .put("digitalPreference", "No")
-            .put("subjectLineWithHearingDate", "lastName, 11")
-            .put("respondentLastName", "lastName")
-            .build();
-
-        assertThat(caseManagementOrderEmailContentProvider
-            .buildCMOPartyReviewParameters(createCase(), new byte[] {}, RepresentativeServingPreferences.POST))
-            .isEqualTo(expectedParameters);
-    }
-
-    @Test
     void shouldBuildCMORejectedByJudgeNotificationExpectedParameters() {
-        final uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder cmo = buildCmo();
+        final CaseManagementOrder cmo = buildCmo();
         cmo.setRequestedChanges("change it");
 
         RejectedCMOTemplate expectedTemplate = new RejectedCMOTemplate();
@@ -131,31 +101,10 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
             expectedTemplate);
     }
 
-    @Test
-    void shouldBuildCMOReadyForJudgeReviewNotificationExpectedParameters() {
-        AllocatedJudgeTemplateForCMO expectedParameters = getCMOReadyForJudgeReviewParameters();
-
-        assertThat(caseManagementOrderEmailContentProvider
-            .buildCMOReadyForJudgeReviewNotificationParameters(createCase()))
-            .isEqualToComparingFieldByField(expectedParameters);
-    }
-
-    private uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder buildCmo() {
-        return uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.builder()
+    private CaseManagementOrder buildCmo() {
+        return CaseManagementOrder.builder()
             .order(testDocumentReference())
             .hearing("Test hearing, 20th June").build();
-    }
-
-    private AllocatedJudgeTemplateForCMO getCMOReadyForJudgeReviewParameters() {
-        AllocatedJudgeTemplateForCMO allocatedJudgeTemplate = new AllocatedJudgeTemplateForCMO();
-        allocatedJudgeTemplate.setSubjectLineWithHearingDate("lastName, 11");
-        allocatedJudgeTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
-        allocatedJudgeTemplate.setReference(CASE_REFERENCE);
-        allocatedJudgeTemplate.setRespondentLastName("lastName");
-        allocatedJudgeTemplate.setJudgeTitle("Deputy District Judge");
-        allocatedJudgeTemplate.setJudgeName("JudgeLastName");
-
-        return allocatedJudgeTemplate;
     }
 
     private CaseData createCase() {
