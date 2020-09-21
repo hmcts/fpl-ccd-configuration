@@ -8,7 +8,7 @@ const loginPage = require('./pages/login.page');
 const caseListPage = require('./pages/caseList.page');
 const eventSummaryPage = require('./pages/eventSummary.page');
 const openApplicationEventPage = require('./pages/events/openApplicationEvent.page');
-const mandatorySubmissionFields = require('./fixtures/caseData/mandatorySubmissionFields.json');
+const mandatorySubmissionFields = require('./fixtures/mandatorySubmissionFields.json');
 
 const normalizeCaseId = caseId => caseId.toString().replace(/\D/g, '');
 
@@ -151,6 +151,15 @@ module.exports = function () {
 
     dontSeeCaseInSearchResult(caseId) {
       this.dontSeeElement(caseListPage.locateCase(normalizeCaseId(caseId)));
+    },
+
+    async seeEndStateForEvent(eventName, state) {
+      try {
+        await this.waitForSelector(`//tr[@class="EventLogTable-Selected" and td[contains(., "${eventName}")]]`);
+      } catch (notFound) {
+        this.click(`//table[@class="EventLogTable"]//tr[td[contains(., "${eventName}")]][1]`);
+      }
+      this.seeElement(`//table[@class="EventLogDetails"]//tr[.//span[text()="End state"] and .//span[text()="${state}"]]`);
     },
 
     async navigateToCaseDetails(caseId) {
