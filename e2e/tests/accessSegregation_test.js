@@ -35,3 +35,10 @@ Scenario('Judiciary user can see the case', async I => {
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
   I.see(caseId);
 });
+
+Scenario('Magistrate user can see the case', async I => {
+  await I.navigateToCaseDetailsAs(config.magistrateUser, caseId);
+  I.see(caseId);
+  await I.seeAvailableEvents([config.administrationActions.manageDocuments]);
+
+});
