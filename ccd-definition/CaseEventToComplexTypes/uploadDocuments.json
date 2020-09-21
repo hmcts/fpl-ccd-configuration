@@ -151,14 +151,5 @@
     "ListElementCode": "typeOfDocument",
     "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "OtherDocuments",
-    "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "courtBundle",
-    "ListElementCode": "documentStatus",
-    "FieldDisplayOrder": 4,
-    "DisplayContext": "MANDATORY"
   }
 ]

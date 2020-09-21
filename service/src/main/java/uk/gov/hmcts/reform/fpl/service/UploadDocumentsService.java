@@ -44,6 +44,9 @@ public class UploadDocumentsService {
             caseData.getThresholdDocument(), caseDataBefore.getThresholdDocument());
         Document checklistDocument = setUpdatedByAndDateAndTimeForDocuments(
             caseData.getChecklistDocument(), caseDataBefore.getChecklistDocument());
+        Document courtBundleDocument = setUpdatedByAndDateAndTimeForDocuments(
+            caseData.getCourtBundle(), caseDataBefore.getCourtBundle()
+        );
 
         Map<String, Object> updatedCaseData = new HashMap<>();
 
@@ -55,6 +58,7 @@ public class UploadDocumentsService {
         updatedCaseData.put("documents_socialWorkEvidenceTemplate_document", socialWorkEvidenceTemplateDocument);
         updatedCaseData.put("documents_threshold_document", thresholdDocument);
         updatedCaseData.put("documents_checklist_document", checklistDocument);
+        updatedCaseData.put("courtBundle", courtBundleDocument);
 
         return updatedCaseData;
     }
