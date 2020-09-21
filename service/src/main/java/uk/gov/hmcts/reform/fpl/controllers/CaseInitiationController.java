@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityUserService;
+import uk.gov.hmcts.reform.fpl.service.OrganisationService;
 
 import java.util.Map;
 
@@ -29,6 +30,7 @@ public class CaseInitiationController extends CallbackController {
 
     private final FeatureToggleService featureToggleService;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
+    private final OrganisationService organisationService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
@@ -52,10 +54,13 @@ public class CaseInitiationController extends CallbackController {
         String caseLocalAuthority = localAuthorityNameService.getLocalAuthorityCode();
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
 
+
         Map<String, Object> data = caseDetails.getData();
         data.put("caseLocalAuthority", caseLocalAuthority);
 
         data.remove("pageShow");
+
+        organisationService.findOrganisationPolicy().ifPresent(policy -> data.put("localAuthorityPolicy", policy));
 
         return respond(caseDetails);
     }

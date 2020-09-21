@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
+import uk.gov.hmcts.reform.rd.model.Organisation;
 import uk.gov.hmcts.reform.rd.model.OrganisationUser;
 import uk.gov.hmcts.reform.rd.model.OrganisationUsers;
 import uk.gov.hmcts.reform.rd.model.Status;
@@ -34,10 +35,13 @@ import uk.gov.hmcts.reform.rd.model.Status;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import static feign.Request.HttpMethod.GET;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
+import static org.apache.http.HttpStatus.SC_FORBIDDEN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -55,6 +59,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseRole.CREATOR;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.feignException;
 import static uk.gov.hmcts.reform.fpl.utils.assertions.ExceptionAssertion.assertException;
 
 @ActiveProfiles("integration-test")
@@ -128,7 +133,35 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldAddCaseLocalAuthorityToCaseData() {
+    void shouldAddCaseLocalAuthorityAndOrganisationPolicy() {
+        Organisation organisation = Organisation.builder()
+            .name(randomAlphanumeric(5))
+            .organisationIdentifier(UUID.randomUUID().toString())
+            .build();
+
+        given(organisationApi.findUserOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN)).willReturn(organisation);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("caseName", "title"))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
+
+        assertThat(callbackResponse.getData())
+            .containsEntry("caseName", "title")
+            .containsEntry("caseLocalAuthority", "example")
+            .containsEntry("localAuthorityPolicy", Map.of(
+                "Organisation", Map.of(
+                    "OrganisationID", organisation.getOrganisationIdentifier(),
+                    "OrganisationName", organisation.getName()),
+                "OrgPolicyCaseAssignedRole", "[LASOLICITOR]"));
+    }
+
+    @Test
+    void shouldSkipOrganisationPolicyIfUserNotRegisteredInOrganisation() {
+        given(organisationApi.findUserOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN))
+            .willThrow(feignException(SC_FORBIDDEN));
+
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("caseName", "title"))
             .build();
@@ -327,7 +360,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
     }
 
     private void givenPRDWillAnswer(Answer... answers) {
-        BDDMockito.BDDMyOngoingStubbing<OrganisationUsers> stub = given(organisationApi.findUsersByOrganisation(
+        BDDMockito.BDDMyOngoingStubbing<OrganisationUsers> stub = given(organisationApi.findUsersInOrganisation(
             USER_AUTH_TOKEN,
             SERVICE_AUTH_TOKEN,
             Status.ACTIVE,
@@ -339,6 +372,6 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
     private void verifyUsersFetchFromPrd(int times) {
         checkUntil(() -> verify(organisationApi, times(times))
-            .findUsersByOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, Status.ACTIVE, false));
+            .findUsersInOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, Status.ACTIVE, false));
     }
 }
