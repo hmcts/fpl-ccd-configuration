@@ -45,7 +45,7 @@
     "ID": "SupportingEvidenceBundle",
     "ListElementCode": "document",
     "FieldType": "Document",
-    "ElementLabel": "Upload document",
+    "ElementLabel": "File",
     "SecurityClassification": "Public"
   }
 ]
