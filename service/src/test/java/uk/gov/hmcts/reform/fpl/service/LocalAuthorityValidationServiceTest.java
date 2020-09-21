@@ -19,37 +19,35 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {LocalAuthorityValidationService.class, OrganisationService.class})
+@ExtendWith(MockitoExtension.class)
 class LocalAuthorityValidationServiceTest {
 
-    @Autowired
     private LocalAuthorityValidationService validationService;
 
-    @MockBean
-    private RequestData requestData;
-
-    @MockBean
+    @Mock
     private OrganisationService organisationService;
 
-    @MockBean
+    @Mock
     private FeatureToggleService featureToggleService;
 
-    @MockBean
+    @Mock
     private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
 
-    @MockBean
+    @Mock
     private LocalAuthorityService localAuthorityNameService;
 
     private static final String LOCAL_AUTHORITY_CODE = "SA";
     private static final String LOCAL_AUTHORITY_NAME = "Swansea City Council";
-    private static final String USER_ID = "a3850cb6-36ce-4612-b8c0-da00d57f1537";
     private static final String ORGANISATION_IDENTIFIER = "123";
-
 
     @BeforeEach
     void setup() {
-        given(requestData.userId()).willReturn(USER_ID);
+        validationService = new LocalAuthorityValidationService(organisationService,
+            featureToggleService,
+            localAuthorityNameLookupConfiguration,
+            localAuthorityNameService
+        );
+
         given(localAuthorityNameService.getLocalAuthorityCode()).willReturn(LOCAL_AUTHORITY_CODE);
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn(LOCAL_AUTHORITY_NAME);
