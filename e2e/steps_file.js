@@ -1,6 +1,6 @@
 /* global process */
 const output = require('codeceptjs').output;
-
+const lodash = require('lodash');
 const config = require('./config');
 const caseHelper = require('./helpers/case_helper.js');
 
@@ -81,6 +81,18 @@ module.exports = function () {
     clickHyperlink(link, urlNavigatedTo) {
       this.click(link);
       this.seeCurrentUrlEquals(urlNavigatedTo);
+    },
+
+    async seeAvailableEvents(expectedEvents) {
+      const actualEvents = await this.grabTextFrom('//ccd-event-trigger//option')
+        .then(options => Array.isArray(options) ? options : [options])
+        .then(options => {
+          return lodash.without(options, 'Select action');
+        });
+
+      if (!lodash.isEqual(lodash.sortBy(expectedEvents), lodash.sortBy(actualEvents))) {
+        throw new Error(`Events wanted: [${expectedEvents}], found: [${actualEvents}]`);
+      }
     },
 
     async startEventViaHyperlink(linkLabel) {
