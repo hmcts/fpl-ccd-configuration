@@ -50,7 +50,6 @@ public class ChangeStateControllerAboutToSubmitTest extends AbstractControllerTe
         assertThat(response.getData()).extracting("state").isEqualTo(FINAL_HEARING.getValue());
     }
 
-
     private CaseData caseData(State state, String changeState) {
         return CaseData.builder()
             .state(state)

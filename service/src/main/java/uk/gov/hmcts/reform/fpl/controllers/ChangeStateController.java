@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import io.swagger.annotations.Api;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +19,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFie
 @Api
 @RestController
 @RequestMapping("/callback/change-state")
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class ChangeStateController extends CallbackController {
 
     private static final String LABEL_CONTENT = "Do you want to change the case state to %s?";
