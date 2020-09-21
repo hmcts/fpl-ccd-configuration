@@ -8,6 +8,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
 
@@ -19,10 +20,11 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     UploadC2DocumentsService.class,
     SupportingEvidenceValidatorService.class,
     ValidateGroupService.class,
-    LocalValidatorFactoryBean.class
+    LocalValidatorFactoryBean.class,
+    FixedTimeConfiguration.class
 })
 class UploadC2DocumentsServiceTest {
-    private static final String ERROR_MESSAGE = "Date of time received cannot be in the future";
+    private static final String ERROR_MESSAGE = "Date received cannot be in the future";
 
     @Autowired
     private UploadC2DocumentsService service;
