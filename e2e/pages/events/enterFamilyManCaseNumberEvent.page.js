@@ -6,7 +6,7 @@ module.exports = {
     caseId: '#familyManCaseNumber',
   },
 
-  enterCaseID(caseId = 'mockcaseID') {
+  enterCaseID(caseId) {
     I.fillField(this.fields.caseId, caseId);
   },
 };

@@ -34,7 +34,7 @@
     "CaseFieldID": "supportingEvidenceDocumentsTemp",
     "ListElementCode": "document",
     "FieldDisplayOrder": 4,
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Upload document"
   }
 ]
-

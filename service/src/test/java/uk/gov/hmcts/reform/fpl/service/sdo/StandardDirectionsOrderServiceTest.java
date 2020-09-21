@@ -20,10 +20,9 @@ import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.Constants.USER_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
@@ -48,7 +47,7 @@ class StandardDirectionsOrderServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new StandardDirectionsOrderService(conversionService, sealingService, TIME, idamClient, requestData);
+        service = new StandardDirectionsOrderService(sealingService, TIME, idamClient, requestData);
     }
 
     @Test
@@ -127,13 +126,11 @@ class StandardDirectionsOrderServiceTest {
         );
 
         assertThat(builtOrder).isEqualTo(expectedOrder);
-        verify(sealingService, never()).sealDocument(any(DocumentReference.class));
-        verify(conversionService, never()).convertToPdf(any(DocumentReference.class));
+        verifyNoInteractions(conversionService, conversionService);
     }
 
     @Test
     void shouldSealDocumentWhenSDOIsToBeSealed() throws Exception {
-        given(conversionService.convertToPdf(PDF_DOC)).willCallRealMethod();
         mockSealingService();
         mockIdamAndRequestData();
 
@@ -152,16 +149,14 @@ class StandardDirectionsOrderServiceTest {
 
     @Test
     void shouldConvertWordDocumentAndSealWhenSDOIsSetToSeal() throws Exception {
-        given(conversionService.convertToPdf(WORD_DOC)).willReturn(PDF_DOC);
-        mockSealingService();
-        mockIdamAndRequestData();
-
         StandardDirectionOrder order = buildStandardDirectionOrder(WORD_DOC, SEALED);
 
-        service.buildOrderFromUpload(order);
+        given(sealingService.sealDocument(WORD_DOC)).willReturn(SEALED_DOC);
+        mockIdamAndRequestData();
 
-        verify(conversionService).convertToPdf(WORD_DOC);
-        verify(sealingService).sealDocument(PDF_DOC);
+        StandardDirectionOrder standardDirectionOrder = service.buildOrderFromUpload(order);
+
+        assertThat(standardDirectionOrder.orderDoc).isEqualTo(SEALED_DOC);
     }
 
     private StandardDirectionOrder buildStandardDirectionOrder(DocumentReference document, OrderStatus status) {

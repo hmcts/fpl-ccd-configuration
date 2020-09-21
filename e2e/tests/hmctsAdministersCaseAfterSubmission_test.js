@@ -32,9 +32,10 @@ Before(async I => await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId)
 
 Scenario('HMCTS admin enters FamilyMan reference number', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
-  enterFamilyManCaseNumberEventPage.enterCaseID();
+  enterFamilyManCaseNumberEventPage.enterCaseID('mockCaseID');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.addFamilyManCaseNumber);
+  I.seeFamilyManNumber('mockCaseID');
 });
 
 Scenario('HMCTS admin amends children, respondents, others, international element, other proceedings and attending hearing', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage, enterOtherProceedingsEventPage) => {
@@ -84,12 +85,12 @@ Scenario('HMCTS admin uploads correspondence documents', async (I, caseViewPage,
   I.seeInTab(['Correspondence document 1', 'Notes'], 'Evidence will be late');
   I.seeInTab(['Correspondence document 1', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
   I.seeInTab(['Correspondence document 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeInTab(['Correspondence document 1', 'Upload document'], 'mockFile.txt');
+  I.seeInTab(['Correspondence document 1', 'File'], 'mockFile.txt');
   I.seeInTab(['Correspondence document 2', 'Document name'], 'Email with evidence attached');
   I.seeInTab(['Correspondence document 2', 'Notes'], 'Case evidence included');
   I.seeInTab(['Correspondence document 2', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
   I.seeInTab(['Correspondence document 2', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeInTab(['Correspondence document 2', 'Upload document'], 'mockFile.txt');
+  I.seeInTab(['Correspondence document 2', 'File'], 'mockFile.txt');
 });
 
 Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage, uploadC2DocumentsEventPage, paymentHistoryPage) => {
@@ -118,7 +119,7 @@ Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage,
   I.seeInTab(['C2 Application 1', 'Notes'], 'C2 supporting document');
   I.seeInTab(['C2 Application 1', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
   I.seeInTab(['C2 Application 1', 'Document name'], 'This is a note about supporting doc');
-  I.seeInTab(['C2 Application 1', 'Upload document'], 'mockFile.txt');
+  I.seeInTab(['C2 Application 1', 'File'], 'mockFile.txt');
 
   await I.startEventViaHyperlink('Upload a new C2 application');
 
@@ -147,7 +148,7 @@ Scenario('HMCTS admin edits supporting evidence document on C2 application', asy
   I.seeInTab(['C2 Application 1', 'Notes'], 'C2 supporting document');
   I.seeInTab(['C2 Application 1', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
   I.seeInTab(['C2 Application 1', 'Document name'], 'This is a note about supporting doc');
-  I.seeInTab(['C2 Application 1', 'Upload document'], 'mockFile.txt');
+  I.seeInTab(['C2 Application 1', 'File'], 'mockFile.txt');
 });
 
 Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
@@ -205,7 +206,7 @@ Scenario('HMCTS admin uploads further hearing evidence documents', async (I, cas
   await manageDocumentsEventPage.selectFurtherEvidence();
   await manageDocumentsEventPage.selectFurtherEvidenceIsRelatedToHearing();
   await manageDocumentsEventPage.selectHearing('1 January 2050');
-  await I.retryUntilExists(() => I.click('Continue'), '#furtherEvidenceDocumentsTEMP');
+  await I.retryUntilExists(() => I.click('Continue'), '#supportingEvidenceDocumentsTemp');
   await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[0]);
   await I.addAnotherElementToCollection();
   await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[1]);
@@ -217,12 +218,12 @@ Scenario('HMCTS admin uploads further hearing evidence documents', async (I, cas
   I.seeInTab(['Further evidence documents 1', 'Documents 1', 'Notes'], 'Evidence will be late');
   I.seeInTab(['Further evidence documents 1', 'Documents 1', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
   I.seeInTab(['Further evidence documents 1', 'Documents 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeInTab(['Further evidence documents 1', 'Documents 1', 'Upload document'], 'mockFile.txt');
+  I.seeInTab(['Further evidence documents 1', 'Documents 1', 'File'], 'mockFile.txt');
   I.seeInTab(['Further evidence documents 1', 'Documents 2', 'Document name'], 'Email with evidence attached');
   I.seeInTab(['Further evidence documents 1', 'Documents 2', 'Notes'], 'Case evidence included');
   I.seeInTab(['Further evidence documents 1', 'Documents 2', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
   I.seeInTab(['Further evidence documents 1', 'Documents 2', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeInTab(['Further evidence documents 1', 'Documents 2', 'Upload document'], 'mockFile.txt');
+  I.seeInTab(['Further evidence documents 1', 'Documents 2', 'File'], 'mockFile.txt');
 });
 
 Scenario('HMCTS admin share case with representatives', async (I, caseViewPage, enterRepresentativesEventPage) => {
@@ -350,12 +351,7 @@ Scenario('HMCTS admin handles supplementary evidence', async (I, caseListPage, c
   await I.seeCaseInSearchResult(caseId);
 });
 
-Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async (I, caseViewPage, sendCaseToGatekeeperEventPage, enterFamilyManCaseNumberEventPage) => {
-  await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
-  enterFamilyManCaseNumberEventPage.enterCaseID();
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.addFamilyManCaseNumber);
-
+Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async (I, caseViewPage, sendCaseToGatekeeperEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
   await sendCaseToGatekeeperEventPage.enterEmail();
   await I.addAnotherElementToCollection();
