@@ -67,10 +67,10 @@ public class UploadDocumentsService {
         List<Element<T>> listOfCurrentDocs,
         List<Element<T>> listOfOldDocs) {
 
-        Predicate<Element<T>> containsInListOfOldDocs = doc -> listOfOldDocs != null && !listOfOldDocs.contains(doc);
+        Predicate<Element<T>> doesNotContainInOldDocs = doc -> listOfOldDocs != null && !listOfOldDocs.contains(doc);
 
         listOfCurrentDocs.stream()
-            .filter(containsInListOfOldDocs)
+            .filter(doesNotContainInOldDocs)
             .forEach(doc -> findElement(doc.getId(), listOfOldDocs)
                 .ifPresent(e -> {
                     if (!e.getValue().getTypeOfDocument().equals(doc.getValue().getTypeOfDocument())) {

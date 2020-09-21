@@ -34,11 +34,12 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ContextConfiguration(classes = {
     JacksonAutoConfiguration.class,
     UploadDocumentsService.class,
-    FixedTimeConfiguration.class,
-    Document.class
+    FixedTimeConfiguration.class
 })
 class UploadDocumentsServiceTest {
 
+    private static final String USER = "HMCTS";
+    private static final String LA_USER = "someLA@la.co.uk";
     private CaseData givenCaseData;
 
     @Autowired
@@ -61,29 +62,35 @@ class UploadDocumentsServiceTest {
     @Test
     void shouldReturnMapOfCaseDetailsWithAttachedDocuments() {
         CaseData caseData = caseData();
-        when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn("HMCTS");
+        when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(USER);
 
         Map<String, Object> map = uploadDocumentsService.updateCaseDetailsWithDocuments(caseData, caseData);
 
-        assertThat(map.get("documents_checklist_document"))
+        assertThat(map.get("documents_socialWorkChronology_document"))
             .isEqualToComparingOnlyGivenFields(Document.builder()
-                .statusReason("Social work chronology text")
-                .uploadedBy("HMCTS")
+                .uploadedBy(USER)
                 .dateTimeUploaded(time.now())
-                .documentStatus("To follow")
                 .build());
 
         assertThat(map.get("documents_socialWorkStatement_document"))
             .isEqualToComparingOnlyGivenFields(Document.builder()
                 .statusReason("Social work statement and genogram text")
-                .uploadedBy("HMCTS")
+                .uploadedBy(USER)
+                .dateTimeUploaded(time.now())
+                .documentStatus("To follow")
+                .build());
+
+        assertThat(map.get("documents_checklist_document"))
+            .isEqualToComparingOnlyGivenFields(Document.builder()
+                .statusReason("Social work chronology text")
+                .uploadedBy(USER)
                 .dateTimeUploaded(time.now())
                 .documentStatus("To follow")
                 .build());
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"HMCTS", "someLA@la.co.uk"})
+    @ValueSource(strings = {USER, LA_USER})
     void shouldUpdateOtherSocialWorkDocumentsListWithUpdatedDetailsAndUser(String user) {
         when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(user);
 
@@ -98,20 +105,18 @@ class UploadDocumentsServiceTest {
             .isEqualTo("/new_test.doc");
 
         assertThat(list).first()
-            .extracting(DocumentSocialWorkOther::getDocumentTitle)
-            .isEqualTo("New Additional Doc 1");
-
-        assertThat(list).first()
-            .extracting(DocumentSocialWorkOther::getDateTimeUploaded)
-            .isEqualTo(time.now());
-
-        assertThat(list).first()
-            .extracting(DocumentSocialWorkOther::getUploadedBy)
-            .isEqualTo(user);
+            .extracting(
+                DocumentSocialWorkOther::getDocumentTitle,
+                DocumentSocialWorkOther::getDateTimeUploaded,
+                DocumentSocialWorkOther::getUploadedBy)
+            .containsExactly(
+                "New Additional Doc 1",
+                time.now(),
+                user);
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"HMCTS", "someLA@la.co.uk"})
+    @ValueSource(strings = {USER, LA_USER})
     void shouldUpdateOtherSocialWorkDocumentsListWithNewDocument(String user) {
         when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(user);
 
@@ -120,6 +125,7 @@ class UploadDocumentsServiceTest {
                 createCaseDataWithCurrentDocumentSocialWorkOther(),
                 createCaseDataWithOldDocumentSocialWorkOther()));
 
+        //Below tests old updated document title and title for new document
         assertThat(list)
             .extracting(DocumentSocialWorkOther::getDocumentTitle)
             .containsExactly("Additional Doc 1 - changed", "Additional Doc 2");
@@ -128,14 +134,10 @@ class UploadDocumentsServiceTest {
             .extracting(DocumentSocialWorkOther::getTypeOfDocument)
             .extracting(DocumentReference::getUrl)
             .containsExactly("/test1 - changed.doc", "/test2.doc");
-
-        assertThat(list)
-            .extracting(DocumentSocialWorkOther::getUploadedBy)
-            .containsExactly(user, user);
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"HMCTS", "someLA@la.co.uk"})
+    @ValueSource(strings = {USER, LA_USER})
     void shouldUpdateDocumentWithUpdatedDetailsAndUser(String user) {
         when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(user);
 
@@ -150,12 +152,13 @@ class UploadDocumentsServiceTest {
             .isEqualTo("/new_test.doc");
 
         assertThat(list)
-            .extracting(Document::getDateTimeUploaded)
-            .isEqualTo(time.now());
-
-        assertThat(list)
-            .extracting(Document::getUploadedBy)
-            .isEqualTo(user);
+            .extracting(
+                Document::getDateTimeUploaded,
+                Document::getUploadedBy)
+            .containsExactly(
+                time.now(),
+                user
+            );
     }
 
     private List<Element<DocumentSocialWorkOther>> createCaseDataWithCurrentDocumentSocialWorkOther() {

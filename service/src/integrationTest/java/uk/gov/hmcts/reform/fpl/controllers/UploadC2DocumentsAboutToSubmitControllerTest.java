@@ -122,13 +122,15 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
                 SupportingEvidenceBundle::getNotes,
                 SupportingEvidenceBundle::getDateTimeReceived,
                 SupportingEvidenceBundle::getDateTimeUploaded,
-                SupportingEvidenceBundle::getDocument
+                SupportingEvidenceBundle::getDocument,
+                SupportingEvidenceBundle::getUploadedBy
             ).containsExactly(
             "Supporting document",
             "Document notes",
             time.now().minusDays(1),
             time.now(),
-            document
+            document,
+            USER_NAME
         );
     }
 
