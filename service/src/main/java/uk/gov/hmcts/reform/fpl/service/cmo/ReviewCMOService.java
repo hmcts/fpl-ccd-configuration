@@ -46,15 +46,13 @@ public class ReviewCMOService {
         List<Element<CaseManagementOrder>> cmosReadyForApproval = getCMOsReadyForApproval(caseData);
         Element<CaseManagementOrder> selectedCMO = getSelectedCMO(caseData);
 
-        return asDynamicList(cmosReadyForApproval, selectedCMO.getId(),
-            uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder::getHearing);
+        return asDynamicList(cmosReadyForApproval, selectedCMO.getId(), CaseManagementOrder::getHearing);
     }
 
     public DynamicList buildUnselectedDynamicList(CaseData caseData) {
         List<Element<CaseManagementOrder>> cmosReadyForApproval = getCMOsReadyForApproval(caseData);
 
-        return asDynamicList(cmosReadyForApproval, null,
-            uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder::getHearing);
+        return asDynamicList(cmosReadyForApproval, null, CaseManagementOrder::getHearing);
     }
 
     public Map<String, Object> getPageDisplayControls(CaseData caseData) {
