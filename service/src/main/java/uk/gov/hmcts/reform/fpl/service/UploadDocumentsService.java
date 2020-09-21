@@ -88,9 +88,8 @@ public class UploadDocumentsService {
 
     public Document setUpdatedByAndDateAndTimeForDocuments(Document currentDoc, Document oldDoc) {
 
-        if (oldDoc != null && !currentDoc.getTypeOfDocument().equals(oldDoc.getTypeOfDocument())) {
-            return buildDocument(currentDoc);
-        } else if (currentDoc.getDateTimeUploaded() == null) {
+        if ((oldDoc != null && !currentDoc.getTypeOfDocument().equals(oldDoc.getTypeOfDocument()))
+            || currentDoc.getDateTimeUploaded() == null) {
             return buildDocument(currentDoc);
         }
         return null;
