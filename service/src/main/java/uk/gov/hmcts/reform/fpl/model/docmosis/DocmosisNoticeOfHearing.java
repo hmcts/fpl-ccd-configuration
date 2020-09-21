@@ -20,6 +20,7 @@ public class DocmosisNoticeOfHearing implements DocmosisData {
     private String hearingDate;
     private String preHearingAttendance;
     private String hearingTime;
+    private final String additionalNotes;
     private final String courtseal;
     private final String crest;
 }
