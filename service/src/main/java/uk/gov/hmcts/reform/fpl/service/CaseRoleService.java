@@ -61,8 +61,9 @@ public class CaseRoleService {
             final String serviceToken = authTokenGenerator.generate();
             List<CaseAssignedUserRoleWithOrganisation> caseAssignedRoles = new ArrayList<>();
             List<AddCaseAssignedUserRolesRequest> addCaseAssignedUserRolesRequests = new ArrayList<>();
+            AddCaseAssignedUserRolesRequest addCaseRequest = new AddCaseAssignedUserRolesRequest();
 
-            users.stream().parallel()
+            users.stream().sequential()
                 .forEach(userId -> {
                     try {
                         CaseAssignedUserRoleWithOrganisation caseUserRole = new CaseAssignedUserRoleWithOrganisation();
@@ -72,21 +73,17 @@ public class CaseRoleService {
                         // This api call needs only LASOLICITOR rolestring
                         caseUserRole.setCaseRole(CaseRole.LASOLICITOR.formattedName());
                         caseAssignedRoles.add(caseUserRole);
-                        AddCaseAssignedUserRolesRequest addCaseRequest = new AddCaseAssignedUserRolesRequest();
                         addCaseRequest.setCaseAssignedUserRoles(caseAssignedRoles);
-                        addCaseAssignedUserRolesRequests.add(addCaseRequest);
-
                         usersGrantedAccess.add(userId);
                     } catch (Exception exception) {
                         log.warn("User {} has not been granted {} to case {}", userId, roles, caseId, exception);
                     }
                 });
 
-            for (AddCaseAssignedUserRolesRequest addRequest : addCaseAssignedUserRolesRequests) {
-                AddCaseAssignedUserRolesResponse response = caseAccessApi.addCaseUserRoles(userToken,
-                                                                                            serviceToken, addRequest);
-                log.info("New API Response  ===== " + response.getStatus());
-            }
+            AddCaseAssignedUserRolesResponse response = caseAccessApi.addCaseUserRoles(userToken,
+                                                                                            serviceToken,
+                                                                                            addCaseRequest);
+
         } catch (FeignException ex) {
             ex.printStackTrace();
             log.error("Could not find the case users for associated organisation from reference data", ex);
