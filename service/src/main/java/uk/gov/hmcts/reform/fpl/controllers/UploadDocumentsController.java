@@ -37,6 +37,6 @@ public class UploadDocumentsController extends CallbackController {
                 .updateCaseDetailsWithDocuments(caseDataBefore, caseData));
         }
 
-        return respond(caseDetails, documentsValidatorService.validateDocuments(caseData));
+        return respond(caseDetails, errors);
     }
 }
