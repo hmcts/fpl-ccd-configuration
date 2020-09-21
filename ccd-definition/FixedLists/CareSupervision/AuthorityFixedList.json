@@ -152,5 +152,12 @@
     "ListElementCode": "SNW",
     "ListElement": "Wiltshire Council",
     "DisplayOrder": 95
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "TEST",
+    "ListElement": "Test Council",
+    "DisplayOrder": 96
   }
 ]
