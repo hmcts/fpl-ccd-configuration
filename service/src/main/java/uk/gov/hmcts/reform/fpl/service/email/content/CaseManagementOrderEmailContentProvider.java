@@ -1,8 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -15,9 +12,7 @@ import static org.apache.commons.lang3.StringUtils.uncapitalize;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
-@Slf4j
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseManagementOrderEmailContentProvider extends AbstractEmailContentProvider {
 
     public IssuedCMOTemplate buildCMOIssuedNotificationParameters(CaseData caseData, CaseManagementOrder cmo,
