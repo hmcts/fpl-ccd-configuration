@@ -53,9 +53,6 @@ class UploadDocumentsServiceTest {
     @MockBean
     private DocumentUploadHelper documentUploadHelper;
 
-    @MockBean
-    private Document currentDoc;
-
     @BeforeEach
     void setup() {
         givenCaseData = prepareCaseData();
@@ -64,10 +61,25 @@ class UploadDocumentsServiceTest {
     @Test
     void shouldReturnMapOfCaseDetailsWithAttachedDocuments() {
         CaseData caseData = caseData();
-        when(currentDoc.getDateTimeUploaded()).thenReturn(null);
+        when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn("HMCTS");
 
         Map<String, Object> map = uploadDocumentsService.updateCaseDetailsWithDocuments(caseData, caseData);
-        System.out.println(map);
+
+        assertThat(map.get("documents_checklist_document"))
+            .isEqualToComparingOnlyGivenFields(Document.builder()
+                .statusReason("Social work chronology text")
+                .uploadedBy("HMCTS")
+                .dateTimeUploaded(time.now())
+                .documentStatus("To follow")
+                .build());
+
+        assertThat(map.get("documents_socialWorkStatement_document"))
+            .isEqualToComparingOnlyGivenFields(Document.builder()
+                .statusReason("Social work statement and genogram text")
+                .uploadedBy("HMCTS")
+                .dateTimeUploaded(time.now())
+                .documentStatus("To follow")
+                .build());
     }
 
     @ParameterizedTest
