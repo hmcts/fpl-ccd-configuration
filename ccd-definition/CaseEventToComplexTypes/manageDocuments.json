@@ -34,7 +34,8 @@
     "CaseFieldID": "furtherEvidenceDocumentsTEMP",
     "ListElementCode": "document",
     "FieldDisplayOrder": 4,
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Upload document"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -71,7 +72,8 @@
     "CaseFieldID": "correspondenceDocuments",
     "ListElementCode": "document",
     "FieldDisplayOrder": 4,
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Upload document"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -108,7 +110,8 @@
     "CaseFieldID": "c2SupportingDocuments",
     "ListElementCode": "document",
     "FieldDisplayOrder": 4,
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Upload document"
   }
 ]
 
