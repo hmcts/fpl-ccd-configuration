@@ -44,6 +44,7 @@ public class HearingBooking {
     private final LocalDateTime endDate;
     private final List<HearingNeedsBooked> hearingNeedsBooked;
     private final String hearingNeedsDetails;
+    private final String additionalNotes;
     private JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private UUID caseManagementOrderId;
     private DocumentReference noticeOfHearing;
