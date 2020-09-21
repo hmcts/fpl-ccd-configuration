@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.GrantCaseAccessException;
 import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityCodeException;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
@@ -39,11 +38,9 @@ import static feign.Request.HttpMethod.GET;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
@@ -99,9 +96,6 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
     @MockBean
     private CoreCaseDataService coreCaseDataService;
-
-    @MockBean
-    private FeatureToggleService featureToggleService;
 
     @Autowired
     private SystemUpdateUserConfiguration userConfig;
@@ -236,45 +230,6 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
         postSubmittedEvent(getCase(LA_NOT_IN_PRD_CODE));
 
         verifyGrantCaseRoleAttempts(LA_NOT_IN_PRD_USER_IDS, 2);
-    }
-
-    @Test
-    void shouldSetPageShowToYesWhenToggleIsEnabled() {
-        given(featureToggleService.isMigrateToManageOrgWarningPageEnabled(anyString())).willReturn(true);
-
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("caseName", "title"))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
-
-        assertThat(callbackResponse.getData().get(PAGE_SHOW)).isEqualTo("YES");
-    }
-
-    @Test
-    void shouldNotSetPageShowWhenToggleIsDisabled() {
-        given(featureToggleService.isMigrateToManageOrgWarningPageEnabled(anyString())).willReturn(false);
-
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("caseName", "title"))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
-
-        assertThat(callbackResponse.getData().get(PAGE_SHOW)).isNotEqualTo("YES");
-    }
-
-    @Test
-    void shouldRemovePageShowOnAboutToSubmit() {
-        given(featureToggleService.isMigrateToManageOrgWarningPageEnabled(anyString())).willReturn(false);
-
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("caseName", "title", PAGE_SHOW, "YES"))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
-
-        assertNull(callbackResponse.getData().get(PAGE_SHOW));
     }
 
     private void verifyGrantCaseRoleAttempts(List<String> users, int attempts) {
