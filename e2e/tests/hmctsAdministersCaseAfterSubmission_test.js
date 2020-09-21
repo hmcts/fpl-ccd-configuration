@@ -18,17 +18,22 @@ const supportingEvidenceDocuments = require('../fixtures/supportingEvidenceDocum
 
 let caseId;
 let submittedAt;
+let resetUser = true;
 
 Feature('Case administration after submission');
 
 BeforeSuite(async (I) => {
   caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
   submittedAt = new Date();
-
-  await I.signIn(config.hmctsAdminUser);
 });
 
-Before(async I => await I.navigateToCaseDetails(caseId));
+Before(async I => {
+  if (resetUser) {
+    await I.signIn(config.hmctsAdminUser);
+    resetUser = false;
+  }
+  await I.navigateToCaseDetails(caseId);
+});
 
 Scenario('HMCTS admin enters FamilyMan reference number', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
@@ -227,7 +232,7 @@ Scenario('HMCTS admin uploads further hearing evidence documents', async (I, cas
   I.seeInTab(['Further evidence documents 1', 'Documents 2', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
   I.seeInTab(['Further evidence documents 1', 'Documents 2', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
   I.seeInTab(['Further evidence documents 1', 'Documents 2', 'Upload document'], 'mockFile.txt');
-});
+}).retry(1); // async send letters call in submitted of previous event
 
 Scenario('HMCTS admin share case with representatives', async (I, caseViewPage, enterRepresentativesEventPage) => {
   const representative1 = representatives.servedByDigitalService;
@@ -259,6 +264,8 @@ Scenario('HMCTS admin share case with representatives', async (I, caseViewPage, 
 
   await I.navigateToCaseDetailsAs({email: representative1.email, password: config.localAuthorityPassword}, caseId);
   I.see(caseId);
+
+  resetUser = true;
 });
 
 Scenario('HMCTS admin revoke case access from representative', async (I, caseViewPage) => {
@@ -270,8 +277,9 @@ Scenario('HMCTS admin revoke case access from representative', async (I, caseVie
   I.seeEventSubmissionConfirmation(config.administrationActions.amendRepresentatives);
 
   await I.navigateToCaseDetailsAs({email: representatives.servedByDigitalService.email, password: config.localAuthorityPassword}, caseId);
-
   I.see('No cases found.');
+
+  resetUser = true;
 });
 
 Scenario('HMCTS admin creates blank order', async (I, caseViewPage, createOrderEventPage) => {
