@@ -3,12 +3,10 @@ package uk.gov.hmcts.reform.fpl.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.util.List;
@@ -21,9 +19,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 @ExtendWith(MockitoExtension.class)
 class LocalAuthorityValidationServiceTest {
-
-    private LocalAuthorityValidationService validationService;
-
     @Mock
     private OrganisationService organisationService;
 
@@ -36,18 +31,15 @@ class LocalAuthorityValidationServiceTest {
     @Mock
     private LocalAuthorityService localAuthorityNameService;
 
+    @InjectMocks
+    private LocalAuthorityValidationService validationService;
+
     private static final String LOCAL_AUTHORITY_CODE = "SA";
     private static final String LOCAL_AUTHORITY_NAME = "Swansea City Council";
     private static final String ORGANISATION_IDENTIFIER = "123";
 
     @BeforeEach
     void setup() {
-        validationService = new LocalAuthorityValidationService(organisationService,
-            featureToggleService,
-            localAuthorityNameLookupConfiguration,
-            localAuthorityNameService
-        );
-
         given(localAuthorityNameService.getLocalAuthorityCode()).willReturn(LOCAL_AUTHORITY_CODE);
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn(LOCAL_AUTHORITY_NAME);
