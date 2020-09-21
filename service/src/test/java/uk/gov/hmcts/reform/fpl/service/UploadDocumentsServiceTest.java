@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -19,10 +20,12 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.util.List;
+import java.util.Map;
 
 import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -31,7 +34,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ContextConfiguration(classes = {
     JacksonAutoConfiguration.class,
     UploadDocumentsService.class,
-    FixedTimeConfiguration.class
+    FixedTimeConfiguration.class,
+    Document.class
 })
 class UploadDocumentsServiceTest {
 
@@ -49,9 +53,21 @@ class UploadDocumentsServiceTest {
     @MockBean
     private DocumentUploadHelper documentUploadHelper;
 
+    @MockBean
+    private Document currentDoc;
+
     @BeforeEach
     void setup() {
         givenCaseData = prepareCaseData();
+    }
+
+    @Test
+    void shouldReturnMapOfCaseDetailsWithAttachedDocuments() {
+        CaseData caseData = caseData();
+        when(currentDoc.getDateTimeUploaded()).thenReturn(null);
+
+        Map<String, Object> map = uploadDocumentsService.updateCaseDetailsWithDocuments(caseData, caseData);
+        System.out.println(map);
     }
 
     @ParameterizedTest

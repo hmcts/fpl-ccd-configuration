@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 
@@ -62,8 +63,10 @@ public class UploadDocumentsService {
         List<Element<T>> listOfCurrentDocs,
         List<Element<T>> listOfOldDocs) {
 
+        Predicate<Element<T>> containsInListOfOldDocs = doc -> listOfOldDocs != null && !listOfOldDocs.contains(doc);
+
         listOfCurrentDocs.stream()
-            .filter(doc -> listOfOldDocs != null && !listOfOldDocs.contains(doc))
+            .filter(containsInListOfOldDocs)
             .forEach(doc -> findElement(doc.getId(), listOfOldDocs)
                 .ifPresent(e -> {
                     if (!e.getValue().getTypeOfDocument().equals(doc.getValue().getTypeOfDocument())) {
