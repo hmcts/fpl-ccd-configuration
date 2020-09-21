@@ -38,7 +38,7 @@ public class ManageDocumentService {
 
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_KEY = "correspondenceDocuments";
     public static final String C2_DOCUMENTS_COLLECTION_KEY = "c2DocumentBundle";
-    public static final String TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY = "furtherEvidenceDocumentsTEMP";
+    public static final String TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY = "supportingEvidenceDocumentsTemp";
     public static final String FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY = "furtherEvidenceDocuments";
     public static final String HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY = "hearingFurtherEvidenceDocuments";
     public static final String C2_SUPPORTING_DOCUMENTS_COLLECTION = "c2SupportingDocuments";
@@ -218,6 +218,25 @@ public class ManageDocumentService {
             updatedC2Bundles.add(c2DocumentBundleElement);
         }
         return updatedC2Bundles;
+    }
+
+    public List<Element<SupportingEvidenceBundle>> setDateTimeOnHearingFurtherEvidenceSupportingEvidence(
+        CaseData caseData, CaseData caseDataBefore) {
+        List<Element<SupportingEvidenceBundle>> currentSupportingDocuments
+            = caseData.getSupportingEvidenceDocumentsTemp();
+        List<Element<SupportingEvidenceBundle>> previousSupportingDocuments = List.of();
+
+        UUID selectedHearingCode = getDynamicListValueCode(caseData.getManageDocumentsHearingList(), mapper);
+
+        if (caseDataBefore.documentBundleContainsHearingId(selectedHearingCode)) {
+            for (Element<HearingFurtherEvidenceBundle> element : caseDataBefore.getHearingFurtherEvidenceDocuments()) {
+                if (element.getId().equals(selectedHearingCode)) {
+                    previousSupportingDocuments = element.getValue().getSupportingEvidenceBundle();
+                }
+            }
+        }
+
+        return setDateTimeUploadedOnSupportingEvidence(currentSupportingDocuments, previousSupportingDocuments);
     }
 
     private Element<HearingFurtherEvidenceBundle> buildHearingSupportingEvidenceBundle(

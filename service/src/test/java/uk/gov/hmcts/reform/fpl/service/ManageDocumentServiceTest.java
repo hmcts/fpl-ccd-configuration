@@ -529,6 +529,79 @@ class ManageDocumentServiceTest {
         assertThat(thirdC2DocumentUploadTime).isEqualTo(uploadDateTime);
     }
 
+    @Test
+    void shouldUpdatePreviousSupportingEvidenceWhenFurtherEvidenceIsAssociatedWithAHearingAndNewDocumentHasBeenAdded() {
+        SupportingEvidenceBundle previousSupportingEvidenceBundle = SupportingEvidenceBundle.builder()
+            .dateTimeUploaded(futureDate)
+            .document(DocumentReference.builder().filename("previousDocument.pdf").build())
+            .build();
+
+        SupportingEvidenceBundle editedSupportingEvidenceBundle = SupportingEvidenceBundle.builder()
+            .document(DocumentReference.builder().filename("editedDocument.pdf").build())
+            .build();
+
+        List<Element<SupportingEvidenceBundle>> previousSupportingEvidenceList = List.of(
+            element(previousSupportingEvidenceBundle));
+
+        UUID hearingId = UUID.randomUUID();
+        HearingBooking hearingBooking = buildFinalHearingBooking();
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(List.of(element(hearingId, hearingBooking)))
+            .manageDocumentsHearingList(buildDynamicList(hearingId))
+            .supportingEvidenceDocumentsTemp(List.of(
+                element(editedSupportingEvidenceBundle),
+                element(SupportingEvidenceBundle.builder().build())))
+            .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue()))
+            .build();
+
+        CaseData caseDataBefore = CaseData.builder()
+            .hearingFurtherEvidenceDocuments(new ArrayList<>(List.of(
+                element(hearingId, HearingFurtherEvidenceBundle.builder()
+                    .supportingEvidenceBundle(previousSupportingEvidenceList)
+                    .build()))))
+            .build();
+
+        List<Element<SupportingEvidenceBundle>> updatedEvidenceBundle =
+            manageDocumentService.setDateTimeOnHearingFurtherEvidenceSupportingEvidence(caseData, caseDataBefore);
+
+        assertThat(updatedEvidenceBundle.size()).isEqualTo(2);
+        assertThat(updatedEvidenceBundle.get(0).getValue().getDateTimeUploaded()).isEqualTo(time.now());
+        assertThat(updatedEvidenceBundle.get(1).getValue().getDateTimeUploaded()).isEqualTo(time.now());
+    }
+
+    @Test
+    void shouldNotUpdatePreviousSupportingEvidenceWhenFurtherEvidenceIsAssociatedWithAHearing() {
+        List<Element<SupportingEvidenceBundle>> previousSupportingEvidenceList
+            = buildSupportingEvidenceBundle(futureDate);
+
+        UUID hearingId = UUID.randomUUID();
+        HearingBooking hearingBooking = buildFinalHearingBooking();
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(List.of(element(hearingId, hearingBooking)))
+            .manageDocumentsHearingList(buildDynamicList(hearingId))
+            .supportingEvidenceDocumentsTemp(List.of(
+                previousSupportingEvidenceList.get(0),
+                element(SupportingEvidenceBundle.builder().build())))
+            .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue()))
+            .build();
+
+        CaseData caseDataBefore = CaseData.builder()
+            .hearingFurtherEvidenceDocuments(new ArrayList<>(List.of(
+                element(hearingId, HearingFurtherEvidenceBundle.builder()
+                    .supportingEvidenceBundle(previousSupportingEvidenceList)
+                    .build()))))
+            .build();
+
+        List<Element<SupportingEvidenceBundle>> updatedEvidenceBundle =
+            manageDocumentService.setDateTimeOnHearingFurtherEvidenceSupportingEvidence(caseData, caseDataBefore);
+
+        assertThat(updatedEvidenceBundle.size()).isEqualTo(2);
+        assertThat(updatedEvidenceBundle.get(0)).isEqualTo(previousSupportingEvidenceList.get(0));
+        assertThat(updatedEvidenceBundle.get(1).getValue().getDateTimeUploaded()).isEqualTo(time.now());
+    }
+
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
         return wrapElements(SupportingEvidenceBundle.builder().name("test").build());
     }

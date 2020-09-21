@@ -2,8 +2,7 @@ const { I } = inject();
 const supportingDocumentsFragment = require('../../fragments/supportingDocuments.js');
 
 module.exports = {
-  supportingDocumentType: '',
-  fields: function(index, supportingDocumentType) {
+  fields: function(index) {
     return {
       documentType: {
         furtherEvidence: '#manageDocument_type-FURTHER_EVIDENCE_DOCUMENTS',
@@ -16,72 +15,62 @@ module.exports = {
       },
       hearingList: '#manageDocumentsHearingList',
       c2DocumentsList: '#manageDocumentsSupportingC2List',
-      supportingDocuments: supportingDocumentsFragment.supportingDocuments(index, supportingDocumentType),
+      supportingDocuments: supportingDocumentsFragment.supportingDocuments(index, 'supportingEvidenceDocumentsTemp'),
     };
   },
 
   async selectFurtherEvidence() {
     const elementIndex = await this.getActiveElementIndex();
-    const type = this.getSupportingEvidenceDocumentType();
-    I.click(this.fields(elementIndex, type).documentType.furtherEvidence);
+    I.click(this.fields(elementIndex).documentType.furtherEvidence);
   },
 
   async selectCorrespondence() {
     const elementIndex = await this.getActiveElementIndex();
-    const type = this.getSupportingEvidenceDocumentType();
-    I.click(this.fields(elementIndex, type).documentType.correspondence);
+    I.click(this.fields(elementIndex).documentType.correspondence);
   },
 
   async selectC2SupportingDocuments() {
     const elementIndex = await this.getActiveElementIndex();
-    const type = this.getSupportingEvidenceDocumentType();
-    I.click(this.fields(elementIndex, type).documentType.c2);
+    I.click(this.fields(elementIndex).documentType.c2);
   },
 
   async selectFurtherEvidenceIsRelatedToHearing() {
     const elementIndex = await this.getActiveElementIndex();
-    const type = this.getSupportingEvidenceDocumentType();
-    I.waitForElement(this.fields(elementIndex, type).relatedToHearing.yes);
-    I.click(this.fields(elementIndex, type).relatedToHearing.yes);
+    I.waitForElement(this.fields(elementIndex).relatedToHearing.yes);
+    I.click(this.fields(elementIndex).relatedToHearing.yes);
   },
 
   async selectHearing(hearingDate) {
     const elementIndex = await this.getActiveElementIndex();
-    const type = this.getSupportingEvidenceDocumentType();
-    I.waitForElement(this.fields(elementIndex, type).hearingList);
-    I.selectOption(this.fields(elementIndex, type).hearingList, `Case management hearing, ${hearingDate}`);
+    I.waitForElement(this.fields(elementIndex).hearingList);
+    I.selectOption(this.fields(elementIndex).hearingList, `Case management hearing, ${hearingDate}`);
   },
 
   async select2FromDropdown() {
     const elementIndex = await this.getActiveElementIndex();
-    const type = this.getSupportingEvidenceDocumentType();
-    const dropdownLabel = await I.grabTextFrom(`${this.fields(elementIndex, type).c2DocumentsList} option:nth-child(2)`);
-    I.waitForElement(this.fields(elementIndex, type).c2DocumentsList);
-    I.selectOption(this.fields(elementIndex, type).c2DocumentsList, dropdownLabel);
+    const dropdownLabel = await I.grabTextFrom(`${this.fields(elementIndex).c2DocumentsList} option:nth-child(2)`);
+    I.waitForElement(this.fields(elementIndex).c2DocumentsList);
+    I.selectOption(this.fields(elementIndex).c2DocumentsList, dropdownLabel);
   },
 
   async enterDocumentName(documentName) {
     const elementIndex = await this.getActiveElementIndex();
-    const type = this.getSupportingEvidenceDocumentType();
-    I.fillField(this.fields(elementIndex, type).supportingDocuments.name, documentName);
+    I.fillField(this.fields(elementIndex).supportingDocuments.name, documentName);
   },
 
   async enterDocumentNotes(notes) {
     const elementIndex = await this.getActiveElementIndex();
-    const type = this.getSupportingEvidenceDocumentType();
-    I.fillField(this.fields(elementIndex, type).supportingDocuments.notes, notes);
+    I.fillField(this.fields(elementIndex).supportingDocuments.notes, notes);
   },
 
   async enterDateAndTimeReceived(dateAndTime) {
     const elementIndex = await this.getActiveElementIndex();
-    const type = this.getSupportingEvidenceDocumentType();
-    I.fillDateAndTime(dateAndTime, this.fields(elementIndex, type).supportingDocuments.dateAndTime);
+    I.fillDateAndTime(dateAndTime, this.fields(elementIndex).supportingDocuments.dateAndTime);
   },
 
   async uploadDocument(document) {
     const elementIndex = await this.getActiveElementIndex();
-    const type = this.getSupportingEvidenceDocumentType();
-    I.attachFile(this.fields(elementIndex, type).supportingDocuments.document, document);
+    I.attachFile(this.fields(elementIndex).supportingDocuments.document, document);
   },
 
   async uploadSupportingEvidenceDocument(supportingEvidenceDocument) {
@@ -93,13 +82,5 @@ module.exports = {
 
   async getActiveElementIndex() {
     return await I.grabNumberOfVisibleElements('//button[text()="Remove"]') - 1;
-  },
-
-  setSupportingEvidenceDocumentType(type) {
-    this.supportingDocumentType = type;
-  },
-
-  getSupportingEvidenceDocumentType() {
-    return this.supportingDocumentType;
   },
 };

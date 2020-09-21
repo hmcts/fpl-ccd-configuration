@@ -390,7 +390,7 @@ public class CaseData {
     private final String closeCaseFromOrder;
 
     private final ManageDocument manageDocument;
-    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsTEMP;
+    private final List<Element<SupportingEvidenceBundle>> supportingEvidenceDocumentsTemp;
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments;
     private final List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocuments;
@@ -398,8 +398,8 @@ public class CaseData {
     private final Object manageDocumentsHearingList;
     private final Object manageDocumentsSupportingC2List;
 
-    public List<Element<SupportingEvidenceBundle>> getFurtherEvidenceDocumentsTEMP() {
-        return defaultIfNull(furtherEvidenceDocumentsTEMP, new ArrayList<>());
+    public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceDocumentsTemp() {
+        return defaultIfNull(supportingEvidenceDocumentsTemp, new ArrayList<>());
     }
 
     public List<Element<SupportingEvidenceBundle>> getCorrespondenceDocuments() {

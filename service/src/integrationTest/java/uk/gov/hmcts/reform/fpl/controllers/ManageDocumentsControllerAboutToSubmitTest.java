@@ -35,7 +35,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENT_KEY;
-import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -65,7 +65,7 @@ public class ManageDocumentsControllerAboutToSubmitTest extends AbstractControll
                     .code(hearingId)
                     .build())
                 .build(),
-            TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, furtherEvidenceBundle,
+            TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, furtherEvidenceBundle,
             MANAGE_DOCUMENT_KEY, buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue())));
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
@@ -87,7 +87,7 @@ public class ManageDocumentsControllerAboutToSubmitTest extends AbstractControll
         List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
 
         Map<String, Object> data = new HashMap<>(Map.of(
-            TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, furtherEvidenceBundle,
+            TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, furtherEvidenceBundle,
             MANAGE_DOCUMENT_KEY, buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, NO.getValue())));
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
@@ -190,7 +190,6 @@ public class ManageDocumentsControllerAboutToSubmitTest extends AbstractControll
     }
 
     private void assertExpectedFieldsAreRemoved(CaseData caseData) {
-        assertThat(caseData.getFurtherEvidenceDocumentsTEMP()).isEmpty();
         assertThat(caseData.getManageDocument()).isNull();
         assertThat(caseData.getC2SupportingDocuments()).isNull();
         assertThat(caseData.getManageDocumentsHearingList()).isNull();
