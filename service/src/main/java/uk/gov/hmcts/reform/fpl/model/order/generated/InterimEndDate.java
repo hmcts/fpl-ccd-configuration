@@ -18,7 +18,7 @@ public class InterimEndDate {
     @Future(message = "Enter an end date in the future", groups = InterimEndDateGroup.class)
     private final LocalDate endDate;
     @Future(message = "Enter an end date in the future", groups = InterimEndDateGroup.class)
-    private final LocalDate endDateTime;
+    private final LocalDateTime endDateTime;
 
     public Optional<LocalDateTime> toLocalDateTime() {
         return Optional.ofNullable(endDate).map(date -> LocalDateTime.of(date, LocalTime.of(23, 59, 59)));

@@ -44,6 +44,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.DISCHARGE_OF_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.SPECIFIC_TIME_NAMED_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -94,7 +95,6 @@ public class GeneratedOrderService {
                 orderBuilder.title(null);
                 if (typeAndDocument.getSubtype() == INTERIM) {
                     requireNonNull(caseData.getInterimEndDate());
-                    System.out.println("End date is" + caseData.getInterimEndDate());
                     expiryDate = getInterimExpiryDate(caseData.getInterimEndDate());
                 }
                 break;
@@ -235,8 +235,12 @@ public class GeneratedOrderService {
     }
 
     private String getInterimExpiryDate(InterimEndDate interimEndDate) {
-        return interimEndDate.toLocalDateTime()
-            .map(dateTime -> formatLocalDateTimeBaseUsingFormat(dateTime, TIME_DATE))
-            .orElse(END_OF_PROCEEDINGS.getLabel());
+        if (interimEndDate.getType().equals(SPECIFIC_TIME_NAMED_DATE)) {
+           return formatLocalDateTimeBaseUsingFormat(interimEndDate.getEndDateTime(), TIME_DATE);
+        } else {
+            return interimEndDate.toLocalDateTime()
+                .map(dateTime -> formatLocalDateTimeBaseUsingFormat(dateTime, TIME_DATE))
+                .orElse(END_OF_PROCEEDINGS.getLabel());
+        }
     }
 }
