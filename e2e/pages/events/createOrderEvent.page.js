@@ -25,6 +25,7 @@ module.exports = {
       options: {
         endOfProceedings: 'At the end of the proceedings',
         namedDate: 'At the end of a named date',
+        specificTimeNamedDate: 'At a specific time on a named date',
       },
       endDate: {
         day: '#interimEndDate_endDate-day',
