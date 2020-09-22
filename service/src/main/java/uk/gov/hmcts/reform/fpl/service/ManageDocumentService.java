@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.IntStream;
 
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -90,11 +89,12 @@ public class ManageDocumentService {
         UUID selectedC2DocumentCode = getDynamicListValueCode(caseData.getManageDocumentsSupportingC2List(), mapper);
         List<Element<C2DocumentBundle>> c2DocumentBundle = caseData.getC2DocumentBundle();
 
-        IntStream.range(0, c2DocumentBundle.size())
-            .filter(index -> c2DocumentBundle.get(index).getId().equals(selectedC2DocumentCode))
-            .findFirst()
-            .ifPresent(index -> listAndLabel.put(SUPPORTING_C2_LABEL,
-                c2DocumentBundle.get(index).getValue().toLabel(index + 1)));
+        for (int i = 0; i < c2DocumentBundle.size(); i++) {
+            if (c2DocumentBundle.get(i).getId().equals(selectedC2DocumentCode)) {
+                listAndLabel.put(SUPPORTING_C2_LABEL, c2DocumentBundle.get(i).getValue().toLabel(i + 1));
+                break;
+            }
+        }
 
         listAndLabel.put(SUPPORTING_C2_LIST_KEY, caseData.buildC2DocumentDynamicList(selectedC2DocumentCode));
 
@@ -119,7 +119,7 @@ public class ManageDocumentService {
             return caseData.getFurtherEvidenceDocuments();
         }
 
-        return getSupportingEvidenceBundle(null);
+        return getEmptySupportingEvidenceBundle();
     }
 
     public List<Element<SupportingEvidenceBundle>> getC2SupportingEvidenceBundle(CaseData caseData) {
@@ -130,7 +130,7 @@ public class ManageDocumentService {
             return c2DocumentBundle.getSupportingEvidenceBundle();
         }
 
-        return getSupportingEvidenceBundle(null);
+        return getEmptySupportingEvidenceBundle();
     }
 
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle(
@@ -183,11 +183,7 @@ public class ManageDocumentService {
             }
 
             altered.forEach(bundle -> findElement(bundle.getId(), supportingEvidenceBundleBefore).ifPresent(
-                previousVersion -> {
-                    if (!previousVersion.getValue().getDocument().equals(bundle.getValue().getDocument())) {
-                        bundle.getValue().setDateTimeUploaded(time.now());
-                    }
-                }
+                previousVersion -> updateSupportingEvidenceDateTimeIfChanged(bundle, previousVersion)
             ));
         }
 
@@ -247,5 +243,16 @@ public class ManageDocumentService {
             .hearingName(hearingBooking.toLabel(DATE))
             .supportingEvidenceBundle(supportingEvidenceBundle)
             .build());
+    }
+
+    private void updateSupportingEvidenceDateTimeIfChanged(Element<SupportingEvidenceBundle> current,
+                                                           Element<SupportingEvidenceBundle> previous) {
+        if (!previous.getValue().getDocument().equals(current.getValue().getDocument())) {
+            current.getValue().setDateTimeUploaded(time.now());
+        }
+    }
+
+    private List<Element<SupportingEvidenceBundle>> getEmptySupportingEvidenceBundle() {
+        return List.of(element(SupportingEvidenceBundle.builder().build()));
     }
 }
