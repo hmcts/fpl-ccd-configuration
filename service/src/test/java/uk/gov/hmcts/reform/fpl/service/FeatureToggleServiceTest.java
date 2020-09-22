@@ -163,11 +163,12 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsMigrateToManageOrgWarningPageEnabled(Boolean toggleState) {
+    void shouldMakeCorrectCallForIsAllowCaseCreationForUsersNotOnboardedToMOEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
-        assertThat(service.isMigrateToManageOrgWarningPageEnabled("test name")).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(eq("migrate-to-manage-org-warning-page"), any(LDUser.class), eq(false));
+        assertThat(service.isAllowCaseCreationForUsersNotOnboardedToMOEnabled("test name")).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(eq("allow-case-creation-for-users-not-onboarded-to-mo"),
+            any(LDUser.class), eq(false));
     }
 
     @ParameterizedTest
