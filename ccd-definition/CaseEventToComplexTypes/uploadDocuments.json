@@ -148,7 +148,7 @@
     "ID": "OtherDocuments",
     "CaseEventID": "uploadDocuments",
     "CaseFieldID": "courtBundle",
-    "ListElementCode": "typeOfDocument",
+    "ListElementCode": "document",
     "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY"
   }
