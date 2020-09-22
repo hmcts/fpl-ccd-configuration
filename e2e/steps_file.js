@@ -141,6 +141,11 @@ module.exports = function () {
       }
     },
 
+    seeInTabText (pathToField) {
+      const fieldSelector = this.tabFieldSelector(pathToField);
+      this.seeElement(locate(fieldSelector));
+    },
+
     dontSeeInTab(pathToField) {
       this.dontSeeElement(locate(this.tabFieldSelector(pathToField)));
     },

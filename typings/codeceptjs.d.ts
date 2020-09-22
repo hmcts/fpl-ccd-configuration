@@ -290,7 +290,7 @@ declare namespace CodeceptJS {
     seeEventSubmissionConfirmation(event: string) : void,
     clickHyperlink(link: string, urlNavigatedTo: string) : void,
     startEventViaHyperlink(link: string) : void,
-    seeDocument(title: string, name: string, status?: string, reason?: string) : void,
+    seeDocument(title: string, name: string, status?: string, reason?: string, dateAndTimeUploaded?: string, uploadedBy?: string) : void,
     seeFamilyManNumber(familyManNumber: string) : void,
     seeInTab(path: string | string[], answer: string | string[]): void,
     seeAvailableEvents(events: string[]): void

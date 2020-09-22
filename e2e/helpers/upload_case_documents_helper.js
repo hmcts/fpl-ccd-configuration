@@ -23,19 +23,20 @@ const uploadCaseDocuments = (uploadDocumentsEventPage, uploadSWET=false) => {
 };
 
 const assertCaseDocuments = (I, hasUploadedSWET=true) => {
-  I.seeDocument('Social work chronology', '', 'To follow', 'mock reason');
-  I.seeDocument('Social work statement and genogram', 'mockFile.txt', 'Attached');
-  I.seeDocument('Social work assessment', 'mockFile.txt', 'Attached');
-  I.seeDocument('Care plan', 'mockFile.txt', 'Attached');
+  const uploadedByAndDateTimeText = '\'Date and time uploaded\', \'Uploaded by\'';
+  I.seeDocument('Social work chronology', '', 'To follow', 'mock reason', uploadedByAndDateTimeText);
+  I.seeDocument('Social work statement and genogram', 'mockFile.txt', 'Attached', uploadedByAndDateTimeText);
+  I.seeDocument('Social work assessment', 'mockFile.txt', 'Attached', uploadedByAndDateTimeText);
+  I.seeDocument('Care plan', 'mockFile.txt', 'Attached', uploadedByAndDateTimeText);
 
   if (hasUploadedSWET) {
-    I.seeDocument('Social work evidence template (SWET)', 'mockFile.txt', 'Attached');
+    I.seeDocument('Social work evidence template (SWET)', 'mockFile.txt', 'Attached', uploadedByAndDateTimeText);
   } else {
-    I.seeDocument('Social work evidence template (SWET)', '', 'Not Required');
+    I.seeDocument('Social work evidence template (SWET)', '', 'Not Required', uploadedByAndDateTimeText);
   }
 
-  I.seeDocument('Threshold document', 'mockFile.txt', 'Attached');
-  I.seeDocument('Checklist document', 'mockFile.txt', 'Attached');
+  I.seeDocument('Threshold document', 'mockFile.txt', 'Attached', uploadedByAndDateTimeText);
+  I.seeDocument('Checklist document', 'mockFile.txt', 'Attached', uploadedByAndDateTimeText);
 };
 
 module.exports = {
