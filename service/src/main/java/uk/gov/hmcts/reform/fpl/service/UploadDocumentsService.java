@@ -67,7 +67,8 @@ public class UploadDocumentsService {
         List<Element<T>> currentDocuments,
         List<Element<T>> previousDocuments) {
 
-        Predicate<Element<T>> doesNotContainInOldDocs = doc -> previousDocuments != null && !previousDocuments.contains(doc);
+        Predicate<Element<T>> doesNotContainInOldDocs =
+            doc -> previousDocuments != null && !previousDocuments.contains(doc);
 
         currentDocuments.stream()
             .filter(doesNotContainInOldDocs)
