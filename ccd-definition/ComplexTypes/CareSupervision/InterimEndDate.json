@@ -22,8 +22,7 @@
     "ID": "InterimEndDate",
     "ListElementCode": "endDateTime",
     "FieldType": "DateTime",
-    "EventHintText": "Give the document a descriptive name. For example, 'Parenting assessment' or 'Paediatric report'.",
-    "ElementLabel": " ",
+    "ElementLabel": "Use 24 hour clock, for example 15 30 00",
     "SecurityClassification": "Public",
     "FieldShowCondition": "type = \"SPECIFIC_TIME_NAMED_DATE\""
   }
