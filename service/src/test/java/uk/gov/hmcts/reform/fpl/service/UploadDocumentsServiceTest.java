@@ -135,17 +135,17 @@ class UploadDocumentsServiceTest {
     void shouldUpdateDocumentWithUpdatedDetailsAndUser() {
         when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(USER);
 
-        Document list =
+        Document document =
             uploadDocumentsService.setUpdatedByAndDateAndTimeForDocuments(
                 createCaseDataWithUpdatedDocument(),
                 createCaseDataWithOldDocument());
 
-        assertThat(list)
+        assertThat(document)
             .extracting(Document::getTypeOfDocument)
             .extracting(DocumentReference::getUrl)
             .isEqualTo("/new_test.doc");
 
-        assertThat(list)
+        assertThat(document)
             .extracting(
                 Document::getDateTimeUploaded,
                 Document::getUploadedBy)
@@ -153,6 +153,18 @@ class UploadDocumentsServiceTest {
                 time.now(),
                 USER
             );
+    }
+
+    @Test
+    void shouldReturnNullWhenCourtBundleDocumentIsNotAttached() {
+        when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(USER);
+
+        Document document =
+            uploadDocumentsService.setUpdatedByAndDateAndTimeForDocuments(
+                null,
+                createCaseDataWithOldDocument());
+
+        assertThat(document).isNull();
     }
 
     private List<Element<DocumentSocialWorkOther>> createCaseDataWithCurrentDocumentSocialWorkOther() {
