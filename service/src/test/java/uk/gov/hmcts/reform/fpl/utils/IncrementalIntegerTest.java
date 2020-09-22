@@ -4,11 +4,11 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class IncrementalIntegerTest {
+class IncrementalIntegerTest {
     @Test
     void shouldGetAndIncrementCurrentIntegerValue() {
         IncrementalInteger i = new IncrementalInteger();
-        assertThat(i.getAndIncrement()).isEqualTo(0);
+        assertThat(i.getAndIncrement()).isZero();
     }
 
     @Test
