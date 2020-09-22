@@ -153,7 +153,7 @@ module.exports = function () {
       this.dontSeeElement(caseListPage.locateCase(normalizeCaseId(caseId)));
     },
 
-    async seeEndStateForEvent(eventName, state) {
+    seeEndStateForEvent(eventName, state) {
       this.click(`//table[@class="EventLogTable"]//tr[td[contains(., "${eventName}")]][1]`);
       this.seeElement(`//table[@class="EventLogDetails"]//tr[.//span[text()="End state"] and .//span[text()="${state}"]]`);
     },

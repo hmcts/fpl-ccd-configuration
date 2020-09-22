@@ -1,7 +1,7 @@
 const config = require('../config.js');
 
 const orderCaseData = require('../fixtures/caseData/caseDataWithOrderCollection.json');
-const caseManagementCaseData = require('../fixtures/standardDirectionOrder.json');
+const caseManagementCaseData = require('../fixtures/caseData/prepareForHearing.json');
 const orderFunctions = require('../helpers/generated_order_helper');
 const blankOrder = require('../fixtures/orders/blankOrder.js');
 
@@ -53,5 +53,5 @@ Scenario('HMCTS super user changes state from case management to final hearing',
   I.seeEventSubmissionConfirmation(config.superUserActions.changeCaseState);
 
   caseViewPage.selectTab(caseViewPage.tabs.history);
-  await I.seeEndStateForEvent(config.superUserActions.changeCaseState, 'Final hearing');
+  I.seeEndStateForEvent(config.superUserActions.changeCaseState, 'Final hearing');
 });
