@@ -7,16 +7,16 @@ let caseId;
 
 Feature('Review CMO state progression');
 
-Scenario('Judge transitions CMO to issue resolution case state', async (I, caseViewPage, caseListPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage) => {
+Scenario('Judge transitions CMO to issue resolution case state', async (I, caseViewPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage) => {
   caseId = await I.submitNewCaseWithData(issueResolution);
-  await cmoHelper.judgeSendsReviewedCmoToAllParties(I, caseId, caseViewPage, caseListPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage);
+  await cmoHelper.judgeSendsReviewedCmoToAllParties(I, caseId, caseViewPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage);
   caseViewPage.selectTab(caseViewPage.tabs.history);
   await I.seeEndStateForEvent(config.applicationActions.reviewAgreedCmo, 'Issue resolution');
 });
 
-Scenario('Judge transitions CMO to final hearing case state', async (I, caseViewPage, caseListPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage) => {
+Scenario('Judge transitions CMO to final hearing case state', async (I, caseViewPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage) => {
   caseId = await I.submitNewCaseWithData(finalHearing);
-  await cmoHelper.judgeSendsReviewedCmoToAllParties(I, caseId, caseViewPage, caseListPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage);
+  await cmoHelper.judgeSendsReviewedCmoToAllParties(I, caseId, caseViewPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage);
   caseViewPage.selectTab(caseViewPage.tabs.history);
   await I.seeEndStateForEvent(config.applicationActions.reviewAgreedCmo, 'Final hearing');
 });

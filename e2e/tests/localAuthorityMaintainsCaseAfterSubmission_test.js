@@ -42,7 +42,7 @@ Scenario('local authority uploads court bundle', async (I, caseViewPage, uploadD
   I.seeDocument('Court bundle', 'mockFile.txt');
 });
 
-Scenario('local authority provides a statements of service', async (I, caseViewPage, loginPage, addStatementOfServiceEventPage) => {
+Scenario('local authority provides a statements of service', async (I, caseViewPage, addStatementOfServiceEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addStatementOfService);
   await addStatementOfServiceEventPage.enterRecipientDetails(recipients[0]);
   await I.addAnotherElementToCollection();

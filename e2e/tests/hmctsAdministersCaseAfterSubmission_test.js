@@ -35,7 +35,7 @@ Before(async I => {
   await I.navigateToCaseDetails(caseId);
 });
 
-Scenario('HMCTS admin enters FamilyMan reference number', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage) => {
+Scenario('HMCTS admin enters FamilyMan reference number', async (I, caseViewPage, enterFamilyManCaseNumberEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
   enterFamilyManCaseNumberEventPage.enterCaseID('mockCaseID');
   await I.completeEvent('Save and continue');
@@ -43,7 +43,7 @@ Scenario('HMCTS admin enters FamilyMan reference number', async (I, caseViewPage
   I.seeFamilyManNumber('mockCaseID');
 });
 
-Scenario('HMCTS admin amends children, respondents, others, international element, other proceedings and attending hearing', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage, enterOtherProceedingsEventPage) => {
+Scenario('HMCTS admin amends children, respondents, others, international element, other proceedings and attending hearing', async (I, caseViewPage, enterOtherProceedingsEventPage) => {
   async function I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(event, summary, description, I_doActionsOnEditPage = () => {
   }) {
     await caseViewPage.goToNewActions(event);
@@ -141,7 +141,7 @@ Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage,
   I.seeInTab(['C2 Application 2', 'Paid with PBA'], 'No');
 });
 
-Scenario('HMCTS admin edits supporting evidence document on C2 application', async(I, caseViewPage, loginPage, manageDocumentsEventPage) => {
+Scenario('HMCTS admin edits supporting evidence document on C2 application', async(I, caseViewPage, manageDocumentsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
   manageDocumentsEventPage.setSupportingEvidenceDocumentType('c2SupportingDocuments');
   await manageDocumentsEventPage.selectC2SupportingDocuments();
@@ -158,7 +158,7 @@ Scenario('HMCTS admin edits supporting evidence document on C2 application', asy
   I.seeInTab(['C2 Application 1', 'File'], 'mockFile.txt');
 });
 
-Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
+Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, addHearingBookingDetailsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
   await addHearingBookingDetailsEventPage.useAllocatedJudge();
@@ -381,7 +381,7 @@ Scenario('HMCTS admin adds a note to the case', async (I, caseViewPage, addNoteE
   I.seeInTab(['Note 1', 'Note'], note);
 });
 
-Scenario('HMCTS admin adds expert report log', async (I, caseViewPage, loginPage, addExpertReportEventPage) => {
+Scenario('HMCTS admin adds expert report log', async (I, caseViewPage, addExpertReportEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addExpertReportLog);
   addExpertReportEventPage.addExpertReportLog(expertReportLog[0]);
   await I.completeEvent('Save and continue');

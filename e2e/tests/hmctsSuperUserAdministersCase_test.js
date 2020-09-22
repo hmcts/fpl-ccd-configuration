@@ -15,7 +15,7 @@ BeforeSuite(async I => {
 
 Before(async I => await I.navigateToCaseDetails(caseId));
 
-Scenario('HMCTS super user updates FamilyMan reference number', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage) => {
+Scenario('HMCTS super user updates FamilyMan reference number', async (I, caseViewPage, enterFamilyManCaseNumberEventPage) => {
   I.seeFamilyManNumber('mockCaseID');
   await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
   enterFamilyManCaseNumberEventPage.enterCaseID('newMockCaseID');
@@ -24,7 +24,7 @@ Scenario('HMCTS super user updates FamilyMan reference number', async (I, caseVi
   I.seeFamilyManNumber('newMockCaseID');
 });
 
-Scenario('HMCTS super user removes an order from a case', async (I, caseViewPage, loginPage, removeOrderEventPage) => {
+Scenario('HMCTS super user removes an order from a case', async (I, caseViewPage, removeOrderEventPage) => {
   await caseViewPage.goToNewActions(config.superUserActions.removeOrder);
   let order = orderCaseData.caseData.orderCollection[0];
   const labelToSelect = order.value.title + ' - ' + order.value.dateOfIssue;
@@ -36,9 +36,7 @@ Scenario('HMCTS super user removes an order from a case', async (I, caseViewPage
   const issuedDate = new Date(2020, 4, 26, 14, 33);
   order = {
     ...blankOrder,
-    ...{
-      document: 'Blank order (C21).pdf',
-    },
+    document: 'Blank order (C21).pdf',
   };
   await orderFunctions.assertOrder(I, caseViewPage, order, issuedDate, false, true);
 });

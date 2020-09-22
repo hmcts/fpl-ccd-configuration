@@ -12,7 +12,7 @@ const localAuthoritySendsAgreedCmo = async function (I, caseViewPage, uploadCase
   await I.completeEvent('Submit');
 };
 
-const judgeSendsReviewedCmoToAllParties = async function(I, caseId, caseViewPage, caseListPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage) {
+const judgeSendsReviewedCmoToAllParties = async function(I, caseId, caseViewPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage) {
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   await localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, '1 January 2020', true);
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadCMO);

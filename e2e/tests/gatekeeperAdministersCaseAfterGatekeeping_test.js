@@ -60,7 +60,7 @@ Scenario('Gatekeeper enters allocation decision', async (I, caseViewPage, enterA
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationDecision);
 });
 
-Scenario('Gatekeeper enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
+Scenario('Gatekeeper enters hearing details and submits', async (I, caseViewPage, addHearingBookingDetailsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
   await addHearingBookingDetailsEventPage.useAllocatedJudge();
