@@ -18,22 +18,17 @@ const supportingEvidenceDocuments = require('../fixtures/supportingEvidenceDocum
 
 let caseId;
 let submittedAt;
-let resetUser = true;
 
 Feature('Case administration after submission');
 
 BeforeSuite(async (I) => {
   caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
   submittedAt = new Date();
+
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 });
 
-Before(async I => {
-  if (resetUser) {
-    await I.signIn(config.hmctsAdminUser);
-    resetUser = false;
-  }
-  await I.navigateToCaseDetails(caseId);
-});
+Before(async I => await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId));
 
 Scenario('HMCTS admin enters FamilyMan reference number', async (I, caseViewPage, enterFamilyManCaseNumberEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
@@ -264,8 +259,6 @@ Scenario('HMCTS admin share case with representatives', async (I, caseViewPage, 
 
   await I.navigateToCaseDetailsAs({email: representative1.email, password: config.localAuthorityPassword}, caseId);
   I.see(caseId);
-
-  resetUser = true;
 });
 
 Scenario('HMCTS admin revoke case access from representative', async (I, caseViewPage) => {
@@ -277,9 +270,8 @@ Scenario('HMCTS admin revoke case access from representative', async (I, caseVie
   I.seeEventSubmissionConfirmation(config.administrationActions.amendRepresentatives);
 
   await I.navigateToCaseDetailsAs({email: representatives.servedByDigitalService.email, password: config.localAuthorityPassword}, caseId);
-  I.see('No cases found.');
 
-  resetUser = true;
+  I.see('No cases found.');
 });
 
 Scenario('HMCTS admin creates blank order', async (I, caseViewPage, createOrderEventPage) => {
