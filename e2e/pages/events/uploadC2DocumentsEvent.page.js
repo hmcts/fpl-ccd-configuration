@@ -1,6 +1,6 @@
 const { I } = inject();
 const money = require('../../helpers/money_helper');
-const c2SupportingDocuments = require('../../fixtures/testData/c2SupportingDocuments.js');
+const c2SupportingDocuments = require('../../fixtures/c2SupportingDocuments.js');
 const supportingDocumentsFragment = require('../../fragments/supportingDocuments.js');
 module.exports = {
   fields: {
