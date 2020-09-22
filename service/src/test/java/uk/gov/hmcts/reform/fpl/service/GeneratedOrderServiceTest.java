@@ -304,7 +304,7 @@ class GeneratedOrderServiceTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = GeneratedOrderType.class, names = {"CARE_ORDER"})
+    @EnumSource(value = GeneratedOrderType.class, names = {"CARE_ORDER", "SUPERVISION_ORDER"})
     void shouldReturnFormattedExpiryDateWhenInterimSubtypeAndSpecificTimeNamedDateSelected(GeneratedOrderType type) {
         LocalDateTime localDateTime = LocalDateTime.of(2022, 9, 22, 11, 59);
         final OrderTypeAndDocument orderTypeAndDocument = orderTypeAndDocument(type, INTERIM);
