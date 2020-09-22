@@ -22,7 +22,8 @@
     "ID": "InterimEndDate",
     "ListElementCode": "endDateTime",
     "FieldType": "DateTime",
-    "ElementLabel": "Use 24 hour clock, for example 15 30 00",
+    "ElementLabel": " ",
+    "HintText": "Use 24 hour clock, for example 15 30 00",
     "SecurityClassification": "Public",
     "FieldShowCondition": "type = \"SPECIFIC_TIME_NAMED_DATE\""
   }
