@@ -291,7 +291,9 @@ declare namespace CodeceptJS {
     clickHyperlink(link: string, urlNavigatedTo: string) : void,
     startEventViaHyperlink(link: string) : void,
     seeDocument(title: string, name: string, status?: string, reason?: string) : void,
+    seeFamilyManNumber(familyManNumber: string) : void,
     seeInTab(path: string | string[], answer: string | string[]): void,
+    seeAvailableEvents(events: string[]): void
     dontSeeInTab(path: string | string[]): void,
     seeCaseInSearchResult(caseId: string | number): void
     dontSeeCaseInSearchResult(caseId: string | number): void
@@ -305,6 +307,7 @@ declare namespace CodeceptJS {
     retryUntilExists(action: Function, locator: string) : void,
     fillDate(date: {day: number, month: number, year: number}, dateId: string): void,
     fillDateAndTime(date: {day: number, month: number, year: number, hour: number, minute: number, second: number}, dateId: string): void,
+    seeEndStateForEvent(eventName: string, state: string): void,
   }
 
   export interface config {
