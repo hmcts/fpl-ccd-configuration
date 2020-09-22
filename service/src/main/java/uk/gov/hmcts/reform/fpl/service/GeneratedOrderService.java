@@ -94,6 +94,7 @@ public class GeneratedOrderService {
                 orderBuilder.title(null);
                 if (typeAndDocument.getSubtype() == INTERIM) {
                     requireNonNull(caseData.getInterimEndDate());
+                    System.out.println("End date is" + caseData.getInterimEndDate());
                     expiryDate = getInterimExpiryDate(caseData.getInterimEndDate());
                 }
                 break;
