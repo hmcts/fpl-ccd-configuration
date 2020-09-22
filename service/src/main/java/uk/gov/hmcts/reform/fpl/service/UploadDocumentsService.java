@@ -44,7 +44,7 @@ public class UploadDocumentsService {
             caseData.getThresholdDocument(), caseDataBefore.getThresholdDocument());
         Document checklistDocument = setUpdatedByAndDateAndTimeOnDocuments(
             caseData.getChecklistDocument(), caseDataBefore.getChecklistDocument());
-        Document courtBundleDocument = setUpdatedByAndDateAndTimeOnDocuments(
+        DocumentMetaData courtBundleDocument = setUpdatedByAndDateAndTimeOnDocuments(
             caseData.getCourtBundle(), caseDataBefore.getCourtBundle()
         );
 
@@ -87,26 +87,26 @@ public class UploadDocumentsService {
         return currentDocuments;
     }
 
-    public Document setUpdatedByAndDateAndTimeOnDocuments(Document currentDoc, Document oldDoc) {
-
-        if (currentDoc == null) {
+    public <T extends DocumentMetaData> T setUpdatedByAndDateAndTimeOnDocuments(T currentDocuments,
+                                                                                T previousDocuments) {
+        if (currentDocuments == null) {
             return null;
         }
 
-        if ((oldDoc != null && !currentDoc.getTypeOfDocument().equals(oldDoc.getTypeOfDocument()))
-            || currentDoc.getDateTimeUploaded() == null) {
-            return buildDocument(currentDoc);
+        if ((previousDocuments != null
+            && !currentDocuments.getTypeOfDocument().equals(previousDocuments.getTypeOfDocument()))
+            || currentDocuments.getDateTimeUploaded() == null) {
+            return setUpdatedByAndDateTime(currentDocuments);
         }
         return null;
     }
 
-    private Document buildDocument(Document document) {
+    private <T extends DocumentMetaData> T setUpdatedByAndDateTime(T document) {
         String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
 
-        return document.toBuilder()
-            .dateTimeUploaded(time.now())
-            .uploadedBy(uploadedBy)
-            .build();
+        document.setDateTimeUploaded(time.now());
+        document.setUploadedBy(uploadedBy);
+        return document;
     }
 
     private <T extends DocumentMetaData> void setUpdatedByAndDateTime(Element<T> doc) {

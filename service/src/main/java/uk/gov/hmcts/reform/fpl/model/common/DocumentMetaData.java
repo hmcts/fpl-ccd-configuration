@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor(force = true)
-public abstract class DocumentMetaData {
+public class DocumentMetaData {
     protected final DocumentReference typeOfDocument;
     protected LocalDateTime dateTimeUploaded;
     protected String uploadedBy;
