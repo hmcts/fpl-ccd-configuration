@@ -207,7 +207,7 @@ public class ManageDocumentService {
         C2DocumentBundle c2DocumentBundle = caseData.getC2DocumentBundleByUUID(selected);
 
         List<Element<SupportingEvidenceBundle>> updatedCorrespondenceDocuments =
-            setDateTimeUploadedOnSupportingEvidence(caseData.getC2SupportingDocuments(),
+            setDateTimeUploadedOnSupportingEvidence(caseData.getSupportingEvidenceDocumentsTemp(),
                 c2DocumentBundle.getSupportingEvidenceBundle());
 
         List<Element<C2DocumentBundle>> updatedC2Bundles = new ArrayList<>();

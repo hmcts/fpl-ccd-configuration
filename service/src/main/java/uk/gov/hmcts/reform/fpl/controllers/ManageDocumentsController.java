@@ -117,7 +117,7 @@ public class ManageDocumentsController extends CallbackController {
                 break;
             case CORRESPONDENCE:
                 List<Element<SupportingEvidenceBundle>> updatedCorrespondenceDocuments = manageDocumentService
-                    .setDateTimeUploadedOnSupportingEvidence(caseData.getCorrespondenceDocuments(),
+                    .setDateTimeUploadedOnSupportingEvidence(caseData.getSupportingEvidenceDocumentsTemp(),
                         caseDataBefore.getCorrespondenceDocuments()
                 );
 
@@ -131,9 +131,8 @@ public class ManageDocumentsController extends CallbackController {
                 break;
         }
 
-        removeTemporaryFields(caseDetails, MANAGE_DOCUMENT_KEY, C2_SUPPORTING_DOCUMENTS_COLLECTION,
-            MANAGE_DOCUMENTS_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENTS_HEARING_LABEL_KEY,
-            SUPPORTING_C2_LABEL);
+        removeTemporaryFields(caseDetails, MANAGE_DOCUMENT_KEY, C2_SUPPORTING_DOCUMENTS_COLLECTION, SUPPORTING_C2_LABEL,
+            MANAGE_DOCUMENTS_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENTS_HEARING_LABEL_KEY);
 
         return respond(caseDetails);
     }

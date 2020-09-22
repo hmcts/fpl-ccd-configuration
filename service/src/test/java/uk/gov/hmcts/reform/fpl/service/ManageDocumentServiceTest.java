@@ -479,7 +479,7 @@ class ManageDocumentServiceTest {
         CaseData caseData = CaseData.builder()
             .manageDocumentsSupportingC2List(c2DynamicList)
             .c2DocumentBundle(c2DocumentBundleList)
-            .c2SupportingDocuments(newSupportingEvidenceBundle)
+            .supportingEvidenceDocumentsTemp(newSupportingEvidenceBundle)
             .build();
 
         List<Element<C2DocumentBundle>> updatedC2DocumentBundle =
