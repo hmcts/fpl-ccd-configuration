@@ -91,7 +91,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
     private DocumentSealingService sealingService;
 
     @Captor
-    private ArgumentCaptor<String> fileName;
+    private ArgumentCaptor<String> filename;
 
     StandardDirectionsOrderControllerAboutToSubmitTest() {
         super("draft-standard-directions");
@@ -102,7 +102,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
         DocmosisDocument docmosisDocument = new DocmosisDocument(SEALED_ORDER_FILE_NAME, PDF);
 
         given(docmosisService.generateDocmosisDocument(any(DocmosisData.class), any())).willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(eq(PDF), fileName.capture())).willReturn(DOCUMENT);
+        given(uploadDocumentService.uploadPDF(eq(PDF), filename.capture())).willReturn(DOCUMENT);
     }
 
     @Test
@@ -116,7 +116,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
         assertThat(caseData.getStandardDirectionOrder()).isEqualToComparingFieldByField(expectedOrder());
         assertThat(caseData.getJudgeAndLegalAdvisor()).isNull();
         assertThatDirectionsArePlacedBackIntoCaseDetailsWithValues(caseData);
-        assertThat(fileName.getValue()).isEqualTo(SEALED_ORDER_FILE_NAME);
+        assertThat(filename.getValue()).isEqualTo(SEALED_ORDER_FILE_NAME);
     }
 
     @Test
