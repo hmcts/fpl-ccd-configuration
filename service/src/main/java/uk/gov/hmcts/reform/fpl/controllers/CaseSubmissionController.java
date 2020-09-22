@@ -74,25 +74,21 @@ public class CaseSubmissionController extends CallbackController {
         Document document = caseSubmissionService.generateSubmittedFormPDF(caseData, true);
         data.put("draftApplicationDocument", buildFromDocument(document));
 
-        List<String> errors = validate(caseData);
-
-        if (errors.isEmpty()) {
-            if (isInOpenState(caseDetails)) {
-                try {
-                    FeesData feesData = feeService.getFeesDataForOrders(caseData.getOrders());
-                    data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
-                    data.put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
-                } catch (FeeRegisterException ignore) {
-                    data.put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
-                }
+        if (isInOpenState(caseDetails)) {
+            try {
+                FeesData feesData = feeService.getFeesDataForOrders(caseData.getOrders());
+                data.put("amountToPay", BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
+                data.put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
+            } catch (FeeRegisterException ignore) {
+                data.put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
             }
-
-            String label = String.format(CONSENT_TEMPLATE, idamClient.getUserInfo(requestData.authorisation())
-                .getName());
-            data.put("submissionConsentLabel", label);
         }
 
-        return respond(caseDetails, errors);
+        String label = String.format(CONSENT_TEMPLATE, idamClient.getUserInfo(requestData.authorisation())
+            .getName());
+        data.put("submissionConsentLabel", label);
+
+        return respond(caseDetails);
     }
 
     private List<String> validate(CaseData caseData) {
@@ -119,21 +115,25 @@ public class CaseSubmissionController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        Document document = caseSubmissionService.generateSubmittedFormPDF(caseData, false);
+        List<String> errors = validate(caseData);
 
-        ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
+        if (errors.isEmpty()) {
+            Document document = caseSubmissionService.generateSubmittedFormPDF(caseData, false);
 
-        Map<String, Object> data = caseDetails.getData();
-        data.put("dateAndTimeSubmitted", DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(zonedDateTime));
-        data.put("dateSubmitted", DateTimeFormatter.ISO_LOCAL_DATE.format(zonedDateTime));
-        data.put("sendToCtsc", setSendToCtsc(data.get("caseLocalAuthority").toString()).getValue());
-        data.put("submittedForm", ImmutableMap.<String, String>builder()
-            .put("document_url", document.links.self.href)
-            .put("document_binary_url", document.links.binary.href)
-            .put("document_filename", document.originalDocumentName)
-            .build());
+            ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
 
-        return respond(caseDetails);
+            Map<String, Object> data = caseDetails.getData();
+            data.put("dateAndTimeSubmitted", DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(zonedDateTime));
+            data.put("dateSubmitted", DateTimeFormatter.ISO_LOCAL_DATE.format(zonedDateTime));
+            data.put("sendToCtsc", setSendToCtsc(data.get("caseLocalAuthority").toString()).getValue());
+            data.put("submittedForm", ImmutableMap.<String, String>builder()
+                .put("document_url", document.links.self.href)
+                .put("document_binary_url", document.links.binary.href)
+                .put("document_filename", document.originalDocumentName)
+                .build());
+        }
+
+        return respond(caseDetails, errors);
     }
 
     @PostMapping("/submitted")

@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Map.of;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -64,11 +66,13 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
             .willReturn(document);
         given(uploadDocumentService.uploadPDF(DOCUMENT_CONTENT, "2313.pdf"))
             .willReturn(document);
+        given(featureToggleService.isRestrictedFromCaseSubmission("FPLA"))
+            .willReturn(true);
     }
 
     @Test
     void shouldReturnUnsuccessfulResponseWithNoData() {
-        postAboutToSubmitEvent(new byte[]{}, SC_BAD_REQUEST);
+        postAboutToSubmitEvent(new byte[] {}, SC_BAD_REQUEST);
     }
 
     @Test
@@ -120,5 +124,34 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
         assertThat(callbackResponse.getData())
             .containsEntry("amountToPay", "233300")
             .containsEntry("displayAmountToPay", YES.getValue());
+    }
+
+    @Nested
+    class LocalAuthorityValidation {
+
+        @Test
+        void shouldReturnErrorWhenCaseBelongsToSmokeTestLocalAuthority() {
+            CaseDetails caseDetails = prepareCaseBelongingTo("FPLA");
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
+
+            assertThat(callbackResponse.getData()).containsEntry("caseLocalAuthority", "FPLA");
+            assertThat(callbackResponse.getErrors()).contains("You cannot submit this application online yet."
+                + " Ask your FPL administrator for your local authority’s enrolment date");
+        }
+
+        @Test
+        void shouldReturnNoErrorWhenCaseBelongsToRegularLocalAuthority() {
+            CaseDetails caseDetails = prepareCaseBelongingTo("example");
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
+
+            assertThat(callbackResponse.getData()).containsEntry("caseLocalAuthority", "example");
+            assertThat(callbackResponse.getErrors()).isEmpty();
+        }
+
+        private CaseDetails prepareCaseBelongingTo(String localAuthority) {
+            return CaseDetails.builder()
+                .data(of("caseLocalAuthority", localAuthority))
+                .build();
+        }
     }
 }

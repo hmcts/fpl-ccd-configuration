@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -14,7 +13,6 @@ import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
@@ -51,9 +49,6 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
     private FeeService feeService;
 
     @MockBean
-    private FeatureToggleService featureToggleService;
-
-    @MockBean
     private CaseSubmissionService caseSubmissionService;
 
     @MockBean
@@ -72,8 +67,6 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
             .willReturn(document);
         given(uploadDocumentService.uploadPDF(DOCUMENT_CONTENT, "2313.pdf"))
             .willReturn(document);
-        given(featureToggleService.isRestrictedFromCaseSubmission("FPLA"))
-            .willReturn(true);
     }
 
     @Test
@@ -142,34 +135,5 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
                     "document_filename", "file.pdf",
                     "document_binary_url",
                     "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary"));
-    }
-
-    @Nested
-    class LocalAuthorityValidation {
-
-        @Test
-        void shouldReturnErrorWhenCaseBelongsToSmokeTestLocalAuthority() {
-            CaseDetails caseDetails = prepareCaseBelongingTo("FPLA");
-            AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
-
-            assertThat(callbackResponse.getData()).containsEntry("caseLocalAuthority", "FPLA");
-            assertThat(callbackResponse.getErrors()).contains("You cannot submit this application online yet."
-                + " Ask your FPL administrator for your local authority’s enrolment date");
-        }
-
-        @Test
-        void shouldReturnNoErrorWhenCaseBelongsToRegularLocalAuthority() {
-            CaseDetails caseDetails = prepareCaseBelongingTo("SA");
-            AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
-
-            assertThat(callbackResponse.getData()).containsEntry("caseLocalAuthority", "SA");
-            assertThat(callbackResponse.getErrors()).isEmpty();
-        }
-
-        private CaseDetails prepareCaseBelongingTo(String localAuthority) {
-            return CaseDetails.builder()
-                .data(of("caseLocalAuthority", localAuthority))
-                .build();
-        }
     }
 }
