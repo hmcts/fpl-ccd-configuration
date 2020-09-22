@@ -24,7 +24,7 @@ module.exports = {
       id: '#interimEndDate_interimEndDate',
       options: {
         endOfProceedings: 'At the end of the proceedings',
-        namedDate: 'On a named date',
+        namedDate: 'At the end of a named date',
       },
       endDate: {
         day: '#interimEndDate_endDate-day',

@@ -236,7 +236,7 @@ public class GeneratedOrderService {
 
     private String getInterimExpiryDate(InterimEndDate interimEndDate) {
         if (interimEndDate.getType().equals(SPECIFIC_TIME_NAMED_DATE)) {
-           return formatLocalDateTimeBaseUsingFormat(interimEndDate.getEndDateTime(), TIME_DATE);
+            return formatLocalDateTimeBaseUsingFormat(interimEndDate.getEndDateTime(), TIME_DATE);
         } else {
             return interimEndDate.toLocalDateTime()
                 .map(dateTime -> formatLocalDateTimeBaseUsingFormat(dateTime, TIME_DATE))
