@@ -16,12 +16,12 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
+import uk.gov.hmcts.reform.fpl.utils.IncrementalInteger;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.UUID.randomUUID;
@@ -417,7 +417,7 @@ class CaseDataTest {
             );
 
             CaseData caseData = CaseData.builder().c2DocumentBundle(c2DocumentBundle).build();
-            AtomicInteger i = new AtomicInteger(1);
+            IncrementalInteger i = new IncrementalInteger(1);
             DynamicList expectedDynamicList = ElementUtils
                 .asDynamicList(c2DocumentBundle, null, documentBundle ->
                     documentBundle.toLabel(i.getAndIncrement()));
@@ -436,7 +436,7 @@ class CaseDataTest {
             );
 
             CaseData caseData = CaseData.builder().c2DocumentBundle(c2DocumentBundle).build();
-            AtomicInteger i = new AtomicInteger(1);
+            IncrementalInteger i = new IncrementalInteger(1);
             DynamicList expectedDynamicList = ElementUtils
                 .asDynamicList(c2DocumentBundle, null, documentBundle ->
                     documentBundle.toLabel(i.getAndIncrement()));
