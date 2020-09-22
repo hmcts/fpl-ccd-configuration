@@ -1,5 +1,5 @@
 const config = require('../config.js');
-const gatekeeping = require('../fixtures/gatekeeping.json');
+const gatekeeping = require('../fixtures/caseData/gatekeeping.json');
 const dateFormat = require('dateformat');
 
 let caseId;
@@ -15,7 +15,7 @@ BeforeSuite(async (I) => {
 Scenario('Gatekeeper uploads draft standard directions', async (I, caseViewPage, draftStandardDirectionsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
   await draftStandardDirectionsEventPage.createSDOThroughUpload();
-  await draftStandardDirectionsEventPage.uploadPreparedSDO(config.testNonEmptyPdfFile);
+  await draftStandardDirectionsEventPage.uploadPreparedSDO(config.testPdfFile);
   await draftStandardDirectionsEventPage.markAsDraft();
   await I.completeEvent('Save and continue');
 
@@ -29,7 +29,7 @@ Scenario('Gatekeeper uploads draft standard directions', async (I, caseViewPage,
 Scenario('Gatekeeper uploads final standard directions', async (I, caseViewPage, draftStandardDirectionsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
   I.see('mockFile.pdf');
-  await draftStandardDirectionsEventPage.uploadReplacementSDO(config.testNonEmptyWordFile);
+  await draftStandardDirectionsEventPage.uploadReplacementSDO(config.testWordFile);
   await draftStandardDirectionsEventPage.markAsFinal();
   await I.completeEvent('Save and continue');
 
