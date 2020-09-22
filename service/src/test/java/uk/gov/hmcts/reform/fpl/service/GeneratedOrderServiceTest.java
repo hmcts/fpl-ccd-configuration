@@ -319,7 +319,7 @@ class GeneratedOrderServiceTest {
         GeneratedOrder builtOrder = service.buildCompleteOrder(orderTypeAndDocument, judgeAndLegalAdvisor, caseData);
 
         assertThat(builtOrder.getExpiryDate())
-            .isEqualTo(formatLocalDateTimeBaseUsingFormat(localDateTime, "'11:59am', d MMMM y"));
+            .isEqualTo("11:59am, 22 September 2022");
     }
 
     @Test
