@@ -1,6 +1,6 @@
 /* global process */
 const output = require('codeceptjs').output;
-
+const lodash = require('lodash');
 const config = require('./config');
 const caseHelper = require('./helpers/case_helper.js');
 
@@ -83,6 +83,18 @@ module.exports = function () {
       this.seeCurrentUrlEquals(urlNavigatedTo);
     },
 
+    async seeAvailableEvents(expectedEvents) {
+      const actualEvents = await this.grabTextFrom('//ccd-event-trigger//option')
+        .then(options => Array.isArray(options) ? options : [options])
+        .then(options => {
+          return lodash.without(options, 'Select action');
+        });
+
+      if (!lodash.isEqual(lodash.sortBy(expectedEvents), lodash.sortBy(actualEvents))) {
+        throw new Error(`Events wanted: [${expectedEvents}], found: [${actualEvents}]`);
+      }
+    },
+
     async startEventViaHyperlink(linkLabel) {
       await this.retryUntilExists(() => {
         this.click(locate(`//p/a[text()="${linkLabel}"]`));
@@ -99,6 +111,10 @@ module.exports = function () {
       } else {
         this.see(name);
       }
+    },
+
+    seeFamilyManNumber(familyManNumber) {
+      this.seeElement(`//*[@class="markdown"]//h2/strong[text()='FamilyMan ID: ${familyManNumber}']`);
     },
 
     tabFieldSelector(pathToField) {
@@ -135,6 +151,15 @@ module.exports = function () {
 
     dontSeeCaseInSearchResult(caseId) {
       this.dontSeeElement(caseListPage.locateCase(normalizeCaseId(caseId)));
+    },
+
+    async seeEndStateForEvent(eventName, state) {
+      try {
+        await this.waitForSelector(`//tr[@class="EventLogTable-Selected" and td[contains(., "${eventName}")]]`);
+      } catch (notFound) {
+        this.click(`//table[@class="EventLogTable"]//tr[td[contains(., "${eventName}")]][1]`);
+      }
+      this.seeElement(`//table[@class="EventLogDetails"]//tr[.//span[text()="End state"] and .//span[text()="${state}"]]`);
     },
 
     async navigateToCaseDetails(caseId) {

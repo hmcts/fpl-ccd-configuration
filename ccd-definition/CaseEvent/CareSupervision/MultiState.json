@@ -86,22 +86,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "addFamilyManCaseNumber",
-    "Name": "Add case number",
-    "Description": "Add case number",
-    "DisplayOrder": 5,
-    "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING;ISSUE_RESOLUTION;FINAL_HEARING",
-    "PostConditionState": "*",
-    "SecurityClassification": "Public",
-    "ShowSummary": "N",
-    "ShowEventNotes": "N",
-    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-case-number/about-to-submit",
-    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-case-number/submitted",
-    "EndButtonLabel": "Save and continue"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "expertReport",
     "Name": "Log expert report",
     "DisplayOrder": 20,
@@ -635,5 +619,36 @@
     "Comment": "Recreated due to differing permissions in this state compared to other states",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documents/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documents/about-to-submit"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "editFamilyManCaseNumber",
+    "Name": "Add case number",
+    "Description": "Add case number",
+    "DisplayOrder": 5,
+    "PreConditionState(s)": "Gatekeeping;PREPARE_FOR_HEARING;ISSUE_RESOLUTION;FINAL_HEARING;CLOSED",
+    "PostConditionState": "*",
+    "SecurityClassification": "Public",
+    "ShowSummary": "N",
+    "ShowEventNotes": "N",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-case-number/about-to-submit",
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-case-number/submitted",
+    "EndButtonLabel": "Save and continue"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "changeState",
+    "Name": "Change case state",
+    "Description": "Change the state of the case",
+    "PreConditionState(s)": "PREPARE_FOR_HEARING;FINAL_HEARING",
+    "PostConditionState": "*",
+    "SecurityClassification": "Public",
+    "ShowSummary": "N",
+    "ShowEventNotes": "Y",
+    "EndButtonLabel": "Save and return",
+    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/change-state/about-to-start",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/change-state/about-to-submit"
   }
 ]

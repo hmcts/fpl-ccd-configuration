@@ -111,7 +111,7 @@
     "CaseEventID": "uploadC2",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "supportingEvidenceBundle.document",
-    "EventElementLabel": "Upload a file",
+    "EventElementLabel": "Upload document",
     "DisplayContext": "MANDATORY"
   }
 ]
