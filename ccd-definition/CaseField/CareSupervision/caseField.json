@@ -1618,5 +1618,29 @@
     "FieldType": "Text",
     "Label": "Upload C2 documents for:",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageDocumentsFurtherEvidenceHeading",
+    "FieldType": "Label",
+    "Label": "## Further evidence",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageDocumentsCorrespondenceHeading",
+    "FieldType": "Label",
+    "Label": "## Correspondence",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageDocumentsC2Heading",
+    "FieldType": "Label",
+    "Label": "## C2 supporting documents",
+    "SecurityClassification": "Public"
   }
 ]
