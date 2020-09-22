@@ -1,6 +1,7 @@
 const config = require('../config.js');
 
 const orderCaseData = require('../fixtures/caseData/caseDataWithOrderCollection.json');
+const caseManagementCaseData = require('../fixtures/standardDirectionOrder.json');
 const orderFunctions = require('../helpers/generated_order_helper');
 const blankOrder = require('../fixtures/orders/blankOrder.js');
 
@@ -39,4 +40,18 @@ Scenario('HMCTS super user removes an order from a case', async (I, caseViewPage
     document: 'Blank order (C21).pdf',
   };
   await orderFunctions.assertOrder(I, caseViewPage, order, issuedDate, false, true);
+});
+
+Scenario('HMCTS super user changes state from case management to final hearing', async (I, caseViewPage, changeCaseStateEventPage) => {
+  const newCaseId = await I.submitNewCaseWithData(caseManagementCaseData);
+  await I.navigateToCaseDetailsAs(config.hmctsSuperUser, newCaseId);
+
+  await caseViewPage.goToNewActions(config.superUserActions.changeCaseState);
+  changeCaseStateEventPage.seeAsCurrentState('Case management');
+  changeCaseStateEventPage.changeState();
+  await I.completeEvent(changeCaseStateEventPage.fields.endButton, {summary: 'change state', description: 'change state to final hearing'});
+  I.seeEventSubmissionConfirmation(config.superUserActions.changeCaseState);
+
+  caseViewPage.selectTab(caseViewPage.tabs.history);
+  await I.seeEndStateForEvent(config.superUserActions.changeCaseState, 'Final hearing');
 });

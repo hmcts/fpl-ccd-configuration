@@ -123,6 +123,7 @@ module.exports = {
   },
   superUserActions: {
     removeOrder: 'Remove an order',
+    changeCaseState: 'Change case state',
   },
   // files
   testFile: './e2e/fixtures/testFiles/mockFile.txt',
