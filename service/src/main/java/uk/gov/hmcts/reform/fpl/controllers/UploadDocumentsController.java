@@ -34,7 +34,7 @@ public class UploadDocumentsController extends CallbackController {
 
         if (errors.isEmpty()) {
             caseDetails.getData().putAll(uploadDocumentsService
-                .updateCaseDetailsWithDocuments(caseDataBefore, caseData));
+                .updateCaseDocuments(caseDataBefore, caseData));
         }
 
         return respond(caseDetails, errors);

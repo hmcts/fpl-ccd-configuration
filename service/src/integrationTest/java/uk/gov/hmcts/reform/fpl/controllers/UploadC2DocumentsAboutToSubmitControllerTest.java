@@ -58,7 +58,7 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
 
     @BeforeEach
     void before() {
-        given(idamClient.getUserInfo(USER_AUTH_TOKEN)).willReturn(UserInfo.builder().name("Emma Taylor").build());
+        given(idamClient.getUserInfo(USER_AUTH_TOKEN)).willReturn(UserInfo.builder().name(USER_NAME).build());
         given(idamClient.getUserDetails(eq(USER_AUTH_TOKEN))).willReturn(createUserDetailsWithHmctsRole());
         given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
     }

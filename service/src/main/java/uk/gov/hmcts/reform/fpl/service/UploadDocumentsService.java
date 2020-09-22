@@ -24,27 +24,27 @@ public class UploadDocumentsService {
     private final Time time;
     private final DocumentUploadHelper documentUploadHelper;
 
-    public Map<String, Object> updateCaseDetailsWithDocuments(CaseData caseDataBefore,
-                                                               CaseData caseData) {
-        List<Element<DocumentSocialWorkOther>> listOfOtherDocs = setUpdatedByAndDateAndTimeForDocuments(
+    public Map<String, Object> updateCaseDocuments(CaseData caseDataBefore,
+                                                   CaseData caseData) {
+        List<Element<DocumentSocialWorkOther>> listOfOtherDocs = setUpdatedByAndDateAndTimeOnDocuments(
                 caseData.getOtherSocialWorkDocuments(), caseDataBefore.getOtherSocialWorkDocuments());
 
-        Document socialWorkChronologyDocument = setUpdatedByAndDateAndTimeForDocuments(
+        Document socialWorkChronologyDocument = setUpdatedByAndDateAndTimeOnDocuments(
             caseData.getSocialWorkChronologyDocument(), caseDataBefore.getSocialWorkChronologyDocument());
-        Document socialWorkStatementDocument = setUpdatedByAndDateAndTimeForDocuments(
+        Document socialWorkStatementDocument = setUpdatedByAndDateAndTimeOnDocuments(
             caseData.getSocialWorkStatementDocument(), caseDataBefore.getSocialWorkStatementDocument());
-        Document socialWorkAssessmentDocument = setUpdatedByAndDateAndTimeForDocuments(
+        Document socialWorkAssessmentDocument = setUpdatedByAndDateAndTimeOnDocuments(
             caseData.getSocialWorkAssessmentDocument(), caseDataBefore.getSocialWorkAssessmentDocument());
-        Document socialWorkCarePlanDocument = setUpdatedByAndDateAndTimeForDocuments(
+        Document socialWorkCarePlanDocument = setUpdatedByAndDateAndTimeOnDocuments(
             caseData.getSocialWorkCarePlanDocument(), caseDataBefore.getSocialWorkCarePlanDocument());
-        Document socialWorkEvidenceTemplateDocument = setUpdatedByAndDateAndTimeForDocuments(
+        Document socialWorkEvidenceTemplateDocument = setUpdatedByAndDateAndTimeOnDocuments(
             caseData.getSocialWorkEvidenceTemplateDocument(),
                 caseDataBefore.getSocialWorkEvidenceTemplateDocument());
-        Document thresholdDocument = setUpdatedByAndDateAndTimeForDocuments(
+        Document thresholdDocument = setUpdatedByAndDateAndTimeOnDocuments(
             caseData.getThresholdDocument(), caseDataBefore.getThresholdDocument());
-        Document checklistDocument = setUpdatedByAndDateAndTimeForDocuments(
+        Document checklistDocument = setUpdatedByAndDateAndTimeOnDocuments(
             caseData.getChecklistDocument(), caseDataBefore.getChecklistDocument());
-        Document courtBundleDocument = setUpdatedByAndDateAndTimeForDocuments(
+        Document courtBundleDocument = setUpdatedByAndDateAndTimeOnDocuments(
             caseData.getCourtBundle(), caseDataBefore.getCourtBundle()
         );
 
@@ -63,15 +63,15 @@ public class UploadDocumentsService {
         return updatedCaseData;
     }
 
-    public <T extends DocumentMetaData> List<Element<T>> setUpdatedByAndDateAndTimeForDocuments(
-        List<Element<T>> listOfCurrentDocs,
-        List<Element<T>> listOfOldDocs) {
+    public <T extends DocumentMetaData> List<Element<T>> setUpdatedByAndDateAndTimeOnDocuments(
+        List<Element<T>> currentDocuments,
+        List<Element<T>> previousDocuments) {
 
-        Predicate<Element<T>> doesNotContainInOldDocs = doc -> listOfOldDocs != null && !listOfOldDocs.contains(doc);
+        Predicate<Element<T>> doesNotContainInOldDocs = doc -> previousDocuments != null && !previousDocuments.contains(doc);
 
-        listOfCurrentDocs.stream()
+        currentDocuments.stream()
             .filter(doesNotContainInOldDocs)
-            .forEach(doc -> findElement(doc.getId(), listOfOldDocs)
+            .forEach(doc -> findElement(doc.getId(), previousDocuments)
                 .ifPresent(e -> {
                     if (!e.getValue().getTypeOfDocument().equals(doc.getValue().getTypeOfDocument())) {
                         setUpdatedByAndDateTime(doc);
@@ -79,14 +79,14 @@ public class UploadDocumentsService {
                 })
             );
 
-        listOfCurrentDocs.stream()
+        currentDocuments.stream()
             .filter(doc -> doc.getValue().getDateTimeUploaded() == null)
             .forEach(this::setUpdatedByAndDateTime);
 
-        return listOfCurrentDocs;
+        return currentDocuments;
     }
 
-    public Document setUpdatedByAndDateAndTimeForDocuments(Document currentDoc, Document oldDoc) {
+    public Document setUpdatedByAndDateAndTimeOnDocuments(Document currentDoc, Document oldDoc) {
 
         if (currentDoc == null) {
             return null;
@@ -99,10 +99,10 @@ public class UploadDocumentsService {
         return null;
     }
 
-    private Document buildDocument(Document currentDoc) {
+    private Document buildDocument(Document document) {
         String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
 
-        return currentDoc.toBuilder()
+        return document.toBuilder()
             .dateTimeUploaded(time.now())
             .uploadedBy(uploadedBy)
             .build();

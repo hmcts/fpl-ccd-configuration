@@ -61,7 +61,7 @@ class UploadDocumentsServiceTest {
         CaseData caseData = caseData();
         when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(USER);
 
-        Map<String, Object> map = uploadDocumentsService.updateCaseDetailsWithDocuments(caseData, caseData);
+        Map<String, Object> map = uploadDocumentsService.updateCaseDocuments(caseData, caseData);
 
         assertThat(map.get("documents_socialWorkChronology_document"))
             .isEqualToComparingOnlyGivenFields(Document.builder()
@@ -91,7 +91,7 @@ class UploadDocumentsServiceTest {
         when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(USER);
 
         List<DocumentSocialWorkOther> list = unwrapElements(
-            uploadDocumentsService.setUpdatedByAndDateAndTimeForDocuments(
+            uploadDocumentsService.setUpdatedByAndDateAndTimeOnDocuments(
                 createCaseDataWithUpdatedDocumentSocialWorkOther(),
                 createCaseDataWithOldDocumentSocialWorkOther()));
 
@@ -116,7 +116,7 @@ class UploadDocumentsServiceTest {
         when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(USER);
 
         List<DocumentSocialWorkOther> list = unwrapElements(
-            uploadDocumentsService.setUpdatedByAndDateAndTimeForDocuments(
+            uploadDocumentsService.setUpdatedByAndDateAndTimeOnDocuments(
                 createCaseDataWithCurrentDocumentSocialWorkOther(),
                 createCaseDataWithOldDocumentSocialWorkOther()));
 
@@ -136,7 +136,7 @@ class UploadDocumentsServiceTest {
         when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(USER);
 
         Document document =
-            uploadDocumentsService.setUpdatedByAndDateAndTimeForDocuments(
+            uploadDocumentsService.setUpdatedByAndDateAndTimeOnDocuments(
                 createCaseDataWithUpdatedDocument(),
                 createCaseDataWithOldDocument());
 
@@ -160,7 +160,7 @@ class UploadDocumentsServiceTest {
         when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(USER);
 
         Document document =
-            uploadDocumentsService.setUpdatedByAndDateAndTimeForDocuments(
+            uploadDocumentsService.setUpdatedByAndDateAndTimeOnDocuments(
                 null,
                 createCaseDataWithOldDocument());
 
