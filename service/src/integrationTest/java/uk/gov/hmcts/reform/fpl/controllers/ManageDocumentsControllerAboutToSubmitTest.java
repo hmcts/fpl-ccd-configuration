@@ -189,6 +189,7 @@ public class ManageDocumentsControllerAboutToSubmitTest extends AbstractControll
     }
 
     private void assertExpectedFieldsAreRemoved(CaseData caseData) {
+        assertThat(caseData.getSupportingEvidenceDocumentsTemp()).isEmpty();
         assertThat(caseData.getManageDocument()).isNull();
         assertThat(caseData.getC2SupportingDocuments()).isNull();
         assertThat(caseData.getManageDocumentsHearingList()).isNull();

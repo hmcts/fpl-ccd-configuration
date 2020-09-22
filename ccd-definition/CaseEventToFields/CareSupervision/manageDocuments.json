@@ -29,6 +29,19 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageDocuments",
+    "CaseFieldID": "manageDocumentsSupportingC2List",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY",
+    "PageID": "ManageDocumentType",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "manageDocument.type=\"C2\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageDocuments",
     "CaseFieldID": "manageDocumentsHearingLabel",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
@@ -36,7 +49,7 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "FieldShowCondition": "manageDocument.relatedToHearing=\"Yes\""
+    "FieldShowCondition": "manageDocument.type=\"FURTHER_EVIDENCE_DOCUMENTS\" AND manageDocument.relatedToHearing=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
