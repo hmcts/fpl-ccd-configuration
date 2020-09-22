@@ -45,8 +45,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @WebMvcTest(ManageDocumentsController.class)
 @OverrideAutoConfiguration(enabled = true)
 public class ManageDocumentsControllerMidEventTest extends AbstractControllerTest {
-    private static final String ERROR_MESSAGE = "Date received cannot be in the future";
-
     ManageDocumentsControllerMidEventTest() {
         super("manage-documents");
     }
@@ -121,9 +119,7 @@ public class ManageDocumentsControllerMidEventTest extends AbstractControllerTes
 
         List<Element<C2DocumentBundle>> c2DocumentBundle = List.of(
             element(buildC2DocumentBundle(today.plusDays(2))),
-            element(selectedC2DocumentId, C2DocumentBundle.builder()
-                .supportingEvidenceBundle(c2EvidenceDocuments)
-                .build()),
+            element(selectedC2DocumentId, buildC2DocumentBundle(c2EvidenceDocuments)),
             element(buildC2DocumentBundle(today.plusDays(2))));
 
         Map<String, Object> data = new HashMap<>(Map.of(
@@ -148,7 +144,7 @@ public class ManageDocumentsControllerMidEventTest extends AbstractControllerTes
             "validate-supporting-evidence");
 
         assertThat(callbackResponse.getErrors()).isNotEmpty();
-        assertThat(callbackResponse.getErrors()).containsExactly(ERROR_MESSAGE);
+        assertThat(callbackResponse.getErrors()).containsExactly("Date received cannot be in the future");
     }
 
     @Test
@@ -184,5 +180,11 @@ public class ManageDocumentsControllerMidEventTest extends AbstractControllerTes
 
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {
         return C2DocumentBundle.builder().uploadedDateTime(dateTime.toString()).build();
+    }
+
+    private C2DocumentBundle buildC2DocumentBundle(List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle) {
+        return buildC2DocumentBundle(now()).toBuilder()
+            .supportingEvidenceBundle(supportingEvidenceBundle)
+            .build();
     }
 }
