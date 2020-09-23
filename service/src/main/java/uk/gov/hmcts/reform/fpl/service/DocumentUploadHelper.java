@@ -2,13 +2,13 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
-@Service
+@Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class DocumentUploadHelper {
 
