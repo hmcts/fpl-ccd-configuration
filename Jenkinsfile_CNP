@@ -82,6 +82,9 @@ withPipeline(type, product, component) {
     loadVaultSecrets(serviceSecrets + otherSecrets)
   }
   onPR {
+    env.URL_FOR_SECURITY_SCAN = "http://fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
+    env.SECURITY_RULES = "https://raw.githubusercontent.com/hmcts/security-test-rules/master/conf/security-rules.conf"
+    pipelineConf.securityScan=true;
     loadVaultSecrets(serviceSecrets + otherSecrets)
   }
   disableLegacyDeployment()
