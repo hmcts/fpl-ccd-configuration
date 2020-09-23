@@ -28,6 +28,7 @@ module.exports = function () {
     async signIn(user) {
       if (currentUser !== user) {
         this.say(`Logging in as ${user.email}`);
+        currentUser = {}; // reset in case the login fails
         await this.retryUntilExists(async () => {
           this.amOnPage(baseUrl);
 
