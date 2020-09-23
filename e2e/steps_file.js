@@ -8,7 +8,7 @@ const loginPage = require('./pages/login.page');
 const caseListPage = require('./pages/caseList.page');
 const eventSummaryPage = require('./pages/eventSummary.page');
 const openApplicationEventPage = require('./pages/events/openApplicationEvent.page');
-const mandatorySubmissionFields = require('./fixtures/mandatorySubmissionFields.json');
+const mandatorySubmissionFields = require('./fixtures/caseData/mandatorySubmissionFields.json');
 
 const normalizeCaseId = caseId => caseId.toString().replace(/\D/g, '');
 
@@ -18,7 +18,7 @@ const signedOutSelector = '#global-header';
 
 'use strict';
 
-function log (msg) {
+function log(msg) {
   console.log(`[${require('codeceptjs').config.get().mocha.child}] ${msg}`);
 }
 
@@ -28,11 +28,11 @@ module.exports = function () {
       await this.retryUntilExists(async () => {
         this.amOnPage(baseUrl);
 
-        if(await this.waitForAnySelector([signedOutSelector, signedInSelector]) == null){
+        if (await this.waitForAnySelector([signedOutSelector, signedInSelector]) == null) {
           return;
         }
 
-        if(await this.hasSelector(signedInSelector)){
+        if (await this.hasSelector(signedInSelector)) {
           this.click('Sign out');
         }
 
@@ -153,6 +153,11 @@ module.exports = function () {
       this.dontSeeElement(caseListPage.locateCase(normalizeCaseId(caseId)));
     },
 
+    seeEndStateForEvent(eventName, state) {
+      this.click(`//table[@class="EventLogTable"]//tr[td[contains(., "${eventName}")]][1]`);
+      this.seeElement(`//table[@class="EventLogDetails"]//tr[.//span[text()="End state"] and .//span[text()="${state}"]]`);
+    },
+
     async navigateToCaseDetails(caseId) {
       const currentUrl = await this.grabCurrentUrl();
       if (!currentUrl.replace(/#.+/g, '').endsWith(caseId)) {
@@ -167,7 +172,7 @@ module.exports = function () {
       await this.navigateToCaseDetails(caseId);
     },
 
-    async navigateToCaseList(){
+    async navigateToCaseList() {
       await caseListPage.navigate();
     },
 
@@ -187,7 +192,8 @@ module.exports = function () {
 
     fillDateAndTime(date, sectionId = 'form') {
       if (date instanceof Date) {
-        date = {day: date.getDate(), month: date.getMonth() + 1, year: date.getFullYear(),
+        date = {
+          day: date.getDate(), month: date.getMonth() + 1, year: date.getFullYear(),
           hour: date.getHours(), minute: date.getMinutes(), second: date.getSeconds(),
         };
       }
@@ -206,7 +212,7 @@ module.exports = function () {
 
     async addAnotherElementToCollection(collectionName) {
       const numberOfElements = await this.grabNumberOfVisibleElements('.collection-title');
-      if(collectionName) {
+      if (collectionName) {
         this.click(locate('button')
           .inside(locate('div').withChild(locate('h2').withText(collectionName)))
           .withText('Add new'));
@@ -218,7 +224,7 @@ module.exports = function () {
     },
 
     async removeElementFromCollection(collectionName, index = 1) {
-      if(collectionName) {
+      if (collectionName) {
         await this.click(locate('button')
           .inside(locate('div').withChild(locate('h2').withText(collectionName)))
           .withText('Remove')
@@ -259,7 +265,7 @@ module.exports = function () {
         }
         try {
           await action();
-        }catch(error){
+        } catch (error) {
           log(error);
         }
         if (await this.waitForSelector(locator) != null) {
