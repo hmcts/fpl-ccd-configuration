@@ -15,6 +15,7 @@ const normalizeCaseId = caseId => caseId.toString().replace(/\D/g, '');
 const baseUrl = process.env.URL || 'http://localhost:3333';
 const signedInSelector = 'exui-header';
 const signedOutSelector = '#global-header';
+let currentUser = {};
 
 'use strict';
 
@@ -25,19 +26,25 @@ function log(msg) {
 module.exports = function () {
   return actor({
     async signIn(user) {
-      await this.retryUntilExists(async () => {
-        this.amOnPage(baseUrl);
+      if (currentUser !== user) {
+        this.say(`Logging in as ${user.email}`);
+        await this.retryUntilExists(async () => {
+          this.amOnPage(baseUrl);
 
-        if (await this.waitForAnySelector([signedOutSelector, signedInSelector]) == null) {
-          return;
-        }
+          if (await this.waitForAnySelector([signedOutSelector, signedInSelector]) == null) {
+            return;
+          }
 
-        if (await this.hasSelector(signedInSelector)) {
-          this.click('Sign out');
-        }
+          if (await this.hasSelector(signedInSelector)) {
+            this.click('Sign out');
+          }
 
-        await loginPage.signIn(user);
-      }, signedInSelector);
+          await loginPage.signIn(user);
+          currentUser = user;
+        }, signedInSelector);
+      } else {
+        this.say(`Already logged in as ${user.email}`);
+      }
     },
 
     async logInAndCreateCase(user, caseName) {
