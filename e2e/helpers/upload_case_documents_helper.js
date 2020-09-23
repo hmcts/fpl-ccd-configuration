@@ -23,20 +23,19 @@ const uploadCaseDocuments = (uploadDocumentsEventPage, uploadSWET=false) => {
 };
 
 const assertCaseDocuments = (I, hasUploadedSWET=true) => {
-  const uploadedByAndDateTimeText = '\'Date and time uploaded\', \'Uploaded by\'';
-  I.seeDocument('Social work chronology', '', 'To follow', 'mock reason', uploadedByAndDateTimeText);
-  I.seeDocument('Social work statement and genogram', 'mockFile.txt', 'Attached', uploadedByAndDateTimeText);
-  I.seeDocument('Social work assessment', 'mockFile.txt', 'Attached', uploadedByAndDateTimeText);
-  I.seeDocument('Care plan', 'mockFile.txt', 'Attached', uploadedByAndDateTimeText);
+  I.seeDocument('Social work chronology', '', 'To follow', 'mock reason', 'Date and time uploaded', 'Uploaded by');
+  I.seeDocument('Social work statement and genogram', 'mockFile.txt', 'Attached', 'Date and time uploaded', 'Uploaded by');
+  I.seeDocument('Social work assessment', 'mockFile.txt', 'Attached', 'Date and time uploaded', 'Uploaded by');
+  I.seeDocument('Care plan', 'mockFile.txt', 'Attached', 'Date and time uploaded', 'Uploaded by');
 
   if (hasUploadedSWET) {
-    I.seeDocument('Social work evidence template (SWET)', 'mockFile.txt', 'Attached', uploadedByAndDateTimeText);
+    I.seeDocument('Social work evidence template (SWET)', 'mockFile.txt', 'Attached', 'Date and time uploaded', 'Uploaded by');
   } else {
-    I.seeDocument('Social work evidence template (SWET)', '', 'Not Required', uploadedByAndDateTimeText);
+    I.seeDocument('Social work evidence template (SWET)', '', 'Not Required', 'Date and time uploaded', 'Uploaded by');
   }
 
-  I.seeDocument('Threshold document', 'mockFile.txt', 'Attached', uploadedByAndDateTimeText);
-  I.seeDocument('Checklist document', 'mockFile.txt', 'Attached', uploadedByAndDateTimeText);
+  I.seeDocument('Threshold document', 'mockFile.txt', 'Attached', 'Date and time uploaded', 'Uploaded by');
+  I.seeDocument('Checklist document', 'mockFile.txt', 'Attached', 'Date and time uploaded', 'Uploaded by');
 };
 
 module.exports = {
