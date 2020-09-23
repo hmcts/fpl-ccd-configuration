@@ -7,7 +7,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentsService;
 
 import java.util.List;
@@ -15,8 +14,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.INCLUDED_IN_SWET;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
@@ -36,8 +33,6 @@ public class UploadDocumentsControllerTest extends AbstractControllerTest {
     @Test
     void shouldNotReturnErrorsWhenUploadedDocumentsAreValid() {
         CaseDetails caseDetails = callbackRequest().getCaseDetails();
-        when(uploadDocumentsService.updateCaseDocuments(any(CaseData.class), any(CaseData.class)))
-            .thenReturn(caseDetails.getData());
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 

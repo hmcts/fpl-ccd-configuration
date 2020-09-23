@@ -173,7 +173,6 @@ public class CaseData {
     @JsonProperty("documents_socialWorkEvidenceTemplate_document")
     @Valid
     public final Document socialWorkEvidenceTemplateDocument;
-    @Valid
     public final CourtBundle courtBundle;
     @NotEmpty(message = "Add the child's details")
     @Valid

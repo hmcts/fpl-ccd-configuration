@@ -28,7 +28,7 @@ public class UploadDocumentsService {
 
     public Map<String, Object> updateCaseDocuments(CaseData caseDataBefore,
                                                    CaseData caseData) {
-        List<Element<DocumentSocialWorkOther>> listOfOtherDocs = setUpdatedByAndDateAndTimeOnDocuments(
+        List<Element<DocumentSocialWorkOther>> otherSocialWorkDocuments = setUpdatedByAndDateAndTimeOnDocuments(
                 caseData.getOtherSocialWorkDocuments(), caseDataBefore.getOtherSocialWorkDocuments());
 
         Document socialWorkChronologyDocument = setUpdatedByAndDateAndTimeOnDocuments(
@@ -51,7 +51,7 @@ public class UploadDocumentsService {
 
         Map<String, Object> updatedCaseData = new HashMap<>();
 
-        updatedCaseData.put("documents_socialWorkOther", listOfOtherDocs);
+        updatedCaseData.put("documents_socialWorkOther", otherSocialWorkDocuments);
         updatedCaseData.put("documents_socialWorkChronology_document", socialWorkChronologyDocument);
         updatedCaseData.put("documents_socialWorkStatement_document", socialWorkStatementDocument);
         updatedCaseData.put("documents_socialWorkAssessment_document", socialWorkAssessmentDocument);
@@ -110,9 +110,9 @@ public class UploadDocumentsService {
         return document;
     }
 
-    private <T extends DocumentMetaData> void setUpdatedByAndDateTime(Element<T> doc) {
+    private <T extends DocumentMetaData> void setUpdatedByAndDateTime(Element<T> documentElement) {
         String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
-        doc.getValue().setDateTimeUploaded(time.now());
-        doc.getValue().setUploadedBy(uploadedBy);
+        documentElement.getValue().setDateTimeUploaded(time.now());
+        documentElement.getValue().setUploadedBy(uploadedBy);
     }
 }

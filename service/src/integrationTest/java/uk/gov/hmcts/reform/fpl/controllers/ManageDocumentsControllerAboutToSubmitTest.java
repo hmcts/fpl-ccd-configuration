@@ -52,6 +52,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @OverrideAutoConfiguration(enabled = true)
 public class ManageDocumentsControllerAboutToSubmitTest extends AbstractControllerTest {
 
+    private static final String USER = "HMCTS";
+
     ManageDocumentsControllerAboutToSubmitTest() {
         super("manage-documents");
     }
@@ -193,6 +195,7 @@ public class ManageDocumentsControllerAboutToSubmitTest extends AbstractControll
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
         return wrapElements(SupportingEvidenceBundle.builder()
             .dateTimeUploaded(LocalDateTime.now())
+            .uploadedBy(USER)
             .name("test")
             .build());
     }
@@ -201,6 +204,7 @@ public class ManageDocumentsControllerAboutToSubmitTest extends AbstractControll
         return wrapElements(SupportingEvidenceBundle.builder()
             .name("test")
             .dateTimeUploaded(localDateTime)
+            .uploadedBy(USER)
             .build());
     }
 

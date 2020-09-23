@@ -55,6 +55,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     DocumentUploadHelper.class
 })
 class ManageDocumentServiceTest {
+    private static final String USER = "HMCTS";
 
     @Autowired
     private Time time;
@@ -547,6 +548,7 @@ class ManageDocumentServiceTest {
         return wrapElements(SupportingEvidenceBundle.builder()
             .name("test")
             .dateTimeUploaded(localDateTime)
+            .uploadedBy(USER)
             .build());
     }
 

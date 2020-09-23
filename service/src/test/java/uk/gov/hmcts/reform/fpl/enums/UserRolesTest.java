@@ -27,7 +27,7 @@ public class UserRolesTest {
     }
 
     @Test
-    void shouldCheckIfUserIsHmctsUser() {
+    void shouldReturnTrueIfUserIsOfHmctsRole() {
         assertThat(isHmctsUser("caseworker-publiclaw-courtadmin")).isTrue();
         assertThat(isHmctsUser("caseworker-publiclaw-gatekeeper")).isTrue();
         assertThat(isHmctsUser("caseworker-publiclaw-superuser")).isTrue();
@@ -35,7 +35,7 @@ public class UserRolesTest {
     }
 
     @Test
-    void shouldCheckIfUserIsNotHmctsUser() {
+    void shouldReturnFalseIfUserIsNotOfHmctsRole() {
         assertThat(isHmctsUser("caseworker-publiclaw-cafcass")).isFalse();
         assertThat(isHmctsUser("caseworker-publiclaw-solicitor")).isFalse();
         assertThat(isHmctsUser("unknown")).isFalse();
