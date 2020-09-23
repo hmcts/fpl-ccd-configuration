@@ -82,14 +82,14 @@ public class UploadDocumentsService {
             .forEach(doc -> findElement(doc.getId(), previousDocuments)
                 .ifPresent(e -> {
                     if (!e.getValue().getTypeOfDocument().equals(doc.getValue().getTypeOfDocument())) {
-                        setUpdatedByAndDateTime(doc);
+                        setUpdatedByAndDateTime(doc.getValue());
                     }
                 })
             );
 
         currentDocuments.stream()
             .filter(doc -> doc.getValue().getDateTimeUploaded() == null)
-            .forEach(this::setUpdatedByAndDateTime);
+            .forEach(document -> setUpdatedByAndDateTime(document.getValue()));
 
         return currentDocuments;
     }
@@ -114,11 +114,5 @@ public class UploadDocumentsService {
         document.setDateTimeUploaded(time.now());
         document.setUploadedBy(uploadedBy);
         return document;
-    }
-
-    private <T extends DocumentMetaData> void setUpdatedByAndDateTime(Element<T> documentElement) {
-        String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
-        documentElement.getValue().setDateTimeUploaded(time.now());
-        documentElement.getValue().setUploadedBy(uploadedBy);
     }
 }
