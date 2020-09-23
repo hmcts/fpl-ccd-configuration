@@ -19,15 +19,11 @@ let currentUser = {};
 
 'use strict';
 
-function log(msg) {
-  console.log(`[${require('codeceptjs').config.get().mocha.child}] ${msg}`);
-}
-
 module.exports = function () {
   return actor({
     async signIn(user) {
       if (currentUser !== user) {
-        this.say(`Logging in as ${user.email}`);
+        output.debug(`Logging in as ${user.email}`);
         currentUser = {}; // reset in case the login fails
         await this.retryUntilExists(async () => {
           this.amOnPage(baseUrl);
@@ -41,10 +37,11 @@ module.exports = function () {
           }
 
           await loginPage.signIn(user);
-          currentUser = user;
         }, signedInSelector);
+        output.debug(`Logged in as ${user.email}`);
+        currentUser = user;
       } else {
-        this.say(`Already logged in as ${user.email}`);
+        output.debug(`Already logged in as ${user.email}`);
       }
     },
 
@@ -55,7 +52,7 @@ module.exports = function () {
       await this.completeEvent('Save and continue');
       this.waitForElement('.markdown h2', 5);
       const caseId = normalizeCaseId(await this.grabTextFrom('.markdown h2'));
-      log(`Case created #${caseId}`);
+      output.print(`Case created #${caseId}`);
       return caseId;
     },
 
@@ -172,6 +169,8 @@ module.exports = function () {
         await this.retryUntilExists(() => {
           this.amOnPage(`${baseUrl}/cases/case-details/${caseId}`);
         }, signedInSelector);
+      } else {
+        this.refreshPage();
       }
     },
 
@@ -248,7 +247,7 @@ module.exports = function () {
     async submitNewCaseWithData(data = mandatorySubmissionFields) {
       const caseId = await this.logInAndCreateCase(config.swanseaLocalAuthorityUserOne);
       await caseHelper.populateWithData(caseId, data);
-      log(`Case #${caseId} has been populated with data`);
+      output.print(`Case #${caseId} has been populated with data`);
 
       return caseId;
     },
@@ -274,7 +273,7 @@ module.exports = function () {
         try {
           await action();
         } catch (error) {
-          log(error);
+          output.error(error);
         }
         if (await this.waitForSelector(locator) != null) {
           output.log(`retryUntilExists(${locator}): element found after try #${tryNumber} was executed`);
