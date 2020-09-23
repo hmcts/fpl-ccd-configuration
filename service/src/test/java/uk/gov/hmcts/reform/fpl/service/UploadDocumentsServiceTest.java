@@ -55,12 +55,12 @@ class UploadDocumentsServiceTest {
     @BeforeEach
     void setup() {
         givenCaseData = prepareCaseData();
+        when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(USER);
     }
 
     @Test
-    void shouldReturnMapOfCaseDetailsWithAttachedDocuments() {
+    void shouldSetUploadedByAndDateTimeOnCaseDocuments() {
         CaseData caseData = caseData();
-        when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(USER);
 
         Map<String, Object> map = uploadDocumentsService.updateCaseDocuments(caseData, caseData);
 
@@ -89,8 +89,6 @@ class UploadDocumentsServiceTest {
 
     @Test
     void shouldUpdateOtherSocialWorkDocumentsListWithUpdatedDetailsAndUser() {
-        when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(USER);
-
         List<DocumentSocialWorkOther> list = unwrapElements(
             uploadDocumentsService.setUpdatedByAndDateAndTimeOnDocuments(
                 createCaseDataWithUpdatedDocumentSocialWorkOther(),
@@ -114,8 +112,6 @@ class UploadDocumentsServiceTest {
 
     @Test
     void shouldUpdateOtherSocialWorkDocumentsListWithNewDocument() {
-        when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(USER);
-
         List<DocumentSocialWorkOther> list = unwrapElements(
             uploadDocumentsService.setUpdatedByAndDateAndTimeOnDocuments(
                 createCaseDataWithCurrentDocumentSocialWorkOther(),
@@ -134,8 +130,6 @@ class UploadDocumentsServiceTest {
 
     @Test
     void shouldUpdateDocumentWithUpdatedDetailsAndUser() {
-        when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(USER);
-
         Document document =
             uploadDocumentsService.setUpdatedByAndDateAndTimeOnDocuments(
                 createCaseDataWithUpdatedDocument(),
@@ -158,8 +152,6 @@ class UploadDocumentsServiceTest {
 
     @Test
     void shouldReturnNullWhenCourtBundleDocumentIsNotAttached() {
-        when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(USER);
-
         Document document =
             uploadDocumentsService.setUpdatedByAndDateAndTimeOnDocuments(
                 null,
