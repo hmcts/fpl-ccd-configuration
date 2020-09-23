@@ -72,7 +72,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldReturnUnsuccessfulResponseWithNoData() {
-        postAboutToSubmitEvent(new byte[] {}, SC_BAD_REQUEST);
+        postAboutToSubmitEvent(new byte[]{}, SC_BAD_REQUEST);
     }
 
     @Test
@@ -129,29 +129,30 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
     @Nested
     class LocalAuthorityValidation {
 
+        final String localAuthority = "example";
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .data(of("caseLocalAuthority", localAuthority))
+            .build();
+
         @Test
-        void shouldReturnErrorWhenCaseBelongsToSmokeTestLocalAuthority() {
-            CaseDetails caseDetails = prepareCaseBelongingTo("FPLA");
+        void shouldReturnErrorWhenCaseSubmissionIsBlockedForLocalAuthority() {
+            given(featureToggleService.isRestrictedFromCaseSubmission(localAuthority)).willReturn(true);
+
             AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
-            assertThat(callbackResponse.getData()).containsEntry("caseLocalAuthority", "FPLA");
+            assertThat(callbackResponse.getData()).containsEntry("caseLocalAuthority", localAuthority);
             assertThat(callbackResponse.getErrors()).contains("You cannot submit this application online yet."
                 + " Ask your FPL administrator for your local authority’s enrolment date");
         }
 
         @Test
-        void shouldReturnNoErrorWhenCaseBelongsToRegularLocalAuthority() {
-            CaseDetails caseDetails = prepareCaseBelongingTo("example");
+        void shouldReturnNoErrorsWhenCaseSubmissionIsAllowedForLocalAuthority() {
+            given(featureToggleService.isRestrictedFromCaseSubmission(localAuthority)).willReturn(false);
+
             AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
 
-            assertThat(callbackResponse.getData()).containsEntry("caseLocalAuthority", "example");
+            assertThat(callbackResponse.getData()).containsEntry("caseLocalAuthority", localAuthority);
             assertThat(callbackResponse.getErrors()).isEmpty();
-        }
-
-        private CaseDetails prepareCaseBelongingTo(String localAuthority) {
-            return CaseDetails.builder()
-                .data(of("caseLocalAuthority", localAuthority))
-                .build();
         }
     }
 }

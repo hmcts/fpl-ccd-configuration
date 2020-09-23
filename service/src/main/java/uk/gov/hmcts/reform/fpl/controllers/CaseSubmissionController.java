@@ -91,17 +91,6 @@ public class CaseSubmissionController extends CallbackController {
         return respond(caseDetails);
     }
 
-    private List<String> validate(CaseData caseData) {
-        List<String> errors = new ArrayList<>();
-
-        if (featureToggleService.isRestrictedFromCaseSubmission(caseData.getCaseLocalAuthority())) {
-            errors.add("You cannot submit this application online yet."
-                + " Ask your FPL administrator for your local authority’s enrolment date");
-        }
-
-        return errors;
-    }
-
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = getCaseData(callbackRequest);
@@ -159,6 +148,17 @@ public class CaseSubmissionController extends CallbackController {
         String localAuthorityName = localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseLocalAuthority);
 
         return YesNo.from(featureToggleService.isCtscEnabled(localAuthorityName));
+    }
+
+    private List<String> validate(CaseData caseData) {
+        List<String> errors = new ArrayList<>();
+
+        if (featureToggleService.isRestrictedFromCaseSubmission(caseData.getCaseLocalAuthority())) {
+            errors.add("You cannot submit this application online yet."
+                + " Ask your FPL administrator for your local authority’s enrolment date");
+        }
+
+        return errors;
     }
 
 }
