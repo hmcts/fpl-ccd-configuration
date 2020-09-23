@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -42,52 +43,37 @@ class DocumentUploadHelperTest {
 
     @Test
     void shouldReturnUploadedDocumentUserInfoForUserWithHmctsRole() {
-        when(idamClient.getUserDetails(eq(AUTH_TOKEN))).thenReturn(createUserDetailsWithHmctsRole());
+        when(idamClient.getUserDetails(eq(AUTH_TOKEN))).thenReturn(createUserDetails(
+            Arrays.asList("caseworker-publiclaw-courtadmin", "caseworker-publiclaw-judiciary")));
         assertThat(documentUploadHelper.getUploadedDocumentUserDetails()).isEqualTo("HMCTS");
     }
 
     @Test
     void shouldReturnUploadedDocumentUserInfoForUserWithNonHmctsRole() {
-        when(idamClient.getUserDetails(eq(AUTH_TOKEN))).thenReturn(createUserDetailsWithNonHmctsRole());
+        when(idamClient.getUserDetails(eq(AUTH_TOKEN))).thenReturn(createUserDetails(
+            Arrays.asList("caseworker-publiclaw-solicitor", "caseworker-publiclaw-cafcass")
+        ));
         assertThat(documentUploadHelper.getUploadedDocumentUserDetails()).isEqualTo("steve.hudson@gov.uk");
     }
 
     @Test
     void shouldReturnUploadedDocumentUserInfoForUserWithHmctsAndNonHmctsRole() {
-        when(idamClient.getUserDetails(eq(AUTH_TOKEN))).thenReturn(createUserDetailsWithHmctsAndNonHmctsRole());
+        when(idamClient.getUserDetails(eq(AUTH_TOKEN))).thenReturn(createUserDetails(
+            Arrays.asList(
+                "caseworker-publiclaw-solicitor",
+                "caseworker-publiclaw-cafcass",
+                "caseworker-publiclaw-superuser")
+        ));
         assertThat(documentUploadHelper.getUploadedDocumentUserDetails()).isEqualTo("HMCTS");
     }
 
-    private UserDetails createUserDetailsWithHmctsRole() {
+    private UserDetails createUserDetails(List<String> roles) {
         return UserDetails.builder()
             .id(USER_ID)
             .surname("Hudson")
             .forename("Steve")
             .email("steve.hudson@gov.uk")
-            .roles(Arrays.asList("caseworker-publiclaw-courtadmin", "caseworker-publiclaw-judiciary"))
-            .build();
-    }
-
-    private UserDetails createUserDetailsWithNonHmctsRole() {
-        return UserDetails.builder()
-            .id(USER_ID)
-            .surname("Hudson")
-            .forename("Steve")
-            .email("steve.hudson@gov.uk")
-            .roles(Arrays.asList("caseworker-publiclaw-solicitor", "caseworker-publiclaw-cafcass"))
-            .build();
-    }
-
-    private UserDetails createUserDetailsWithHmctsAndNonHmctsRole() {
-        return UserDetails.builder()
-            .id(USER_ID)
-            .surname("Hudson")
-            .forename("Steve")
-            .email("steve.hudson@gov.uk")
-            .roles(Arrays.asList(
-                "caseworker-publiclaw-solicitor",
-                "caseworker-publiclaw-cafcass",
-                "caseworker-publiclaw-superuser"))
+            .roles(roles)
             .build();
     }
 }
