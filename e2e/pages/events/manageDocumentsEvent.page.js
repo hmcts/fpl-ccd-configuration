@@ -14,6 +14,7 @@ module.exports = {
     },
     hearingList: '#manageDocumentsHearingList',
     c2DocumentsList: '#manageDocumentsSupportingC2List',
+    supportingDocumentsCollectionId: '#supportingEvidenceDocumentsTemp',
     supportingDocuments: function(index) {
       return supportingDocumentsFragment.supportingDocuments(index, 'supportingEvidenceDocumentsTemp');
     },
@@ -49,22 +50,22 @@ module.exports = {
 
   async enterDocumentName(documentName) {
     const elementIndex = await this.getActiveElementIndex();
-    I.fillField(this.fields(elementIndex).supportingDocuments.name, documentName);
+    I.fillField(this.fields.supportingDocuments(elementIndex).name, documentName);
   },
 
   async enterDocumentNotes(notes) {
     const elementIndex = await this.getActiveElementIndex();
-    I.fillField(this.fields(elementIndex).supportingDocuments.notes, notes);
+    I.fillField(this.fields.supportingDocuments(elementIndex).notes, notes);
   },
 
   async enterDateAndTimeReceived(dateAndTime) {
     const elementIndex = await this.getActiveElementIndex();
-    I.fillDateAndTime(dateAndTime, this.fields(elementIndex).supportingDocuments.dateAndTime);
+    I.fillDateAndTime(dateAndTime, this.fields.supportingDocuments(elementIndex).dateAndTime);
   },
 
   async uploadDocument(document) {
     const elementIndex = await this.getActiveElementIndex();
-    I.attachFile(this.fields(elementIndex).supportingDocuments.document, document);
+    I.attachFile(this.fields.supportingDocuments(elementIndex).document, document);
   },
 
   async uploadSupportingEvidenceDocument(supportingEvidenceDocument) {

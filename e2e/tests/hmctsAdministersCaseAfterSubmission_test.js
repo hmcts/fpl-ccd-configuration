@@ -74,7 +74,7 @@ Scenario('HMCTS admin amends children, respondents, others, international elemen
 Scenario('HMCTS admin uploads correspondence documents', async (I, caseViewPage, manageDocumentsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
   await manageDocumentsEventPage.selectCorrespondence();
-  await I.retryUntilExists(() => I.click('Continue'), '#supportingEvidenceDocumentsTemp');
+  await I.retryUntilExists(() => I.click('Continue'), manageDocumentsEventPage.fields.supportingDocumentsCollectionId);
   await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[0]);
   await I.addAnotherElementToCollection();
   await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[1]);
@@ -139,7 +139,7 @@ Scenario('HMCTS admin edits supporting evidence document on C2 application', asy
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
   await manageDocumentsEventPage.selectC2SupportingDocuments();
   await manageDocumentsEventPage.select2FromDropdown();
-  await I.retryUntilExists(() => I.click('Continue'), '#supportingEvidenceDocumentsTemp');
+  await I.retryUntilExists(() => I.click('Continue'), manageDocumentsEventPage.fields.supportingDocumentsCollectionId);
   await manageDocumentsEventPage.enterDocumentName('Updated document name');
   await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
   I.seeEventSubmissionConfirmation(config.administrationActions.manageDocuments);
@@ -206,7 +206,7 @@ Scenario('HMCTS admin uploads further hearing evidence documents', async (I, cas
   await manageDocumentsEventPage.selectFurtherEvidence();
   await manageDocumentsEventPage.selectFurtherEvidenceIsRelatedToHearing();
   await manageDocumentsEventPage.selectHearing('1 January 2050');
-  await I.retryUntilExists(() => I.click('Continue'), '#supportingEvidenceDocumentsTemp');
+  await I.retryUntilExists(() => I.click('Continue'), manageDocumentsEventPage.fields.supportingDocumentsCollectionId);
   await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[0]);
   await I.addAnotherElementToCollection();
   await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[1]);
