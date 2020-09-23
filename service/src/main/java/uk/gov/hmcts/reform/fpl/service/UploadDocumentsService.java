@@ -33,19 +33,25 @@ public class UploadDocumentsService {
 
         Document socialWorkChronologyDocument = setUpdatedByAndDateAndTimeOnDocuments(
             caseData.getSocialWorkChronologyDocument(), caseDataBefore.getSocialWorkChronologyDocument());
+
         Document socialWorkStatementDocument = setUpdatedByAndDateAndTimeOnDocuments(
             caseData.getSocialWorkStatementDocument(), caseDataBefore.getSocialWorkStatementDocument());
+
         Document socialWorkAssessmentDocument = setUpdatedByAndDateAndTimeOnDocuments(
             caseData.getSocialWorkAssessmentDocument(), caseDataBefore.getSocialWorkAssessmentDocument());
+
         Document socialWorkCarePlanDocument = setUpdatedByAndDateAndTimeOnDocuments(
             caseData.getSocialWorkCarePlanDocument(), caseDataBefore.getSocialWorkCarePlanDocument());
+
         Document socialWorkEvidenceTemplateDocument = setUpdatedByAndDateAndTimeOnDocuments(
-            caseData.getSocialWorkEvidenceTemplateDocument(),
-                caseDataBefore.getSocialWorkEvidenceTemplateDocument());
+            caseData.getSocialWorkEvidenceTemplateDocument(), caseDataBefore.getSocialWorkEvidenceTemplateDocument());
+
         Document thresholdDocument = setUpdatedByAndDateAndTimeOnDocuments(
             caseData.getThresholdDocument(), caseDataBefore.getThresholdDocument());
+
         Document checklistDocument = setUpdatedByAndDateAndTimeOnDocuments(
             caseData.getChecklistDocument(), caseDataBefore.getChecklistDocument());
+
         CourtBundle courtBundleDocument = setUpdatedByAndDateAndTimeOnDocuments(
             caseData.getCourtBundle(), caseDataBefore.getCourtBundle());
 
