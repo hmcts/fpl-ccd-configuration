@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -40,11 +38,12 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFie
 @RestController
 @RequestMapping("/callback/placement")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class PlacementController {
-    private final ApplicationEventPublisher applicationEventPublisher;
+public class PlacementController extends CallbackController {
+    private static final String PLACEMENT = "placement";
+    private static final String PLACEMENT_CHILD_NAME = "placementChildName";
+    private static final String CHILDREN_LIST = "childrenList";
     private final ObjectMapper mapper;
     private final PlacementService placementService;
-    private final RequestData requestData;
     private final CoreCaseDataService coreCaseDataService;
     private final DocumentDownloadService documentDownloadService;
 
@@ -52,7 +51,7 @@ public class PlacementController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> caseProperties = caseDetails.getData();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = getCaseData(caseDetails);
 
         boolean singleChild = placementService.hasSingleChild(caseData);
 
@@ -60,45 +59,41 @@ public class PlacementController {
 
         if (singleChild) {
             Element<Child> child = caseData.getAllChildren().get(0);
-            caseProperties.put("placement", placementService.getPlacement(caseData, child));
-            caseProperties.put("placementChildName", child.getValue().getParty().getFullName());
+            caseProperties.put(PLACEMENT, placementService.getPlacement(caseData, child));
+            caseProperties.put(PLACEMENT_CHILD_NAME, child.getValue().getParty().getFullName());
         } else {
-            caseProperties.put("childrenList", placementService.getChildrenList(caseData, null));
+            caseProperties.put(CHILDREN_LIST, placementService.getChildrenList(caseData, null));
         }
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseProperties)
-            .build();
+        return respond(caseDetails);
     }
 
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> caseProperties = caseDetails.getData();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = getCaseData(caseDetails);
 
         UUID childId = getSelectedChildId(caseDetails, caseData);
         Element<Child> child = placementService.getChild(caseData, childId);
 
-        caseProperties.put("childrenList", placementService.getChildrenList(caseData, child));
-        caseProperties.put("placement", placementService.getPlacement(caseData, child));
-        caseProperties.put("placementChildName", child.getValue().getParty().getFullName());
+        caseProperties.put(CHILDREN_LIST, placementService.getChildrenList(caseData, child));
+        caseProperties.put(PLACEMENT, placementService.getPlacement(caseData, child));
+        caseProperties.put(PLACEMENT_CHILD_NAME, child.getValue().getParty().getFullName());
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseProperties)
-            .build();
+        return respond(caseDetails);
     }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = getCaseData(caseDetails);
         Map<String, Object> caseProperties = caseDetails.getData();
 
         UUID childId = getSelectedChildId(caseDetails, caseData);
         Element<Child> child = placementService.getChild(caseData, childId);
 
-        Placement placement = mapper.convertValue(caseDetails.getData().get("placement"), Placement.class)
+        Placement placement = mapper.convertValue(caseDetails.getData().get(PLACEMENT), Placement.class)
             .setChild(child);
 
         List<Element<Placement>> updatedPlacement = placementService.setPlacement(caseData, placement);
@@ -107,7 +102,7 @@ public class PlacementController {
         caseProperties.put("placementsWithoutPlacementOrder", placementService.withoutPlacementOrder(updatedPlacement));
         caseProperties.put("placements", placementService.withoutConfidentialData(updatedPlacement));
 
-        removeTemporaryFields(caseDetails, "placement", "placementChildName", "singleChild");
+        removeTemporaryFields(caseDetails, PLACEMENT, PLACEMENT_CHILD_NAME, "singleChild");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseProperties)
@@ -118,13 +113,12 @@ public class PlacementController {
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
 
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
+        CaseData caseData = getCaseData(caseDetails);
+        CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
         sendNotificationForNewPlacementOrder(callbackRequest, caseDetails, caseData, caseDataBefore);
-        sendNotificationForNewNoticeOfPlacementOrder(callbackRequest, caseData, caseDataBefore);
+        sendNotificationForNewNoticeOfPlacementOrder(caseData, caseDataBefore);
         triggerSendDocumentEventForUpdatedPlacementOrderDocuments(caseDetails, caseData, caseDataBefore);
     }
 
@@ -139,20 +133,17 @@ public class PlacementController {
         Placement previousPlacement = placementService.getPlacement(caseDataBefore, child);
 
         if (isEmpty(previousPlacement) || isUpdatedPlacement(previousPlacement, currentPlacement)) {
-            publishPlacementApplicationUploadEvent(callbackRequest);
+            publishEvent(new PlacementApplicationEvent(caseData));
         }
     }
 
-    private void sendNotificationForNewNoticeOfPlacementOrder(CallbackRequest callbackRequest,
-                                                              CaseData caseData,
-                                                              CaseData caseDataBefore) {
+    private void sendNotificationForNewNoticeOfPlacementOrder(CaseData caseData, CaseData caseDataBefore) {
         placementService.getUpdatedDocuments(caseData, caseDataBefore, NOTICE_OF_PLACEMENT_ORDER)
             .stream()
             .map(DocumentReference::getBinaryUrl)
             .map(documentDownloadService::downloadDocument)
-            .map(documentContents -> new NoticeOfPlacementOrderUploadedEvent(
-            callbackRequest, requestData, documentContents))
-            .forEach(applicationEventPublisher::publishEvent);
+            .map(documentContents -> new NoticeOfPlacementOrderUploadedEvent(caseData, documentContents))
+            .forEach(this::publishEvent);
     }
 
     private void triggerSendDocumentEventForUpdatedPlacementOrderDocuments(CaseDetails caseDetails, CaseData caseData,
@@ -162,7 +153,7 @@ public class PlacementController {
                 caseDetails.getJurisdiction(),
                 caseDetails.getCaseTypeId(),
                 caseDetails.getId(),
-                "internal-change:SEND_DOCUMENT",
+                "internal-change-SEND_DOCUMENT",
                 Map.of("documentToBeSent", documentReference)));
     }
 
@@ -171,18 +162,13 @@ public class PlacementController {
             return caseData.getAllChildren().get(0).getId();
         }
 
-        Object childrenList = caseDetails.getData().get("childrenList");
+        Object childrenList = caseDetails.getData().get(CHILDREN_LIST);
 
         //see RDM-5696
         if (childrenList instanceof String) {
             return UUID.fromString(childrenList.toString());
         }
         return mapper.convertValue(childrenList, DynamicList.class).getValueCode();
-    }
-
-    private void publishPlacementApplicationUploadEvent(CallbackRequest callbackRequest) {
-        applicationEventPublisher.publishEvent(
-            new PlacementApplicationEvent(callbackRequest, requestData));
     }
 
     private boolean isUpdatedPlacement(Placement previousPlacement, Placement newPlacement) {

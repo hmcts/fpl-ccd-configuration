@@ -14,7 +14,9 @@ import uk.gov.hmcts.reform.auth.checker.core.user.User;
 import uk.gov.hmcts.reform.auth.checker.spring.useronly.AuthCheckerUserOnlyFilter;
 
 @Configuration
+@SuppressWarnings("java:S1118")
 public class SecurityConfiguration {
+
     @Configuration
     @ConditionalOnProperty(value = "spring.security.enabled", havingValue = "true")
     static class SecurityConfigurationWithUserTokenValidator extends WebSecurityConfigurerAdapter {
@@ -43,7 +45,6 @@ public class SecurityConfiguration {
 
     @Order(2)
     @Configuration
-    @ConditionalOnProperty(value = "spring.security.enabled", havingValue = "true")
     static class RoboticsSecurityConfiguration extends WebSecurityConfigurerAdapter {
         private AuthCheckerUserOnlyFilter<User> authCheckerUserOnlyFilter;
 
@@ -56,7 +57,7 @@ public class SecurityConfiguration {
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http.requestMatchers()
-                .antMatchers(HttpMethod.POST, "/sendRPAEmailByID/*")
+                .antMatchers(HttpMethod.POST, "/sendRPAEmailByID/*", "/support/case/*/share")
                 .and()
                 .addFilter(authCheckerUserOnlyFilter)
                 .csrf(AbstractHttpConfigurer::disable)

@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(CaseSubmissionController.class)
@@ -29,30 +30,29 @@ class CaseSubmissionControllerMidEventTest extends AbstractControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 
         assertThat(callbackResponse.getErrors()).containsOnly(
-            "In the orders and directions needed section:",
-            "• You need to add details to orders and directions needed",
-            "In the children section:",
-            "• You need to add details to children",
-            "In the respondents section:",
-            "• You need to add details to respondents",
-            "In the applicant section:",
-            "• You need to add details to applicant",
-            "• You need to add details to solicitor",
+            "In the orders and directions sought section:",
+            "• Add the orders and directions sought",
+            "In the child's details section:",
+            "• Add the child's details",
+            "In the respondents' details section:",
+            "• Add the respondents' details",
+            "In the your organisation's details section:",
+            "• Add your organisation's details",
+            "• Add the applicant's solicitor's details",
             "In the grounds for the application section:",
-            "• You need to add details to grounds for the application",
-            "In the hearing needed section:",
-            "• You need to add details to hearing needed",
-            "In the documents section:",
-            "• Tell us the status of all documents including those that you haven't uploaded",
+            "• Add the grounds for the application",
+            "In the hearing urgency section:",
+            "• Add the hearing urgency details",
+            "In the upload documents section:",
+            "• Add social work documents, or details of when you'll send them",
             "In the allocation proposal section:",
-            "• You need to add details to allocation proposal"
+            "• Add the allocation proposal"
         );
     }
 
     @Test
     void shouldReturnNoErrorsWhenMandatoryFieldsAreProvidedInCaseData() {
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
-            "core-case-data-store-api/callback-request.json");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(callbackRequest());
 
         assertThat(callbackResponse.getErrors()).isEmpty();
     }

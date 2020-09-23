@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service.robotics;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.robotics.Respondent;
 import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
 import uk.gov.hmcts.reform.fpl.model.robotics.Solicitor;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -34,6 +34,7 @@ import java.util.Set;
 
 import static com.google.common.collect.ImmutableSet.of;
 import static java.util.Arrays.asList;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
@@ -44,6 +45,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.math.NumberUtils.toInt;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.robotics.Gender.convertStringToGender;
+import static uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper.fromCCDMoneyGBP;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @Service
@@ -51,13 +53,12 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 public class RoboticsDataService {
     private final ObjectMapper objectMapper;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
-    private final RoboticsDataValidatorService validatorService;
 
-    public RoboticsData prepareRoboticsData(final CaseData caseData, final Long caseId) {
-        final RoboticsData roboticsData = RoboticsData.builder()
+    public RoboticsData prepareRoboticsData(final CaseData caseData) {
+        return RoboticsData.builder()
             .caseNumber(caseData.getFamilyManCaseNumber())
             .applicationType(deriveApplicationType(caseData.getOrders()))
-            .feePaid(2055.00)
+            .feePaid(fromCCDMoneyGBP(caseData.getAmountToPay()).orElse(BigDecimal.valueOf(2055.00)))
             .children(populateChildren(caseData.getAllChildren()))
             .respondents(populateRespondents(caseData.getRespondents1()))
             .solicitor(populateSolicitor(caseData.getSolicitor()))
@@ -65,27 +66,17 @@ public class RoboticsDataService {
             .internationalElement(hasInternationalElement(caseData.getInternationalElement()))
             .allocation(isNotEmpty(caseData.getAllocationProposal())
                 && isNotBlank(caseData.getAllocationProposal().getProposal())
-                ? caseData.getAllocationProposal().getProposal() :  null)
-            .issueDate(isNotEmpty(caseData.getDateSubmitted())
-                ? formatLocalDateToString(caseData.getDateSubmitted(), "dd-MM-yyyy") : "")
+                ? caseData.getAllocationProposal().getProposal() : null)
+            .issueDate(formatDate(caseData.getDateSubmitted(), "dd-MM-yyyy"))
             .applicant(populateApplicant(caseData.getAllApplicants()))
             .owningCourt(toInt(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getCourtCode()))
-            .caseId(caseId)
+            .caseId(caseData.getId())
             .build();
-
-        List<String> validationErrors = validatorService.validate(roboticsData);
-        if (isNotEmpty(validationErrors)) {
-            throw new RoboticsDataException(String.format("failed validation with these error(s) %s",
-                validationErrors));
-        }
-
-        return roboticsData;
     }
 
     public String convertRoboticsDataToJson(final RoboticsData roboticsData) {
         try {
-            return objectMapper.writerWithDefaultPrettyPrinter()
-                .writeValueAsString(roboticsData);
+            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(roboticsData);
         } catch (JsonProcessingException e) {
             throw new RoboticsDataException(e.getMessage(), e);
         }
@@ -125,7 +116,7 @@ public class RoboticsDataService {
     }
 
     private String getApplicantPartyNumber(final Telephone telephone) {
-        return Optional.ofNullable(telephone)
+        return ofNullable(telephone)
             .map(Telephone::getTelephoneNumber)
             .filter(StringUtils::isNotBlank)
             .map(this::formatContactNumber)
@@ -177,7 +168,7 @@ public class RoboticsDataService {
             .gender(convertStringToGender(respondentParty.getGender()))
             .address(convertAddress(respondentParty.getAddress()).orElse(null))
             .relationshipToChild(respondentParty.getRelationshipToChild())
-            .dob(formatDob(respondentParty.getDateOfBirth()))
+            .dob(formatDate(respondentParty.getDateOfBirth(), "d-MMM-y"))
             .confidential(respondent.containsConfidentialDetails())
             .build();
     }
@@ -202,17 +193,19 @@ public class RoboticsDataService {
             .firstName(childParty.getFirstName())
             .lastName(childParty.getLastName())
             .gender(convertStringToGender(childParty.getGender()))
-            .dob(formatDob(childParty.getDateOfBirth()))
+            .dob(formatDate(childParty.getDateOfBirth(), "d-MMM-y"))
             .isParty(false)
             .build();
     }
 
-    private String formatDob(final LocalDate date) {
-        return isEmpty(date) ? "" : formatLocalDateToString(date, "d-MMM-y").toUpperCase();
+    private String formatDate(LocalDate date, String format) {
+        return ofNullable(date)
+            .map(dateToFormat -> formatLocalDateToString(dateToFormat, format).toUpperCase())
+            .orElse(null);
     }
 
     private String deriveApplicationType(final Orders orders) {
-        if (isEmpty(orders) || ObjectUtils.isEmpty(orders.getOrderType())) {
+        if (isEmpty(orders) || isEmpty(orders.getOrderType())) {
             throw new RoboticsDataException("no order type(s) to derive Application Type from.");
         }
 
@@ -246,9 +239,9 @@ public class RoboticsDataService {
                 return "Education Supervision Order";
             case OTHER:
                 return "Discharge of a Care Order";
+            default:
+                throw new RoboticsDataException("unable to derive an appropriate Application Type from " + orderType);
         }
-
-        throw new RoboticsDataException("unable to derive an appropriate Application Type from " + orderType);
     }
 
     private boolean hasInternationalElement(final InternationalElement internationalElement) {

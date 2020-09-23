@@ -1,11 +1,14 @@
 package uk.gov.hmcts.reform.fpl.model.docmosis;
 
-import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 @Data
-@Builder
-public class DocmosisJudgeAndLegalAdvisor {
-    private final String judgeTitleAndName;
+@SuperBuilder
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+public class DocmosisJudgeAndLegalAdvisor extends DocmosisJudge {
     private final String legalAdvisorName;
 }

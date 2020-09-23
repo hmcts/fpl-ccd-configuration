@@ -10,44 +10,8 @@ module.exports = [
     judgeAndLegalAdvisor: {
       judgeTitle: 'Her Honour Judge',
       judgeLastName: 'Sotomayer',
+      judgeEmailAddress: 'test@test.com',
       legalAdvisorName: 'Peter Parker',
-    },
-    children: 'All',
-  },
-  {
-    type: 'Care order',
-    subtype: 'Interim',
-    fullType: 'Interim care order',
-    document: 'interim_care_order.pdf',
-    dateOfIssue: {
-      day: '01',
-      month: '01',
-      year: '2020',
-    },
-    interimEndDate: {
-      isNamedDate: false,
-    },
-    judgeAndLegalAdvisor: {
-      judgeTitle: 'Her Honour Judge',
-      judgeLastName: 'Judy',
-      legalAdvisorName: 'Fred Frederickson',
-    },
-    children: 'All',
-  },
-  {
-    type: 'Care order',
-    subtype: 'Final',
-    fullType: 'Final care order',
-    document: 'final_care_order.pdf',
-    dateOfIssue: {
-      day: '01',
-      month: '01',
-      year: '2020',
-    },
-    judgeAndLegalAdvisor: {
-      judgeTitle: 'Her Honour Judge',
-      judgeLastName: 'Judy',
-      legalAdvisorName: 'Fred Frederickson',
     },
     children: 'All',
   },
@@ -72,6 +36,7 @@ module.exports = [
     judgeAndLegalAdvisor: {
       judgeTitle: 'His Honour Judge',
       judgeLastName: 'Dredd',
+      judgeEmailAddress: 'test@test.com',
       legalAdvisorName: 'Frank N. Stein',
     },
     directionText: 'Example direction',
@@ -91,6 +56,7 @@ module.exports = [
     judgeAndLegalAdvisor: {
       judgeTitle: 'His Honour Judge',
       judgeLastName: 'Dredd',
+      judgeEmailAddress: 'test@test.com',
       legalAdvisorName: 'Frank N. Stein',
     },
     directionText: 'Example direction',
@@ -108,6 +74,7 @@ module.exports = [
     judgeAndLegalAdvisor: {
       judgeTitle: 'Her Honour Judge',
       judgeLastName: 'Judy',
+      judgeEmailAddress: 'test@test.com',
       legalAdvisorName: 'Fred Frederickson',
     },
     childrenDescription: 'description',
@@ -125,6 +92,64 @@ module.exports = [
     },
     directionText: 'Example direction',
     includePhrase: 'Yes',
-    children: [0,1],
+    children: [2,3],
+  },
+  {
+    type: 'Care order',
+    subtype: 'Interim',
+    fullType: 'Interim care order',
+    document: 'interim_care_order.pdf',
+    dateOfIssue: {
+      day: '01',
+      month: '01',
+      year: '2020',
+    },
+    interimEndDate: {
+      isNamedDate: false,
+    },
+    judgeAndLegalAdvisor: {
+      judgeTitle: 'Her Honour Judge',
+      judgeLastName: 'Judy',
+      judgeEmailAddress: 'test@test.com',
+      legalAdvisorName: 'Fred Frederickson',
+    },
+    children: 'All',
+  },
+  {
+    type: 'Care order',
+    subtype: 'Final',
+    fullType: 'Final care order',
+    document: 'final_care_order.pdf',
+    dateOfIssue: {
+      day: '01',
+      month: '01',
+      year: '2020',
+    },
+    judgeAndLegalAdvisor: {
+      judgeTitle: 'Her Honour Judge',
+      judgeLastName: 'Judy',
+      judgeEmailAddress: 'test@test.com',
+      legalAdvisorName: 'Fred Frederickson',
+    },
+    closeCase: false,
+    children: 'Single',
+  },
+  {
+    type: 'Discharge of care order',
+    fullType: 'Discharge of care order',
+    document: 'discharge_of_care_order.pdf',
+    dateOfIssue: {
+      day: '01',
+      month: '01',
+      year: '2020',
+    },
+    judgeAndLegalAdvisor: {
+      judgeTitle: 'Her Honour Judge',
+      judgeLastName: 'Judy',
+      judgeEmailAddress: 'test@test.com',
+      legalAdvisorName: 'Fred Frederickson',
+    },
+    careOrders: [0],
+    closeCase: false,
   },
 ];

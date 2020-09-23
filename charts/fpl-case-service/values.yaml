@@ -1,11 +1,17 @@
 tags:
   fpl-ccd-stack: false
-  ccd-idam-pr: false
+
+idam-pr:
+  enabled: false
+
+xui-webapp:
+  enabled: false
 
 java:
   aadIdentityName: family-public-law
   image: hmctspublic.azurecr.io/fpl/case-service:latest
   environment:
+    FPL_ENV: '{{ .Values.global.environment }}'
     IDAM_CLIENT_ID: fpl_case_service
     IDAM_CLIENT_REDIRECT_URI: https://fpl-case-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/oauth2/callback
     IDAM_API_URL: https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net
@@ -16,7 +22,7 @@ java:
     PAYMENT_API_URL: http://payment-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     FEES_REGISTER_API_URL: http://fees-register-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     DOCUMENT_MANAGEMENT_URL: http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
-    CCD_UI_BASE_URL: https://www-ccd.{{ .Values.global.environment }}.platform.hmcts.net
+    MANAGE_CASE_UI_BASE_URL: https://manage-case.{{ .Values.global.environment }}.platform.hmcts.net
     DOCMOSIS_TORNADO_URL: https://docmosis-development.platform.hmcts.net
     SPRING_MAIL_HOST: mta.reform.hmcts.net
     SPRING_MAIL_PORT: 25

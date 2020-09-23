@@ -18,7 +18,7 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 import java.math.BigDecimal;
 
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Currency.GBP;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Service.FPL;
 
@@ -27,7 +27,7 @@ import static uk.gov.hmcts.reform.fnp.model.payment.enums.Service.FPL;
 public class PaymentService {
 
     private static final String DESCRIPTION_TEMPLATE = "Payment for case: %s";
-    private static final String BLANK_CUSTOMER_REFERENCE_VALUE = "Not provided";
+    public static final String BLANK_PARAMETER_VALUE = "Not provided";
 
     private final FeeService feeService;
     private final PaymentApi paymentApi;
@@ -49,17 +49,18 @@ public class PaymentService {
         this.siteId = siteId;
     }
 
-    public void makePaymentForCaseOrders(Long caseId, CaseData caseData) {
+    public void makePaymentForCaseOrders(CaseData caseData) {
         FeesData feesData = feeService.getFeesDataForOrders(caseData.getOrders());
 
         if (!feesData.getTotalAmount().equals(BigDecimal.ZERO)) {
             String localAuthorityName =
                 localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseData.getCaseLocalAuthority());
             ApplicantParty applicantParty = getFirstApplicantParty(caseData);
-            CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseId,
+
+            CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseData.getId(),
                 applicantParty.getPbaNumber(),
-                applicantParty.getClientCode(),
-                defaultCustomerReferenceIfBlank(applicantParty.getCustomerReference()),
+                defaultIfBlank(applicantParty.getClientCode(), BLANK_PARAMETER_VALUE),
+                defaultIfBlank(applicantParty.getCustomerReference(), BLANK_PARAMETER_VALUE),
                 localAuthorityName,
                 feesData);
 
@@ -79,16 +80,12 @@ public class PaymentService {
 
         CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseId,
             c2DocumentBundle.getPbaNumber(),
-            c2DocumentBundle.getClientCode(),
-            defaultCustomerReferenceIfBlank(c2DocumentBundle.getFileReference()),
+            defaultIfBlank(c2DocumentBundle.getClientCode(), BLANK_PARAMETER_VALUE),
+            defaultIfBlank(c2DocumentBundle.getFileReference(), BLANK_PARAMETER_VALUE),
             localAuthorityName,
             feesData);
 
         callPaymentsApi(paymentRequest);
-    }
-
-    private String defaultCustomerReferenceIfBlank(final String currentValue) {
-        return isNotBlank(currentValue) ? currentValue : BLANK_CUSTOMER_REFERENCE_VALUE;
     }
 
     private CreditAccountPaymentRequest getCreditAccountPaymentRequest(Long caseId, String pbaNumber,
@@ -120,7 +117,7 @@ public class PaymentService {
             log.error("Payments response error for {}\n\tstatus: {} => message: \"{}\"",
                 creditAccountPaymentRequest, ex.status(), ex.contentUTF8(), ex);
 
-            throw new PaymentsApiException(ex.status(), ex.contentUTF8(), ex);
+            throw new PaymentsApiException(ex.contentUTF8(), ex);
         }
     }
 }

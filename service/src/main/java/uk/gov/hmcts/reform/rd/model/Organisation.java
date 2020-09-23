@@ -17,7 +17,7 @@ public class Organisation {
     private List<ContactInformation> contactInformation;
     private String name;
     private String organisationIdentifier;
-    private List<PaymentAccount> paymentAccount;
+    private List<String> paymentAccount;
     private String sraId;
     private boolean sraRegulated;
     private String status;

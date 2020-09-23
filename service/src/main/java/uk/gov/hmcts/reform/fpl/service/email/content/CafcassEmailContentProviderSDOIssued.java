@@ -1,37 +1,22 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
+import uk.gov.hmcts.reform.fpl.service.email.content.base.StandardDirectionOrderContent;
 
 import java.util.Map;
 
 @Service
-public class CafcassEmailContentProviderSDOIssued extends AbstractEmailContentProvider {
-    private final CafcassLookupConfiguration cafcassLookupConfiguration;
-    private final ObjectMapper mapper;
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+public class CafcassEmailContentProviderSDOIssued extends StandardDirectionOrderContent {
+    private final CafcassLookupConfiguration config;
 
-    @Autowired
-    public CafcassEmailContentProviderSDOIssued(CafcassLookupConfiguration cafcassLookupConfiguration,
-                                                @Value("${ccd.ui.base.url}") String uiBaseUrl,
-                                                ObjectMapper mapper,
-                                                HearingBookingService hearingBookingService) {
-        super(uiBaseUrl, hearingBookingService);
-        this.cafcassLookupConfiguration = cafcassLookupConfiguration;
-        this.mapper = mapper;
-    }
-
-    public Map<String, Object> buildCafcassStandardDirectionOrderIssuedNotification(CaseDetails caseDetails,
-                                                                                    String localAuthorityCode) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
-        return super.getSDOPersonalisationBuilder(caseDetails.getId(), caseData)
-            .put("title", cafcassLookupConfiguration.getCafcass(localAuthorityCode).getName())
+    public Map<String, Object> buildCafcassStandardDirectionOrderIssuedNotification(CaseData caseData) {
+        return super.getSDOPersonalisationBuilder(caseData)
+            .put("title", config.getCafcass(caseData.getCaseLocalAuthority()).getName())
             .build();
     }
 }

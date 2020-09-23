@@ -1,92 +1,85 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Representative;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
-import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
-import uk.gov.service.notify.NotificationClientException;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
+import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
+import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
-import java.util.List;
 import java.util.Map;
 
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
-import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
-import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
-import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.formatRepresentativesForPostNotification;
+import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
-import static uk.gov.service.notify.NotificationClient.prepareUpload;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvider {
+    private final HmctsCourtLookupConfiguration config;
+    private final GeneratedOrderService generatedOrderService;
+    private final Time time;
 
-    private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
-    private final RepresentativeService representativeService;
-    private final ObjectMapper objectMapper;
-
-    public OrderIssuedEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
-                                           ObjectMapper objectMapper,
-                                           HearingBookingService hearingBookingService,
-                                           HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
-                                           RepresentativeService representativeService) {
-        super(uiBaseUrl, hearingBookingService);
-        this.objectMapper = objectMapper;
-        this.representativeService = representativeService;
-        this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
-    }
-
-    public Map<String, Object> buildNotificationParametersForHmctsAdmin(final CaseDetails caseDetails,
-                                                                        final String localAuthorityCode,
-                                                                        final byte[] documentContents,
-                                                                        final IssuedOrderType issuedOrderType) {
-        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
-        List<Representative> representativesServedByPost = representativeService.getRepresentativesByServedPreference(
-            caseData.getRepresentatives(), POST);
-        List<String> formattedRepresentatives = formatRepresentativesForPostNotification(representativesServedByPost);
-
-        return ImmutableMap.<String, Object>builder()
-            .put("callout", (issuedOrderType != NOTICE_OF_PLACEMENT_ORDER) ? buildCallout(caseData) : "")
-            .put("needsPosting", isNotEmpty(representativesServedByPost) ? "Yes" : "No")
-            .put("doesNotNeedPosting", representativesServedByPost.isEmpty() ? "Yes" : "No")
-            .put("courtName", hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName())
-            .putAll(caseUrlOrDocumentLink(isNotEmpty(representativesServedByPost), documentContents,
-                caseDetails.getId()))
-            .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
-            .put("representatives", formattedRepresentatives.isEmpty() ? "" : formattedRepresentatives)
-            .build();
-    }
-
-    public Map<String, Object> buildNotificationParametersForRepresentatives(final CaseDetails caseDetails,
-                                                                             final String localAuthorityCode,
-                                                                             final byte[] documentContents,
-                                                                             final IssuedOrderType issuedOrderType) {
-        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
-
+    public Map<String, Object> buildParametersWithoutCaseUrl(final CaseData caseData,
+                                                             final byte[] documentContents,
+                                                             final IssuedOrderType issuedOrderType) {
         return ImmutableMap.<String, Object>builder()
             .put("orderType", getTypeOfOrder(caseData, issuedOrderType))
             .put("callout", (issuedOrderType != NOTICE_OF_PLACEMENT_ORDER) ? buildCallout(caseData) : "")
-            .put("courtName", hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName())
+            .put("courtName", config.getCourt(caseData.getCaseLocalAuthority()).getName())
             .putAll(linkToAttachedDocument(documentContents))
             .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
             .build();
     }
 
-    private String buildCallout(CaseData caseData) {
-        return "^" + buildSubjectLineWithHearingBookingDateSuffix(buildSubjectLine(caseData),
-            caseData.getHearingDetails());
+    public Map<String, Object> buildParametersWithCaseUrl(final CaseData caseData,
+                                                          final byte[] documentContents,
+                                                          final IssuedOrderType issuedOrderType) {
+        return ImmutableMap.<String, Object>builder()
+            .putAll(buildParametersWithoutCaseUrl(caseData, documentContents, issuedOrderType))
+            .put("caseUrl", getCaseUrl(caseData.getId()))
+            .build();
+    }
+
+    public AllocatedJudgeTemplateForGeneratedOrder buildAllocatedJudgeOrderIssuedNotification(CaseData caseData) {
+
+        JudgeAndLegalAdvisor judge = getAllocatedJudge(caseData);
+
+        AllocatedJudgeTemplateForGeneratedOrder judgeTemplate = new AllocatedJudgeTemplateForGeneratedOrder();
+        judgeTemplate.setOrderType(getTypeOfOrder(caseData, GENERATED_ORDER));
+        judgeTemplate.setCallout(buildCallout(caseData));
+        judgeTemplate.setCaseUrl(getCaseUrl(caseData.getId()));
+        judgeTemplate.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
+        judgeTemplate.setJudgeTitle(judge.getJudgeOrMagistrateTitle());
+        judgeTemplate.setJudgeName(judge.getJudgeName());
+
+        return judgeTemplate;
+    }
+
+    private JudgeAndLegalAdvisor getAllocatedJudge(CaseData caseData) {
+        return generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData);
+    }
+
+    private String buildCallout(final CaseData caseData) {
+        HearingBooking hearing = null;
+        if (caseData.hasFutureHearing(caseData.getHearingDetails())) {
+            hearing = caseData.getMostUrgentHearingBookingAfter(time.now());
+        }
+        return "^" + buildSubjectLineWithHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
+            caseData.getRespondents1(),
+            hearing);
     }
 
     private String getTypeOfOrder(CaseData caseData, IssuedOrderType issuedOrderType) {
@@ -100,29 +93,11 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
         return orderType.toLowerCase();
     }
 
-    private Map<String, Object> caseUrlOrDocumentLink(boolean needsServing,
-                                                      final byte[] documentContents,
-                                                      Long caseId) {
-        ImmutableMap.Builder<String, Object> url = ImmutableMap.builder();
-
-        try {
-            url.put("caseUrlOrDocumentLink", needsServing ? prepareUpload(documentContents)
-                : formatCaseUrl(uiBaseUrl, caseId));
-        } catch (NotificationClientException e) {
-            log.error("Unable to send notification due to ", e);
-        }
-
-        return url.build();
-    }
-
     private Map<String, Object> linkToAttachedDocument(final byte[] documentContents) {
         ImmutableMap.Builder<String, Object> url = ImmutableMap.builder();
 
-        try {
-            url.put("documentLink", prepareUpload(documentContents));
-        } catch (NotificationClientException e) {
-            log.error("Unable to send notification due to ", e);
-        }
+        generateAttachedDocumentLink(documentContents).ifPresent(
+            attachedDocumentLink -> url.put("documentLink", attachedDocumentLink));
 
         return url.build();
     }

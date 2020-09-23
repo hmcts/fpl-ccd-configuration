@@ -11,91 +11,146 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.NewHearingsAdded;
+import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
-import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
-import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingValidatorService;
+import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
+import static java.util.Collections.emptyList;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.NEW_HEARING_LABEL;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.NEW_HEARING_SELECTOR;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
+import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.SELECTED_HEARING_IDS;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInGatekeepingState;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 
 @Api
 @RestController
 @RequestMapping("/callback/add-hearing-bookings")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class HearingBookingDetailsController {
+public class HearingBookingDetailsController extends CallbackController {
     private final HearingBookingService service;
-    private final ValidateGroupService validateGroupService;
+    private final HearingBookingValidatorService validationService;
     private final ObjectMapper mapper;
+    private final StandardDirectionsService standardDirectionsService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = getCaseData(caseDetails);
 
-        List<Element<HearingBooking>> hearingDetails = service.expandHearingBookingCollection(caseData);
+        List<String> errors = validationService.validateHasAllocatedJudge(caseData);
 
-        List<Element<HearingBooking>> pastHearings = service.getPastHearings(hearingDetails);
+        Judge allocatedJudge = caseData.getAllocatedJudge();
 
-        hearingDetails.removeAll(pastHearings);
+        if (errors.isEmpty()) {
+            List<Element<HearingBooking>> hearingDetails = service.expandHearingBookingCollection(caseData);
 
-        caseDetails.getData().put(HEARING_DETAILS_KEY, hearingDetails);
+            hearingDetails = service.resetHearingJudge(hearingDetails, allocatedJudge);
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .build();
+            service.removePastHearings(hearingDetails);
+
+            caseDetails.getData().put(HEARING_DETAILS_KEY, hearingDetails);
+            caseDetails.getData().put("allocatedJudgeLabel", buildAllocatedJudgeLabel(caseData.getAllocatedJudge()));
+        }
+
+        caseDetails.getData().remove(NEW_HEARING_LABEL.getKey());
+        caseDetails.getData().remove(NEW_HEARING_SELECTOR.getKey());
+        caseDetails.getData().remove(SELECTED_HEARING_IDS);
+
+        return respond(caseDetails, errors);
     }
 
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseDetails caseDetailsBefore = callbackrequest.getCaseDetailsBefore();
+        CaseData caseData = getCaseData(caseDetails);
+        CaseData caseDataBefore = getCaseData(caseDetailsBefore);
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .errors(validateHearingBookings(caseData.getHearingDetails()))
-            .build();
+        List<Element<HearingBooking>> hearings = caseData.getHearingDetails();
+        List<Element<HearingBooking>> hearingsBefore = defaultIfNull(caseDataBefore.getHearingDetails(), emptyList());
+
+        service.removePastHearings(hearingsBefore);
+
+        if (!service.getNewHearings(hearings, hearingsBefore).isEmpty()) {
+            caseDetails.getData().putAll(service.getHearingNoticeCaseFields(hearings, hearingsBefore));
+        } else {
+            caseDetails.getData().put(NEW_HEARING_LABEL.getKey(), "");
+            caseDetails.getData().put(NEW_HEARING_SELECTOR.getKey(), null);
+        }
+
+        return respond(caseDetails,
+            validationService.validateHearingBookings(unwrapElements(caseData.getHearingDetails())));
     }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
-        CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
+        CaseData caseData = getCaseData(caseDetails);
+        CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
-        List<Element<HearingBooking>> hearingDetailsBefore = service.expandHearingBookingCollection(caseDataBefore);
-        List<Element<HearingBooking>> pastHearings = service.getPastHearings(hearingDetailsBefore);
+        List<Element<HearingBooking>> hearings = caseData.getHearingDetails();
+        List<Element<HearingBooking>> hearingsBefore = new ArrayList<>(defaultIfNull(
+            caseDataBefore.getHearingDetails(), emptyList()));
 
-        List<Element<HearingBooking>> combinedHearingDetails =
-            service.combineHearingDetails(caseData.getHearingDetails(), pastHearings);
+        service.removePastHearings(hearingsBefore);
 
-        caseDetails.getData().put(HEARING_DETAILS_KEY, combinedHearingDetails);
+        if (service.getNewHearings(hearings, hearingsBefore).isEmpty()) {
+            caseDetails.getData().put(NEW_HEARING_SELECTOR.getKey(), null);
+        }
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .build();
+        List<Element<HearingBooking>> updatedHearings =
+            service.setHearingJudge(caseData.getHearingDetails(), caseData.getAllocatedJudge());
+
+        Selector newHearingSelector = mapper.convertValue(caseDetails.getData().get(NEW_HEARING_SELECTOR.getKey()),
+            Selector.class);
+        List<Element<HearingBooking>> selectedHearings = service.getSelectedHearings(newHearingSelector,
+            updatedHearings);
+        service.attachDocumentsForSelectedHearings(caseData, selectedHearings);
+
+        //Store selected hearing IDs so they can be used in submitted callback for sending correct notifications
+        List<Element<UUID>> selectedHearingIds = wrapElements(selectedHearings.stream()
+            .map(Element::getId)
+            .collect(Collectors.toList()));
+
+        caseDetails.getData().put(SELECTED_HEARING_IDS, selectedHearingIds);
+
+        List<Element<HearingBooking>> hearingDetails = service.combineHearingDetails(updatedHearings,
+            service.getPastHearings(defaultIfNull(caseDataBefore.getHearingDetails(), emptyList())));
+
+        caseDetails.getData().put(HEARING_DETAILS_KEY, hearingDetails);
+
+        return respond(caseDetails);
     }
 
-    private List<String> validateHearingBookings(List<Element<HearingBooking>> hearingDetails) {
-        final List<String> errors = new ArrayList<>();
-        for (int i = 0; i < hearingDetails.size(); i++) {
-            HearingBooking hearingDetail = hearingDetails.get(i).getValue();
-            for (String message : validateGroupService.validateGroup(hearingDetail, HearingBookingDetailsGroup.class)) {
-                String formattedMessage;
-                // Format the message if there is more than one hearing
-                if (hearingDetails.size() != 1) {
-                    formattedMessage = String.format("%s for hearing %d", message, i + 1);
-                } else {
-                    formattedMessage = message;
-                }
-                errors.add(formattedMessage);
-            }
+    @PostMapping("/submitted")
+    public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
+        CaseData caseData = getCaseData(callbackRequest);
+
+        if (isInGatekeepingState(callbackRequest.getCaseDetails())
+            && standardDirectionsService.hasEmptyDates(caseData)) {
+            publishEvent(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
         }
-        return errors;
+
+        List<Element<HearingBooking>> newHearings = service.getSelectedHearings(
+            unwrapElements(caseData.getSelectedHearingIds()), caseData.getHearingDetails());
+        if (!newHearings.isEmpty()) {
+            publishEvent(new NewHearingsAdded(caseData, newHearings));
+        }
     }
 }

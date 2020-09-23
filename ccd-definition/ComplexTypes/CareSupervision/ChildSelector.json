@@ -1,0 +1,289 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "optionCount",
+    "FieldType": "Text",
+    "ElementLabel": "placeholder",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "option0Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Child 1",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "option1Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Child 1",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "option2Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Child 2",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "option3Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Child 3",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "option4Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Child 4",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "option5Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Child 5",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "option6Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Child 6",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "option7Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Child 7",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "option8Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Child 8",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "option9Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Child 9",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "option10Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Child 10",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "option11Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Child 11",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "option12Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Child 12",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "option13Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Child 13",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "option14Hidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Child 14",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "option0",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ChildSelector",
+    "ElementLabel": "Child 1",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"1*\" AND option0Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "option1",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ChildSelector",
+    "ElementLabel": "Child 2",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"12*\" AND option1Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "option2",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ChildSelector",
+    "ElementLabel": "Child 3",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"123*\" AND option2Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "option3",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ChildSelector",
+    "ElementLabel": "Child 4",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"1234*\" AND option3Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "option4",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ChildSelector",
+    "ElementLabel": "Child 5",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"12345*\" AND option4Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "option5",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ChildSelector",
+    "ElementLabel": "Child 6",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"123456*\" AND option5Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "option6",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ChildSelector",
+    "ElementLabel": "Child 7",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"1234567*\" AND option6Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "option7",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ChildSelector",
+    "ElementLabel": "Child 8",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"12345678*\" AND option7Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "option8",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ChildSelector",
+    "ElementLabel": "Child 9",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"123456789*\" AND option8Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "option9",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ChildSelector",
+    "ElementLabel": "Child 10",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"12345678910*\" AND option9Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "option10",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ChildSelector",
+    "ElementLabel": "Child 11",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"1234567891011*\" AND option10Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "option11",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ChildSelector",
+    "ElementLabel": "Child 12",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"123456789101112*\" AND option11Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "option12",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ChildSelector",
+    "ElementLabel": "Child 13",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"12345678910111213*\" AND option12Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "option13",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ChildSelector",
+    "ElementLabel": "Child 14",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"1234567891011121314*\" AND option13Hidden!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildSelector",
+    "ListElementCode": "option14",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ChildSelector",
+    "ElementLabel": "Child 15",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "optionCount=\"123456789101112131415\" AND option14Hidden!=\"Yes\""
+  }
+]

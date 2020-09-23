@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -11,12 +9,13 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 
-import java.time.LocalDate;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ChildController.class)
@@ -27,12 +26,10 @@ class ChildControllerTest extends AbstractControllerTest {
         super("enter-children");
     }
 
-    private static final String ERROR_MESSAGE = "Date of birth cannot be in the future";
-
     @Test
     void aboutToStartShouldPrepopulateChildrenDataWhenNoChildExists() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(ImmutableMap.of("data", "some data"))
+            .data(Map.of("data", "some data"))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
@@ -41,78 +38,29 @@ class ChildControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldReturnDateOfBirthErrorWhenFutureDateOfBirth() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .id(12345L)
-            .data(ImmutableMap.of("children1", ImmutableList.of(
-                createChildrenElement(LocalDate.now().plusDays(1)))))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
-
-        assertThat(callbackResponse.getErrors()).containsOnlyOnce(ERROR_MESSAGE);
-    }
-
-    @Test
-    void shouldReturnDateOfBirthErrorWhenThereIsMultipleChildren() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .id(12345L)
-            .data(ImmutableMap.of(
-                "children1", ImmutableList.of(
-                    createChildrenElement(LocalDate.now().plusDays(1)),
-                    createChildrenElement(LocalDate.now().plusDays(1))
-                )))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
-
-        assertThat(callbackResponse.getErrors()).containsOnlyOnce(ERROR_MESSAGE);
-    }
-
-    @Test
-    void shouldReturnNoDateOfBirthErrorWhenValidDateOfBirth() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .id(12345L)
-            .data(ImmutableMap.of("children1", ImmutableList.of(
-                createChildrenElement(LocalDate.now().minusDays(1)))))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
-
-        assertThat(callbackResponse.getErrors()).isEmpty();
-    }
-
-    @Test
-    void shouldReturnNoDateOfBirthErrorsWhenCaseDataIsEmpty() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .id(12345L)
-            .data(ImmutableMap.of())
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
-
-        assertThat(callbackResponse.getErrors()).isEmpty();
-    }
-
-    @Test
-    void aboutToSubmitShouldAddConfidentialChildrenToCaseDataWhenConfidentialChildrenExist() throws Exception {
+    void aboutToSubmitShouldAddConfidentialChildrenToCaseDataWhenConfidentialChildrenExist() {
         //first child in callbackRequest() has yes value for detailsHidden.
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest());
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
         CaseData initialData = mapper.convertValue(callbackRequest().getCaseDetails().getData(), CaseData.class);
 
-        assertThat(caseData.getConfidentialChildren()).containsOnly(initialData.getAllChildren().get(0));
-        assertThat(caseData.getChildren1().get(0).getValue().getParty().address).isNull();
-        assertThat(caseData.getChildren1().get(1).getValue().getParty().address).isNotNull();
+        assertThat(caseData.getConfidentialChildren())
+            .containsOnly(retainConfidentialDetails(initialData.getAllChildren().get(0)));
+
+        assertThat(caseData.getChildren1().get(0).getValue().getParty().getAddress()).isNull();
+        assertThat(caseData.getChildren1().get(1).getValue().getParty().getAddress()).isNotNull();
     }
 
-    private Map<String, Object> createChildrenElement(LocalDate dateOfBirth) {
-        return ImmutableMap.of(
-            "id", "",
-            "value", Child.builder()
-                .party(ChildParty.builder()
-                    .dateOfBirth(dateOfBirth)
-                    .build())
-                .build());
+    private Element<Child> retainConfidentialDetails(Element<Child> child) {
+        return element(child.getId(), Child.builder()
+            .party(ChildParty.builder()
+                .firstName(child.getValue().getParty().getFirstName())
+                .lastName(child.getValue().getParty().getLastName())
+                .address(child.getValue().getParty().getAddress())
+                .telephoneNumber(child.getValue().getParty().getTelephoneNumber())
+                .email(child.getValue().getParty().getEmail())
+                .showAddressInConfidentialTab("Yes")
+                .build())
+            .build());
     }
 }

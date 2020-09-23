@@ -13,7 +13,7 @@ import java.util.UUID;
 @Data
 @Builder
 public class DynamicListElement {
-    public static final String DEFAULT_CODE = "-1";
+    public static final UUID DEFAULT_CODE = UUID.fromString("00000000-0000-0000-0000-000000000000");
     public static final String DEFAULT_LABEL = "";
     public static final DynamicListElement EMPTY = DynamicListElement.builder().build();
 

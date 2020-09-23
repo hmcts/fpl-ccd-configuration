@@ -1,13 +1,10 @@
 package uk.gov.hmcts.reform.fpl.service.robotics;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.robotics.RoboticsEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.events.CaseNumberAdded;
 import uk.gov.hmcts.reform.fpl.exceptions.robotics.RoboticsDataException;
@@ -25,33 +22,30 @@ import static uk.gov.hmcts.reform.fpl.model.email.EmailAttachment.json;
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-@ConditionalOnProperty(prefix = "feature.toggle", name = "robotics.case-number.notification.enabled",
-    havingValue = "true")
 public class RoboticsNotificationService {
     private final EmailService emailService;
     private final RoboticsDataService roboticsDataService;
     private final RoboticsEmailConfiguration roboticsEmailConfiguration;
-    private final ObjectMapper mapper;
 
     @EventListener
     public void notifyRoboticsOfSubmittedCaseData(final CaseNumberAdded event) {
-        sendSubmittedCaseData(event.getCaseDetails());
+        sendSubmittedCaseData(event.getCaseData());
     }
 
-    public void sendSubmittedCaseData(final CaseDetails caseDetails) {
-        if (isNotEmpty(caseDetails) && isNotEmpty(caseDetails.getData())) {
-            CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
+    public void sendSubmittedCaseData(final CaseData caseData) {
+        if (isNotEmpty(caseData)) {
             try {
-                RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData, caseDetails.getId());
+                RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
 
                 EmailData emailData = prepareEmailData(roboticsData);
 
                 emailService.sendEmail(roboticsEmailConfiguration.getSender(), emailData);
+                log.info("Robotics email notification successful for case with caseId {} and familyManNumber {}",
+                    caseData.getId(), caseData.getFamilyManCaseNumber());
 
             } catch (Exception exc) {
                 log.error("Robotics email notification failed for case with caseId {} and familyManNumber {} due to {}",
-                    caseDetails.getId(), caseData.getFamilyManCaseNumber(), exc.getMessage());
+                    caseData.getId(), caseData.getFamilyManCaseNumber(), exc.getMessage());
 
                 throw exc;
             }

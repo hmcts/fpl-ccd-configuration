@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
@@ -48,6 +49,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POS
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOther;
 
 @ExtendWith(SpringExtension.class)
 class RepresentativesServiceTest {
@@ -78,6 +80,51 @@ class RepresentativesServiceTest {
     private void verifyNoUnexpectedInteractions() {
         verifyNoMoreInteractions(organisationService);
         verifyNoMoreInteractions(caseService);
+    }
+
+    @Test
+    void shouldFailPresenceOfRepresentedPartiesValidation() {
+        Representative representative1 = Representative.builder().role(REPRESENTING_RESPONDENT_1).build();
+        Representative representative2 = Representative.builder().role(REPRESENTING_PERSON_1).build();
+        Representative representative3 = Representative.builder().role(REPRESENTING_OTHER_PERSON_1).build();
+
+        CaseData caseData = caseWithRepresentatives(representative1, representative2, representative3);
+
+        List<String> validationErrors = representativesService.validateRepresentatives(caseData);
+
+        assertThat(validationErrors).contains(
+            "Respondent 1 represented by Representative 1 doesn't exist."
+                + " Choose a respondent who is associated with this case",
+            "Person represented by Representative 2 doesn't exist."
+                + " Choose a person who is associated with this case",
+            "Other person 1 represented by Representative 3 doesn't exist."
+                + " Choose a person who is associated with this case");
+    }
+
+    @Test
+    void shouldPassPresenceOfRepresentedPartiesValidation() {
+        Representative representative1 = Representative.builder().role(REPRESENTING_RESPONDENT_1).build();
+        Representative representative2 = Representative.builder().role(REPRESENTING_PERSON_1).build();
+        Representative representative3 = Representative.builder().role(REPRESENTING_OTHER_PERSON_1).build();
+
+        CaseData caseData = caseWithRepresentatives(representative1, representative2, representative3).toBuilder()
+            .respondents1(wrapElements(Respondent.builder().build()))
+            .others(Others.from(wrapElements(testOther(), testOther())))
+            .build();
+
+        List<String> validationErrors = representativesService.validateRepresentatives(caseData);
+
+        assertThat(validationErrors).containsExactly(
+            "Enter a full name for Representative 1",
+            "Enter a position in the case for Representative 1",
+            "Select how Representative 1 wants to get case information",
+            "Enter a full name for Representative 2",
+            "Enter a position in the case for Representative 2",
+            "Select how Representative 2 wants to get case information",
+            "Enter a full name for Representative 3",
+            "Enter a position in the case for Representative 3",
+            "Select how Representative 3 wants to get case information"
+        );
     }
 
     @Test
@@ -145,6 +192,35 @@ class RepresentativesServiceTest {
         assertThat(validationErrors).containsExactly(
             "Enter a postcode for Representative",
             "Enter a valid address for Representative");
+    }
+
+    @Test
+    void shouldValidateAddressFormatWhenServingPreferenceIsPost() {
+        Representative representative1 = Representative.builder()
+            .fullName("John Smith")
+            .positionInACase("Position")
+            .role(LA_LEGAL_REPRESENTATIVE)
+            .servingPreferences(POST)
+            .address(Address.builder()
+                .addressLine1("Flat 1000, Saffron Square,")
+                .postcode("CR0 2GE").build())
+            .build();
+
+        Representative representative2 = Representative.builder()
+            .fullName("Alex White")
+            .positionInACase("Position")
+            .role(LA_LEGAL_REPRESENTATIVE)
+            .servingPreferences(POST)
+            .address(Address.builder().build())
+            .build();
+
+        CaseData caseData = caseWithRepresentatives(representative1, representative2);
+
+        List<String> validationErrors = representativesService.validateRepresentatives(caseData);
+
+        assertThat(validationErrors).containsExactly(
+            "Enter a postcode for Representative 2",
+            "Enter a valid address for Representative 2");
     }
 
     @Test
@@ -362,7 +438,7 @@ class RepresentativesServiceTest {
         List<Representative> updatedRepresentatives = representativesService.getUpdatedRepresentatives(
             caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), EMAIL);
 
-        assertThat(updatedRepresentatives.equals(unwrapElements(expectedRepresentatives)));
+        assertThat(updatedRepresentatives).isEqualTo(unwrapElements(expectedRepresentatives));
     }
 
     @Test
@@ -375,7 +451,7 @@ class RepresentativesServiceTest {
         List<Representative> updatedRepresentatives = representativesService.getUpdatedRepresentatives(
             caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), DIGITAL_SERVICE);
 
-        assertThat(updatedRepresentatives.equals(unwrapElements(expectedRepresentatives)));
+        assertThat(updatedRepresentatives).isEqualTo(unwrapElements(expectedRepresentatives));
     }
 
     @Test
@@ -386,7 +462,7 @@ class RepresentativesServiceTest {
         List<Representative> updatedRepresentatives = representativesService.getUpdatedRepresentatives(
             caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), EMAIL);
 
-        assertThat(updatedRepresentatives.isEmpty());
+        assertThat(updatedRepresentatives).isEmpty();
     }
 
     @Test
@@ -397,7 +473,7 @@ class RepresentativesServiceTest {
         List<Representative> updatedRepresentatives = representativesService.getUpdatedRepresentatives(
             caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), DIGITAL_SERVICE);
 
-        assertThat(updatedRepresentatives.isEmpty());
+        assertThat(updatedRepresentatives).isEmpty();
     }
 
     @Test
@@ -408,7 +484,7 @@ class RepresentativesServiceTest {
         List<Representative> updatedRepresentatives = representativesService.getUpdatedRepresentatives(
             caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), DIGITAL_SERVICE);
 
-        assertThat(updatedRepresentatives.isEmpty());
+        assertThat(updatedRepresentatives).isEmpty();
     }
 
     @Test
@@ -421,7 +497,7 @@ class RepresentativesServiceTest {
         List<Representative> updatedRepresentatives = representativesService.getUpdatedRepresentatives(
             caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), EMAIL);
 
-        assertThat(updatedRepresentatives.equals(unwrapElements(expectedRepresentatives)));
+        assertThat(updatedRepresentatives).isEqualTo(unwrapElements(expectedRepresentatives));
     }
 
     private CaseData buildCaseDataWithRepresentatives(RepresentativeServingPreferences preference) {

@@ -1,11 +1,13 @@
 /* global process */
-// const config = require('../config.js');
+const config = require('../config');
 
 Feature('Smoke tests @smoke-tests');
 
-Scenario('Sign in as local authority', async (I) => {
-  I.amOnPage(process.env.URL || 'http://localhost:3451');
-  // await I.signIn(config.smokeTestLocalAuthorityEmail, config.smokeTestLocalAuthorityPassword);
-  // I.see('Create new case');
-  // I.signOut();
+Scenario('Sign in as local authority and create a case', async (I, caseListPage) => {
+  I.amOnPage(process.env.URL || 'http://localhost:3333');
+  const caseName = `smoke test case (${new Date().toISOString()})`;
+  const caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne, caseName);
+  await I.navigateToCaseList();
+  await caseListPage.searchForCasesWithName(caseName, 'Open');
+  await I.seeCaseInSearchResult(caseId);
 });

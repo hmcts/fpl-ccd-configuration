@@ -1,296 +1,153 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
-import uk.gov.hmcts.reform.ccd.client.model.Event;
-import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
-import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
-import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
-import uk.gov.hmcts.reform.fpl.model.configuration.Display;
-import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
+import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
-import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
-import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
-import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-import static java.util.Collections.EMPTY_LIST;
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, HearingBookingService.class})
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, PopulateStandardDirectionsHandler.class})
 class PopulateStandardDirectionsHandlerTest {
     private static final String CASE_EVENT = "populateSDO";
-    private static final String TOKEN = "1";
-    private static final String USER_ID = "12345";
-    private static final String CASE_ID = "12345";
-    private static final String AUTH_TOKEN = "Bearer token";
+    private static final Long CASE_ID = 12345L;
+    private static final List<Element<HearingBooking>> HEARING_DETAILS = List.of(element(HearingBooking.builder()
+        .type(HearingType.ISSUE_RESOLUTION)
+        .build()));
+    private static final HearingBooking FIRST_HEARING = HearingBooking.builder()
+        .type(HearingType.CASE_MANAGEMENT).build();
+    private static final Element<Direction> ALL_PARTIES_DIRECTION =
+        element(Direction.builder().assignee(ALL_PARTIES).build());
+    private static final Element<Direction> LOCAL_AUTHORITY_DIRECTION =
+        element(Direction.builder().assignee(LOCAL_AUTHORITY).build());
+    private static final Element<Direction> RESPONDENT_DIRECTION =
+        element(Direction.builder().assignee(PARENTS_AND_RESPONDENTS).build());
 
-    @Mock
-    private OrdersLookupService ordersLookupService;
-
-    @Mock
-    private CoreCaseDataApi coreCaseDataApi;
-
-    @Mock
-    private IdamClient idamClient;
-
-    @Mock
-    private AuthTokenGenerator authTokenGenerator;
-
-    @Mock
-    private SystemUpdateUserConfiguration userConfig;
-
-    @Mock
-    private RequestData requestData;
+    private static final Map<DirectionAssignee, List<Element<Direction>>> DIRECTIONS_SORTED_BY_ASSIGNEE = Map.of(
+        ALL_PARTIES, List.of(ALL_PARTIES_DIRECTION),
+        LOCAL_AUTHORITY, List.of(LOCAL_AUTHORITY_DIRECTION),
+        PARENTS_AND_RESPONDENTS, List.of(RESPONDENT_DIRECTION)
+    );
+    private static final List<Element<Direction>> STANDARD_DIRECTIONS = List.of(
+        ALL_PARTIES_DIRECTION, LOCAL_AUTHORITY_DIRECTION, RESPONDENT_DIRECTION);
 
     @Autowired
-    private HearingBookingService hearingBookingService;
-
-    @Autowired
-    private ObjectMapper objectMapper;
+    private PopulateStandardDirectionsHandler handler;
 
     @MockBean
-    private UserDetailsService userDetailsService;
+    private HearingBookingService hearingBookingService;
 
-    @InjectMocks
-    private CommonDirectionService commonDirectionService;
+    @MockBean
+    private CoreCaseDataService coreCaseDataService;
 
-    private PopulateStandardDirectionsHandler populateStandardDirectionsHandler;
+    @MockBean
+    private StandardDirectionsService standardDirectionsService;
+
+    @MockBean
+    private RequestData requestData;
+
+    @Captor
+    private ArgumentCaptor<Map<String, Object>> data;
+
+    private CallbackRequest callbackRequest;
 
     @BeforeEach
-    void before() {
-        populateStandardDirectionsHandler = new PopulateStandardDirectionsHandler(objectMapper, ordersLookupService,
-            coreCaseDataApi, authTokenGenerator, idamClient, userConfig, commonDirectionService, hearingBookingService);
+    void setup() {
+        given(hearingBookingService.getFirstHearing(any())).willReturn(Optional.of(FIRST_HEARING));
+        given(standardDirectionsService.getDirections(any())).willReturn(STANDARD_DIRECTIONS);
 
-        given(idamClient.authenticateUser(userConfig.getUserName(), userConfig.getPassword())).willReturn(TOKEN);
-
-        given(idamClient.getUserDetails(TOKEN)).willReturn(UserDetails.builder()
-            .id(USER_ID)
-            .build());
-
-        given(authTokenGenerator.generate()).willReturn(AUTH_TOKEN);
-
-        given(userDetailsService.getUserName()).willReturn("Emma Taylor");
-
-        given(requestData.userId()).willReturn(USER_ID);
-
-        given(requestData.authorisation()).willReturn(AUTH_TOKEN);
+        callbackRequest = getCallbackRequest();
     }
 
     @Test
-    void shouldPopulateStandardDirectionsWhenPopulatedDisplayInConfiguration() throws IOException {
-        CallbackRequest callbackRequest = callbackRequest();
+    void shouldTriggerEventWithCorrectData() {
+        handler.populateStandardDirections(new PopulateStandardDirectionsEvent(callbackRequest));
 
-        given(coreCaseDataApi.startEventForCaseWorker(
-            TOKEN, AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, CASE_ID, CASE_EVENT))
-            .willReturn(StartEventResponse.builder()
-                .caseDetails(callbackRequest.getCaseDetails())
-                .eventId(CASE_EVENT)
-                .token(TOKEN)
-                .build());
-
-        given(ordersLookupService.getStandardDirectionOrder()).willReturn(OrderDefinition.builder()
-            .directions(ImmutableList.of(
-                DirectionConfiguration.builder()
-                    .assignee(LOCAL_AUTHORITY)
-                    .title("Direction")
-                    .text("Example Direction")
-                    .display(Display.builder()
-                        .delta("0")
-                        .due(Display.Due.BY)
-                        .templateDateFormat("h:mma, d MMMM yyyy")
-                        .directionRemovable(false)
-                        .build())
-                    .build()
-            ))
-            .build());
-
-        populateStandardDirectionsHandler.populateStandardDirections(
-            new PopulateStandardDirectionsEvent(callbackRequest, requestData));
-
-        verify(coreCaseDataApi).submitEventForCaseWorker(
-            TOKEN, AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, CASE_ID, true, CaseDataContent.builder()
-                .eventToken(TOKEN)
-                .event(Event.builder()
-                    .id(CASE_EVENT)
-                    .build())
-                .data(callbackRequest.getCaseDetails().getData())
-                .build());
+        verify(coreCaseDataService).triggerEvent(
+            eq(JURISDICTION),
+            eq(CASE_TYPE),
+            eq(CASE_ID),
+            eq(CASE_EVENT),
+            data.capture());
+        verify(hearingBookingService).getFirstHearing(HEARING_DETAILS);
+        verify(standardDirectionsService).getDirections(FIRST_HEARING);
+        assertThat(data.getValue()).isEqualTo(getExpectedData());
     }
 
     @Test
-    void shouldPopulateStandardDirectionsWhenNullDeltaValueInConfiguration() throws IOException {
-        CallbackRequest callbackRequest = callbackRequest();
+    void shouldCallStandardDirectionsServiceWithNullIfNoFirstHearing() {
+        given(hearingBookingService.getFirstHearing(any())).willReturn(Optional.empty());
 
-        given(coreCaseDataApi.startEventForCaseWorker(
-            TOKEN, AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, CASE_ID, CASE_EVENT))
-            .willReturn(StartEventResponse.builder()
-                .caseDetails(callbackRequest.getCaseDetails())
-                .eventId(CASE_EVENT)
-                .token(TOKEN)
-                .build());
+        handler.populateStandardDirections(new PopulateStandardDirectionsEvent(callbackRequest));
 
-        given(ordersLookupService.getStandardDirectionOrder()).willReturn(OrderDefinition.builder()
-            .directions(ImmutableList.of(
-                DirectionConfiguration.builder()
-                    .assignee(LOCAL_AUTHORITY)
-                    .title("Direction")
-                    .text("Example Direction")
-                    .display(Display.builder()
-                        .delta(null)
-                        .due(Display.Due.BY)
-                        .templateDateFormat("h:mma, d MMMM yyyy")
-                        .directionRemovable(false)
-                        .build())
-                    .build()
-            ))
-            .build());
-
-        populateStandardDirectionsHandler.populateStandardDirections(
-            new PopulateStandardDirectionsEvent(callbackRequest, requestData));
-
-        verify(coreCaseDataApi).submitEventForCaseWorker(
-            TOKEN, AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, CASE_ID, true, CaseDataContent.builder()
-                .eventToken(TOKEN)
-                .event(Event.builder()
-                    .id(CASE_EVENT)
-                    .build())
-                .data(callbackRequest.getCaseDetails().getData())
-                .build());
+        verify(coreCaseDataService).triggerEvent(
+            eq(JURISDICTION),
+            eq(CASE_TYPE),
+            eq(CASE_ID),
+            eq(CASE_EVENT),
+            data.capture());
+        verify(hearingBookingService).getFirstHearing(HEARING_DETAILS);
+        verify(standardDirectionsService).getDirections(null);
+        assertThat(data.getValue()).isEqualTo(getExpectedData());
     }
 
-    @Test
-    void shouldPopulateStandardDirectionsWhenTextContainsSpecialCharacters() throws IOException {
-        CallbackRequest callbackRequest = callbackRequest();
-
-        given(coreCaseDataApi.startEventForCaseWorker(
-            TOKEN, AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, CASE_ID, CASE_EVENT))
-            .willReturn(StartEventResponse.builder()
-                .caseDetails(callbackRequest.getCaseDetails())
-                .eventId(CASE_EVENT)
-                .token(TOKEN)
-                .build());
-
-        given(ordersLookupService.getStandardDirectionOrder()).willReturn(OrderDefinition.builder()
-            .directions(ImmutableList.of(
-                DirectionConfiguration.builder()
-                    .assignee(LOCAL_AUTHORITY)
-                    .title("Direction")
-                    .text("- Test body's 1 \n\n- Two")
-                    .display(Display.builder()
-                        .delta("0")
-                        .due(Display.Due.BY)
-                        .templateDateFormat("h:mma, d MMMM yyyy")
-                        .directionRemovable(false)
-                        .build())
-                    .build()
-            ))
-            .build());
-
-        populateStandardDirectionsHandler.populateStandardDirections(
-            new PopulateStandardDirectionsEvent(callbackRequest, requestData));
-
-        assertThat(objectMapper.convertValue(
-            callbackRequest.getCaseDetails().getData().get("localAuthorityDirections"), List.class).get(0))
-            .extracting("value")
-            .isEqualTo(Map.of(
-                "assignee", "LOCAL_AUTHORITY",
-                "dateToBeCompletedBy", "2020-01-01T15:30:00",
-                "directionText", "- Test body's 1 \n\n- Two",
-                "directionType", "Direction",
-                "directionRemovable", "No",
-                "readOnly", "No",
-                "responses", EMPTY_LIST));
-
-        verify(coreCaseDataApi).submitEventForCaseWorker(
-            TOKEN, AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, CASE_ID, true, CaseDataContent.builder()
-                .eventToken(TOKEN)
-                .event(Event.builder()
-                    .id(CASE_EVENT)
-                    .build())
-                .data(callbackRequest.getCaseDetails().getData())
-                .build());
+    private CallbackRequest getCallbackRequest() {
+        return CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(CASE_ID)
+                .jurisdiction(JURISDICTION)
+                .caseTypeId(CASE_TYPE)
+                .data(new HashMap<>(Map.of("hearingDetails", HEARING_DETAILS)))
+                .build())
+            .build();
     }
 
-    //TODO: this test just asserts previous functionality. To be looked into in FPLA-1516.
-    @Test
-    void shouldAddNoCompleteByDateWhenNoHearings() throws IOException {
-        CallbackRequest callbackRequest = callbackRequest();
-        callbackRequest.getCaseDetails().getData().remove("hearingDetails");
-
-        given(coreCaseDataApi.startEventForCaseWorker(
-            TOKEN, AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, CASE_ID, CASE_EVENT))
-            .willReturn(StartEventResponse.builder()
-                .caseDetails(callbackRequest.getCaseDetails())
-                .eventId(CASE_EVENT)
-                .token(TOKEN)
-                .build());
-
-        given(ordersLookupService.getStandardDirectionOrder()).willReturn(OrderDefinition.builder()
-            .directions(ImmutableList.of(
-                DirectionConfiguration.builder()
-                    .assignee(LOCAL_AUTHORITY)
-                    .title("Direction")
-                    .text("- Test body's 1 \n\n- Two")
-                    .display(Display.builder()
-                        .delta("0")
-                        .due(Display.Due.BY)
-                        .templateDateFormat("h:mma, d MMMM yyyy")
-                        .directionRemovable(false)
-                        .build())
-                    .build()
-            ))
-            .build());
-
-        populateStandardDirectionsHandler.populateStandardDirections(
-            new PopulateStandardDirectionsEvent(callbackRequest, requestData));
-
-        assertThat(objectMapper.convertValue(
-            callbackRequest.getCaseDetails().getData().get("localAuthorityDirections"), List.class).get(0))
-            .extracting("value")
-            .isEqualTo(Map.of(
-                "assignee", "LOCAL_AUTHORITY",
-                "directionText", "- Test body's 1 \n\n- Two",
-                "directionType", "Direction",
-                "directionRemovable", "No",
-                "readOnly", "No",
-                "responses", EMPTY_LIST));
-
-        verify(coreCaseDataApi).submitEventForCaseWorker(
-            TOKEN, AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, CASE_ID, true, CaseDataContent.builder()
-                .eventToken(TOKEN)
-                .event(Event.builder()
-                    .id(CASE_EVENT)
-                    .build())
-                .data(callbackRequest.getCaseDetails().getData())
-                .build());
+    private Map<String, Object> getExpectedData() {
+        return Map.of(
+            "hearingDetails", HEARING_DETAILS,
+            ALL_PARTIES.getValue(), DIRECTIONS_SORTED_BY_ASSIGNEE.get(ALL_PARTIES),
+            LOCAL_AUTHORITY.getValue(), DIRECTIONS_SORTED_BY_ASSIGNEE.get(LOCAL_AUTHORITY),
+            PARENTS_AND_RESPONDENTS.getValue(), DIRECTIONS_SORTED_BY_ASSIGNEE.get(PARENTS_AND_RESPONDENTS),
+            CAFCASS.getValue(), emptyList(),
+            COURT.getValue(), emptyList(),
+            OTHERS.getValue(), emptyList());
     }
 }

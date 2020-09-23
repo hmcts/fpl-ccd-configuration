@@ -21,9 +21,6 @@ idam:
   s2s-auth:
     microservice: fpl_case_service
 
-fpl:
-  local_authority_codes_forbidden_case_submission:
-
 fees-register:
   parameters:
     # if these change be sure to update the appropriate wiremocks
@@ -32,7 +29,7 @@ fees-register:
       event: general application
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: without-notice
+      keyword: ${FEES_REGISTER_C2_WITHOUT_NOTICE_KEYWORD:GeneralAppWithoutNotice}
       service: other
     C2_WITH_NOTICE:
       channel: default
@@ -114,7 +111,7 @@ scheduler:
   datasourceConf:
     name: schedulerDataSource
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${SCHEDULER_DB_HOST:localhost}:${SCHEDULER_DB_PORT:5050}/${SCHEDULER_DB_NAME:fpl_scheduler}
+    url: jdbc:postgresql://${SCHEDULER_DB_HOST:localhost}:${SCHEDULER_DB_PORT:5050}/${SCHEDULER_DB_NAME:fpl_scheduler}?gssEncMode=disable
     username: ${SCHEDULER_DB_USER:fpl_scheduler}
     password: ${SCHEDULER_DB_PASSWORD:fpl_scheduler}
   quartzConf:
@@ -133,10 +130,25 @@ scheduler:
       description: 'Finds upcoming hearings'
       jobClass: 'uk.gov.hmcts.reform.fpl.jobs.UpcomingHearingsFinder'
       cron: ${UPCOMING_HEARINGS_CRON:0 0 2 ? * MON-FRI *}
+
+testing:
+  support:
+    enabled: ${TESTING_SUPPORT_ENABLED:false}
+
+# Actual survey will be injected through flux for prod
+survey:
+  url:
+    caseSubmission: 'https://www.smartsurvey.co.uk/s/preview/FamilyPublicLaw/44945E4F1F8CBEE3E10D79A4CED903'
+
+resources:
+  images:
+    baseUrl: 'https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/'
 ---
 
 spring:
   profiles: integration-test
+  main:
+    lazy-initialization: true
   mail:
     host: 127.0.0.1
     port: 1025
@@ -197,7 +209,7 @@ payment:
   api:
     url: http://fake-payment-api
 
-ccd:
+manage-case:
   ui:
     base:
       url: http://fake-url
@@ -206,9 +218,11 @@ fees-register:
   api:
     url: http://fake-fees-register-api
 
+retry:
+  delay: 50
 
 fpl:
-  local_authority_codes_forbidden_case_submission: FPLA
+  env: 'localhost'
   local_authority_email_to_code:
     mapping: 'example.gov.uk=>example'
   local_authority_code_to_name:
@@ -236,18 +250,12 @@ security:
   anonymousPaths:
   authorisedServices:
 
-feature:
-  toggle:
-    robotics:
-      case-number:
-        notification:
-          enabled: true
-      support:
-        api:
-          enabled: true
-
 scheduler:
   enabled: false
+
+testing:
+  support:
+    enabled: true
 
 ---
 
@@ -324,10 +332,10 @@ payment:
   api:
     url: http://localhost:8765
 
-ccd:
+manage-case:
   ui:
     base:
-      url: http://localhost:3451
+      url: http://localhost:3333
 
 bankHolidays:
   api:
@@ -352,21 +360,16 @@ fpl:
     username: 'fpl-system-update@mailnesia.com'
     password: 'Password12'
   ctsc_inbox: 'FamilyPublicLaw+ctsc@gmail.com'
+  env: 'localhost'
 
 robotics:
   notification:
     sender: sender@example.com
     recipient: FamilyPublicLaw+robotics@gmail.com
 
-feature:
-  toggle:
-    robotics:
-      case-number:
-        notification:
-          enabled: true
-      support:
-        api:
-          enabled: true
-
 scheduler:
   enabled: false
+
+testing:
+  support:
+    enabled: true

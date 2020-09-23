@@ -5,35 +5,40 @@
   "directions": [
     {
       "title": "Test SDO type 1",
-      "text": "- Test body 1 \n\n- Two",
+      "text": "- Test body 1 \n\n- Two\n",
       "assignee": "ALL_PARTIES",
       "display": {
         "due": "ON",
         "templateDateFormat": "d MMMM yyyy 'at' h:mma",
         "directionRemovable": false,
-        "showDateOnly": true
+        "showDateOnly": true,
+        "delta": "0"
       }
     },
     {
       "title": "Test SDO type 2",
-      "text": "Test body 2",
+      "text": "Test body 2\n",
       "assignee": "LOCAL_AUTHORITY",
       "display": {
         "due": "BY",
         "templateDateFormat": "h:mma, d MMMM yyyy",
         "directionRemovable": false,
-        "showDateOnly": false
+        "showDateOnly": false,
+        "delta": "-3",
+        "time": "12:00:00"
       }
     },
     {
       "title": "Test SDO type 3",
-      "text": "Test body 3",
+      "text": "Test body 3\n",
       "assignee": "LOCAL_AUTHORITY",
       "display": {
         "due": "BY",
         "templateDateFormat": "h:mma, d MMMM yyyy",
         "directionRemovable": true,
-        "showDateOnly": false
+        "showDateOnly": false,
+        "delta": "-2",
+        "time": "16:00:00"
       }
     }
   ]

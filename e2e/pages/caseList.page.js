@@ -1,13 +1,17 @@
 const {I} = inject();
+const config = require('../config');
 
 module.exports = {
 
   fields: {
+    jurisdiction: '#wb-jurisdiction',
+    caseType: '#wb-case-type',
     caseState: '#wb-case-state',
     evidenceHandled: '#evidenceHandled-Yes',
     evidenceNotHandled: '#evidenceHandled-No',
+    caseName: '#caseName',
     search: 'Apply',
-    caseList: 'Case List',
+    caseList: 'Case list',
   },
 
   navigate(){
@@ -15,18 +19,31 @@ module.exports = {
   },
 
   changeStateFilter(desiredState) {
+    I.selectOption(this.fields.jurisdiction, config.definition.jurisdictionFullDesc);
+    I.selectOption(this.fields.caseType, config.definition.caseTypeFullDesc);
     I.selectOption(this.fields.caseState, desiredState);
     I.click(this.fields.search);
   },
 
-  searchForCasesWithHandledEvidences() {
+  searchForCasesWithHandledEvidences(submittedAt) {
+    I.selectOption(this.fields.jurisdiction, config.definition.jurisdictionFullDesc);
+    I.selectOption(this.fields.caseType, config.definition.caseTypeFullDesc);
     I.waitForElement(this.fields.evidenceHandled);
+    I.fillDate(submittedAt);
     I.click(this.fields.evidenceHandled);
     I.click(this.fields.search);
   },
 
   searchForCasesWithUnhandledEvidences() {
     I.click(this.fields.evidenceNotHandled);
+    I.click(this.fields.search);
+  },
+
+  searchForCasesWithName(caseName, state='Any') {
+    I.selectOption(this.fields.jurisdiction, config.definition.jurisdictionFullDesc);
+    I.selectOption(this.fields.caseType, config.definition.caseTypeFullDesc);
+    I.selectOption(this.fields.caseState, state);
+    I.fillField(this.fields.caseName, caseName);
     I.click(this.fields.search);
   },
 

@@ -3,31 +3,37 @@ package uk.gov.hmcts.reform.fpl.model;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
+import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
+import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
+import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.common.Recital;
-import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
+import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
-import uk.gov.hmcts.reform.fpl.model.order.selector.ChildSelector;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
+import uk.gov.hmcts.reform.fpl.validation.groups.CaseExtensionGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.SealedSDOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.UploadDocumentsGroup;
@@ -40,95 +46,100 @@ import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeRange;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 import javax.validation.Valid;
 import javax.validation.constraints.Future;
+import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 
 import static java.time.temporal.ChronoUnit.DAYS;
+import static java.util.Comparator.comparing;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Data
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @HasDocumentsIncludedInSwet(groups = UploadDocumentsGroup.class)
 public class CaseData {
+    private final Long id;
+    private final State state;
     @NotBlank(message = "Enter a case name")
     private final String caseName;
-    private final String gatekeeperEmail;
     private final String caseLocalAuthority;
     private final Risks risks;
-    @NotNull(message = "You need to add details to orders and directions needed")
+    @NotNull(message = "Add the orders and directions sought")
     @Valid
     private final Orders orders;
-    @NotNull(message = "You need to add details to grounds for the application")
+    @NotNull(message = "Add the grounds for the application")
     @Valid
     private final Grounds grounds;
-    @NotNull(message = "You need to add details to grounds for the application", groups = EPOGroup.class)
+    @NotNull(message = "Add the grounds for the application", groups = EPOGroup.class)
     @Valid
     private final GroundsForEPO groundsForEPO;
-    @NotNull(message = "You need to add details to applicant")
+    @NotEmpty(message = "Add your organisation's details")
     @Valid
-    private final List<@NotNull(message = "You need to add details to applicant")
-        Element<Applicant>> applicants;
+    private final List<@NotNull(message = "Add your organisation's details") Element<Applicant>> applicants;
 
     @Valid
-    @NotNull(message = "You need to add details to respondents")
-    private final List<@NotNull(message = "You need to add details to respondents") Element<Respondent>> respondents1;
-
-    private Optional<Respondent> getFirstRespondent() {
-        return findRespondent(0);
-    }
+    @NotEmpty(message = "Add the respondents' details")
+    private final List<@NotNull(message = "Add the respondents' details") Element<Respondent>> respondents1;
 
     private final Proceeding proceeding;
 
-    @NotNull(message = "You need to add details to solicitor")
+    @NotNull(message = "Add the applicant's solicitor's details")
     @Valid
     private final Solicitor solicitor;
     private final FactorsParenting factorsParenting;
 
-    @NotNull(message = "You need to add details to allocation proposal")
+    @NotNull(message = "Add the allocation proposal")
     @Valid
     private final Allocation allocationProposal;
-
     private final Allocation allocationDecision;
+
     private final List<Element<Direction>> allParties;
     private final List<Element<Direction>> allPartiesCustom;
-    private final List<Element<Direction>> allPartiesCustomCMO;
     private final List<Element<Direction>> localAuthorityDirections;
     private final List<Element<Direction>> localAuthorityDirectionsCustom;
-    private final List<Element<Direction>> localAuthorityDirectionsCustomCMO;
     private final List<Element<Direction>> courtDirections;
     private final List<Element<Direction>> courtDirectionsCustom;
-    private final List<Element<Direction>> courtDirectionsCustomCMO;
     private final List<Element<Direction>> cafcassDirections;
     private final List<Element<Direction>> cafcassDirectionsCustom;
-    private final List<Element<Direction>> cafcassDirectionsCustomCMO;
     private final List<Element<Direction>> otherPartiesDirections;
     private final List<Element<Direction>> otherPartiesDirectionsCustom;
-    private final List<Element<Direction>> otherPartiesDirectionsCustomCMO;
     private final List<Element<Direction>> respondentDirections;
     private final List<Element<Direction>> respondentDirectionsCustom;
-    private final List<Element<Direction>> respondentDirectionsCustomCMO;
-    private final List<Element<Placement>> placements;
-    private final Order standardDirectionOrder;
 
-    @NotNull(message = "You need to enter the allocated judge.", groups = SealedSDOGroup.class)
+    private final List<Element<Placement>> placements;
+    private final StandardDirectionOrder standardDirectionOrder;
+    private SDORoute sdoRouter;
+    private final DocumentReference preparedSDO;
+    private final DocumentReference replacementSDO;
+
+    @NotNull(message = "You need to enter the allocated judge.",
+        groups = {SealedSDOGroup.class, HearingBookingDetailsGroup.class})
     private final Judge allocatedJudge;
-    @NotNull(message = "You need to add details to hearing needed")
+    @NotNull(message = "Add the hearing urgency details")
     @Valid
     private final Hearing hearing;
     private final HearingPreferences hearingPreferences;
@@ -136,35 +147,35 @@ public class CaseData {
     @JsonProperty("documents_socialWorkOther")
     private final List<Element<DocumentSocialWorkOther>> otherSocialWorkDocuments;
     @JsonProperty("documents_socialWorkCarePlan_document")
-    @NotNull(message = "Tell us the status of all documents including those that you haven't uploaded")
+    @NotNull(message = "Add social work documents, or details of when you'll send them")
     @Valid
     public final Document socialWorkCarePlanDocument;
     @JsonProperty("documents_socialWorkStatement_document")
-    @NotNull(message = "Tell us the status of all documents including those that you haven't uploaded")
+    @NotNull(message = "Add social work documents, or details of when you'll send them")
     @Valid
     public final Document socialWorkStatementDocument;
     @JsonProperty("documents_socialWorkAssessment_document")
-    @NotNull(message = "Tell us the status of all documents including those that you haven't uploaded")
+    @NotNull(message = "Add social work documents, or details of when you'll send them")
     @Valid
     public final Document socialWorkAssessmentDocument;
     @JsonProperty("documents_socialWorkChronology_document")
-    @NotNull(message = "Tell us the status of all documents including those that you haven't uploaded")
+    @NotNull(message = "Add social work documents, or details of when you'll send them")
     @Valid
     public final Document socialWorkChronologyDocument;
     @JsonProperty("documents_checklist_document")
-    @NotNull(message = "Tell us the status of all documents including those that you haven't uploaded")
+    @NotNull(message = "Add social work documents, or details of when you'll send them")
     @Valid
     public final Document checklistDocument;
     @JsonProperty("documents_threshold_document")
-    @NotNull(message = "Tell us the status of all documents including those that you haven't uploaded")
+    @NotNull(message = "Add social work documents, or details of when you'll send them")
     @Valid
     public final Document thresholdDocument;
     @JsonProperty("documents_socialWorkEvidenceTemplate_document")
     @Valid
     private final Document socialWorkEvidenceTemplateDocument;
-    @NotNull(message = "You need to add details to children")
+    @NotEmpty(message = "Add the child's details")
     @Valid
-    private final List<@NotNull(message = "You need to add details to children") Element<Child>> children1;
+    private final List<@NotNull(message = "Add the child's details") Element<Child>> children1;
     @NotBlank(message = "Enter Familyman case number", groups = {NoticeOfProceedingsGroup.class,
         ValidateFamilyManCaseNumberGroup.class})
     private final String familyManCaseNumber;
@@ -188,6 +199,7 @@ public class CaseData {
     @NotNull(message = "Enter hearing details", groups = NoticeOfProceedingsGroup.class)
     @NotEmpty(message = "You need to enter a hearing date.", groups = SealedSDOGroup.class)
     private final List<Element<HearingBooking>> hearingDetails;
+    private final List<Element<UUID>> selectedHearingIds;
 
     private LocalDate dateSubmitted;
     private final List<Element<DocumentBundle>> noticeOfProceedingsBundle;
@@ -195,6 +207,11 @@ public class CaseData {
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final C2DocumentBundle temporaryC2Document;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
+
+    @JsonIgnore
+    public boolean hasC2DocumentBundle() {
+        return c2DocumentBundle != null && !c2DocumentBundle.isEmpty();
+    }
 
     @JsonIgnore
     public C2DocumentBundle getLastC2DocumentBundle() {
@@ -205,14 +222,44 @@ public class CaseData {
             .orElse(null);
     }
 
+    @JsonIgnore
+    public C2DocumentBundle getC2DocumentBundleByUUID(UUID elementId) {
+        return c2DocumentBundle.stream()
+            .filter(c2DocumentBundleElement -> c2DocumentBundleElement.getId().equals(elementId))
+            .map(Element::getValue)
+            .findFirst()
+            .orElse(null);
+    }
+
+    public DynamicList buildC2DocumentDynamicList(UUID selected) {
+        AtomicInteger i = new AtomicInteger(1);
+        return asDynamicList(c2DocumentBundle, selected, documentBundle -> documentBundle.toLabel(i.getAndIncrement()));
+    }
+
+    public DynamicList buildC2DocumentDynamicList() {
+        return buildC2DocumentDynamicList(null);
+    }
+
     private final Map<String, C2ApplicationType> c2ApplicationType;
     private final OrderTypeAndDocument orderTypeAndDocument;
     private final FurtherDirections orderFurtherDirections;
     private final GeneratedOrder order;
+    @JsonIgnore
+    private OrderStatus generatedOrderStatus;
     private final Integer orderMonths;
     private final InterimEndDate interimEndDate;
-    private final ChildSelector childSelector;
+    private final Selector childSelector;
+    private final Selector careOrderSelector;
+    private final Selector newHearingSelector;
+
     private final String orderAppliesToAllChildren;
+
+    public String getOrderAppliesToAllChildren() {
+        return getAllChildren().size() == 1 ? YES.getValue() : orderAppliesToAllChildren;
+    }
+
+    private String remainingChildIndex;
+
     @PastOrPresent(message = "Date of issue cannot be in the future", groups = DateOfIssueGroup.class)
     private final LocalDate dateOfIssue;
     private final List<Element<GeneratedOrder>> orderCollection;
@@ -221,53 +268,15 @@ public class CaseData {
         return orderCollection != null ? orderCollection : new ArrayList<>();
     }
 
-    @JsonIgnore
-    private CaseManagementOrder caseManagementOrder;
+    private final Object removableOrderList;
+    private final String reasonToRemoveOrder;
+    private final List<Element<GeneratedOrder>> hiddenOrders;
 
-    @JsonGetter("caseManagementOrder")
-    private CaseManagementOrder getCaseManagementOrder_LocalAuthority() {
-        if (caseManagementOrder != null && caseManagementOrder.getStatus() != SEND_TO_JUDGE) {
-            return caseManagementOrder;
-        }
-        return null;
-    }
-
-    @JsonSetter("caseManagementOrder")
-    private void setCaseManagementOrder_LocalAuthority(CaseManagementOrder order) {
-        if (order != null) {
-            caseManagementOrder = order;
-        }
-    }
-
-    @JsonGetter("cmoToAction")
-    private CaseManagementOrder getCaseManagementOrder_Judiciary() {
-        if (caseManagementOrder != null && caseManagementOrder.getStatus() == SEND_TO_JUDGE) {
-            return caseManagementOrder;
-        }
-        return null;
-    }
-
-    @JsonSetter("cmoToAction")
-    private void setCaseManagementOrder_Judiciary(CaseManagementOrder order) {
-        if (order != null) {
-            caseManagementOrder = order;
-        }
-    }
-
-    private final OrderAction orderAction;
-    private final DynamicList cmoHearingDateList;
-    private final Schedule schedule;
-    private final List<Element<Recital>> recitals;
-    private final DocumentReference sharedDraftCMODocument;
-
-    private final List<Element<CaseManagementOrder>> servedCaseManagementOrders;
-
-    public List<Element<CaseManagementOrder>> getServedCaseManagementOrders() {
-        return defaultIfNull(servedCaseManagementOrders, new ArrayList<>());
+    public List<Element<GeneratedOrder>> getHiddenOrders() {
+        return defaultIfNull(hiddenOrders, new ArrayList<>());
     }
 
     private final Others others;
-    private final DynamicList nextHearingDateList;
 
     private final List<Element<Representative>> representatives;
 
@@ -282,6 +291,24 @@ public class CaseData {
     private final EPOType epoType;
     @Valid
     private final Address epoRemovalAddress;
+
+    @JsonIgnore
+    public List<Element<Proceeding>> getAllProceedings() {
+        List<Element<Proceeding>> proceedings = new ArrayList<>();
+
+        ofNullable(this.getProceeding()).map(ElementUtils::element).ifPresent(proceedings::add);
+        ofNullable(this.getProceeding())
+            .map(Proceeding::getAdditionalProceedings).ifPresent(proceedings::addAll);
+
+        return Collections.unmodifiableList(proceedings);
+    }
+
+    @JsonIgnore
+    public String getRelevantProceedings() {
+        return ofNullable(this.getProceeding())
+            .map(Proceeding::getOnGoingProceeding)
+            .orElse("");
+    }
 
     @JsonIgnore
     public List<Element<Other>> getAllOthers() {
@@ -342,4 +369,133 @@ public class CaseData {
 
     private final String caseNote;
     private final List<Element<CaseNote>> caseNotes;
+    private final List<Element<EmailAddress>> gatekeeperEmails;
+
+    @JsonIgnore
+    public String getComplianceDeadline() {
+        return formatLocalDateToString(dateSubmitted.plusWeeks(26), FormatStyle.LONG);
+    }
+
+    private final String amountToPay;
+
+    private LocalDate caseCompletionDate;
+    @FutureOrPresent(message = "Enter an end date in the future", groups = CaseExtensionGroup.class)
+    private LocalDate extensionDateOther;
+    @FutureOrPresent(message = "Enter an end date in the future", groups = CaseExtensionGroup.class)
+    private LocalDate eightWeeksExtensionDateOther;
+    private final CaseExtensionTime caseExtensionTimeList;
+    private final CaseExtensionTime caseExtensionTimeConfirmationList;
+
+    private final CloseCase closeCase;
+    private final String deprivationOfLiberty;
+    private final String closeCaseFromOrder;
+
+    private final ManageDocument manageDocument;
+    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsTEMP;
+    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments;
+    private final List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
+    private final List<Element<SupportingEvidenceBundle>> correspondenceDocuments;
+    private final List<Element<SupportingEvidenceBundle>> c2SupportingDocuments;
+    private final Object manageDocumentsHearingList;
+    private final Object manageDocumentsSupportingC2List;
+
+    public List<Element<SupportingEvidenceBundle>> getFurtherEvidenceDocumentsTEMP() {
+        return defaultIfNull(furtherEvidenceDocumentsTEMP, new ArrayList<>());
+    }
+
+    public List<Element<SupportingEvidenceBundle>> getCorrespondenceDocuments() {
+        return defaultIfNull(correspondenceDocuments, new ArrayList<>());
+    }
+
+    public List<Element<HearingFurtherEvidenceBundle>> getHearingFurtherEvidenceDocuments() {
+        return defaultIfNull(hearingFurtherEvidenceDocuments, new ArrayList<>());
+    }
+
+    public boolean documentBundleContainsHearingId(UUID hearingId) {
+        return getHearingFurtherEvidenceDocuments().stream()
+            .anyMatch(element -> element.getId().equals(hearingId));
+    }
+
+    @JsonIgnore
+    public boolean isClosedFromOrder() {
+        return YES.getValue().equals(closeCaseFromOrder);
+    }
+
+    private final ReturnApplication returnApplication;
+
+    public boolean allocatedJudgeExists() {
+        return allocatedJudge != null;
+    }
+
+    public boolean hasAllocatedJudgeEmail() {
+        return allocatedJudgeExists() && isNotEmpty(allocatedJudge.getJudgeEmailAddress());
+    }
+
+    public Optional<HearingBooking> getFirstHearing() {
+        return unwrapElements(hearingDetails).stream()
+            .min(comparing(HearingBooking::getStartDate));
+    }
+
+    public HearingBooking getMostUrgentHearingBookingAfter(LocalDateTime time) {
+        return unwrapElements(hearingDetails).stream()
+            .filter(hearing -> hearing.getStartDate().isAfter(time))
+            .min(comparing(HearingBooking::getStartDate))
+            .orElseThrow(NoHearingBookingException::new);
+    }
+
+    public boolean hasFutureHearing(List<Element<HearingBooking>> hearingBookings) {
+        return isNotEmpty(hearingBookings) && hearingBookings.stream()
+            .anyMatch(hearingBooking -> hearingBooking.getValue().startsAfterToday());
+    }
+
+    private final DocumentReference submittedForm;
+
+    private final DocumentReference uploadedCaseManagementOrder;
+    private final List<Element<CaseManagementOrder>> draftUploadedCMOs;
+    private final Object hearingsWithoutApprovedCMO; // Could be dynamic list or string
+
+    public List<Element<CaseManagementOrder>> getDraftUploadedCMOs() {
+        return defaultIfNull(draftUploadedCMOs, new ArrayList<>());
+    }
+
+    @JsonIgnore
+    public List<Element<HearingBooking>> getPastHearings() {
+        return defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()).stream()
+            .filter(hearingBooking -> !hearingBooking.getValue().startsAfterToday())
+            .collect(toList());
+    }
+
+    private final Object cmoToReviewList;
+    private final ReviewDecision reviewCMODecision;
+    private final String numDraftCMOs;
+    private final List<Element<CaseManagementOrder>> sealedCMOs;
+
+    public List<Element<CaseManagementOrder>> getSealedCMOs() {
+        return defaultIfNull(sealedCMOs, new ArrayList<>());
+    }
+
+    @JsonIgnore
+    public Optional<HearingBooking> getNextHearingAfterCmo(UUID cmoID) {
+        LocalDateTime currentCmoStartDate = unwrapElements(hearingDetails).stream()
+            .filter(hearingBooking -> cmoID.equals(hearingBooking.getCaseManagementOrderId()))
+            .map(HearingBooking::getStartDate)
+            .findAny()
+            .orElseThrow(() -> new IllegalArgumentException("Failed to find hearing matching cmo id " + cmoID));
+
+        return unwrapElements(hearingDetails).stream()
+            .filter(hearingBooking -> hearingBooking.getStartDate().isAfter(currentCmoStartDate))
+            .min(comparing(HearingBooking::getStartDate));
+    }
+
+    private String sendToCtsc;
+    private String displayAmountToPay;
+    private final String confirmChangeState;
+
+    public DynamicList buildDynamicHearingList() {
+        return buildDynamicHearingList(null);
+    }
+
+    public DynamicList buildDynamicHearingList(UUID selected) {
+        return asDynamicList(getHearingDetails(), selected, hearingBooking -> hearingBooking.toLabel(DATE));
+    }
 }

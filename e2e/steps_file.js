@@ -1,73 +1,77 @@
 /* global process */
 const output = require('codeceptjs').output;
-
+const lodash = require('lodash');
 const config = require('./config');
+const caseHelper = require('./helpers/case_helper.js');
 
 const loginPage = require('./pages/login.page');
-const caseViewPage = require('./pages/caseView.page');
 const caseListPage = require('./pages/caseList.page');
 const eventSummaryPage = require('./pages/eventSummary.page');
 const openApplicationEventPage = require('./pages/events/openApplicationEvent.page');
-const ordersAndDirectionsNeededEventPage  = require('./pages/events/enterOrdersAndDirectionsNeededEvent.page');
-const enterHearingNeededEventPage = require('./pages/events/enterHearingNeededEvent.page');
-const enterChildrenEventPage = require('./pages/events/enterChildrenEvent.page');
-const enterApplicantEventPage  = require('./pages/events/enterApplicantEvent.page');
-const enterGroundsEventPage = require('./pages/events/enterGroundsForApplicationEvent.page');
-const uploadDocumentsEventPage = require('./pages/events/uploadDocumentsEvent.page');
-const enterAllocationProposalEventPage = require('./pages/events/enterAllocationProposalEvent.page');
-const enterRespondentsEventPage = require('./pages/events/enterRespondentsEvent.page');
+const mandatorySubmissionFields = require('./fixtures/caseData/mandatorySubmissionFields.json');
 
-const applicant = require('./fixtures/applicant');
-const solicitor = require('./fixtures/solicitor');
-const respondent = require('./fixtures/respondents');
-const normalizeCaseId = caseId => caseId.replace(/\D/g, '');
+const normalizeCaseId = caseId => caseId.toString().replace(/\D/g, '');
 
-let baseUrl = process.env.URL || 'http://localhost:3451';
+const baseUrl = process.env.URL || 'http://localhost:3333';
+const signedInSelector = 'exui-header';
+const signedOutSelector = '#global-header';
 
 'use strict';
 
+function log(msg) {
+  console.log(`[${require('codeceptjs').config.get().mocha.child}] ${msg}`);
+}
+
 module.exports = function () {
   return actor({
-    async signIn(username, password) {
+    async signIn(user) {
       await this.retryUntilExists(async () => {
-        this.amOnPage(process.env.URL || 'http://localhost:3451');
-        if (await this.waitForSelector('#global-header') == null) {
+        this.amOnPage(baseUrl);
+
+        if (await this.waitForAnySelector([signedOutSelector, signedInSelector]) == null) {
           return;
         }
 
-        const user = await this.grabText('#user-name');
-        if (user !== undefined) {
-          if (user.toLowerCase().includes(username)) {
-            return;
-          }
-          this.signOut();
+        if (await this.hasSelector(signedInSelector)) {
+          this.click('Sign out');
         }
 
-        loginPage.signIn(username, password);
-      }, '#sign-out');
+        await loginPage.signIn(user);
+      }, signedInSelector);
     },
 
-    async logInAndCreateCase(username, password) {
-      await this.signIn(username, password);
-      this.click('Create new case');
-      this.waitForElement(`#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
-      await openApplicationEventPage.populateForm();
+    async logInAndCreateCase(user, caseName) {
+      await this.signIn(user);
+      await this.retryUntilExists(() => this.click('Create case'), `#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
+      await openApplicationEventPage.populateForm(caseName);
       await this.completeEvent('Save and continue');
+      this.waitForElement('.markdown h2', 5);
+      const caseId = normalizeCaseId(await this.grabTextFrom('.markdown h2'));
+      log(`Case created #${caseId}`);
+      return caseId;
     },
 
-    async completeEvent(button, changeDetails) {
+    async completeEvent(button, changeDetails, confirmationPage = false) {
       await this.retryUntilExists(() => this.click('Continue'), '.check-your-answers');
       if (changeDetails != null) {
         eventSummaryPage.provideSummary(changeDetails.summary, changeDetails.description);
       }
-      await eventSummaryPage.submit(button);
+      await this.submitEvent(button, confirmationPage);
     },
 
-    seeCheckAnswers(checkAnswerTitle) {
-      this.click('Continue');
-      this.waitForElement('.check-your-answers');
-      this.see(checkAnswerTitle);
-      eventSummaryPage.submit('Save and continue');
+    async seeCheckAnswersAndCompleteEvent(button, confirmationPage = false) {
+      await this.retryUntilExists(() => this.click('Continue'), '.check-your-answers');
+      this.see('Check the information below carefully.');
+      await this.submitEvent(button, confirmationPage);
+    },
+
+    async submitEvent(button, confirmationPage) {
+      if (!confirmationPage) {
+        await eventSummaryPage.submit(button);
+      } else {
+        await eventSummaryPage.submit(button, '#confirmation-body');
+        await this.retryUntilExists(() => this.click('Close and Return to case details'), '.alert-success');
+      }
     },
 
     seeEventSubmissionConfirmation(event) {
@@ -77,6 +81,24 @@ module.exports = function () {
     clickHyperlink(link, urlNavigatedTo) {
       this.click(link);
       this.seeCurrentUrlEquals(urlNavigatedTo);
+    },
+
+    async seeAvailableEvents(expectedEvents) {
+      const actualEvents = await this.grabTextFrom('//ccd-event-trigger//option')
+        .then(options => Array.isArray(options) ? options : [options])
+        .then(options => {
+          return lodash.without(options, 'Select action');
+        });
+
+      if (!lodash.isEqual(lodash.sortBy(expectedEvents), lodash.sortBy(actualEvents))) {
+        throw new Error(`Events wanted: [${expectedEvents}], found: [${actualEvents}]`);
+      }
+    },
+
+    async startEventViaHyperlink(linkLabel) {
+      await this.retryUntilExists(() => {
+        this.click(locate(`//p/a[text()="${linkLabel}"]`));
+      }, 'ccd-case-event-trigger');
     },
 
     seeDocument(title, name, status = '', reason = '') {
@@ -91,43 +113,36 @@ module.exports = function () {
       }
     },
 
-    seeAnswerInTab(questionNo, complexTypeHeading, question, answer) {
-      const complexType = locate(`.//span[text() = "${complexTypeHeading}"]`);
-      const questionRow = locate(`${complexType}/../../../table/tbody/tr[${questionNo}]`);
-      this.seeElement(locate(`${questionRow}/th/span`).withText(question));
-      if (Array.isArray(answer)) {
-        let ansIndex = 1;
-        answer.forEach(ans => {
-          this.seeElement(locate(`${questionRow}/td/span//tr[${ansIndex}]`).withText(ans));
-          ansIndex++;
+    seeFamilyManNumber(familyManNumber) {
+      this.seeElement(`//*[@class="markdown"]//h2/strong[text()='FamilyMan ID: ${familyManNumber}']`);
+    },
+
+    tabFieldSelector(pathToField) {
+      let path = [].concat(pathToField);
+      let fieldName = path.splice(-1, 1)[0];
+      let selector = '//div[@class="tabs-panel"]';
+
+      path.forEach(step => {
+        selector = `${selector}//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="${step}"]]]`;
+      }, this);
+
+      return `${selector}//*[@class="complex-panel-simple-field" and .//th/span[text()="${fieldName}"]]`;
+    },
+
+    seeInTab(pathToField, fieldValue) {
+      const fieldSelector = this.tabFieldSelector(pathToField);
+
+      if (Array.isArray(fieldValue)) {
+        fieldValue.forEach((value, index) => {
+          this.seeElement(locate(`${fieldSelector}//tr[${index + 1}]`).withText(value));
         });
       } else {
-        this.seeElement(locate(`${questionRow}/td/span`).withText(answer));
+        this.seeElement(locate(fieldSelector).withText(fieldValue));
       }
     },
 
-    seeSimpleAnswerInTab(sectionName, question, answer) {
-      const sectionLocator =  locate(`//div[@class="complex-panel"][//span[text()="${sectionName}"]]`);
-      const questionRow = locate(`${sectionLocator}//tr[@class="complex-panel-simple-field"][//span[text()="${question}"]]`);
-      this.seeElement(sectionLocator);
-      this.seeElement(questionRow);
-      this.seeElement(questionRow.withText(answer));
-    },
-
-    seeNestedAnswerInTab(questionNo, complexTypeHeading, complexTypeSubHeading, question, answer) {
-      const panelLocator = name => locate(`//div[@class="complex-panel"][//span[text()="${name}"]]`);
-
-      const topLevelLocator = panelLocator(complexTypeHeading);
-      const subLevelLocator = panelLocator(complexTypeSubHeading);
-      const rowLocator = locate(`${topLevelLocator}${subLevelLocator}/table/tbody/tr[${questionNo}]`);
-      const questionLocator = locate(`${rowLocator}/th/span`);
-      const answerLocator = locate(`${rowLocator}/td/span`);
-
-      this.seeElement(topLevelLocator);
-      this.seeElement(subLevelLocator);
-      this.seeElement(rowLocator);
-      this.seeElement(questionLocator.withText(question));
-      this.seeElement(answerLocator.withText(answer));
+    dontSeeInTab(pathToField) {
+      this.dontSeeElement(locate(this.tabFieldSelector(pathToField)));
     },
 
     seeCaseInSearchResult(caseId) {
@@ -138,71 +153,34 @@ module.exports = function () {
       this.dontSeeElement(caseListPage.locateCase(normalizeCaseId(caseId)));
     },
 
-    signOut() {
-      this.click('Sign Out');
-      this.wait(2); // in seconds
+    seeEndStateForEvent(eventName, state) {
+      this.click(`//table[@class="EventLogTable"]//tr[td[contains(., "${eventName}")]][1]`);
+      this.seeElement(`//table[@class="EventLogDetails"]//tr[.//span[text()="End state"] and .//span[text()="${state}"]]`);
     },
 
     async navigateToCaseDetails(caseId) {
-      const normalisedCaseId = normalizeCaseId(caseId);
-
       const currentUrl = await this.grabCurrentUrl();
-      if (!currentUrl.replace(/#.+/g, '').endsWith(normalisedCaseId)) {
+      if (!currentUrl.replace(/#.+/g, '').endsWith(caseId)) {
         await this.retryUntilExists(() => {
-          this.amOnPage(`${baseUrl}/case/${config.definition.jurisdiction}/${config.definition.caseType}/${normalisedCaseId}`);
-        }, '#sign-out');
+          this.amOnPage(`${baseUrl}/cases/case-details/${caseId}`);
+        }, signedInSelector);
       }
     },
 
-    async navigateToCaseList(){
+    async navigateToCaseDetailsAs(user, caseId) {
+      await this.signIn(user);
+      await this.navigateToCaseDetails(caseId);
+    },
+
+    async navigateToCaseList() {
       await caseListPage.navigate();
     },
 
-    async enterAllocationProposal () {
-      await caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
-      enterAllocationProposalEventPage.selectAllocationProposal('District judge');
-      await this.completeEvent('Save and continue');
-    },
-
-    async enterMandatoryFields (settings) {
-      await caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
-      ordersAndDirectionsNeededEventPage.checkCareOrder();
-      await this.completeEvent('Save and continue');
-      await caseViewPage.goToNewActions(config.applicationActions.enterHearingNeeded);
-      enterHearingNeededEventPage.enterTimeFrame();
-      await this.completeEvent('Save and continue');
-      await caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
-      enterApplicantEventPage.enterApplicantDetails(applicant);
-      enterApplicantEventPage.enterSolicitorDetails(solicitor);
-      await this.completeEvent('Save and continue');
-      await caseViewPage.goToNewActions(config.applicationActions.enterChildren);
-      await enterChildrenEventPage.enterChildDetails('Timothy', 'Jones', '01', '08', '2015');
-      if(settings && settings.multipleChildren){
-        await this.addAnotherElementToCollection('Child');
-        await enterChildrenEventPage.enterChildDetails('John', 'Black', '02', '09', '2016');
-      }
-      await this.completeEvent('Save and continue');
-      await caseViewPage.goToNewActions(config.applicationActions.enterRespondents);
-      await enterRespondentsEventPage.enterRespondent(respondent[0]);
-      await this.completeEvent('Save and continue');
-      await caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
-      enterGroundsEventPage.enterThresholdCriteriaDetails();
-      await this.completeEvent('Save and continue');
-      await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
-      uploadDocumentsEventPage.selectSocialWorkChronologyToFollow();
-      uploadDocumentsEventPage.selectSocialWorkStatementIncludedInSWET();
-      uploadDocumentsEventPage.uploadSocialWorkAssessment(config.testFile);
-      uploadDocumentsEventPage.uploadCarePlan(config.testFile);
-      uploadDocumentsEventPage.uploadSWET(config.testFile);
-      uploadDocumentsEventPage.uploadThresholdDocument(config.testFile);
-      uploadDocumentsEventPage.uploadChecklistDocument(config.testFile);
-      await this.completeEvent('Save and continue');
-      await caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
-      enterAllocationProposalEventPage.selectAllocationProposal('District judge');
-      await this.completeEvent('Save and continue');
-    },
-
     async fillDate(date, sectionId = 'form') {
+      if (date instanceof Date) {
+        date = {day: date.getDate(), month: date.getMonth() + 1, year: date.getFullYear()};
+      }
+
       if (date) {
         return within(sectionId, () => {
           this.fillField('Day', date.day);
@@ -212,9 +190,29 @@ module.exports = function () {
       }
     },
 
+    fillDateAndTime(date, sectionId = 'form') {
+      if (date instanceof Date) {
+        date = {
+          day: date.getDate(), month: date.getMonth() + 1, year: date.getFullYear(),
+          hour: date.getHours(), minute: date.getMinutes(), second: date.getSeconds(),
+        };
+      }
+
+      if (date) {
+        return within(sectionId, () => {
+          this.fillField('Day', date.day);
+          this.fillField('Month', date.month);
+          this.fillField('Year', date.year);
+          this.fillField('Hour', date.hour);
+          this.fillField('Minute', date.minute);
+          this.fillField('Second', date.second);
+        });
+      }
+    },
+
     async addAnotherElementToCollection(collectionName) {
       const numberOfElements = await this.grabNumberOfVisibleElements('.collection-title');
-      if(collectionName) {
+      if (collectionName) {
         this.click(locate('button')
           .inside(locate('div').withChild(locate('h2').withText(collectionName)))
           .withText('Add new'));
@@ -226,7 +224,7 @@ module.exports = function () {
     },
 
     async removeElementFromCollection(collectionName, index = 1) {
-      if(collectionName) {
+      if (collectionName) {
         await this.click(locate('button')
           .inside(locate('div').withChild(locate('h2').withText(collectionName)))
           .withText('Remove')
@@ -237,6 +235,14 @@ module.exports = function () {
       this.click(locate('button')
         .inside('.mat-dialog-container')
         .withText('Remove'));
+    },
+
+    async submitNewCaseWithData(data = mandatorySubmissionFields) {
+      const caseId = await this.logInAndCreateCase(config.swanseaLocalAuthorityUserOne);
+      await caseHelper.populateWithData(caseId, data);
+      log(`Case #${caseId} has been populated with data`);
+
+      return caseId;
     },
 
     /**
@@ -250,16 +256,18 @@ module.exports = function () {
      * @param locator - locator for an element that is expected to be present upon successful execution of an action
      * @returns {Promise<void>} - promise holding no result if resolved or error if rejected
      */
-    async retryUntilExists(action, locator) {
-      const maxNumberOfTries = 4;
-
+    async retryUntilExists(action, locator, maxNumberOfTries = 6) {
       for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
         output.log(`retryUntilExists(${locator}): starting try #${tryNumber}`);
-        if (tryNumber > 1 && (await this.locateSelector(locator)).length > 0) {
+        if (tryNumber > 1 && await this.hasSelector(locator)) {
           output.log(`retryUntilExists(${locator}): element found before try #${tryNumber} was executed`);
           break;
         }
-        await action();
+        try {
+          await action();
+        } catch (error) {
+          log(error);
+        }
         if (await this.waitForSelector(locator) != null) {
           output.log(`retryUntilExists(${locator}): element found after try #${tryNumber} was executed`);
           break;

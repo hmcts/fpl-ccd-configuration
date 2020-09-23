@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -11,23 +12,27 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.Orders;
-import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
-import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
+import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Map.of;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(CaseSubmissionController.class)
@@ -37,10 +42,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
     private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
 
     @MockBean
-    private UserDetailsService userDetailsService;
-
-    @MockBean
-    private DocumentGeneratorService documentGeneratorService;
+    private IdamClient idamClient;
 
     @MockBean
     private UploadDocumentService uploadDocumentService;
@@ -48,7 +50,10 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
     @MockBean
     private FeatureToggleService featureToggleService;
 
-    private Document document = document();
+    @MockBean
+    private CaseSubmissionService caseSubmissionService;
+
+    private final Document document = document();
 
     CaseSubmissionControllerAboutToSubmitTest() {
         super("case-submission");
@@ -56,14 +61,13 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @BeforeEach
     void mocking() {
-        byte[] pdf = {1, 2, 3, 4, 5};
-
-        given(userDetailsService.getUserName())
-            .willReturn("Emma Taylor");
-        given(documentGeneratorService.generateSubmittedFormPDF(any(), any()))
-            .willReturn(pdf);
-        given(uploadDocumentService.uploadPDF(pdf, "2313.pdf"))
+        given(idamClient.getUserInfo(USER_AUTH_TOKEN)).willReturn(UserInfo.builder().name("Emma Taylor").build());
+        given(caseSubmissionService.generateSubmittedFormPDF(any(), eq(false)))
             .willReturn(document);
+        given(uploadDocumentService.uploadPDF(DOCUMENT_CONTENT, "2313.pdf"))
+            .willReturn(document);
+        given(featureToggleService.isRestrictedFromCaseSubmission("FPLA"))
+            .willReturn(true);
     }
 
     @Test
@@ -103,12 +107,13 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldRemoveTemporaryFieldsWhenPresent() {
+    void shouldRetainPaymentInformationInCase() {
         given(featureToggleService.isCtscEnabled(anyString())).willReturn(true);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(CaseDetails.builder()
             .id(2313L)
             .data(Map.of(
+                "dateSubmitted", dateNow(),
                 "orders", Orders.builder().orderType(List.of(CARE_ORDER)).build(),
                 "caseLocalAuthority", "example",
                 "amountToPay", "233300",
@@ -117,7 +122,37 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractControllerTest {
             .build());
 
         assertThat(callbackResponse.getData())
-            .doesNotContainKey("amountToPay")
+            .containsEntry("amountToPay", "233300")
             .containsEntry("displayAmountToPay", YES.getValue());
+    }
+
+    @Nested
+    class LocalAuthorityValidation {
+
+        final String localAuthority = "example";
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .data(of("caseLocalAuthority", localAuthority))
+            .build();
+
+        @Test
+        void shouldReturnErrorWhenCaseSubmissionIsBlockedForLocalAuthority() {
+            given(featureToggleService.isRestrictedFromCaseSubmission(localAuthority)).willReturn(true);
+
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
+
+            assertThat(callbackResponse.getData()).containsEntry("caseLocalAuthority", localAuthority);
+            assertThat(callbackResponse.getErrors()).contains("You cannot submit this application online yet."
+                + " Ask your FPL administrator for your local authority’s enrolment date");
+        }
+
+        @Test
+        void shouldReturnNoErrorsWhenCaseSubmissionIsAllowedForLocalAuthority() {
+            given(featureToggleService.isRestrictedFromCaseSubmission(localAuthority)).willReturn(false);
+
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
+
+            assertThat(callbackResponse.getData()).containsEntry("caseLocalAuthority", localAuthority);
+            assertThat(callbackResponse.getErrors()).isEmpty();
+        }
     }
 }

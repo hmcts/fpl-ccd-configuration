@@ -4,14 +4,24 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.State;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.params.provider.EnumSource.Mode.EXCLUDE;
+import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
+import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
+import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.formatCCDCaseNumber;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInGatekeepingState;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInOpenState;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInReturnedState;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
 class CaseDetailsHelperTest {
@@ -79,6 +89,54 @@ class CaseDetailsHelperTest {
             removeTemporaryFields(caseDetails, "key1", "key3");
 
             assertThat(caseDetails.getData()).containsOnly(Map.entry("key2", "some value 2"));
+        }
+    }
+
+    @Nested
+    class CaseState {
+        @ParameterizedTest
+        @EnumSource(value = State.class, mode = EXCLUDE, names = {"OPEN"})
+        void shouldReturnFalseForCasesNotInOpenState(State state) {
+            CaseDetails caseDetails = CaseDetails.builder().state(state.getValue()).build();
+
+            assertThat(isInOpenState(caseDetails)).isFalse();
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = State.class, mode = EXCLUDE, names = {"RETURNED"})
+        void shouldReturnFalseForCasesNotInReturnedState(State state) {
+            CaseDetails caseDetails = CaseDetails.builder().state(state.getValue()).build();
+
+            assertThat(isInReturnedState(caseDetails)).isFalse();
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = State.class, mode = EXCLUDE, names = {"GATEKEEPING"})
+        void shouldReturnFalseForCasesNotInGatekeepingState(State state) {
+            CaseDetails caseDetails = CaseDetails.builder().state(state.getValue()).build();
+
+            assertThat(isInGatekeepingState(caseDetails)).isFalse();
+        }
+
+        @Test
+        void shouldReturnTrueForCasesInOpenState() {
+            CaseDetails caseDetails = CaseDetails.builder().state(OPEN.getValue()).build();
+
+            assertThat(isInOpenState(caseDetails)).isTrue();
+        }
+
+        @Test
+        void shouldReturnTrueForCasesInReturnedState() {
+            CaseDetails caseDetails = CaseDetails.builder().state(RETURNED.getValue()).build();
+
+            assertThat(isInReturnedState(caseDetails)).isTrue();
+        }
+
+        @Test
+        void shouldReturnTrueForCasesInGatekeepingState() {
+            CaseDetails caseDetails = CaseDetails.builder().state(GATEKEEPING.getValue()).build();
+
+            assertThat(isInGatekeepingState(caseDetails)).isTrue();
         }
     }
 }

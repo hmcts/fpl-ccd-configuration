@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
-import uk.gov.hmcts.reform.rd.model.User;
+import uk.gov.hmcts.reform.rd.model.OrganisationUser;
 
 import java.util.Map;
 
@@ -67,14 +67,14 @@ class RepresentativeMidEventControllerTest extends AbstractControllerTest {
             .email(representativeEmail).build());
 
         given(authTokenGenerator.generate()).willReturn(serviceAuthToken);
-        given(organisationApi.findUserByEmail(userAuthToken, serviceAuthToken, representativeEmail))
+        given(organisationApi.findUserByEmail(USER_AUTH_TOKEN, serviceAuthToken, representativeEmail))
             .willThrow(new FeignException.NotFound("User not found",
                 Request.create(GET, "", Map.of(), new byte[] {}, UTF_8),
                 new byte[] {}));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 
-        verify(organisationApi).findUserByEmail(userAuthToken, serviceAuthToken, representativeEmail);
+        verify(organisationApi).findUserByEmail(USER_AUTH_TOKEN, serviceAuthToken, representativeEmail);
 
         assertThat(callbackResponse.getErrors())
             .contains("Representative must already have an account with the digital service");
@@ -86,12 +86,12 @@ class RepresentativeMidEventControllerTest extends AbstractControllerTest {
             .email(representativeEmail).build());
 
         given(authTokenGenerator.generate()).willReturn(serviceAuthToken);
-        given(organisationApi.findUserByEmail(userAuthToken, serviceAuthToken, representativeEmail))
-            .willReturn(new User(RandomStringUtils.randomAlphanumeric(10)));
+        given(organisationApi.findUserByEmail(USER_AUTH_TOKEN, serviceAuthToken, representativeEmail))
+            .willReturn(new OrganisationUser(RandomStringUtils.randomAlphanumeric(10)));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 
-        verify(organisationApi).findUserByEmail(userAuthToken, serviceAuthToken, representativeEmail);
+        verify(organisationApi).findUserByEmail(USER_AUTH_TOKEN, serviceAuthToken, representativeEmail);
 
         assertThat(callbackResponse.getErrors()).isEmpty();
     }

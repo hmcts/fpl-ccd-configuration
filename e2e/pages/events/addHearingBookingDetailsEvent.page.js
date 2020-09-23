@@ -1,5 +1,6 @@
-const { I } = inject();
+const {I} = inject();
 const judgeAndLegalAdvisor = require('../../fragments/judgeAndLegalAdvisor');
+const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 
 module.exports = {
   fields: function (index) {
@@ -31,7 +32,9 @@ module.exports = {
           somethingElse: `#hearingDetails_${index}_hearingNeedsBooked-SOMETHING_ELSE`,
         },
         giveDetails: `#hearingDetails_${index}_hearingNeedsDetails`,
+        venueCustomAddress: `#hearingDetails_${index}_venueCustomAddress_venueCustomAddress`,
       },
+      sendNoticeOfHearing: `#newHearingSelector_option${index}-SELECTED`,
     };
   },
 
@@ -41,6 +44,13 @@ module.exports = {
     I.waitForElement(this.fields(elementIndex).hearingBooking.type.caseManagement);
     I.click(this.fields(elementIndex).hearingBooking.type);
     I.selectOption(this.fields(elementIndex).hearingBooking.venue, hearingDetails.venue);
+
+    if (hearingDetails.venue === 'Other') {
+      within(this.fields(elementIndex).hearingBooking.venueCustomAddress, () => {
+        postcodeLookup.enterAddressManually(hearingDetails.venueCustomAddress);
+      });
+    }
+
     I.fillField(this.fields(elementIndex).hearingBooking.startDate.second, hearingDetails.startDate.second);
     I.fillField(this.fields(elementIndex).hearingBooking.startDate.minute, hearingDetails.startDate.minute);
     I.fillField(this.fields(elementIndex).hearingBooking.startDate.hour, hearingDetails.startDate.hour);
@@ -57,20 +67,35 @@ module.exports = {
     I.click(this.fields(elementIndex).hearingBooking.hearingNeedsBooked.welsh);
     I.click(this.fields(elementIndex).hearingBooking.hearingNeedsBooked.somethingElse);
     I.fillField(this.fields(elementIndex).hearingBooking.giveDetails, hearingDetails.giveDetails);
-
-    this.enterJudgeAndLegalAdvisor(hearingDetails.judgeAndLegalAdvisor.judgeLastName,
-      hearingDetails.judgeAndLegalAdvisor.legalAdvisorName,
-      hearingDetails.judgeAndLegalAdvisor.judgeTitle,
-      hearingDetails.judgeAndLegalAdvisor.otherTitle,
-      elementIndex
-    );
   },
 
-  enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName, title, otherTitle, elementIndex) {
+  async enterJudge(judge) {
+    const elementIndex = await this.getActiveElementIndex();
     const complexTypeAppender = `hearingDetails_${elementIndex}_`;
-    judgeAndLegalAdvisor.selectJudgeTitle(complexTypeAppender, title, otherTitle);
-    judgeAndLegalAdvisor.enterJudgeLastName(judgeLastName, complexTypeAppender);
+
+    judgeAndLegalAdvisor.useAlternateJudge(complexTypeAppender);
+    judgeAndLegalAdvisor.selectJudgeTitle(complexTypeAppender, judge.judgeTitle, judge.otherTitle);
+    judgeAndLegalAdvisor.enterJudgeLastName(judge.judgeLastName, complexTypeAppender);
+  },
+
+  async useAllocatedJudge() {
+    const elementIndex = await this.getActiveElementIndex();
+    const complexTypeAppender = `hearingDetails_${elementIndex}_`;
+    judgeAndLegalAdvisor.useAllocatedJudge(complexTypeAppender);
+  },
+
+  async enterLegalAdvisor(legalAdvisorName) {
+    const elementIndex = await this.getActiveElementIndex();
+    const complexTypeAppender = `hearingDetails_${elementIndex}_`;
     judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName, complexTypeAppender);
+  },
+
+  sendNoticeOfHearing(sendNoticeOfHearing = 'Yes', index = 0) {
+    within('#newHearingSelector_newHearingSelector', () => {
+      if (sendNoticeOfHearing == 'Yes') {
+        I.click(this.fields(index).sendNoticeOfHearing);
+      }
+    });
   },
 
   async getActiveElementIndex() {

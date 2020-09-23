@@ -35,7 +35,7 @@ public class FeeService {
     private final FeesConfig feesConfig;
     private final FeesRegisterApi feesRegisterApi;
 
-    public FeesData getFeesDataForOrders(Orders orders) throws FeignException {
+    public FeesData getFeesDataForOrders(Orders orders) {
         return Optional.ofNullable(orders)
             .map(Orders::getOrderType)
             .map(orderTypeList -> getFees(fromOrderType(orderTypeList)))
@@ -50,7 +50,7 @@ public class FeeService {
             .max(Comparator.comparing(FeeResponse::getAmount));
     }
 
-    public List<FeeResponse> getFees(List<FeeType> feeTypes) throws FeignException {
+    public List<FeeResponse> getFees(List<FeeType> feeTypes) {
         return ofNullable(feeTypes).stream()
             .flatMap(Collection::stream)
             .map(this::makeRequest)
@@ -67,7 +67,7 @@ public class FeeService {
             .build();
     }
 
-    private FeeResponse makeRequest(FeeType feeType) throws FeeRegisterException {
+    private FeeResponse makeRequest(FeeType feeType) {
         FeeParameters parameters = feesConfig.getFeeParametersByFeeType(feeType);
         try {
             log.debug("Making request to Fee Register with parameters : {} ", parameters);

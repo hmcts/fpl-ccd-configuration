@@ -1,0 +1,139 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Direction",
+    "ListElementCode": "directionType",
+    "FieldType": "Text",
+    "ElementLabel": "Title",
+    "HintText": "You must include a brief direction summary",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Direction",
+    "ListElementCode": "readOnly",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Is this readOnly?",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "directionType CONTAINS \"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Direction",
+    "ListElementCode": "custom",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Is this a custom direction?",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "directionType CONTAINS \"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Direction",
+    "ListElementCode": "directionRemovable",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Is this direction needed?",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "directionType CONTAINS \"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Direction",
+    "ListElementCode": "directionNeeded",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Is this direction needed?",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "directionRemovable CONTAINS \"DO NOT SHOW\"",
+    "Comment": "Field will only be shown in the event and not in the tab (FieldShowCondition overwritten in CaseEventToComplexType)"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Direction",
+    "ListElementCode": "directionText",
+    "FieldType": "TextArea",
+    "ElementLabel": "Description",
+    "HintText": "Add more details",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Direction",
+    "ListElementCode": "assignee",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "DirectionAssignees",
+    "ElementLabel": "For",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "directionNeeded!=\"No\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Direction",
+    "ListElementCode": "parentsAndRespondentsAssignee",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "ParentsAndRespondentsDirectionAssignee",
+    "ElementLabel": "Assignee",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "directionNeeded!=\"No\"",
+    "Comment": "This field is used for capturing parents and respondents assignee on CMO"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Direction",
+    "ListElementCode": "otherPartiesAssignee",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "OtherPartiesDirectionAssignee",
+    "ElementLabel": "Assignee",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "directionNeeded!=\"No\"",
+    "Comment": "This field is used for capturing other persons assignee on CMO"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Direction",
+    "ListElementCode": "dateToBeCompletedBy",
+    "FieldType": "DateTime",
+    "ElementLabel": "Due date and time",
+    "HintText": "For example, 31 3 2016 2 30 00",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "directionNeeded!=\"No\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Direction",
+    "ListElementCode": "allParties_label",
+    "ElementLabel": "### For ###\nAll parties",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "directionNeeded=\"DO_NOT_SHOW\"",
+    "comment": "Used in event to complex type to display All parties if direction is for all parties"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Direction",
+    "ListElementCode": "status",
+    "FieldType": "Text",
+    "ElementLabel": "Status",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "directionNeeded!=\"No\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Direction",
+    "ListElementCode": "response",
+    "FieldType": "DirectionResponse",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "directionNeeded!=\"No\"",
+    "Comment": "This field is used for display purpose only. This neatens up the UI allowing only one response per party"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Direction",
+    "ListElementCode": "responses",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DirectionResponse",
+    "ElementLabel": "Compliance",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "directionNeeded!=\"No\"",
+    "Comment": "A single response is stored in this collection in aboutToSubmit allowing for multiple responses to the same direction"
+  }
+]

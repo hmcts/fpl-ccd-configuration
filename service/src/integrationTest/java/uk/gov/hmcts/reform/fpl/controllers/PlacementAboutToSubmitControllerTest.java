@@ -112,7 +112,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractControllerTest {
             .isEqualTo(expectedPlacementWithoutConfidentialDocuments(childPlacement, childApplication));
     }
 
-    private List convertToList(Map<String, Object> updatedCaseDetails, String string) {
+    private List<?> convertToList(Map<String, Object> updatedCaseDetails, String string) {
         return mapper.convertValue(updatedCaseDetails.get(string), List.class);
     }
 

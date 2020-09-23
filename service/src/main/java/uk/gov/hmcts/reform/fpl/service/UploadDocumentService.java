@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -16,10 +15,8 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import static com.google.common.collect.Lists.newArrayList;
 
 @Service
+@Slf4j
 public class UploadDocumentService {
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     private final AuthTokenGenerator authTokenGenerator;
     private final DocumentUploadClientApi documentUploadClient;
     private final RequestData requestData;
@@ -43,7 +40,7 @@ public class UploadDocumentService {
             .orElseThrow(() ->
                 new RuntimeException("Document upload failed due to empty result"));
 
-        logger.debug("Document upload resulted with links: {}, {}", document.links.self.href, document.links.binary.href);
+        log.debug("Document upload resulted with links: {}, {}", document.links.self.href, document.links.binary.href);
 
         return document;
     }

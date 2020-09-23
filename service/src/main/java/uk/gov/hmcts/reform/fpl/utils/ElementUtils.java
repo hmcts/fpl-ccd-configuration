@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
@@ -25,6 +26,13 @@ public class ElementUtils {
     @SafeVarargs
     public static <T> List<Element<T>> wrapElements(T... elements) {
         return Stream.of(elements)
+            .filter(Objects::nonNull)
+            .map(element -> Element.<T>builder().value(element).build())
+            .collect(toList());
+    }
+
+    public static <T> List<Element<T>> wrapElements(List<T> elements) {
+        return nullSafeCollection(elements).stream()
             .filter(Objects::nonNull)
             .map(element -> Element.<T>builder().value(element).build())
             .collect(toList());
@@ -88,4 +96,11 @@ public class ElementUtils {
         return defaultIfNull(collection, Collections.emptyList());
     }
 
+    public static UUID getDynamicListValueCode(Object dynamicList, ObjectMapper mapper) {
+        if (dynamicList instanceof String) {
+            return UUID.fromString((String) dynamicList);
+        }
+
+        return mapper.convertValue(dynamicList, DynamicList.class).getValueCode();
+    }
 }

@@ -104,7 +104,7 @@ class CourtLevelAllocationServiceTest {
 
         Allocation allocationDecision = courtAllocationService.setAllocationDecisionIfNull(caseData);
 
-        assertThat(allocationDecision.equals(expectedDecision));
+        assertThat(allocationDecision).isEqualTo(expectedDecision);
     }
 
     private Allocation createAllocation(String proposal, String reason) {

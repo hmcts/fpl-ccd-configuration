@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
 
@@ -14,7 +15,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 @Slf4j
 @Service
@@ -26,31 +26,38 @@ public class HearingVenueLookUpService {
     @Autowired
     public HearingVenueLookUpService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
-        populateHearingVenueMappings();
+        loadHearingVenueMappings();
     }
 
-    private void populateHearingVenueMappings() {
-        if (isEmpty(hearingVenues)) {
-            try {
-                final String jsonContent = ResourceReader.readString("static_data/hearingVenues.json");
-                hearingVenues = objectMapper.reader()
-                    .forType(new TypeReference<List<HearingVenue>>() {})
-                    .readValue(jsonContent);
-
-            } catch (IOException e) {
-                log.error("Unable to parse hearingVenues.json file.", e);
-            }
+    private void loadHearingVenueMappings() {
+        try {
+            final String jsonContent = ResourceReader.readString("static_data/hearingVenues.json");
+            hearingVenues = objectMapper.readValue(jsonContent, new TypeReference<>() {});
+        } catch (IOException e) {
+            log.error("Unable to parse hearingVenues.json file.", e);
         }
     }
 
-    HearingVenue getHearingVenue(final String venueId) {
+    public HearingVenue getHearingVenue(final HearingBooking hearingBooking) {
+        if (!"OTHER".equals(hearingBooking.getVenue())) {
+            return getHearingVenue(hearingBooking.getVenue());
+        } else {
+            return HearingVenue.builder()
+                .hearingVenueId("OTHER")
+                .venue("Other")
+                .address(hearingBooking.getVenueCustomAddress())
+                .build();
+        }
+    }
+
+    private HearingVenue getHearingVenue(final String venueId) {
         return this.hearingVenues.stream()
             .filter(hearingVenue -> venueId.equalsIgnoreCase(hearingVenue.getHearingVenueId()))
             .findFirst()
             .orElse(HearingVenue.builder().build());
     }
 
-    String buildHearingVenue(final HearingVenue hearingVenue) {
+    public String buildHearingVenue(final HearingVenue hearingVenue) {
         if (hearingVenue == null || hearingVenue.getAddress() == null) {
             return "";
         } else {

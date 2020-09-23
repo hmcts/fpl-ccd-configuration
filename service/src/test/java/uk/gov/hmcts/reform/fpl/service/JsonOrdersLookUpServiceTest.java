@@ -13,8 +13,6 @@ import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
 
-import java.io.IOException;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
@@ -35,7 +33,7 @@ class JsonOrdersLookUpServiceTest {
     }
 
     @Test
-    void shouldPopulateOrderDefinitionForStandardDirectionOrder() throws IOException {
+    void shouldPopulateOrderDefinitionForStandardDirectionOrder() {
         OrderDefinition expectedOrderDefinition = OrderDefinition.builder()
             .type("standardDirectionOrder")
             .language(ENGLISH)
@@ -43,35 +41,40 @@ class JsonOrdersLookUpServiceTest {
             .directions(ImmutableList.of(
                 DirectionConfiguration.builder()
                     .title("Test SDO type 1")
-                    .text("- Test body 1 \n\n- Two")
+                    .text("- Test body 1 \n\n- Two\n")
                     .assignee(ALL_PARTIES)
                     .display(Display.builder()
                         .due(Display.Due.ON)
                         .templateDateFormat("d MMMM yyyy 'at' h:mma")
                         .directionRemovable(false)
                         .showDateOnly(true)
+                        .delta("0")
                         .build())
                     .build(),
                 DirectionConfiguration.builder()
                     .title("Test SDO type 2")
-                    .text("Test body 2")
+                    .text("Test body 2\n")
                     .assignee(LOCAL_AUTHORITY)
                     .display(Display.builder()
                         .due(Display.Due.BY)
                         .templateDateFormat("h:mma, d MMMM yyyy")
                         .directionRemovable(false)
                         .showDateOnly(false)
+                        .delta("-3")
+                        .time("12:00:00")
                         .build())
                     .build(),
                 DirectionConfiguration.builder()
                     .title("Test SDO type 3")
-                    .text("Test body 3")
+                    .text("Test body 3\n")
                     .assignee(LOCAL_AUTHORITY)
                     .display(Display.builder()
                         .due(Display.Due.BY)
                         .templateDateFormat("h:mma, d MMMM yyyy")
                         .directionRemovable(true)
                         .showDateOnly(false)
+                        .delta("-2")
+                        .time("16:00:00")
                         .build())
                     .build()))
             .build();

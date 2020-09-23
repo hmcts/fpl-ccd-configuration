@@ -13,12 +13,11 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.DocumentsSentToParty;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
+import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DocumentSenderService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.SentDocumentHistoryService;
 
@@ -30,23 +29,22 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POS
 @RestController
 @RequestMapping("/callback/send-document")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class SendDocumentController {
+public class SendDocumentController extends CallbackController {
     private static final String DOCUMENT_TO_BE_SENT_KEY = "documentToBeSent";
     private final ObjectMapper mapper;
     private final DocumentSenderService documentSenderService;
     private final SentDocumentHistoryService sentDocumentHistoryService;
     private final RepresentativeService representativeService;
-    private final FeatureToggleService featureToggleService;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSave(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = getCaseData(caseDetails);
 
         var representativesServedByPost =
             representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(), POST);
 
-        if (featureToggleService.isXeroxPrintingEnabled() && !representativesServedByPost.isEmpty()) {
+        if (!representativesServedByPost.isEmpty()) {
             DocumentReference documentToBeSent = mapper.convertValue(caseDetails.getData()
                 .get(DOCUMENT_TO_BE_SENT_KEY), DocumentReference.class);
 
@@ -59,13 +57,11 @@ public class SendDocumentController {
         }
         caseDetails.getData().remove(DOCUMENT_TO_BE_SENT_KEY);
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .build();
+        return respond(caseDetails);
     }
 
     private void updateSentDocumentsHistory(CaseDetails caseDetails, List<SentDocument> sentDocuments) {
-        List<Element<DocumentsSentToParty>> sentDocumentsHistory = mapper
+        List<Element<SentDocuments>> sentDocumentsHistory = mapper
             .convertValue(caseDetails.getData().get("documentsSentToParties"), new TypeReference<>() {
             });
 

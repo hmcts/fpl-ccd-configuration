@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.util.List;
 import java.util.Map;
@@ -65,9 +65,9 @@ class CoreCaseDataServiceTest {
 
         @BeforeEach
         void setUp() {
-            when(idamClient.getUserDetails(userAuthToken))
-                .thenReturn(UserDetails.builder().id(userId).build());
-            when(idamClient.authenticateUser(userConfig.getUserName(), userConfig.getPassword()))
+            when(idamClient.getUserInfo(userAuthToken))
+                .thenReturn(UserInfo.builder().uid(userId).build());
+            when(idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword()))
                 .thenReturn(userAuthToken);
 
             when(coreCaseDataApi.startEventForCaseWorker(userAuthToken, serviceAuthToken, userId, JURISDICTION,
@@ -131,14 +131,14 @@ class CoreCaseDataServiceTest {
         List<CaseDetails> cases = List.of(CaseDetails.builder().id(RandomUtils.nextLong()).build());
         SearchResult searchResult = SearchResult.builder().cases(cases).build();
 
-        when(idamClient.authenticateUser(userConfig.getUserName(), userConfig.getPassword())).thenReturn(userAuthToken);
+        when(idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword())).thenReturn(userAuthToken);
         when(coreCaseDataApi.searchCases(userAuthToken, serviceAuthToken, caseType, query)).thenReturn(searchResult);
 
         List<CaseDetails> casesFound = service.searchCases(caseType, query);
 
         assertThat(casesFound).isEqualTo(cases);
         verify(coreCaseDataApi).searchCases(userAuthToken, serviceAuthToken, caseType, query);
-        verify(idamClient).authenticateUser(userConfig.getUserName(), userConfig.getPassword());
+        verify(idamClient).getAccessToken(userConfig.getUserName(), userConfig.getPassword());
     }
 
     private StartEventResponse buildStartEventResponse(String eventId, String eventToken) {

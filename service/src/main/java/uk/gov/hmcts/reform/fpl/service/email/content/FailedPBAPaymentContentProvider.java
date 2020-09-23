@@ -1,40 +1,25 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import com.google.common.collect.ImmutableMap;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
-
-import java.util.Map;
-
-import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.notify.payment.FailedPBANotificationData;
+import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
 @Service
 public class FailedPBAPaymentContentProvider extends AbstractEmailContentProvider {
 
-    @Autowired
-    public FailedPBAPaymentContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
-                                           HearingBookingService hearingBookingService) {
-        super(uiBaseUrl, hearingBookingService);
-    }
-
-    public Map<String, Object> buildCtscNotificationParameters(CaseDetails caseDetails,
-        ApplicationType applicationType) {
-        return ImmutableMap.<String, Object>builder()
-            .putAll(buildCommonNotificationParameters(applicationType))
-            .put("caseUrl", formatCaseUrl(uiBaseUrl, caseDetails.getId()))
+    public FailedPBANotificationData buildCtscNotificationParameters(CaseData caseData,
+                                                                     ApplicationType applicationType) {
+        return FailedPBANotificationData.builder()
+            .caseUrl(getCaseUrl(caseData.getId()))
+            .applicationType(applicationType.getType())
             .build();
     }
 
-    public Map<String, Object> buildLANotificationParameters(ApplicationType applicationType) {
-        return buildCommonNotificationParameters(applicationType);
-    }
-
-    private Map<String, Object> buildCommonNotificationParameters(ApplicationType applicationType) {
-        return Map.of(
-            "applicationType", applicationType.getType());
+    public FailedPBANotificationData buildLANotificationParameters(ApplicationType applicationType) {
+        return FailedPBANotificationData.builder()
+            .applicationType(applicationType.getType())
+            .build();
     }
 }

@@ -10,8 +10,11 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityUserService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityValidationService;
 
 import java.util.Map;
 
@@ -19,9 +22,18 @@ import java.util.Map;
 @RestController
 @RequestMapping("/callback/case-initiation")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class CaseInitiationController {
+public class CaseInitiationController extends CallbackController {
     private final LocalAuthorityService localAuthorityNameService;
     private final LocalAuthorityUserService localAuthorityUserService;
+    private final LocalAuthorityValidationService localAuthorityOnboardedValidationService;
+
+    @PostMapping("/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(
+        @RequestBody CallbackRequest callbackrequest) {
+        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+
+        return respond(caseDetails, localAuthorityOnboardedValidationService.validateIfUserIsOnboarded());
+    }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(
@@ -32,18 +44,15 @@ public class CaseInitiationController {
         Map<String, Object> data = caseDetails.getData();
         data.put("caseLocalAuthority", caseLocalAuthority);
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .build();
+        return respond(caseDetails);
     }
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        String caseId = Long.toString(caseDetails.getId());
-        String caseLocalAuthority = (String) caseDetails.getData()
-            .get("caseLocalAuthority");
+        CaseData caseData = getCaseData(callbackRequest);
 
-        localAuthorityUserService.grantUserAccessWithCaseRole(caseId, caseLocalAuthority);
+        localAuthorityUserService.grantUserAccessWithCaseRole(caseData.getId().toString(),
+            caseData.getCaseLocalAuthority());
+        publishEvent(new CaseDataChanged(caseData));
     }
 }

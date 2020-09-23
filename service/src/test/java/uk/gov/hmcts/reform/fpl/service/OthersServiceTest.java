@@ -17,7 +17,6 @@ import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
@@ -45,7 +44,7 @@ class OthersServiceTest {
 
         String result = service.buildOthersLabel(others);
 
-        assertThat(result).isEqualTo("Person 1 - BLANK - Please complete\n");
+        assertThat(result).isEqualTo("Person 1 - \n");
     }
 
     @Test
@@ -69,7 +68,7 @@ class OthersServiceTest {
 
         String result = service.buildOthersLabel(others);
 
-        assertThat(result).isEqualTo("Person 1 - BLANK - Please complete\nOther person 1 - BLANK - Please complete\n");
+        assertThat(result).isEqualTo("Person 1 - \nOther person 1 - \n");
     }
 
     @Test
@@ -134,7 +133,7 @@ class OthersServiceTest {
     }
 
     @Test
-    void shouldAddExpectedRespondentWhenHiddenDetailsMarkedAsNo() {
+    void shouldAddExpectedOtherWhenHiddenDetailsMarkedAsNo() {
         Other firstOther = otherWithDetailsHiddenValue("No");
         List<Element<Other>> confidentialOther = othersWithConfidentialFields(ID);
 
@@ -147,45 +146,27 @@ class OthersServiceTest {
     }
 
     @Test
-    void shouldHideOtherContactDetailsWhenConfidentialityFlagSet() {
-        List<Element<Other>> additionalOthers = othersWithRemovedConfidentialFields();
-        Other others = otherWithDetailsHiddenValue("Yes");
+    void shouldMaintainOrderingOfOthersWhenPreparingOthersWithConfidential() {
+        UUID otherId = randomUUID();
 
-        CaseData caseData = buildCaseDataWithOthers(others, additionalOthers, null);
+        List<Element<Other>> others = List.of(
+            othersWithRemovedConfidentialFields().get(0),
+            othersWithConfidentialFields(otherId).get(0));
 
-        Others updatedOthers = service.modifyHiddenValues(caseData.getAllOthers());
+        List<Element<Other>> confidentialOthers = List.of(othersWithConfidentialFields(otherId).get(0));
 
-        assertThat(updatedOthers.getFirstOther().getTelephone()).isNull();
-        assertThat(updatedOthers.getFirstOther().getAddress()).isNull();
-    }
+        CaseData caseData = CaseData.builder()
+            .others(Others.builder()
+                .firstOther(othersWithRemovedConfidentialFields().get(0).getValue())
+                .additionalOthers(others)
+                .build())
+            .confidentialOthers(confidentialOthers)
+            .build();
 
-    @Test
-    void shouldNotHideOtherContactDetailsWhenConfidentialityFlagSet() {
-        List<Element<Other>> additionalOthers = othersWithRemovedConfidentialFields();
+        Others updatedOthers = service.prepareOthers(caseData);
 
-        Other others = otherWithDetailsHiddenValue("No");
-
-        CaseData caseData = buildCaseDataWithOthers(others, additionalOthers, null);
-
-        Others updatedOthers = service.modifyHiddenValues(caseData.getAllOthers());
-
-        assertThat(updatedOthers.getFirstOther().getTelephone()).isNotNull();
-        assertThat(updatedOthers.getFirstOther().getAddress()).isNotNull();
-    }
-
-    @Test
-    void shouldRetainConfidentialDetailsWhenConfidentialOtherExists() {
-        List<Element<Other>> confidentialOthers =
-            service.retainConfidentialDetails(wrapElements(otherWithDetailsHiddenValue("Yes")));
-
-        assertThat(unwrapElements(confidentialOthers)).containsOnly(confidentialOther());
-    }
-
-    @Test
-    void shouldReturnEmptyListWhenNoConfidentialOthers() {
-        List<Element<Other>> confidentialOthers = service.retainConfidentialDetails(emptyList());
-
-        assertThat(confidentialOthers).isEmpty();
+        assertThat(updatedOthers.getAdditionalOthers().get(0).getValue()).isEqualTo(others.get(0).getValue());
+        assertThat(updatedOthers.getAdditionalOthers().get(1).getValue()).isEqualTo(others.get(1).getValue());
     }
 
     private CaseData buildCaseDataWithOthers(Other firstOther,

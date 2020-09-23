@@ -1,10 +1,8 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +13,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Others;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
@@ -29,47 +26,38 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 @RestController
 @RequestMapping("/callback/manage-representatives")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class RepresentativesController {
-    private final ObjectMapper mapper;
+public class RepresentativesController extends CallbackController {
     private final RepresentativeService representativeService;
     private final RespondentService respondentService;
     private final OthersService othersService;
-    private final ApplicationEventPublisher applicationEventPublisher;
-    private final RequestData requestData;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = getCaseData(caseDetails);
 
         caseDetails.getData().put("representatives", representativeService.getDefaultRepresentatives(caseData));
         caseDetails.getData().put("respondents_label", getRespondentsLabel(caseData));
         caseDetails.getData().put("others_label", getOthersLabel(caseData));
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .build();
+        return respond(caseDetails);
     }
 
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = getCaseData(caseDetails);
 
         final List<String> validationErrors = representativeService.validateRepresentatives(caseData);
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .errors(validationErrors)
-            .build();
+        return respond(caseDetails, validationErrors);
     }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails updatedCaseDetails = callbackRequest.getCaseDetails();
-        CaseDetails originalCaseDetails = callbackRequest.getCaseDetailsBefore();
-        CaseData updatedCaseData = mapper.convertValue(updatedCaseDetails.getData(), CaseData.class);
-        CaseData originalCaseData = mapper.convertValue(originalCaseDetails.getData(), CaseData.class);
+        CaseData updatedCaseData = getCaseData(updatedCaseDetails);
+        CaseData originalCaseData = getCaseDataBefore(callbackRequest);
 
         representativeService.updateRepresentatives(updatedCaseDetails.getId(), updatedCaseData, originalCaseData);
 
@@ -77,15 +65,12 @@ public class RepresentativesController {
         updatedCaseDetails.getData().put("others", updatedCaseData.getOthers());
         updatedCaseDetails.getData().put("respondents1", updatedCaseData.getRespondents1());
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(updatedCaseDetails.getData())
-            .build();
+        return respond(updatedCaseDetails);
     }
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        applicationEventPublisher.publishEvent(new PartyAddedToCaseEvent(
-            callbackRequest, requestData));
+        publishEvent(new PartyAddedToCaseEvent(getCaseData(callbackRequest), getCaseDataBefore(callbackRequest)));
     }
 
     private String getRespondentsLabel(CaseData caseData) {
