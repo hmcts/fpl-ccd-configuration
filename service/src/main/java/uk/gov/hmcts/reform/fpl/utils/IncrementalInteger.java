@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
-import com.launchdarkly.shaded.javax.annotation.concurrent.NotThreadSafe;
+import javax.annotation.concurrent.NotThreadSafe;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
