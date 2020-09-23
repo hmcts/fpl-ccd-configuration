@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentMetaData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
@@ -44,9 +45,8 @@ public class UploadDocumentsService {
             caseData.getThresholdDocument(), caseDataBefore.getThresholdDocument());
         Document checklistDocument = setUpdatedByAndDateAndTimeOnDocuments(
             caseData.getChecklistDocument(), caseDataBefore.getChecklistDocument());
-        DocumentMetaData courtBundleDocument = setUpdatedByAndDateAndTimeOnDocuments(
-            caseData.getCourtBundle(), caseDataBefore.getCourtBundle()
-        );
+        CourtBundle courtBundleDocument = setUpdatedByAndDateAndTimeOnDocuments(
+            caseData.getCourtBundle(), caseDataBefore.getCourtBundle());
 
         Map<String, Object> updatedCaseData = new HashMap<>();
 
@@ -89,7 +89,7 @@ public class UploadDocumentsService {
 
     public <T extends DocumentMetaData> T setUpdatedByAndDateAndTimeOnDocuments(T currentDocuments,
                                                                                 T previousDocuments) {
-        if (currentDocuments == null) {
+        if (currentDocuments == null || currentDocuments.getTypeOfDocument() == null) {
             return null;
         }
 

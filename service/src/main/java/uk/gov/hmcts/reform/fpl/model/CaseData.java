@@ -175,7 +175,7 @@ public class CaseData {
     @Valid
     public final Document socialWorkEvidenceTemplateDocument;
     @Valid
-    public final DocumentMetaData courtBundle;
+    public final CourtBundle courtBundle;
     @NotEmpty(message = "Add the child's details")
     @Valid
     private final List<@NotNull(message = "Add the child's details") Element<Child>> children1;
