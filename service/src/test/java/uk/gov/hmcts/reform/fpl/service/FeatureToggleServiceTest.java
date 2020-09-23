@@ -171,6 +171,15 @@ class FeatureToggleServiceTest {
             any(LDUser.class), eq(false));
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForIsLocalAuthorityRestrictedFromCaseSubmission(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isRestrictedFromCaseSubmission("test name")).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(eq("restrict-case-submission"), any(LDUser.class), eq(false));
+    }
+
     private static Stream<Arguments> userAttributesTestSource() {
         return Stream.of(
                 Arguments.of(
