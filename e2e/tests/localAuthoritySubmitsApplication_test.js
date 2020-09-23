@@ -543,8 +543,7 @@ Scenario('local authority uploads documents @create-case-with-mandatory-sections
 Scenario('local authority cannot upload court bundle', async (I, caseViewPage, uploadDocumentsEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
   I.dontSeeElement(uploadDocumentsEventPage.documents.courtBundle);
-  await I.seeCheckAnswersAndCompleteEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
+  I.click('Cancel');
 });
 
 Scenario('local authority tries to submit without giving consent', async (I, caseViewPage, submitApplicationEventPage) => {
