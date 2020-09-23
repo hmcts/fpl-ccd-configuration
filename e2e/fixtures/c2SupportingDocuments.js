@@ -1,4 +1,4 @@
-const config = require('../../config.js');
+const config = require('../config.js');
 
 module.exports = {
   name: 'C2 supporting document',
