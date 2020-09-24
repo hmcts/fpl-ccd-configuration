@@ -139,7 +139,7 @@ withPipeline(type, product, component) {
   }
 
   before('functionalTest:aat') {
-    env.SKIP_FUNCTIONAL_TESTS = 'true'
+    env.TESTS_SELECTOR="@smoke-tests"
   }
 
   before('functionalTest:demo') {
@@ -173,6 +173,10 @@ withPipeline(type, product, component) {
         uploadCoreCaseDataDefinitions('ithc')
       }
     }
+  }
+
+  before('buildinfra:perftest') {
+    archiveCoreCaseDataDefinitions('perftest')
   }
 
   before('smoketest:aat') {

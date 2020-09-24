@@ -114,7 +114,6 @@ Custom configuration parameters:
 |rd_professional.api.url|ENV|URL for Professional Reference Data service|
 |send-letter.url|ENV|URL for service delivering Bulk Print functionality|
 |ccd.ui.base.url|ENV|URL for CCD Web UI, used in notifications|
-|fpl.local_authority_codes_forbidden_case_submission|ENV|(Optional) Local authority code, which will be blocked from submitting applications|
 |fpl.local_authority_email_to_code.mapping|SECRET|Explained below.|
 |fpl.local_authority_code_to_name.mapping|SECRET|Explained below.|
 |fpl.local_authority_code_to_hmcts_court.mapping|SECRET|Explained below.|
