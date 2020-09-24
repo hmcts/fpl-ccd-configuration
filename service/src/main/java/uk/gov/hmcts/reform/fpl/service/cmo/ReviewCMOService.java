@@ -131,8 +131,6 @@ public class ReviewCMOService {
             if (nextHearingBooking.isPresent()
                 && caseData.getReviewCMODecision().hasReviewOutcomeOf(SEND_TO_ALL_PARTIES)) {
                 switch (nextHearingBooking.get().getType()) {
-                    case ISSUE_RESOLUTION:
-                        return State.ISSUE_RESOLUTION;
                     case FINAL:
                         return State.FINAL_HEARING;
                     default:

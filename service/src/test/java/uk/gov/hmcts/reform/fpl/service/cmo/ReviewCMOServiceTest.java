@@ -261,7 +261,7 @@ class ReviewCMOServiceTest {
     }
 
     @Test
-    void shouldReturnIssueResolutionStateWhenNextHearingTypeIsIssueResolutionAndFeatureToggleIsToggledOn() {
+    void shouldReturnCaseManagementStateWhenNextHearingTypeIsIssueResolutionAndFeatureToggleIsToggledOn() {
         given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
 
         List<Element<HearingBooking>> hearingBookings = List.of(
@@ -273,7 +273,7 @@ class ReviewCMOServiceTest {
             element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, UUID.randomUUID())));
 
         CaseData caseData = buildCaseData(SEND_TO_ALL_PARTIES, hearingBookings);
-        assertThat(service.getStateBasedOnNextHearing(caseData, cmoID)).isEqualTo(State.ISSUE_RESOLUTION);
+        assertThat(service.getStateBasedOnNextHearing(caseData, cmoID)).isEqualTo(State.CASE_MANAGEMENT);
     }
 
     @Test

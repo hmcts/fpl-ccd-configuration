@@ -101,7 +101,7 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
             .status(APPROVED)
             .build();
 
-        assertThat(State.ISSUE_RESOLUTION).isNotEqualTo(responseData.getState());
+        assertThat(State.FINAL_HEARING).isNotEqualTo(responseData.getState());
         assertThat(responseData.getDraftUploadedCMOs()).isEmpty();
         assertThat(responseData.getSealedCMOs())
             .extracting(Element::getValue)
@@ -109,7 +109,7 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldUpdateStateToIssueResolutionWhenNextHearingTypeIsIssueResolutionAndCmoDecisionIsSendToAllParties()
+    void shouldKeepStateInCaseManagementWhenNextHearingTypeIsIssueResolutionAndCmoDecisionIsSendToAllParties()
         throws Exception {
         given(documentSealingService.sealDocument(convertedDocument)).willReturn(sealedDocument);
         given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
@@ -124,7 +124,7 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
             .reviewCMODecision(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build()).build();
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
-        assertThat(State.ISSUE_RESOLUTION).isEqualTo(responseData.getState());
+        assertThat(State.CASE_MANAGEMENT).isEqualTo(responseData.getState());
     }
 
     @Test
