@@ -111,8 +111,12 @@ module.exports = function () {
       } else {
         this.see(name);
       }
-      dateAndTimeUploaded && this.see(dateAndTimeUploaded);
-      uploadedBy && this.see(uploadedBy);
+      if (dateAndTimeUploaded) {
+        this.see(dateAndTimeUploaded);
+      }
+      if (uploadedBy) {
+        this.see(uploadedBy);
+      }
     },
 
     seeFamilyManNumber(familyManNumber) {

@@ -25,6 +25,7 @@ import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseData;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -62,7 +63,7 @@ class UploadDocumentsServiceTest {
     void shouldSetUploadedByAndDateTimeOnCaseDocuments() {
         CaseData caseData = caseData();
 
-        Map<String, Object> map = uploadDocumentsService.updateCaseDocuments(caseData, caseData);
+        Map<String, Object> map = uploadDocumentsService.updateCaseDocuments(caseData, emptyCaseData());
 
         assertThat(map.get("documents_socialWorkChronology_document"))
             .isEqualToComparingOnlyGivenFields(Document.builder()
