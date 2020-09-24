@@ -31,7 +31,7 @@ const assertCaseDocuments = (I, hasUploadedSWET=true) => {
   if (hasUploadedSWET) {
     I.seeDocument('Social work evidence template (SWET)', 'mockFile.txt', 'Attached', '', 'Date and time uploaded', 'Uploaded by');
   } else {
-    I.seeDocument('Social work evidence template (SWET)', '', 'Not Required', 'Date and time uploaded', 'Uploaded by');
+    I.seeDocument('Social work evidence template (SWET)', '', 'Not Required');
   }
 
   I.seeDocument('Threshold document', 'mockFile.txt', 'Attached', '', 'Date and time uploaded', 'Uploaded by');
