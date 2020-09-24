@@ -9,6 +9,8 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked.INTERPRETER;
 import static uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked.NONE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked.SOMETHING_ELSE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked.SPOKEN_OR_WRITTEN_WELSH;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 
 class HearingBookingTest {
 
@@ -36,4 +38,15 @@ class HearingBookingTest {
         assertThat(hearing.buildHearingNeedsList()).isEmpty();
     }
 
+    @Test
+    void shouldReturnTrueIfHearingTypeIsOfTypeFinal() {
+        HearingBooking hearingBooking = HearingBooking.builder().type(FINAL).build();
+        assertThat(hearingBooking.isHearingOfType(FINAL)).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseIfHearingTypeIsNotOfTypeFinal() {
+        HearingBooking hearingBooking = HearingBooking.builder().type(CASE_MANAGEMENT).build();
+        assertThat(hearingBooking.isHearingOfType(FINAL)).isFalse();
+    }
 }

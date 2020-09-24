@@ -80,4 +80,8 @@ public class HearingBooking {
         }
         return list;
     }
+
+    public boolean isHearingOfType(HearingType hearingType) {
+        return type == hearingType;
+    }
 }

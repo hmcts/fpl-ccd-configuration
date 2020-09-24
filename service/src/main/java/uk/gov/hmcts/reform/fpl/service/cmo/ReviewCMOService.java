@@ -131,7 +131,7 @@ public class ReviewCMOService {
 
             if (nextHearingBooking.isPresent()
                 && caseData.getReviewCMODecision().hasReviewOutcomeOf(SEND_TO_ALL_PARTIES)
-                && (nextHearingBooking.get().getType() == HearingType.FINAL)) {
+                && nextHearingBooking.get().isHearingOfType(HearingType.FINAL)) {
                 return State.FINAL_HEARING;
             } else {
                 return currentState;
