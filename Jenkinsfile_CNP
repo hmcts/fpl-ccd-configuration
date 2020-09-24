@@ -172,6 +172,10 @@ withPipeline(type, product, component) {
     }
   }
 
+  before('buildinfra:perftest') {
+    archiveCoreCaseDataDefinitions('perftest')
+  }
+
   before('smoketest:aat') {
     env.URL = "https://manage-case.aat.platform.hmcts.net"
     archiveCoreCaseDataDefinitions('aat')
