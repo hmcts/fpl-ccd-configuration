@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -129,13 +130,11 @@ public class ReviewCMOService {
             Optional<HearingBooking> nextHearingBooking = caseData.getNextHearingAfterCmo(cmoID);
 
             if (nextHearingBooking.isPresent()
-                && caseData.getReviewCMODecision().hasReviewOutcomeOf(SEND_TO_ALL_PARTIES)) {
-                switch (nextHearingBooking.get().getType()) {
-                    case FINAL:
-                        return State.FINAL_HEARING;
-                    default:
-                        return currentState;
-                }
+                && caseData.getReviewCMODecision().hasReviewOutcomeOf(SEND_TO_ALL_PARTIES)
+                && (nextHearingBooking.get().getType() == HearingType.FINAL)) {
+                return State.FINAL_HEARING;
+            } else {
+                return currentState;
             }
         }
         return currentState;
