@@ -33,8 +33,7 @@ public class UploadDocumentsController extends CallbackController {
         List<String> errors = documentsValidatorService.validateDocuments(caseData);
 
         if (errors.isEmpty()) {
-            caseDetails.getData().putAll(uploadDocumentsService
-                .updateCaseDocuments(caseData, caseDataBefore));
+            caseDetails.getData().putAll(uploadDocumentsService.updateCaseDocuments(caseData, caseDataBefore));
         }
 
         return respond(caseDetails, errors);

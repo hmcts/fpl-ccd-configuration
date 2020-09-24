@@ -91,8 +91,8 @@ class UploadDocumentsServiceTest {
     void shouldUpdateOtherSocialWorkDocumentsListWithUpdatedDetailsAndUser() {
         List<DocumentSocialWorkOther> updateDocs = unwrapElements(
             uploadDocumentsService.setUpdatedByAndDateAndTimeOnDocuments(
-                createCaseDataWithUpdatedDocumentSocialWorkOther(),
-                createCaseDataWithOldDocumentSocialWorkOther()));
+                createUpdatedDocumentSocialWorkOther(),
+                createPreviousDocumentSocialWorkOther()));
 
         assertThat(updateDocs).first()
             .extracting(
@@ -111,10 +111,9 @@ class UploadDocumentsServiceTest {
     void shouldUpdateOtherSocialWorkDocumentsListWithNewDocument() {
         List<DocumentSocialWorkOther> updatedDocs = unwrapElements(
             uploadDocumentsService.setUpdatedByAndDateAndTimeOnDocuments(
-                createCaseDataWithCurrentDocumentSocialWorkOther(),
-                createCaseDataWithOldDocumentSocialWorkOther()));
+                createCurrentDocumentSocialWorkOther(),
+                createPreviousDocumentSocialWorkOther()));
 
-        //Below tests old updated document title and title for new document
         assertThat(updatedDocs)
             .extracting(DocumentSocialWorkOther::getDocumentTitle)
             .containsExactly("Additional Doc 1 - changed", "Additional Doc 2");
@@ -129,8 +128,8 @@ class UploadDocumentsServiceTest {
     void shouldUpdateDocumentWithUpdatedDetailsAndUser() {
         Document document =
             uploadDocumentsService.setUpdatedByAndDateAndTimeOnDocuments(
-                createCaseDataWithUpdatedDocument(),
-                createCaseDataWithOldDocument());
+                createUpdatedDocument(),
+                createPreviousDocument());
 
         assertThat(document)
             .extracting(Document::getTypeOfDocument)
@@ -152,7 +151,7 @@ class UploadDocumentsServiceTest {
         Document document =
             uploadDocumentsService.setUpdatedByAndDateAndTimeOnDocuments(
                 null,
-                createCaseDataWithOldDocument());
+                createPreviousDocument());
 
         assertThat(document).isNull();
     }
@@ -161,7 +160,7 @@ class UploadDocumentsServiceTest {
     void shouldReturnCurrentDocumentWithUpdatedByAndTimeWhenNoPreviousDocs() {
         Document document =
             uploadDocumentsService.setUpdatedByAndDateAndTimeOnDocuments(
-                createCaseDataWithUpdatedDocument(),
+                createUpdatedDocument(),
                 null);
 
         assertThat(document)
@@ -179,7 +178,7 @@ class UploadDocumentsServiceTest {
             );
     }
 
-    private List<Element<DocumentSocialWorkOther>> createCaseDataWithCurrentDocumentSocialWorkOther() {
+    private List<Element<DocumentSocialWorkOther>> createCurrentDocumentSocialWorkOther() {
         return givenCaseData.toBuilder()
             .otherSocialWorkDocuments(wrapElements(DocumentSocialWorkOther.builder()
                     .documentTitle("Additional Doc 1 - changed")
@@ -198,7 +197,7 @@ class UploadDocumentsServiceTest {
             .getOtherSocialWorkDocuments();
     }
 
-    private List<Element<DocumentSocialWorkOther>> createCaseDataWithOldDocumentSocialWorkOther() {
+    private List<Element<DocumentSocialWorkOther>> createPreviousDocumentSocialWorkOther() {
         return givenCaseData.toBuilder()
             .otherSocialWorkDocuments(wrapElements(DocumentSocialWorkOther.builder()
                 .documentTitle("Additional Doc 1")
@@ -211,7 +210,7 @@ class UploadDocumentsServiceTest {
             .getOtherSocialWorkDocuments();
     }
 
-    private List<Element<DocumentSocialWorkOther>> createCaseDataWithUpdatedDocumentSocialWorkOther() {
+    private List<Element<DocumentSocialWorkOther>> createUpdatedDocumentSocialWorkOther() {
         return givenCaseData.toBuilder()
             .otherSocialWorkDocuments(wrapElements(DocumentSocialWorkOther.builder()
                 .documentTitle("New Additional Doc 1")
@@ -223,7 +222,7 @@ class UploadDocumentsServiceTest {
             .getOtherSocialWorkDocuments();
     }
 
-    private Document createCaseDataWithOldDocument() {
+    private Document createPreviousDocument() {
         return givenCaseData.toBuilder()
             .socialWorkChronologyDocument(Document.builder()
                 .typeOfDocument(DocumentReference.builder()
@@ -235,7 +234,7 @@ class UploadDocumentsServiceTest {
             .getSocialWorkChronologyDocument();
     }
 
-    private Document createCaseDataWithUpdatedDocument() {
+    private Document createUpdatedDocument() {
         return givenCaseData.toBuilder()
             .socialWorkChronologyDocument(Document.builder()
                 .typeOfDocument(DocumentReference.builder()
