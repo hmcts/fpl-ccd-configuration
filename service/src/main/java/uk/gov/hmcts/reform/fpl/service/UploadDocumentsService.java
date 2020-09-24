@@ -26,8 +26,7 @@ public class UploadDocumentsService {
     private final Time time;
     private final DocumentUploadHelper documentUploadHelper;
 
-    public Map<String, Object> updateCaseDocuments(CaseData caseDataBefore,
-                                                   CaseData caseData) {
+    public Map<String, Object> updateCaseDocuments(CaseData caseData, CaseData caseDataBefore) {
         List<Element<DocumentSocialWorkOther>> otherSocialWorkDocuments = setUpdatedByAndDateAndTimeOnDocuments(
                 caseData.getOtherSocialWorkDocuments(), caseDataBefore.getOtherSocialWorkDocuments());
 
