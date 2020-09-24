@@ -62,6 +62,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECT
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.NAMED_DATE;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.SPECIFIC_TIME_NAMED_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
@@ -300,6 +301,25 @@ class GeneratedOrderServiceTest {
 
         assertThat(builtOrder.getExpiryDate())
             .isEqualTo(formatLocalDateToString(time.now().toLocalDate(), "'11:59pm', d MMMM y"));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = GeneratedOrderType.class, names = {"CARE_ORDER", "SUPERVISION_ORDER"})
+    void shouldReturnFormattedExpiryDateWhenInterimSubtypeAndSpecificTimeNamedDateSelected(GeneratedOrderType type) {
+        LocalDateTime localDateTime = LocalDateTime.of(2022, 9, 22, 11, 59);
+        final OrderTypeAndDocument orderTypeAndDocument = orderTypeAndDocument(type, INTERIM);
+        final JudgeAndLegalAdvisor judgeAndLegalAdvisor = testJudgeAndLegalAdviser();
+        final CaseData caseData = caseData()
+            .interimEndDate(InterimEndDate.builder()
+                .type(SPECIFIC_TIME_NAMED_DATE)
+                .endDateTime(localDateTime)
+                .build())
+            .build();
+
+        GeneratedOrder builtOrder = service.buildCompleteOrder(orderTypeAndDocument, judgeAndLegalAdvisor, caseData);
+
+        assertThat(builtOrder.getExpiryDate())
+            .isEqualTo("11:59am, 22 September 2022");
     }
 
     @Test
