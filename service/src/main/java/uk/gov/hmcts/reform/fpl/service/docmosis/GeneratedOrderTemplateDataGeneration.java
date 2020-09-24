@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 
 import java.util.List;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
@@ -93,11 +94,12 @@ public abstract class GeneratedOrderTemplateDataGeneration
     }
 
     String getInterimEndDateString(InterimEndDate interimEndDate) {
-        return interimEndDate.toLocalDateTime()
+        return Optional.ofNullable(interimEndDate.getEndDateTime())
+            .or(interimEndDate::toLocalDateTime)
             .map(dateTime -> {
                 final String dayOrdinalSuffix = getDayOfMonthSuffix(dateTime.getDayOfMonth());
-                return formatLocalDateTimeBaseUsingFormat(
-                    dateTime, String.format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix));
+                return formatLocalDateTimeBaseUsingFormat(dateTime, String.format(DATE_WITH_ORDINAL_SUFFIX,
+                    dayOrdinalSuffix));
             })
             .orElse("the end of the proceedings");
     }
