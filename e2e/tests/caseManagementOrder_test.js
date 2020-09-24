@@ -1,5 +1,5 @@
 const config = require('../config.js');
-const standardDirectionOrder = require('../fixtures/standardDirectionOrder.json');
+const standardDirectionOrder = require('../fixtures/caseData/prepareForHearing.json');
 const cmoHelper = require('../helpers/cmo_helper');
 const dateFormat = require('dateformat');
 
@@ -36,7 +36,7 @@ Scenario('Judge makes changes to agreed CMO and seals', async (I, caseViewPage, 
   await I.retryUntilExists(() => I.click('Continue'), '#reviewCMODecision_decision');
   I.see('mockFile.docx');
   reviewAgreedCaseManagementOrderEventPage.selectMakeChangesToCmo();
-  reviewAgreedCaseManagementOrderEventPage.uploadAmendedCmo(config.testNonEmptyWordFile);
+  reviewAgreedCaseManagementOrderEventPage.uploadAmendedCmo(config.testWordFile);
   await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
   I.seeEventSubmissionConfirmation(config.applicationActions.reviewAgreedCmo);
   caseViewPage.selectTab(caseViewPage.tabs.orders);
