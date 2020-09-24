@@ -234,7 +234,8 @@ public class GeneratedOrderService {
     }
 
     private String getInterimExpiryDate(InterimEndDate interimEndDate) {
-        return interimEndDate.toLocalDateTime()
+        return Optional.ofNullable(interimEndDate.getEndDateTime())
+            .or(interimEndDate::toLocalDateTime)
             .map(dateTime -> formatLocalDateTimeBaseUsingFormat(dateTime, TIME_DATE))
             .orElse(END_OF_PROCEEDINGS.getLabel());
     }
