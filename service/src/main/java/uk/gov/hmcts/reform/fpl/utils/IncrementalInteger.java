@@ -1,23 +1,25 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
+@NoArgsConstructor
 @AllArgsConstructor
 @NotThreadSafe
 public class IncrementalInteger {
-    private int currentValue;
-
-    public IncrementalInteger() {
-        currentValue = 0;
-    }
+    private int value;
 
     public int getAndIncrement() {
-        return currentValue++;
+        return value++;
     }
 
     public int incrementAndGet() {
-        return ++currentValue;
+        return ++value;
+    }
+
+    public int getValue() {
+        return value;
     }
 }

@@ -9,11 +9,13 @@ class IncrementalIntegerTest {
     void shouldGetAndIncrementCurrentIntegerValue() {
         IncrementalInteger i = new IncrementalInteger();
         assertThat(i.getAndIncrement()).isZero();
+        assertThat(i.getValue()).isEqualTo(1);
     }
 
     @Test
     void shouldIncrementAndGetCurrentIntegerValue() {
         IncrementalInteger i = new IncrementalInteger();
         assertThat(i.incrementAndGet()).isEqualTo(1);
+        assertThat(i.getValue()).isEqualTo(1);
     }
 }
