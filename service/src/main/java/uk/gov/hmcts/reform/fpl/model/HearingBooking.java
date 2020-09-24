@@ -81,7 +81,7 @@ public class HearingBooking {
         return list;
     }
 
-    public boolean isHearingOfType(HearingType hearingType) {
+    public boolean isOfType(HearingType hearingType) {
         return type == hearingType;
     }
 }

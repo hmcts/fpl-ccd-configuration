@@ -293,7 +293,7 @@ class ReviewCMOServiceTest {
     }
 
     @Test
-    void shouldReturnCurrentCaseStateWhenNextHearingIsTypeIssueResolutionAndFeatureToggleIsToggledOff() {
+    void shouldReturnCaseManagementStateWhenNextHearingIsTypeIssueResolutionAndFeatureToggleIsToggledOff() {
         given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(false);
 
         CaseData caseData = CaseData.builder()
@@ -304,7 +304,7 @@ class ReviewCMOServiceTest {
     }
 
     @Test
-    void shouldReturnCurrentStateWhenNextHearingIsNotOfTypeIssueResolutionOrFinal() {
+    void shouldReturnCaseManagementStateWhenNextHearingIsNotOfTypeIssueResolutionOrFinal() {
         given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
 
         List<Element<HearingBooking>> hearingBookings = List.of(
@@ -318,7 +318,7 @@ class ReviewCMOServiceTest {
     }
 
     @Test
-    void shouldReturnCurrentStateWhenNextReviewDecisionIsNotSendToAllParties() {
+    void shouldReturnCaseManagementStateWhenNextReviewDecisionIsNotSendToAllParties() {
         given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
 
         List<Element<HearingBooking>> hearingBookings = List.of(

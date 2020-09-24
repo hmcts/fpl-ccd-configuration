@@ -41,12 +41,12 @@ class HearingBookingTest {
     @Test
     void shouldReturnTrueIfHearingTypeIsOfTypeFinal() {
         HearingBooking hearingBooking = HearingBooking.builder().type(FINAL).build();
-        assertThat(hearingBooking.isHearingOfType(FINAL)).isTrue();
+        assertThat(hearingBooking.isOfType(FINAL)).isTrue();
     }
 
     @Test
     void shouldReturnFalseIfHearingTypeIsNotOfTypeFinal() {
         HearingBooking hearingBooking = HearingBooking.builder().type(CASE_MANAGEMENT).build();
-        assertThat(hearingBooking.isHearingOfType(FINAL)).isFalse();
+        assertThat(hearingBooking.isOfType(FINAL)).isFalse();
     }
 }
