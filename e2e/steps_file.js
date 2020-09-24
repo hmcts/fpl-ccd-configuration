@@ -101,7 +101,7 @@ module.exports = function () {
       }, 'ccd-case-event-trigger');
     },
 
-    seeDocument(title, name, status = '', reason = '') {
+    seeDocument(title, name, status = '', reason = '', dateAndTimeUploaded, uploadedBy) {
       this.see(title);
       if (status !== '') {
         this.see(status);
@@ -111,6 +111,8 @@ module.exports = function () {
       } else {
         this.see(name);
       }
+      this.see(dateAndTimeUploaded);
+      this.see(uploadedBy);
     },
 
     seeFamilyManNumber(familyManNumber) {
