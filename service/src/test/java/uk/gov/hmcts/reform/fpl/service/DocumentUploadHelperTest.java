@@ -3,9 +3,8 @@ package uk.gov.hmcts.reform.fpl.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
@@ -20,20 +19,17 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {
-    DocumentUploadHelper.class
-})
 class DocumentUploadHelperTest {
     private static final String AUTH_TOKEN = "token";
     private static final String USER_ID = "1";
 
-    @MockBean
+    @Mock
     private IdamClient idamClient;
 
-    @MockBean
+    @Mock
     private RequestData requestData;
 
-    @Autowired
+    @InjectMocks
     private DocumentUploadHelper documentUploadHelper;
 
     @BeforeEach

@@ -89,22 +89,19 @@ class UploadDocumentsServiceTest {
 
     @Test
     void shouldUpdateOtherSocialWorkDocumentsListWithUpdatedDetailsAndUser() {
-        List<DocumentSocialWorkOther> list = unwrapElements(
+        List<DocumentSocialWorkOther> updateDocs = unwrapElements(
             uploadDocumentsService.setUpdatedByAndDateAndTimeOnDocuments(
                 createCaseDataWithUpdatedDocumentSocialWorkOther(),
                 createCaseDataWithOldDocumentSocialWorkOther()));
 
-        assertThat(list).first()
-            .extracting(DocumentSocialWorkOther::getTypeOfDocument)
-            .extracting(DocumentReference::getUrl)
-            .isEqualTo("/new_test.doc");
-
-        assertThat(list).first()
+        assertThat(updateDocs).first()
             .extracting(
+                documentSocialWorkOther -> documentSocialWorkOther.getTypeOfDocument().getUrl(),
                 DocumentSocialWorkOther::getDocumentTitle,
                 DocumentSocialWorkOther::getDateTimeUploaded,
                 DocumentSocialWorkOther::getUploadedBy)
             .containsExactly(
+                "/new_test.doc",
                 "New Additional Doc 1",
                 time.now(),
                 USER);
@@ -112,17 +109,17 @@ class UploadDocumentsServiceTest {
 
     @Test
     void shouldUpdateOtherSocialWorkDocumentsListWithNewDocument() {
-        List<DocumentSocialWorkOther> list = unwrapElements(
+        List<DocumentSocialWorkOther> updatedDocs = unwrapElements(
             uploadDocumentsService.setUpdatedByAndDateAndTimeOnDocuments(
                 createCaseDataWithCurrentDocumentSocialWorkOther(),
                 createCaseDataWithOldDocumentSocialWorkOther()));
 
         //Below tests old updated document title and title for new document
-        assertThat(list)
+        assertThat(updatedDocs)
             .extracting(DocumentSocialWorkOther::getDocumentTitle)
             .containsExactly("Additional Doc 1 - changed", "Additional Doc 2");
 
-        assertThat(list)
+        assertThat(updatedDocs)
             .extracting(DocumentSocialWorkOther::getTypeOfDocument)
             .extracting(DocumentReference::getUrl)
             .containsExactly("/test1 - changed.doc", "/test2.doc");
@@ -158,6 +155,28 @@ class UploadDocumentsServiceTest {
                 createCaseDataWithOldDocument());
 
         assertThat(document).isNull();
+    }
+
+    @Test
+    void shouldReturnCurrentDocumentWithUpdatedByAndTimeWhenNoPreviousDocs() {
+        Document document =
+            uploadDocumentsService.setUpdatedByAndDateAndTimeOnDocuments(
+                createCaseDataWithUpdatedDocument(),
+                null);
+
+        assertThat(document)
+            .extracting(Document::getTypeOfDocument)
+            .extracting(DocumentReference::getUrl)
+            .isEqualTo("/new_test.doc");
+
+        assertThat(document)
+            .extracting(
+                Document::getDateTimeUploaded,
+                Document::getUploadedBy)
+            .containsExactly(
+                time.now(),
+                USER
+            );
     }
 
     private List<Element<DocumentSocialWorkOther>> createCaseDataWithCurrentDocumentSocialWorkOther() {
