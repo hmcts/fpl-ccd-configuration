@@ -101,7 +101,6 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
             .status(APPROVED)
             .build();
 
-        assertThat(State.FINAL_HEARING).isNotEqualTo(responseData.getState());
         assertThat(responseData.getDraftUploadedCMOs()).isEmpty();
         assertThat(responseData.getSealedCMOs())
             .extracting(Element::getValue)
