@@ -43,7 +43,7 @@ class CaseManagementOrderRejectedEventHandlerTest {
 
         RejectedCMOTemplate expectedTemplate = new RejectedCMOTemplate();
 
-        given(inboxLookupService.getNotificationRecipientsEmails(caseData))
+        given(inboxLookupService.getRecipients(caseData))
             .willReturn(List.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         given(caseManagementOrderEmailContentProvider.buildCMORejectedByJudgeNotificationParameters(caseData, cmo))

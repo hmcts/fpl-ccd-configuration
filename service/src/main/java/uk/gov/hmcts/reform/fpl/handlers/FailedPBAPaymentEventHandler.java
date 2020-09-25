@@ -32,7 +32,7 @@ public class FailedPBAPaymentEventHandler {
         FailedPBANotificationData params = notificationContent
             .buildLANotificationParameters(event.getApplicationType());
 
-        List<String> emails = inboxLookupService.getNotificationRecipientsEmails(caseData);
+        List<String> emails = inboxLookupService.getRecipients(caseData);
 
         emails.forEach(email -> notificationService.sendEmail(
             APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA, email, params, caseData.getId().toString()));

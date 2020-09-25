@@ -54,7 +54,7 @@ public class CaseManagementOrderIssuedEventHandler {
         final IssuedCMOTemplate localAuthorityNotificationParameters = caseManagementOrderEmailContentProvider
             .buildCMOIssuedNotificationParameters(caseData, cmo, DIGITAL_SERVICE);
 
-        List<String> emails = inboxLookupService.getNotificationRecipientsEmails(caseData);
+        List<String> emails = inboxLookupService.getRecipients(caseData);
 
         emails.forEach(email -> notificationService.sendEmail(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, email,
             localAuthorityNotificationParameters, caseData.getId().toString()));

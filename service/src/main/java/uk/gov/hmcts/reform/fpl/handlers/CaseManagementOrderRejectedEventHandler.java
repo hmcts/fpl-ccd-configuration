@@ -29,7 +29,7 @@ public class CaseManagementOrderRejectedEventHandler {
             caseManagementOrderEmailContentProvider.buildCMORejectedByJudgeNotificationParameters(
                 caseData, event.getCmo());
 
-        List<String> emails = inboxLookupService.getNotificationRecipientsEmails(caseData);
+        List<String> emails = inboxLookupService.getRecipients(caseData);
 
         emails.forEach(email -> notificationService.sendEmail(
             CMO_REJECTED_BY_JUDGE_TEMPLATE, email, parameters, caseData.getId().toString()));

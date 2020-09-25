@@ -45,7 +45,7 @@ class InboxLookupServiceTest {
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
             .willReturn(Optional.of(new LocalAuthority(LOCAL_AUTHORITY_EMAIL_ADDRESS)));
 
-        List<String> emails = inboxLookupService.getNotificationRecipientsEmails(caseData);
+        List<String> emails = inboxLookupService.getRecipients(caseData);
 
         assertThat(emails).containsExactly(LOCAL_AUTHORITY_EMAIL_ADDRESS);
     }
@@ -57,7 +57,7 @@ class InboxLookupServiceTest {
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
             .willReturn(Optional.empty());
 
-        List<String> emails = inboxLookupService.getNotificationRecipientsEmails(caseData);
+        List<String> emails = inboxLookupService.getRecipients(caseData);
 
         assertThat(emails).containsExactly(SOLICITOR_EMAIL_ADDRESS);
     }
@@ -69,7 +69,7 @@ class InboxLookupServiceTest {
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
             .willReturn(Optional.of(new LocalAuthority("")));
 
-        List<String> emails = inboxLookupService.getNotificationRecipientsEmails(caseData);
+        List<String> emails = inboxLookupService.getRecipients(caseData);
 
         assertThat(emails).containsExactly(SOLICITOR_EMAIL_ADDRESS);
     }
@@ -83,7 +83,7 @@ class InboxLookupServiceTest {
 
         given(featureToggleService.isSendToSolicitorEnabled(LOCAL_AUTHORITY_CODE)).willReturn(true);
 
-        List<String> emails = inboxLookupService.getNotificationRecipientsEmails(caseData);
+        List<String> emails = inboxLookupService.getRecipients(caseData);
 
         assertThat(emails).containsExactly(LOCAL_AUTHORITY_EMAIL_ADDRESS, SOLICITOR_EMAIL_ADDRESS);
     }
@@ -97,7 +97,7 @@ class InboxLookupServiceTest {
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
             .willReturn(Optional.of(new LocalAuthority("")));
 
-        List<String> emails = inboxLookupService.getNotificationRecipientsEmails(caseData);
+        List<String> emails = inboxLookupService.getRecipients(caseData);
 
         assertThat(emails).containsExactly(FALLBACK_INBOX);
     }
@@ -109,7 +109,7 @@ class InboxLookupServiceTest {
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
             .willReturn(Optional.empty());
 
-        List<String> emails = inboxLookupService.getNotificationRecipientsEmails(caseData);
+        List<String> emails = inboxLookupService.getRecipients(caseData);
 
         assertThat(emails).containsExactly(FALLBACK_INBOX);
     }

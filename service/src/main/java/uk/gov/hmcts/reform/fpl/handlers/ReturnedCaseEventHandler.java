@@ -28,7 +28,7 @@ public class ReturnedCaseEventHandler {
 
         ReturnedCaseTemplate parameters = returnedCaseContentProvider.parametersWithCaseUrl(caseData);
 
-        List<String> emails = inboxLookupService.getNotificationRecipientsEmails(caseData);
+        List<String> emails = inboxLookupService.getRecipients(caseData);
 
         emails.forEach(email -> notificationService.sendEmail(
             APPLICATION_RETURNED_TO_THE_LA, email, parameters, caseData.getId().toString()));

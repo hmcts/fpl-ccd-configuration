@@ -55,7 +55,7 @@ public class StandardDirectionsOrderIssuedEventHandler {
         CaseData caseData = event.getCaseData();
         Map<String, Object> parameters = localAuthorityEmailContentProvider
             .buildLocalAuthorityStandardDirectionOrderIssuedNotification(caseData);
-        List<String> emails = inboxLookupService.getNotificationRecipientsEmails(caseData);
+        List<String> emails = inboxLookupService.getRecipients(caseData);
 
         emails.forEach(email -> notificationService.sendEmail(
             STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, email, parameters, caseData.getId().toString()));

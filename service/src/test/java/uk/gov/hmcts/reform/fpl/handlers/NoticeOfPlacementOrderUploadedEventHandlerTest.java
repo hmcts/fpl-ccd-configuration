@@ -65,7 +65,7 @@ class NoticeOfPlacementOrderUploadedEventHandlerTest {
         final NoticeOfPlacementOrderUploadedEvent event = new NoticeOfPlacementOrderUploadedEvent(
             caseData, DOCUMENT_CONTENTS);
 
-        given(inboxLookupService.getNotificationRecipientsEmails(caseData))
+        given(inboxLookupService.getRecipients(caseData))
             .willReturn(List.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         given(localAuthorityEmailContentProvider.buildNoticeOfPlacementOrderUploadedNotification(caseData))

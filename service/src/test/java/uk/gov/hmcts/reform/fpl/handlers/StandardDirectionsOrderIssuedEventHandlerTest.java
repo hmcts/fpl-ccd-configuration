@@ -98,7 +98,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
         given(localAuthorityEmailContentProvider.buildLocalAuthorityStandardDirectionOrderIssuedNotification(caseData))
             .willReturn(expectedParameters);
 
-        given(inboxLookupService.getNotificationRecipientsEmails(caseData))
+        given(inboxLookupService.getRecipients(caseData))
             .willReturn(List.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         standardDirectionsOrderIssuedEventHandler.notifyLocalAuthorityOfIssuedStandardDirectionsOrder(

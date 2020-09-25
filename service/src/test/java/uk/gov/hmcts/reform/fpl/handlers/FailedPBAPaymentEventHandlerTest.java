@@ -56,7 +56,7 @@ class FailedPBAPaymentEventHandlerTest {
 
         given(requestData.authorisation()).willReturn(AUTH_TOKEN);
 
-        given(inboxLookupService.getNotificationRecipientsEmails(caseData))
+        given(inboxLookupService.getRecipients(caseData))
             .willReturn(List.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
     }
 

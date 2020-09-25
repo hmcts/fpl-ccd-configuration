@@ -44,7 +44,7 @@ public class NewHearingsAddedHandler {
     @EventListener
     public void sendEmailToLA(final NewHearingsAdded event) {
         final CaseData caseData = event.getCaseData();
-        List<String> emails = inboxLookupService.getNotificationRecipientsEmails(caseData);
+        List<String> emails = inboxLookupService.getRecipients(caseData);
 
         event.getNewHearings().forEach(hearing -> {
             NoticeOfHearingTemplate templateData = newHearingContent.buildNewNoticeOfHearingNotification(caseData,

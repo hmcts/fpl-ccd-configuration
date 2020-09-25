@@ -34,7 +34,7 @@ public class NoticeOfPlacementOrderUploadedEventHandler {
     @EventListener
     public void sendEmailForNoticeOfPlacementOrderUploaded(NoticeOfPlacementOrderUploadedEvent noticeOfPlacementEvent) {
         CaseData caseData = noticeOfPlacementEvent.getCaseData();
-        List<String> emails = inboxLookupService.getNotificationRecipientsEmails(caseData);
+        List<String> emails = inboxLookupService.getRecipients(caseData);
 
         Map<String, Object> parameters =
             localAuthorityEmailContentProvider.buildNoticeOfPlacementOrderUploadedNotification(caseData);

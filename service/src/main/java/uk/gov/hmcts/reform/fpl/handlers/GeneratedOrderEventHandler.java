@@ -91,7 +91,7 @@ public class GeneratedOrderEventHandler {
 
     private void sendToLocalAuthority(final CaseData caseData,
                                       final Map<String, Object> templateParameters) {
-        List<String> emails = inboxLookupService.getNotificationRecipientsEmails(caseData);
+        List<String> emails = inboxLookupService.getRecipients(caseData);
 
         emails.forEach(email -> notificationService.sendEmail(
             ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES, email, templateParameters,

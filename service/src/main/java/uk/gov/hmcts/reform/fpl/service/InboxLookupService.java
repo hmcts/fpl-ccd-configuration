@@ -24,7 +24,7 @@ public class InboxLookupService {
     @Value("${fpl.local_authority_fallback_inbox}")
     private String fallbackInbox;
 
-    public List<String> getNotificationRecipientsEmails(final CaseData caseData) {
+    public List<String> getRecipients(final CaseData caseData) {
         List<String> recipients = new ArrayList<>();
         localAuthorityEmailLookupConfiguration.getLocalAuthority(caseData.getCaseLocalAuthority())
             .map(LocalAuthority::getEmail)

@@ -82,7 +82,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
         CaseData caseData = caseData();
         CaseManagementOrder cmo = buildCmo();
 
-        given(inboxLookupService.getNotificationRecipientsEmails(caseData))
+        given(inboxLookupService.getRecipients(caseData))
             .willReturn(List.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         given(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(caseData, cmo,
