@@ -56,7 +56,7 @@ public class UploadDocumentsService {
         CourtBundle courtBundleDocument = setUpdatedByAndDateAndTimeOnDocuments(
             caseData.getCourtBundle(), caseDataBefore.getCourtBundle());
 
-        CaseData updateCaseDataWithDocuments = caseData.toBuilder()
+        CaseData updateCaseDataWithDocuments = CaseData.builder()
             .otherSocialWorkDocuments(otherSocialWorkDocuments)
             .socialWorkChronologyDocument(socialWorkChronologyDocument)
             .socialWorkStatementDocument(socialWorkStatementDocument)
