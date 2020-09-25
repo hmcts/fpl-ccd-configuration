@@ -15,7 +15,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -23,6 +25,7 @@ import static java.lang.Integer.parseInt;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMapping;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
@@ -42,15 +45,23 @@ public class StandardDirectionsService {
 
     public boolean hasEmptyDates(CaseData caseData) {
         return Stream.of(caseData.getAllParties(),
-                caseData.getLocalAuthorityDirections(),
-                caseData.getRespondentDirections(),
-                caseData.getCafcassDirections(),
-                caseData.getOtherPartiesDirections(),
-                caseData.getCourtDirections())
+            caseData.getLocalAuthorityDirections(),
+            caseData.getRespondentDirections(),
+            caseData.getCafcassDirections(),
+            caseData.getOtherPartiesDirections(),
+            caseData.getCourtDirections())
             .flatMap(Collection::stream)
             .map(Element::getValue)
             .map(Direction::getDateToBeCompletedBy)
             .anyMatch(Objects::isNull);
+    }
+
+    public Map<String, List<Element<Direction>>> populateStandardDirections(CaseData caseData) {
+        Map<String, List<Element<Direction>>> standardDirections = new HashMap<>();
+        getAssigneeToDirectionMapping(getDirections(caseData.getFirstHearing().orElse(null)))
+            .forEach((assignee, directionsElements) -> standardDirections.put(assignee.getValue(), directionsElements));
+
+        return standardDirections;
     }
 
     private Element<Direction> constructDirectionForCCD(LocalDateTime hearingDate, DirectionConfiguration direction) {

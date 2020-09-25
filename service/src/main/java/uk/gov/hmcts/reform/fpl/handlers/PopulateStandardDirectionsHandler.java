@@ -9,14 +9,13 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
+import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
+import java.util.List;
 import java.util.Map;
-
-import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMapping;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -24,27 +23,22 @@ public class PopulateStandardDirectionsHandler {
     private final CoreCaseDataService coreCaseDataService;
     private final StandardDirectionsService standardDirectionsService;
     private final ObjectMapper mapper;
-    private final HearingBookingService hearingService;
 
     @Async
     @EventListener
     public void populateStandardDirections(PopulateStandardDirectionsEvent event) {
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        Map<String, List<Element<Direction>>> populatedDirections
+            = standardDirectionsService.populateStandardDirections(caseData);
+
+        caseDetails.getData().putAll(populatedDirections);
 
         coreCaseDataService.triggerEvent(caseDetails.getJurisdiction(),
             caseDetails.getCaseTypeId(),
             caseDetails.getId(),
             "populateSDO",
-            populateStandardDirections(caseDetails.getData()));
-    }
-
-    private Map<String, Object> populateStandardDirections(Map<String, Object> data) {
-        CaseData caseData = mapper.convertValue(data, CaseData.class);
-        HearingBooking hearingBooking = hearingService.getFirstHearing(caseData.getHearingDetails()).orElse(null);
-
-        getAssigneeToDirectionMapping(standardDirectionsService.getDirections(hearingBooking))
-            .forEach((assignee, directionsElements) -> data.put(assignee.getValue(), directionsElements));
-
-        return data;
+            caseDetails.getData()
+        );
     }
 }

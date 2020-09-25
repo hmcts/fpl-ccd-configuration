@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
@@ -24,6 +25,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -89,6 +91,29 @@ class StandardDirectionsServiceTest {
             .build();
 
         assertThat(service.hasEmptyDates(caseData)).isFalse();
+    }
+
+    @Test
+    void shouldPopulateStandardDirections() {
+        LocalDate hearingDate = LocalDate.of(2099, 6, 1);
+        given(calendarService.getWorkingDayFrom(eq(hearingDate), eq(-2))).willReturn(hearingDate.minusDays(2));
+        given(calendarService.getWorkingDayFrom(eq(hearingDate), eq(-3))).willReturn(hearingDate.minusDays(3));
+
+        List<Element<HearingBooking>> hearings = createHearingBookings(hearingDate.atStartOfDay(),
+            hearingDate.atStartOfDay().plusDays(1));
+
+        CaseData caseData = CaseData.builder().hearingDetails(hearings).build();
+
+        Map<String, List<Element<Direction>>> standardDirections = service.populateStandardDirections(caseData);
+
+        List<Element<Direction>> allParties = standardDirections.remove("allParties");
+        List<Element<Direction>> localAuthorityDirections = standardDirections.remove("localAuthorityDirections");
+
+        Direction[] expectedDirections = expectedDirections(hearingDate);
+
+        assertThat(unwrapElements(allParties)).containsExactly(expectedDirections[0]);
+        assertThat(unwrapElements(localAuthorityDirections)).containsExactly(
+            expectedDirections[1], expectedDirections[2]);
     }
 
     private Direction buildDirectionWithDate() {
