@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentP
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
+import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE;
@@ -33,13 +34,13 @@ public class NoticeOfPlacementOrderUploadedEventHandler {
     @EventListener
     public void sendEmailForNoticeOfPlacementOrderUploaded(NoticeOfPlacementOrderUploadedEvent noticeOfPlacementEvent) {
         CaseData caseData = noticeOfPlacementEvent.getCaseData();
-        String recipientEmail = inboxLookupService.getNotificationRecipientEmail(caseData);
+        List<String> emails = inboxLookupService.getNotificationRecipientsEmails(caseData);
 
         Map<String, Object> parameters =
             localAuthorityEmailContentProvider.buildNoticeOfPlacementOrderUploadedNotification(caseData);
 
-        notificationService.sendEmail(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE, recipientEmail, parameters,
-            caseData.getId().toString());
+        emails.forEach(email -> notificationService.sendEmail(
+            NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE, email, parameters, caseData.getId().toString()));
 
         issuedOrderAdminNotificationHandler.sendToAdmin(caseData,
             noticeOfPlacementEvent.getDocumentContents(), NOTICE_OF_PLACEMENT_ORDER);

@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvi
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
+import java.util.List;
 import java.util.Map;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
@@ -124,8 +125,8 @@ class C2UploadedEventHandlerTest {
             given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(
                 UserInfo.builder().sub(CTSC_INBOX).roles(LOCAL_AUTHORITY.getRoles()).build());
 
-            given(inboxLookupService.getNotificationRecipientEmail(caseData))
-                .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
+            given(inboxLookupService.getNotificationRecipientsEmails(caseData))
+                .willReturn(List.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
             given(c2UploadedEmailContentProvider
                 .buildC2UploadNotificationTemplate(caseData, c2DocumentBundle.getDocument()))

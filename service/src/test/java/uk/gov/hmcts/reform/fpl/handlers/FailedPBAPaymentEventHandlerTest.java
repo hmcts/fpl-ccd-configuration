@@ -16,6 +16,8 @@ import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.FailedPBAPaymentContentProvider;
 
+import java.util.List;
+
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
@@ -54,8 +56,8 @@ class FailedPBAPaymentEventHandlerTest {
 
         given(requestData.authorisation()).willReturn(AUTH_TOKEN);
 
-        given(inboxLookupService.getNotificationRecipientEmail(caseData))
-            .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
+        given(inboxLookupService.getNotificationRecipientsEmails(caseData))
+            .willReturn(List.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
     }
 
     @Test

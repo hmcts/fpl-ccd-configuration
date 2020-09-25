@@ -54,10 +54,10 @@ public class CaseManagementOrderIssuedEventHandler {
         final IssuedCMOTemplate localAuthorityNotificationParameters = caseManagementOrderEmailContentProvider
             .buildCMOIssuedNotificationParameters(caseData, cmo, DIGITAL_SERVICE);
 
-        final String email = inboxLookupService.getNotificationRecipientEmail(caseData);
+        List<String> emails = inboxLookupService.getNotificationRecipientsEmails(caseData);
 
-        notificationService.sendEmail(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, email,
-            localAuthorityNotificationParameters, caseData.getId().toString());
+        emails.forEach(email -> notificationService.sendEmail(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, email,
+            localAuthorityNotificationParameters, caseData.getId().toString()));
     }
 
     private void sendToCafcass(final CaseData caseData, CaseManagementOrder cmo) {

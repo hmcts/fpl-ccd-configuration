@@ -92,8 +92,8 @@ class NewHearingsAddedHandlerTest {
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(UUID.randomUUID(), createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))));
 
-        given(inboxLookupService.getNotificationRecipientEmail(caseData))
-            .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
+        given(inboxLookupService.getNotificationRecipientsEmails(caseData))
+            .willReturn(List.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         newHearingsAddedHandler.sendEmailToLA(new NewHearingsAdded(caseData, hearingBookings));
 

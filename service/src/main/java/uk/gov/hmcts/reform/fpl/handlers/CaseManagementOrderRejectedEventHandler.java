@@ -11,6 +11,8 @@ import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 
+import java.util.List;
+
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
 
 @Service
@@ -27,9 +29,9 @@ public class CaseManagementOrderRejectedEventHandler {
             caseManagementOrderEmailContentProvider.buildCMORejectedByJudgeNotificationParameters(
                 caseData, event.getCmo());
 
-        String recipientEmail = inboxLookupService.getNotificationRecipientEmail(caseData);
+        List<String> emails = inboxLookupService.getNotificationRecipientsEmails(caseData);
 
-        notificationService.sendEmail(CMO_REJECTED_BY_JUDGE_TEMPLATE, recipientEmail, parameters,
-            caseData.getId().toString());
+        emails.forEach(email -> notificationService.sendEmail(
+            CMO_REJECTED_BY_JUDGE_TEMPLATE, email, parameters, caseData.getId().toString()));
     }
 }

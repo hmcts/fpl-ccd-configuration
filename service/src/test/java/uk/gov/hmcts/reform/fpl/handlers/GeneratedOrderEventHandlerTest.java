@@ -89,8 +89,8 @@ class GeneratedOrderEventHandlerTest {
     void before() {
         caseData = caseData();
 
-        given(inboxLookupService.getNotificationRecipientEmail(caseData))
-            .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
+        given(inboxLookupService.getNotificationRecipientsEmails(caseData))
+            .willReturn(List.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         given(orderIssuedEmailContentProvider.buildParametersWithCaseUrl(caseData, DOCUMENT_CONTENTS, GENERATED_ORDER))
             .willReturn(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true));
