@@ -100,20 +100,15 @@ class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
     void shouldSendCMOIssuedNotificationsIfJudgeApproves() {
         given(documentDownloadService.downloadDocument(order.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
 
-        CaseDetails caseDetails = buildCaseDetailsForApprovedCMO();
-        caseDetails.setId(CASE_ID);
-        caseDetails.setJurisdiction(JURISDICTION);
-        caseDetails.setCaseTypeId(CASE_TYPE);
+        CaseManagementOrder caseManagementOrder = buildCMO(APPROVED);
+
+        CaseDetails caseDetails = buildCaseDetailsForApprovedCMO(caseManagementOrder);
 
         CaseDetails caseDetailsBefore = CaseDetails.builder().data(
             Map.of("draftUploadedCMOs", List.of(element(buildCMO(SEND_TO_JUDGE))))).build();
 
         CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails)
             .caseDetailsBefore(caseDetailsBefore).build();
-
-        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
-
-        DocumentReference expectedDocumentReference = caseData.getSealedCMOs().get(0).getValue().getOrder();
 
         postSubmittedEvent(callbackRequest);
 
@@ -157,7 +152,7 @@ class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
                 CASE_TYPE,
                 CASE_ID,
                 SEND_DOCUMENT_EVENT,
-                Map.of("documentToBeSent", expectedDocumentReference));
+                Map.of("documentToBeSent", caseManagementOrder.getOrder()));
 
             verifyNoMoreInteractions(notificationClient);
         });
@@ -187,17 +182,22 @@ class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
         verifyNoMoreInteractions(notificationClient);
     }
 
-    private CaseDetails buildCaseDetailsForApprovedCMO() {
+    private CaseDetails buildCaseDetailsForApprovedCMO(CaseManagementOrder... caseManagementOrders) {
         UUID cmoId = UUID.randomUUID();
 
-        return asCaseDetails(CaseData.builder()
+        CaseDetails caseDetails = asCaseDetails(CaseData.builder()
             .representatives(createRepresentatives())
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .draftUploadedCMOs(List.of(element(cmoId, buildCMO(SEND_TO_JUDGE))))
-            .sealedCMOs(List.of(element(buildCMO(APPROVED))))
+            .sealedCMOs(wrapElements(caseManagementOrders))
             .reviewCMODecision(buildReviewDecision(SEND_TO_ALL_PARTIES))
             .hearingDetails(List.of(element(hearing(cmoId))))
             .build());
+
+        caseDetails.setId(CASE_ID);
+        caseDetails.setJurisdiction(JURISDICTION);
+        caseDetails.setCaseTypeId(CASE_TYPE);
+        return caseDetails;
     }
 
     private CaseDetails buildCaseDetailsForRejectedCMO() {
