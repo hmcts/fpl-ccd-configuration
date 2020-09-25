@@ -41,8 +41,6 @@ public class SendDocumentController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        System.out.println("Im going to send to reps");
-
         var representativesServedByPost =
             representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(), POST);
 
