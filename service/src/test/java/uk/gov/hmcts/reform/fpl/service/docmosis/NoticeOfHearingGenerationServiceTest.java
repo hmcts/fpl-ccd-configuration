@@ -108,6 +108,7 @@ class NoticeOfHearingGenerationServiceTest {
             .hearingVenue("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW")
             .judgeAndLegalAdvisor(getExpectedDocmosisJudgeAndLegalAdvisor())
             .postingDate(formatLocalDateToString(LocalDate.now(), DATE))
+            .additionalNotes("additional note")
             .courtseal(COURT_SEAL.getValue())
             .crest(CREST.getValue());
     }
@@ -123,6 +124,7 @@ class NoticeOfHearingGenerationServiceTest {
                 .judgeLastName("Law")
                 .legalAdvisorName("Watson")
                 .build())
+            .additionalNotes("additional note")
             .build();
     }
 

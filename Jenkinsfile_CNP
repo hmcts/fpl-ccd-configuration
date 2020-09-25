@@ -144,8 +144,7 @@ withPipeline(type, product, component) {
   }
 
   before('buildinfra:demo') {
-    def subscription = 'nonprod'
-    withSubscription(subscription) {
+    withSubscription('nonprod') {
       withTeamSecrets(pipelineConf, 'demo') {
         archiveCoreCaseDataDefinitions('demo')
         uploadCoreCaseDataDefinitions('demo')
@@ -154,8 +153,7 @@ withPipeline(type, product, component) {
   }
 
   before('buildinfra:ithc') {
-    def subscription = 'nonprod'
-    withSubscription(subscription) {
+    withSubscription('nonprod') {
       withTeamSecrets(pipelineConf, 'ithc') {
         archiveCoreCaseDataDefinitions('ithc')
         uploadCoreCaseDataDefinitions('ithc')
@@ -164,7 +162,7 @@ withPipeline(type, product, component) {
   }
 
   before('buildinfra:perftest') {
-    withSubscription(subscription) {
+    withSubscription('nonprod') {
       withTeamSecrets(pipelineConf, 'perftest') {
         archiveCoreCaseDataDefinitions('perftest')
         uploadCoreCaseDataDefinitions('perftest')
