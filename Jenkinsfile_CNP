@@ -72,18 +72,9 @@ def uploadCoreCaseDataDefinitions(env) {
 
 withPipeline(type, product, component) {
   pipelineConf = config;
-  onMaster {
-    loadVaultSecrets(serviceSecrets + otherSecrets)
-  }
-  onDemo {
-    loadVaultSecrets(serviceSecrets + otherSecrets)
-  }
-  onIthc {
-    loadVaultSecrets(serviceSecrets + otherSecrets)
-  }
-  onPR {
-    loadVaultSecrets(serviceSecrets + otherSecrets)
-  }
+
+  loadVaultSecrets(serviceSecrets + otherSecrets)
+
   disableLegacyDeployment()
 
   enableAksStagingDeployment()
@@ -173,7 +164,12 @@ withPipeline(type, product, component) {
   }
 
   before('buildinfra:perftest') {
-    archiveCoreCaseDataDefinitions('perftest')
+    withSubscription(subscription) {
+      withTeamSecrets(pipelineConf, 'perftest') {
+        archiveCoreCaseDataDefinitions('perftest')
+        uploadCoreCaseDataDefinitions('perftest')
+      }
+    }
   }
 
   before('smoketest:aat') {
