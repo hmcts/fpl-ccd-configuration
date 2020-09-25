@@ -29,6 +29,7 @@ module.exports = [
       judgeLastName: 'Reed',
       legalAdvisorName: 'Rupert Robert',
     },
+    additionalNotes: 'please make sure that you attend this...',
     sendNoticeOfHearing: 'Yes',
   },
   {

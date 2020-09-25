@@ -40,6 +40,7 @@ public class NoticeOfHearingGenerationService {
             .preHearingAttendance(dataService.extractPrehearingAttendance(hearingBooking))
             .judgeAndLegalAdvisor(dataService.getJudgeAndLegalAdvisor(hearingBooking.getJudgeAndLegalAdvisor()))
             .postingDate(formatLocalDateToString(LocalDate.now(), DATE))
+            .additionalNotes(hearingBooking.getAdditionalNotes())
             .courtseal(COURT_SEAL.getValue())
             .crest(CREST.getValue())
             .build();
