@@ -24,11 +24,9 @@ import uk.gov.hmcts.reform.fpl.service.email.content.StandardDirectionOrderIssue
 import java.util.Map;
 import java.util.Set;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE;
@@ -143,7 +141,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
         standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(
             new StandardDirectionsOrderIssuedEvent(caseData));
 
-        verify(notificationService, never()).sendEmail(any(), any(String.class), anyMap(), any());
+        verifyNoInteractions(notificationService);
     }
 
     @Test
@@ -163,7 +161,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
         standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(
             new StandardDirectionsOrderIssuedEvent(caseData));
 
-        verify(notificationService, never()).sendEmail(any(), any(String.class), anyMap(), any());
+        verifyNoInteractions(notificationService);
     }
 
     private Map<String, Object> getStandardDirectionTemplateParameters() {

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.RandomUtils;
 import org.json.JSONObject;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -30,13 +31,14 @@ import java.util.Map;
 import java.util.Set;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
@@ -90,6 +92,14 @@ class C2UploadedEventHandlerTest {
         @BeforeEach
         void before() {
             given(requestData.authorisation()).willReturn(AUTH_TOKEN);
+        }
+
+        @AfterEach
+        void resetInvocations() {
+            reset(notificationService);
+            reset(inboxLookupService);
+            reset(featureToggleService);
+            reset(c2UploadedEmailContentProvider);
         }
 
         @Test
@@ -206,7 +216,7 @@ class C2UploadedEventHandlerTest {
             c2UploadedEventHandler.sendC2UploadedNotificationToAllocatedJudge(
                 new C2UploadedEvent(caseData, c2DocumentBundle));
 
-            verify(notificationService, never()).sendEmail(any(), any(String.class), anyMap(), any());
+            verifyNoInteractions(notificationService);
         }
 
         private AllocatedJudgeTemplateForC2 getAllocatedJudgeParametersForC2() {
