@@ -26,13 +26,13 @@ public class UploadDocumentsController extends CallbackController {
 
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
-        CaseData caseDataBefore = getCaseDataBefore(callbackrequest);
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
         List<String> errors = documentsValidatorService.validateDocuments(caseData);
 
         if (errors.isEmpty()) {
+            CaseData caseDataBefore = getCaseDataBefore(callbackrequest);
             caseDetails.getData().putAll(uploadDocumentsService.updateCaseDocuments(caseData, caseDataBefore));
         }
 
