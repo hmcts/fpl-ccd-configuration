@@ -16,6 +16,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseStateID": "Open",
+    "UserRole": "caseworker-caa",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseStateID": "Submitted",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "CRU"
@@ -65,6 +72,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseStateID": "Submitted",
+    "UserRole": "caseworker-caa",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseStateID": "Gatekeeping",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "CRU"
@@ -109,6 +123,13 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseStateID": "Gatekeeping",
     "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseStateID": "Gatekeeping",
+    "UserRole": "caseworker-caa",
     "CRUD": "CRU"
   },
   {
@@ -205,6 +226,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseStateID": "PREPARE_FOR_HEARING",
+    "UserRole": "caseworker-caa",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseStateID": "CLOSED",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
@@ -256,6 +284,13 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseStateID": "CLOSED",
     "UserRole": "caseworker-publiclaw-solicitor",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseStateID": "CLOSED",
+    "UserRole": "caseworker-caa",
     "CRUD": "CRU"
   },
   {
@@ -270,6 +305,13 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseStateID": "RETURNED",
     "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseStateID": "RETURNED",
+    "UserRole": "caseworker-caa",
     "CRUD": "CRU"
   },
   {
