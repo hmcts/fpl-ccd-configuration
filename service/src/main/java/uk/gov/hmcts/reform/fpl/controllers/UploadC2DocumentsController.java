@@ -110,7 +110,7 @@ public class UploadC2DocumentsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().put("c2DocumentBundle", buildC2DocumentBundle(caseData));
+        caseDetails.getData().put("c2DocumentBundle", uploadC2DocumentsService.buildC2DocumentBundle(caseData));
         caseDetails.getData().keySet().removeAll(Set.of(TEMPORARY_C2_DOCUMENT, "c2ApplicationType", AMOUNT_TO_PAY));
 
         return respond(caseDetails);
@@ -152,31 +152,6 @@ public class UploadC2DocumentsController extends CallbackController {
         var updatedC2DocumentMap = mapper.convertValue(data.get(TEMPORARY_C2_DOCUMENT), Map.class);
         updatedC2DocumentMap.remove("document");
         data.put(TEMPORARY_C2_DOCUMENT, updatedC2DocumentMap);
-    }
-
-    private List<Element<C2DocumentBundle>> buildC2DocumentBundle(CaseData caseData) {
-        List<Element<C2DocumentBundle>> c2DocumentBundle = defaultIfNull(caseData.getC2DocumentBundle(),
-            Lists.newArrayList());
-
-        List<SupportingEvidenceBundle> updatedSupportingEvidenceBundle =
-            unwrapElements(caseData.getTemporaryC2Document().getSupportingEvidenceBundle())
-                .stream()
-                .map(supportingEvidence -> supportingEvidence.toBuilder().dateTimeUploaded(time.now()).build())
-                .collect(Collectors.toList());
-
-        var c2DocumentBundleBuilder = caseData.getTemporaryC2Document().toBuilder()
-            .author(idamClient.getUserInfo(requestData.authorisation()).getName())
-            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
-            .supportingEvidenceBundle(wrapElements(updatedSupportingEvidenceBundle));
-
-        c2DocumentBundleBuilder.type(caseData.getC2ApplicationType().get("type"));
-
-        c2DocumentBundle.add(Element.<C2DocumentBundle>builder()
-            .id(UUID.randomUUID())
-            .value(c2DocumentBundleBuilder.build())
-            .build());
-
-        return c2DocumentBundle;
     }
 
     private boolean displayAmountToPay(CaseDetails caseDetails) {
