@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -26,7 +25,6 @@ public class UploadDocumentsService {
 
     private final Time time;
     private final DocumentUploadHelper documentUploadHelper;
-    private final ObjectMapper mapper;
 
     public Map<String, Object> updateCaseDocuments(CaseData caseData, CaseData caseDataBefore) {
         List<Element<DocumentSocialWorkOther>> otherSocialWorkDocuments = setUpdatedByAndDateAndTimeOnDocuments(
@@ -56,19 +54,19 @@ public class UploadDocumentsService {
         CourtBundle courtBundleDocument = setUpdatedByAndDateAndTimeOnDocuments(
             caseData.getCourtBundle(), caseDataBefore.getCourtBundle());
 
-        CaseData updateCaseDataWithDocuments = CaseData.builder()
-            .otherSocialWorkDocuments(otherSocialWorkDocuments)
-            .socialWorkChronologyDocument(socialWorkChronologyDocument)
-            .socialWorkStatementDocument(socialWorkStatementDocument)
-            .socialWorkAssessmentDocument(socialWorkAssessmentDocument)
-            .socialWorkCarePlanDocument(socialWorkCarePlanDocument)
-            .socialWorkEvidenceTemplateDocument(socialWorkEvidenceTemplateDocument)
-            .thresholdDocument(thresholdDocument)
-            .checklistDocument(checklistDocument)
-            .courtBundle(courtBundleDocument)
-            .build();
+        Map<String, Object> updatedCaseData = new HashMap<>();
 
-        return mapper.convertValue(updateCaseDataWithDocuments, new TypeReference<>() {});
+        updatedCaseData.put("documents_socialWorkOther", otherSocialWorkDocuments);
+        updatedCaseData.put("documents_socialWorkChronology_document", socialWorkChronologyDocument);
+        updatedCaseData.put("documents_socialWorkStatement_document", socialWorkStatementDocument);
+        updatedCaseData.put("documents_socialWorkAssessment_document", socialWorkAssessmentDocument);
+        updatedCaseData.put("documents_socialWorkCarePlan_document", socialWorkCarePlanDocument);
+        updatedCaseData.put("documents_socialWorkEvidenceTemplate_document", socialWorkEvidenceTemplateDocument);
+        updatedCaseData.put("documents_threshold_document", thresholdDocument);
+        updatedCaseData.put("documents_checklist_document", checklistDocument);
+        updatedCaseData.put("courtBundle", courtBundleDocument);
+
+        return updatedCaseData;
     }
 
     public <T extends DocumentMetaData> List<Element<T>> setUpdatedByAndDateAndTimeOnDocuments(
