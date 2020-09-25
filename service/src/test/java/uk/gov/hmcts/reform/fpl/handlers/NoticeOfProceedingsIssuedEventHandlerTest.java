@@ -80,7 +80,7 @@ class NoticeOfProceedingsIssuedEventHandlerTest {
         noticeOfProceedingsIssuedEventHandler.notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(
             new NoticeOfProceedingsIssuedEvent(caseData));
 
-        verify(notificationService, never()).sendEmail(any(), any(), anyMap(), any());
+        verify(notificationService, never()).sendEmail(any(), any(String.class), anyMap(), any());
     }
 
     @Test
@@ -100,7 +100,7 @@ class NoticeOfProceedingsIssuedEventHandlerTest {
         noticeOfProceedingsIssuedEventHandler.notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(
             new NoticeOfProceedingsIssuedEvent(caseData));
 
-        verify(notificationService, never()).sendEmail(any(), any(), anyMap(), any());
+        verify(notificationService, never()).sendEmail(any(), any(String.class), anyMap(), any());
     }
 
     private AllocatedJudgeTemplateForNoticeOfProceedings getAllocatedJudgeTemplateParameters() {

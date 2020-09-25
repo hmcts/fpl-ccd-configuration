@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.FailedPBAPaymentContentProvider;
 
-import java.util.List;
+import java.util.Collection;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA;
@@ -32,10 +32,10 @@ public class FailedPBAPaymentEventHandler {
         FailedPBANotificationData params = notificationContent
             .buildLANotificationParameters(event.getApplicationType());
 
-        List<String> emails = inboxLookupService.getRecipients(caseData);
+        Collection<String> emails = inboxLookupService.getRecipients(caseData);
 
-        emails.forEach(email -> notificationService.sendEmail(
-            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA, email, params, caseData.getId().toString()));
+        notificationService.sendEmail(APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA, emails, params,
+            caseData.getId().toString());
     }
 
     @EventListener

@@ -17,8 +17,8 @@ import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvi
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -79,7 +79,7 @@ class C2PbaPaymentNotTakenEventHandlerTest {
             UserInfo.builder().sub(CTSC_INBOX).roles(LOCAL_AUTHORITY.getRoles()).build());
 
         given(inboxLookupService.getRecipients(caseData))
-            .willReturn(List.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
+            .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         given(c2UploadedEmailContentProvider.buildC2UploadPbaPaymentNotTakenNotification(caseData))
             .willReturn(c2PaymentNotTakenParameters);

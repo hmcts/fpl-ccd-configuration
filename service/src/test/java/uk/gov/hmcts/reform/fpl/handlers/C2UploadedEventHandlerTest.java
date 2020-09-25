@@ -26,8 +26,8 @@ import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvi
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static org.mockito.ArgumentMatchers.any;
@@ -126,7 +126,7 @@ class C2UploadedEventHandlerTest {
                 UserInfo.builder().sub(CTSC_INBOX).roles(LOCAL_AUTHORITY.getRoles()).build());
 
             given(inboxLookupService.getRecipients(caseData))
-                .willReturn(List.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
+                .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
             given(c2UploadedEmailContentProvider
                 .buildC2UploadNotificationTemplate(caseData, c2DocumentBundle.getDocument()))
@@ -206,7 +206,7 @@ class C2UploadedEventHandlerTest {
             c2UploadedEventHandler.sendC2UploadedNotificationToAllocatedJudge(
                 new C2UploadedEvent(caseData, c2DocumentBundle));
 
-            verify(notificationService, never()).sendEmail(any(), any(), anyMap(), any());
+            verify(notificationService, never()).sendEmail(any(), any(String.class), anyMap(), any());
         }
 
         private AllocatedJudgeTemplateForC2 getAllocatedJudgeParametersForC2() {

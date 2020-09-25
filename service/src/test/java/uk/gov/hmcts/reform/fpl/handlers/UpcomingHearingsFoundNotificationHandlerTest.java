@@ -80,7 +80,7 @@ public class UpcomingHearingsFoundNotificationHandlerTest {
 
         upcomingHearingsFoundNotificationHandler.sendEmailWithUpcomingHearings(upcomingHearings);
 
-        verify(notificationService, never()).sendEmail(any(), any(), anyMap(), any());
+        verify(notificationService, never()).sendEmail(any(), any(String.class), anyMap(), any());
     }
 
     @Test
@@ -92,6 +92,6 @@ public class UpcomingHearingsFoundNotificationHandlerTest {
 
         upcomingHearingsFoundNotificationHandler.sendEmailWithUpcomingHearings(upcomingHearings);
 
-        verify(notificationService, never()).sendEmail(any(), any(), anyMap(), any());
+        verify(notificationService, never()).sendEmail(any(), any(String.class), anyMap(), any());
     }
 }

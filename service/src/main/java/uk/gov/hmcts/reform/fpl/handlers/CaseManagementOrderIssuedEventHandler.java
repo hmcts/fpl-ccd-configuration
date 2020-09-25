@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 
+import java.util.Collection;
 import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
@@ -54,10 +55,10 @@ public class CaseManagementOrderIssuedEventHandler {
         final IssuedCMOTemplate localAuthorityNotificationParameters = caseManagementOrderEmailContentProvider
             .buildCMOIssuedNotificationParameters(caseData, cmo, DIGITAL_SERVICE);
 
-        List<String> emails = inboxLookupService.getRecipients(caseData);
+        Collection<String> emails = inboxLookupService.getRecipients(caseData);
 
-        emails.forEach(email -> notificationService.sendEmail(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, email,
-            localAuthorityNotificationParameters, caseData.getId().toString()));
+        notificationService.sendEmail(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, emails,
+            localAuthorityNotificationParameters, caseData.getId().toString());
     }
 
     private void sendToCafcass(final CaseData caseData, CaseManagementOrder cmo) {

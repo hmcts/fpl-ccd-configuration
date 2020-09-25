@@ -21,8 +21,8 @@ import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.StandardDirectionOrderIssuedEmailContentProvider;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -99,13 +99,15 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
             .willReturn(expectedParameters);
 
         given(inboxLookupService.getRecipients(caseData))
-            .willReturn(List.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
+            .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         standardDirectionsOrderIssuedEventHandler.notifyLocalAuthorityOfIssuedStandardDirectionsOrder(
             new StandardDirectionsOrderIssuedEvent(caseData));
 
         verify(notificationService).sendEmail(
-            STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, LOCAL_AUTHORITY_EMAIL_ADDRESS, expectedParameters,
+            STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE,
+            Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            expectedParameters,
             "12345");
     }
 
@@ -141,7 +143,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
         standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(
             new StandardDirectionsOrderIssuedEvent(caseData));
 
-        verify(notificationService, never()).sendEmail(any(), any(), anyMap(), any());
+        verify(notificationService, never()).sendEmail(any(), any(String.class), anyMap(), any());
     }
 
     @Test
@@ -161,7 +163,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
         standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(
             new StandardDirectionsOrderIssuedEvent(caseData));
 
-        verify(notificationService, never()).sendEmail(any(), any(), anyMap(), any());
+        verify(notificationService, never()).sendEmail(any(), any(String.class), anyMap(), any());
     }
 
     private Map<String, Object> getStandardDirectionTemplateParameters() {

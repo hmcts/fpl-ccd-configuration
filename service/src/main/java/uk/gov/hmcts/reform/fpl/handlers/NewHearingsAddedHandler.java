@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -44,14 +45,13 @@ public class NewHearingsAddedHandler {
     @EventListener
     public void sendEmailToLA(final NewHearingsAdded event) {
         final CaseData caseData = event.getCaseData();
-        List<String> emails = inboxLookupService.getRecipients(caseData);
+        Collection<String> emails = inboxLookupService.getRecipients(caseData);
 
         event.getNewHearings().forEach(hearing -> {
             NoticeOfHearingTemplate templateData = newHearingContent.buildNewNoticeOfHearingNotification(caseData,
                 hearing.getValue(), DIGITAL_SERVICE);
 
-            emails.forEach(email -> notificationService.sendEmail(
-                NOTICE_OF_NEW_HEARING, email, templateData, caseData.getId().toString()));
+            notificationService.sendEmail(NOTICE_OF_NEW_HEARING, emails, templateData, caseData.getId().toString());
         });
     }
 

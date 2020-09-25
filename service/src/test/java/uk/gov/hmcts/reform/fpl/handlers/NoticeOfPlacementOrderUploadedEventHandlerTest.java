@@ -14,8 +14,8 @@ import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentP
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -66,7 +66,7 @@ class NoticeOfPlacementOrderUploadedEventHandlerTest {
             caseData, DOCUMENT_CONTENTS);
 
         given(inboxLookupService.getRecipients(caseData))
-            .willReturn(List.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
+            .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         given(localAuthorityEmailContentProvider.buildNoticeOfPlacementOrderUploadedNotification(caseData))
             .willReturn(localAuthorityParameters);
@@ -79,7 +79,7 @@ class NoticeOfPlacementOrderUploadedEventHandlerTest {
 
         verify(notificationService).sendEmail(
             NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE,
-            LOCAL_AUTHORITY_EMAIL_ADDRESS,
+            Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             localAuthorityParameters,
             caseData.getId().toString());
 
