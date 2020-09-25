@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityUserService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityValidationService;
+import uk.gov.hmcts.reform.fpl.service.OrganisationService;
 
 import java.util.Map;
 
@@ -26,6 +27,7 @@ public class CaseInitiationController extends CallbackController {
     private final LocalAuthorityService localAuthorityNameService;
     private final LocalAuthorityUserService localAuthorityUserService;
     private final LocalAuthorityValidationService localAuthorityOnboardedValidationService;
+    private final OrganisationService organisationService;
 
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(
@@ -43,6 +45,7 @@ public class CaseInitiationController extends CallbackController {
 
         Map<String, Object> data = caseDetails.getData();
         data.put("caseLocalAuthority", caseLocalAuthority);
+        organisationService.findOrganisationPolicy().ifPresent(policy -> data.put("localAuthorityPolicy", policy));
 
         return respond(caseDetails);
     }
