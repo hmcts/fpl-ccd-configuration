@@ -76,19 +76,15 @@ class PopulateStandardDirectionsHandlerTest {
     @Captor
     private ArgumentCaptor<Map<String, Object>> data;
 
-    private CallbackRequest callbackRequest;
-
     @BeforeEach
     void setup() {
         given(standardDirectionsService.getDirections(any())).willReturn(STANDARD_DIRECTIONS);
         given(standardDirectionsService.populateStandardDirections(any())).willReturn(getExpectedDirections());
-
-        callbackRequest = getCallbackRequest();
     }
 
     @Test
     void shouldTriggerEventWithCorrectData() {
-        handler.populateStandardDirections(new PopulateStandardDirectionsEvent(callbackRequest));
+        handler.populateStandardDirections(new PopulateStandardDirectionsEvent(callbackWithHearing()));
 
         verify(coreCaseDataService).triggerEvent(
             eq(JURISDICTION),
@@ -96,12 +92,12 @@ class PopulateStandardDirectionsHandlerTest {
             eq(CASE_ID),
             eq(CASE_EVENT),
             data.capture());
-        assertThat(data.getValue()).isEqualTo(getExpectedData());
+        assertThat(data.getValue()).isEqualTo(expectedDataWithHearing());
     }
 
     @Test
     void shouldCallStandardDirectionsServiceWithNullIfNoFirstHearing() {
-        handler.populateStandardDirections(new PopulateStandardDirectionsEvent(callbackRequest));
+        handler.populateStandardDirections(new PopulateStandardDirectionsEvent(callbackWithoutHearing()));
 
         verify(coreCaseDataService).triggerEvent(
             eq(JURISDICTION),
@@ -109,16 +105,27 @@ class PopulateStandardDirectionsHandlerTest {
             eq(CASE_ID),
             eq(CASE_EVENT),
             data.capture());
-        assertThat(data.getValue()).isEqualTo(getExpectedData());
+        assertThat(data.getValue()).isEqualTo(expectedDataWithoutHearing());
     }
 
-    private CallbackRequest getCallbackRequest() {
+    private CallbackRequest callbackWithHearing() {
         return CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(CASE_ID)
                 .jurisdiction(JURISDICTION)
                 .caseTypeId(CASE_TYPE)
                 .data(new HashMap<>(Map.of("hearingDetails", HEARING_DETAILS)))
+                .build())
+            .build();
+    }
+
+    private CallbackRequest callbackWithoutHearing() {
+        return CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(CASE_ID)
+                .jurisdiction(JURISDICTION)
+                .caseTypeId(CASE_TYPE)
+                .data(new HashMap<>(Map.of()))
                 .build())
             .build();
     }
@@ -133,11 +140,15 @@ class PopulateStandardDirectionsHandlerTest {
             OTHERS.getValue(), emptyList());
     }
 
-    private Map<String, Object> getExpectedData() {
+    private Map<String, Object> expectedDataWithHearing() {
         Map<String, Object> expectedData = new HashMap<>();
         expectedData.put("hearingDetails", HEARING_DETAILS);
         expectedData.putAll(getExpectedDirections());
 
         return expectedData;
+    }
+
+    private Map<String, Object> expectedDataWithoutHearing() {
+        return new HashMap<>(getExpectedDirections());
     }
 }
