@@ -21,9 +21,6 @@ idam:
   s2s-auth:
     microservice: fpl_case_service
 
-fpl:
-  local_authority_codes_forbidden_case_submission:
-
 fees-register:
   parameters:
     # if these change be sure to update the appropriate wiremocks
@@ -226,7 +223,6 @@ retry:
 
 fpl:
   env: 'localhost'
-  local_authority_codes_forbidden_case_submission: FPLA
   local_authority_email_to_code:
     mapping: 'example.gov.uk=>example'
   local_authority_code_to_name:

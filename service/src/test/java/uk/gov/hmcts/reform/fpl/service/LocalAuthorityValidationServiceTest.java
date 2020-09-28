@@ -10,10 +10,10 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -50,7 +50,7 @@ class LocalAuthorityValidationServiceTest {
         given(featureToggleService.isAllowCaseCreationForUsersNotOnboardedToMOEnabled(LOCAL_AUTHORITY_NAME))
             .willReturn(false);
         Organisation organisation = Organisation.builder().organisationIdentifier(ORGANISATION_IDENTIFIER).build();
-        given(organisationService.findOrganisation()).willReturn(organisation);
+        given(organisationService.findOrganisation()).willReturn(Optional.of(organisation));
 
         final List<String> validationErrors = validationService.validateIfUserIsOnboarded();
 
@@ -61,11 +61,11 @@ class LocalAuthorityValidationServiceTest {
     void shouldReturnErrorsWhenToggleIsDisabledAndUserHasNotBeenOnboarded() {
         given(featureToggleService.isAllowCaseCreationForUsersNotOnboardedToMOEnabled(LOCAL_AUTHORITY_NAME))
             .willReturn(false);
-        given(organisationService.findOrganisation()).willReturn(Organisation.builder().build());
+        given(organisationService.findOrganisation()).willReturn(Optional.empty());
 
         final List<String> errors = validationService.validateIfUserIsOnboarded();
 
-        verify(organisationService, times(1)).findOrganisation();
+        verify(organisationService).findOrganisation();
         assertThat(errors).containsExactly(
             "Register for an account.",
             "You cannot start an online application until you’re fully registered.",

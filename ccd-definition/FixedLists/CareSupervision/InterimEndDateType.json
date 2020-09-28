@@ -10,7 +10,14 @@
     "LiveFrom": "01/01/2017",
     "ID": "InterimEndDateType",
     "ListElementCode": "NAMED_DATE",
-    "ListElement": "On a named date",
+    "ListElement": "At the end of a named date",
     "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "InterimEndDateType",
+    "ListElementCode": "SPECIFIC_TIME_NAMED_DATE",
+    "ListElement": "At a specific time on a named date",
+    "DisplayOrder": 3
   }
 ]
