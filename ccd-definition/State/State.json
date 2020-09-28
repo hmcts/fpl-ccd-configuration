@@ -29,11 +29,12 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "ISSUE_RESOLUTION",
-    "Name": "Issue resolution",
-    "Description": "Issue resolution case state - Triggered via CMO event and hearing is of issue resolution type",
-    "DisplayOrder": 5,
-    "TitleDisplay": "# ${caseName}\n## **FamilyMan ID: ${familyManCaseNumber}**\n## **CCD ID: #${[CASE_REFERENCE]}**"
+    "ID": "PREPARE_FOR_HEARING",
+    "Name": "Case management",
+    "Description": "State indicating that SDO is ready to send - triggered when SDO is issued",
+    "DisplayOrder": 4,
+    "TitleDisplay": "# ${caseName}\n## **FamilyMan ID: ${familyManCaseNumber}**\n## **CCD ID: #${[CASE_REFERENCE]}**",
+    "Comment": "PREPARE_FOR_HEARING state name changed as part of FPLA-1920. CaseStateID naming remains to avoid break existing cases."
   },
   {
     "LiveFrom": "01/01/2017",
@@ -41,7 +42,7 @@
     "ID": "FINAL_HEARING",
     "Name": "Final hearing",
     "Description": "Final hearing case state - Triggered via CMO event and hearing is of final type",
-    "DisplayOrder": 6,
+    "DisplayOrder": 5,
     "TitleDisplay": "# ${caseName}\n## **FamilyMan ID: ${familyManCaseNumber}**\n## **CCD ID: #${[CASE_REFERENCE]}**"
   },
   {
@@ -50,7 +51,7 @@
     "ID": "CLOSED",
     "Name": "Closed",
     "Description": "Final case state, no longer allowed to create orders apart from C21",
-    "DisplayOrder": 7,
+    "DisplayOrder": 6,
     "TitleDisplay": "# ${caseName}\n## **FamilyMan ID: ${familyManCaseNumber}**\n## **CCD ID: #${[CASE_REFERENCE]}**"
   },
   {
@@ -59,7 +60,7 @@
     "ID": "Deleted",
     "Name": "Deleted",
     "Description": "Deleted case state - all data is removed",
-    "DisplayOrder": 8,
+    "DisplayOrder": 7,
     "TitleDisplay": "# ${caseName}\n## **FamilyMan ID: ${familyManCaseNumber}**\n## **CCD ID: #${[CASE_REFERENCE]}**"
   },
   {
@@ -68,7 +69,7 @@
     "ID": "RETURNED",
     "Name": "Returned",
     "Description": "Returned case state - LA to make changes to previously submitted application",
-    "DisplayOrder": 9,
+    "DisplayOrder": 8,
     "TitleDisplay": "# ${caseName}\n## **FamilyMan ID: ${familyManCaseNumber}**\n## **CCD ID: #${[CASE_REFERENCE]}**"
   },
   {

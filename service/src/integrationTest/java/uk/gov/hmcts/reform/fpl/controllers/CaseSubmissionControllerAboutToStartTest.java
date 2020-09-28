@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -136,33 +135,5 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
                     "document_filename", "file.pdf",
                     "document_binary_url",
                     "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary"));
-    }
-
-    @Nested
-    class LocalAuthorityValidation {
-
-        @Test
-        void shouldReturnErrorWhenCaseBelongsToSmokeTestLocalAuthority() {
-            CaseDetails caseDetails = prepareCaseBelongingTo("FPLA");
-            AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
-
-            assertThat(callbackResponse.getData()).containsEntry("caseLocalAuthority", "FPLA");
-            assertThat(callbackResponse.getErrors()).contains("Test local authority cannot submit cases");
-        }
-
-        @Test
-        void shouldReturnNoErrorWhenCaseBelongsToRegularLocalAuthority() {
-            CaseDetails caseDetails = prepareCaseBelongingTo("SA");
-            AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
-
-            assertThat(callbackResponse.getData()).containsEntry("caseLocalAuthority", "SA");
-            assertThat(callbackResponse.getErrors()).isEmpty();
-        }
-
-        private CaseDetails prepareCaseBelongingTo(String localAuthority) {
-            return CaseDetails.builder()
-                .data(of("caseLocalAuthority", localAuthority))
-                .build();
-        }
     }
 }

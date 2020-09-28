@@ -8,36 +8,41 @@ const loginPage = require('./pages/login.page');
 const caseListPage = require('./pages/caseList.page');
 const eventSummaryPage = require('./pages/eventSummary.page');
 const openApplicationEventPage = require('./pages/events/openApplicationEvent.page');
-const mandatorySubmissionFields = require('./fixtures/mandatorySubmissionFields.json');
+const mandatorySubmissionFields = require('./fixtures/caseData/mandatorySubmissionFields.json');
 
 const normalizeCaseId = caseId => caseId.toString().replace(/\D/g, '');
 
 const baseUrl = process.env.URL || 'http://localhost:3333';
 const signedInSelector = 'exui-header';
 const signedOutSelector = '#global-header';
+let currentUser = {};
 
 'use strict';
-
-function log (msg) {
-  console.log(`[${require('codeceptjs').config.get().mocha.child}] ${msg}`);
-}
 
 module.exports = function () {
   return actor({
     async signIn(user) {
-      await this.retryUntilExists(async () => {
-        this.amOnPage(baseUrl);
+      if (currentUser !== user) {
+        output.debug(`Logging in as ${user.email}`);
+        currentUser = {}; // reset in case the login fails
+        await this.retryUntilExists(async () => {
+          this.amOnPage(baseUrl);
 
-        if(await this.waitForAnySelector([signedOutSelector, signedInSelector]) == null){
-          return;
-        }
+          if (await this.waitForAnySelector([signedOutSelector, signedInSelector]) == null) {
+            return;
+          }
 
-        if(await this.hasSelector(signedInSelector)){
-          this.click('Sign out');
-        }
+          if (await this.hasSelector(signedInSelector)) {
+            this.click('Sign out');
+          }
 
-        await loginPage.signIn(user);
-      }, signedInSelector);
+          await loginPage.signIn(user);
+        }, signedInSelector);
+        output.debug(`Logged in as ${user.email}`);
+        currentUser = user;
+      } else {
+        output.debug(`Already logged in as ${user.email}`);
+      }
     },
 
     async logInAndCreateCase(user, caseName) {
@@ -47,7 +52,7 @@ module.exports = function () {
       await this.completeEvent('Save and continue');
       this.waitForElement('.markdown h2', 5);
       const caseId = normalizeCaseId(await this.grabTextFrom('.markdown h2'));
-      log(`Case created #${caseId}`);
+      output.print(`Case created #${caseId}`);
       return caseId;
     },
 
@@ -153,12 +158,19 @@ module.exports = function () {
       this.dontSeeElement(caseListPage.locateCase(normalizeCaseId(caseId)));
     },
 
+    seeEndStateForEvent(eventName, state) {
+      this.click(`//table[@class="EventLogTable"]//tr[td[contains(., "${eventName}")]][1]`);
+      this.seeElement(`//table[@class="EventLogDetails"]//tr[.//span[text()="End state"] and .//span[text()="${state}"]]`);
+    },
+
     async navigateToCaseDetails(caseId) {
       const currentUrl = await this.grabCurrentUrl();
       if (!currentUrl.replace(/#.+/g, '').endsWith(caseId)) {
         await this.retryUntilExists(() => {
           this.amOnPage(`${baseUrl}/cases/case-details/${caseId}`);
         }, signedInSelector);
+      } else {
+        this.refreshPage();
       }
     },
 
@@ -167,7 +179,7 @@ module.exports = function () {
       await this.navigateToCaseDetails(caseId);
     },
 
-    async navigateToCaseList(){
+    async navigateToCaseList() {
       await caseListPage.navigate();
     },
 
@@ -187,7 +199,8 @@ module.exports = function () {
 
     fillDateAndTime(date, sectionId = 'form') {
       if (date instanceof Date) {
-        date = {day: date.getDate(), month: date.getMonth() + 1, year: date.getFullYear(),
+        date = {
+          day: date.getDate(), month: date.getMonth() + 1, year: date.getFullYear(),
           hour: date.getHours(), minute: date.getMinutes(), second: date.getSeconds(),
         };
       }
@@ -206,7 +219,7 @@ module.exports = function () {
 
     async addAnotherElementToCollection(collectionName) {
       const numberOfElements = await this.grabNumberOfVisibleElements('.collection-title');
-      if(collectionName) {
+      if (collectionName) {
         this.click(locate('button')
           .inside(locate('div').withChild(locate('h2').withText(collectionName)))
           .withText('Add new'));
@@ -218,7 +231,7 @@ module.exports = function () {
     },
 
     async removeElementFromCollection(collectionName, index = 1) {
-      if(collectionName) {
+      if (collectionName) {
         await this.click(locate('button')
           .inside(locate('div').withChild(locate('h2').withText(collectionName)))
           .withText('Remove')
@@ -234,7 +247,7 @@ module.exports = function () {
     async submitNewCaseWithData(data = mandatorySubmissionFields) {
       const caseId = await this.logInAndCreateCase(config.swanseaLocalAuthorityUserOne);
       await caseHelper.populateWithData(caseId, data);
-      log(`Case #${caseId} has been populated with data`);
+      output.print(`Case #${caseId} has been populated with data`);
 
       return caseId;
     },
@@ -259,8 +272,8 @@ module.exports = function () {
         }
         try {
           await action();
-        }catch(error){
-          log(error);
+        } catch (error) {
+          output.error(error);
         }
         if (await this.waitForSelector(locator) != null) {
           output.log(`retryUntilExists(${locator}): element found after try #${tryNumber} was executed`);

@@ -1,5 +1,5 @@
 const config = require('../config.js');
-const gatekeeping = require('../fixtures/gatekeeping.json');
+const gatekeeping = require('../fixtures/caseData/gatekeeping.json');
 
 let caseId;
 
@@ -8,7 +8,7 @@ Feature('Gatekeeper makes allocation decision');
 BeforeSuite(async (I) => {
   caseId = await I.submitNewCaseWithData(gatekeeping);
 
-  await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
+  await I.signIn(config.gateKeeperUser);
 });
 
 Before(async I => await I.navigateToCaseDetails(caseId));

@@ -7,20 +7,20 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.Address;
+import uk.gov.hmcts.reform.fpl.model.Applicant;
+import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.OrganisationService;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.ContactInformation;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDetails;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ApplicantController.class)
@@ -34,9 +34,6 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
     private OrganisationApi organisationApi;
 
     @MockBean
-    private OrganisationService organisationService;
-
-    @MockBean
     private AuthTokenGenerator authTokenGenerator;
 
     ApplicantAboutToStartControllerTest() {
@@ -45,44 +42,58 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setup() {
-        given(organisationService.findOrganisation()).willReturn(POPULATED_ORGANISATION);
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
-        given(organisationApi.findOrganisationById(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN))
-            .willReturn(POPULATED_ORGANISATION);
     }
 
     @Test
     void shouldPrepopulateApplicantDataWhenNoApplicantExists() {
-        CaseDetails caseDetails = buildCaseDetails();
 
-        given(organisationApi.findOrganisationById(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN))
+        given(organisationApi.findUserOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN))
             .willReturn(EMPTY_ORGANISATION);
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
+        CaseData returnedCaseData = extractCaseData(postAboutToStartEvent(emptyCaseDetails()));
 
-        assertThat(callbackResponse.getData()).containsKey("applicants");
+        Applicant expectedApplicant = Applicant.builder()
+            .party(ApplicantParty.builder()
+                .partyId(returnedCaseData.getApplicants().get(0).getValue().getParty().getPartyId())
+                .address(Address.builder().build())
+                .build())
+            .build();
+
+        assertThat(returnedCaseData.getApplicants())
+            .extracting(Element::getValue)
+            .containsExactly(expectedApplicant);
     }
 
     @Test
     void shouldAddOrganisationDetailsToApplicantWhenOrganisationExists() {
-        CaseDetails caseDetails = buildCaseDetails();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
+        given(organisationApi.findUserOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN))
+            .willReturn(POPULATED_ORGANISATION);
 
-        CaseData data = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        CaseData returnedCaseData = extractCaseData(postAboutToStartEvent(emptyCaseDetails()));
 
-        String applicantOrganisationName = unwrapElements(data.getAllApplicants()).get(0)
-            .getParty().getOrganisationName();
+        ContactInformation organisationContact = POPULATED_ORGANISATION.getContactInformation().get(0);
 
-        String organisationName = POPULATED_ORGANISATION.getName();
-
-        assertThat(applicantOrganisationName).isEqualTo(organisationName);
-    }
-
-    private CaseDetails buildCaseDetails() {
-        return CaseDetails.builder()
-            .data(Map.of("data", "some data"))
+        Applicant expectedApplicant = Applicant.builder()
+            .party(ApplicantParty.builder()
+                .partyId(returnedCaseData.getApplicants().get(0).getValue().getParty().getPartyId())
+                .organisationName(POPULATED_ORGANISATION.getName())
+                .address(Address.builder()
+                    .addressLine1(organisationContact.getAddressLine1())
+                    .addressLine2(organisationContact.getAddressLine2())
+                    .addressLine3(organisationContact.getAddressLine3())
+                    .county(organisationContact.getCounty())
+                    .country(organisationContact.getCountry())
+                    .postcode(organisationContact.getPostCode())
+                    .postTown(organisationContact.getTownCity())
+                    .build())
+                .build())
             .build();
+
+        assertThat(returnedCaseData.getApplicants())
+            .extracting(Element::getValue)
+            .containsExactly(expectedApplicant);
     }
 
     private static Organisation buildOrganisation() {

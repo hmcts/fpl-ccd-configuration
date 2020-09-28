@@ -480,7 +480,7 @@
     "Name": "Comply with directions",
     "Description": "Allows Local Authority user access to comply with their directions as well as ones for all parties",
     "DisplayOrder": 11,
-    "PreConditionState(s)": "PREPARE_FOR_HEARING;ISSUE_RESOLUTION;FINAL_HEARING",
+    "PreConditionState(s)": "PREPARE_FOR_HEARING;FINAL_HEARING",
     "PostConditionState": "*",
     "SecurityClassification": "Public"
   },
@@ -491,7 +491,7 @@
     "Name": "Comply with directions",
     "Description": "Allows Cafcass user access to comply with their directions as well as ones for all parties",
     "DisplayOrder": 11,
-    "PreConditionState(s)": "PREPARE_FOR_HEARING;ISSUE_RESOLUTION;FINAL_HEARING",
+    "PreConditionState(s)": "PREPARE_FOR_HEARING;FINAL_HEARING",
     "PostConditionState": "*",
     "SecurityClassification": "Public"
   },
@@ -502,7 +502,7 @@
     "Name": "Comply with directions",
     "Description": "Event gives Court user access to comply with their directions as well as all parties",
     "DisplayOrder": 11,
-    "PreConditionState(s)": "PREPARE_FOR_HEARING;ISSUE_RESOLUTION;FINAL_HEARING",
+    "PreConditionState(s)": "PREPARE_FOR_HEARING;FINAL_HEARING",
     "PostConditionState": "*",
     "SecurityClassification": "Public"
   },
@@ -513,7 +513,7 @@
     "Name": "Comply on behalf of others",
     "Description": "Event gives SOLICITOR user access to comply with directions for other parties",
     "DisplayOrder": 11,
-    "PreConditionState(s)": "PREPARE_FOR_HEARING;ISSUE_RESOLUTION;FINAL_HEARING",
+    "PreConditionState(s)": "PREPARE_FOR_HEARING;FINAL_HEARING",
     "PostConditionState": "*",
     "SecurityClassification": "Public"
   },
@@ -524,7 +524,7 @@
     "Name": "Comply on behalf of others",
     "Description": "Event gives Court user access to comply with all directions on behalf of others",
     "DisplayOrder": 11,
-    "PreConditionState(s)": "PREPARE_FOR_HEARING;ISSUE_RESOLUTION;FINAL_HEARING",
+    "PreConditionState(s)": "PREPARE_FOR_HEARING;FINAL_HEARING",
     "PostConditionState": "*",
     "SecurityClassification": "Public"
   },
@@ -549,7 +549,7 @@
     "Name": "Upload documents",
     "Description": "Upload documents",
     "DisplayOrder": 13,
-    "PreConditionState(s)": "PREPARE_FOR_HEARING;ISSUE_RESOLUTION;FINAL_HEARING",
+    "PreConditionState(s)": "PREPARE_FOR_HEARING;FINAL_HEARING",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "ShowSummary": "N",
