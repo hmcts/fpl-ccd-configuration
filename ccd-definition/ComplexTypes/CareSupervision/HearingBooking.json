@@ -81,6 +81,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
+    "ListElementCode": "additionalNotes",
+    "FieldType": "TextArea",
+    "ElementLabel": "Additional notes",
+    "HintText": "This will be printed on the notice of hearing, if issued",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
     "ListElementCode": "noticeOfHearing",
     "FieldType": "Document",
     "ElementLabel": "Notice of hearing",

@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -29,7 +30,6 @@ import static org.mockito.BDDMockito.given;
 @WebMvcTest(CaseInitiationController.class)
 @OverrideAutoConfiguration(enabled = true)
 class CaseInitiationMidEventControllerTest extends AbstractControllerTest {
-    private static final Organisation EMPTY_ORGANISATION = Organisation.builder().build();
     private static final String ORGANISATION_IDENTIFIER = "123";
 
     @MockBean
@@ -85,7 +85,7 @@ class CaseInitiationMidEventControllerTest extends AbstractControllerTest {
         Organisation organisation = Organisation.builder().organisationIdentifier(ORGANISATION_IDENTIFIER).build();
 
         given(featureToggleService.isAllowCaseCreationForUsersNotOnboardedToMOEnabled(anyString())).willReturn(true);
-        given(organisationService.findOrganisation()).willReturn(organisation);
+        given(organisationService.findOrganisation()).willReturn(Optional.of(organisation));
 
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("caseName", "title"))
@@ -105,7 +105,7 @@ class CaseInitiationMidEventControllerTest extends AbstractControllerTest {
 
         given(featureToggleService.isAllowCaseCreationForUsersNotOnboardedToMOEnabled(anyString())).willReturn(false);
 
-        given(organisationService.findOrganisation()).willReturn(EMPTY_ORGANISATION);
+        given(organisationService.findOrganisation()).willReturn(Optional.empty());
 
         AboutToStartOrSubmitCallbackResponse actualResponse = postMidEvent(caseDetails);
 
