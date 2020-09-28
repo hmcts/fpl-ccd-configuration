@@ -104,16 +104,17 @@ class StandardDirectionsServiceTest {
 
         CaseData caseData = CaseData.builder().hearingDetails(hearings).build();
 
-        Map<String, List<Element<Direction>>> standardDirections = service.populateStandardDirections(caseData);
+        Map<String, List<Element<Direction>>> standardDirections = service.populateStandardDirections(
+            caseData);
 
         //test data in test/resources/ordersConfig.json
-        List<Element<Direction>> allParties = standardDirections.get("allParties");
-        List<Element<Direction>> localAuthorityDirections = standardDirections.get("localAuthorityDirections");
+        List<Element<Direction>> allParties = standardDirections.get(ALL_PARTIES.getValue());
+        List<Element<Direction>> localAuthority = standardDirections.get(LOCAL_AUTHORITY.getValue());
 
         Direction[] expectedDirections = expectedDirections(hearingDate);
 
         assertThat(unwrapElements(allParties)).containsExactly(expectedDirections[0]);
-        assertThat(unwrapElements(localAuthorityDirections)).containsExactly(
+        assertThat(unwrapElements(localAuthority)).containsExactly(
             expectedDirections[1], expectedDirections[2]);
     }
 
