@@ -106,8 +106,9 @@ class StandardDirectionsServiceTest {
 
         Map<String, List<Element<Direction>>> standardDirections = service.populateStandardDirections(caseData);
 
-        List<Element<Direction>> allParties = standardDirections.remove("allParties");
-        List<Element<Direction>> localAuthorityDirections = standardDirections.remove("localAuthorityDirections");
+        //test data in test/resources/ordersConfig.json
+        List<Element<Direction>> allParties = standardDirections.get("allParties");
+        List<Element<Direction>> localAuthorityDirections = standardDirections.get("localAuthorityDirections");
 
         Direction[] expectedDirections = expectedDirections(hearingDate);
 
