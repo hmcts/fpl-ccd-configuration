@@ -65,6 +65,11 @@ public class FeatureToggleService {
             createLDUser(Map.of("localAuthorityName", LDValue.of(localAuthorityName))), false);
     }
 
+    public boolean isSendLAEmailsToSolicitorEnabled(String localAuthorityName) {
+        return ldClient.boolVariation("send-la-emails-to-solicitor",
+            createLDUser(Map.of("localAuthorityName", LDValue.of(localAuthorityName))), false);
+    }
+
     private LDUser createLDUser() {
         return createLDUser(Map.of());
     }
