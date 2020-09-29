@@ -22,12 +22,11 @@ import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentP
 import uk.gov.hmcts.reform.fpl.service.email.content.StandardDirectionOrderIssuedEmailContentProvider;
 
 import java.util.Map;
+import java.util.Set;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE;
@@ -97,15 +96,16 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
         given(localAuthorityEmailContentProvider.buildLocalAuthorityStandardDirectionOrderIssuedNotification(caseData))
             .willReturn(expectedParameters);
 
-        given(
-            inboxLookupService.getNotificationRecipientEmail(caseData))
-            .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
+        given(inboxLookupService.getRecipients(caseData))
+            .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         standardDirectionsOrderIssuedEventHandler.notifyLocalAuthorityOfIssuedStandardDirectionsOrder(
             new StandardDirectionsOrderIssuedEvent(caseData));
 
         verify(notificationService).sendEmail(
-            STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, LOCAL_AUTHORITY_EMAIL_ADDRESS, expectedParameters,
+            STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE,
+            Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            expectedParameters,
             "12345");
     }
 
@@ -141,7 +141,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
         standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(
             new StandardDirectionsOrderIssuedEvent(caseData));
 
-        verify(notificationService, never()).sendEmail(any(), any(), anyMap(), any());
+        verifyNoInteractions(notificationService);
     }
 
     @Test
@@ -161,7 +161,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
         standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(
             new StandardDirectionsOrderIssuedEvent(caseData));
 
-        verify(notificationService, never()).sendEmail(any(), any(), anyMap(), any());
+        verifyNoInteractions(notificationService);
     }
 
     private Map<String, Object> getStandardDirectionTemplateParameters() {
