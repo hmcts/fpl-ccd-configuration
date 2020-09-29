@@ -76,6 +76,8 @@ Scenario('Judge seals and sends the agreed CMO to parties', async (I, caseViewPa
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   assertSealedCMO(I, '1', '1 March 2020');
   assertSealedCMO(I, '2', '1 January 2020');
+  caseViewPage.selectTab(caseViewPage.tabs.documentsSentToParties);
+  assertDocumentSentToParties(I);
 });
 
 const assertDraftCMO = function (I, collectionId, hearingDate, status) {
@@ -99,4 +101,9 @@ const assertSealedCMO = function (I, collectionId, hearingDate) {
   I.seeInTab([sealedCMO, 'Hearing'], `Case management hearing, ${hearingDate}`);
   I.seeInTab([sealedCMO, 'Date issued'], dateFormat(today, 'd mmm yyyy'));
   I.seeInTab([sealedCMO, 'Judge'], 'Her Honour Judge Reed');
+};
+
+const assertDocumentSentToParties = function (I) {
+  I.seeInTab(['Party 1', 'Representative name'], 'Marie Kelly');
+  I.seeInTab(['Party 1', 'Document 1', 'File'], 'mockFile.pdf');
 };
