@@ -45,4 +45,9 @@ public class OrderTypeAndDocument {
     public DocmosisTemplates getDocmosisTemplate() {
         return EMERGENCY_PROTECTION_ORDER == type ? EPO : ORDER;
     }
+
+    @JsonIgnore
+    public String getTypeLabel() {
+        return UPLOAD != type ? type.getLabel() : uploadableOrderType.getLabel();
+    }
 }

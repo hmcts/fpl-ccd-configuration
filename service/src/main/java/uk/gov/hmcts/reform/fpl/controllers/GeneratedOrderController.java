@@ -218,6 +218,7 @@ public class GeneratedOrderController extends CallbackController {
         return respond(caseDetails);
     }
 
+    // TODO: 29/09/2020 will currently break
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
@@ -241,13 +242,7 @@ public class GeneratedOrderController extends CallbackController {
         data.put("orderCollection", orders);
 
         if (featureToggleService.isCloseCaseEnabled() && caseData.getOrderTypeAndDocument().isClosable()) {
-            List<Element<Child>> updatedChildren = childrenService.updateFinalOrderIssued(
-                caseData.getOrderTypeAndDocument().getType(),
-                caseData.getAllChildren(),
-                caseData.getOrderAppliesToAllChildren(),
-                caseData.getChildSelector(),
-                caseData.getRemainingChildIndex());
-            data.put("children1", updatedChildren);
+            data.put("children1", getUpdatedChildren(caseData));
         }
 
         if (caseData.isClosedFromOrder()) {
@@ -315,8 +310,12 @@ public class GeneratedOrderController extends CallbackController {
     }
 
     private List<Element<Child>> getUpdatedChildren(CaseData caseData) {
-        return childrenService.updateFinalOrderIssued(caseData.getOrderTypeAndDocument().getType(),
-            caseData.getAllChildren(), caseData.getOrderAppliesToAllChildren(), caseData.getChildSelector(),
-            caseData.getRemainingChildIndex());
+        return childrenService.updateFinalOrderIssued(
+            caseData.getOrderTypeAndDocument(),
+            caseData.getAllChildren(),
+            caseData.getOrderAppliesToAllChildren(),
+            caseData.getChildSelector(),
+            caseData.getRemainingChildIndex()
+        );
     }
 }
