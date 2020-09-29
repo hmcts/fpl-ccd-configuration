@@ -45,8 +45,8 @@ public class StandardDirectionsOrderService {
             // been through once, either pull from replacement doc or SDO if that isn't present
             document = defaultIfNull(
                 caseData.getReplacementSDO(),
-                isNotEmpty(caseData.getStandardDirectionOrder()) ?
-                    caseData.getStandardDirectionOrder().getOrderDoc() : null
+                isNotEmpty(caseData.getStandardDirectionOrder())
+                    ? caseData.getStandardDirectionOrder().getOrderDoc() : null
             );
         }
         return StandardDirectionOrder.builder()
