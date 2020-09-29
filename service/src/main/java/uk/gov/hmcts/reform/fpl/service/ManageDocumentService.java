@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -183,7 +184,7 @@ public class ManageDocumentService {
             }
 
             altered.forEach(bundle -> findElement(bundle.getId(), supportingEvidenceBundleBefore).ifPresent(
-                previousVersion -> updateSupportingEvidenceDateTimeIfChanged(bundle, previousVersion)
+                previousVersion -> updateUploadTimeWhenDocumentChanged(bundle, previousVersion)
             ));
         }
 
@@ -220,17 +221,14 @@ public class ManageDocumentService {
         CaseData caseData, CaseData caseDataBefore) {
         List<Element<SupportingEvidenceBundle>> currentSupportingDocuments
             = caseData.getSupportingEvidenceDocumentsTemp();
-        List<Element<SupportingEvidenceBundle>> previousSupportingDocuments = List.of();
 
         UUID selectedHearingCode = getDynamicListValueCode(caseData.getManageDocumentsHearingList(), mapper);
 
-        if (caseDataBefore.documentBundleContainsHearingId(selectedHearingCode)) {
-            for (Element<HearingFurtherEvidenceBundle> element : caseDataBefore.getHearingFurtherEvidenceDocuments()) {
-                if (element.getId().equals(selectedHearingCode)) {
-                    previousSupportingDocuments = element.getValue().getSupportingEvidenceBundle();
-                }
-            }
-        }
+        List<Element<SupportingEvidenceBundle>> previousSupportingDocuments =
+            ElementUtils.findElement(selectedHearingCode, caseDataBefore.getHearingFurtherEvidenceDocuments())
+                .map(Element::getValue)
+                .map(HearingFurtherEvidenceBundle::getSupportingEvidenceBundle)
+                .orElse(List.of());
 
         return setDateTimeUploadedOnSupportingEvidence(currentSupportingDocuments, previousSupportingDocuments);
     }
@@ -245,7 +243,7 @@ public class ManageDocumentService {
             .build());
     }
 
-    private void updateSupportingEvidenceDateTimeIfChanged(Element<SupportingEvidenceBundle> current,
+    private void updateUploadTimeWhenDocumentChanged(Element<SupportingEvidenceBundle> current,
                                                            Element<SupportingEvidenceBundle> previous) {
         if (!previous.getValue().getDocument().equals(current.getValue().getDocument())) {
             current.getValue().setDateTimeUploaded(time.now());
