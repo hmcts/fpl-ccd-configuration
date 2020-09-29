@@ -6,6 +6,7 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
+import uk.gov.hmcts.reform.fpl.enums.UploadableOrderType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
@@ -14,6 +15,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.DISCHARGE_OF_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.UPLOAD;
 
 @Data
 @Builder(toBuilder = true)
@@ -22,10 +24,11 @@ public class OrderTypeAndDocument {
     private final GeneratedOrderType type;
     private final GeneratedOrderSubtype subtype;
     private final DocumentReference document;
+    private final UploadableOrderType uploadableOrderType;
 
     @JsonIgnore
     public boolean isFinal() {
-        return FINAL == subtype;
+        return FINAL == subtype || (UPLOAD == type && uploadableOrderType.isFinal());
     }
 
     @JsonIgnore
