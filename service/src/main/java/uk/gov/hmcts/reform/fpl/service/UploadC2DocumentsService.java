@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
