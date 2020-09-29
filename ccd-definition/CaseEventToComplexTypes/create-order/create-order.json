@@ -24,9 +24,18 @@
     "ID": "OrderTypeAndDocumentComplexType",
     "CaseEventID": "createOrder",
     "CaseFieldID": "orderTypeAndDocument",
+    "ListElementCode": "uploadableOrderType",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTypeAndDocumentComplexType",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "orderTypeAndDocument",
     "ListElementCode": "document",
     "EventElementLabel": "Order document",
-    "FieldDisplayOrder": 3,
+    "FieldDisplayOrder": 4,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "document=\"DO_NOT_SHOW\""
   },
