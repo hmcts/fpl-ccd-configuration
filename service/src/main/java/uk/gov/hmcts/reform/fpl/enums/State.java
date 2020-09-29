@@ -32,8 +32,6 @@ public enum State {
 
     RETURNED("RETURNED", "Returned"),
 
-    ISSUE_RESOLUTION("ISSUE_RESOLUTION", "Issue resolution"),
-
     FINAL_HEARING("FINAL_HEARING", "Final hearing");
 
     private final String value;

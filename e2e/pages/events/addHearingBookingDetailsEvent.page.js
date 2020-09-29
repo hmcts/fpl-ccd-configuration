@@ -33,6 +33,7 @@ module.exports = {
         },
         giveDetails: `#hearingDetails_${index}_hearingNeedsDetails`,
         venueCustomAddress: `#hearingDetails_${index}_venueCustomAddress_venueCustomAddress`,
+        additionalNotes: `#hearingDetails_${index}_additionalNotes`,
       },
       sendNoticeOfHearing: `#newHearingSelector_option${index}-SELECTED`,
     };
@@ -88,6 +89,10 @@ module.exports = {
     const elementIndex = await this.getActiveElementIndex();
     const complexTypeAppender = `hearingDetails_${elementIndex}_`;
     judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName, complexTypeAppender);
+  },
+
+  async enterAdditionalNotes(notes) {
+    I.fillField(this.fields(await this.getActiveElementIndex()).hearingBooking.additionalNotes, notes);
   },
 
   sendNoticeOfHearing(sendNoticeOfHearing = 'Yes', index = 0) {

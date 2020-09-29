@@ -16,7 +16,7 @@ import static uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi.SERVICE_AUTHORIZATI
 @FeignClient(name = "rd-professional-api", url = "${rd_professional.api.url}", configuration = FeignConfiguration.class)
 public interface OrganisationApi {
     @GetMapping("/refdata/external/v1/organisations/users")
-    OrganisationUsers findUsersByOrganisation(
+    OrganisationUsers findUsersInOrganisation(
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
         @RequestParam(value = "status") Status status,
@@ -31,7 +31,7 @@ public interface OrganisationApi {
     );
 
     @GetMapping("/refdata/external/v1/organisations")
-    Organisation findOrganisationById(
+    Organisation findUserOrganisation(
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization
     );
