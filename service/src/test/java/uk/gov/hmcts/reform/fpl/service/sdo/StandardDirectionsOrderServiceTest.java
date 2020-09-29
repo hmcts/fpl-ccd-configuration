@@ -97,6 +97,20 @@ class StandardDirectionsOrderServiceTest {
     }
 
     @Test
+    void shouldUseReplacementSDOWhenNoStandardDirectionOrder() {
+        CaseData caseData = CaseData.builder()
+            .standardDirectionOrder(null)
+            .replacementSDO(WORD_DOC)
+            .build();
+
+        StandardDirectionOrder order = service.buildTemporarySDO(caseData);
+
+        StandardDirectionOrder expectedOrder = StandardDirectionOrder.builder().orderDoc(WORD_DOC).build();
+
+        assertThat(order).isEqualTo(expectedOrder);
+    }
+
+    @Test
     void shouldUseCurrentSDODocumentForTemporaryStandardDirectionOrder() {
         CaseData caseData = CaseData.builder()
             .preparedSDO(null)

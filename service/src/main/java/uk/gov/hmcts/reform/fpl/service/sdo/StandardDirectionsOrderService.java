@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import java.time.LocalDate;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFromStringUsingFormat;
 
@@ -44,7 +45,8 @@ public class StandardDirectionsOrderService {
             // been through once, either pull from replacement doc or SDO if that isn't present
             document = defaultIfNull(
                 caseData.getReplacementSDO(),
-                caseData.getStandardDirectionOrder().getOrderDoc()
+                isNotEmpty(caseData.getStandardDirectionOrder()) ?
+                    caseData.getStandardDirectionOrder().getOrderDoc() : null
             );
         }
         return StandardDirectionOrder.builder()
