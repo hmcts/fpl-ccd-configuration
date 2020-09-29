@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
@@ -42,7 +43,8 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPON
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, PopulateStandardDirectionsHandler.class})
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, PopulateStandardDirectionsHandler.class,
+    CaseConverter.class})
 class PopulateStandardDirectionsHandlerTest {
     private static final String CASE_EVENT = "populateSDO";
     private static final Long CASE_ID = 12345L;

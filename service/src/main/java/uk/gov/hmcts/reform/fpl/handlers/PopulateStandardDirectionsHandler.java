@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
@@ -11,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
@@ -22,13 +22,13 @@ import java.util.Map;
 public class PopulateStandardDirectionsHandler {
     private final CoreCaseDataService coreCaseDataService;
     private final StandardDirectionsService standardDirectionsService;
-    private final ObjectMapper mapper;
+    private final CaseConverter caseConverter;
 
     @Async
     @EventListener
     public void populateStandardDirections(PopulateStandardDirectionsEvent event) {
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = caseConverter.convert(caseDetails);
         Map<String, List<Element<Direction>>> populatedDirections
             = standardDirectionsService.populateStandardDirections(caseData);
 
