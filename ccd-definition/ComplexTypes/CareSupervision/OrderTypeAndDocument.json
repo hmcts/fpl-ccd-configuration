@@ -21,7 +21,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OrderTypeAndDocument",
-    "ListElementCode": "subtype",
+    "ListElementCode": "uploadableOrderType",
     "FieldType": "FixedList",
     "FieldTypeParameter": "UploadableOrderType",
     "ElementLabel": "Select the type of order you're uploading",
