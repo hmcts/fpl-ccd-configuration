@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
+import java.util.Collection;
 import java.util.Map;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -90,9 +91,10 @@ public class GeneratedOrderEventHandler {
 
     private void sendToLocalAuthority(final CaseData caseData,
                                       final Map<String, Object> templateParameters) {
-        String recipientEmail = inboxLookupService.getNotificationRecipientEmail(caseData);
+        Collection<String> emails = inboxLookupService.getRecipients(caseData);
 
-        notificationService.sendEmail(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES,
-            recipientEmail, templateParameters, caseData.getId().toString());
+        notificationService.sendEmail(
+            ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES, emails, templateParameters,
+            caseData.getId().toString());
     }
 }

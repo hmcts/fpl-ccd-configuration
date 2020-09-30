@@ -172,7 +172,8 @@ public class CaseData {
     public final Document thresholdDocument;
     @JsonProperty("documents_socialWorkEvidenceTemplate_document")
     @Valid
-    private final Document socialWorkEvidenceTemplateDocument;
+    public final Document socialWorkEvidenceTemplateDocument;
+    public final CourtBundle courtBundle;
     @NotEmpty(message = "Add the child's details")
     @Valid
     private final List<@NotNull(message = "Add the child's details") Element<Child>> children1;
