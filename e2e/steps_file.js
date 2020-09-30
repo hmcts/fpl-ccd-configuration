@@ -106,7 +106,7 @@ module.exports = function () {
       }, 'ccd-case-event-trigger');
     },
 
-    seeDocument(title, name, status = '', reason = '') {
+    seeDocument(title, name, status = '', reason = '', dateAndTimeUploaded, uploadedBy) {
       this.see(title);
       if (status !== '') {
         this.see(status);
@@ -115,6 +115,12 @@ module.exports = function () {
         this.see(reason);
       } else {
         this.see(name);
+      }
+      if (dateAndTimeUploaded) {
+        this.see(dateAndTimeUploaded);
+      }
+      if (uploadedBy) {
+        this.see(uploadedBy);
       }
     },
 
@@ -144,6 +150,11 @@ module.exports = function () {
       } else {
         this.seeElement(locate(fieldSelector).withText(fieldValue));
       }
+    },
+
+    seeTextInTab (pathToField) {
+      const fieldSelector = this.tabFieldSelector(pathToField);
+      this.seeElement(locate(fieldSelector));
     },
 
     dontSeeInTab(pathToField) {

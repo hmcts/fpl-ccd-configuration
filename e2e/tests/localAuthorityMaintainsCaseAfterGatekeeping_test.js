@@ -29,5 +29,5 @@ Scenario('local authority uploads court bundle', async (I, caseViewPage, uploadD
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
-  I.seeDocument('Court bundle', 'mockFile.txt');
+  I.seeDocument('Court bundle', 'mockFile.txt', '', '', 'Date and time uploaded', 'Uploaded by');
 });
