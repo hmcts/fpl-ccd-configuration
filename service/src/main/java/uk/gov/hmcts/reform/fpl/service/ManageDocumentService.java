@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListValueCode
 public class ManageDocumentService {
     private final ObjectMapper mapper;
     private final Time time;
+    private final DocumentUploadHelper documentUploadHelper;
 
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_KEY = "correspondenceDocuments";
     public static final String C2_DOCUMENTS_COLLECTION_KEY = "c2DocumentBundle";
@@ -148,7 +150,7 @@ public class ManageDocumentService {
 
         List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceBundle
             = caseData.getHearingFurtherEvidenceDocuments();
-        
+
         UUID selectedHearingCode = getDynamicListValueCode(caseData.getManageDocumentsHearingList(), mapper);
         HearingBooking hearingBooking = getHearingBookingByUUID(caseData.getHearingDetails(), selectedHearingCode);
 
@@ -175,6 +177,8 @@ public class ManageDocumentService {
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle,
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundleBefore) {
 
+        String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
+
         if (!Objects.equals(supportingEvidenceBundle, supportingEvidenceBundleBefore)) {
             List<Element<SupportingEvidenceBundle>> altered = new ArrayList<>(supportingEvidenceBundle);
 
@@ -184,7 +188,12 @@ public class ManageDocumentService {
             }
 
             altered.forEach(bundle -> findElement(bundle.getId(), supportingEvidenceBundleBefore).ifPresent(
-                previousVersion -> updateUploadTimeWhenDocumentChanged(bundle, previousVersion)
+                previousVersion -> {
+                    if (!previousVersion.getValue().getDocument().equals(bundle.getValue().getDocument())) {
+                        bundle.getValue().setDateTimeUploaded(time.now());
+                        bundle.getValue().setUploadedBy(uploadedBy);
+                    }
+                }
             ));
         }
 
@@ -192,6 +201,7 @@ public class ManageDocumentService {
         for (Element<SupportingEvidenceBundle> supportingEvidenceBundleElement : supportingEvidenceBundle) {
             if (supportingEvidenceBundleElement.getValue().getDateTimeUploaded() == null) {
                 supportingEvidenceBundleElement.getValue().setDateTimeUploaded(time.now());
+                supportingEvidenceBundleElement.getValue().setUploadedBy(uploadedBy);
             }
             updatedBundles.add(supportingEvidenceBundleElement);
         }
@@ -241,13 +251,6 @@ public class ManageDocumentService {
             .hearingName(hearingBooking.toLabel(DATE))
             .supportingEvidenceBundle(supportingEvidenceBundle)
             .build());
-    }
-
-    private void updateUploadTimeWhenDocumentChanged(Element<SupportingEvidenceBundle> current,
-                                                           Element<SupportingEvidenceBundle> previous) {
-        if (!previous.getValue().getDocument().equals(current.getValue().getDocument())) {
-            current.getValue().setDateTimeUploaded(time.now());
-        }
     }
 
     private List<Element<SupportingEvidenceBundle>> getEmptySupportingEvidenceBundle() {

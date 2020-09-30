@@ -12,6 +12,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.DocumentsValidatorService;
+import uk.gov.hmcts.reform.fpl.service.UploadDocumentsService;
+
+import java.util.List;
 
 @Api
 @RestController
@@ -19,12 +22,20 @@ import uk.gov.hmcts.reform.fpl.service.DocumentsValidatorService;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UploadDocumentsController extends CallbackController {
     private final DocumentsValidatorService documentsValidatorService;
+    private final UploadDocumentsService uploadDocumentsService;
 
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        return respond(caseDetails, documentsValidatorService.validateDocuments(caseData));
+        List<String> errors = documentsValidatorService.validateDocuments(caseData);
+
+        if (errors.isEmpty()) {
+            CaseData caseDataBefore = getCaseDataBefore(callbackrequest);
+            caseDetails.getData().putAll(uploadDocumentsService.updateCaseDocuments(caseData, caseDataBefore));
+        }
+
+        return respond(caseDetails, errors);
     }
 }

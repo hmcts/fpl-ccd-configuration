@@ -23,14 +23,13 @@ import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.UploadC2DocumentsService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,13 +57,12 @@ public class UploadC2DocumentsController extends CallbackController {
     private static final String AMOUNT_TO_PAY = "amountToPay";
     private static final String TEMPORARY_C2_DOCUMENT = "temporaryC2Document";
     private final ObjectMapper mapper;
-    private final IdamClient idamClient;
     private final FeeService feeService;
     private final PaymentService paymentService;
     private final PbaNumberService pbaNumberService;
     private final Time time;
-    private final RequestData requestData;
     private final UploadC2DocumentsService uploadC2DocumentsService;
+    private final DocumentUploadHelper documentUploadHelper;
 
     @PostMapping("/get-fee/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
@@ -157,15 +155,19 @@ public class UploadC2DocumentsController extends CallbackController {
     private List<Element<C2DocumentBundle>> buildC2DocumentBundle(CaseData caseData) {
         List<Element<C2DocumentBundle>> c2DocumentBundle = defaultIfNull(caseData.getC2DocumentBundle(),
             Lists.newArrayList());
+        String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
 
         List<SupportingEvidenceBundle> updatedSupportingEvidenceBundle =
             unwrapElements(caseData.getTemporaryC2Document().getSupportingEvidenceBundle())
                 .stream()
-                .map(supportingEvidence -> supportingEvidence.toBuilder().dateTimeUploaded(time.now()).build())
+                .map(supportingEvidence -> supportingEvidence.toBuilder()
+                    .dateTimeUploaded(time.now())
+                    .uploadedBy(uploadedBy)
+                    .build())
                 .collect(Collectors.toList());
 
         var c2DocumentBundleBuilder = caseData.getTemporaryC2Document().toBuilder()
-            .author(idamClient.getUserInfo(requestData.authorisation()).getName())
+            .author(uploadedBy)
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
             .supportingEvidenceBundle(wrapElements(updatedSupportingEvidenceBundle));
 
