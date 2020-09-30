@@ -30,8 +30,10 @@ public class MigrateCaseController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if ("SA20C50004".equals(caseData.getFamilyManCaseNumber())) {
-            data.put("state", State.CASE_MANAGEMENT.getValue());
+        if ("SA20C50002".equals(caseData.getFamilyManCaseNumber())) {
+            data.remove("deprivationOfLiberty");
+            data.remove("closeCaseTabField");
+            data.put("state", State.FINAL_HEARING.getValue());
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
