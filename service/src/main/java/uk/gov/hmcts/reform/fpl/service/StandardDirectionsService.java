@@ -47,6 +47,7 @@ public class StandardDirectionsService {
                 caseData.getCafcassDirections(),
                 caseData.getOtherPartiesDirections(),
                 caseData.getCourtDirections())
+            .filter(Objects::nonNull)
             .flatMap(Collection::stream)
             .map(Element::getValue)
             .map(Direction::getDateToBeCompletedBy)
