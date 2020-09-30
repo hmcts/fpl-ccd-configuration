@@ -236,6 +236,13 @@ abstract class AbstractControllerTest {
             .build();
     }
 
+    CallbackRequest toCallBackRequest(CaseDetails caseDetails, CaseDetails caseDetailsBefore) {
+        return CallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .caseDetailsBefore(caseDetailsBefore)
+            .build();
+    }
+
     LocalDateTime now() {
         return time.now();
     }
