@@ -18,20 +18,10 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "orderCollection",
-    "Label": "Order",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "GeneratedOrder",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "order",
     "Label": "Create an order",
     "FieldType": "GeneratedOrder",
-    "SecurityClassification": "Public",
-    "Comment": "Event is single order centric: order added to Collection of orderCollection above (displayed in orders tab) then deleted from case data so that event can be used to create a new order"
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -198,6 +188,22 @@
     "ID": "uploadedOrder",
     "Label": "Add the sealed order",
     "FieldType": "Document",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "someTextArea",
+    "Label": " ",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "someLabel",
+    "Label": "DATA: ${someTextArea}",
+    "FieldType": "Label",
     "SecurityClassification": "Public"
   }
 ]

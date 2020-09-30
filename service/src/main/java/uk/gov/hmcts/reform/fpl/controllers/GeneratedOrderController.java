@@ -50,6 +50,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.MULTIPLE_CARE_ORDE
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.SINGLE_CARE_ORDER_LABEL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.DISCHARGE_OF_CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
@@ -103,6 +104,8 @@ public class GeneratedOrderController extends CallbackController {
                 data.put("orderTypeAndDocument", OrderTypeAndDocument.builder().type(BLANK_ORDER).build());
             }
         }
+
+        data.put("someTextArea", "# should be a header");
 
         return respond(caseDetails, errors);
     }
@@ -181,6 +184,7 @@ public class GeneratedOrderController extends CallbackController {
      This mid event is called after:
       • Inputting Judge + LA
       • Adding further directions
+      • Uploading an order
     */
     @PostMapping("/generate-document/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
@@ -213,6 +217,8 @@ public class GeneratedOrderController extends CallbackController {
             //Update orderTypeAndDocument with the document so it can be displayed in check-your-answers
             data.put("orderTypeAndDocument", service.buildOrderTypeAndDocument(
                 orderTypeAndDocument, document));
+        } else if (UPLOAD == orderTypeAndDocument.getType()) {
+            // TODO: 30/09/2020 populate the custom cya object 
         }
 
         return respond(caseDetails);

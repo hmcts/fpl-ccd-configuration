@@ -244,6 +244,7 @@ public class CaseData {
     private final OrderTypeAndDocument orderTypeAndDocument;
     private final FurtherDirections orderFurtherDirections;
     private final GeneratedOrder order;
+    private final DocumentReference uploadedOrder;
     @JsonIgnore
     private OrderStatus generatedOrderStatus;
     private final Integer orderMonths;
