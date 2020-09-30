@@ -1,0 +1,154 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hasExistingHearings",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hasAdjournedHearings",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "adjournedHearingDateListLabel",
+    "Label": "Sorry, you don't have any ajourned hearings. Please click previous or continue to add a new hearing",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "useExistingHearing",
+    "Label": "What would you like to do?",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "HearingOptions",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hearingDateList",
+    "Label": "Which draft hearing do you want to edit?",
+    "FieldType": "DynamicList",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "adjournedHearingDateList",
+    "Label": "Which adjourned hearing do you want to edit?",
+    "FieldType": "DynamicList",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hearingType",
+    "Label": "Type of hearing",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "HearingType",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hearingVenue",
+    "Label": "Venue",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "HearingVenue",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hearingVenueCustom",
+    "FieldType": "AddressUK",
+    "Label": "Venue address",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "hearingStartDate",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "DateTime",
+    "Label": "Start date and time",
+    "HintText": "Use 24 hour format",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "hearingEndDate",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "DateTime",
+    "Label": "End date and time",
+    "HintText": "Use 24 hour format",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hearingNeedsLabel",
+    "Label": " ",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hearingNeedsBooked",
+    "Label": "Hearing needs booked",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "HearingNeedsBooked",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hearingNeedsDetails",
+    "FieldType": "TextArea",
+    "Label": "Give details",
+    "FieldShowCondition": "hearingNeedsBooked!=\"NONE\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "sendNoticeOfHearing",
+    "FieldType": "YesOrNo",
+    "Label": "Do you want to send a notice of hearing?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "isFirstHearing",
+    "FieldType": "YesOrNo",
+    "Label": " ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "sendNoticeOfProceedings",
+    "FieldType": "YesOrNo",
+    "Label": "Do you want to send notice of proceedings?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "proceedingType",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ProceedingType",
+    "Label": "What type of proceeding would you like to create?",
+    "SecurityClassification": "Public"
+  }
+]

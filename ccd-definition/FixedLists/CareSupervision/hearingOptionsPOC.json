@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOptions",
+    "ListElementCode": "NEW_HEARING",
+    "ListElement": "Create a new hearing",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOptions",
+    "ListElementCode": "EDIT_DRAFT",
+    "ListElement": "Edit a draft hearing",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOptions",
+    "ListElementCode": "EDIT_ADJOURNED",
+    "ListElement": "Edit an adjourned hearing",
+    "DisplayOrder": 3
+  }
+]

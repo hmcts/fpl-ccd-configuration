@@ -48,6 +48,7 @@ public class HearingBooking {
     private JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private UUID caseManagementOrderId;
     private DocumentReference noticeOfHearing;
+    private String isAdjourned;
 
     public boolean hasDatesOnSameDay() {
         return this.startDate.toLocalDate().isEqual(this.endDate.toLocalDate());

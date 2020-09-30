@@ -9,7 +9,11 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
+import uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked;
+import uk.gov.hmcts.reform.fpl.enums.HearingOptionsPOCType;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
+import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
@@ -34,6 +38,7 @@ import uk.gov.hmcts.reform.fpl.validation.groups.CaseExtensionGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.SealedSDOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.UploadDocumentsGroup;
@@ -498,4 +503,22 @@ public class CaseData {
     public DynamicList buildDynamicHearingList(UUID selected) {
         return asDynamicList(getHearingDetails(), selected, hearingBooking -> hearingBooking.toLabel(DATE));
     }
+
+    private final HearingType hearingType;
+    private final String hearingVenue;
+    private final Address hearingVenueCustom;
+    private final List<HearingNeedsBooked> hearingNeedsBooked;
+    private final String hearingNeedsDetails;
+
+    @TimeNotMidnight(message = "Enter a valid start time", groups = HearingDatesGroup.class)
+    @Future(message = "Enter a start date in the future", groups = HearingDatesGroup.class)
+    private final LocalDateTime hearingStartDate;
+
+    @TimeNotMidnight(message = "Enter a valid end time", groups = HearingDatesGroup.class)
+    @Future(message = "Enter an end date in the future", groups = HearingDatesGroup.class)
+    private final LocalDateTime hearingEndDate;
+    private final String sendNoticeOfHearing;
+    private final HearingOptionsPOCType useExistingHearing;
+    private final List<ProceedingType> proceedingType;
+    private final String hasAdjournedHearings;
 }

@@ -49,9 +49,9 @@ public class NoticeOfProceedingsTemplateDataGenerationService
             .orderTypes(getOrderTypes(caseData.getOrders()))
             .childrenNames(getAllChildrenNames(caseData.getAllChildren()))
             .judgeTitleAndName(JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
-                caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()))
+                prioritisedHearingBooking.getJudgeAndLegalAdvisor()))
             .legalAdvisorName(JudgeAndLegalAdvisorHelper.getLegalAdvisorName(
-                caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()))
+                prioritisedHearingBooking.getJudgeAndLegalAdvisor()))
             .hearingDate(caseDataExtractionService.getHearingDateIfHearingsOnSameDay(
                 prioritisedHearingBooking)
                 .orElse(""))
