@@ -11,6 +11,8 @@ import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.ReturnedCaseContentProvider;
 
+import java.util.Collection;
+
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_RETURNED_TO_THE_LA;
 
 @Component
@@ -26,8 +28,8 @@ public class ReturnedCaseEventHandler {
 
         ReturnedCaseTemplate parameters = returnedCaseContentProvider.parametersWithCaseUrl(caseData);
 
-        String email = inboxLookupService.getNotificationRecipientEmail(caseData);
+        Collection<String> emails = inboxLookupService.getRecipients(caseData);
 
-        notificationService.sendEmail(APPLICATION_RETURNED_TO_THE_LA, email, parameters, caseData.getId().toString());
+        notificationService.sendEmail(APPLICATION_RETURNED_TO_THE_LA, emails, parameters, caseData.getId().toString());
     }
 }

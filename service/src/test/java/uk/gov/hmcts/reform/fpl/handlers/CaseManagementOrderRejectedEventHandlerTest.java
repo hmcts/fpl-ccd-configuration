@@ -13,6 +13,8 @@ import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 
+import java.util.Set;
+
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
@@ -41,8 +43,8 @@ class CaseManagementOrderRejectedEventHandlerTest {
 
         RejectedCMOTemplate expectedTemplate = new RejectedCMOTemplate();
 
-        given(inboxLookupService.getNotificationRecipientEmail(caseData))
-            .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
+        given(inboxLookupService.getRecipients(caseData))
+            .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         given(caseManagementOrderEmailContentProvider.buildCMORejectedByJudgeNotificationParameters(caseData, cmo))
             .willReturn(expectedTemplate);
@@ -52,7 +54,7 @@ class CaseManagementOrderRejectedEventHandlerTest {
 
         verify(notificationService).sendEmail(
             CMO_REJECTED_BY_JUDGE_TEMPLATE,
-            LOCAL_AUTHORITY_EMAIL_ADDRESS,
+            Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             expectedTemplate,
             caseData.getId().toString());
     }
