@@ -14,10 +14,10 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
-import uk.gov.hmcts.reform.fpl.utils.IncrementalInteger;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
@@ -55,7 +55,7 @@ public class ManageDocumentsControllerAboutToStartTest extends AbstractControlle
         DynamicList expectedHearingDynamicList = ElementUtils
             .asDynamicList(hearingBookings, null, hearingBooking -> hearingBooking.toLabel(DATE));
 
-        IncrementalInteger i = new IncrementalInteger(1);
+        AtomicInteger i = new AtomicInteger(1);
         DynamicList expectedC2DocumentsDynamicList = ElementUtils
             .asDynamicList(c2DocumentBundle, null, documentBundle ->
                 documentBundle.toLabel(i.getAndIncrement()));
