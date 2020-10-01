@@ -48,9 +48,12 @@ public class ManageDocumentsControllerAboutToStartTest extends AbstractControlle
 
         CaseData caseData = CaseData.builder()
             .c2DocumentBundle(c2DocumentBundle)
+            .furtherEvidenceDocumentsTEMP(List.of())
             .hearingDetails(hearingBookings).build();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(asCaseDetails(caseData));
+
+        CaseData responseCaseData = mapper.convertValue(response.getData(), CaseData.class);
 
         DynamicList expectedHearingDynamicList = ElementUtils
             .asDynamicList(hearingBookings, null, hearingBooking -> hearingBooking.toLabel(DATE));
@@ -74,7 +77,7 @@ public class ManageDocumentsControllerAboutToStartTest extends AbstractControlle
         assertThat(hearingDynamicList).isEqualTo(expectedHearingDynamicList);
         assertThat(c2DocumentDynamicList).isEqualTo(expectedC2DocumentsDynamicList);
         assertThat(actualManageDocument).isEqualTo(expectedManageDocument);
-        assertThat(response.getData().get("furtherEvidenceDocumentsTEMP")).isNull();
+        assertThat(responseCaseData.getFurtherEvidenceDocumentsTEMP()).isNull();
     }
 
     private HearingBooking hearing(LocalDateTime startDate) {
