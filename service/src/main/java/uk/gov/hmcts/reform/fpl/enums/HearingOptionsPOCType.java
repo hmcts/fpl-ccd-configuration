@@ -6,9 +6,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum HearingOptionsPOCType {
-    NEW_HEARING("Create a new hearing"),
-    EDIT_DRAFT("Edit a draft hearing"),
-    EDIT_ADJOURNED("Edit an adjourned hearing");
+    NEW_HEARING("Add a new hearing"),
+    EDIT_DRAFT("Edit or issue a draft hearing");
 
     private final String label;
 }

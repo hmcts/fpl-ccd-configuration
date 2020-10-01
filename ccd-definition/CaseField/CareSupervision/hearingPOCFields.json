@@ -10,22 +10,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "hasAdjournedHearings",
-    "Label": " ",
-    "FieldType": "Text",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "adjournedHearingDateListLabel",
-    "Label": "Sorry, you don't have any ajourned hearings. Please click previous or continue to add a new hearing",
-    "FieldType": "Label",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "useExistingHearing",
     "Label": "What would you like to do?",
     "FieldType": "FixedRadioList",
@@ -37,14 +21,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearingDateList",
     "Label": "Which draft hearing do you want to edit?",
-    "FieldType": "DynamicList",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "adjournedHearingDateList",
-    "Label": "Which adjourned hearing do you want to edit?",
     "FieldType": "DynamicList",
     "SecurityClassification": "Public"
   },
@@ -132,14 +108,6 @@
     "ID": "isFirstHearing",
     "FieldType": "YesOrNo",
     "Label": " ",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "sendNoticeOfProceedings",
-    "FieldType": "YesOrNo",
-    "Label": "Do you want to send notice of proceedings?",
     "SecurityClassification": "Public"
   },
   {

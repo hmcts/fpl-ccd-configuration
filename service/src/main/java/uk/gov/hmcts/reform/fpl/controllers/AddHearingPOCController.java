@@ -29,7 +29,6 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
-import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsTemplateDataGenerationService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
@@ -45,16 +44,13 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.time.LocalDate.now;
-import static java.util.Objects.isNull;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptionsPOCType.EDIT_DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.HearingOptionsPOCType.EDIT_DRAFT;
-import static uk.gov.hmcts.reform.fpl.enums.HearingOptionsPOCType.EDIT_ADJOURNED;
 
 @Api
 @RestController
@@ -66,7 +62,6 @@ public class AddHearingPOCController {
     private final NoticeOfHearingGenerationService noticeOfHearingGenerationService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
-    private final NoticeOfProceedingsTemplateDataGenerationService noticeOfProceedingsTemplateDataGenerationService;
     private final HearingBookingService hearingBookingService;
 
     @PostMapping("/about-to-start")
@@ -82,11 +77,6 @@ public class AddHearingPOCController {
         if (hasExistingHearingBookings(caseData.getHearingDetails())) {
             data.put("hasExistingHearings", YES.getValue());
             data.put("hearingDateList", buildDraftHearingDateList(caseData.getHearingDetails()));
-
-            if (!getAdjournedHearings(caseData.getHearingDetails()).isEmpty()) {
-                data.put("hasAdjournedHearings", YES.getValue());
-                data.put("adjournedHearingDateList", buildAdjournedHearingDateList(caseData.getHearingDetails()));
-            }
         }
 
         if (caseData.getHearingDetails() == null) {
@@ -104,55 +94,16 @@ public class AddHearingPOCController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        // Editing a draft hearing
-        if (EDIT_DRAFT.equals(caseData.getUseExistingHearing())) {
-            UUID hearingBookingId = mapper.convertValue(caseDetails.getData().get("hearingDateList"), UUID.class);
+        UUID hearingBookingId = mapper.convertValue(caseDetails.getData().get("hearingDateList"), UUID.class);
 
-            caseDetails.getData().put("hearingDateList",
-                ElementUtils.asDynamicList(caseData.getHearingDetails(),
-                    hearingBookingId, hearingBooking -> hearingBooking.toLabel(DATE)));
+        caseDetails.getData().put("hearingDateList",
+            ElementUtils.asDynamicList(caseData.getHearingDetails(),
+                hearingBookingId, hearingBooking -> hearingBooking.toLabel(DATE)));
 
-            HearingBooking hearingBooking = findHearingBooking(hearingBookingId, caseData.getHearingDetails());
+        HearingBooking hearingBooking = findHearingBooking(hearingBookingId, caseData.getHearingDetails());
 
-            Optional<Element<HearingBooking>> firstHearingElement =
-                hearingBookingService.getFirstHearingElement(caseData.getHearingDetails());
+        populateHearingBooking(caseDetails, hearingBooking);
 
-            if (firstHearingElement.isPresent() && firstHearingElement.get().getId().equals(hearingBookingId)) {
-                caseDetails.getData().put("isFirstHearing", YES.getValue());
-                caseDetails.getData().put("sendNoticeOfHearing", NO.getValue());
-            } else {
-                caseDetails.getData().remove("isFirstHearing");
-            }
-
-            caseDetails.getData().remove("adjournedHearingDateList");
-
-            populateHearingBooking(caseDetails, hearingBooking);
-        }
-        // Editing an adjourned hearing
-        else if (EDIT_ADJOURNED.equals(caseData.getUseExistingHearing())) {
-            UUID hearingBookingId = mapper.convertValue(caseDetails.getData().get("adjournedHearingDateList"), UUID.class);
-
-            caseDetails.getData().put("adjournedHearingDateList",
-                ElementUtils.asDynamicList(caseData.getHearingDetails(),
-                    hearingBookingId, hearingBooking -> hearingBooking.toLabel(DATE)));
-
-            HearingBooking hearingBooking = findHearingBooking(hearingBookingId, caseData.getHearingDetails());
-
-            Optional<Element<HearingBooking>> firstHearingElement =
-                hearingBookingService.getFirstHearingElement(caseData.getHearingDetails());
-
-            if (firstHearingElement.isPresent() && firstHearingElement.get().getId().equals(hearingBookingId)) {
-                caseDetails.getData().put("isFirstHearing", YES.getValue());
-                caseDetails.getData().put("sendNoticeOfHearing", NO.getValue());
-            } else {
-                caseDetails.getData().remove("isFirstHearing");
-            }
-
-            caseDetails.getData().remove("hearingDateList");
-
-            populateHearingBooking(caseDetails, hearingBooking);
-        }
-        
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
@@ -196,8 +147,7 @@ public class AddHearingPOCController {
         List<Element<HearingBooking>> hearingBookingElements;
 
         // Editing previous hearing
-        if ((caseData.getUseExistingHearing() != null) && EDIT_DRAFT.equals(caseData.getUseExistingHearing())
-            || EDIT_ADJOURNED.equals(caseData.getUseExistingHearing())) {
+        if ((caseData.getUseExistingHearing() != null) && EDIT_DRAFT.equals(caseData.getUseExistingHearing())) {
 
             DynamicList hearingList;
 
@@ -226,24 +176,6 @@ public class AddHearingPOCController {
 
         caseDetails.getData().put(HEARING_DETAILS_KEY, hearingBookingElements);
 
-        if (caseData.getProceedingType() != null
-            && isSendingNoticeOfProceeding(caseData.getProceedingType())) {
-
-            CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
-            DocmosisNoticeOfProceeding templateData = noticeOfProceedingsTemplateDataGenerationService
-                .getTemplateData(updatedCaseData);
-
-            List<DocmosisTemplates> templateTypes = getProceedingTemplateTypes(caseData.getProceedingType());
-
-            List<Document> uploadedDocuments = generateAndUploadDocuments(templateData, templateTypes);
-
-            List<Element<DocumentBundle>> noticeOfProceedingCaseData =
-                createNoticeOfProceedingsCaseData(uploadedDocuments);
-
-            caseDetails.getData().put("noticeOfProceedingsBundle", noticeOfProceedingCaseData);
-        }
-
         removeHearingProperties(caseDetails);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -267,45 +199,16 @@ public class AddHearingPOCController {
         for (int i = 0; i < hearingBookings.size(); i++) {
             HearingBooking hearingBooking = hearingBookings.get(i).getValue();
 
-            if (isNull(hearingBooking.getIsAdjourned())) {
+            DynamicListElement dynamicListElement = DynamicListElement.builder()
+                .label(hearingBooking.toLabel(DATE))
+                .code(hearingBookings.get(i).getId())
+                .build();
 
-                DynamicListElement dynamicListElement = DynamicListElement.builder()
-                    .label(hearingBooking.toLabel(DATE))
-                    .code(hearingBookings.get(i).getId())
-                    .build();
-
-                dynamicListElements.add(dynamicListElement);
-            }
+            dynamicListElements.add(dynamicListElement);
         }
 
         if (dynamicListElements.isEmpty()) {
             return null;
-        }
-
-        return DynamicList.builder()
-            .listItems(dynamicListElements)
-            .value(dynamicListElements.get(0))
-            .build();
-    }
-
-    private DynamicList buildAdjournedHearingDateList(List<Element<HearingBooking>> hearingBookings) {
-        List<DynamicListElement> dynamicListElements = new ArrayList<>();
-
-        for (int i = 0; i < hearingBookings.size(); i++) {
-            HearingBooking hearingBooking = hearingBookings.get(i).getValue();
-
-            if(YES.getValue().equals(hearingBooking.getIsAdjourned())) {
-                DynamicListElement dynamicListElement = DynamicListElement.builder()
-                    .label(hearingBooking.toLabel(DATE))
-                    .code(hearingBookings.get(i).getId())
-                    .build();
-
-                dynamicListElements.add(dynamicListElement);
-            }
-        }
-
-        if (dynamicListElements.isEmpty()) {
-            dynamicListElements.add(DynamicListElement.builder().build());
         }
 
         return DynamicList.builder()
@@ -352,10 +255,6 @@ public class AddHearingPOCController {
 
     private boolean isSendingNoticeOfHearing(String sendNoticeOfHearing) {
         return sendNoticeOfHearing.equals(YES.getValue());
-    }
-
-    private boolean isSendingNoticeOfProceeding(List<ProceedingType> proceedingTypes) {
-        return !proceedingTypes.isEmpty();
     }
 
     private boolean hasExistingHearingBookings(List<Element<HearingBooking>> hearingBookings) {
@@ -463,13 +362,5 @@ public class AddHearingPOCController {
         caseDetails.getData().remove("hearingDateList");
         caseDetails.getData().remove("useExistingHearing");
         caseDetails.getData().remove("isFirstHearing");
-        caseDetails.getData().remove("proceedingType");
-        caseDetails.getData().remove("sendNoticeOfProceedings");
-    }
-
-    private List<Element<HearingBooking>> getAdjournedHearings(List<Element<HearingBooking>> hearingBookings) {
-        return hearingBookings.stream()
-            .filter(hearingBookingElement -> YES.getValue().equals(hearingBookingElement.getValue().getIsAdjourned()))
-            .collect(Collectors.toList());
     }
 }

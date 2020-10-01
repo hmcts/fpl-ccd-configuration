@@ -520,5 +520,4 @@ public class CaseData {
     private final String sendNoticeOfHearing;
     private final HearingOptionsPOCType useExistingHearing;
     private final List<ProceedingType> proceedingType;
-    private final String hasAdjournedHearings;
 }
