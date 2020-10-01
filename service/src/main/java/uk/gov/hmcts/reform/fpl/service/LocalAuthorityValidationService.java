@@ -25,7 +25,8 @@ public class LocalAuthorityValidationService {
             && organisationService.findOrganisation().isEmpty()) {
             errors.add("Register for an account.");
             errors.add("You cannot start an online application until you’re fully registered.");
-            errors.add("Ask your local authority’s public law administrator for help with registration.");
+            errors.add("Ask your local authority’s public law administrator, or email MyHMCTSsupport@justice.gov.uk, "
+                + "for help with registration.");
         }
 
         return errors;
