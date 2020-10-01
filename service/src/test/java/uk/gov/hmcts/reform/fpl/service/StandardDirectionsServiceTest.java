@@ -91,20 +91,6 @@ class StandardDirectionsServiceTest {
         assertThat(service.hasEmptyDates(caseData)).isFalse();
     }
 
-    @Test
-    void shouldReturnFalseWhenCafcassDirectionsAreNull() {
-        CaseData caseData = CaseData.builder()
-            .allParties(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
-            .localAuthorityDirections(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
-            .respondentDirections(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
-            .cafcassDirections(null)
-            .otherPartiesDirections(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
-            .courtDirections(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
-            .build();
-
-        assertThat(service.hasEmptyDates(caseData)).isFalse();
-    }
-
     private Direction buildDirectionWithDate() {
         return Direction.builder().dateToBeCompletedBy(LocalDateTime.now()).build();
     }
