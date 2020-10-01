@@ -69,9 +69,8 @@ class NoticeOfHearingGenerationServiceTest {
         final DocmosisNoticeOfHearing actualDocmosisNoticeOfHearing = service.getTemplateData(caseData, hearingBooking);
 
         DocmosisNoticeOfHearing.DocmosisNoticeOfHearingBuilder docmosisNoticeOfHearingBuilder
-            = getDocmosisNoticeOfHearingBuilder(now.toLocalDate());
-
-        docmosisNoticeOfHearingBuilder.hearingBooking(getDocmosisHearingBookingBuilder()
+            = getDocmosisNoticeOfHearingBuilder(now.toLocalDate())
+            .hearingBooking(getDocmosisHearingBookingBuilder()
             .hearingTime(String.format("%s - %s",
                 formatLocalDateTime(hearingBooking.getStartDate(), HEARING_DATE_AND_TIME_FORMAT),
                 formatLocalDateTime(hearingBooking.getEndDate(), HEARING_DATE_AND_TIME_FORMAT)))
@@ -92,9 +91,8 @@ class NoticeOfHearingGenerationServiceTest {
         HearingBooking hearingBooking = buildHearingBooking(now, now);
         final DocmosisNoticeOfHearing actualDocmosisNoticeOfHearing = service.getTemplateData(caseData, hearingBooking);
         DocmosisNoticeOfHearing.DocmosisNoticeOfHearingBuilder docmosisNoticeOfHearingBuilder
-            = getDocmosisNoticeOfHearingBuilder(now.toLocalDate());
-
-        docmosisNoticeOfHearingBuilder.hearingBooking(getDocmosisHearingBookingBuilder()
+            = getDocmosisNoticeOfHearingBuilder(now.toLocalDate())
+            .hearingBooking(getDocmosisHearingBookingBuilder()
             .hearingDate(formatLocalDateTime(now, DATE))
             .preHearingAttendance(formatLocalDateTime(now.minusHours(1), "h:mma"))
             .hearingTime(String.format("%s - %s",
