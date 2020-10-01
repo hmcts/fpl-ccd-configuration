@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
@@ -31,6 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -46,9 +49,13 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, FixedTimeConfiguration.class, ManageDocumentService.class
+    JacksonAutoConfiguration.class,
+    FixedTimeConfiguration.class,
+    ManageDocumentService.class,
+    DocumentUploadHelper.class
 })
 class ManageDocumentServiceTest {
+    private static final String USER = "HMCTS";
 
     @Autowired
     private Time time;
@@ -56,11 +63,15 @@ class ManageDocumentServiceTest {
     @Autowired
     private ManageDocumentService manageDocumentService;
 
+    @MockBean
+    private DocumentUploadHelper documentUploadHelper;
+
     private LocalDateTime futureDate;
 
     @BeforeEach
     void before() {
         futureDate = time.now().plusDays(1);
+        given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn("HMCTS");
     }
 
     @Test
@@ -537,6 +548,7 @@ class ManageDocumentServiceTest {
         return wrapElements(SupportingEvidenceBundle.builder()
             .name("test")
             .dateTimeUploaded(localDateTime)
+            .uploadedBy(USER)
             .build());
     }
 
