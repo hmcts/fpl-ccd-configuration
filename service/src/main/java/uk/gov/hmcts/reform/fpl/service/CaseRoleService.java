@@ -1,21 +1,25 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.Sets;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.client.CaseUserApi;
-import uk.gov.hmcts.reform.ccd.client.model.CaseUser;
+import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
+import uk.gov.hmcts.reform.ccd.model.AddCaseAssignedUserRolesRequest;
+import uk.gov.hmcts.reform.ccd.model.AddCaseAssignedUserRolesResponse;
+import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRoleWithOrganisation;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.exceptions.GrantCaseAccessException;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
@@ -26,7 +30,7 @@ import static java.util.stream.Collectors.toSet;
 public class CaseRoleService {
 
     private final IdamClient idam;
-    private final CaseUserApi caseUser;
+    private final CaseAccessApi caseAccessApi;
     private final AuthTokenGenerator authTokenGenerator;
     private final SystemUpdateUserConfiguration userConfig;
     private final OrganisationService organisationService;
@@ -36,7 +40,6 @@ public class CaseRoleService {
         log.info("User {} granted {} to case {}", user, roles, caseId);
     }
 
-    @Async
     @Retryable(value = {GrantCaseAccessException.class},
         backoff = @Backoff(delayExpression = "#{${retry.delay:1000}}"),
         label = "share a case")
@@ -54,20 +57,36 @@ public class CaseRoleService {
         try {
             final String userToken = idam.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
             final String serviceToken = authTokenGenerator.generate();
-            final Set<String> caseRoles = roles.stream()
-                .map(CaseRole::formattedName)
-                .collect(toSet());
+            List<CaseAssignedUserRoleWithOrganisation> caseAssignedRoles = new ArrayList<>();
+            AddCaseAssignedUserRolesRequest addCaseRequest = new AddCaseAssignedUserRolesRequest();
 
-            users.stream().parallel()
+            users.stream().sequential()
                 .forEach(userId -> {
                     try {
-                        caseUser.updateCaseRolesForUser(
-                            userToken, serviceToken, caseId, userId, new CaseUser(userId, caseRoles));
+                        CaseAssignedUserRoleWithOrganisation caseUserRole = new CaseAssignedUserRoleWithOrganisation();
+                        //caseUserRole.setOrganisationId("");
+                        caseUserRole.setCaseDataId(caseId);
+                        caseUserRole.setUserId(userId);
+                        // This api call needs only LASOLICITOR rolestring
+                        caseUserRole.setCaseRole(CaseRole.LASOLICITOR.formattedName());
+                        caseAssignedRoles.add(caseUserRole);
+                        addCaseRequest.setCaseAssignedUserRoles(caseAssignedRoles);
                         usersGrantedAccess.add(userId);
                     } catch (Exception exception) {
                         log.warn("User {} has not been granted {} to case {}", userId, roles, caseId, exception);
                     }
                 });
+
+            AddCaseAssignedUserRolesResponse response = caseAccessApi.addCaseUserRoles(userToken,
+                                                                            serviceToken,
+                                                                            addCaseRequest);
+
+        } catch (FeignException ex) {
+            ex.printStackTrace();
+            log.error("Could not find the case users for associated organisation from reference data", ex);
+            String statusMessage = ex.getMessage();
+            AddCaseAssignedUserRolesResponse addCaseResponse = new AddCaseAssignedUserRolesResponse();
+            addCaseResponse.setStatus(statusMessage);
         } finally {
             checkAllUsersGrantedAccess(caseId, users, usersGrantedAccess, roles);
         }
