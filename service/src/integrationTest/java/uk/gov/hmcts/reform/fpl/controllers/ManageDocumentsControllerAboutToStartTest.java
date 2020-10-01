@@ -74,6 +74,7 @@ public class ManageDocumentsControllerAboutToStartTest extends AbstractControlle
         assertThat(hearingDynamicList).isEqualTo(expectedHearingDynamicList);
         assertThat(c2DocumentDynamicList).isEqualTo(expectedC2DocumentsDynamicList);
         assertThat(actualManageDocument).isEqualTo(expectedManageDocument);
+        assertThat(response.getData().get("furtherEvidenceDocumentsTEMP")).isNull();
     }
 
     private HearingBooking hearing(LocalDateTime startDate) {

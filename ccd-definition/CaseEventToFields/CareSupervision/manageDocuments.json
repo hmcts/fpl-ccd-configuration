@@ -115,5 +115,18 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageDocuments",
+    "CaseFieldID": "furtherEvidenceDocumentsTEMP",
+    "PageFieldDisplayOrder": 7,
+    "DisplayContext": "COMPLEX",
+    "PageID": "FurtherEvidenceDocuments",
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "manageDocument.type=\"DO_NOT_SHOW\""
   }
 ]
