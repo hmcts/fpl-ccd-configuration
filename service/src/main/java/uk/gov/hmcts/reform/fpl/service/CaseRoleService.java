@@ -5,8 +5,6 @@ import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
@@ -40,10 +38,6 @@ public class CaseRoleService {
         log.info("User {} granted {} to case {}", user, roles, caseId);
     }
 
-    @Retryable(value = {GrantCaseAccessException.class},
-        backoff = @Backoff(delayExpression = "#{${retry.delay:1000}}"),
-        label = "share a case")
-    //Due to @Retryable keep this method idempotent
     public void grantAccessToLocalAuthority(String caseId, String localAuthority, Set<CaseRole> roles,
                                             Set<String> excludeUsers) {
         Set<String> localAuthorityUsers = getUsers(caseId, localAuthority, excludeUsers, roles);
@@ -64,7 +58,8 @@ public class CaseRoleService {
                 .forEach(userId -> {
                     try {
                         CaseAssignedUserRoleWithOrganisation caseUserRole = new CaseAssignedUserRoleWithOrganisation();
-                        //caseUserRole.setOrganisationId("");
+                        // It has been decided that this will be tested in preview with blank org id first.
+                        caseUserRole.setOrganisationId("");
                         caseUserRole.setCaseDataId(caseId);
                         caseUserRole.setUserId(userId);
                         // This api call needs only LASOLICITOR rolestring
@@ -77,12 +72,8 @@ public class CaseRoleService {
                     }
                 });
 
-            AddCaseAssignedUserRolesResponse response = caseAccessApi.addCaseUserRoles(userToken,
-                                                                            serviceToken,
-                                                                            addCaseRequest);
-
+            caseAccessApi.addCaseUserRoles(userToken,serviceToken,addCaseRequest);
         } catch (FeignException ex) {
-            ex.printStackTrace();
             log.error("Could not find the case users for associated organisation from reference data", ex);
             String statusMessage = ex.getMessage();
             AddCaseAssignedUserRolesResponse addCaseResponse = new AddCaseAssignedUserRolesResponse();

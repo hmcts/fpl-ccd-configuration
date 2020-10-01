@@ -24,7 +24,7 @@ public class LocalAuthorityUserService {
     public void grantUserAccessWithCaseRole(String caseId, String caseLocalAuthority) {
         String currentUser = requestData.userId();
 
-        caseRoleService.grantAccessToLocalAuthority(caseId, caseLocalAuthority, CASE_ROLES, Set.of(currentUser));
         caseRoleService.grantAccessToUser(caseId, currentUser, CASE_ROLES);
+        caseRoleService.grantAccessToLocalAuthority(caseId, caseLocalAuthority, CASE_ROLES, Set.of(currentUser));
     }
 }
