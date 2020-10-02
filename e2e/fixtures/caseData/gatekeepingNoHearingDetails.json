@@ -382,6 +382,31 @@
     "documents_socialWorkEvidenceTemplate_document": {
       "documentStatus": "Attached",
       "typeOfDocument": "TO BE FILLED WITH VALID DATA"
-    }
+    },
+    "orderCollection": [
+      {
+        "id": "52caf114-d171-4dc5-ac33-c842dba88205",
+        "value": {
+          "date": "2:33pm, 26 May 2020",
+          "type": "Blank order (C21)",
+          "title": "Example Order Title",
+          "details": "szvd",
+          "document": "TO BE FILLED WITH VALID DATA",
+          "expiryDate": null,
+          "dateOfIssue": "26 May 2020",
+          "furtherDirections": {},
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "HER_HONOUR_JUDGE",
+            "otherTitle": null,
+            "judgeFullName": null,
+            "judgeLastName": "Sotomayer",
+            "legalAdvisorName": "Peter Parker",
+            "judgeEmailAddress": "test@test.com",
+            "useAllocatedJudge": null,
+            "allocatedJudgeLabel": null
+          }
+        }
+      }
+    ]
   }
 }
