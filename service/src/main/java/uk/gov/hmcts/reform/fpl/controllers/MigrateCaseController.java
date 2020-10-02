@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
+import java.util.List;
 import java.util.Map;
 
 @Api
@@ -30,14 +32,19 @@ public class MigrateCaseController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if ("SA20C50002".equals(caseData.getFamilyManCaseNumber())) {
-            data.remove("deprivationOfLiberty");
-            data.remove("closeCaseTabField");
-            data.put("state", State.FINAL_HEARING.getValue());
+        if ("PO20C50003".equals(caseData.getFamilyManCaseNumber())) {
+            data.put("orderCollection", removeInterimCareOrder(caseData.getOrderCollection()));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
             .build();
+    }
+
+    private List<Element<GeneratedOrder>> removeInterimCareOrder(List<Element<GeneratedOrder>> orders) {
+        if ("Interim care order".equals(orders.get(0).getValue().getType())) {
+            orders.remove(0);
+        }
+        return orders;
     }
 }
