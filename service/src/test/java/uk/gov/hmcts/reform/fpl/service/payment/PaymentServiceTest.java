@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
@@ -39,9 +40,13 @@ import static feign.Request.HttpMethod.GET;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Currency.GBP;
@@ -97,6 +102,30 @@ class PaymentServiceTest {
         void setup() {
             when(feeService.getFeesDataForC2(WITH_NOTICE)).thenReturn(buildFeesData(feeForC2WithNotice));
             when(feeService.getFeesDataForC2(WITHOUT_NOTICE)).thenReturn(buildFeesData(feeForC2WithoutNotice));
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"customerReference"})
+        void shouldRetryWhen500(final String customerReference) {
+            CaseData caseData = CaseData.builder()
+                .caseLocalAuthority("LA")
+                .c2DocumentBundle(List.of(element(C2DocumentBundle.builder()
+                    .type(WITH_NOTICE)
+                    .pbaNumber("PBA123")
+                    .clientCode("clientCode")
+                    .fileReference(customerReference)
+                    .build())))
+                .build();
+
+            Mockito.doThrow(new RuntimeException("500")).when(paymentApi).createCreditAccountPayment(anyString(),
+                anyString(),any());
+
+            Exception actualException = assertThrows(Exception.class,
+                () -> paymentService.makePaymentForC2(CASE_ID, caseData));
+
+            assertThat(actualException).isInstanceOf(RuntimeException.class);
+
+            verify(paymentApi, times(3)).createCreditAccountPayment(anyString(), anyString(), any());
         }
 
         @ParameterizedTest
@@ -351,6 +380,7 @@ class PaymentServiceTest {
             verify(feeService).getFeesDataForOrders(orders);
         }
     }
+
 
     @AfterEach
     void resetInvocations() {
