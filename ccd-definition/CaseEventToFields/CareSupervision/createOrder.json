@@ -406,8 +406,7 @@
     "PageDisplayOrder": 15,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "PageShowCondition": "orderTypeAndDocument.type=\"UPLOAD\"",
-    "Comment": "I hate that we have to do this"
+    "PageShowCondition": "orderTypeAndDocument.type=\"UPLOAD\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -419,8 +418,7 @@
     "PageID": "PrimaryCheck",
     "PageDisplayOrder": 15,
     "PageColumnNumber": 1,
-    "ShowSummaryChangeOption": "N",
-    "Comment": "I hate that we have to do this"
+    "ShowSummaryChangeOption": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -432,8 +430,7 @@
     "PageID": "PrimaryCheck",
     "PageDisplayOrder": 15,
     "PageColumnNumber": 1,
-    "ShowSummaryChangeOption": "N",
-    "Comment": "I hate that we have to do this"
+    "ShowSummaryChangeOption": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -445,8 +442,7 @@
     "PageID": "PrimaryCheck",
     "PageDisplayOrder": 15,
     "PageColumnNumber": 1,
-    "ShowSummaryChangeOption": "N",
-    "Comment": "I hate that we have to do this"
+    "ShowSummaryChangeOption": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -458,7 +454,6 @@
     "PageID": "PrimaryCheck",
     "PageDisplayOrder": 15,
     "PageColumnNumber": 1,
-    "ShowSummaryChangeOption": "N",
-    "Comment": "I hate that we have to do this"
+    "ShowSummaryChangeOption": "N"
   }
 ]

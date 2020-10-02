@@ -211,6 +211,7 @@ public class GeneratedOrderController extends CallbackController {
             //Update orderTypeAndDocument with the document so it can be displayed in check-your-answers
             data.put("orderTypeAndDocument", service.buildOrderTypeAndDocument(orderTypeAndDocument, document));
         } else if (orderTypeAndDocument.isUploaded()) {
+            // check yo order
             data.putAll(Map.of(
                 "readOnlyFamNumber", caseData.getFamilyManCaseNumber(),
                 "readOnlyChildren", format(childrenService.getSelectedChildren(caseData)),
