@@ -110,14 +110,12 @@ public class PaymentService {
 
     private void callPaymentsApi(CreditAccountPaymentRequest creditAccountPaymentRequest) {
         try {
-            System.out.println("About to try payments api");
             paymentApi.createCreditAccountPayment(requestData.authorisation(),
                 authTokenGenerator.generate(),
                 creditAccountPaymentRequest);
         } catch (FeignException ex) {
             log.error("Payments response error for {}\n\tstatus: {} => message: \"{}\"",
                 creditAccountPaymentRequest, ex.status(), ex.contentUTF8(), ex);
-            System.out.println("Error is" + ex.status() + ex.getMessage());
 
             throw new PaymentsApiException(ex.contentUTF8(), ex);
         }
