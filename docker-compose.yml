@@ -26,7 +26,7 @@ services:
       - default
       - ccd-network
   docmosis-tornado:
-    image: skeneventures/docmosis-tornado
+    image: skeneventures/docmosis-tornado:2.7.3-8366
     environment:
       # not supported in current version of Tornado
       - DOCMOSIS_KEY="0UAD-KLTK-JALP-DKIA-EBBH-1ELH-PBKQ-KS91-23ED-8-97D1"

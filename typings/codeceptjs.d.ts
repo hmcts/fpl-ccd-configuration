@@ -133,7 +133,7 @@ declare namespace CodeceptJS {
     cancelPopup() : void,
     seeInPopup(text: string) : void,
     grabPopupText() : Promise<string>,
-    amOnPage(url: string) : void,
+    goToPage(url: string) : void,
     resizeWindow(width: number, height: number) : void,
     haveRequestHeaders(customHeaders: string) : void,
     moveCursorTo(locator: ILocator, offsetX?: number, offsetY?: number) : void,
@@ -290,9 +290,10 @@ declare namespace CodeceptJS {
     seeEventSubmissionConfirmation(event: string) : void,
     clickHyperlink(link: string, urlNavigatedTo: string) : void,
     startEventViaHyperlink(link: string) : void,
-    seeDocument(title: string, name: string, status?: string, reason?: string) : void,
+    seeDocument(title: string, name: string, status?: string, reason?: string, dateAndTimeUploaded?: string, uploadedBy?: string) : void,
     seeFamilyManNumber(familyManNumber: string) : void,
     seeInTab(path: string | string[], answer: string | string[]): void,
+    seeTextInTab(path: string | string[]): void,
     seeAvailableEvents(events: string[]): void
     dontSeeInTab(path: string | string[]): void,
     seeCaseInSearchResult(caseId: string | number): void

@@ -1,6 +1,6 @@
 const config = require('../config.js');
 
-const orderCaseData = require('../fixtures/caseData/caseDataWithOrderCollection.json');
+const orderCaseData = require('../fixtures/caseData/gatekeepingNoHearingDetails');
 const caseManagementCaseData = require('../fixtures/caseData/prepareForHearing.json');
 const orderFunctions = require('../helpers/generated_order_helper');
 const blankOrder = require('../fixtures/orders/blankOrder.js');
@@ -17,7 +17,7 @@ BeforeSuite(async I => {
 Before(async I => await I.navigateToCaseDetails(caseId));
 
 Scenario('HMCTS super user updates FamilyMan reference number', async (I, caseViewPage, enterFamilyManCaseNumberEventPage) => {
-  I.seeFamilyManNumber('mockCaseID');
+  I.seeFamilyManNumber('mockcaseID');
   await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
   enterFamilyManCaseNumberEventPage.enterCaseID('newMockCaseID');
   await I.completeEvent('Save and continue');

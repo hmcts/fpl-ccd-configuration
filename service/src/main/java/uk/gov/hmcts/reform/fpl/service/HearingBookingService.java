@@ -77,6 +77,7 @@ public class HearingBookingService {
             .orElseThrow(NoHearingBookingException::new);
     }
 
+    //Can be removed in future, see getFirstHearing in CaseData.java
     public Optional<HearingBooking> getFirstHearing(List<Element<HearingBooking>> hearingDetails) {
         return unwrapElements(hearingDetails).stream()
             .min(comparing(HearingBooking::getStartDate));

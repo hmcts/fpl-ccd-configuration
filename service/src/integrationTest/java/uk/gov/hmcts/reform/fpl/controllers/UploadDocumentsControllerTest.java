@@ -3,9 +3,11 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.service.UploadDocumentsService;
 
 import java.util.List;
 import java.util.Map;
@@ -21,12 +23,15 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 @OverrideAutoConfiguration(enabled = true)
 public class UploadDocumentsControllerTest extends AbstractControllerTest {
 
+    @MockBean
+    private UploadDocumentsService uploadDocumentsService;
+
     UploadDocumentsControllerTest() {
         super("upload-documents");
     }
 
     @Test
-    void shouldNotReturnErrorsWhenUploadedDocumentsAreValid() throws Exception {
+    void shouldNotReturnErrorsWhenUploadedDocumentsAreValid() {
         CaseDetails caseDetails = callbackRequest().getCaseDetails();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
