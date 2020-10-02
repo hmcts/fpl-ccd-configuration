@@ -963,6 +963,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "furtherEvidenceDocumentsTEMP",
     "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "CRUD"
+    "CRUD": "D"
   }
 ]

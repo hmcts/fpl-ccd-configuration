@@ -1103,6 +1103,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "furtherEvidenceDocumentsTEMP",
     "UserRole": "caseworker-publiclaw-judiciary",
-    "CRUD": "CRUD"
+    "CRUD": "D"
   }
 ]
