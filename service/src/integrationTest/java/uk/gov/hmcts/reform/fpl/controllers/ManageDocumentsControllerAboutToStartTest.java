@@ -5,6 +5,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.utils.IncrementalInteger;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
@@ -46,14 +48,17 @@ public class ManageDocumentsControllerAboutToStartTest extends AbstractControlle
             element(buildC2DocumentBundle(LocalDateTime.now().plusDays(2))),
             element(buildC2DocumentBundle(LocalDateTime.now().plusDays(1))));
 
-        CaseData caseData = CaseData.builder()
-            .c2DocumentBundle(c2DocumentBundle)
-            .furtherEvidenceDocumentsTEMP(List.of())
-            .hearingDetails(hearingBookings).build();
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of(
+                "furtherEvidenceDocumentsTEMP", List.of(),
+                "c2DocumentBundle", c2DocumentBundle,
+                "hearingDetails", hearingBookings
+            ))
+            .build();
+
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(asCaseDetails(caseData));
-
-        CaseData responseCaseData = mapper.convertValue(response.getData(), CaseData.class);
 
         DynamicList expectedHearingDynamicList = ElementUtils
             .asDynamicList(hearingBookings, null, hearingBooking -> hearingBooking.toLabel(DATE));
@@ -77,7 +82,7 @@ public class ManageDocumentsControllerAboutToStartTest extends AbstractControlle
         assertThat(hearingDynamicList).isEqualTo(expectedHearingDynamicList);
         assertThat(c2DocumentDynamicList).isEqualTo(expectedC2DocumentsDynamicList);
         assertThat(actualManageDocument).isEqualTo(expectedManageDocument);
-        assertThat(responseCaseData.getFurtherEvidenceDocumentsTEMP()).isNull();
+        assertThat(response.getData().get("furtherEvidenceDocumentsTEMP")).isNull();
     }
 
     private HearingBooking hearing(LocalDateTime startDate) {
