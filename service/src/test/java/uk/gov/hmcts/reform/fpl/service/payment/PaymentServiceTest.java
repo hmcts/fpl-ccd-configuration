@@ -104,16 +104,15 @@ class PaymentServiceTest {
             when(feeService.getFeesDataForC2(WITHOUT_NOTICE)).thenReturn(buildFeesData(feeForC2WithoutNotice));
         }
 
-        @ParameterizedTest
-        @ValueSource(strings = {"customerReference"})
-        void shouldRetryWhen500(final String customerReference) {
+        @Test
+        void shouldRetryPaymentsApiWhen500IsThrown() {
             CaseData caseData = CaseData.builder()
                 .caseLocalAuthority("LA")
                 .c2DocumentBundle(List.of(element(C2DocumentBundle.builder()
                     .type(WITH_NOTICE)
                     .pbaNumber("PBA123")
                     .clientCode("clientCode")
-                    .fileReference(customerReference)
+                    .fileReference("reference")
                     .build())))
                 .build();
 
@@ -380,7 +379,6 @@ class PaymentServiceTest {
             verify(feeService).getFeesDataForOrders(orders);
         }
     }
-
 
     @AfterEach
     void resetInvocations() {
