@@ -3,17 +3,17 @@
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocuments",
     "CaseEventID": "manageDocuments",
-    "CaseFieldID": "furtherEvidenceDocumentsTEMP",
+    "CaseFieldID": "supportingEvidenceDocumentsTemp",
     "ListElementCode": "name",
     "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
-    "EventHintText": "Give the document a descriptive name. For example, 'Parenting assessment' or 'Paediatric report'."
+    "EventHintText": "Add a descriptive name. For example, ‘Parenting assessment’, ‘Email with evidence attached’ or ‘Form C110a’."
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocuments",
     "CaseEventID": "manageDocuments",
-    "CaseFieldID": "furtherEvidenceDocumentsTEMP",
+    "CaseFieldID": "supportingEvidenceDocumentsTemp",
     "ListElementCode": "notes",
     "FieldDisplayOrder": 2,
     "DisplayContext": "OPTIONAL"
@@ -22,7 +22,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocuments",
     "CaseEventID": "manageDocuments",
-    "CaseFieldID": "furtherEvidenceDocumentsTEMP",
+    "CaseFieldID": "supportingEvidenceDocumentsTemp",
     "ListElementCode": "dateTimeReceived",
     "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY"
@@ -31,87 +31,10 @@
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocuments",
     "CaseEventID": "manageDocuments",
-    "CaseFieldID": "furtherEvidenceDocumentsTEMP",
-    "ListElementCode": "document",
-    "FieldDisplayOrder": 4,
-    "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Upload document"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageDocuments",
-    "CaseEventID": "manageDocuments",
-    "CaseFieldID": "correspondenceDocuments",
-    "ListElementCode": "name",
-    "FieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY",
-    "EventHintText": "Give the document a descriptive name. For example. 'Email to say evidence will be late' or 'Email with evidence attached'."
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageDocuments",
-    "CaseEventID": "manageDocuments",
-    "CaseFieldID": "correspondenceDocuments",
-    "ListElementCode": "notes",
-    "FieldDisplayOrder": 2,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageDocuments",
-    "CaseEventID": "manageDocuments",
-    "CaseFieldID": "correspondenceDocuments",
-    "ListElementCode": "dateTimeReceived",
-    "FieldDisplayOrder": 3,
-    "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageDocuments",
-    "CaseEventID": "manageDocuments",
-    "CaseFieldID": "correspondenceDocuments",
-    "ListElementCode": "document",
-    "FieldDisplayOrder": 4,
-    "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Upload document"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageDocuments",
-    "CaseEventID": "manageDocuments",
-    "CaseFieldID": "c2SupportingDocuments",
-    "ListElementCode": "name",
-    "FieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY",
-    "EventHintText": "Give the document a descriptive name, for example form C1000 or C1A."
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageDocuments",
-    "CaseEventID": "manageDocuments",
-    "CaseFieldID": "c2SupportingDocuments",
-    "ListElementCode": "notes",
-    "FieldDisplayOrder": 2,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageDocuments",
-    "CaseEventID": "manageDocuments",
-    "CaseFieldID": "c2SupportingDocuments",
-    "ListElementCode": "dateTimeReceived",
-    "FieldDisplayOrder": 3,
-    "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageDocuments",
-    "CaseEventID": "manageDocuments",
-    "CaseFieldID": "c2SupportingDocuments",
+    "CaseFieldID": "supportingEvidenceDocumentsTemp",
     "ListElementCode": "document",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY",
     "EventElementLabel": "Upload document"
   }
 ]
-
