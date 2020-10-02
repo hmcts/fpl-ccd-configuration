@@ -32,7 +32,7 @@ public class MigrateCaseController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if ("PO20C50003".equals(caseData.getFamilyManCaseNumber())) {
+        if ("PO20C50001".equals(caseData.getFamilyManCaseNumber())) {
             data.put("orderCollection", removeInterimCareOrder(caseData.getOrderCollection()));
         }
 
