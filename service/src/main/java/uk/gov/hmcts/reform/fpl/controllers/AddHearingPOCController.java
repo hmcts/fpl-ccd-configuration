@@ -12,9 +12,12 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -22,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
+import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
@@ -37,12 +41,14 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.time.LocalDate.now;
+import static java.util.Comparator.comparing;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptionsPOCType.EDIT_DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 
 @Api
@@ -55,6 +61,7 @@ public class AddHearingPOCController {
     private final NoticeOfHearingGenerationService noticeOfHearingGenerationService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
+    private final HearingVenueLookUpService hearingVenueLookUpService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -122,7 +129,13 @@ public class AddHearingPOCController {
         CaseDetails caseDetails = mapper.convertValue(callbackRequest.getCaseDetails(), CaseDetails.class);
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        HearingBooking hearingBooking = buildHearingBooking(caseData);
+        HearingBooking hearingBooking;
+        if (caseData.getPreviousHearingVenue() == null
+            || caseData.getPreviousHearingVenue().getUsePreviousVenue() == null) {
+            hearingBooking = buildFirstHearing(caseData);
+        } else {
+            hearingBooking = buildFollowingHearings(caseData);
+        }
 
         if (caseData.getSendNoticeOfHearing() != null
             && isSendingNoticeOfHearing(caseData.getSendNoticeOfHearing())) {
@@ -160,7 +173,20 @@ public class AddHearingPOCController {
             hearingBookingElements = appendHearingBooking(caseData.getHearingDetails(), hearingBooking);
         }
 
+        HearingBooking mostRecentHearingBooking = unwrapElements(hearingBookingElements).stream().min(
+            comparing(HearingBooking::getStartDate)).orElseThrow(NoHearingBookingException::new);
+
+        HearingVenue mostRecentVenue = hearingVenueLookUpService.getHearingVenue(mostRecentHearingBooking);
+
         caseDetails.getData().put(HEARING_DETAILS_KEY, hearingBookingElements);
+        caseDetails.getData().put("isFirstHearing", "No");
+
+        //Set previousHearingVenue to be the venue of the most recent hearing
+        caseDetails.getData().put("previousHearingVenue",
+            PreviousHearingVenue.builder()
+                .previousVenue(hearingVenueLookUpService.buildHearingVenue(mostRecentVenue))
+                .build());
+        caseDetails.getData().put("previousVenueId", mostRecentVenue.getHearingVenueId());
 
         removeHearingProperties(caseDetails);
 
@@ -218,7 +244,7 @@ public class AddHearingPOCController {
         return currentHearingBookings;
     }
 
-    private HearingBooking buildHearingBooking(CaseData caseData) {
+    private HearingBooking buildFirstHearing(CaseData caseData) {
         return HearingBooking.builder()
             .type(caseData.getHearingType())
             .venue(caseData.getHearingVenue())
@@ -226,7 +252,21 @@ public class AddHearingPOCController {
             .startDate(caseData.getHearingStartDate())
             .endDate(caseData.getHearingEndDate())
             .judgeAndLegalAdvisor(caseData.getJudgeAndLegalAdvisor())
+            .isFirstHearing("Yes")
+            .build();
+    }
+
+    private HearingBooking buildFollowingHearings(CaseData caseData) {
+        return HearingBooking.builder()
+            .type(caseData.getHearingType())
+            .venue(caseData.getPreviousHearingVenue().getUsePreviousVenue().equals("Yes")
+                ? caseData.getPreviousVenueId() : caseData.getPreviousHearingVenue().getNewVenue())
+            .venueCustomAddress(caseData.getPreviousHearingVenue().getVenueCustomAddress())
+            .startDate(caseData.getHearingStartDate())
+            .endDate(caseData.getHearingEndDate())
+            .judgeAndLegalAdvisor(caseData.getJudgeAndLegalAdvisor())
             .isFirstHearing(caseData.getIsFirstHearing())
+            .previousHearingVenue(caseData.getPreviousHearingVenue())
             .build();
     }
 
@@ -254,6 +294,7 @@ public class AddHearingPOCController {
         caseDetails.getData().put("hearingEndDate", hearingBooking.getEndDate());
         caseDetails.getData().put("judgeAndLegalAdvisor", hearingBooking.getJudgeAndLegalAdvisor());
         caseDetails.getData().put("isFirstHearing", hearingBooking.getIsFirstHearing());
+        caseDetails.getData().put("previousHearingVenue", hearingBooking.getPreviousHearingVenue());
     }
 
     private void removeHearingProperties(CaseDetails caseDetails) {

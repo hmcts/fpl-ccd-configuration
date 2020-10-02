@@ -69,7 +69,7 @@
     "PageID": "hearingDetails",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 4,
-    "FieldShowCondition": "isFirstHearing=\"Yes\""
+    "FieldShowCondition": "isFirstHearing!=\"No\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -93,7 +93,8 @@
     "PageID": "hearingDetails",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 4,
-    "FieldShowCondition": "isFirstHearing!=\"Yes\""
+    "CaseEventFieldLabel": " ",
+    "FieldShowCondition": "isFirstHearing=\"No\""
   },
   {
     "LiveFrom": "01/01/2017",

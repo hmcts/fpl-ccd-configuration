@@ -34,7 +34,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 public class HearingBooking {
     private final HearingType type;
     private final String typeDetails;
-    private final String venue;
+    private String venue;
     private final Address venueCustomAddress;
     @TimeNotMidnight(message = "Enter a valid start time", groups = HearingBookingDetailsGroup.class)
     @Future(message = "Enter a start date in the future", groups = HearingBookingDetailsGroup.class)
@@ -49,6 +49,7 @@ public class HearingBooking {
     private UUID caseManagementOrderId;
     private DocumentReference noticeOfHearing;
     private final String isFirstHearing;
+    private final PreviousHearingVenue previousHearingVenue;
 
     public boolean hasDatesOnSameDay() {
         return this.startDate.toLocalDate().isEqual(this.endDate.toLocalDate());

@@ -103,11 +103,10 @@
     "ID": "HearingBookingPOC",
     "CaseEventID": "addHearingPOC",
     "CaseFieldID": "previousHearingVenue",
-    "ListElementCode": "venue",
+    "ListElementCode": "newVenue",
     "EventElementLabel": "Venue",
     "FieldDisplayOrder": 3,
-    "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "usePreviousVenue=\"NO\""
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -117,7 +116,6 @@
     "ListElementCode": "venueCustomAddress",
     "SecurityClassification": "Public",
     "FieldDisplayOrder": 4,
-    "FieldShowCondition": "previousHearingVenue.venue=\"OTHER\"",
     "DisplayContext": "MANDATORY"
   },
   {

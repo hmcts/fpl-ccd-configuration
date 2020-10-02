@@ -103,5 +103,23 @@
     "ElementLabel": "Id of the Case Management Order for this hearing",
     "SecurityClassification": "Public",
     "FieldShowCondition": "judgeAndLegalAdvisor=\"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "isFirstHearing",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "isFirstHearing=\"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "previousHearingVenue",
+    "FieldType": "PreviousHearingVenue",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "previousHearingVenue=\"DO NOT SHOW\""
   }
 ]
