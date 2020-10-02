@@ -59,7 +59,6 @@
     "FieldType": "Text",
     "ElementLabel": "Order expires on",
     "SecurityClassification": "Public"
-
   },
   {
     "LiveFrom": "01/01/2017",
@@ -75,6 +74,14 @@
     "ListElementCode": "furtherDirections",
     "FieldType": "FurtherDirections",
     "ElementLabel": "Directions",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
+    "ListElementCode": "uploader",
+    "FieldType": "Text",
+    "ElementLabel": "Uploaded by",
     "SecurityClassification": "Public"
   },
   {

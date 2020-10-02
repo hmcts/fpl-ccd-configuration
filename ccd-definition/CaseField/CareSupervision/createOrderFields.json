@@ -193,16 +193,40 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "someTextArea",
-    "Label": " ",
+    "ID": "readOnlyFamNumber",
+    "Label": "FamilyMan case number",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "readOnlyChildren",
+    "Label": "Children in the order",
     "FieldType": "TextArea",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "someLabel",
-    "Label": "DATA: ${someTextArea}",
+    "ID": "readOnlyOrder_label",
+    "Label": "### Check and issue order\nCheck you're uploading the right order to the right case. When you're happy, press continue to issue the order.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "readOnlyOrder",
+    "Label": " ",
+    "FieldType": "Document",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "cyaOrder_label",
+    "Label": "## Check order details",
     "FieldType": "Label",
     "SecurityClassification": "Public"
   }

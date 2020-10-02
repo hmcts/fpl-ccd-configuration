@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -50,7 +49,6 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.MULTIPLE_CARE_ORDE
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.SINGLE_CARE_ORDER_LABEL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.DISCHARGE_OF_CARE_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
@@ -64,7 +62,6 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllo
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
 
-@Slf4j
 @Api
 @RestController
 @RequestMapping("/callback/create-order")
@@ -104,8 +101,6 @@ public class GeneratedOrderController extends CallbackController {
                 data.put("orderTypeAndDocument", OrderTypeAndDocument.builder().type(BLANK_ORDER).build());
             }
         }
-
-        data.put("someTextArea", "# should be a header");
 
         return respond(caseDetails, errors);
     }
@@ -204,7 +199,6 @@ public class GeneratedOrderController extends CallbackController {
 
         // If can display close case, set the flag in order to show the close case page
         if (service.showCloseCase(orderTypeAndDocument, children, featureToggleService.isCloseCaseEnabled())) {
-
             data.put("showCloseCaseFromOrderPage", YES);
             data.put("close_case_label", CloseCaseController.LABEL);
         } else {
@@ -215,39 +209,48 @@ public class GeneratedOrderController extends CallbackController {
             Document document = getDocument(caseData, DRAFT);
 
             //Update orderTypeAndDocument with the document so it can be displayed in check-your-answers
-            data.put("orderTypeAndDocument", service.buildOrderTypeAndDocument(
-                orderTypeAndDocument, document));
-        } else if (UPLOAD == orderTypeAndDocument.getType()) {
-            // TODO: 30/09/2020 populate the custom cya object 
+            data.put("orderTypeAndDocument", service.buildOrderTypeAndDocument(orderTypeAndDocument, document));
+        } else if (orderTypeAndDocument.isUploaded()) {
+            data.putAll(Map.of(
+                "readOnlyFamNumber", caseData.getFamilyManCaseNumber(),
+                "readOnlyChildren", format(childrenService.getSelectedChildren(caseData)),
+                "readOnlyOrder", caseData.getUploadedOrder()
+            ));
         }
 
         return respond(caseDetails);
     }
 
-    // TODO: 29/09/2020 will currently break
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = getCaseData(caseDetails);
 
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
-            caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge());
-
-        Document document = getDocument(caseData, SEALED);
-
         List<Element<GeneratedOrder>> orders = caseData.getOrderCollection();
+        OrderTypeAndDocument typeAndDocument = caseData.getOrderTypeAndDocument();
 
-        OrderTypeAndDocument orderTypeAndDocument = service.buildOrderTypeAndDocument(caseData
-            .getOrderTypeAndDocument(), document);
+        if (!typeAndDocument.isUploaded()) {
+            JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
+                caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()
+            );
 
-        removeAllocatedJudgeProperties(judgeAndLegalAdvisor);
+            Document document = getDocument(caseData, SEALED);
 
-        orders.add(element(service.buildCompleteOrder(orderTypeAndDocument, judgeAndLegalAdvisor, caseData)));
+            OrderTypeAndDocument orderTypeAndDocument = service.buildOrderTypeAndDocument(typeAndDocument, document);
+
+            removeAllocatedJudgeProperties(judgeAndLegalAdvisor);
+
+            orders.add(element(service.buildCompleteOrder(orderTypeAndDocument, judgeAndLegalAdvisor, caseData)));
+        } else {
+            typeAndDocument.setDocument(caseData.getUploadedOrder());
+
+            orders.add(element(service.buildCompleteOrder(typeAndDocument, null, caseData)));
+        }
 
         data.put("orderCollection", orders);
 
-        if (featureToggleService.isCloseCaseEnabled() && caseData.getOrderTypeAndDocument().isClosable()) {
+        if (featureToggleService.isCloseCaseEnabled() && typeAndDocument.isClosable()) {
             data.put("children1", getUpdatedChildren(caseData));
         }
 
@@ -283,6 +286,12 @@ public class GeneratedOrderController extends CallbackController {
                 gatewayConfiguration.getUrl(),
                 mostRecentUploadedDocument.getBinaryUrl()),
             documentDownloadService.downloadDocument(mostRecentUploadedDocument.getBinaryUrl())));
+    }
+
+    private String format(List<Element<Child>> children) {
+        StringBuilder sb = new StringBuilder();
+        children.forEach(e -> sb.append(e.getValue().getParty().getFullName()).append("\n"));
+        return sb.toString();
     }
 
     private JudgeAndLegalAdvisor setAllocatedJudgeLabel(Judge allocatedJudge) {

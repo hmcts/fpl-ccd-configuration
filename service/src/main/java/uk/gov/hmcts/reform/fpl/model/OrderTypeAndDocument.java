@@ -23,12 +23,12 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.UPLOAD;
 public class OrderTypeAndDocument {
     private final GeneratedOrderType type;
     private final GeneratedOrderSubtype subtype;
-    private final DocumentReference document;
+    private DocumentReference document;
     private final UploadableOrderType uploadableOrderType;
 
     @JsonIgnore
     public boolean isFinal() {
-        return FINAL == subtype || (UPLOAD == type && uploadableOrderType.isFinal());
+        return FINAL == subtype || (isUploaded() && uploadableOrderType.isFinal());
     }
 
     @JsonIgnore
@@ -42,12 +42,17 @@ public class OrderTypeAndDocument {
     }
 
     @JsonIgnore
+    public boolean isUploaded() {
+        return UPLOAD == type;
+    }
+
+    @JsonIgnore
     public DocmosisTemplates getDocmosisTemplate() {
         return EMERGENCY_PROTECTION_ORDER == type ? EPO : ORDER;
     }
 
     @JsonIgnore
     public String getTypeLabel() {
-        return UPLOAD != type ? type.getLabel() : uploadableOrderType.getLabel();
+        return !isUploaded() ? type.getLabel() : uploadableOrderType.getLabel();
     }
 }
