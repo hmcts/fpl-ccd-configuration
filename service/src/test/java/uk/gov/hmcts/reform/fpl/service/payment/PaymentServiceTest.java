@@ -40,8 +40,6 @@ import static feign.Request.HttpMethod.GET;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
@@ -116,15 +114,16 @@ class PaymentServiceTest {
                     .build())))
                 .build();
 
-            Mockito.doThrow(new RuntimeException("500")).when(paymentApi).createCreditAccountPayment(anyString(),
+            Mockito.doThrow(FeignException.InternalServerError.class).when(paymentApi).createCreditAccountPayment(anyString(),
                 anyString(),any());
 
-            Exception actualException = assertThrows(Exception.class,
-                () -> paymentService.makePaymentForC2(CASE_ID, caseData));
+            try {
+                paymentService.makePaymentForC2(CASE_ID, caseData);
+            } catch (FeignException e) {
+            } finally {
+                verify(paymentApi, times(3)).createCreditAccountPayment(anyString(), anyString(), any());
+            }
 
-            assertThat(actualException).isInstanceOf(RuntimeException.class);
-
-            verify(paymentApi, times(3)).createCreditAccountPayment(anyString(), anyString(), any());
         }
 
         @ParameterizedTest
