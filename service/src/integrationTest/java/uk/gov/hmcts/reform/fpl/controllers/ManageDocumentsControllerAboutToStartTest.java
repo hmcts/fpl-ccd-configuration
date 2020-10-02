@@ -7,7 +7,6 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -56,9 +55,7 @@ public class ManageDocumentsControllerAboutToStartTest extends AbstractControlle
             ))
             .build();
 
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(asCaseDetails(caseData));
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
 
         DynamicList expectedHearingDynamicList = ElementUtils
             .asDynamicList(hearingBookings, null, hearingBooking -> hearingBooking.toLabel(DATE));
