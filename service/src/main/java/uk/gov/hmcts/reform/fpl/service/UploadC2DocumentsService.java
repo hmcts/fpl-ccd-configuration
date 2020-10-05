@@ -50,7 +50,7 @@ public class UploadC2DocumentsService {
                 .collect(Collectors.toList());
 
         C2DocumentBundle.C2DocumentBundleBuilder c2DocumentBundleBuilder = caseData.getTemporaryC2Document().toBuilder()
-            .author(idamClient.getUserInfo(requestData.authorisation()).getName())
+            .author(uploadedBy)
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
             .supportingEvidenceBundle(wrapElements(updatedSupportingEvidenceBundle))
             .type(caseData.getC2ApplicationType().get("type"));

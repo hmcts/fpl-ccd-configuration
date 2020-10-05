@@ -65,9 +65,10 @@ class UploadC2DocumentsServiceTest {
         List<Element<C2DocumentBundle>> actualC2DocumentBundle = service
             .buildC2DocumentBundle(createCaseDataWithC2DocumentBundle());
 
-        List<C2DocumentBundle> listOfC2Bundle = unwrapElements(actualC2DocumentBundle);
+        List<C2DocumentBundle> actualC2Bundle = unwrapElements(actualC2DocumentBundle);
+        C2DocumentBundle expectedC2Bundle = createC2DocumentBundle();
 
-        assertThat(listOfC2Bundle).first().isEqualToComparingFieldByField(createC2DocumentBundle());
+        assertThat(actualC2Bundle).first().isEqualToComparingFieldByField(expectedC2Bundle);
     }
 
     @Test
