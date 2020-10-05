@@ -126,7 +126,7 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
             .build();
         DocmosisNoticeOfProceeding templateData = noticeOfProceedingsTemplateDataGenerationService
             .getTemplateData(caseData);
-        assertThat(templateData.getJudgeAndLegalAdvisor().getJudgeTitleAndName()).isEqualTo("");
+        assertThat(templateData.getJudgeAndLegalAdvisor().getJudgeTitleAndName()).isEmpty();
     }
 
     @Test
