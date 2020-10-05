@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 
 import java.util.List;
 import java.util.Map;
@@ -32,8 +32,8 @@ public class MigrateCaseController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if ("PO20C50001".equals(caseData.getFamilyManCaseNumber())) {
-            data.put("orderCollection", removeInterimCareOrder(caseData.getOrderCollection()));
+        if ("CF20C50052".equals(caseData.getFamilyManCaseNumber())) {
+            data.put("sealedCMOs", removeCaseManagementOrder(caseData.getSealedCMOs()));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -41,8 +41,8 @@ public class MigrateCaseController {
             .build();
     }
 
-    private List<Element<GeneratedOrder>> removeInterimCareOrder(List<Element<GeneratedOrder>> orders) {
-        if ("Interim care order".equals(orders.get(0).getValue().getType())) {
+    private List<Element<CaseManagementOrder>> removeCaseManagementOrder(List<Element<CaseManagementOrder>> orders) {
+        if ("CMO approved order 27/09/2020".equals(orders.get(0).getValue().getHearing())) {
             orders.remove(0);
         }
         return orders;
