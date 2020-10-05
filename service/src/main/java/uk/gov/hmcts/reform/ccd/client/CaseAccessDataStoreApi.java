@@ -12,9 +12,9 @@ import uk.gov.hmcts.reform.ccd.model.AddCaseAssignedUserRolesResponse;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi.SERVICE_AUTHORIZATION;
 
-@FeignClient(name = "ccd-access-api", url = "${core_case_data.api.url}",
+@FeignClient(name = "ccd-access-data-store-api", url = "${core_case_data.api.url}",
     configuration = CoreCaseDataConfiguration.class)
-public interface CaseAccessApi {
+public interface CaseAccessDataStoreApi {
 
     @PostMapping(
         value = "/case-users",

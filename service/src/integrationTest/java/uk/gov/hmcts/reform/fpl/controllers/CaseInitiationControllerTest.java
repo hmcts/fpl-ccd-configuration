@@ -13,7 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.authorisation.ServiceAuthorisationApi;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
+import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
 import uk.gov.hmcts.reform.ccd.client.CaseUserApi;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
@@ -46,7 +46,10 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.apache.http.HttpStatus.SC_FORBIDDEN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
@@ -95,7 +98,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
     private CaseUserApi caseUserApi;
 
     @MockBean
-    private CaseAccessApi caseAccessApi;
+    private CaseAccessDataStoreApi caseDataAccessApi;
 
     @MockBean
     private IdamClient client;
@@ -129,7 +132,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
         given(localAuthorityUserLookupConfiguration.getUserIds(LA_IN_PRD_CODE))
             .willThrow(new UnknownLocalAuthorityCodeException(LA_IN_PRD_CODE));
 
-        given(caseAccessApi.addCaseUserRoles(anyString(),anyString(),any(AddCaseAssignedUserRolesRequest.class)))
+        given(caseDataAccessApi.addCaseUserRoles(anyString(),anyString(),any(AddCaseAssignedUserRolesRequest.class)))
             .willReturn(AddCaseAssignedUserRolesResponse.builder().build());
     }
 
