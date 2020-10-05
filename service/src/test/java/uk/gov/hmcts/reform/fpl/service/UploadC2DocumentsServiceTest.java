@@ -14,14 +14,18 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.Constants.USER_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -33,10 +37,12 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     ValidateGroupService.class,
     SupportingEvidenceValidatorService.class,
     LocalValidatorFactoryBean.class,
-    FixedTimeConfiguration.class
+    FixedTimeConfiguration.class,
+    DocumentUploadHelper.class
 })
 class UploadC2DocumentsServiceTest {
     private static final String ERROR_MESSAGE = "Date received cannot be in the future";
+    private static final String USER_ID = "1";
 
     @Autowired
     private UploadC2DocumentsService service;
@@ -53,11 +59,13 @@ class UploadC2DocumentsServiceTest {
     @Test
     void shouldBuildExpectedC2DocumentBundle() {
         given(idamClient.getUserInfo(USER_AUTH_TOKEN)).willReturn(UserInfo.builder().name("Emma Taylor").build());
+        given(idamClient.getUserDetails(eq(USER_AUTH_TOKEN))).willReturn(createUserDetailsWithHmctsRole());
         given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
 
-        List<Element<C2DocumentBundle>> list = service.buildC2DocumentBundle(createCaseDataWithC2DocumentBundle());
+        List<Element<C2DocumentBundle>> actualC2DocumentBundle = service
+            .buildC2DocumentBundle(createCaseDataWithC2DocumentBundle());
 
-        List<C2DocumentBundle> listOfC2Bundle = unwrapElements(list);
+        List<C2DocumentBundle> listOfC2Bundle = unwrapElements(actualC2DocumentBundle);
 
         assertThat(listOfC2Bundle).first().isEqualToComparingFieldByField(createC2DocumentBundle());
     }
@@ -99,6 +107,16 @@ class UploadC2DocumentsServiceTest {
             .c2DocumentBundle(wrapElements(createC2DocumentBundle()))
             .temporaryC2Document(createC2DocumentBundle())
             .c2ApplicationType(Map.of("type",C2ApplicationType.WITH_NOTICE))
+            .build();
+    }
+
+    private UserDetails createUserDetailsWithHmctsRole() {
+        return UserDetails.builder()
+            .id(USER_ID)
+            .surname("Hudson")
+            .forename("Steve")
+            .email("steve.hudson@gov.uk")
+            .roles(Arrays.asList("caseworker-publiclaw-courtadmin", "caseworker-publiclaw-judiciary"))
             .build();
     }
 }
