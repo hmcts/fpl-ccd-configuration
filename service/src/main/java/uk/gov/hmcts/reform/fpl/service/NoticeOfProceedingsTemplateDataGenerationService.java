@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisTemplateDataGeneration;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -49,10 +50,12 @@ public class NoticeOfProceedingsTemplateDataGenerationService
             .applicantName(PeopleInCaseHelper.getFirstApplicantName(caseData.getApplicants()))
             .orderTypes(getOrderTypes(caseData.getOrders()))
             .childrenNames(getAllChildrenNames(caseData.getAllChildren()))
-            .judgeTitleAndName(JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
-                caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()))
-            .legalAdvisorName(JudgeAndLegalAdvisorHelper.getLegalAdvisorName(
-                caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()))
+            .judgeAndLegalAdvisor(DocmosisJudgeAndLegalAdvisor.builder()
+                .judgeTitleAndName(JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
+                    caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()))
+                .legalAdvisorName(JudgeAndLegalAdvisorHelper.getLegalAdvisorName(
+                    caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()))
+                .build())
             .hearingBooking(DocmosisHearingBooking.builder()
                 .hearingDate(caseDataExtractionService.getHearingDateIfHearingsOnSameDay(
                     prioritisedHearingBooking)

@@ -15,8 +15,8 @@ public class DocmosisNoticeOfProceeding implements DocmosisData {
     private final String applicantName;
     private final String orderTypes;
     private final String childrenNames;
-    private final String judgeTitleAndName;
-    private final String legalAdvisorName;
+    @JsonUnwrapped
+    private final DocmosisJudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final String crest;
     private final String courtseal;
     @JsonUnwrapped
