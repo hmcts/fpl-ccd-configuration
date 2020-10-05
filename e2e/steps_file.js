@@ -26,7 +26,7 @@ module.exports = function () {
         output.debug(`Logging in as ${user.email}`);
         currentUser = {}; // reset in case the login fails
         await this.retryUntilExists(async () => {
-          this.amOnPage(baseUrl);
+          await this.goToPage(baseUrl);
 
           if (await this.waitForAnySelector([signedOutSelector, signedInSelector]) == null) {
             return;
@@ -42,6 +42,31 @@ module.exports = function () {
         currentUser = user;
       } else {
         output.debug(`Already logged in as ${user.email}`);
+      }
+    },
+
+    async goToPage(url){
+      this.amOnPage(url);
+      await this.logWithHmctsAccount();
+    },
+
+    async logWithHmctsAccount(){
+      const hmctsLoginIn = 'div.win-scroll';
+
+      if (await this.hasSelector(hmctsLoginIn)) {
+        if (!config.hmctsUser.email || !config.hmctsUser.password) {
+          throw new Error('For environment requiring hmcts authentication please provide HMCTS_USER_USERNAME and HMCTS_USER_PASSWORD environment variables');
+        }
+        within(hmctsLoginIn, () => {
+          this.fillField('//input[@type="email"]', config.hmctsUser.email);
+          this.wait(0.2);
+          this.click('Next');
+          this.wait(0.2);
+          this.fillField('//input[@type="password"]', config.hmctsUser.password);
+          this.wait(0.2);
+          this.click('Sign in');
+          this.click('Yes');
+        });
       }
     },
 
@@ -177,8 +202,8 @@ module.exports = function () {
     async navigateToCaseDetails(caseId) {
       const currentUrl = await this.grabCurrentUrl();
       if (!currentUrl.replace(/#.+/g, '').endsWith(caseId)) {
-        await this.retryUntilExists(() => {
-          this.amOnPage(`${baseUrl}/cases/case-details/${caseId}`);
+        await this.retryUntilExists(async () => {
+          await this.goToPage(`${baseUrl}/cases/case-details/${caseId}`);
         }, signedInSelector);
       } else {
         this.refreshPage();
