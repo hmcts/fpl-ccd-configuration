@@ -12,7 +12,7 @@
       "document_binary_url": "${applicationBinaryUrl:-http://dm-store:8080/documents/be17a76e-38ed-4448-8b83-45de1aa93f55/binary}"
     },
     "gatekeeperEmail": "FamilyPublicLaw+gatekeeper@gmail.com",
-    "caseLocalAuthority": "example",
+    "caseLocalAuthority": "${caseLocalAuthority:-example}",
     "risks": {
       "neglect": "Yes",
       "sexualAbuse": "Yes",
