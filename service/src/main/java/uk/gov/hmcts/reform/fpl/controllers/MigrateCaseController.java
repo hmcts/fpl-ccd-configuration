@@ -38,7 +38,11 @@ public class MigrateCaseController {
             data.put("hearingDetails", removeHearingLinkedToCmo(caseData.getHearingDetails(),
                 caseData.getSealedCMOs().get(0).getId()));
 
-            data.put("sealedCMOs", removeCaseManagementOrder(caseData.getSealedCMOs()));
+            if (caseData.getSealedCMOs().size() > 1) {
+                data.put("sealedCMOs", removeCaseManagementOrder(caseData.getSealedCMOs()));
+            } else {
+                data.remove("sealedCMOs");
+            }
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
