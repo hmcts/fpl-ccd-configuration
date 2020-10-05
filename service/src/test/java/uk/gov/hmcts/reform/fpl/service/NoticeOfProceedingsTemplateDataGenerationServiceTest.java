@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -159,10 +160,12 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
             .applicantName("Bran Stark")
             .orderTypes("Care order")
             .childrenNames("Bran Stark, Sansa Stark and Jon Snow")
-            .hearingDate(formatLocalDateToString(futureDate, FormatStyle.LONG))
-            .hearingVenue("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW")
-            .preHearingAttendance("8:30am")
-            .hearingTime("9:30am - 11:30am")
+            .hearingBooking(DocmosisHearingBooking.builder()
+                .hearingDate(formatLocalDateToString(futureDate, FormatStyle.LONG))
+                .hearingVenue("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW")
+                .preHearingAttendance("8:30am")
+                .hearingTime("9:30am - 11:30am")
+                .build())
             .judgeTitleAndName("His Honour Judge Samuel Davidson")
             .legalAdvisorName("John Bishop")
             .todaysDate(formatLocalDateToString(time.now().toLocalDate(), FormatStyle.LONG))
