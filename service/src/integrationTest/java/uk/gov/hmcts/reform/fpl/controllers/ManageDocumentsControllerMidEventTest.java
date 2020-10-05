@@ -29,14 +29,13 @@ import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.C2;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.C2_SUPPORTING_DOCUMENTS_COLLECTION;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LABEL_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
-import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -46,8 +45,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @WebMvcTest(ManageDocumentsController.class)
 @OverrideAutoConfiguration(enabled = true)
 public class ManageDocumentsControllerMidEventTest extends AbstractControllerTest {
-    private static final String ERROR_MESSAGE = "Date received cannot be in the future";
-
     ManageDocumentsControllerMidEventTest() {
         super("manage-documents");
     }
@@ -93,7 +90,7 @@ public class ManageDocumentsControllerMidEventTest extends AbstractControllerTes
         assertThat(callbackResponse.getData().get(MANAGE_DOCUMENTS_HEARING_LABEL_KEY))
             .isEqualTo(selectedHearingBooking.toLabel(DATE));
 
-        assertThat(caseData.getFurtherEvidenceDocumentsTEMP()).isEqualTo(furtherEvidenceBundle);
+        assertThat(caseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(furtherEvidenceBundle);
     }
 
     @Test
@@ -122,9 +119,7 @@ public class ManageDocumentsControllerMidEventTest extends AbstractControllerTes
 
         List<Element<C2DocumentBundle>> c2DocumentBundle = List.of(
             element(buildC2DocumentBundle(today.plusDays(2))),
-            element(selectedC2DocumentId, C2DocumentBundle.builder()
-                .supportingEvidenceBundle(c2EvidenceDocuments)
-                .build()),
+            element(selectedC2DocumentId, buildC2DocumentBundle(c2EvidenceDocuments)),
             element(buildC2DocumentBundle(today.plusDays(2))));
 
         Map<String, Object> data = new HashMap<>(Map.of(
@@ -138,68 +133,26 @@ public class ManageDocumentsControllerMidEventTest extends AbstractControllerTes
             "initialise-manage-document-collections");
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-        assertThat(caseData.getC2SupportingDocuments()).isEqualTo(c2EvidenceDocuments);
+        assertThat(caseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(c2EvidenceDocuments);
     }
 
     @Test
     void shouldReturnValidationErrorsIfSupportingEvidenceDateTimeReceivedOnFurtherEvidenceIsInTheFuture() {
         LocalDateTime futureDate = LocalDateTime.now().plusDays(1);
-        CaseDetails caseDetails = buildCaseDetails(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, futureDate);
+        CaseDetails caseDetails = buildCaseDetails(TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, futureDate);
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails,
-            "validate-further-evidence");
+            "validate-supporting-evidence");
 
         assertThat(callbackResponse.getErrors()).isNotEmpty();
-        assertThat(callbackResponse.getErrors()).containsExactly(ERROR_MESSAGE);
+        assertThat(callbackResponse.getErrors()).containsExactly("Date received cannot be in the future");
     }
 
     @Test
     void shouldReturnNoValidationErrorsIfSupportingEvidenceDateTimeReceivedOnFurtherEvidenceIsInThePast() {
         LocalDateTime pastDate = LocalDateTime.now().minusDays(2);
-        CaseDetails caseDetails = buildCaseDetails(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, pastDate);
+        CaseDetails caseDetails = buildCaseDetails(TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, pastDate);
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails,
-            "validate-further-evidence");
-
-        assertThat(callbackResponse.getErrors()).isEmpty();
-    }
-
-    @Test
-    void shouldReturnValidationErrorsIfSupportingEvidenceDateTimeReceivedOnCorrespondenceDocumentsAreInTheFuture() {
-        LocalDateTime futureDate = LocalDateTime.now().plusDays(1);
-        CaseDetails caseDetails = buildCaseDetails(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, futureDate);
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails,
-            "validate-correspondence-documents");
-
-        assertThat(callbackResponse.getErrors()).isNotEmpty();
-        assertThat(callbackResponse.getErrors()).containsExactly(ERROR_MESSAGE);
-    }
-
-    @Test
-    void shouldReturnNoValidationErrorsIfSupportingEvidenceDateTimeReceivedOnCorrespondenceDocumentsAreInThePast() {
-        LocalDateTime pastDate = LocalDateTime.now().minusDays(2);
-        CaseDetails caseDetails = buildCaseDetails(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, pastDate);
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails,
-            "validate-correspondence-documents");
-
-        assertThat(callbackResponse.getErrors()).isEmpty();
-    }
-
-    @Test
-    void shouldReturnValidationErrorsIfSupportingEvidenceDateTimeReceivedOnC2DocumentsAreInTheFuture() {
-        LocalDateTime futureDate = LocalDateTime.now().plusDays(1);
-        CaseDetails caseDetails = buildCaseDetails(C2_SUPPORTING_DOCUMENTS_COLLECTION, futureDate);
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails,
-            "validate-c2-supporting-documents");
-
-        assertThat(callbackResponse.getErrors()).isNotEmpty();
-        assertThat(callbackResponse.getErrors()).containsExactly(ERROR_MESSAGE);
-    }
-
-    @Test
-    void shouldReturnNoValidationErrorsIfSupportingEvidenceDateTimeReceivedOnC2DocumentsAreInThePast() {
-        LocalDateTime pastDate = LocalDateTime.now().minusDays(2);
-        CaseDetails caseDetails = buildCaseDetails(C2_SUPPORTING_DOCUMENTS_COLLECTION, pastDate);
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails,
-            "validate-c2-supporting-documents");
+            "validate-supporting-evidence");
 
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
@@ -227,5 +180,11 @@ public class ManageDocumentsControllerMidEventTest extends AbstractControllerTes
 
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {
         return C2DocumentBundle.builder().uploadedDateTime(dateTime.toString()).build();
+    }
+
+    private C2DocumentBundle buildC2DocumentBundle(List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle) {
+        return buildC2DocumentBundle(now()).toBuilder()
+            .supportingEvidenceBundle(supportingEvidenceBundle)
+            .build();
     }
 }

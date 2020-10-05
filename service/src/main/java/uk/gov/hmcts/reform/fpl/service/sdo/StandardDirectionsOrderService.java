@@ -37,14 +37,14 @@ public class StandardDirectionsOrderService {
         return dateOfIssue;
     }
 
-    public StandardDirectionOrder buildTemporarySDO(CaseData caseData) {
+    public StandardDirectionOrder buildTemporarySDO(CaseData caseData, StandardDirectionOrder previousSDO) {
         DocumentReference document = caseData.getPreparedSDO();
 
         if (document == null) {
             // been through once, either pull from replacement doc or SDO if that isn't present
             document = defaultIfNull(
                 caseData.getReplacementSDO(),
-                caseData.getStandardDirectionOrder().getOrderDoc()
+                previousSDO.getOrderDoc()
             );
         }
         return StandardDirectionOrder.builder()

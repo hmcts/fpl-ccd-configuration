@@ -7,6 +7,28 @@
         "CARE_ORDER"
       ]
     },
+    "representatives": [
+      {
+        "id": "d3b136bb-edad-43e4-913e-15cc6ee486a1",
+        "value": {
+          "role": "LA_LEGAL_REPRESENTATIVE",
+          "email": "test@gmail.com",
+          "address": {
+            "County": "County Down",
+            "Country": "",
+            "PostCode": "BT35 9BC",
+            "PostTown": "Testville",
+            "AddressLine1": "45 Bridge Park",
+            "AddressLine2": "Test Line 2",
+            "AddressLine3": "Test Line 3"
+          },
+          "fullName": "Marie Kelly",
+          "positionInACase": "Solicitor",
+          "telephoneNumber": "07477126568",
+          "servingPreferences": "POST"
+        }
+      }
+    ],
     "grounds": {
       "thresholdReason": [
         "noCare"

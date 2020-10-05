@@ -27,7 +27,7 @@ public interface OrganisationApi {
     OrganisationUser findUserByEmail(
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
-        @RequestParam(value = "email") final String email
+        @RequestHeader("UserEmail") final String email
     );
 
     @GetMapping("/refdata/external/v1/organisations")

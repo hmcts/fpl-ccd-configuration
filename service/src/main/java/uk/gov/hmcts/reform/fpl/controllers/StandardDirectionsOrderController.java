@@ -179,12 +179,15 @@ public class StandardDirectionsOrderController extends CallbackController {
     @PostMapping("/upload-route/mid-event")
     public CallbackResponse handleUploadMidEvent(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
-        Map<String, Object> data = caseDetails.getData();
         CaseData caseData = getCaseData(caseDetails);
+        CaseData caseDataBefore = getCaseDataBefore(request);
 
-        StandardDirectionOrder order = sdoService.buildTemporarySDO(caseData);
+        StandardDirectionOrder order = sdoService.buildTemporarySDO(
+            caseData,
+            caseDataBefore.getStandardDirectionOrder()
+        );
 
-        data.put("standardDirectionOrder", order);
+        caseDetails.getData().put("standardDirectionOrder", order);
 
         return respond(caseDetails);
     }

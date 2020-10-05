@@ -111,6 +111,7 @@ class CaseInitiationMidEventControllerTest extends AbstractControllerTest {
 
         assertThat(actualResponse.getErrors()).containsExactly("Register for an account.",
             "You cannot start an online application until you’re fully registered.",
-            "Ask your local authority’s public law administrator for help with registration.");
+            "Ask your local authority’s public law administrator, or email MyHMCTSsupport@justice.gov.uk, "
+                + "for help with registration.");
     }
 }

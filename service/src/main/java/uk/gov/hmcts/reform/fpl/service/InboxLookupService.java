@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,33 +9,40 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import static uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration.LocalAuthority;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class InboxLookupService {
     private final LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
-    private final String fallbackInbox;
+    private final FeatureToggleService featureToggleService;
 
-    @Autowired
-    public InboxLookupService(LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration,
-                              @Value("${fpl.local_authority_fallback_inbox}") String fallbackInbox) {
-        this.localAuthorityEmailLookupConfiguration = localAuthorityEmailLookupConfiguration;
-        this.fallbackInbox = fallbackInbox;
-    }
+    @Value("${fpl.local_authority_fallback_inbox}")
+    private String fallbackInbox;
 
-    public String getNotificationRecipientEmail(final CaseData caseData) {
-        return localAuthorityEmailLookupConfiguration.getLocalAuthority(caseData.getCaseLocalAuthority())
+    public Set<String> getRecipients(final CaseData caseData) {
+        Set<String> recipients = new HashSet<>();
+        localAuthorityEmailLookupConfiguration.getLocalAuthority(caseData.getCaseLocalAuthority())
             .map(LocalAuthority::getEmail)
             .filter(StringUtils::isNotBlank)
-            .orElseGet(() -> getSolicitorOrFallbackEmail(caseData.getSolicitor()));
-    }
+            .ifPresent(recipients::add);
 
-    private String getSolicitorOrFallbackEmail(final Solicitor solicitor) {
-        return Optional.ofNullable(solicitor)
-            .map(Solicitor::getEmail)
-            .filter(StringUtils::isNotBlank)
-            .orElse(fallbackInbox);
+        if (recipients.isEmpty() || featureToggleService.isSendLAEmailsToSolicitorEnabled(
+            caseData.getCaseLocalAuthority())) {
+            Optional.ofNullable(caseData.getSolicitor())
+                .map(Solicitor::getEmail)
+                .filter(StringUtils::isNotBlank)
+                .ifPresent(recipients::add);
+        }
+
+        if (recipients.isEmpty()) {
+            recipients.add(fallbackInbox);
+        }
+
+        return recipients;
     }
 }

@@ -16,13 +16,16 @@ import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ReviewCMOService;
 
 import java.util.List;
+import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
@@ -36,6 +39,7 @@ public class ReviewCMOController extends CallbackController {
     private final ReviewCMOService reviewCMOService;
     private final DocumentSealingService documentSealingService;
     private final ApplicationEventPublisher eventPublisher;
+    private final CoreCaseDataService coreCaseDataService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -117,6 +121,15 @@ public class ReviewCMOController extends CallbackController {
         if (!cmosReadyForApproval.isEmpty()) {
             if (!JUDGE_REQUESTED_CHANGES.equals(caseData.getReviewCMODecision().getDecision())) {
                 CaseManagementOrder sealed = reviewCMOService.getLatestSealedCMO(caseData);
+                DocumentReference documentToBeSent = sealed.getOrder();
+
+                coreCaseDataService.triggerEvent(
+                    callbackRequest.getCaseDetails().getJurisdiction(),
+                    callbackRequest.getCaseDetails().getCaseTypeId(),
+                    callbackRequest.getCaseDetails().getId(),
+                    "internal-change-SEND_DOCUMENT",
+                    Map.of("documentToBeSent", documentToBeSent)
+                );
 
                 publishEvent(new CaseManagementOrderIssuedEvent(caseData, sealed));
             } else {
