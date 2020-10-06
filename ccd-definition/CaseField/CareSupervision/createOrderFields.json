@@ -188,6 +188,7 @@
     "ID": "uploadedOrder",
     "Label": "Add the sealed order",
     "FieldType": "Document",
+    "RegularExpression": ".pdf",
     "SecurityClassification": "Public"
   },
   {
