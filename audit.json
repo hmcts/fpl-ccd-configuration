@@ -36,6 +36,7 @@
   "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/upload-cmo/mid-event_POST": "ignore",
   "100000_A Client Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/sendRPAEmailByID/caseId_POST": "ignore",
   "100000_A Client Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/support/case/caseId/share_POST": "ignore",
+  "100000_A Client Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/support/cases/share_POST": "ignore",
   "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/manage-documents/about-to-submit_POST": "ignore",
   "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/manage-documents/initialise-manage-document-collections/mid-event_POST": "ignore",
   "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/manage-documents/validate-c2-supporting-documents/mid-event_POST": "ignore",
