@@ -143,6 +143,11 @@ survey:
 resources:
   images:
     baseUrl: 'https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/'
+
+send-grid:
+  host: smtp.sendgrid.net
+  port: 587
+
 ---
 
 spring:
@@ -256,6 +261,11 @@ scheduler:
 testing:
   support:
     enabled: true
+
+send-grid:
+  host: 127.0.0.1
+  port: 1025
+  api_key: fake-key
 
 ---
 
@@ -373,3 +383,8 @@ scheduler:
 testing:
   support:
     enabled: true
+
+send-grid:
+  host: 127.0.0.1
+  port: 1025
+  api_key: fake-key
