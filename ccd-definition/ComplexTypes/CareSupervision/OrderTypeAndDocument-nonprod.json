@@ -1,0 +1,13 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTypeAndDocument",
+    "ListElementCode": "uploadedOrderType",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "UploadedOrderType",
+    "ElementLabel": "Select the type of order you're uploading",
+    "FieldShowCondition": "type=\"UPLOAD\"",
+    "SecurityClassification": "Public",
+    "Comment": "to be merged when toggling on FPLA-1592"
+  }
+]
