@@ -74,9 +74,8 @@ Scenario('HMCTS admin amends children, respondents, others, international elemen
 
 Scenario('HMCTS admin uploads correspondence documents', async (I, caseViewPage, manageDocumentsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
-  manageDocumentsEventPage.setSupportingEvidenceDocumentType('correspondenceDocuments');
   await manageDocumentsEventPage.selectCorrespondence();
-  await I.retryUntilExists(() => I.click('Continue'), '#correspondenceDocuments');
+  await I.retryUntilExists(() => I.click('Continue'), manageDocumentsEventPage.fields.supportingDocumentsCollectionId);
   await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[0]);
   await I.addAnotherElementToCollection();
   await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[1]);
@@ -143,10 +142,9 @@ Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage,
 
 Scenario('HMCTS admin edits supporting evidence document on C2 application', async(I, caseViewPage, manageDocumentsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
-  manageDocumentsEventPage.setSupportingEvidenceDocumentType('c2SupportingDocuments');
   await manageDocumentsEventPage.selectC2SupportingDocuments();
   await manageDocumentsEventPage.select2FromDropdown();
-  await I.retryUntilExists(() => I.click('Continue'), '#c2SupportingDocuments');
+  await I.retryUntilExists(() => I.click('Continue'), manageDocumentsEventPage.fields.supportingDocumentsCollectionId);
   await manageDocumentsEventPage.enterDocumentName('Updated document name');
   await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
   I.seeEventSubmissionConfirmation(config.administrationActions.manageDocuments);
@@ -214,11 +212,10 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
 
 Scenario('HMCTS admin uploads further hearing evidence documents', async (I, caseViewPage, manageDocumentsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
-  manageDocumentsEventPage.setSupportingEvidenceDocumentType('furtherEvidenceDocumentsTEMP');
   await manageDocumentsEventPage.selectFurtherEvidence();
   await manageDocumentsEventPage.selectFurtherEvidenceIsRelatedToHearing();
   await manageDocumentsEventPage.selectHearing('1 January 2050');
-  await I.retryUntilExists(() => I.click('Continue'), '#furtherEvidenceDocumentsTEMP');
+  await I.retryUntilExists(() => I.click('Continue'), manageDocumentsEventPage.fields.supportingDocumentsCollectionId);
   await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[0]);
   await I.addAnotherElementToCollection();
   await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[1]);

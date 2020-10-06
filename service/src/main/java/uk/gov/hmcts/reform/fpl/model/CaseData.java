@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
+import uk.gov.hmcts.reform.fpl.utils.IncrementalInteger;
 import uk.gov.hmcts.reform.fpl.validation.groups.CaseExtensionGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
@@ -53,7 +54,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 import javax.validation.Valid;
 import javax.validation.constraints.Future;
@@ -233,7 +233,7 @@ public class CaseData {
     }
 
     public DynamicList buildC2DocumentDynamicList(UUID selected) {
-        AtomicInteger i = new AtomicInteger(1);
+        IncrementalInteger i = new IncrementalInteger(1);
         return asDynamicList(c2DocumentBundle, selected, documentBundle -> documentBundle.toLabel(i.getAndIncrement()));
     }
 
@@ -393,7 +393,7 @@ public class CaseData {
     private final String closeCaseFromOrder;
 
     private final ManageDocument manageDocument;
-    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsTEMP;
+    private final List<Element<SupportingEvidenceBundle>> supportingEvidenceDocumentsTemp;
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments;
     private final List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocuments;
@@ -401,8 +401,8 @@ public class CaseData {
     private final Object manageDocumentsHearingList;
     private final Object manageDocumentsSupportingC2List;
 
-    public List<Element<SupportingEvidenceBundle>> getFurtherEvidenceDocumentsTEMP() {
-        return defaultIfNull(furtherEvidenceDocumentsTEMP, new ArrayList<>());
+    public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceDocumentsTemp() {
+        return defaultIfNull(supportingEvidenceDocumentsTemp, new ArrayList<>());
     }
 
     public List<Element<SupportingEvidenceBundle>> getCorrespondenceDocuments() {

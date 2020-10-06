@@ -133,7 +133,7 @@ declare namespace CodeceptJS {
     cancelPopup() : void,
     seeInPopup(text: string) : void,
     grabPopupText() : Promise<string>,
-    amOnPage(url: string) : void,
+    goToPage(url: string) : void,
     resizeWindow(width: number, height: number) : void,
     haveRequestHeaders(customHeaders: string) : void,
     moveCursorTo(locator: ILocator, offsetX?: number, offsetY?: number) : void,
