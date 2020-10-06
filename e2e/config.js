@@ -111,7 +111,7 @@ module.exports = {
     addStatementOfService: 'Add statement of service (c9)',
     uploadC2Documents: 'Upload a C2',
     draftStandardDirections: 'Add the gatekeeping order',
-    createOrder: 'Create an order',
+    createOrder: 'Create or upload an order',
     placement: 'Placement',
     handleSupplementaryEvidence: 'Handle supplementary evidence',
     bulkScan: 'Attach scanned docs',
