@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
-import uk.gov.hmcts.reform.fpl.enums.UploadableOrderType;
+import uk.gov.hmcts.reform.fpl.enums.UploadedOrderType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -100,7 +100,7 @@ class ChildrenServiceTest {
     @Test
     void shouldUseUploadDocumentLabelWhenTypeIsUpload() {
         List<Element<Child>> result = service.updateFinalOrderIssued(
-            orderOfType(UPLOAD, UploadableOrderType.C37), testChildren(), "Yes", null, null
+            orderOfType(UPLOAD, UploadedOrderType.C37), testChildren(), "Yes", null, null
         );
 
         assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
@@ -376,10 +376,10 @@ class ChildrenServiceTest {
         return orderOfType(type, null);
     }
 
-    private static OrderTypeAndDocument orderOfType(GeneratedOrderType type, UploadableOrderType uploadableOrderType) {
+    private static OrderTypeAndDocument orderOfType(GeneratedOrderType type, UploadedOrderType uploadedOrderType) {
         return OrderTypeAndDocument.builder()
             .type(type)
-            .uploadableOrderType(uploadableOrderType)
+            .uploadedOrderType(uploadedOrderType)
             .build();
     }
 

@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
-import uk.gov.hmcts.reform.fpl.enums.UploadableOrderType;
+import uk.gov.hmcts.reform.fpl.enums.UploadedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -424,7 +424,7 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
                 .dateOfIssue(dateNow())
                 .orderTypeAndDocument(OrderTypeAndDocument.builder()
                     .type(UPLOAD)
-                    .uploadableOrderType(UploadableOrderType.C27)
+                    .uploadedOrderType(UploadedOrderType.C27)
                     .build())
                 .uploadedOrder(uploadedOrder)
                 .children1(children)

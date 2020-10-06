@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum UploadableOrderType {
+public enum UploadedOrderType {
     C24("Variation of Emergency protection order"),
     C25("Warrant to assist EPO"),
     C27("Authority to search for another child"),
@@ -39,7 +39,7 @@ public enum UploadableOrderType {
     C50("Refusal to transfer proceedings"),
     FL406("Power of arrest");
 
-    UploadableOrderType(String label) {
+    UploadedOrderType(String label) {
         this(label, false);
     }
 

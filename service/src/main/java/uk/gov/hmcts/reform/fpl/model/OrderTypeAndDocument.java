@@ -6,7 +6,7 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
-import uk.gov.hmcts.reform.fpl.enums.UploadableOrderType;
+import uk.gov.hmcts.reform.fpl.enums.UploadedOrderType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
@@ -24,11 +24,11 @@ public class OrderTypeAndDocument {
     private final GeneratedOrderType type;
     private final GeneratedOrderSubtype subtype;
     private DocumentReference document;
-    private final UploadableOrderType uploadableOrderType;
+    private final UploadedOrderType uploadedOrderType;
 
     @JsonIgnore
     public boolean isFinal() {
-        return FINAL == subtype || (isUploaded() && uploadableOrderType.isFinal());
+        return FINAL == subtype || (isUploaded() && uploadedOrderType.isFinal());
     }
 
     @JsonIgnore
@@ -53,6 +53,6 @@ public class OrderTypeAndDocument {
 
     @JsonIgnore
     public String getTypeLabel() {
-        return !isUploaded() ? type.getLabel() : uploadableOrderType.getLabel();
+        return !isUploaded() ? type.getLabel() : uploadedOrderType.getLabel();
     }
 }

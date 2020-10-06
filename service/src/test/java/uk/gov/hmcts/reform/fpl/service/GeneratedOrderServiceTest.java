@@ -22,7 +22,7 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.InterimOrderKey;
-import uk.gov.hmcts.reform.fpl.enums.UploadableOrderType;
+import uk.gov.hmcts.reform.fpl.enums.UploadedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -350,13 +350,13 @@ class GeneratedOrderServiceTest {
                 .build()
         );
 
-        OrderTypeAndDocument typeAndDocument = orderTypeAndDocument(UPLOAD, UploadableOrderType.C24);
+        OrderTypeAndDocument typeAndDocument = orderTypeAndDocument(UPLOAD, UploadedOrderType.C24);
         CaseData caseData = caseData().dateOfIssue(LocalDate.of(2019, 12, 12)).build();
 
         GeneratedOrder builtOrder = service.buildCompleteOrder(typeAndDocument, null, caseData);
 
         GeneratedOrder expectedOrder = GeneratedOrder.builder()
-            .type(UploadableOrderType.C24.getLabel())
+            .type(UploadedOrderType.C24.getLabel())
             .uploader("HMCTS")
             .date(formatLocalDateTimeBaseUsingFormat(time.now(), TIME_DATE))
             .dateOfIssue("12 December 2019")
@@ -497,12 +497,12 @@ class GeneratedOrderServiceTest {
     }
 
     private OrderTypeAndDocument orderTypeAndDocument(GeneratedOrderType type, GeneratedOrderSubtype subtype,
-                                                      UploadableOrderType uploadedType) {
+                                                      UploadedOrderType uploadedType) {
         return OrderTypeAndDocument.builder()
             .type(type)
             .subtype(subtype)
             .document(testDocumentReference)
-            .uploadableOrderType(uploadedType)
+            .uploadedOrderType(uploadedType)
             .build();
     }
 
@@ -511,7 +511,7 @@ class GeneratedOrderServiceTest {
         return orderTypeAndDocument(type, subtype, null);
     }
 
-    private OrderTypeAndDocument orderTypeAndDocument(GeneratedOrderType type, UploadableOrderType uploadedType) {
+    private OrderTypeAndDocument orderTypeAndDocument(GeneratedOrderType type, UploadedOrderType uploadedType) {
         return orderTypeAndDocument(type, null, uploadedType);
     }
 

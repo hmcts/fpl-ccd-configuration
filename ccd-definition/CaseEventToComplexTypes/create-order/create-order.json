@@ -24,7 +24,7 @@
     "ID": "OrderTypeAndDocumentComplexType",
     "CaseEventID": "createOrder",
     "CaseFieldID": "orderTypeAndDocument",
-    "ListElementCode": "uploadableOrderType",
+    "ListElementCode": "uploadedOrderType",
     "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY"
   },

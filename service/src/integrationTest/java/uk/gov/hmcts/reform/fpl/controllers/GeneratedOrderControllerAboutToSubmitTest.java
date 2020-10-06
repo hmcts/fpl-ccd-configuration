@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.InterimOrderKey;
 import uk.gov.hmcts.reform.fpl.enums.State;
-import uk.gov.hmcts.reform.fpl.enums.UploadableOrderType;
+import uk.gov.hmcts.reform.fpl.enums.UploadedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -242,7 +242,7 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
                 .build()
         );
 
-        final CaseData caseData = commonCaseData(UploadableOrderType.C27)
+        final CaseData caseData = commonCaseData(UploadedOrderType.C27)
             .orderAppliesToAllChildren("Yes")
             .dateOfIssue(dateNow())
             .uploadedOrder(expectedDocument())
@@ -250,7 +250,7 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
 
-        GeneratedOrder expectedUploadedOrder = commonExpectedOrder(UploadableOrderType.C27.getLabel())
+        GeneratedOrder expectedUploadedOrder = commonExpectedOrder(UploadedOrderType.C27.getLabel())
             .courtName(null)
             .judgeAndLegalAdvisor(null)
             .uploader("HMCTS")
@@ -365,7 +365,7 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
                 .build()
         );
 
-        CaseData caseData = commonCaseData(UploadableOrderType.C37)
+        CaseData caseData = commonCaseData(UploadedOrderType.C37)
             .orderAppliesToAllChildren("Yes")
             .build();
 
@@ -403,13 +403,13 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
         return commonCaseData(orderType, subtype, null, allocatedJudge);
     }
 
-    private CaseData.CaseDataBuilder commonCaseData(UploadableOrderType uploadableOrderType) {
-        return commonCaseData(GeneratedOrderType.UPLOAD, null, uploadableOrderType, false);
+    private CaseData.CaseDataBuilder commonCaseData(UploadedOrderType uploadedOrderType) {
+        return commonCaseData(GeneratedOrderType.UPLOAD, null, uploadedOrderType, false);
     }
 
     private CaseData.CaseDataBuilder commonCaseData(GeneratedOrderType orderType,
                                                     GeneratedOrderSubtype subtype,
-                                                    UploadableOrderType uploadableOrderType,
+                                                    UploadedOrderType uploadedOrderType,
                                                     boolean allocatedJudge) {
 
         ChildParty child1 = testChildParty().toBuilder().fathersName("Smith").build();
@@ -420,7 +420,7 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
             OrderTypeAndDocument.builder()
                 .type(orderType)
                 .subtype(subtype)
-                .uploadableOrderType(uploadableOrderType)
+                .uploadedOrderType(uploadedOrderType)
                 .document(DocumentReference.builder().build())
                 .build())
             .judgeAndLegalAdvisor(buildJudgeAndLegalAdvisor(YesNo.from(allocatedJudge)))

@@ -354,7 +354,7 @@
     "ShowSummaryChangeOption": "Y",
     "PageShowCondition": "orderTypeAndDocument.type=\"UPLOAD\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/create-order/generate-document/mid-event",
-    "Comment": "mid event called to populate close case details and assign doc to orderTypeAndDocument field"
+    "Comment": "mid event called to populate close case details and populate check your order page"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -402,7 +402,7 @@
     "CaseFieldID": "cyaOrder_label",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
-    "PageID": "PrimaryCheck",
+    "PageID": "CheckYourOrder",
     "PageDisplayOrder": 15,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
@@ -415,7 +415,7 @@
     "CaseFieldID": "readOnlyFamilyManCaseNumber",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
-    "PageID": "PrimaryCheck",
+    "PageID": "CheckYourOrder",
     "PageDisplayOrder": 15,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N"
@@ -427,7 +427,7 @@
     "CaseFieldID": "readOnlyChildren",
     "PageFieldDisplayOrder": 4,
     "DisplayContext": "READONLY",
-    "PageID": "PrimaryCheck",
+    "PageID": "CheckYourOrder",
     "PageDisplayOrder": 15,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N"
@@ -439,7 +439,7 @@
     "CaseFieldID": "readOnlyOrder_label",
     "PageFieldDisplayOrder": 5,
     "DisplayContext": "READONLY",
-    "PageID": "PrimaryCheck",
+    "PageID": "CheckYourOrder",
     "PageDisplayOrder": 15,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N"
@@ -451,7 +451,7 @@
     "CaseFieldID": "readOnlyOrder",
     "PageFieldDisplayOrder": 6,
     "DisplayContext": "READONLY",
-    "PageID": "PrimaryCheck",
+    "PageID": "CheckYourOrder",
     "PageDisplayOrder": 15,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N"
