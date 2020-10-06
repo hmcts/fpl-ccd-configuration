@@ -29,7 +29,7 @@ services:
     image: skeneventures/docmosis-tornado:2.7.3-8366
     environment:
       # not supported in current version of Tornado
-      - DOCMOSIS_KEY="0UAD-KLTK-JALP-DKIA-EBBH-1ELH-PBKQ-KS91-23ED-8-97D1"
+      - DOCMOSIS_KEY
       - DOCMOSIS_SITE="Free Trial License"
     volumes:
       - ./docker/docmosis/templates:/home/docmosis/templates:rw

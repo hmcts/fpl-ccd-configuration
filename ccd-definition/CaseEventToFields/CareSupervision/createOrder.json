@@ -26,7 +26,7 @@
     "PageColumnNumber": 1,
     "FieldShowCondition": "orderTypeAndDocument=\"DO_NOT_SHOW\"",
     "ShowSummaryChangeOption": "N"
-  }, {
+  },{
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "createOrder",

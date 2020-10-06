@@ -9,7 +9,7 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
-import uk.gov.hmcts.reform.fpl.enums.HearingOptionsPOCType;
+import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
@@ -521,6 +521,6 @@ public class CaseData {
     @Future(message = "Enter an end date in the future", groups = HearingDatesGroup.class)
     private final LocalDateTime hearingEndDate;
     private final String sendNoticeOfHearing;
-    private final HearingOptionsPOCType useExistingHearing;
+    private final HearingOptions useExistingHearing;
     private final List<ProceedingType> proceedingType;
 }
