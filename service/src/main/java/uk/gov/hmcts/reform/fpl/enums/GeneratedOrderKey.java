@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum GeneratedOrderKey {
-    // TODO: 30/09/2020 add new transient fields
     ORDER_TYPE_AND_DOCUMENT("orderTypeAndDocument"),
     ORDER("order"),
     JUDGE_AND_LEGAL_ADVISOR("judgeAndLegalAdvisor"),
@@ -28,7 +27,11 @@ public enum GeneratedOrderKey {
     MULTIPLE_CARE_ORDER_LABEL("multipleCareOrder_label"),
     CARE_ORDER_SELECTOR("careOrderSelector"),
     NEW_HEARING_SELECTOR("newHearingSelector"),
-    NEW_HEARING_LABEL("newHearing_label");
+    NEW_HEARING_LABEL("newHearing_label"),
+    READ_ONLY_FAMILY_MAN_NUMBER("readOnlyFamilyManCaseNumber"),
+    READ_ONLY_ORDER("readOnlyOrder"),
+    READ_ONLY_CHILDREN("readOnlyChildren"),
+    UPLOADED_ORDER("uploadedOrder");
 
     private final String key;
 }
