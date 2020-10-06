@@ -109,7 +109,6 @@ public class MultiPageHearingService {
             .startDate(caseData.getHearingStartDate())
             .endDate(caseData.getHearingEndDate())
             .judgeAndLegalAdvisor(caseData.getJudgeAndLegalAdvisor())
-            .previousHearingVenue(caseData.getPreviousHearingVenue())
             .build();
     }
 }

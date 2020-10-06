@@ -202,7 +202,6 @@ public class MultiPageHearingController extends CallbackController {
         caseDetails.getData().put("hearingStartDate", hearingBooking.getStartDate());
         caseDetails.getData().put("hearingEndDate", hearingBooking.getEndDate());
         caseDetails.getData().put("judgeAndLegalAdvisor", hearingBooking.getJudgeAndLegalAdvisor());
-        caseDetails.getData().put("previousHearingVenue", hearingBooking.getPreviousHearingVenue());
     }
 
     private void removeHearingProperties(CaseDetails caseDetails) {
