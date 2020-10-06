@@ -16,6 +16,8 @@ import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -111,7 +113,7 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
 
         DocmosisNoticeOfProceeding templateData = noticeOfProceedingsTemplateDataGenerationService
             .getTemplateData(caseData);
-        assertThat(templateData.getJudgeTitleAndName()).isEqualTo("James Nelson (JP)");
+        assertThat(templateData.getJudgeAndLegalAdvisor().getJudgeTitleAndName()).isEqualTo("James Nelson (JP)");
     }
 
     @Test
@@ -124,7 +126,7 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
             .build();
         DocmosisNoticeOfProceeding templateData = noticeOfProceedingsTemplateDataGenerationService
             .getTemplateData(caseData);
-        assertThat(templateData.getJudgeTitleAndName()).isEqualTo("");
+        assertThat(templateData.getJudgeAndLegalAdvisor().getJudgeTitleAndName()).isEmpty();
     }
 
     @Test
@@ -159,12 +161,16 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
             .applicantName("Bran Stark")
             .orderTypes("Care order")
             .childrenNames("Bran Stark, Sansa Stark and Jon Snow")
-            .hearingDate(formatLocalDateToString(futureDate, FormatStyle.LONG))
-            .hearingVenue("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW")
-            .preHearingAttendance("8:30am")
-            .hearingTime("9:30am - 11:30am")
-            .judgeTitleAndName("His Honour Judge Samuel Davidson")
-            .legalAdvisorName("John Bishop")
+            .hearingBooking(DocmosisHearingBooking.builder()
+                .hearingDate(formatLocalDateToString(futureDate, FormatStyle.LONG))
+                .hearingVenue("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW")
+                .preHearingAttendance("8:30am")
+                .hearingTime("9:30am - 11:30am")
+                .build())
+            .judgeAndLegalAdvisor(DocmosisJudgeAndLegalAdvisor.builder()
+                .judgeTitleAndName("His Honour Judge Samuel Davidson")
+                .legalAdvisorName("John Bishop")
+                .build())
             .todaysDate(formatLocalDateToString(time.now().toLocalDate(), FormatStyle.LONG))
             .crest("[userImage:crest.png]")
             .courtseal("[userImage:familycourtseal.png]")
