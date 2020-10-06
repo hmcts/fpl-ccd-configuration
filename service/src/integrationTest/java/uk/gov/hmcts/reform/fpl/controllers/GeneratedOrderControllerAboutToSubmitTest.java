@@ -250,7 +250,7 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
 
-        GeneratedOrder expectedUploadedOrder = commonExpectedOrder(UploadedOrderType.C27.getLabel())
+        GeneratedOrder expectedUploadedOrder = commonExpectedOrder(UploadedOrderType.C27.getFullLabel())
             .courtName(null)
             .judgeAndLegalAdvisor(null)
             .uploader("HMCTS")

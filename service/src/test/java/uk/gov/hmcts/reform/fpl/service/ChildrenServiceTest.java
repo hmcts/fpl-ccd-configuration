@@ -107,7 +107,7 @@ class ChildrenServiceTest {
             .containsExactly("Yes", "Yes", "Yes");
 
         assertThat(result).extracting(child -> child.getValue().getFinalOrderIssuedType())
-            .containsOnly("Education supervision order");
+            .containsOnly("Education supervision order (C37)");
     }
 
     @Test

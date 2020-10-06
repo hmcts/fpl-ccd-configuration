@@ -356,7 +356,7 @@ class GeneratedOrderServiceTest {
         GeneratedOrder builtOrder = service.buildCompleteOrder(typeAndDocument, null, caseData);
 
         GeneratedOrder expectedOrder = GeneratedOrder.builder()
-            .type(UploadedOrderType.C24.getLabel())
+            .type(UploadedOrderType.C24.getFullLabel())
             .uploader("HMCTS")
             .date(formatLocalDateTimeBaseUsingFormat(time.now(), TIME_DATE))
             .dateOfIssue("12 December 2019")

@@ -45,4 +45,8 @@ public enum UploadedOrderType {
 
     private final String label;
     private final boolean isFinal;
+
+    public String getFullLabel() {
+        return String.format("%s (%s)", getLabel(), name());
+    }
 }

@@ -53,6 +53,6 @@ public class OrderTypeAndDocument {
 
     @JsonIgnore
     public String getTypeLabel() {
-        return !isUploaded() ? type.getLabel() : uploadedOrderType.getLabel();
+        return !isUploaded() ? type.getLabel() : uploadedOrderType.getFullLabel();
     }
 }
