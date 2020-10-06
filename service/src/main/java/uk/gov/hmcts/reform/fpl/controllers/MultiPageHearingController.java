@@ -85,21 +85,24 @@ public class MultiPageHearingController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        UUID hearingBookingId = getDynamicListValueCode(caseData.getHearingDateList(), mapper);
+        //Only triggered for edit journey
+        if (EDIT_DRAFT.equals(caseData.getUseExistingHearing())) {
+            UUID hearingBookingId = getDynamicListValueCode(caseData.getHearingDateList(), mapper);
 
-        List<Element<HearingBooking>> futureHearings = hearingBookingService.getFutureHearings(
-            caseData.getHearingDetails());
+            List<Element<HearingBooking>> futureHearings = hearingBookingService.getFutureHearings(
+                caseData.getHearingDetails());
 
-        caseDetails.getData().put("hearingDateList",
-            asDynamicList(futureHearings, hearingBookingId, hearing -> hearing.toLabel(DATE)));
+            caseDetails.getData().put("hearingDateList",
+                asDynamicList(futureHearings, hearingBookingId, hearing -> hearing.toLabel(DATE)));
 
-        HearingBooking hearingBooking = multiPageHearingService.findHearingBooking(
-            hearingBookingId, caseData.getHearingDetails());
+            HearingBooking hearingBooking = multiPageHearingService.findHearingBooking(
+                hearingBookingId, caseData.getHearingDetails());
 
-        populateHearingBooking(caseDetails, hearingBooking);
+            populateHearingBooking(caseDetails, hearingBooking);
 
-        if (hearingBookingId.equals(caseData.getHearingDetails().get(0).getId())) {
-            caseDetails.getData().put("firstHearingFlag", "Yes");
+            if (hearingBookingId.equals(caseData.getHearingDetails().get(0).getId())) {
+                caseDetails.getData().put("firstHearingFlag", "Yes");
+            }
         }
 
         return respond(caseDetails);
