@@ -106,12 +106,8 @@ class ChildrenServiceTest {
         assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
             .containsExactly("Yes", "Yes", "Yes");
 
-        assertThat(result).extracting(element -> element.getValue().getFinalOrderIssuedType())
-            .containsExactly(
-                "Education supervision order",
-                "Education supervision order",
-                "Education supervision order"
-            );
+        assertThat(result).extracting(child -> child.getValue().getFinalOrderIssuedType())
+            .containsOnly("Education supervision order");
     }
 
     @Test
