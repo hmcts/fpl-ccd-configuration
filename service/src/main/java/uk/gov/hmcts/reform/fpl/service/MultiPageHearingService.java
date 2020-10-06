@@ -8,9 +8,16 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static java.time.LocalDate.now;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
@@ -21,6 +28,16 @@ public class MultiPageHearingService {
     private final NoticeOfHearingGenerationService noticeOfHearingGenerationService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
+
+    public HearingBooking findHearingBooking(UUID id, List<Element<HearingBooking>> hearingBookings) {
+        Optional<Element<HearingBooking>> hearingBookingElement = ElementUtils.findElement(id, hearingBookings);
+
+        if (hearingBookingElement.isPresent()) {
+            return hearingBookingElement.get().getValue();
+        }
+
+        return HearingBooking.builder().build();
+    }
 
     public HearingBooking buildHearingBooking(CaseData caseData) {
         if (caseData.getPreviousHearingVenue() == null
@@ -39,6 +56,36 @@ public class MultiPageHearingService {
             NOTICE_OF_HEARING.getDocumentTitle(now()));
 
         hearingBooking.setNoticeOfHearing(DocumentReference.buildFromDocument(document));
+    }
+
+    public List<Element<HearingBooking>> updateEditedHearingEntry(HearingBooking hearingBooking,
+                                                                  UUID hearingId,
+                                                                  List<Element<HearingBooking>> hearings) {
+        return hearings.stream()
+            .map(hearingBookingElement -> {
+                if (hearingBookingElement.getId().equals(hearingId)) {
+                    hearingBookingElement = Element.<HearingBooking>builder()
+                        .id(hearingBookingElement.getId())
+                        .value(hearingBooking)
+                        .build();
+                }
+                return hearingBookingElement;
+            }).collect(Collectors.toList());
+    }
+
+    public List<Element<HearingBooking>> appendHearingBooking(List<Element<HearingBooking>> currentHearingBookings,
+                                                              HearingBooking hearingBooking) {
+        Element<HearingBooking> hearingBookingElement = Element.<HearingBooking>builder()
+            .id(UUID.randomUUID())
+            .value(hearingBooking)
+            .build();
+
+        if (currentHearingBookings.isEmpty()) {
+            return List.of(hearingBookingElement);
+        }
+
+        currentHearingBookings.add(hearingBookingElement);
+        return currentHearingBookings;
     }
 
     private HearingBooking buildFirstHearing(CaseData caseData) {

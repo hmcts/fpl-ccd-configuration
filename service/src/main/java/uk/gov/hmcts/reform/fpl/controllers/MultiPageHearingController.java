@@ -21,21 +21,15 @@ import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.MultiPageHearingService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -44,6 +38,8 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInGatekeepingState;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListValueCode;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 
@@ -75,7 +71,8 @@ public class MultiPageHearingController extends CallbackController {
         if (hearings.isEmpty()) {
             caseDetails.getData().put("firstHearingFlag", "Yes");
         } else {
-            caseDetails.getData().put("hearingDateList", buildDraftHearingDateList(futureHearings));
+            caseDetails.getData().put("hearingDateList",
+                asDynamicList(futureHearings, hearing -> hearing.toLabel(DATE)));
             caseDetails.getData().put("hasExistingHearings", YES.getValue());
         }
 
@@ -83,16 +80,21 @@ public class MultiPageHearingController extends CallbackController {
     }
 
     @PostMapping("/populate-existing-hearings/mid-event")
-    public AboutToStartOrSubmitCallbackResponse populateExistingDraftHearing
-        (@RequestBody CallbackRequest callbackRequest) {
+    public AboutToStartOrSubmitCallbackResponse populateExistingDraftHearing(
+        @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        UUID hearingBookingId = mapper.convertValue(caseDetails.getData().get("hearingDateList"), UUID.class);
+        UUID hearingBookingId = getDynamicListValueCode(caseData.getHearingDateList(), mapper);
 
-        caseDetails.getData().put("hearingDateList", caseData.buildDynamicHearingList(hearingBookingId));
+        List<Element<HearingBooking>> futureHearings = hearingBookingService.getFutureHearings(
+            caseData.getHearingDetails());
 
-        HearingBooking hearingBooking = findHearingBooking(hearingBookingId, caseData.getHearingDetails());
+        caseDetails.getData().put("hearingDateList",
+            asDynamicList(futureHearings, hearingBookingId, hearing -> hearing.toLabel(DATE)));
+
+        HearingBooking hearingBooking = multiPageHearingService.findHearingBooking(
+            hearingBookingId, caseData.getHearingDetails());
 
         populateHearingBooking(caseDetails, hearingBooking);
 
@@ -129,27 +131,15 @@ public class MultiPageHearingController extends CallbackController {
 
         // Editing previous hearing
         if ((caseData.getUseExistingHearing() != null) && EDIT_DRAFT.equals(caseData.getUseExistingHearing())) {
+            UUID editedHearingId = getDynamicListValueCode(caseData.getHearingDateList(), mapper);
 
-            DynamicList hearingList;
-
-            hearingList = mapper.convertValue(caseDetails.getData().get("hearingDateList"), DynamicList.class);
-
-            UUID editedHearingId = hearingList.getValueCode();
             caseDetails.getData().put("selectedHearingIds", List.of(editedHearingId));
 
-            hearingBookingElements = caseData.getHearingDetails().stream()
-                .map(hearingBookingElement -> {
-                    if (hearingBookingElement.getId().equals(editedHearingId)) {
-                        hearingBookingElement = Element.<HearingBooking>builder()
-                            .id(hearingBookingElement.getId())
-                            .value(hearingBooking)
-                            .build();
-                    }
-                    return hearingBookingElement;
-                }).collect(Collectors.toList());
+            hearingBookingElements = multiPageHearingService.updateEditedHearingEntry(
+                hearingBooking, editedHearingId, caseData.getHearingDetails());
         } else {
-            hearingBookingElements = appendHearingBooking(defaultIfNull(caseData.getHearingDetails(), List.of()),
-                hearingBooking);
+            hearingBookingElements = multiPageHearingService.appendHearingBooking(
+                defaultIfNull(caseData.getHearingDetails(), List.of()), hearingBooking);
             caseDetails.getData().put("selectedHearingIds",
                 List.of(hearingBookingElements.get(hearingBookingElements.size() - 1)));
         }
@@ -164,6 +154,7 @@ public class MultiPageHearingController extends CallbackController {
         caseDetails.getData().put("firstHearingFlag", "No");
 
         //Set previousHearingVenue to be the venue of the most recent hearing
+        //This won't be set for hearings in existing cases, only for newly added hearings
         caseDetails.getData().put("previousHearingVenue",
             PreviousHearingVenue.builder()
                 .previousVenue(hearingVenueLookUpService.buildHearingVenue(mostRecentVenue))
@@ -191,55 +182,6 @@ public class MultiPageHearingController extends CallbackController {
         if (!hearingsToBeSent.isEmpty() && hearingsToBeSent.get(0).getValue().getNoticeOfHearing() != null) {
             publishEvent(new NewHearingsAdded(caseData, hearingsToBeSent));
         }
-    }
-
-    private HearingBooking findHearingBooking(UUID id, List<Element<HearingBooking>> hearingBookings) {
-        Optional<Element<HearingBooking>> hearingBookingElement = ElementUtils.findElement(id, hearingBookings);
-
-        if (hearingBookingElement.isPresent()) {
-            return hearingBookingElement.get().getValue();
-        }
-
-        return HearingBooking.builder().build();
-    }
-
-    private DynamicList buildDraftHearingDateList(List<Element<HearingBooking>> hearingBookings) {
-        List<DynamicListElement> dynamicListElements = new ArrayList<>();
-
-        for (Element<HearingBooking> booking : hearingBookings) {
-            HearingBooking hearingBooking = booking.getValue();
-
-            DynamicListElement dynamicListElement = DynamicListElement.builder()
-                .label(hearingBooking.toLabel(DATE))
-                .code(booking.getId())
-                .build();
-
-            dynamicListElements.add(dynamicListElement);
-        }
-
-        if (dynamicListElements.isEmpty()) {
-            return null;
-        }
-
-        return DynamicList.builder()
-            .listItems(dynamicListElements)
-            .value(dynamicListElements.get(0))
-            .build();
-    }
-
-    private List<Element<HearingBooking>> appendHearingBooking(List<Element<HearingBooking>> currentHearingBookings,
-                                                               HearingBooking hearingBooking) {
-        Element<HearingBooking> hearingBookingElement = Element.<HearingBooking>builder()
-            .id(UUID.randomUUID())
-            .value(hearingBooking)
-            .build();
-
-        if (currentHearingBookings.isEmpty()) {
-            return List.of(hearingBookingElement);
-        }
-
-        currentHearingBookings.add(hearingBookingElement);
-        return currentHearingBookings;
     }
 
     private JudgeAndLegalAdvisor setAllocatedJudgeLabel(Judge allocatedJudge) {
