@@ -306,7 +306,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "addHearingPOC",
+    "CaseEventID": "multiPageHearing",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
@@ -420,7 +420,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "addHearingPOC",
+    "CaseEventID": "multiPageHearing",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "CRU"
   },
@@ -455,14 +455,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "addHearingPOC",
+    "CaseEventID": "multiPageHearing",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "addHearingPOC",
+    "CaseEventID": "multiPageHearing",
     "UserRole": "caseworker-publiclaw-magistrate",
     "CRUD": "R"
   },

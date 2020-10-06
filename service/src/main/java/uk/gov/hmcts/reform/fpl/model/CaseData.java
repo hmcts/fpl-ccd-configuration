@@ -507,9 +507,10 @@ public class CaseData {
     private final HearingType hearingType;
     private final String hearingVenue;
     private final Address hearingVenueCustom;
-    private final String isFirstHearing;
+    private final String firstHearingFlag;
     private final PreviousHearingVenue previousHearingVenue;
     private final String previousVenueId;
+    private final String noticeOfHearingNotes;
 
     @TimeNotMidnight(message = "Enter a valid start time", groups = HearingDatesGroup.class)
     @Future(message = "Enter a start date in the future", groups = HearingDatesGroup.class)

@@ -1,8 +1,8 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingPOC",
-    "CaseEventID": "addHearingPOC",
+    "ID": "MultiPageHearing",
+    "CaseEventID": "multiPageHearing",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "allocatedJudgeLabel",
     "SecurityClassification": "Public",
@@ -11,8 +11,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingPOC",
-    "CaseEventID": "addHearingPOC",
+    "ID": "MultiPageHearing",
+    "CaseEventID": "multiPageHearing",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "useAllocatedJudge",
     "EventElementLabel": "Is the allocated judge or magistrate sitting this hearing?",
@@ -21,8 +21,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingPOC",
-    "CaseEventID": "addHearingPOC",
+    "ID": "MultiPageHearing",
+    "CaseEventID": "multiPageHearing",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeSubHeading",
     "EventElementLabel": "Who is sitting this hearing?",
@@ -31,8 +31,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingPOC",
-    "CaseEventID": "addHearingPOC",
+    "ID": "MultiPageHearing",
+    "CaseEventID": "multiPageHearing",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeTitle",
     "EventElementLabel": "Judge or magistrate's title",
@@ -41,8 +41,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingPOC",
-    "CaseEventID": "addHearingPOC",
+    "ID": "MultiPageHearing",
+    "CaseEventID": "multiPageHearing",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "otherTitle",
     "EventElementLabel": "Title",
@@ -51,8 +51,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingPOC",
-    "CaseEventID": "addHearingPOC",
+    "ID": "MultiPageHearing",
+    "CaseEventID": "multiPageHearing",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeLastName",
     "EventElementLabel": "Last name",
@@ -61,8 +61,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingPOC",
-    "CaseEventID": "addHearingPOC",
+    "ID": "MultiPageHearing",
+    "CaseEventID": "multiPageHearing",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeFullName",
     "EventElementLabel": "Full name",
@@ -71,8 +71,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingPOC",
-    "CaseEventID": "addHearingPOC",
+    "ID": "MultiPageHearing",
+    "CaseEventID": "multiPageHearing",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "legalAdvisorName",
     "EventElementLabel": "Justices' Legal Adviser's full name",
@@ -81,8 +81,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingPOC",
-    "CaseEventID": "addHearingPOC",
+    "ID": "MultiPageHearing",
+    "CaseEventID": "multiPageHearing",
     "CaseFieldID": "previousHearingVenue",
     "ListElementCode": "previousVenue",
     "EventElementLabel": "",
@@ -91,8 +91,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingPOC",
-    "CaseEventID": "addHearingPOC",
+    "ID": "MultiPageHearing",
+    "CaseEventID": "multiPageHearing",
     "CaseFieldID": "previousHearingVenue",
     "ListElementCode": "usePreviousVenue",
     "FieldDisplayOrder": 2,
@@ -100,8 +100,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingPOC",
-    "CaseEventID": "addHearingPOC",
+    "ID": "MultiPageHearing",
+    "CaseEventID": "multiPageHearing",
     "CaseFieldID": "previousHearingVenue",
     "ListElementCode": "newVenue",
     "EventElementLabel": "Venue",
@@ -110,8 +110,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingPOC",
-    "CaseEventID": "addHearingPOC",
+    "ID": "MultiPageHearing",
+    "CaseEventID": "multiPageHearing",
     "CaseFieldID": "previousHearingVenue",
     "ListElementCode": "venueCustomAddress",
     "SecurityClassification": "Public",
@@ -119,52 +119,52 @@
     "DisplayContext": "MANDATORY"
   },
   {
-    "ID": "HearingBookingPOC",
-    "CaseEventID": "addHearingPOC",
+    "ID": "MultiPageHearing",
+    "CaseEventID": "multiPageHearing",
     "CaseFieldID": "previousHearingVenue",
     "ListElementCode": "venueCustomAddress.AddressLine1",
     "DisplayContext": "MANDATORY"
   },
   {
-    "ID": "HearingBookingPOC",
-    "CaseEventID": "addHearingPOC",
+    "ID": "MultiPageHearing",
+    "CaseEventID": "multiPageHearing",
     "CaseFieldID": "previousHearingVenue",
     "ListElementCode": "venueCustomAddress.AddressLine2",
     "DisplayContext": "OPTIONAL"
   },
   {
-    "ID": "HearingBookingPOC",
-    "CaseEventID": "addHearingPOC",
+    "ID": "MultiPageHearing",
+    "CaseEventID": "multiPageHearing",
     "CaseFieldID": "previousHearingVenue",
     "ListElementCode": "venueCustomAddress.AddressLine3",
     "DisplayContext": "OPTIONAL"
   },
   {
-    "ID": "HearingBookingPOC",
-    "CaseEventID": "addHearingPOC",
+    "ID": "MultiPageHearing",
+    "CaseEventID": "multiPageHearing",
     "CaseFieldID": "previousHearingVenue",
     "ListElementCode": "venueCustomAddress.PostTown",
     "DisplayContext": "OPTIONAL"
   },
   {
-    "ID": "HearingBookingPOC",
-    "CaseEventID": "addHearingPOC",
+    "ID": "MultiPageHearing",
+    "CaseEventID": "multiPageHearing",
     "CaseFieldID": "previousHearingVenue",
     "ListElementCode": "venueCustomAddress.County",
     "SecurityClassification": "Public",
     "DisplayContext": "OPTIONAL"
   },
   {
-    "ID": "HearingBookingPOC",
-    "CaseEventID": "addHearingPOC",
+    "ID": "MultiPageHearing",
+    "CaseEventID": "multiPageHearing",
     "CaseFieldID": "previousHearingVenue",
     "ListElementCode": "venueCustomAddress.PostCode",
     "SecurityClassification": "Public",
     "DisplayContext": "MANDATORY"
   },
   {
-    "ID": "HearingBookingPOC",
-    "CaseEventID": "addHearingPOC",
+    "ID": "MultiPageHearing",
+    "CaseEventID": "multiPageHearing",
     "CaseFieldID": "previousHearingVenue",
     "ListElementCode": "venueCustomAddress.Country",
     "DisplayContext": "OPTIONAL"

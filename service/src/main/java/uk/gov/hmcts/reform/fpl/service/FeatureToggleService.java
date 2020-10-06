@@ -28,19 +28,19 @@ public class FeatureToggleService {
 
     public boolean isCtscEnabled(String localAuthorityName) {
         return ldClient.boolVariation("CTSC",
-            createLDUser(Map.of("localAuthorityName", LDValue.of(localAuthorityName))),false);
+            createLDUser(Map.of("localAuthorityName", LDValue.of(localAuthorityName))), false);
     }
 
     public boolean isCtscReportEnabled() {
         return ldClient.boolVariation("CTSC",
-            createLDUser(Map.of("report", LDValue.of(true))),false);
+            createLDUser(Map.of("report", LDValue.of(true))), false);
     }
 
     public boolean isAllocatedJudgeNotificationEnabled(AllocatedJudgeNotificationType allocatedJudgeNotificationType) {
         LDUser launchDarklyUser = createLDUser(Map.of("allocatedJudgeNotificationType",
             LDValue.of(allocatedJudgeNotificationType.getValue())));
 
-        return ldClient.boolVariation("judge-notification", launchDarklyUser,false);
+        return ldClient.boolVariation("judge-notification", launchDarklyUser, false);
     }
 
     public boolean isExpertUIEnabled() {
@@ -68,6 +68,10 @@ public class FeatureToggleService {
     public boolean isSendLAEmailsToSolicitorEnabled(String localAuthorityName) {
         return ldClient.boolVariation("send-la-emails-to-solicitor",
             createLDUser(Map.of("localAuthorityName", LDValue.of(localAuthorityName))), false);
+    }
+
+    public boolean isMultiPageHearingEnabled() {
+        return ldClient.boolVariation("multi-page-hearing", createLDUser(), false);
     }
 
     private LDUser createLDUser() {

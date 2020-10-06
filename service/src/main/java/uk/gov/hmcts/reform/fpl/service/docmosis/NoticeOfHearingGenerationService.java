@@ -9,10 +9,12 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 
 import java.time.LocalDate;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
@@ -25,6 +27,7 @@ public class NoticeOfHearingGenerationService {
     private final CaseDataExtractionService dataService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+    private final FeatureToggleService featureToggleService;
 
     public DocmosisNoticeOfHearing getTemplateData(CaseData caseData, HearingBooking hearingBooking) {
         HearingVenue venue = hearingVenueLookUpService.getHearingVenue(hearingBooking);
@@ -40,7 +43,7 @@ public class NoticeOfHearingGenerationService {
             .preHearingAttendance(dataService.extractPrehearingAttendance(hearingBooking))
             .judgeAndLegalAdvisor(dataService.getJudgeAndLegalAdvisor(hearingBooking.getJudgeAndLegalAdvisor()))
             .postingDate(formatLocalDateToString(LocalDate.now(), DATE))
-            .additionalNotes(hearingBooking.getAdditionalNotes())
+            .additionalNotes(getHearingNotes(caseData.getNoticeOfHearingNotes(), hearingBooking.getAdditionalNotes()))
             .courtseal(COURT_SEAL.getValue())
             .crest(CREST.getValue())
             .build();
@@ -51,4 +54,12 @@ public class NoticeOfHearingGenerationService {
             hearingBooking.getTypeDetails();
     }
 
+    //feature toggle
+    private String getHearingNotes(String multiHearingNotes, String singleHearingNotes) {
+        if (featureToggleService.isMultiPageHearingEnabled()) {
+            return defaultIfNull(multiHearingNotes, "");
+        } else {
+            return singleHearingNotes;
+        }
+    }
 }
