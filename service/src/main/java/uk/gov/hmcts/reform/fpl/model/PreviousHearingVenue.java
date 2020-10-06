@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 public class PreviousHearingVenue {
     private final String previousVenue;
     private final String usePreviousVenue;

@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
 import java.util.List;
 import java.util.UUID;
 
+import static java.time.LocalDateTime.now;
 import static java.util.Comparator.comparing;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptionsPOCType.EDIT_DRAFT;
@@ -147,22 +148,25 @@ public class MultiPageHearingController extends CallbackController {
                 List.of(hearingBookingElements.get(hearingBookingElements.size() - 1)));
         }
 
-        HearingBooking mostRecentHearingBooking = unwrapElements(hearingBookingElements).stream().min(
-            comparing(HearingBooking::getStartDate)).orElseThrow(NoHearingBookingException::new);
+        HearingBooking nextHearingBooking = unwrapElements(hearingBookingElements).stream()
+            .filter(hearing -> hearing.getStartDate().isAfter(now()))
+            .min(comparing(HearingBooking::getStartDate))
+            .orElseThrow(NoHearingBookingException::new);
 
-        HearingVenue mostRecentVenue = hearingVenueLookUpService.getHearingVenue(mostRecentHearingBooking);
+        HearingVenue nextHearingVenue = hearingVenueLookUpService.getHearingVenue(nextHearingBooking);
 
         caseDetails.getData().put("selectedHearingIds", caseData.getSelectedHearingIds());
         caseDetails.getData().put(HEARING_DETAILS_KEY, hearingBookingElements);
         caseDetails.getData().put("firstHearingFlag", "No");
 
-        //Set previousHearingVenue to be the venue of the most recent hearing
+        //Set previousHearingVenue to be the venue of the next upcoming hearing (including hearing just added)
+        //When users add a new hearing, this venue will be displayed
         //This won't be set for hearings in existing cases, only for newly added hearings
         caseDetails.getData().put("previousHearingVenue",
             PreviousHearingVenue.builder()
-                .previousVenue(hearingVenueLookUpService.buildHearingVenue(mostRecentVenue))
+                .previousVenue(hearingVenueLookUpService.buildHearingVenue(nextHearingVenue))
                 .build());
-        caseDetails.getData().put("previousVenueId", mostRecentVenue.getHearingVenueId());
+        caseDetails.getData().put("previousVenueId", nextHearingVenue.getHearingVenueId());
 
         removeHearingProperties(caseDetails);
 
@@ -202,6 +206,7 @@ public class MultiPageHearingController extends CallbackController {
         caseDetails.getData().put("hearingStartDate", hearingBooking.getStartDate());
         caseDetails.getData().put("hearingEndDate", hearingBooking.getEndDate());
         caseDetails.getData().put("judgeAndLegalAdvisor", hearingBooking.getJudgeAndLegalAdvisor());
+        caseDetails.getData().put("previousHearingVenue", hearingBooking.getPreviousHearingVenue());
     }
 
     private void removeHearingProperties(CaseDetails caseDetails) {
