@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.util.stream.Collectors.joining;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.CARE_ORDER_SELECTOR;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.MULTIPLE_CARE_ORDER_LABEL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.SINGLE_CARE_ORDER_LABEL;
@@ -213,8 +214,10 @@ public class GeneratedOrderController extends CallbackController {
         } else if (orderTypeAndDocument.isUploaded()) {
             // check yo order
             data.putAll(Map.of(
-                "readOnlyFamNumber", caseData.getFamilyManCaseNumber(),
-                "readOnlyChildren", format(childrenService.getSelectedChildren(caseData)),
+                "readOnlyFamilyManCaseNumber", caseData.getFamilyManCaseNumber(),
+                "readOnlyChildren", childrenService.getSelectedChildren(caseData).stream()
+                    .map(child -> child.getValue().getParty().getFullName())
+                    .collect(joining("\n")),
                 "readOnlyOrder", caseData.getUploadedOrder()
             ));
         }
@@ -287,12 +290,6 @@ public class GeneratedOrderController extends CallbackController {
                 gatewayConfiguration.getUrl(),
                 mostRecentUploadedDocument.getBinaryUrl()),
             documentDownloadService.downloadDocument(mostRecentUploadedDocument.getBinaryUrl())));
-    }
-
-    private String format(List<Element<Child>> children) {
-        StringBuilder sb = new StringBuilder();
-        children.forEach(e -> sb.append(e.getValue().getParty().getFullName()).append("\n"));
-        return sb.toString();
     }
 
     private JudgeAndLegalAdvisor setAllocatedJudgeLabel(Judge allocatedJudge) {
