@@ -4,6 +4,7 @@ import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fnp.client.PaymentApi;
@@ -72,6 +73,7 @@ public class PaymentService {
         return caseData.getApplicants().get(0).getValue().getParty();
     }
 
+    @Retryable(value = PaymentsApiException.class)
     public void makePaymentForC2(Long caseId, CaseData caseData) {
         C2DocumentBundle c2DocumentBundle = caseData.getLastC2DocumentBundle();
         String localAuthorityName =

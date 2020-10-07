@@ -14,6 +14,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -41,7 +42,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -58,6 +58,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {PaymentService.class})
+@EnableRetry
 @TestPropertySource(properties = {"payment.site_id=TEST_SITE_ID"})
 class PaymentServiceTest {
 
@@ -114,14 +115,15 @@ class PaymentServiceTest {
                     .build())))
                 .build();
 
-            Mockito.doThrow(FeignException.InternalServerError.class).when(paymentApi).createCreditAccountPayment(anyString(),
-                anyString(),any());
+            Mockito.doThrow(FeignException.class).when(paymentApi).createCreditAccountPayment(
+                any(),any(), any());
 
             try {
                 paymentService.makePaymentForC2(CASE_ID, caseData);
-            } catch (FeignException e) {
+            } catch (PaymentsApiException e) {
             } finally {
-                verify(paymentApi, times(3)).createCreditAccountPayment(anyString(), anyString(), any());
+                verify(paymentApi, times(3)).createCreditAccountPayment(any(), any(), any());
+
             }
 
         }
