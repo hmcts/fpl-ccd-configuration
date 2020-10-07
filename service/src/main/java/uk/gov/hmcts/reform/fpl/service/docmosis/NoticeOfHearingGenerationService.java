@@ -57,7 +57,7 @@ public class NoticeOfHearingGenerationService {
     //feature toggle
     private String getHearingNotes(String multiHearingNotes, String singleHearingNotes) {
         if (featureToggleService.isMultiPageHearingEnabled()) {
-            return defaultIfNull(multiHearingNotes, "");
+            return multiHearingNotes;
         } else {
             return singleHearingNotes;
         }

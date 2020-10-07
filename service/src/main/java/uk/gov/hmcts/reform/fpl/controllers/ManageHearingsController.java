@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.NewHearingsAdded;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
@@ -52,7 +52,7 @@ public class ManageHearingsController extends CallbackController {
     private final ManageHearingsService manageHearingsService;
 
     @PostMapping("/about-to-start")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
+    public CallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
@@ -72,17 +72,15 @@ public class ManageHearingsController extends CallbackController {
     }
 
     @PostMapping("/edit-hearing/mid-event")
-    public AboutToStartOrSubmitCallbackResponse populateExistingDraftHearing(
-        @RequestBody CallbackRequest callbackRequest) {
+    public CallbackResponse populateExistingDraftHearing(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
         //Only triggered for edit journey
-        if (EDIT_DRAFT.equals(caseData.getUseExistingHearing())) {
+        if (EDIT_DRAFT == caseData.getUseExistingHearing()) {
             UUID hearingBookingId = getDynamicListValueCode(caseData.getHearingDateList(), mapper);
 
-            List<Element<HearingBooking>> futureHearings = hearingBookingService.getFutureHearings(
-                caseData.getHearingDetails());
+            List<Element<HearingBooking>> futureHearings = caseData.getFutureHearings();
 
             caseDetails.getData().put(HEARING_DATE_LIST,
                 asDynamicList(futureHearings, hearingBookingId, hearing -> hearing.toLabel(DATE)));
@@ -101,8 +99,7 @@ public class ManageHearingsController extends CallbackController {
     }
 
     @PostMapping("/validate-hearing-dates/mid-event")
-    public AboutToStartOrSubmitCallbackResponse validateHearingDatesMidEvent(
-        @RequestBody CallbackRequest callbackRequest) {
+    public CallbackResponse validateHearingDatesMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
@@ -112,20 +109,20 @@ public class ManageHearingsController extends CallbackController {
     }
 
     @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
+    public CallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
         HearingBooking hearingBooking = manageHearingsService.buildHearingBooking(caseData);
 
-        if (caseData.getSendNoticeOfHearing() != null && caseData.getSendNoticeOfHearing().equals("Yes")) {
+        if ("Yes".equals(caseData.getSendNoticeOfHearing())) {
             manageHearingsService.addNoticeOfHearing(caseData, hearingBooking);
         }
 
         List<Element<HearingBooking>> hearingBookingElements;
 
         // Editing previous hearing
-        if ((caseData.getUseExistingHearing() != null) && EDIT_DRAFT.equals(caseData.getUseExistingHearing())) {
+        if (EDIT_DRAFT == caseData.getUseExistingHearing()) {
             UUID editedHearingId = getDynamicListValueCode(caseData.getHearingDateList(), mapper);
 
             caseDetails.getData().put(SELECTED_HEARING_IDS, List.of(editedHearingId));
@@ -159,7 +156,7 @@ public class ManageHearingsController extends CallbackController {
             publishEvent(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
         }
 
-        //TODO Refactor in future during removal of old HearingBookingDetails code
+        //TODO Refactor during removal of legacy code (now only ever one hearing sent) (FPLA-2280)
         List<Element<HearingBooking>> hearingsToBeSent = hearingBookingService.getSelectedHearings(
             unwrapElements(caseData.getSelectedHearingIds()), caseData.getHearingDetails());
 

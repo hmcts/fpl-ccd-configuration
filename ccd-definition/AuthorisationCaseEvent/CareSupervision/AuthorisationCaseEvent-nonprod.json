@@ -68,7 +68,8 @@
         "UserRoles": ["caseworker-publiclaw-judiciary", "caseworker-publiclaw-magistrate", "caseworker-publiclaw-solicitor"],
         "CRUD": "R"
       }
-      ]
+      ],
+    "Comment": "Move when toggling on FPLA-1592"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -79,6 +80,7 @@
         "UserRoles": ["caseworker-publiclaw-courtadmin", "caseworker-publiclaw-gatekeeper", "caseworker-publiclaw-judiciary", "caseworker-publiclaw-magistrate", "caseworker-publiclaw-solicitor"],
         "CRUD": "R"
       }
-    ]
+    ],
+    "Comment": "Move when toggling on FPLA-1592"
   }
 ]

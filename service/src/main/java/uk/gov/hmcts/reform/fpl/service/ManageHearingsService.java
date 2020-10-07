@@ -18,21 +18,21 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.time.LocalDate.now;
 import static java.util.Comparator.comparing;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
@@ -42,15 +42,13 @@ public class ManageHearingsService {
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
-    private final HearingBookingService hearingBookingService;
 
     public static final String FIRST_HEARING_FLAG = "firstHearingFlag";
     public static final String HEARING_DATE_LIST = "hearingDateList";
 
     public Map<String, Object> populateInitialFields(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
-        List<Element<HearingBooking>> futureHearings = hearingBookingService.getFutureHearings(
-            defaultIfNull(caseData.getHearingDetails(), List.of()));
+        List<Element<HearingBooking>> futureHearings = caseData.getFutureHearings();
 
         data.put(HEARING_DATE_LIST, asDynamicList(futureHearings, hearing -> hearing.toLabel(DATE)));
         data.put("hasExistingHearings", YES.getValue());
@@ -93,16 +91,14 @@ public class ManageHearingsService {
     }
 
     public Map<String, Object> populateHearingCaseFields(HearingBooking hearingBooking) {
-        Map<String, Object> data = new HashMap<>();
-        data.put("hearingType", hearingBooking.getType());
-        data.put("hearingVenue", hearingBooking.getVenue());
-        data.put("hearingVenueCustom", hearingBooking.getVenueCustomAddress());
-        data.put("hearingStartDate", hearingBooking.getStartDate());
-        data.put("hearingEndDate", hearingBooking.getEndDate());
-        data.put("judgeAndLegalAdvisor", hearingBooking.getJudgeAndLegalAdvisor());
-        data.put("previousHearingVenue", hearingBooking.getPreviousHearingVenue());
-
-        return data;
+        return Map.of(
+            "hearingType", hearingBooking.getType(),
+            "hearingVenue", hearingBooking.getVenue(),
+            "hearingVenueCustom", hearingBooking.getVenueCustomAddress(),
+            "hearingStartDate", hearingBooking.getStartDate(),
+            "hearingEndDate", hearingBooking.getEndDate(),
+            "judgeAndLegalAdvisor", hearingBooking.getJudgeAndLegalAdvisor(),
+            "previousHearingVenue", hearingBooking.getPreviousHearingVenue());
     }
 
     public HearingBooking buildHearingBooking(CaseData caseData) {
@@ -130,10 +126,7 @@ public class ManageHearingsService {
         return hearings.stream()
             .map(hearingBookingElement -> {
                 if (hearingBookingElement.getId().equals(hearingId)) {
-                    hearingBookingElement = Element.<HearingBooking>builder()
-                        .id(hearingBookingElement.getId())
-                        .value(hearingBooking)
-                        .build();
+                    element(hearingBookingElement.getId(), hearingBooking);
                 }
                 return hearingBookingElement;
             }).collect(Collectors.toList());
@@ -154,21 +147,19 @@ public class ManageHearingsService {
         return currentHearingBookings;
     }
 
-    public List<String> caseFieldsToBeRemoved() {
-        List<String> caseFields = new ArrayList<>();
-        caseFields.add("hearingType");
-        caseFields.add("hearingVenue");
-        caseFields.add("hearingVenueCustom");
-        caseFields.add("hearingStartDate");
-        caseFields.add("hearingEndDate");
-        caseFields.add("sendNoticeOfHearing");
-        caseFields.add("judgeAndLegalAdvisor");
-        caseFields.add("hasExistingHearings");
-        caseFields.add("hearingDateList");
-        caseFields.add("useExistingHearing");
-        caseFields.add("noticeOfHearingNotes");
-
-        return caseFields;
+    public Set<String> caseFieldsToBeRemoved() {
+        return Set.of(
+            "hearingType",
+            "hearingVenue",
+            "hearingVenueCustom",
+            "hearingStartDate",
+            "hearingEndDate",
+            "sendNoticeOfHearing",
+            "judgeAndLegalAdvisor",
+            "hasExistingHearings",
+            "hearingDateList",
+            "useExistingHearing",
+            "noticeOfHearingNotes");
     }
 
     private HearingBooking buildFirstHearing(CaseData caseData) {

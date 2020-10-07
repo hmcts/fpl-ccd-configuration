@@ -12,6 +12,7 @@
         "UserRoles": ["caseworker-publiclaw-judiciary", "caseworker-publiclaw-magistrate", "caseworker-publiclaw-solicitor"],
         "CRUD": "R"
       }
-    ]
+    ],
+    "Comment": "Delete when toggling on FPLA-1592"
   }
 ]

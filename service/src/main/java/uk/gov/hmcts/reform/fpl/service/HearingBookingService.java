@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService
 import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -63,10 +62,6 @@ public class HearingBookingService {
 
     public List<Element<HearingBooking>> getPastHearings(List<Element<HearingBooking>> hearingDetails) {
         return hearingDetails.stream().filter(this::isPastHearing).collect(toList());
-    }
-
-    public List<Element<HearingBooking>> getFutureHearings(List<Element<HearingBooking>> hearingDetails) {
-        return hearingDetails.stream().filter(element -> !isPastHearing(element)).collect(toList());
     }
 
     public void removePastHearings(List<Element<HearingBooking>> hearingDetails) {

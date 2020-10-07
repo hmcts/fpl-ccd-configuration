@@ -201,6 +201,7 @@ public class CaseData {
         return children1 != null ? children1 : new ArrayList<>();
     }
 
+    //TODO add null-checker getter for hearingDetails during refactor/removal of legacy code (FPLA-2280)
     @NotNull(message = "Enter hearing details", groups = NoticeOfProceedingsGroup.class)
     @NotEmpty(message = "You need to enter a hearing date.", groups = SealedSDOGroup.class)
     private final List<Element<HearingBooking>> hearingDetails;
@@ -467,6 +468,13 @@ public class CaseData {
     public List<Element<HearingBooking>> getPastHearings() {
         return defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()).stream()
             .filter(hearingBooking -> !hearingBooking.getValue().startsAfterToday())
+            .collect(toList());
+    }
+
+    @JsonIgnore
+    public List<Element<HearingBooking>> getFutureHearings() {
+        return defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()).stream()
+            .filter(hearingBooking -> hearingBooking.getValue().startsAfterToday())
             .collect(toList());
     }
 
