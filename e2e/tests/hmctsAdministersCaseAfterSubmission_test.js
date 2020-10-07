@@ -157,9 +157,13 @@ Scenario('HMCTS admin edits supporting evidence document on C2 application', asy
   I.seeTextInTab(['C2 Application 1', 'Uploaded by']);
 });
 
-Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, manageHearingsEventPage) => {
+Scenario('HMCTS admin manages hearings', async (I, caseViewPage, manageHearingsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
-  await manageHearingsEventPage.selectAddNewHearing();
+  await manageHearingsEventPage.enterHearingDetails(hearingDetails[0]);
+  await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
+  await manageHearingsEventPage.enterJudgeAndLegalAdvisorDetails(hearingDetails[0]);
+  await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
+  await manageHearingsEventPage.enterNoticeOfHearingDetails(hearingDetails[0]);
 });
 
 Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, addHearingBookingDetailsEventPage) => {

@@ -6,7 +6,7 @@
     "CaseFieldID": "hasExistingHearings",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
-    "PageID": "addOrUseExisting",
+    "PageID": "SelectHearingOption",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 1,
     "FieldShowCondition": "useExistingHearing=\"DO_NOT_SHOW\"",
@@ -19,7 +19,7 @@
     "CaseFieldID": "useExistingHearing",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
-    "PageID": "addOrUseExisting",
+    "PageID": "SelectHearingOption",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 1,
     "PageShowCondition": "hasExistingHearings=\"Yes\""
@@ -31,7 +31,7 @@
     "CaseFieldID": "firstHearingFlag",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
-    "PageID": "addOrUseExisting",
+    "PageID": "SelectHearingOption",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 1,
     "FieldShowCondition": "useExistingHearing=\"DO_NOT_SHOW\""
@@ -43,7 +43,7 @@
     "CaseFieldID": "hearingDateList",
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
-    "PageID": "addOrUseExisting",
+    "PageID": "SelectHearingOption",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 1,
     "FieldShowCondition": "useExistingHearing=\"EDIT_DRAFT\""
@@ -55,7 +55,7 @@
     "CaseFieldID": "hearingType",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
-    "PageID": "hearingDetails",
+    "PageID": "EnterHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 2,
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-hearings/validate-hearing-dates/mid-event"
@@ -67,7 +67,7 @@
     "CaseFieldID": "hearingVenue",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
-    "PageID": "hearingDetails",
+    "PageID": "EnterHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 2,
     "FieldShowCondition": "firstHearingFlag!=\"No\""
@@ -79,7 +79,7 @@
     "CaseFieldID": "hearingVenueCustom",
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
-    "PageID": "hearingDetails",
+    "PageID": "EnterHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 2,
     "FieldShowCondition": "hearingVenue=\"OTHER\""
@@ -91,7 +91,7 @@
     "CaseFieldID": "previousHearingVenue",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "COMPLEX",
-    "PageID": "hearingDetails",
+    "PageID": "EnterHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 2,
     "CaseEventFieldLabel": " ",
@@ -104,7 +104,7 @@
     "CaseFieldID": "hearingStartDate",
     "PageFieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY",
-    "PageID": "hearingDetails",
+    "PageID": "EnterHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 2
   },
@@ -115,7 +115,7 @@
     "CaseFieldID": "hearingEndDate",
     "PageFieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY",
-    "PageID": "hearingDetails",
+    "PageID": "EnterHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 2
   },
@@ -138,7 +138,7 @@
     "CaseFieldID": "sendNoticeOfHearing",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
-    "PageID": "sendNotices",
+    "PageID": "SendNoticeOfHearing",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 4
   },
@@ -149,7 +149,7 @@
     "CaseFieldID": "noticeOfHearingNotes",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
-    "PageID": "sendNotices",
+    "PageID": "SendNoticeOfHearing",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 4,
     "FieldShowCondition": "sendNoticeOfHearing=\"Yes\""
