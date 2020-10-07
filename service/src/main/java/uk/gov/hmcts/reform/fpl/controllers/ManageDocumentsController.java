@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.SupportingEvidenceValidatorService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.C2_DOCUMENTS_COLLECTION_KEY;
@@ -30,7 +31,7 @@ import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUM
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.SUPPORTING_C2_LABEL;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
-import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
 @Api
@@ -48,6 +49,8 @@ public class ManageDocumentsController extends CallbackController {
 
         caseDetails.getData().putAll(manageDocumentService.initialiseManageDocumentEvent(caseData));
 
+        caseDetails.getData().remove("furtherEvidenceDocumentsTEMP");
+
         return respond(caseDetails);
     }
 
@@ -56,60 +59,34 @@ public class ManageDocumentsController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
+        List<Element<SupportingEvidenceBundle>> supportingEvidence = new ArrayList<>();
+
         switch (caseData.getManageDocument().getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
                 caseDetails.getData().putAll(manageDocumentService.initialiseHearingListAndLabel(caseData));
-
-                List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments = manageDocumentService
-                    .getFurtherEvidenceCollection(caseData);
-
-                caseDetails.getData().put(TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, furtherEvidenceDocuments);
+                supportingEvidence = manageDocumentService.getFurtherEvidenceCollection(caseData);
                 break;
             case CORRESPONDENCE:
-                List<Element<SupportingEvidenceBundle>> correspondenceDocuments;
-                correspondenceDocuments = manageDocumentService.getSupportingEvidenceBundle(
-                    caseData.getCorrespondenceDocuments()
-                );
-
-                caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, correspondenceDocuments);
+                supportingEvidence = manageDocumentService.getSupportingEvidenceBundle(
+                    caseData.getCorrespondenceDocuments());
                 break;
             case C2:
                 caseDetails.getData().putAll(manageDocumentService.initialiseC2DocumentListAndLabel(caseData));
-
-                caseDetails.getData().put(C2_SUPPORTING_DOCUMENTS_COLLECTION,
-                    manageDocumentService.getC2SupportingEvidenceBundle(caseData));
+                supportingEvidence = manageDocumentService.getC2SupportingEvidenceBundle(caseData);
                 break;
         }
 
+        caseDetails.getData().put(TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, supportingEvidence);
         return respond(caseDetails);
     }
 
-    @PostMapping("/validate-further-evidence/mid-event")
-    public AboutToStartOrSubmitCallbackResponse validateFurtherEvidenceDocuments(@RequestBody CallbackRequest request) {
+    @PostMapping("/validate-supporting-evidence/mid-event")
+    public AboutToStartOrSubmitCallbackResponse validateSupportingEvidence(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        List<String> errors = supportingEvidenceValidatorService.validate(caseData.getFurtherEvidenceDocumentsTEMP());
-
-        return respond(caseDetails, errors);
-    }
-
-    @PostMapping("/validate-correspondence-documents/mid-event")
-    public AboutToStartOrSubmitCallbackResponse validateCorrespondingDocuments(@RequestBody CallbackRequest request) {
-        CaseDetails caseDetails = request.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
-
-        List<String> errors = supportingEvidenceValidatorService.validate(caseData.getCorrespondenceDocuments());
-
-        return respond(caseDetails, errors);
-    }
-
-    @PostMapping("/validate-c2-supporting-documents/mid-event")
-    public AboutToStartOrSubmitCallbackResponse validateC2SupportingDocuments(@RequestBody CallbackRequest request) {
-        CaseDetails caseDetails = request.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
-
-        List<String> errors = supportingEvidenceValidatorService.validate(caseData.getC2SupportingDocuments());
+        List<Element<SupportingEvidenceBundle>> supportingEvidence = caseData.getSupportingEvidenceDocumentsTemp();
+        List<String> errors = supportingEvidenceValidatorService.validate(supportingEvidence);
 
         return respond(caseDetails, errors);
     }
@@ -123,23 +100,26 @@ public class ManageDocumentsController extends CallbackController {
         ManageDocument manageDocument = caseData.getManageDocument();
         switch (manageDocument.getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
-                List<Element<SupportingEvidenceBundle>> currentBundle = manageDocumentService
-                    .setDateTimeUploadedOnSupportingEvidence(caseData.getFurtherEvidenceDocumentsTEMP(),
-                        caseDataBefore.getFurtherEvidenceDocumentsTEMP()
-                );
+                List<Element<SupportingEvidenceBundle>> currentBundle;
 
                 if (manageDocument.isDocumentRelatedToHearing()) {
+                    currentBundle = manageDocumentService.setDateTimeOnHearingFurtherEvidenceSupportingEvidence(
+                        caseData, caseDataBefore);
+
                     caseDetails.getData().put(
                         HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY,
                         manageDocumentService.buildHearingFurtherEvidenceCollection(caseData, currentBundle)
                     );
                 } else {
+                    currentBundle = manageDocumentService
+                        .setDateTimeUploadedOnSupportingEvidence(caseData.getSupportingEvidenceDocumentsTemp(),
+                            caseDataBefore.getFurtherEvidenceDocuments());
                     caseDetails.getData().put(FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, currentBundle);
                 }
                 break;
             case CORRESPONDENCE:
                 List<Element<SupportingEvidenceBundle>> updatedCorrespondenceDocuments = manageDocumentService
-                    .setDateTimeUploadedOnSupportingEvidence(caseData.getCorrespondenceDocuments(),
+                    .setDateTimeUploadedOnSupportingEvidence(caseData.getSupportingEvidenceDocumentsTemp(),
                         caseDataBefore.getCorrespondenceDocuments()
                 );
 
@@ -153,9 +133,9 @@ public class ManageDocumentsController extends CallbackController {
                 break;
         }
 
-        removeTemporaryFields(caseDetails, TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, MANAGE_DOCUMENT_KEY,
-            C2_SUPPORTING_DOCUMENTS_COLLECTION, MANAGE_DOCUMENTS_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY,
-            MANAGE_DOCUMENTS_HEARING_LABEL_KEY, SUPPORTING_C2_LABEL);
+        removeTemporaryFields(caseDetails, TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, MANAGE_DOCUMENT_KEY,
+            C2_SUPPORTING_DOCUMENTS_COLLECTION, SUPPORTING_C2_LABEL, MANAGE_DOCUMENTS_HEARING_LIST_KEY,
+            SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENTS_HEARING_LABEL_KEY);
 
         return respond(caseDetails);
     }

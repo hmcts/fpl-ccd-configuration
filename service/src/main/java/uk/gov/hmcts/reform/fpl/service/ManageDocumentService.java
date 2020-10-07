@@ -12,6 +12,8 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +22,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.IntStream;
 
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -35,10 +36,11 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListValueCode
 public class ManageDocumentService {
     private final ObjectMapper mapper;
     private final Time time;
+    private final DocumentUploadHelper documentUploadHelper;
 
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_KEY = "correspondenceDocuments";
     public static final String C2_DOCUMENTS_COLLECTION_KEY = "c2DocumentBundle";
-    public static final String TEMP_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY = "furtherEvidenceDocumentsTEMP";
+    public static final String TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY = "supportingEvidenceDocumentsTemp";
     public static final String FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY = "furtherEvidenceDocuments";
     public static final String HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY = "hearingFurtherEvidenceDocuments";
     public static final String C2_SUPPORTING_DOCUMENTS_COLLECTION = "c2SupportingDocuments";
@@ -90,11 +92,12 @@ public class ManageDocumentService {
         UUID selectedC2DocumentCode = getDynamicListValueCode(caseData.getManageDocumentsSupportingC2List(), mapper);
         List<Element<C2DocumentBundle>> c2DocumentBundle = caseData.getC2DocumentBundle();
 
-        IntStream.range(0, c2DocumentBundle.size())
-            .filter(index -> c2DocumentBundle.get(index).getId().equals(selectedC2DocumentCode))
-            .findFirst()
-            .ifPresent(index -> listAndLabel.put(SUPPORTING_C2_LABEL,
-                c2DocumentBundle.get(index).getValue().toLabel(index + 1)));
+        for (int i = 0; i < c2DocumentBundle.size(); i++) {
+            if (c2DocumentBundle.get(i).getId().equals(selectedC2DocumentCode)) {
+                listAndLabel.put(SUPPORTING_C2_LABEL, c2DocumentBundle.get(i).getValue().toLabel(i + 1));
+                break;
+            }
+        }
 
         listAndLabel.put(SUPPORTING_C2_LIST_KEY, caseData.buildC2DocumentDynamicList(selectedC2DocumentCode));
 
@@ -119,7 +122,7 @@ public class ManageDocumentService {
             return caseData.getFurtherEvidenceDocuments();
         }
 
-        return getSupportingEvidenceBundle(null);
+        return getEmptySupportingEvidenceBundle();
     }
 
     public List<Element<SupportingEvidenceBundle>> getC2SupportingEvidenceBundle(CaseData caseData) {
@@ -130,7 +133,7 @@ public class ManageDocumentService {
             return c2DocumentBundle.getSupportingEvidenceBundle();
         }
 
-        return getSupportingEvidenceBundle(null);
+        return getEmptySupportingEvidenceBundle();
     }
 
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle(
@@ -147,7 +150,7 @@ public class ManageDocumentService {
 
         List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceBundle
             = caseData.getHearingFurtherEvidenceDocuments();
-        
+
         UUID selectedHearingCode = getDynamicListValueCode(caseData.getManageDocumentsHearingList(), mapper);
         HearingBooking hearingBooking = getHearingBookingByUUID(caseData.getHearingDetails(), selectedHearingCode);
 
@@ -174,6 +177,8 @@ public class ManageDocumentService {
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle,
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundleBefore) {
 
+        String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
+
         if (!Objects.equals(supportingEvidenceBundle, supportingEvidenceBundleBefore)) {
             List<Element<SupportingEvidenceBundle>> altered = new ArrayList<>(supportingEvidenceBundle);
 
@@ -186,6 +191,7 @@ public class ManageDocumentService {
                 previousVersion -> {
                     if (!previousVersion.getValue().getDocument().equals(bundle.getValue().getDocument())) {
                         bundle.getValue().setDateTimeUploaded(time.now());
+                        bundle.getValue().setUploadedBy(uploadedBy);
                     }
                 }
             ));
@@ -195,6 +201,7 @@ public class ManageDocumentService {
         for (Element<SupportingEvidenceBundle> supportingEvidenceBundleElement : supportingEvidenceBundle) {
             if (supportingEvidenceBundleElement.getValue().getDateTimeUploaded() == null) {
                 supportingEvidenceBundleElement.getValue().setDateTimeUploaded(time.now());
+                supportingEvidenceBundleElement.getValue().setUploadedBy(uploadedBy);
             }
             updatedBundles.add(supportingEvidenceBundleElement);
         }
@@ -207,7 +214,7 @@ public class ManageDocumentService {
         C2DocumentBundle c2DocumentBundle = caseData.getC2DocumentBundleByUUID(selected);
 
         List<Element<SupportingEvidenceBundle>> updatedCorrespondenceDocuments =
-            setDateTimeUploadedOnSupportingEvidence(caseData.getC2SupportingDocuments(),
+            setDateTimeUploadedOnSupportingEvidence(caseData.getSupportingEvidenceDocumentsTemp(),
                 c2DocumentBundle.getSupportingEvidenceBundle());
 
         List<Element<C2DocumentBundle>> updatedC2Bundles = new ArrayList<>();
@@ -220,6 +227,22 @@ public class ManageDocumentService {
         return updatedC2Bundles;
     }
 
+    public List<Element<SupportingEvidenceBundle>> setDateTimeOnHearingFurtherEvidenceSupportingEvidence(
+        CaseData caseData, CaseData caseDataBefore) {
+        List<Element<SupportingEvidenceBundle>> currentSupportingDocuments
+            = caseData.getSupportingEvidenceDocumentsTemp();
+
+        UUID selectedHearingCode = getDynamicListValueCode(caseData.getManageDocumentsHearingList(), mapper);
+
+        List<Element<SupportingEvidenceBundle>> previousSupportingDocuments =
+            ElementUtils.findElement(selectedHearingCode, caseDataBefore.getHearingFurtherEvidenceDocuments())
+                .map(Element::getValue)
+                .map(HearingFurtherEvidenceBundle::getSupportingEvidenceBundle)
+                .orElse(List.of());
+
+        return setDateTimeUploadedOnSupportingEvidence(currentSupportingDocuments, previousSupportingDocuments);
+    }
+
     private Element<HearingFurtherEvidenceBundle> buildHearingSupportingEvidenceBundle(
         UUID hearingId, HearingBooking hearingBooking,
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle) {
@@ -228,5 +251,9 @@ public class ManageDocumentService {
             .hearingName(hearingBooking.toLabel(DATE))
             .supportingEvidenceBundle(supportingEvidenceBundle)
             .build());
+    }
+
+    private List<Element<SupportingEvidenceBundle>> getEmptySupportingEvidenceBundle() {
+        return List.of(element(SupportingEvidenceBundle.builder().build()));
     }
 }

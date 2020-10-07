@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
 
 import java.time.LocalDateTime;
@@ -34,6 +35,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
@@ -64,12 +67,16 @@ class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
     private static final String CAFCASS_EMAIL = "cafcass@cafcass.com";
     private static final DocumentReference order = testDocumentReference();
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
+    private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
 
     @MockBean
     private NotificationClient notificationClient;
 
     @MockBean
     private DocumentDownloadService documentDownloadService;
+
+    @MockBean
+    private CoreCaseDataService coreCaseDataService;
 
     ReviewCMOControllerSubmittedTest() {
         super("review-cmo");
@@ -93,8 +100,9 @@ class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
     void shouldSendCMOIssuedNotificationsIfJudgeApproves() {
         given(documentDownloadService.downloadDocument(order.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
 
-        CaseDetails caseDetails = buildCaseDetailsForApprovedCMO();
-        caseDetails.setId(CASE_ID);
+        CaseManagementOrder caseManagementOrder = buildCMO(APPROVED);
+
+        CaseDetails caseDetails = buildCaseDetailsForApprovedCMO(caseManagementOrder);
 
         CaseDetails caseDetailsBefore = CaseDetails.builder().data(
             Map.of("draftUploadedCMOs", List.of(element(buildCMO(SEND_TO_JUDGE))))).build();
@@ -140,6 +148,12 @@ class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
                 eq(NOTIFICATION_REFERENCE)
             );
 
+            verify(coreCaseDataService).triggerEvent(JURISDICTION,
+                CASE_TYPE,
+                CASE_ID,
+                SEND_DOCUMENT_EVENT,
+                Map.of("documentToBeSent", caseManagementOrder.getOrder()));
+
             verifyNoMoreInteractions(notificationClient);
         });
     }
@@ -168,17 +182,22 @@ class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
         verifyNoMoreInteractions(notificationClient);
     }
 
-    private CaseDetails buildCaseDetailsForApprovedCMO() {
+    private CaseDetails buildCaseDetailsForApprovedCMO(CaseManagementOrder... caseManagementOrders) {
         UUID cmoId = UUID.randomUUID();
 
-        return asCaseDetails(CaseData.builder()
+        CaseDetails caseDetails = asCaseDetails(CaseData.builder()
             .representatives(createRepresentatives())
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .draftUploadedCMOs(List.of(element(cmoId, buildCMO(SEND_TO_JUDGE))))
-            .sealedCMOs(List.of(element(buildCMO(APPROVED))))
+            .sealedCMOs(wrapElements(caseManagementOrders))
             .reviewCMODecision(buildReviewDecision(SEND_TO_ALL_PARTIES))
             .hearingDetails(List.of(element(hearing(cmoId))))
             .build());
+
+        caseDetails.setId(CASE_ID);
+        caseDetails.setJurisdiction(JURISDICTION);
+        caseDetails.setCaseTypeId(CASE_TYPE);
+        return caseDetails;
     }
 
     private CaseDetails buildCaseDetailsForRejectedCMO() {

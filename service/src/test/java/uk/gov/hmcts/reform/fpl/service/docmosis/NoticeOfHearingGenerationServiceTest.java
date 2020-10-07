@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
@@ -65,18 +66,21 @@ class NoticeOfHearingGenerationServiceTest {
 
         CaseData caseData = buildCaseData(now.toLocalDate());
         HearingBooking hearingBooking = buildHearingBooking(now, now.plusDays(1));
-        final DocmosisNoticeOfHearing docmosisNoticeOfHearing = service.getTemplateData(caseData, hearingBooking);
+        final DocmosisNoticeOfHearing actualDocmosisNoticeOfHearing = service.getTemplateData(caseData, hearingBooking);
+
         DocmosisNoticeOfHearing.DocmosisNoticeOfHearingBuilder docmosisNoticeOfHearingBuilder
-            = getDocmosisNoticeOfHearingBuilder(now.toLocalDate());
+            = getDocmosisNoticeOfHearingBuilder(now.toLocalDate())
+            .hearingBooking(getDocmosisHearingBookingBuilder()
+            .hearingTime(String.format("%s - %s",
+                formatLocalDateTime(hearingBooking.getStartDate(), HEARING_DATE_AND_TIME_FORMAT),
+                formatLocalDateTime(hearingBooking.getEndDate(), HEARING_DATE_AND_TIME_FORMAT)))
+            .preHearingAttendance(formatLocalDateTime(now.minusHours(1), DATE_TIME))
+            .hearingDate("")
+            .build());
 
-        docmosisNoticeOfHearingBuilder.hearingTime(String.format("%s - %s",
-            formatLocalDateTime(hearingBooking.getStartDate(), HEARING_DATE_AND_TIME_FORMAT),
-            formatLocalDateTime(hearingBooking.getEndDate(), HEARING_DATE_AND_TIME_FORMAT)));
+        DocmosisNoticeOfHearing expectedDocmosisNoticeOfHearing = docmosisNoticeOfHearingBuilder.build();
 
-        docmosisNoticeOfHearingBuilder.preHearingAttendance(formatLocalDateTime(now.minusHours(1), DATE_TIME));
-        docmosisNoticeOfHearingBuilder.hearingDate("");
-
-        assertThat(docmosisNoticeOfHearing).isEqualToComparingFieldByField(docmosisNoticeOfHearingBuilder.build());
+        assertThat(actualDocmosisNoticeOfHearing).isEqualToComparingFieldByField(expectedDocmosisNoticeOfHearing);
     }
 
     @Test
@@ -85,17 +89,20 @@ class NoticeOfHearingGenerationServiceTest {
 
         CaseData caseData = buildCaseData(now.toLocalDate());
         HearingBooking hearingBooking = buildHearingBooking(now, now);
-        final DocmosisNoticeOfHearing docmosisNoticeOfHearing = service.getTemplateData(caseData, hearingBooking);
+        final DocmosisNoticeOfHearing actualDocmosisNoticeOfHearing = service.getTemplateData(caseData, hearingBooking);
         DocmosisNoticeOfHearing.DocmosisNoticeOfHearingBuilder docmosisNoticeOfHearingBuilder
-            = getDocmosisNoticeOfHearingBuilder(now.toLocalDate());
+            = getDocmosisNoticeOfHearingBuilder(now.toLocalDate())
+            .hearingBooking(getDocmosisHearingBookingBuilder()
+            .hearingDate(formatLocalDateTime(now, DATE))
+            .preHearingAttendance(formatLocalDateTime(now.minusHours(1), "h:mma"))
+            .hearingTime(String.format("%s - %s",
+                formatLocalDateTime(now, HEARING_TIME_FORMAT),
+                formatLocalDateTime(now, HEARING_TIME_FORMAT)))
+            .build());
 
-        docmosisNoticeOfHearingBuilder.hearingDate(formatLocalDateTime(now, DATE));
-        docmosisNoticeOfHearingBuilder.preHearingAttendance(formatLocalDateTime(now.minusHours(1), "h:mma"));
-        docmosisNoticeOfHearingBuilder.hearingTime(String.format("%s - %s",
-            formatLocalDateTime(now, HEARING_TIME_FORMAT),
-            formatLocalDateTime(now, HEARING_TIME_FORMAT)));
+        DocmosisNoticeOfHearing expectedDocmosisNoticeOfHearing = docmosisNoticeOfHearingBuilder.build();
 
-        assertThat(docmosisNoticeOfHearing).isEqualToComparingFieldByField(docmosisNoticeOfHearingBuilder.build());
+        assertThat(actualDocmosisNoticeOfHearing).isEqualToComparingFieldByField(expectedDocmosisNoticeOfHearing);
     }
 
     private DocmosisNoticeOfHearing.DocmosisNoticeOfHearingBuilder getDocmosisNoticeOfHearingBuilder(
@@ -104,8 +111,7 @@ class NoticeOfHearingGenerationServiceTest {
             .familyManCaseNumber("12345")
             .courtName("Family Court")
             .children(getExpectedDocmosisChildren(dateOfBirth))
-            .hearingType(CASE_MANAGEMENT.getLabel().toLowerCase())
-            .hearingVenue("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW")
+            .hearingBooking(getDocmosisHearingBookingBuilder().build())
             .judgeAndLegalAdvisor(getExpectedDocmosisJudgeAndLegalAdvisor())
             .postingDate(formatLocalDateToString(LocalDate.now(), DATE))
             .additionalNotes("additional note")
@@ -147,6 +153,12 @@ class NoticeOfHearingGenerationServiceTest {
             .legalAdvisorName("Watson")
             .judgeTitleAndName("Her Honour Judge Law")
             .build();
+    }
+
+    private DocmosisHearingBooking.DocmosisHearingBookingBuilder getDocmosisHearingBookingBuilder() {
+        return DocmosisHearingBooking.builder()
+            .hearingType(CASE_MANAGEMENT.getLabel().toLowerCase())
+            .hearingVenue("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW");
     }
 
     private CaseData buildCaseData(LocalDate dateOfBirth) {

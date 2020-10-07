@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
-import uk.gov.hmcts.reform.fpl.enums.ManageDocumentType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
@@ -31,6 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -46,9 +48,13 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, FixedTimeConfiguration.class, ManageDocumentService.class
+    JacksonAutoConfiguration.class,
+    FixedTimeConfiguration.class,
+    ManageDocumentService.class,
+    DocumentUploadHelper.class
 })
 class ManageDocumentServiceTest {
+    private static final String USER = "HMCTS";
 
     @Autowired
     private Time time;
@@ -56,11 +62,15 @@ class ManageDocumentServiceTest {
     @Autowired
     private ManageDocumentService manageDocumentService;
 
+    @MockBean
+    private DocumentUploadHelper documentUploadHelper;
+
     private LocalDateTime futureDate;
 
     @BeforeEach
     void before() {
         futureDate = time.now().plusDays(1);
+        given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn("HMCTS");
     }
 
     @Test
@@ -125,7 +135,7 @@ class ManageDocumentServiceTest {
         CaseData caseData = CaseData.builder()
             .manageDocumentsHearingList(selectHearingId.toString())
             .hearingDetails(hearingBookings)
-            .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue()))
+            .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
             .build();
 
         Map<String, Object> listAndLabel = manageDocumentService.initialiseHearingListAndLabel(caseData);
@@ -160,15 +170,16 @@ class ManageDocumentServiceTest {
     @Test
     void shouldReturnEmptyCollectionWhenFurtherEvidenceIsNotRelatedToHearingAndCollectionIsNotPresent() {
         CaseData caseData = CaseData.builder()
-            .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, NO.getValue()))
+            .manageDocument(buildFurtherEvidenceManagementDocument(NO.getValue()))
             .build();
 
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundleCollection =
             manageDocumentService.getFurtherEvidenceCollection(caseData);
 
+        SupportingEvidenceBundle firstSupportingEvidenceBundle = supportingEvidenceBundleCollection.get(0).getValue();
+
         assertThat(supportingEvidenceBundleCollection).isNotEmpty();
-        assertThat(supportingEvidenceBundleCollection.get(0).getValue())
-            .isEqualTo(SupportingEvidenceBundle.builder().build());
+        assertThat(firstSupportingEvidenceBundle).isEqualTo(SupportingEvidenceBundle.builder().build());
     }
 
     @Test
@@ -176,7 +187,7 @@ class ManageDocumentServiceTest {
         List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
 
         CaseData caseData = CaseData.builder()
-            .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, NO.getValue()))
+            .manageDocument(buildFurtherEvidenceManagementDocument(NO.getValue()))
             .furtherEvidenceDocuments(furtherEvidenceBundle)
             .build();
 
@@ -198,10 +209,8 @@ class ManageDocumentServiceTest {
             .hearingFurtherEvidenceDocuments(List.of(
                 element(hearingId, HearingFurtherEvidenceBundle.builder()
                     .supportingEvidenceBundle(furtherEvidenceBundle)
-                    .build()
-                )
-            ))
-            .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue()))
+                    .build())))
+            .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
             .build();
 
         List<Element<SupportingEvidenceBundle>> furtherDocumentBundleCollection =
@@ -222,35 +231,33 @@ class ManageDocumentServiceTest {
             = manageDocumentService.setDateTimeUploadedOnSupportingEvidence(correspondingDocuments, List.of());
 
         List<SupportingEvidenceBundle> supportingEvidenceBundle = unwrapElements(updatedCorrespondingDocuments);
+        SupportingEvidenceBundle newSupportingEvidenceBundle = supportingEvidenceBundle.get(0);
+        SupportingEvidenceBundle existingSupportingEvidenceBundle = supportingEvidenceBundle.get(1);
 
-        assertThat(supportingEvidenceBundle.get(0).getDateTimeUploaded()).isEqualTo(time.now());
-        assertThat(supportingEvidenceBundle.get(1).getDateTimeUploaded()).isEqualTo(yesterday);
+        assertThat(newSupportingEvidenceBundle.getDateTimeUploaded()).isEqualTo(time.now());
+        assertThat(existingSupportingEvidenceBundle.getDateTimeUploaded()).isEqualTo(yesterday);
     }
 
     @Test
     void shouldSetNewDateTimeUploadedOnOverwriteOfPreviousDocumentUpload() {
         LocalDateTime yesterday = time.now().minusDays(1);
-
         UUID updatedId = UUID.randomUUID();
 
         List<Element<SupportingEvidenceBundle>> previousCorrespondingDocuments = List.of(
             element(updatedId, SupportingEvidenceBundle.builder()
                 .dateTimeUploaded(yesterday)
                 .document(DocumentReference.builder().filename("Previous").build())
-                .build()
-            )
+                .build())
         );
 
         List<Element<SupportingEvidenceBundle>> currentCorrespondingDocuments = List.of(
             element(updatedId, SupportingEvidenceBundle.builder()
                 .dateTimeUploaded(yesterday)
                 .document(DocumentReference.builder().filename("override").build())
-                .build()
-            ),
+                .build()),
             element(SupportingEvidenceBundle.builder()
                 .document(DocumentReference.builder().filename("new").build())
-                .build()
-            )
+                .build())
         );
 
         List<Element<SupportingEvidenceBundle>> updatedCorrespondingDocuments
@@ -268,29 +275,24 @@ class ManageDocumentServiceTest {
     @Test
     void shouldPersistUploadedDateTimeWhenDocumentReferenceDoesNotDifferBetweenOldAndNewSupportingEvidence() {
         LocalDateTime yesterday = time.now().minusDays(1);
-
         UUID updatedId = UUID.randomUUID();
-
         DocumentReference previousDocument = DocumentReference.builder().filename("Previous").build();
 
         List<Element<SupportingEvidenceBundle>> previousCorrespondingDocuments = List.of(
             element(updatedId, SupportingEvidenceBundle.builder()
                 .dateTimeUploaded(yesterday)
                 .document(previousDocument)
-                .build()
-            )
+                .build())
         );
 
         List<Element<SupportingEvidenceBundle>> currentCorrespondingDocuments = List.of(
             element(updatedId, SupportingEvidenceBundle.builder()
                 .dateTimeUploaded(yesterday)
                 .document(previousDocument)
-                .build()
-            ),
+                .build()),
             element(SupportingEvidenceBundle.builder()
                 .document(DocumentReference.builder().filename("new").build())
-                .build()
-            )
+                .build())
         );
 
         List<Element<SupportingEvidenceBundle>> updatedCorrespondingDocuments
@@ -314,18 +316,20 @@ class ManageDocumentServiceTest {
         CaseData caseData = CaseData.builder()
             .hearingDetails(List.of(element(hearingId, hearingBooking)))
             .manageDocumentsHearingList(buildDynamicList(hearingId))
-            .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue()))
+            .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
             .build();
 
-        List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceBundle =
+        List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceBundleCollection =
             manageDocumentService.buildHearingFurtherEvidenceCollection(caseData, furtherEvidenceBundle);
 
-        Element<HearingFurtherEvidenceBundle> furtherEvidenceBundleElement = hearingFurtherEvidenceBundle.get(0);
+        Element<HearingFurtherEvidenceBundle> furtherEvidenceBundleElement
+            = hearingFurtherEvidenceBundleCollection.get(0);
+
+        HearingFurtherEvidenceBundle hearingFurtherEvidenceBundle = furtherEvidenceBundleElement.getValue();
 
         assertThat(furtherEvidenceBundleElement.getId()).isEqualTo(hearingId);
-        assertThat(furtherEvidenceBundleElement.getValue().getHearingName()).isEqualTo(hearingBooking.toLabel(DATE));
-        assertThat(furtherEvidenceBundleElement.getValue().getSupportingEvidenceBundle())
-            .isEqualTo(furtherEvidenceBundle);
+        assertThat(hearingFurtherEvidenceBundle.getHearingName()).isEqualTo(hearingBooking.toLabel(DATE));
+        assertThat(hearingFurtherEvidenceBundle.getSupportingEvidenceBundle()).isEqualTo(furtherEvidenceBundle);
     }
 
     @Test
@@ -344,7 +348,7 @@ class ManageDocumentServiceTest {
                 element(HearingFurtherEvidenceBundle.builder()
                     .supportingEvidenceBundle(List.of(element(SupportingEvidenceBundle.builder().build())))
                     .build())))
-            .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue()))
+            .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
             .build();
 
         List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceBundle =
@@ -354,8 +358,8 @@ class ManageDocumentServiceTest {
         Element<SupportingEvidenceBundle> supportingEvidenceBundleElement
             = furtherEvidenceBundleElement.getValue().getSupportingEvidenceBundle().get(0);
 
-        assertThat(supportingEvidenceBundleElement).isEqualTo(furtherEvidenceBundle.get(0));
         assertThat(hearingFurtherEvidenceBundle.size()).isEqualTo(2);
+        assertThat(supportingEvidenceBundleElement).isEqualTo(furtherEvidenceBundle.get(0));
     }
 
     @Test
@@ -370,20 +374,21 @@ class ManageDocumentServiceTest {
             .hearingFurtherEvidenceDocuments(new ArrayList<>(List.of(
                 element(randomUUID(), HearingFurtherEvidenceBundle.builder()
                     .supportingEvidenceBundle(List.of(element(SupportingEvidenceBundle.builder().build())))
-                    .build())
-            )))
-            .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue()))
+                    .build()))))
+            .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
             .build();
 
-        List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceBundle =
+        List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceBundleCollection =
             manageDocumentService.buildHearingFurtherEvidenceCollection(caseData, supportingEvidenceBundle);
 
-        Element<HearingFurtherEvidenceBundle> furtherEvidenceBundleElement = hearingFurtherEvidenceBundle.get(1);
+        Element<HearingFurtherEvidenceBundle> furtherEvidenceBundleElement
+            = hearingFurtherEvidenceBundleCollection.get(1);
+
+        HearingFurtherEvidenceBundle hearingFurtherEvidenceBundle = furtherEvidenceBundleElement.getValue();
 
         assertThat(furtherEvidenceBundleElement.getId()).isEqualTo(hearingId);
-        assertThat(furtherEvidenceBundleElement.getValue().getHearingName()).isEqualTo(hearingBooking.toLabel(DATE));
-        assertThat(furtherEvidenceBundleElement.getValue().getSupportingEvidenceBundle())
-            .isEqualTo(supportingEvidenceBundle);
+        assertThat(hearingFurtherEvidenceBundle.getHearingName()).isEqualTo(hearingBooking.toLabel(DATE));
+        assertThat(hearingFurtherEvidenceBundle.getSupportingEvidenceBundle()).isEqualTo(supportingEvidenceBundle);
     }
 
     @Test
@@ -459,7 +464,9 @@ class ManageDocumentServiceTest {
         List<Element<SupportingEvidenceBundle>> c2SupportingEvidenceBundle =
             manageDocumentService.getC2SupportingEvidenceBundle(caseData);
 
-        assertThat(c2SupportingEvidenceBundle.get(0).getValue()).isEqualTo(SupportingEvidenceBundle.builder().build());
+        SupportingEvidenceBundle actualSupportingEvidenceBundle = c2SupportingEvidenceBundle.get(0).getValue();
+
+        assertThat(actualSupportingEvidenceBundle).isEqualTo(SupportingEvidenceBundle.builder().build());
     }
 
     @Test
@@ -468,10 +475,11 @@ class ManageDocumentServiceTest {
         C2DocumentBundle selectedC2DocumentBundle = buildC2DocumentBundle(futureDate.plusDays(2));
         List<Element<SupportingEvidenceBundle>> newSupportingEvidenceBundle = buildSupportingEvidenceBundle(futureDate);
 
+        C2DocumentBundle existingC2DocumentBundle = buildC2DocumentBundle(futureDate.plusDays(2));
+
         List<Element<C2DocumentBundle>> c2DocumentBundleList = List.of(
-            element(buildC2DocumentBundle(futureDate.plusDays(2))),
-            element(selectedC2DocumentId, selectedC2DocumentBundle),
-            element(buildC2DocumentBundle(futureDate.plusDays(2)))
+            element(existingC2DocumentBundle),
+            element(selectedC2DocumentId, selectedC2DocumentBundle)
         );
 
         DynamicList c2DynamicList = buildDynamicList(selectedC2DocumentId);
@@ -479,7 +487,7 @@ class ManageDocumentServiceTest {
         CaseData caseData = CaseData.builder()
             .manageDocumentsSupportingC2List(c2DynamicList)
             .c2DocumentBundle(c2DocumentBundleList)
-            .c2SupportingDocuments(newSupportingEvidenceBundle)
+            .supportingEvidenceDocumentsTemp(newSupportingEvidenceBundle)
             .build();
 
         List<Element<C2DocumentBundle>> updatedC2DocumentBundle =
@@ -489,8 +497,7 @@ class ManageDocumentServiceTest {
             = updatedC2DocumentBundle.get(1).getValue().getSupportingEvidenceBundle();
 
         assertThat(updatedC2EvidenceBundle).isEqualTo(newSupportingEvidenceBundle);
-        assertThat(updatedC2DocumentBundle.get(0)).isEqualTo(c2DocumentBundleList.get(0));
-        assertThat(updatedC2DocumentBundle.get(2)).isEqualTo(c2DocumentBundleList.get(2));
+        assertThat(updatedC2DocumentBundle.get(0).getValue()).isEqualTo(existingC2DocumentBundle);
     }
 
     @Test
@@ -529,6 +536,85 @@ class ManageDocumentServiceTest {
         assertThat(thirdC2DocumentUploadTime).isEqualTo(uploadDateTime);
     }
 
+    @Test
+    void shouldUpdatePreviousSupportingEvidenceWhenFurtherEvidenceIsAssociatedWithAHearingAndNewDocumentHasBeenAdded() {
+        SupportingEvidenceBundle previousSupportingEvidenceBundle = SupportingEvidenceBundle.builder()
+            .dateTimeUploaded(futureDate)
+            .document(DocumentReference.builder().filename("previousDocument.pdf").build())
+            .build();
+
+        SupportingEvidenceBundle editedSupportingEvidenceBundle = SupportingEvidenceBundle.builder()
+            .document(DocumentReference.builder().filename("editedDocument.pdf").build())
+            .build();
+
+        List<Element<SupportingEvidenceBundle>> previousSupportingEvidenceList = List.of(
+            element(previousSupportingEvidenceBundle));
+
+        UUID hearingId = UUID.randomUUID();
+        HearingBooking hearingBooking = buildFinalHearingBooking();
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(List.of(element(hearingId, hearingBooking)))
+            .manageDocumentsHearingList(buildDynamicList(hearingId))
+            .supportingEvidenceDocumentsTemp(List.of(
+                element(editedSupportingEvidenceBundle),
+                element(SupportingEvidenceBundle.builder().build())))
+            .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
+            .build();
+
+        CaseData caseDataBefore = CaseData.builder()
+            .hearingFurtherEvidenceDocuments(new ArrayList<>(List.of(
+                element(hearingId, HearingFurtherEvidenceBundle.builder()
+                    .supportingEvidenceBundle(previousSupportingEvidenceList)
+                    .build()))))
+            .build();
+
+        List<Element<SupportingEvidenceBundle>> updatedEvidenceBundle =
+            manageDocumentService.setDateTimeOnHearingFurtherEvidenceSupportingEvidence(caseData, caseDataBefore);
+
+        SupportingEvidenceBundle firstSupportingEvidenceBundle = updatedEvidenceBundle.get(0).getValue();
+        SupportingEvidenceBundle secondSupportingEvidenceBundle = updatedEvidenceBundle.get(1).getValue();
+
+        assertThat(updatedEvidenceBundle.size()).isEqualTo(2);
+        assertThat(firstSupportingEvidenceBundle.getDateTimeUploaded()).isEqualTo(time.now());
+        assertThat(secondSupportingEvidenceBundle.getDateTimeUploaded()).isEqualTo(time.now());
+    }
+
+    @Test
+    void shouldNotUpdatePreviousSupportingEvidenceWhenFurtherEvidenceIsAssociatedWithAHearing() {
+        List<Element<SupportingEvidenceBundle>> previousSupportingEvidenceList
+            = buildSupportingEvidenceBundle(futureDate);
+
+        UUID hearingId = UUID.randomUUID();
+        HearingBooking hearingBooking = buildFinalHearingBooking();
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(List.of(element(hearingId, hearingBooking)))
+            .manageDocumentsHearingList(buildDynamicList(hearingId))
+            .supportingEvidenceDocumentsTemp(List.of(
+                previousSupportingEvidenceList.get(0),
+                element(SupportingEvidenceBundle.builder().build())))
+            .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
+            .build();
+
+        CaseData caseDataBefore = CaseData.builder()
+            .hearingFurtherEvidenceDocuments(new ArrayList<>(List.of(
+                element(hearingId, HearingFurtherEvidenceBundle.builder()
+                    .supportingEvidenceBundle(previousSupportingEvidenceList)
+                    .build()))))
+            .build();
+
+        List<Element<SupportingEvidenceBundle>> updatedEvidenceBundle =
+            manageDocumentService.setDateTimeOnHearingFurtherEvidenceSupportingEvidence(caseData, caseDataBefore);
+
+        SupportingEvidenceBundle firstSupportingEvidenceBundle = updatedEvidenceBundle.get(0).getValue();
+        SupportingEvidenceBundle secondSupportingEvidenceBundle = updatedEvidenceBundle.get(1).getValue();
+
+        assertThat(updatedEvidenceBundle.size()).isEqualTo(2);
+        assertThat(firstSupportingEvidenceBundle).isEqualTo(previousSupportingEvidenceList.get(0).getValue());
+        assertThat(secondSupportingEvidenceBundle.getDateTimeUploaded()).isEqualTo(time.now());
+    }
+
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
         return wrapElements(SupportingEvidenceBundle.builder().name("test").build());
     }
@@ -537,11 +623,12 @@ class ManageDocumentServiceTest {
         return wrapElements(SupportingEvidenceBundle.builder()
             .name("test")
             .dateTimeUploaded(localDateTime)
+            .uploadedBy(USER)
             .build());
     }
 
-    private ManageDocument buildManagementDocument(ManageDocumentType type, String isRelatedToHearing) {
-        return ManageDocument.builder().type(type).relatedToHearing(isRelatedToHearing).build();
+    private ManageDocument buildFurtherEvidenceManagementDocument(String isRelatedToHearing) {
+        return ManageDocument.builder().type(FURTHER_EVIDENCE_DOCUMENTS).relatedToHearing(isRelatedToHearing).build();
     }
 
     private HearingBooking buildFinalHearingBooking() {

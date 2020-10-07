@@ -21,4 +21,5 @@ public class SupportingEvidenceBundle {
     private final LocalDateTime dateTimeReceived;
     private LocalDateTime dateTimeUploaded;
     private final DocumentReference document;
+    private String uploadedBy;
 }

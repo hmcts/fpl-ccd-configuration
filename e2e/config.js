@@ -59,6 +59,10 @@ module.exports = {
     email: process.env.SMOKE_TEST_LA_USER_USERNAME || 'james@swansea.gov.uk',
     password: process.env.SMOKE_TEST_LA_USER_PASSWORD || defaultPassword,
   },
+  hmctsUser: {
+    email: process.env.HMCTS_USER_USERNAME,
+    password: process.env.HMCTS_USER_PASSWORD,
+  },
   localAuthorityPassword: process.env.LA_USER_PASSWORD || defaultPassword,
   fplServiceUrl: process.env.CASE_SERVICE_URL || 'http://localhost:4000',
   idamApiUrl: process.env.IDAM_API_URL || 'http://localhost:5000',

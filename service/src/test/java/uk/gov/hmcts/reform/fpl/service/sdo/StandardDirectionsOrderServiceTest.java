@@ -74,7 +74,7 @@ class StandardDirectionsOrderServiceTest {
             .preparedSDO(PDF_DOC)
             .build();
 
-        StandardDirectionOrder order = service.buildTemporarySDO(caseData);
+        StandardDirectionOrder order = service.buildTemporarySDO(caseData, null);
 
         StandardDirectionOrder expectedOrder = StandardDirectionOrder.builder().orderDoc(PDF_DOC).build();
 
@@ -86,10 +86,11 @@ class StandardDirectionsOrderServiceTest {
         CaseData caseData = CaseData.builder()
             .preparedSDO(null)
             .replacementSDO(WORD_DOC)
-            .standardDirectionOrder(StandardDirectionOrder.builder().build())
             .build();
 
-        StandardDirectionOrder order = service.buildTemporarySDO(caseData);
+        StandardDirectionOrder previousSDO = StandardDirectionOrder.builder().build();
+
+        StandardDirectionOrder order = service.buildTemporarySDO(caseData, previousSDO);
 
         StandardDirectionOrder expectedOrder = StandardDirectionOrder.builder().orderDoc(WORD_DOC).build();
 
@@ -98,15 +99,16 @@ class StandardDirectionsOrderServiceTest {
 
     @Test
     void shouldUseCurrentSDODocumentForTemporaryStandardDirectionOrder() {
+        StandardDirectionOrder previousSDO = StandardDirectionOrder.builder()
+            .orderDoc(SEALED_DOC)
+            .build();
+
         CaseData caseData = CaseData.builder()
             .preparedSDO(null)
             .replacementSDO(null)
-            .standardDirectionOrder(StandardDirectionOrder.builder()
-                .orderDoc(SEALED_DOC)
-                .build())
             .build();
 
-        StandardDirectionOrder order = service.buildTemporarySDO(caseData);
+        StandardDirectionOrder order = service.buildTemporarySDO(caseData, previousSDO);
 
         StandardDirectionOrder expectedOrder = StandardDirectionOrder.builder().orderDoc(SEALED_DOC).build();
 
