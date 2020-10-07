@@ -5,7 +5,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 public class MultiPageHearingServiceTest {
+    //populateInitialFields tests
+
+    //getPreviousHearingVenue tests
+
     //findHearingBooking tests
+
+    //populateHearingCaseFields tests
 
     //buildHearingBooking tests
 
@@ -14,4 +20,6 @@ public class MultiPageHearingServiceTest {
     //updateEditedHearingEntry tests
 
     //appendHearingBooking tests
+
+    //caseFieldsToBeRemoved tests
 }

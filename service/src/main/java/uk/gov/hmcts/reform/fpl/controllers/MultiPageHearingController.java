@@ -13,16 +13,12 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.NewHearingsAdded;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
-import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Judge;
-import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
-import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.MultiPageHearingService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
@@ -31,12 +27,12 @@ import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
 import java.util.List;
 import java.util.UUID;
 
-import static java.time.LocalDateTime.now;
-import static java.util.Comparator.comparing;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_DRAFT;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
+import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.SELECTED_HEARING_IDS;
+import static uk.gov.hmcts.reform.fpl.service.MultiPageHearingService.FIRST_HEARING_FLAG;
+import static uk.gov.hmcts.reform.fpl.service.MultiPageHearingService.HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInGatekeepingState;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
@@ -51,7 +47,6 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllo
 public class MultiPageHearingController extends CallbackController {
     private final ObjectMapper mapper;
     private final ValidateGroupService validateGroupService;
-    private final HearingVenueLookUpService hearingVenueLookUpService;
     private final HearingBookingService hearingBookingService;
     private final StandardDirectionsService standardDirectionsService;
     private final MultiPageHearingService multiPageHearingService;
@@ -66,15 +61,11 @@ public class MultiPageHearingController extends CallbackController {
         }
 
         List<Element<HearingBooking>> hearings = defaultIfNull(caseData.getHearingDetails(), List.of());
-        List<Element<HearingBooking>> futureHearings = hearingBookingService.getFutureHearings(
-            defaultIfNull(hearings, List.of()));
 
         if (hearings.isEmpty()) {
-            caseDetails.getData().put("firstHearingFlag", "Yes");
+            caseDetails.getData().put(FIRST_HEARING_FLAG, "Yes");
         } else {
-            caseDetails.getData().put("hearingDateList",
-                asDynamicList(futureHearings, hearing -> hearing.toLabel(DATE)));
-            caseDetails.getData().put("hasExistingHearings", YES.getValue());
+            caseDetails.getData().putAll(multiPageHearingService.populateInitialFields(caseData));
         }
 
         return respond(caseDetails);
@@ -93,16 +84,16 @@ public class MultiPageHearingController extends CallbackController {
             List<Element<HearingBooking>> futureHearings = hearingBookingService.getFutureHearings(
                 caseData.getHearingDetails());
 
-            caseDetails.getData().put("hearingDateList",
+            caseDetails.getData().put(HEARING_DATE_LIST,
                 asDynamicList(futureHearings, hearingBookingId, hearing -> hearing.toLabel(DATE)));
 
             HearingBooking hearingBooking = multiPageHearingService.findHearingBooking(
                 hearingBookingId, caseData.getHearingDetails());
 
-            populateHearingBooking(caseDetails, hearingBooking);
+            caseDetails.getData().putAll(multiPageHearingService.populateHearingCaseFields(hearingBooking));
 
             if (hearingBookingId.equals(caseData.getHearingDetails().get(0).getId())) {
-                caseDetails.getData().put("firstHearingFlag", "Yes");
+                caseDetails.getData().put(FIRST_HEARING_FLAG, "Yes");
             }
         }
 
@@ -137,38 +128,24 @@ public class MultiPageHearingController extends CallbackController {
         if ((caseData.getUseExistingHearing() != null) && EDIT_DRAFT.equals(caseData.getUseExistingHearing())) {
             UUID editedHearingId = getDynamicListValueCode(caseData.getHearingDateList(), mapper);
 
-            caseDetails.getData().put("selectedHearingIds", List.of(editedHearingId));
+            caseDetails.getData().put(SELECTED_HEARING_IDS, List.of(editedHearingId));
 
             hearingBookingElements = multiPageHearingService.updateEditedHearingEntry(
                 hearingBooking, editedHearingId, caseData.getHearingDetails());
         } else {
             hearingBookingElements = multiPageHearingService.appendHearingBooking(
                 defaultIfNull(caseData.getHearingDetails(), List.of()), hearingBooking);
-            caseDetails.getData().put("selectedHearingIds",
+
+            //ID of hearing that was just added
+            caseDetails.getData().put(SELECTED_HEARING_IDS,
                 List.of(hearingBookingElements.get(hearingBookingElements.size() - 1)));
         }
 
-        HearingBooking nextHearingBooking = unwrapElements(hearingBookingElements).stream()
-            .filter(hearing -> hearing.getStartDate().isAfter(now()))
-            .min(comparing(HearingBooking::getStartDate))
-            .orElseThrow(NoHearingBookingException::new);
-
-        HearingVenue nextHearingVenue = hearingVenueLookUpService.getHearingVenue(nextHearingBooking);
-
-        caseDetails.getData().put("selectedHearingIds", caseData.getSelectedHearingIds());
+        caseDetails.getData().put(SELECTED_HEARING_IDS, caseData.getSelectedHearingIds());
         caseDetails.getData().put(HEARING_DETAILS_KEY, hearingBookingElements);
-        caseDetails.getData().put("firstHearingFlag", "No");
+        caseDetails.getData().put(FIRST_HEARING_FLAG, "No");
 
-        //Set previousHearingVenue to be the venue of the next upcoming hearing (including hearing just added)
-        //When users add a new hearing, this venue will be displayed
-        //This won't be set for hearings in existing cases, only for newly added hearings
-        caseDetails.getData().put("previousHearingVenue",
-            PreviousHearingVenue.builder()
-                .previousVenue(hearingVenueLookUpService.buildHearingVenue(nextHearingVenue))
-                .build());
-        caseDetails.getData().put("previousVenueId", nextHearingVenue.getHearingVenueId());
-
-        removeHearingProperties(caseDetails);
+        caseDetails.getData().keySet().removeAll(multiPageHearingService.caseFieldsToBeRemoved());
 
         return respond(caseDetails);
     }
@@ -182,7 +159,7 @@ public class MultiPageHearingController extends CallbackController {
             publishEvent(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
         }
 
-        //TODO Refactor during removal of old HearingBookingDetails code
+        //TODO Refactor in future during removal of old HearingBookingDetails code
         List<Element<HearingBooking>> hearingsToBeSent = hearingBookingService.getSelectedHearings(
             unwrapElements(caseData.getSelectedHearingIds()), caseData.getHearingDetails());
 
@@ -197,29 +174,5 @@ public class MultiPageHearingController extends CallbackController {
         return JudgeAndLegalAdvisor.builder()
             .allocatedJudgeLabel(assignedJudgeLabel)
             .build();
-    }
-
-    private void populateHearingBooking(CaseDetails caseDetails, HearingBooking hearingBooking) {
-        caseDetails.getData().put("hearingType", hearingBooking.getType());
-        caseDetails.getData().put("hearingVenue", hearingBooking.getVenue());
-        caseDetails.getData().put("hearingVenueCustom", hearingBooking.getVenueCustomAddress());
-        caseDetails.getData().put("hearingStartDate", hearingBooking.getStartDate());
-        caseDetails.getData().put("hearingEndDate", hearingBooking.getEndDate());
-        caseDetails.getData().put("judgeAndLegalAdvisor", hearingBooking.getJudgeAndLegalAdvisor());
-        caseDetails.getData().put("previousHearingVenue", hearingBooking.getPreviousHearingVenue());
-    }
-
-    private void removeHearingProperties(CaseDetails caseDetails) {
-        caseDetails.getData().remove("hearingType");
-        caseDetails.getData().remove("hearingVenue");
-        caseDetails.getData().remove("hearingVenueCustom");
-        caseDetails.getData().remove("hearingStartDate");
-        caseDetails.getData().remove("hearingEndDate");
-        caseDetails.getData().remove("sendNoticeOfHearing");
-        caseDetails.getData().remove("judgeAndLegalAdvisor");
-        caseDetails.getData().remove("hasExistingHearings");
-        caseDetails.getData().remove("hearingDateList");
-        caseDetails.getData().remove("useExistingHearing");
-        caseDetails.getData().remove("noticeOfHearingNotes");
     }
 }
