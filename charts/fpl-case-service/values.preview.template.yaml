@@ -103,6 +103,7 @@ ccd:
         DATA_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
         DATA_STORE_IDAM_KEY: ${CCD_DATA_STORE_S2S_SECRET}
         IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
+        CCD_S2S-AUTHORISED_SERVICES_CASE_USER_ROLES: fpl_case_service
       keyVaults:
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
   ccd-definition-store-api:
