@@ -21,9 +21,9 @@ import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.exceptions.GrantCaseAccessException;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -38,6 +38,7 @@ public class CaseRoleService {
     private final AuthTokenGenerator authTokenGenerator;
     private final SystemUpdateUserConfiguration userConfig;
     private final OrganisationService organisationService;
+    private final AddCaseAssignedUserRolesRequest addCaseAssignedUserRolesRequest;
 
     public void grantAccessToUser(String caseId, String user, Set<CaseRole> roles) {
         grantCaseAccess(caseId, Set.of(user), roles);
@@ -87,9 +88,9 @@ public class CaseRoleService {
     }
 
     public void grantCaseAssignmentToLocalAuthority(String caseId, String localAuthority, Set<CaseRole> roles,
-                                            Set<String> excludeUsers) {
+                                                    Set<String> excludeUsers) {
         Set<String> localAuthorityUsers = getUsers(caseId, localAuthority, excludeUsers, roles);
-        grantCaseAccess(caseId, localAuthorityUsers, roles);
+        grantCaseAssignmentAccess(caseId, localAuthorityUsers, roles);
         log.info("Users {} granted {} to case {}", localAuthorityUsers, roles, caseId);
     }
 
@@ -99,28 +100,21 @@ public class CaseRoleService {
         try {
             final String userToken = idam.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
             final String serviceToken = authTokenGenerator.generate();
-            List<CaseAssignedUserRoleWithOrganisation> caseAssignedRoles = new ArrayList<>();
-            AddCaseAssignedUserRolesRequest addCaseRequest = new AddCaseAssignedUserRolesRequest();
+            List<CaseAssignedUserRoleWithOrganisation> caseAssignedRoles = users.stream()
+                .map(user -> CaseAssignedUserRoleWithOrganisation.builder()
+                    .organisationId("")
+                    .caseDataId(caseId)
+                    .userId(user)
+                    .caseRole(CaseRole.LASOLICITOR.formattedName())
+                    .build())
+                .collect(Collectors.toList());
 
-            users.stream().sequential()
-                .forEach(userId -> {
-                    try {
-                        CaseAssignedUserRoleWithOrganisation caseUserRole = new CaseAssignedUserRoleWithOrganisation();
-                        // It has been decided that this will be tested in preview with blank org id first.
-                        caseUserRole.setOrganisationId("");
-                        caseUserRole.setCaseDataId(caseId);
-                        caseUserRole.setUserId(userId);
-                        // This api call needs only LASOLICITOR rolestring
-                        caseUserRole.setCaseRole(CaseRole.LASOLICITOR.formattedName());
-                        caseAssignedRoles.add(caseUserRole);
-                        addCaseRequest.setCaseAssignedUserRoles(caseAssignedRoles);
-                        usersGrantedAccess.add(userId);
-                    } catch (Exception exception) {
-                        log.warn("User {} has not been granted {} to case {}", userId, roles, caseId, exception);
-                    }
-                });
+            addCaseAssignedUserRolesRequest.setCaseAssignedUserRoles(caseAssignedRoles);
+            caseAccessDataStoreApi.addCaseUserRoles(userToken, serviceToken, addCaseAssignedUserRolesRequest);
+            caseAssignedRoles.stream()
+                            .map(CaseAssignedUserRoleWithOrganisation::getUserId)
+                            .forEach(usersGrantedAccess::add);
 
-            caseAccessDataStoreApi.addCaseUserRoles(userToken,serviceToken,addCaseRequest);
         } catch (FeignException ex) {
             log.error("Could not find the case users for associated organisation from reference data", ex);
             String statusMessage = ex.getMessage();

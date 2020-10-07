@@ -30,6 +30,10 @@ class LocalAuthorityUserServiceTest {
     @Mock
     private CaseRoleService caseRoleService;
 
+    @Mock
+    private FeatureToggleService featureToggleService;
+
+
     @InjectMocks
     private LocalAuthorityUserService localAuthorityUserService;
 

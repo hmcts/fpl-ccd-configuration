@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.GrantCaseAccessException;
 import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityCodeException;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
@@ -101,6 +102,12 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
     private CaseAccessDataStoreApi caseDataAccessApi;
 
     @MockBean
+    private AddCaseAssignedUserRolesRequest addCaseAssignedUserRolesRequest;
+
+    @Autowired
+    private FeatureToggleService featureToggleService;
+
+    @MockBean
     private IdamClient client;
 
     @MockBean
@@ -132,7 +139,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
         given(localAuthorityUserLookupConfiguration.getUserIds(LA_IN_PRD_CODE))
             .willThrow(new UnknownLocalAuthorityCodeException(LA_IN_PRD_CODE));
 
-        given(caseDataAccessApi.addCaseUserRoles(anyString(),anyString(),any(AddCaseAssignedUserRolesRequest.class)))
+        given(caseDataAccessApi.addCaseUserRoles(anyString(), anyString(), any(AddCaseAssignedUserRolesRequest.class)))
             .willReturn(AddCaseAssignedUserRolesResponse.builder().build());
     }
 
@@ -194,85 +201,97 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
     @Test
     void updateCaseRolesShouldBeCalledOnceForEachUserFetchedFromPRD() {
-        givenPRDWillReturn(LA_IN_PRD_USER_IDS);
+        if (!(featureToggleService.isCaseUserAssignmentEnabled())) {
+            givenPRDWillReturn(LA_IN_PRD_USER_IDS);
 
-        final CallbackRequest request = getCase(LA_IN_PRD_CODE);
+            final CallbackRequest request = getCase(LA_IN_PRD_CODE);
 
-        postSubmittedEvent(request);
+            postSubmittedEvent(request);
 
-        verifyGrantCaseRoleAttempts(LA_IN_PRD_USER_IDS);
-        verifyTaskListUpdated(request.getCaseDetails());
+            verifyGrantCaseRoleAttempts(LA_IN_PRD_USER_IDS);
+            verifyTaskListUpdated(request.getCaseDetails());
+        }
     }
 
     @Test
     void updateCaseRolesShouldBeCalledForEachFromCustomUserMappingIfOrganisationNotInPRD() {
-        givenPRDWillFail();
+        if (!(featureToggleService.isCaseUserAssignmentEnabled())) {
+            givenPRDWillFail();
 
-        final CallbackRequest request = getCase(LA_NOT_IN_PRD_CODE);
+            final CallbackRequest request = getCase(LA_NOT_IN_PRD_CODE);
 
-        postSubmittedEvent(request);
+            postSubmittedEvent(request);
 
-        verifyGrantCaseRoleAttempts(LA_NOT_IN_PRD_USER_IDS);
-        verifyTaskListUpdated(request.getCaseDetails());
+            verifyGrantCaseRoleAttempts(LA_NOT_IN_PRD_USER_IDS);
+            verifyTaskListUpdated(request.getCaseDetails());
+        }
     }
 
     @Test
     void updateCaseRolesShouldBeCalledOnlyForCaseCreatorIfOrganisationNotInPRDAndNoCustomUserMapping() {
-        givenPRDWillFail();
+        if (!(featureToggleService.isCaseUserAssignmentEnabled())) {
+            givenPRDWillFail();
 
-        final CallbackRequest request = getCase(LA_IN_PRD_CODE);
+            final CallbackRequest request = getCase(LA_IN_PRD_CODE);
 
-        postSubmittedEvent(request);
+            postSubmittedEvent(request);
 
-        verifyUsersFetchFromPrd(3);
-        verifyGrantCaseRoleAttempts(List.of(CALLER_ID));
-        verifyTaskListUpdated(request.getCaseDetails());
+            verifyUsersFetchFromPrd(3);
+            verifyGrantCaseRoleAttempts(List.of(CALLER_ID));
+            verifyTaskListUpdated(request.getCaseDetails());
+        }
     }
 
     @Test
     void shouldRetryPRDCallOnFailure() {
-        givenPRDWillAnswer(
-            invocation -> {
-                throw new RuntimeException();
-            },
-            invocation -> organisation(LA_IN_PRD_USER_IDS));
+        if (!(featureToggleService.isCaseUserAssignmentEnabled())) {
+            givenPRDWillAnswer(
+                invocation -> {
+                    throw new RuntimeException();
+                },
+                invocation -> organisation(LA_IN_PRD_USER_IDS));
 
-        final CallbackRequest request = getCase(LA_IN_PRD_CODE);
+            final CallbackRequest request = getCase(LA_IN_PRD_CODE);
 
-        postSubmittedEvent(request);
+            postSubmittedEvent(request);
 
-        verifyUsersFetchFromPrd(2);
-        verifyGrantCaseRoleAttempts(LA_IN_PRD_USER_IDS);
-        verifyTaskListUpdated(request.getCaseDetails());
+            verifyUsersFetchFromPrd(2);
+            verifyGrantCaseRoleAttempts(LA_IN_PRD_USER_IDS);
+            verifyTaskListUpdated(request.getCaseDetails());
+        }
     }
 
     @Test
     void shouldGrantCaseAccessToOtherUsersAndThrowExceptionWhenCallerAccessNotGranted() {
-        doThrow(RuntimeException.class)
-            .when(caseUserApi).updateCaseRolesForUser(any(), any(), any(), eq(CALLER_ID), any());
+        if (!(featureToggleService.isCaseUserAssignmentEnabled())) {
+            doThrow(RuntimeException.class)
+                .when(caseUserApi).updateCaseRolesForUser(any(), any(), any(), eq(CALLER_ID), any());
 
-        givenPRDWillReturn(LA_NOT_IN_PRD_USER_IDS);
+            givenPRDWillReturn(LA_NOT_IN_PRD_USER_IDS);
 
-        final Exception exception = assertThrows(Exception.class,
-            () -> postSubmittedEvent(getCase(LA_NOT_IN_PRD_CODE)));
+            final Exception exception = assertThrows(Exception.class,
+                () -> postSubmittedEvent(getCase(LA_NOT_IN_PRD_CODE)));
 
-        assertException(exception)
-            .isCausedBy(new GrantCaseAccessException(CASE_ID, Set.of(USER_ID), Set.of(CREATOR, LASOLICITOR)));
+            assertException(exception)
+                .isCausedBy(new GrantCaseAccessException(CASE_ID, Set.of(USER_ID), Set.of(CREATOR, LASOLICITOR)));
 
-        verifyGrantCaseRoleAttempts(LA_NOT_IN_PRD_USER_IDS);
+            verifyGrantCaseRoleAttempts(LA_NOT_IN_PRD_USER_IDS);
+        }
     }
 
     @Test
     void shouldAttemptGrantAccessToAllLocalAuthorityUsersWhenGrantAccessFailsForSomeOfThem() {
-        doThrow(RuntimeException.class)
-            .doNothing()
-            .when(caseUserApi).updateCaseRolesForUser(any(), any(), any(), eq(LA_NOT_IN_PRD_USER_1_ID), any());
+        if (!(featureToggleService.isCaseUserAssignmentEnabled())) {
+            doThrow(RuntimeException.class)
+                .doNothing()
+                .when(caseUserApi).updateCaseRolesForUser(any(), any(), any(), eq(LA_NOT_IN_PRD_USER_1_ID), any());
 
-        givenPRDWillReturn(LA_NOT_IN_PRD_USER_IDS);
+            givenPRDWillReturn(LA_NOT_IN_PRD_USER_IDS);
 
-        postSubmittedEvent(getCase(LA_NOT_IN_PRD_CODE));
+            postSubmittedEvent(getCase(LA_NOT_IN_PRD_CODE));
 
-        verifyGrantCaseRoleAttempts(LA_NOT_IN_PRD_USER_IDS, 2);
+            verifyGrantCaseRoleAttempts(LA_NOT_IN_PRD_USER_IDS, 2);
+        }
     }
 
     private void verifyGrantCaseRoleAttempts(List<String> users, int attempts) {

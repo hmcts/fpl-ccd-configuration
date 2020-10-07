@@ -24,7 +24,7 @@ public class LocalAuthorityUserService {
 
     public void grantUserAccessWithCaseRole(String caseId, String caseLocalAuthority) {
         String currentUser = requestData.userId();
-        if (null != featureToggleService && featureToggleService.isCaseUserAssignmentEnabled()) {
+        if (featureToggleService.isCaseUserAssignmentEnabled()) {
             caseRoleService.grantCaseAssignmentToUser(caseId, currentUser, CASE_ROLES);
             caseRoleService.grantCaseAssignmentToLocalAuthority(caseId, caseLocalAuthority, CASE_ROLES,
                                                                     Set.of(currentUser));
