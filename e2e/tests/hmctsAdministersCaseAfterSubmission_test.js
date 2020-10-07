@@ -157,6 +157,11 @@ Scenario('HMCTS admin edits supporting evidence document on C2 application', asy
   I.seeTextInTab(['C2 Application 1', 'Uploaded by']);
 });
 
+Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, manageHearingsEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
+  await manageHearingsEventPage.selectAddNewHearing();
+});
+
 Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, addHearingBookingDetailsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);

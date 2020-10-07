@@ -71,7 +71,7 @@ public class ManageHearingsController extends CallbackController {
         return respond(caseDetails);
     }
 
-    @PostMapping("/populate-existing-hearings/mid-event")
+    @PostMapping("/edit-hearing/mid-event")
     public AboutToStartOrSubmitCallbackResponse populateExistingDraftHearing(
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
