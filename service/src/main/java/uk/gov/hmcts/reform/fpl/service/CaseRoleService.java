@@ -102,7 +102,6 @@ public class CaseRoleService {
             final String serviceToken = authTokenGenerator.generate();
             List<CaseAssignedUserRoleWithOrganisation> caseAssignedRoles = users.stream()
                 .map(user -> CaseAssignedUserRoleWithOrganisation.builder()
-                    .organisationId("")
                     .caseDataId(caseId)
                     .userId(user)
                     .caseRole(CaseRole.LASOLICITOR.formattedName())
