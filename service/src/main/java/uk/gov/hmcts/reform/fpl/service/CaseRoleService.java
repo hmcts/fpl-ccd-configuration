@@ -38,7 +38,6 @@ public class CaseRoleService {
     private final AuthTokenGenerator authTokenGenerator;
     private final SystemUpdateUserConfiguration userConfig;
     private final OrganisationService organisationService;
-    private final AddCaseAssignedUserRolesRequest addCaseAssignedUserRolesRequest;
 
     public void grantAccessToUser(String caseId, String user, Set<CaseRole> roles) {
         grantCaseAccess(caseId, Set.of(user), roles);
@@ -108,7 +107,11 @@ public class CaseRoleService {
                     .build())
                 .collect(Collectors.toList());
 
-            addCaseAssignedUserRolesRequest.setCaseAssignedUserRoles(caseAssignedRoles);
+            AddCaseAssignedUserRolesRequest addCaseAssignedUserRolesRequest =
+                AddCaseAssignedUserRolesRequest.builder()
+                    .caseAssignedUserRoles(caseAssignedRoles)
+                    .build();
+
             caseAccessDataStoreApi.addCaseUserRoles(userToken, serviceToken, addCaseAssignedUserRolesRequest);
             caseAssignedRoles.stream()
                             .map(CaseAssignedUserRoleWithOrganisation::getUserId)
