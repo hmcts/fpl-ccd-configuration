@@ -69,7 +69,7 @@
         "CRUD": "R"
       }
       ],
-    "Comment": "Move when toggling on FPLA-1592"
+    "Comment": "Move when toggling on FPLA-2158"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -81,6 +81,6 @@
         "CRUD": "R"
       }
     ],
-    "Comment": "Move when toggling on FPLA-1592"
+    "Comment": "Move when toggling on FPLA-2158"
   }
 ]
