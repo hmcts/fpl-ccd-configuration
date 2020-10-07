@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "multiPageHearing",
+    "CaseEventID": "manageHearings",
     "CaseFieldID": "hasExistingHearings",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
@@ -10,12 +10,12 @@
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 1,
     "FieldShowCondition": "useExistingHearing=\"DO_NOT_SHOW\"",
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/multi-page-hearing/populate-existing-hearings/mid-event"
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-hearings/populate-existing-hearings/mid-event"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "multiPageHearing",
+    "CaseEventID": "manageHearings",
     "CaseFieldID": "useExistingHearing",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
@@ -27,7 +27,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "multiPageHearing",
+    "CaseEventID": "manageHearings",
     "CaseFieldID": "firstHearingFlag",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
@@ -39,7 +39,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "multiPageHearing",
+    "CaseEventID": "manageHearings",
     "CaseFieldID": "hearingDateList",
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
@@ -51,19 +51,19 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "multiPageHearing",
+    "CaseEventID": "manageHearings",
     "CaseFieldID": "hearingType",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
     "PageID": "hearingDetails",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 2,
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/multi-page-hearing/validate-hearing-dates/mid-event"
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-hearings/validate-hearing-dates/mid-event"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "multiPageHearing",
+    "CaseEventID": "manageHearings",
     "CaseFieldID": "hearingVenue",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
@@ -75,7 +75,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "multiPageHearing",
+    "CaseEventID": "manageHearings",
     "CaseFieldID": "hearingVenueCustom",
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
@@ -87,7 +87,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "multiPageHearing",
+    "CaseEventID": "manageHearings",
     "CaseFieldID": "previousHearingVenue",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "COMPLEX",
@@ -100,7 +100,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "multiPageHearing",
+    "CaseEventID": "manageHearings",
     "CaseFieldID": "hearingStartDate",
     "PageFieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY",
@@ -111,7 +111,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "multiPageHearing",
+    "CaseEventID": "manageHearings",
     "CaseFieldID": "hearingEndDate",
     "PageFieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY",
@@ -122,7 +122,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "multiPageHearing",
+    "CaseEventID": "manageHearings",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "COMPLEX",
@@ -134,7 +134,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "multiPageHearing",
+    "CaseEventID": "manageHearings",
     "CaseFieldID": "sendNoticeOfHearing",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
@@ -145,7 +145,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "multiPageHearing",
+    "CaseEventID": "manageHearings",
     "CaseFieldID": "noticeOfHearingNotes",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",

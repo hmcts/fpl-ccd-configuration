@@ -37,7 +37,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class MultiPageHearingService {
+public class ManageHearingsService {
     private final NoticeOfHearingGenerationService noticeOfHearingGenerationService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;

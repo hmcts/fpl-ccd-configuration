@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
-import uk.gov.hmcts.reform.fpl.service.MultiPageHearingService;
+import uk.gov.hmcts.reform.fpl.service.ManageHearingsService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
@@ -31,8 +31,8 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_DRAFT;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.SELECTED_HEARING_IDS;
-import static uk.gov.hmcts.reform.fpl.service.MultiPageHearingService.FIRST_HEARING_FLAG;
-import static uk.gov.hmcts.reform.fpl.service.MultiPageHearingService.HEARING_DATE_LIST;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.FIRST_HEARING_FLAG;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInGatekeepingState;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
@@ -42,14 +42,14 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllo
 
 @Api
 @RestController
-@RequestMapping("/callback/multi-page-hearing")
+@RequestMapping("/callback/manage-hearings")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class MultiPageHearingController extends CallbackController {
+public class ManageHearingsController extends CallbackController {
     private final ObjectMapper mapper;
     private final ValidateGroupService validateGroupService;
     private final HearingBookingService hearingBookingService;
     private final StandardDirectionsService standardDirectionsService;
-    private final MultiPageHearingService multiPageHearingService;
+    private final ManageHearingsService manageHearingsService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -65,7 +65,7 @@ public class MultiPageHearingController extends CallbackController {
         if (hearings.isEmpty()) {
             caseDetails.getData().put(FIRST_HEARING_FLAG, "Yes");
         } else {
-            caseDetails.getData().putAll(multiPageHearingService.populateInitialFields(caseData));
+            caseDetails.getData().putAll(manageHearingsService.populateInitialFields(caseData));
         }
 
         return respond(caseDetails);
@@ -87,10 +87,10 @@ public class MultiPageHearingController extends CallbackController {
             caseDetails.getData().put(HEARING_DATE_LIST,
                 asDynamicList(futureHearings, hearingBookingId, hearing -> hearing.toLabel(DATE)));
 
-            HearingBooking hearingBooking = multiPageHearingService.findHearingBooking(
+            HearingBooking hearingBooking = manageHearingsService.findHearingBooking(
                 hearingBookingId, caseData.getHearingDetails());
 
-            caseDetails.getData().putAll(multiPageHearingService.populateHearingCaseFields(hearingBooking));
+            caseDetails.getData().putAll(manageHearingsService.populateHearingCaseFields(hearingBooking));
 
             if (hearingBookingId.equals(caseData.getHearingDetails().get(0).getId())) {
                 caseDetails.getData().put(FIRST_HEARING_FLAG, "Yes");
@@ -116,10 +116,10 @@ public class MultiPageHearingController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        HearingBooking hearingBooking = multiPageHearingService.buildHearingBooking(caseData);
+        HearingBooking hearingBooking = manageHearingsService.buildHearingBooking(caseData);
 
         if (caseData.getSendNoticeOfHearing() != null && caseData.getSendNoticeOfHearing().equals("Yes")) {
-            multiPageHearingService.addNoticeOfHearing(caseData, hearingBooking);
+            manageHearingsService.addNoticeOfHearing(caseData, hearingBooking);
         }
 
         List<Element<HearingBooking>> hearingBookingElements;
@@ -130,10 +130,10 @@ public class MultiPageHearingController extends CallbackController {
 
             caseDetails.getData().put(SELECTED_HEARING_IDS, List.of(editedHearingId));
 
-            hearingBookingElements = multiPageHearingService.updateEditedHearingEntry(
+            hearingBookingElements = manageHearingsService.updateEditedHearingEntry(
                 hearingBooking, editedHearingId, caseData.getHearingDetails());
         } else {
-            hearingBookingElements = multiPageHearingService.appendHearingBooking(
+            hearingBookingElements = manageHearingsService.appendHearingBooking(
                 defaultIfNull(caseData.getHearingDetails(), List.of()), hearingBooking);
 
             //ID of hearing that was just added
@@ -145,7 +145,7 @@ public class MultiPageHearingController extends CallbackController {
         caseDetails.getData().put(HEARING_DETAILS_KEY, hearingBookingElements);
         caseDetails.getData().put(FIRST_HEARING_FLAG, "No");
 
-        caseDetails.getData().keySet().removeAll(multiPageHearingService.caseFieldsToBeRemoved());
+        caseDetails.getData().keySet().removeAll(manageHearingsService.caseFieldsToBeRemoved());
 
         return respond(caseDetails);
     }
