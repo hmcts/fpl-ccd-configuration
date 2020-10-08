@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.ManageHearingsService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
@@ -40,7 +39,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInGatekeepingSta
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListValueCode;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 
 @Api
@@ -50,7 +48,6 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllo
 public class ManageHearingsController extends CallbackController {
     private final ObjectMapper mapper;
     private final ValidateGroupService validateGroupService;
-    private final HearingBookingService hearingBookingService;
     private final StandardDirectionsService standardDirectionsService;
     private final ManageHearingsService manageHearingsService;
 
@@ -164,15 +161,16 @@ public class ManageHearingsController extends CallbackController {
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = getCaseData(callbackRequest);
+        CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
         if (isInGatekeepingState(callbackRequest.getCaseDetails())
             && standardDirectionsService.hasEmptyDates(caseData)) {
             publishEvent(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
         }
 
-        //TODO Refactor during removal of legacy code (now only ever one hearing sent) (FPLA-2280)
-        List<Element<HearingBooking>> hearingsToBeSent = hearingBookingService.getSelectedHearings(
-            unwrapElements(caseData.getSelectedHearingIds()), caseData.getHearingDetails());
+        //TODO Refactor during removal of legacy code (now only ever one hearing sent, list not needed) (FPLA-2280)
+        List<Element<HearingBooking>> hearingsToBeSent = caseData.getHearingDetails();
+        hearingsToBeSent.removeAll(caseDataBefore.getHearingDetails());
 
         if (!hearingsToBeSent.isEmpty() && hearingsToBeSent.get(0).getValue().getNoticeOfHearing() != null) {
             publishEvent(new NewHearingsAdded(caseData, hearingsToBeSent));
