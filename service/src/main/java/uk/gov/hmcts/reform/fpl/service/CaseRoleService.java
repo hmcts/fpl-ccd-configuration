@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.exceptions.GrantCaseAccessException;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -81,14 +82,8 @@ public class CaseRoleService {
         }
     }
 
-    public void grantCaseAssignmentToUser(String caseId, String user, Set<CaseRole> roles) {
-        grantCaseAssignmentAccess(caseId, Set.of(user), roles);
-        log.info("User {} granted {} to case {}", user, roles, caseId);
-    }
-
-    public void grantCaseAssignmentToLocalAuthority(String caseId, String localAuthority, Set<CaseRole> roles,
-                                                    Set<String> excludeUsers) {
-        Set<String> localAuthorityUsers = getUsers(caseId, localAuthority, excludeUsers, roles);
+    public void grantCaseAssignmentToLocalAuthority(String caseId, String localAuthority, Set<CaseRole> roles) {
+        Set<String> localAuthorityUsers = getUsers(caseId, localAuthority, Collections.emptySet(), roles);
         grantCaseAssignmentAccess(caseId, localAuthorityUsers, roles);
         log.info("Users {} granted {} to case {}", localAuthorityUsers, roles, caseId);
     }
@@ -112,18 +107,13 @@ public class CaseRoleService {
                     .caseAssignedUserRoles(caseAssignedRoles)
                     .build();
 
-            caseAccessDataStoreApi.addCaseUserRoles(userToken, serviceToken, addCaseAssignedUserRolesRequest);
-            caseAssignedRoles.stream()
-                            .map(CaseAssignedUserRoleWithOrganisation::getUserId)
-                            .forEach(usersGrantedAccess::add);
+            AddCaseAssignedUserRolesResponse response =
+                caseAccessDataStoreApi.addCaseUserRoles(userToken, serviceToken, addCaseAssignedUserRolesRequest);
+            log.info("Case Assignment Status {}", response.getStatus());
 
         } catch (FeignException ex) {
-            log.error("Could not find the case users for associated organisation from reference data", ex);
-            String statusMessage = ex.getMessage();
-            AddCaseAssignedUserRolesResponse addCaseResponse = new AddCaseAssignedUserRolesResponse();
-            addCaseResponse.setStatus(statusMessage);
-        } finally {
-            checkAllUsersGrantedAccess(caseId, users, usersGrantedAccess, roles);
+            log.error("Could not assign the users to the case", ex);
+            throw new GrantCaseAccessException(caseId, users, roles);
         }
     }
 

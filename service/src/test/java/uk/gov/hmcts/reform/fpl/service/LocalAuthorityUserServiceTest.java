@@ -13,6 +13,7 @@ import java.util.Set;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.CREATOR;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 
@@ -44,9 +45,22 @@ class LocalAuthorityUserServiceTest {
 
     @Test
     void shouldGrantCaseRolesToAllLocalAuthorityUsers() {
+        given(featureToggleService.isCaseUserAssignmentEnabled()).willReturn(false);
+
         localAuthorityUserService.grantUserAccessWithCaseRole(CASE_ID, LOCAL_AUTHORITY);
 
         verify(caseRoleService).grantAccessToUser(CASE_ID, USER_ID, CASE_ROLES);
         verify(caseRoleService).grantAccessToLocalAuthority(CASE_ID, LOCAL_AUTHORITY, CASE_ROLES, Set.of(USER_ID));
+        verifyNoMoreInteractions(caseRoleService);
+    }
+
+    @Test
+    void shouldGrantCaseRolesToAllLocalAuthorityUsersWithCaseAssignmentRoles() {
+        given(featureToggleService.isCaseUserAssignmentEnabled()).willReturn(true);
+
+        localAuthorityUserService.grantUserAccessWithCaseRole(CASE_ID, LOCAL_AUTHORITY);
+
+        verify(caseRoleService).grantCaseAssignmentToLocalAuthority(CASE_ID, LOCAL_AUTHORITY, CASE_ROLES);
+        verifyNoMoreInteractions(caseRoleService);
     }
 }
