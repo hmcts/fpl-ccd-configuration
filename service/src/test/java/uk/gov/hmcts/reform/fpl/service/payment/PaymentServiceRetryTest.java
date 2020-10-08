@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fnp.client.PaymentApi;
 
@@ -20,11 +19,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration
-@TestPropertySource(properties = {"payment.site_id=TEST_SITE_ID"})
 class PaymentServiceRetryTest {
 
     @Autowired
-    @Qualifier("asset")
+    @Qualifier("paymentApi")
     private PaymentApi paymentApi;
 
     @Test
@@ -41,9 +39,10 @@ class PaymentServiceRetryTest {
 
     @Configuration
     @EnableRetry
+    //without this it wouldn't let me autowire the payment api interface
     public static class SpringConfig {
-        @Bean(name = "asset")
-        public PaymentApi assetResource() throws Exception {
+        @Bean(name = "paymentApi")
+        public PaymentApi paymentApi() throws Exception {
             PaymentApi remoteService = mock(PaymentApi.class);
             when(remoteService.createCreditAccountPayment(any(), any(), any()))
                 .thenThrow(new RuntimeException("Remote Exception 1"))

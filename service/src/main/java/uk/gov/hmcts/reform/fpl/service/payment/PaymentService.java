@@ -110,6 +110,7 @@ public class PaymentService {
     }
 
     @Retryable(value = PaymentsApiException.class)
+    //had to make this public for retry to work
     public void callPaymentsApi(CreditAccountPaymentRequest creditAccountPaymentRequest) {
         try {
             paymentApi.createCreditAccountPayment(requestData.authorisation(),
@@ -125,6 +126,7 @@ public class PaymentService {
                 creditAccountPaymentRequest, ex.status(), ex.contentUTF8(), ex);
             System.out.println("Feign exception caught");
 
+            //exception type can be changed just using this for now
             throw new RuntimeException();
         }
     }
