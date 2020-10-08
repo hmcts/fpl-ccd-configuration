@@ -34,7 +34,6 @@ class LocalAuthorityUserServiceTest {
     @Mock
     private FeatureToggleService featureToggleService;
 
-
     @InjectMocks
     private LocalAuthorityUserService localAuthorityUserService;
 
@@ -45,7 +44,7 @@ class LocalAuthorityUserServiceTest {
 
     @Test
     void shouldGrantCaseRolesToAllLocalAuthorityUsers() {
-        given(featureToggleService.isCaseUserAssignmentEnabled()).willReturn(false);
+        given(featureToggleService.isCaseUserBulkAssignmentEnabled()).willReturn(false);
 
         localAuthorityUserService.grantUserAccessWithCaseRole(CASE_ID, LOCAL_AUTHORITY);
 
@@ -56,7 +55,7 @@ class LocalAuthorityUserServiceTest {
 
     @Test
     void shouldGrantCaseRolesToAllLocalAuthorityUsersWithCaseAssignmentRoles() {
-        given(featureToggleService.isCaseUserAssignmentEnabled()).willReturn(true);
+        given(featureToggleService.isCaseUserBulkAssignmentEnabled()).willReturn(true);
 
         localAuthorityUserService.grantUserAccessWithCaseRole(CASE_ID, LOCAL_AUTHORITY);
 

@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.authorisation.ServiceAuthorisationApi;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.ccd.model.AddCaseAssignedUserRolesRequest;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.OrganisationService;
@@ -47,9 +46,6 @@ class CaseInitiationMidEventControllerTest extends AbstractControllerTest {
 
     @MockBean
     private OrganisationService organisationService;
-
-    @MockBean
-    private AddCaseAssignedUserRolesRequest addCaseAssignedUserRolesRequest;
 
     @Autowired
     private SystemUpdateUserConfiguration userConfig;

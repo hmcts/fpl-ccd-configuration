@@ -50,7 +50,7 @@ public class FeatureToggleService {
         return ldClient.boolVariation("expert-ui", createLDUser(), false);
     }
 
-    public boolean isCaseUserAssignmentEnabled() {
+    public boolean isCaseUserBulkAssignmentEnabled() {
         return ldClient.boolVariation("case-user-assignment", createLDUser(), false);
     }
 

@@ -94,7 +94,7 @@ class FeatureToggleServiceTest {
     void shouldMakeCorrectCallForCaseUserAssignment(Boolean toggleState) {
         givenToggle(toggleState);
 
-        assertThat(service.isCaseUserAssignmentEnabled()).isEqualTo(toggleState);
+        assertThat(service.isCaseUserBulkAssignmentEnabled()).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
             eq("case-user-assignment"),
             ldUser(ENVIRONMENT).build(),
