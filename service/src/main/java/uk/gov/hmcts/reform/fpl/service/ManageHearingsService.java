@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -27,10 +27,10 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static java.time.LocalDate.now;
 import static java.util.Comparator.comparing;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
@@ -40,6 +40,7 @@ public class ManageHearingsService {
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
+    private final Time time;
 
     public static final String FIRST_HEARING_FLAG = "firstHearingFlag";
     public static final String HEARING_DATE_LIST = "hearingDateList";
@@ -48,13 +49,13 @@ public class ManageHearingsService {
         List<HearingBooking> hearingsList = unwrapElements(caseData.getHearingDetails());
 
         HearingBooking previousHearingBooking;
-        if (hearingsList.stream().anyMatch(hearing -> hearing.getStartDate().isBefore(LocalDateTime.now()))) {
+        if (hearingsList.stream().anyMatch(hearing -> hearing.getStartDate().isBefore(time.now()))) {
             previousHearingBooking = hearingsList.stream()
                 .filter(hearing -> hearing.getStartDate().isBefore(LocalDateTime.now()))
                 .max(comparing(HearingBooking::getStartDate))
                 .orElseThrow(NoHearingBookingException::new);
         } else {
-            previousHearingBooking = caseData.getMostUrgentHearingBookingAfter(LocalDateTime.now());
+            previousHearingBooking = caseData.getMostUrgentHearingBookingAfter(time.now());
         }
 
         return hearingVenueLookUpService.getHearingVenue(previousHearingBooking);
@@ -68,8 +69,8 @@ public class ManageHearingsService {
             ? previousHearingVenue.getAddress() : null;
 
         data.put("previousHearingVenue",
-            PreviousHearingVenue.builder().previousVenue(
-                hearingVenueLookUpService.buildHearingVenue(previousHearingVenue))
+            PreviousHearingVenue.builder()
+                .previousVenue(hearingVenueLookUpService.buildHearingVenue(previousHearingVenue))
                 .newVenueCustomAddress(customAddress)
                 .build());
         data.put("previousVenueId", previousHearingVenue.getHearingVenueId());
@@ -78,7 +79,7 @@ public class ManageHearingsService {
     }
 
     public HearingBooking findHearingBooking(UUID id, List<Element<HearingBooking>> hearingBookings) {
-        Optional<Element<HearingBooking>> hearingBookingElement = ElementUtils.findElement(id, hearingBookings);
+        Optional<Element<HearingBooking>> hearingBookingElement = findElement(id, hearingBookings);
 
         if (hearingBookingElement.isPresent()) {
             return hearingBookingElement.get().getValue();
@@ -112,7 +113,7 @@ public class ManageHearingsService {
         DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(notice,
             NOTICE_OF_HEARING);
         Document document = uploadDocumentService.uploadPDF(docmosisDocument.getBytes(),
-            NOTICE_OF_HEARING.getDocumentTitle(now()));
+            NOTICE_OF_HEARING.getDocumentTitle(time.now().toLocalDate()));
 
         hearingBooking.setNoticeOfHearing(DocumentReference.buildFromDocument(document));
     }
@@ -127,21 +128,6 @@ public class ManageHearingsService {
                 }
                 return hearingBookingElement;
             }).collect(Collectors.toList());
-    }
-
-    public List<Element<HearingBooking>> appendHearingBooking(List<Element<HearingBooking>> currentHearingBookings,
-                                                              HearingBooking hearingBooking) {
-        Element<HearingBooking> hearingBookingElement = Element.<HearingBooking>builder()
-            .id(UUID.randomUUID())
-            .value(hearingBooking)
-            .build();
-
-        if (currentHearingBookings.isEmpty()) {
-            return List.of(hearingBookingElement);
-        }
-
-        currentHearingBookings.add(hearingBookingElement);
-        return currentHearingBookings;
     }
 
     public Set<String> caseFieldsToBeRemoved() {

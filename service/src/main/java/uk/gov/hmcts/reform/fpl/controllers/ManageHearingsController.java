@@ -37,6 +37,7 @@ import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DATE
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInGatekeepingState;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListValueCode;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 
@@ -137,8 +138,11 @@ public class ManageHearingsController extends CallbackController {
             hearingBookingElements = manageHearingsService.updateEditedHearingEntry(
                 hearingBooking, editedHearingId, caseData.getHearingDetails());
         } else {
-            hearingBookingElements = manageHearingsService.appendHearingBooking(
-                defaultIfNull(caseData.getHearingDetails(), List.of()), hearingBooking);
+            List<Element<HearingBooking>> currentHearingBookings = defaultIfNull(
+                caseData.getHearingDetails(), List.of()
+            );
+            currentHearingBookings.add(element(hearingBooking));
+            hearingBookingElements = currentHearingBookings;
         }
 
         caseDetails.getData().put(HEARING_DETAILS_KEY, hearingBookingElements);
