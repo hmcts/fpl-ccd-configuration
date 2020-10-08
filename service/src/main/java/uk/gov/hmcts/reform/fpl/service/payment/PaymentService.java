@@ -73,7 +73,6 @@ public class PaymentService {
         return caseData.getApplicants().get(0).getValue().getParty();
     }
 
-    @Retryable(value = PaymentsApiException.class)
     public void makePaymentForC2(Long caseId, CaseData caseData) {
         C2DocumentBundle c2DocumentBundle = caseData.getLastC2DocumentBundle();
         String localAuthorityName =
@@ -110,17 +109,23 @@ public class PaymentService {
             .build();
     }
 
-    private void callPaymentsApi(CreditAccountPaymentRequest creditAccountPaymentRequest) {
+    @Retryable(value = PaymentsApiException.class)
+    public void callPaymentsApi(CreditAccountPaymentRequest creditAccountPaymentRequest) {
         try {
             paymentApi.createCreditAccountPayment(requestData.authorisation(),
                 authTokenGenerator.generate(),
                 creditAccountPaymentRequest);
-        } catch (FeignException ex) {
-            log.error("Payments response error for {}\n\tstatus: {} => message: \"{}\"",
-                creditAccountPaymentRequest, ex.status(), ex.contentUTF8(), ex);
-            System.out.println("Error test");
+        } catch (FeignException.InternalServerError ex) {
+            System.out.println("Internal server error caught");
 
             throw new PaymentsApiException(ex.contentUTF8(), ex);
+        }
+        catch (FeignException ex) {
+            log.error("Payments response error for {}\n\tstatus: {} => message: \"{}\"",
+                creditAccountPaymentRequest, ex.status(), ex.contentUTF8(), ex);
+            System.out.println("Feign exception caught");
+
+            throw new RuntimeException();
         }
     }
 }

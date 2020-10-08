@@ -105,27 +105,42 @@ class PaymentServiceTest {
 
         @Test
         void shouldRetryPaymentsApiWhen500IsThrown() {
-            CaseData caseData = CaseData.builder()
-                .caseLocalAuthority("LA")
-                .c2DocumentBundle(List.of(element(C2DocumentBundle.builder()
-                    .type(WITH_NOTICE)
-                    .pbaNumber("PBA123")
-                    .clientCode("clientCode")
-                    .fileReference("reference")
-                    .build())))
+            CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+                .customerReference("1")
+                .amount(feeForC2WithNotice.getCalculatedAmount())
+                .fees(List.of(feeForC2WithNotice))
                 .build();
 
-            Mockito.doThrow(FeignException.class).when(paymentApi).createCreditAccountPayment(
-                any(),any(), any());
+            Mockito.doThrow(FeignException.InternalServerError.class).when(paymentApi).createCreditAccountPayment(
+                any(), any(), any());
 
             try {
-                paymentService.makePaymentForC2(CASE_ID, caseData);
-            } catch (PaymentsApiException e) {
+                paymentService.callPaymentsApi(expectedPaymentRequest);
+            } catch (PaymentsApiException ex) {
             } finally {
                 verify(paymentApi, times(3)).createCreditAccountPayment(any(), any(), any());
 
             }
+        }
 
+        @Test
+        void shouldNotRetryPaymentsApiWhenExceptionOtherThan500IsThrown() {
+            CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+                .customerReference("1")
+                .amount(feeForC2WithNotice.getCalculatedAmount())
+                .fees(List.of(feeForC2WithNotice))
+                .build();
+
+            Mockito.doThrow(FeignException.class).when(paymentApi).createCreditAccountPayment(
+                any(), any(), any());
+
+            try {
+                paymentService.callPaymentsApi(expectedPaymentRequest);
+            } catch (RuntimeException ex) {
+            } finally {
+                verify(paymentApi, times(1)).createCreditAccountPayment(any(), any(), any());
+
+            }
         }
 
         @ParameterizedTest
