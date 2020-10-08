@@ -42,7 +42,7 @@ module.exports = {
 
   async enterHearingDetails(hearingDetails) {
     I.click(this.fields.hearingType.final);
-    I.selectOption(this.fields.venue, hearingDetails.venue);
+    I.selectOption(this.fields.hearingVenue, hearingDetails.venue);
 
     I.fillField(this.fields.startDate.second, hearingDetails.startDate.second);
     I.fillField(this.fields.startDate.minute, hearingDetails.startDate.minute);
@@ -59,14 +59,15 @@ module.exports = {
   },
 
   async enterJudgeAndLegalAdvisorDetails(hearingDetails) {
+    judgeAndLegalAdvisor.useAlternateJudge();
     judgeAndLegalAdvisor.selectJudgeTitle();
     judgeAndLegalAdvisor.enterJudgeLastName(hearingDetails.judgeAndLegalAdvisor.judgeLastName);
     judgeAndLegalAdvisor.enterLegalAdvisorName(hearingDetails.judgeAndLegalAdvisor.legalAdvisorName);
   },
 
-  async enterNoticeOfHearingDetails() {
+  async enterNoticeOfHearingDetails(notes) {
     I.click(this.fields.sendNoticeOfHearing);
-    I.fillField(this.fields.noticeOfHearingNotes, 'Notes that will appear on the notice of hearing');
+    I.fillField(this.fields.noticeOfHearingNotes, notes);
   },
 
 };
