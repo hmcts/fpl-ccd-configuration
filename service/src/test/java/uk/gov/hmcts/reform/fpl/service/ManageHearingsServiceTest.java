@@ -139,7 +139,8 @@ public class ManageHearingsServiceTest {
         given(hearingVenueLookUpService.buildHearingVenue(any())).willCallRealMethod();
 
         CaseData caseData = CaseData.builder()
-            .hearingDetails(List.of(element(hearingWithCustomAddress(time.now().plusHours(1), time.now().plusHours(2)))))
+            .hearingDetails(List.of(element(hearingWithCustomAddress(
+                time.now().plusHours(1), time.now().plusHours(2)))))
             .build();
 
         Map<String, Object> previousVenueFields = service.populatePreviousVenueFields(caseData);
@@ -208,7 +209,6 @@ public class ManageHearingsServiceTest {
         assertThat(updatedList).hasSize(2);
         assertThat(updatedList.get(1)).isEqualTo(element(idToUpdate, hearing));
     }
-
 
     private HearingBooking hearing(LocalDateTime start, LocalDateTime end) {
         return HearingBooking.builder()
