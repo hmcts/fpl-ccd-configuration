@@ -38,7 +38,7 @@ public class ManageHearingsControllerValidateHearingDatesMidEventTest extends Ab
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "validate-hearing-dates");
 
-        assertThat(callbackResponse.getErrors()).containsExactly(
+        assertThat(callbackResponse.getErrors()).containsExactlyInAnyOrder(
             "Enter a start date in the future",
             "Enter an end date in the future");
     }
