@@ -89,8 +89,6 @@ public class CaseRoleService {
     }
 
     private void grantCaseAssignmentAccess(String caseId, Set<String> users, Set<CaseRole> roles) {
-        final Set<String> usersGrantedAccess = Sets.newConcurrentHashSet();
-
         try {
             final String userToken = idam.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
             final String serviceToken = authTokenGenerator.generate();
