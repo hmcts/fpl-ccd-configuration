@@ -1,0 +1,5 @@
+ccd configuration:
+  - any: ['ccd-definition/**/*']
+
+docmosis:
+  - any: ['docker/docmosis/templates/*']
