@@ -143,6 +143,10 @@ public class ManageHearingsController extends CallbackController {
             );
             currentHearingBookings.add(element(hearingBooking));
             hearingBookingElements = currentHearingBookings;
+
+            //ID of hearing that was just added
+            caseDetails.getData().put(SELECTED_HEARING_IDS,
+                List.of(hearingBookingElements.get(hearingBookingElements.size() - 1)));
         }
 
         caseDetails.getData().put(HEARING_DETAILS_KEY, hearingBookingElements);
