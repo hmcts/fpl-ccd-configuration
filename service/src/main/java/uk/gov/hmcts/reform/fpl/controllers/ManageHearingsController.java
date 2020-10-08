@@ -32,7 +32,6 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
-import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.SELECTED_HEARING_IDS;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.FIRST_HEARING_FLAG;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInGatekeepingState;
@@ -119,8 +118,7 @@ public class ManageHearingsController extends CallbackController {
 
         if (caseData.getHearingDetails() != null) {
             HearingVenue previousHearingVenue = manageHearingsService.getPreviousHearingVenue(caseData);
-            caseData.setPreviousVenueId(previousHearingVenue.getHearingVenueId()
-            );
+            caseData.setPreviousVenueId(previousHearingVenue.getHearingVenueId());
             caseData.setHearingVenueCustom(previousHearingVenue.getAddress());
         }
 
@@ -136,20 +134,13 @@ public class ManageHearingsController extends CallbackController {
         if (EDIT_DRAFT == caseData.getUseExistingHearing()) {
             UUID editedHearingId = getDynamicListValueCode(caseData.getHearingDateList(), mapper);
 
-            caseDetails.getData().put(SELECTED_HEARING_IDS, List.of(editedHearingId));
-
             hearingBookingElements = manageHearingsService.updateEditedHearingEntry(
                 hearingBooking, editedHearingId, caseData.getHearingDetails());
         } else {
             hearingBookingElements = manageHearingsService.appendHearingBooking(
                 defaultIfNull(caseData.getHearingDetails(), List.of()), hearingBooking);
-
-            //ID of hearing that was just added
-            caseDetails.getData().put(SELECTED_HEARING_IDS,
-                List.of(hearingBookingElements.get(hearingBookingElements.size() - 1)));
         }
 
-        caseDetails.getData().put(SELECTED_HEARING_IDS, caseData.getSelectedHearingIds());
         caseDetails.getData().put(HEARING_DETAILS_KEY, hearingBookingElements);
         caseDetails.getData().put(FIRST_HEARING_FLAG, "No");
 
