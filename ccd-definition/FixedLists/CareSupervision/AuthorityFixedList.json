@@ -9,9 +9,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "DBC",
+    "ListElement": "Darlington Borough Council",
+    "DisplayOrder": 6
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "DCC",
     "ListElement": "Durham County Council",
-    "DisplayOrder": 6
+    "DisplayOrder": 7
   },
   {
     "LiveFrom": "01/01/2017",
@@ -26,6 +33,13 @@
     "ListElementCode": "FPLA",
     "ListElement": "FPLA team",
     "DisplayOrder": 15
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "HCC",
+    "ListElement": "Hertfordshire County Council",
+    "DisplayOrder": 16
   },
   {
     "LiveFrom": "01/01/2017",
