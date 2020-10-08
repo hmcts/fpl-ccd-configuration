@@ -1,5 +1,6 @@
 const {I} = inject();
 const judgeAndLegalAdvisor = require('../../fragments/judgeAndLegalAdvisor');
+const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 
 module.exports = {
 
@@ -8,54 +9,55 @@ module.exports = {
       addNewHearing: '#useExistingHearing-NEW_HEARING',
       editDraftHearing: '#useExistingHearing-EDIT_DRAFT',
     },
+    hearingDateList: '#hearingDateList',
     hearingType: {
       final: '#hearingType-CASE_MANAGEMENT',
     },
     hearingVenue: '#hearingVenue',
-    startDate: {
-      second: '#hearingStartDate-second',
-      minute: '#hearingStartDate-minute',
-      hour: '#hearingStartDate-hour',
-      day: '#hearingStartDate-day',
-      month: '#hearingStartDate-month',
-      year: '#hearingStartDate-year',
-    },
-    endDate: {
-      second: '#hearingEndDate-second',
-      minute: '#hearingEndDate-minute',
-      hour: '#hearingEndDate-hour',
-      day: '#hearingEndDate-day',
-      month: '#hearingEndDate-month',
-      year: '#hearingEndDate-year',
-    },
-    sendNoticeOfHearing: '#sendNoticeOfHearing-Yes',
-    noticeOfHearingNotes: '#noticeOfHearingNotes',
+    usePreviousHearingVenue: '#previousHearingVenue_usePreviousVenue-Yes',
+    dontUsePreviousHearingVenue: '#previousHearingVenue_usePreviousVenue-No',
+    newVenue: '#previousHearingVenue_newVenue',
+    newVenueCustomAddress: '#previousHearingVenue_newVenueCustomAddress_newVenueCustomAddress',
+    startDate: '#hearingStartDate',
+    endDate: '#hearingEndDate',
+    sendNotice: '#sendNoticeOfHearing-Yes',
+    dontSendNotice: '#sendNoticeOfHearing-No',
+    noticeNotes: '#noticeOfHearingNotes',
   },
 
-  // async selectAddNewHearing() {
-  //   I.click(this.fields.hearingOptions.addNewHearing);
-  // },
-  //
-  // async selectEditDraftHearing() {
-  //   I.click(this.fields.hearingOptions.editDraftHearing);
-  // },
+  async selectAddNewHearing() {
+    I.click(this.fields.hearingOptions.addNewHearing);
+  },
+
+  async selectEditHearing(hearing) {
+    I.click(this.fields.hearingOptions.editDraftHearing);
+    I.selectOption(this.fields.hearingDateList, hearing);
+  },
 
   async enterHearingDetails(hearingDetails) {
     I.click(this.fields.hearingType.final);
-    I.selectOption(this.fields.hearingVenue, hearingDetails.venue);
 
-    I.fillField(this.fields.startDate.second, hearingDetails.startDate.second);
-    I.fillField(this.fields.startDate.minute, hearingDetails.startDate.minute);
-    I.fillField(this.fields.startDate.hour, hearingDetails.startDate.hour);
-    I.fillField(this.fields.startDate.day, hearingDetails.startDate.day);
-    I.fillField(this.fields.startDate.month, hearingDetails.startDate.month);
-    I.fillField(this.fields.startDate.year, hearingDetails.startDate.year);
-    I.fillField(this.fields.endDate.second, hearingDetails.endDate.second);
-    I.fillField(this.fields.endDate.minute, hearingDetails.endDate.minute);
-    I.fillField(this.fields.endDate.hour, hearingDetails.endDate.hour);
-    I.fillField(this.fields.endDate.day, hearingDetails.endDate.day);
-    I.fillField(this.fields.endDate.month, hearingDetails.endDate.month);
-    I.fillField(this.fields.endDate.year, hearingDetails.endDate.year);
+    I.fillDateAndTime(hearingDetails.startDate, this.fields.startDate);
+    I.fillDateAndTime(hearingDetails.endDate, this.fields.endDate);
+  },
+
+  async enterVenue(hearingDetails) {
+    I.selectOption(this.fields.hearingVenue, hearingDetails.venue);
+  },
+
+  async selectPreviousVenue() {
+    I.click(this.fields.usePreviousHearingVenue);
+  },
+
+  async enterNewVenue(hearingDetails) {
+    I.click(this.fields.dontUsePreviousHearingVenue);
+    I.selectOption(this.fields.newVenue, hearingDetails.venue);
+
+    if (hearingDetails.venue === 'Other') {
+      within(this.fields.newVenueCustomAddress, () => {
+        postcodeLookup.enterAddressManually(hearingDetails.venueCustomAddress);
+      });
+    }
   },
 
   async enterJudgeAndLegalAdvisorDetails(hearingDetails) {
@@ -65,9 +67,17 @@ module.exports = {
     judgeAndLegalAdvisor.enterLegalAdvisorName(hearingDetails.judgeAndLegalAdvisor.legalAdvisorName);
   },
 
-  async enterNoticeOfHearingDetails(notes) {
-    I.click(this.fields.sendNoticeOfHearing);
-    I.fillField(this.fields.noticeOfHearingNotes, notes);
+  async selectedAllocatedJudge() {
+    judgeAndLegalAdvisor.useAllocatedJudge();
+  },
+
+  async sendNoticeOfHearingWithNotes(notes) {
+    I.click(this.fields.sendNotice);
+    I.fillField(this.fields.noticeNotes, notes);
+  },
+
+  async dontSendNoticeOfHearing() {
+    I.click(this.fields.dontSendNotice);
   },
 
 };

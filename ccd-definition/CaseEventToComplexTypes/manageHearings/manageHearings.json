@@ -113,7 +113,7 @@
     "ID": "ManageHearings",
     "CaseEventID": "manageHearings",
     "CaseFieldID": "previousHearingVenue",
-    "ListElementCode": "venueCustomAddress",
+    "ListElementCode": "newVenueCustomAddress",
     "SecurityClassification": "Public",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY"
@@ -122,35 +122,35 @@
     "ID": "ManageHearings",
     "CaseEventID": "manageHearings",
     "CaseFieldID": "previousHearingVenue",
-    "ListElementCode": "venueCustomAddress.AddressLine1",
+    "ListElementCode": "newVenueCustomAddress.AddressLine1",
     "DisplayContext": "MANDATORY"
   },
   {
     "ID": "ManageHearings",
     "CaseEventID": "manageHearings",
     "CaseFieldID": "previousHearingVenue",
-    "ListElementCode": "venueCustomAddress.AddressLine2",
+    "ListElementCode": "newVenueCustomAddress.AddressLine2",
     "DisplayContext": "OPTIONAL"
   },
   {
     "ID": "ManageHearings",
     "CaseEventID": "manageHearings",
     "CaseFieldID": "previousHearingVenue",
-    "ListElementCode": "venueCustomAddress.AddressLine3",
+    "ListElementCode": "newVenueCustomAddress.AddressLine3",
     "DisplayContext": "OPTIONAL"
   },
   {
     "ID": "ManageHearings",
     "CaseEventID": "manageHearings",
     "CaseFieldID": "previousHearingVenue",
-    "ListElementCode": "venueCustomAddress.PostTown",
+    "ListElementCode": "newVenueCustomAddress.PostTown",
     "DisplayContext": "OPTIONAL"
   },
   {
     "ID": "ManageHearings",
     "CaseEventID": "manageHearings",
     "CaseFieldID": "previousHearingVenue",
-    "ListElementCode": "venueCustomAddress.County",
+    "ListElementCode": "newVenueCustomAddress.County",
     "SecurityClassification": "Public",
     "DisplayContext": "OPTIONAL"
   },
@@ -158,7 +158,7 @@
     "ID": "ManageHearings",
     "CaseEventID": "manageHearings",
     "CaseFieldID": "previousHearingVenue",
-    "ListElementCode": "venueCustomAddress.PostCode",
+    "ListElementCode": "newVenueCustomAddress.PostCode",
     "SecurityClassification": "Public",
     "DisplayContext": "MANDATORY"
   },
@@ -166,7 +166,7 @@
     "ID": "ManageHearings",
     "CaseEventID": "manageHearings",
     "CaseFieldID": "previousHearingVenue",
-    "ListElementCode": "venueCustomAddress.Country",
+    "ListElementCode": "newVenueCustomAddress.Country",
     "DisplayContext": "OPTIONAL"
   }
 ]

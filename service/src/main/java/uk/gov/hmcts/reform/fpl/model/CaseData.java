@@ -514,10 +514,10 @@ public class CaseData {
 
     private final HearingType hearingType;
     private final String hearingVenue;
-    private final Address hearingVenueCustom;
+    private Address hearingVenueCustom;
     private final String firstHearingFlag;
     private final PreviousHearingVenue previousHearingVenue;
-    private final String previousVenueId;
+    private String previousVenueId;
     private final String noticeOfHearingNotes;
     private final Object hearingDateList;
 

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
@@ -29,9 +30,6 @@ import java.util.stream.Collectors;
 import static java.time.LocalDate.now;
 import static java.util.Comparator.comparing;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -45,24 +43,6 @@ public class ManageHearingsService {
 
     public static final String FIRST_HEARING_FLAG = "firstHearingFlag";
     public static final String HEARING_DATE_LIST = "hearingDateList";
-
-    public Map<String, Object> populateInitialFields(CaseData caseData) {
-        Map<String, Object> data = new HashMap<>();
-        List<Element<HearingBooking>> futureHearings = caseData.getFutureHearings();
-
-        data.put(HEARING_DATE_LIST, asDynamicList(futureHearings, hearing -> hearing.toLabel(DATE)));
-        data.put("hasExistingHearings", YES.getValue());
-
-        HearingVenue previousHearingVenue = getPreviousHearingVenue(caseData);
-
-        data.put("previousHearingVenue",
-            PreviousHearingVenue.builder().previousVenue(
-                hearingVenueLookUpService.buildHearingVenue(previousHearingVenue))
-                .build());
-        data.put("previousVenueId", previousHearingVenue.getHearingVenueId());
-
-        return data;
-    }
 
     public HearingVenue getPreviousHearingVenue(CaseData caseData) {
         List<HearingBooking> hearingsList = unwrapElements(caseData.getHearingDetails());
@@ -78,6 +58,23 @@ public class ManageHearingsService {
         }
 
         return hearingVenueLookUpService.getHearingVenue(previousHearingBooking);
+    }
+
+    public Map<String, Object> populatePreviousVenueFields(CaseData caseData) {
+        Map<String, Object> data = new HashMap<>();
+        HearingVenue previousHearingVenue = getPreviousHearingVenue(caseData);
+
+        Address customAddress = "OTHER".equals(previousHearingVenue.getHearingVenueId())
+            ? previousHearingVenue.getAddress() : null;
+
+        data.put("previousHearingVenue",
+            PreviousHearingVenue.builder().previousVenue(
+                hearingVenueLookUpService.buildHearingVenue(previousHearingVenue))
+                .newVenueCustomAddress(customAddress)
+                .build());
+        data.put("previousVenueId", previousHearingVenue.getHearingVenueId());
+
+        return data;
     }
 
     public HearingBooking findHearingBooking(UUID id, List<Element<HearingBooking>> hearingBookings) {
@@ -126,7 +123,7 @@ public class ManageHearingsService {
         return hearings.stream()
             .map(hearingBookingElement -> {
                 if (hearingBookingElement.getId().equals(hearingId)) {
-                    element(hearingBookingElement.getId(), hearingBooking);
+                    hearingBookingElement = element(hearingBookingElement.getId(), hearingBooking);
                 }
                 return hearingBookingElement;
             }).collect(Collectors.toList());
@@ -175,15 +172,25 @@ public class ManageHearingsService {
     }
 
     private HearingBooking buildFollowingHearings(CaseData caseData) {
+        Address venueCustomAddress;
+
+        //Handles situation where user entered a custom hearing venue after selecting 'Other'
+        if (caseData.getPreviousHearingVenue().getUsePreviousVenue().equals("No")) {
+            venueCustomAddress = caseData.getPreviousHearingVenue().getNewVenueCustomAddress();
+        } else {
+            venueCustomAddress = caseData.getHearingVenueCustom();
+        }
+
         return HearingBooking.builder()
             .type(caseData.getHearingType())
             .venue(caseData.getPreviousHearingVenue().getUsePreviousVenue().equals("Yes")
                 ? caseData.getPreviousVenueId() : caseData.getPreviousHearingVenue().getNewVenue())
-            .venueCustomAddress(caseData.getPreviousHearingVenue().getVenueCustomAddress())
+            .venueCustomAddress(venueCustomAddress)
             .startDate(caseData.getHearingStartDate())
             .endDate(caseData.getHearingEndDate())
             .judgeAndLegalAdvisor(caseData.getJudgeAndLegalAdvisor())
             .previousHearingVenue(caseData.getPreviousHearingVenue())
+            .additionalNotes(caseData.getNoticeOfHearingNotes())
             .build();
     }
 }

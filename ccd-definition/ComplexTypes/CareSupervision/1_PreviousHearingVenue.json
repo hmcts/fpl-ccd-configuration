@@ -28,7 +28,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "PreviousHearingVenue",
-    "ListElementCode": "venueCustomAddress",
+    "ListElementCode": "newVenueCustomAddress",
     "FieldType": "AddressUK",
     "ElementLabel": "Venue address",
     "SecurityClassification": "Public",

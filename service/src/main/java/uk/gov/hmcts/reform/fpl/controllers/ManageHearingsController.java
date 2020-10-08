@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.events.NewHearingsAdded;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -29,6 +30,8 @@ import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.SELECTED_HEARING_IDS;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.FIRST_HEARING_FLAG;
@@ -65,7 +68,9 @@ public class ManageHearingsController extends CallbackController {
         if (hearings.isEmpty()) {
             caseDetails.getData().put(FIRST_HEARING_FLAG, "Yes");
         } else {
-            caseDetails.getData().putAll(manageHearingsService.populateInitialFields(caseData));
+            caseDetails.getData().put(HEARING_DATE_LIST,
+                asDynamicList(caseData.getFutureHearings(), hearing -> hearing.toLabel(DATE)));
+            caseDetails.getData().put("hasExistingHearings", YES.getValue());
         }
 
         return respond(caseDetails);
@@ -76,8 +81,10 @@ public class ManageHearingsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        //Only triggered for edit journey
-        if (EDIT_DRAFT == caseData.getUseExistingHearing()) {
+        //If new hearing, populate previous venue - if editing existing hearing, populate page with existing hearing
+        if (NEW_HEARING == caseData.getUseExistingHearing()) {
+            caseDetails.getData().putAll(manageHearingsService.populatePreviousVenueFields(caseData));
+        } else if (EDIT_DRAFT == caseData.getUseExistingHearing()) {
             UUID hearingBookingId = getDynamicListValueCode(caseData.getHearingDateList(), mapper);
 
             List<Element<HearingBooking>> futureHearings = caseData.getFutureHearings();
@@ -112,6 +119,13 @@ public class ManageHearingsController extends CallbackController {
     public CallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+
+        if (caseData.getHearingDetails() != null) {
+            HearingVenue previousHearingVenue = manageHearingsService.getPreviousHearingVenue(caseData);
+            caseData.setPreviousVenueId(previousHearingVenue.getHearingVenueId()
+            );
+            caseData.setHearingVenueCustom(previousHearingVenue.getAddress());
+        }
 
         HearingBooking hearingBooking = manageHearingsService.buildHearingBooking(caseData);
 
