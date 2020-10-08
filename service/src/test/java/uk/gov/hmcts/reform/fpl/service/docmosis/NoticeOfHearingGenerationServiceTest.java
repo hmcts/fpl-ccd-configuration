@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisTemplateImages;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
@@ -115,8 +116,10 @@ class NoticeOfHearingGenerationServiceTest {
             .judgeAndLegalAdvisor(getExpectedDocmosisJudgeAndLegalAdvisor())
             .postingDate(formatLocalDateToString(LocalDate.now(), DATE))
             .additionalNotes("additional note")
-            .courtseal(COURT_SEAL.getValue())
-            .crest(CREST.getValue());
+            .templateImages(DocmosisTemplateImages.builder()
+                .courtseal(COURT_SEAL.getValue())
+                .crest(CREST.getValue())
+                .build());
     }
 
     private HearingBooking buildHearingBooking(LocalDateTime startDate, LocalDateTime endDate) {

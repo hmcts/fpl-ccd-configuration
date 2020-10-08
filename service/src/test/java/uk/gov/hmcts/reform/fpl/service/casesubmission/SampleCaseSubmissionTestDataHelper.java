@@ -43,8 +43,6 @@ public class SampleCaseSubmissionTestDataHelper {
             .allocation(expectedAllocation())
             .hearingPreferences(expectedDocmosisHearingPreferences())
             .internationalElement(expectedDocmosisInternationalElement())
-            .courtSeal(null)
-            .draftWaterMark(null)
             .userFullName("Professor")
             .submittedDate(now().format(ofPattern("d MMMM yyyy")))
             .groundsForEPOReason("There’s reasonable cause to believe the child is likely to suffer"

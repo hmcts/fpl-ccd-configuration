@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisTemplateImages;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 
@@ -44,8 +45,10 @@ public class NoticeOfHearingGenerationService {
             .judgeAndLegalAdvisor(dataService.getJudgeAndLegalAdvisor(hearingBooking.getJudgeAndLegalAdvisor()))
             .postingDate(formatLocalDateToString(LocalDate.now(), DATE))
             .additionalNotes(hearingBooking.getAdditionalNotes())
-            .courtseal(COURT_SEAL.getValue())
-            .crest(CREST.getValue())
+            .templateImages(DocmosisTemplateImages.builder()
+                .courtseal(COURT_SEAL.getValue())
+                .crest(CREST.getValue())
+                .build())
             .build();
     }
 

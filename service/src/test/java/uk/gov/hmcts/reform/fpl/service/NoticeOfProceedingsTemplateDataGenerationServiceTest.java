@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisTemplateImages;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -172,8 +173,10 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
                 .legalAdvisorName("John Bishop")
                 .build())
             .todaysDate(formatLocalDateToString(time.now().toLocalDate(), FormatStyle.LONG))
-            .crest("[userImage:crest.png]")
-            .courtseal("[userImage:familycourtseal.png]")
+            .templateImages(DocmosisTemplateImages.builder()
+                .crest("[userImage:crest.png]")
+                .courtseal("[userImage:familycourtseal.png]")
+                .build())
             .build();
 
         assertThat(templateData).isEqualToComparingFieldByField(expectedData);

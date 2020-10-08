@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisTemplateImages;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisTemplateDataGeneration;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
@@ -65,8 +66,10 @@ public class NoticeOfProceedingsTemplateDataGenerationService
                     prioritisedHearingBooking))
                 .hearingTime(caseDataExtractionService.getHearingTime(prioritisedHearingBooking))
                 .build())
-            .crest(getCrestData())
-            .courtseal(getCourtSealData())
+            .templateImages(DocmosisTemplateImages.builder()
+                .crest(getCrestData())
+                .courtseal(getCourtSealData())
+                .build())
             .build();
     }
 

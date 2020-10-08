@@ -41,6 +41,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearing;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingPreferences;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisInternationalElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRisks;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisTemplateImages;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -1058,16 +1059,20 @@ class CaseSubmissionGenerationServiceTest {
         void shouldHaveDocmosisCaseSubmissionWithDraftWatermarkWhenApplicationIsDraft() {
             templateDataGenerationService.populateDraftWaterOrCourtSeal(caseSubmission, true);
 
-            assertThat(caseSubmission.getDraftWaterMark()).isEqualTo(DRAFT_WATERMARK.getValue());
-            assertThat(caseSubmission.getCourtSeal()).isNull();
+            DocmosisTemplateImages templateImages = caseSubmission.getTemplateImages();
+
+            assertThat(templateImages.getCourtseal()).isNull();
+            assertThat(templateImages.getDraftbackground()).isEqualTo(DRAFT_WATERMARK.getValue());
         }
 
         @Test
         void shouldHaveDocmosisCaseSubmissionWithCourtSealWhenApplicationIsNotDraft() {
             templateDataGenerationService.populateDraftWaterOrCourtSeal(caseSubmission, false);
 
-            assertThat(caseSubmission.getCourtSeal()).isEqualTo(COURT_SEAL.getValue());
-            assertThat(caseSubmission.getDraftWaterMark()).isNull();
+            DocmosisTemplateImages templateImages = caseSubmission.getTemplateImages();
+
+            assertThat(templateImages.getCourtseal()).isEqualTo(COURT_SEAL.getValue());
+            assertThat(templateImages.getDraftbackground()).isNull();
         }
     }
 

@@ -47,6 +47,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisOtherParty;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisProceeding;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRisks;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisTemplateImages;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
@@ -128,9 +129,13 @@ public class CaseSubmissionGenerationService
 
     public void populateDraftWaterOrCourtSeal(final DocmosisCaseSubmission caseSubmission, final boolean isDraft) {
         if (isDraft) {
-            caseSubmission.setDraftWaterMark(getDraftWaterMarkData());
+            caseSubmission.setTemplateImages(DocmosisTemplateImages.builder()
+                .draftWaterMark(getDraftWaterMarkData())
+                .build());
         } else {
-            caseSubmission.setCourtSeal(getCourtSealData());
+            caseSubmission.setTemplateImages(DocmosisTemplateImages.builder()
+                .courtseal(getCourtSealData())
+                .build());
         }
     }
 

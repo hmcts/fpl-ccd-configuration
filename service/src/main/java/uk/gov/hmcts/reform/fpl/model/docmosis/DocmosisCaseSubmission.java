@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.model.docmosis;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -38,6 +39,6 @@ public class DocmosisCaseSubmission implements DocmosisData {
     private final String relevantProceedings;
 
     private String caseNumber;
-    private String courtSeal;
-    private String draftWaterMark;
+    @JsonUnwrapped
+    private DocmosisTemplateImages templateImages;
 }
