@@ -49,7 +49,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-// TODO: 01/10/2020 refactor into services for different orders?
+// REFACTOR: 08/10/2020 Split into separate services (see: FPLA-2290)
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class GeneratedOrderService {
