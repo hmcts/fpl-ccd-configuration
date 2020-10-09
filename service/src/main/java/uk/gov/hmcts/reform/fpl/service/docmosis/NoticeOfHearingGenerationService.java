@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 
 import java.time.LocalDate;
@@ -41,7 +40,7 @@ public class NoticeOfHearingGenerationService {
             .preHearingAttendance(dataService.extractPrehearingAttendance(hearingBooking))
             .judgeAndLegalAdvisor(dataService.getJudgeAndLegalAdvisor(hearingBooking.getJudgeAndLegalAdvisor()))
             .postingDate(formatLocalDateToString(LocalDate.now(), DATE))
-            .additionalNotes(caseData.getNoticeOfHearingNotes())
+            .additionalNotes(hearingBooking.getAdditionalNotes())
             .courtseal(COURT_SEAL.getValue())
             .crest(CREST.getValue())
             .build();
@@ -51,4 +50,5 @@ public class NoticeOfHearingGenerationService {
         return hearingBooking.getType() != OTHER ? hearingBooking.getType().getLabel().toLowerCase() :
             hearingBooking.getTypeDetails();
     }
+
 }
