@@ -106,6 +106,7 @@ public class GeneratedOrderService {
                     .date(formatLocalDateTimeBaseUsingFormat(time.now(), TIME_DATE))
                     .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
                     .uploader(uploadHelper.getUploadedDocumentUserDetails())
+                    .uploadedOrderDescription(typeAndDocument.getOrderDescription())
                     .build();
             default:
         }

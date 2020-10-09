@@ -25,6 +25,8 @@ public class OrderTypeAndDocument {
     private final GeneratedOrderSubtype subtype;
     private DocumentReference document;
     private final UploadedOrderType uploadedOrderType;
+    private final String orderName;
+    private final String orderDescription;
 
     @JsonIgnore
     public boolean isFinal() {
@@ -53,6 +55,11 @@ public class OrderTypeAndDocument {
 
     @JsonIgnore
     public String getTypeLabel() {
-        return !isUploaded() ? type.getLabel() : uploadedOrderType.getFullLabel();
+        if (!isUploaded()) {
+            return type.getLabel();
+        } else if (UploadedOrderType.OTHER == uploadedOrderType) {
+            return orderName;
+        }
+        return uploadedOrderType.getFullLabel();
     }
 }

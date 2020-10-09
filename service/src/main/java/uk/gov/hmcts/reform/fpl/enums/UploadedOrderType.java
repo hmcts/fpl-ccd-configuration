@@ -6,6 +6,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum UploadedOrderType {
+    OTHER(null),
     C24("Variation of Emergency protection order"),
     C25("Warrant to assist EPO"),
     C27("Authority to search for another child"),
