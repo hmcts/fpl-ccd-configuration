@@ -6,12 +6,13 @@ const dateToString = require('../helpers/date_to_string_helper');
 const gatekeepingNoHearingDetails = require('../fixtures/caseData/gatekeepingNoHearingDetails.json');
 
 let caseId;
+let submittedAt;
 
 Feature('Gatekeeper Case administration after gatekeeping');
 
 BeforeSuite(async (I) => {
   caseId = await I.submitNewCaseWithData(gatekeepingNoHearingDetails);
-
+  submittedAt = new Date();
   await I.signIn(config.gateKeeperUser);
 });
 
@@ -60,7 +61,35 @@ Scenario('Gatekeeper enters allocation decision', async (I, caseViewPage, enterA
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationDecision);
 });
 
-Scenario('Gatekeeper enters hearing details and submits', async (I, caseViewPage, addHearingBookingDetailsEventPage) => {
+Scenario('Gatekeeper manages hearings', async (I, caseViewPage, manageHearingsEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
+  await manageHearingsEventPage.enterHearingDetails(hearingDetails[0]);
+  await manageHearingsEventPage.enterVenue(hearingDetails[0]);
+  await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
+  await manageHearingsEventPage.enterJudgeAndLegalAdvisorDetails(hearingDetails[0]);
+  await I.retryUntilExists(() => I.click('Continue'), '#sendNoticeOfHearing');
+  await manageHearingsEventPage.sendNoticeOfHearingWithNotes(hearingDetails[0].additionalNotes);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageHearings);
+  caseViewPage.selectTab(caseViewPage.tabs.hearings);
+
+  I.wait(10);
+
+  let startDate = dateToString(hearingDetails[0].startDate);
+  let endDate = dateToString(hearingDetails[0].endDate);
+  I.seeInTab(['Hearing 1', 'Type of hearing'], hearingDetails[0].caseManagement);
+  I.seeInTab(['Hearing 1', 'Venue'], hearingDetails[0].venue);
+  I.seeInTab(['Hearing 1', 'Start date and time'], dateFormat(startDate, 'd mmm yyyy, h:MM:ss TT'));
+  I.seeInTab(['Hearing 1', 'End date and time'], dateFormat(endDate, 'd mmm yyyy, h:MM:ss TT'));
+  I.seeInTab(['Hearing 1', 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], hearingDetails[0].judgeAndLegalAdvisor.judgeTitle);
+  I.seeInTab(['Hearing 1', 'Judge and Justices\' Legal Adviser', 'Last name'], hearingDetails[0].judgeAndLegalAdvisor.judgeLastName);
+  I.seeInTab(['Hearing 1', 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name'], hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
+  I.seeInTab(['Hearing 1', 'Additional notes'], hearingDetails[0].additionalNotes);
+  I.seeInTab(['Hearing 1', 'Notice of hearing'], `Notice_of_hearing_${dateFormat(submittedAt, 'ddmmmm')}.pdf`);
+
+});
+
+xScenario('Gatekeeper enters hearing details and submits', async (I, caseViewPage, addHearingBookingDetailsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
   await addHearingBookingDetailsEventPage.useAllocatedJudge();
@@ -140,7 +169,7 @@ Scenario('Gatekeeper submits final version of standard directions', async (I, ca
   I.seeInTab(['Gatekeeping order', 'Date of issue'], '11 January 2020');
 
   caseViewPage.checkActionsAreAvailable([
-    config.administrationActions.addHearingBookingDetails,
+    config.administrationActions.manageHearings,
     config.administrationActions.amendChildren,
     config.administrationActions.amendRespondents,
     config.administrationActions.amendOther,
