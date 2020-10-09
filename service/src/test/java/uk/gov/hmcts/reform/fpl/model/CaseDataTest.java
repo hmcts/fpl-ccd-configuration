@@ -12,6 +12,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.order.generated.ExclusionClause;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -40,6 +41,8 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, FixedTimeConfiguration.class})
 class CaseDataTest {
+
+    public static final String EXCLUSION_CLAUSE = "exclusionClause";
 
     @Autowired
     private ObjectMapper mapper;
@@ -315,6 +318,22 @@ class CaseDataTest {
         boolean hearingBookingInFuture = caseData.hasFutureHearing(hearingBooking);
 
         assertThat(hearingBookingInFuture).isFalse();
+    }
+
+    @Test
+    void testGetExclusionClauseTextIfNull() {
+        CaseData underTest = CaseData.builder().build();
+
+        assertThat(underTest.getExclusionClauseText()).isEmpty();
+    }
+
+    @Test
+    void testGetExclusionClauseTextIfExists() {
+        CaseData underTest = CaseData.builder().orderExclusionClause(ExclusionClause.builder()
+            .exclusionClause(EXCLUSION_CLAUSE)
+            .build()).build();
+
+        assertThat(underTest.getExclusionClauseText()).isEqualTo(EXCLUSION_CLAUSE);
     }
 
     @Nested
