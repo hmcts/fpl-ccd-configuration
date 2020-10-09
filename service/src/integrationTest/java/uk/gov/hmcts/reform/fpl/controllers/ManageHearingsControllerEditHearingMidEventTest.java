@@ -53,7 +53,6 @@ class ManageHearingsControllerEditHearingMidEventTest extends AbstractController
         assertThat(caseData.getPreviousHearingVenue()).isEqualTo(PreviousHearingVenue.builder()
             .previousVenue("Aberdeen Tribunal Hearing Centre, 48 Huntly Street, AB1, Aberdeen, AB10 1SH")
             .build());
-        assertThat(caseData.getPreviousVenueId()).isEqualTo("96");
     }
 
     @Test
@@ -80,7 +79,6 @@ class ManageHearingsControllerEditHearingMidEventTest extends AbstractController
             mapper.convertValue(dynamicList, new TypeReference<Map<String, Object>>() {}));
 
         assertThat(caseData.getFirstHearingFlag()).isNull();
-        assertThat(caseData.getPreviousVenueId()).isNull();
         assertHearingCaseFields(caseData, hearings.get(3).getValue());
     }
 
@@ -108,15 +106,12 @@ class ManageHearingsControllerEditHearingMidEventTest extends AbstractController
             mapper.convertValue(dynamicList, new TypeReference<Map<String, Object>>() {}));
 
         assertThat(caseData.getFirstHearingFlag()).isEqualTo("Yes");
-        assertThat(caseData.getPreviousVenueId()).isNull();
         assertHearingCaseFields(caseData, hearings.get(0).getValue());
 
     }
 
     private void assertHearingCaseFields(CaseData caseData, HearingBooking hearingBooking) {
         assertThat(caseData.getHearingType()).isEqualTo(hearingBooking.getType());
-        assertThat(caseData.getHearingVenue()).isEqualTo(hearingBooking.getVenue());
-        assertThat(caseData.getHearingVenueCustom()).isEqualTo(hearingBooking.getVenueCustomAddress());
         assertThat(caseData.getHearingStartDate()).isEqualTo(hearingBooking.getStartDate());
         assertThat(caseData.getHearingEndDate()).isEqualTo(hearingBooking.getEndDate());
         assertThat(caseData.getJudgeAndLegalAdvisor()).isEqualTo(hearingBooking.getJudgeAndLegalAdvisor());

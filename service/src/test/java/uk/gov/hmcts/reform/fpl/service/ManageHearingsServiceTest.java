@@ -151,9 +151,8 @@ class ManageHearingsServiceTest {
             .newVenueCustomAddress(VENUE_CUSTOM_ADDRESS)
             .build();
 
-        assertThat(previousVenueFields).hasSize(2)
-            .extracting("previousHearingVenue", "previousVenueId")
-            .containsOnly(hearingVenue, "OTHER");
+        assertThat(previousVenueFields).hasSize(1)
+            .extracting("previousHearingVenue").isEqualTo(hearingVenue);
     }
 
     @Test
@@ -174,9 +173,8 @@ class ManageHearingsServiceTest {
             .previousVenue(venueAddress)
             .build();
 
-        assertThat(previousVenueFields).hasSize(2)
-            .extracting("previousHearingVenue", "previousVenueId")
-            .containsOnly(hearingVenue, "31");
+        assertThat(previousVenueFields).hasSize(1)
+            .extracting("previousHearingVenue").isEqualTo((hearingVenue));
 
     }
 
@@ -201,8 +199,6 @@ class ManageHearingsServiceTest {
 
         Map<String, Object> expectedCaseFields = Map.of(
             "hearingType", CASE_MANAGEMENT,
-            "hearingVenue", "OTHER",
-            "hearingVenueCustom", VENUE_CUSTOM_ADDRESS,
             "hearingStartDate", startDate,
             "hearingEndDate", endDate,
             "judgeAndLegalAdvisor", judgeAndLegalAdvisor,

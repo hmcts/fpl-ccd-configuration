@@ -90,8 +90,6 @@ public class ManageHearingsService {
     public Map<String, Object> populateHearingCaseFields(HearingBooking hearingBooking) {
         return Map.of(
             "hearingType", hearingBooking.getType(),
-            //"hearingVenue", hearingBooking.getVenue(),
-            //"hearingVenueCustom", hearingBooking.getVenueCustomAddress(),
             "hearingStartDate", hearingBooking.getStartDate(),
             "hearingEndDate", hearingBooking.getEndDate(),
             "judgeAndLegalAdvisor", hearingBooking.getJudgeAndLegalAdvisor(),
