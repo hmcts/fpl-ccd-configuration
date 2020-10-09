@@ -112,10 +112,6 @@ public class ManageHearingsControllerAboutToStartTest extends AbstractController
         return HearingBooking.builder()
             .type(CASE_MANAGEMENT)
             .startDate(startDate)
-            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
-                .judgeLastName("Judy")
-                .build())
             .build();
     }
 }
