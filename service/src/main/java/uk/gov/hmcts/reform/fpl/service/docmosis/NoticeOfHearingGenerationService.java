@@ -40,7 +40,7 @@ public class NoticeOfHearingGenerationService {
             .preHearingAttendance(dataService.extractPrehearingAttendance(hearingBooking))
             .judgeAndLegalAdvisor(dataService.getJudgeAndLegalAdvisor(hearingBooking.getJudgeAndLegalAdvisor()))
             .postingDate(formatLocalDateToString(LocalDate.now(), DATE))
-            .additionalNotes(caseData.getNoticeOfHearingNotes())
+            .additionalNotes(hearingBooking.getAdditionalNotes())
             .courtseal(COURT_SEAL.getValue())
             .crest(CREST.getValue())
             .build();
@@ -50,4 +50,5 @@ public class NoticeOfHearingGenerationService {
         return hearingBooking.getType() != OTHER ? hearingBooking.getType().getLabel().toLowerCase() :
             hearingBooking.getTypeDetails();
     }
+
 }
