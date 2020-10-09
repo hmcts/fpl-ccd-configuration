@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service;
+package uk.gov.hmcts.reform.fpl.service.email;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +16,11 @@ import javax.mail.internet.MimeMessage;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class EmailService {
-    private final JavaMailSender mailSender;
+
+    private final EmailSenderProvider emailSenderProvider;
 
     public void sendEmail(final String from, final EmailData emailData) {
+        final JavaMailSender mailSender = emailSenderProvider.getMailSender();
         try {
             MimeMessage message = mailSender.createMimeMessage();
 
