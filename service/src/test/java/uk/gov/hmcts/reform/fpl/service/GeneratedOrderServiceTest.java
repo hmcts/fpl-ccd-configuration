@@ -350,13 +350,16 @@ class GeneratedOrderServiceTest {
                 .build()
         );
 
-        OrderTypeAndDocument typeAndDocument = orderTypeAndDocument(UPLOAD, UploadedOrderType.C24);
+        OrderTypeAndDocument typeAndDocument = orderTypeAndDocument(
+            UploadedOrderType.OTHER, "other order", "description"
+        );
         CaseData caseData = caseData().dateOfIssue(LocalDate.of(2019, 12, 12)).build();
 
         GeneratedOrder builtOrder = service.buildCompleteOrder(typeAndDocument, null, caseData);
 
         GeneratedOrder expectedOrder = GeneratedOrder.builder()
-            .type(UploadedOrderType.C24.getFullLabel())
+            .type("other order")
+            .uploadedOrderDescription("description")
             .uploader("HMCTS")
             .date(formatLocalDateTimeBaseUsingFormat(time.now(), TIME_DATE))
             .dateOfIssue("12 December 2019")
@@ -497,26 +500,29 @@ class GeneratedOrderServiceTest {
     }
 
     private OrderTypeAndDocument orderTypeAndDocument(GeneratedOrderType type, GeneratedOrderSubtype subtype,
-                                                      UploadedOrderType uploadedType) {
+                                                      UploadedOrderType uploadedType, String orderName,
+                                                      String orderDescription) {
         return OrderTypeAndDocument.builder()
             .type(type)
             .subtype(subtype)
             .document(testDocumentReference)
             .uploadedOrderType(uploadedType)
+            .orderDescription(orderDescription)
+            .orderName(orderName)
             .build();
     }
 
-
     private OrderTypeAndDocument orderTypeAndDocument(GeneratedOrderType type, GeneratedOrderSubtype subtype) {
-        return orderTypeAndDocument(type, subtype, null);
+        return orderTypeAndDocument(type, subtype, null, null, null);
     }
 
-    private OrderTypeAndDocument orderTypeAndDocument(GeneratedOrderType type, UploadedOrderType uploadedType) {
-        return orderTypeAndDocument(type, null, uploadedType);
+    private OrderTypeAndDocument orderTypeAndDocument(UploadedOrderType uploadedType, String orderName,
+                                                      String orderDescription) {
+        return orderTypeAndDocument(UPLOAD, null, uploadedType, orderName, orderDescription);
     }
 
     private OrderTypeAndDocument orderTypeAndDocument(GeneratedOrderType type) {
-        return orderTypeAndDocument(type, null, null);
+        return orderTypeAndDocument(type, null, null, null, null);
     }
 
     private CaseData.CaseDataBuilder caseData() {

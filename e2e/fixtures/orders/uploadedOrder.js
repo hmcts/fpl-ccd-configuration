@@ -3,8 +3,10 @@ const config = require('../../config');
 module.exports =
   {
     type: 'Upload',
-    uploadedOrderType: 'Appointment of a solicitor - C48A',
-    fullType: 'Appointment of a solicitor (C48A)',
+    uploadedOrderType: 'Other',
+    fullType: 'Order for something',
+    orderName: 'Order for something',
+    orderDescription: 'Some order that is not in the dropdown',
     document: 'mockFile.pdf',
     orderFile: config.testPdfFile,
     dateOfIssue: {

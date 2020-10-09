@@ -10,6 +10,10 @@ module.exports = {
     orderTypeList: '#orderTypeAndDocument_type',
     orderSubtypeList: '#orderTypeAndDocument_subtype',
     orderUploadedTypeList: '#orderTypeAndDocument_uploadedOrderType',
+    order: {
+      name: '#orderTypeAndDocument_orderName',
+      description: '#orderTypeAndDocument_orderDescription',
+    },
     directionsNeeded: {
       id: '#orderFurtherDirections_directionsNeeded',
       options: {
@@ -98,6 +102,11 @@ module.exports = {
     if (orderType) {
       I.selectOption(this.fields.orderUploadedTypeList, orderType);
     }
+  },
+
+  enterOrderNameAndDescription(name, description) {
+    I.fillField(this.fields.order.name, name);
+    I.fillField(this.fields.order.description, description);
   },
 
   async uploadOrder(order) {
