@@ -7,7 +7,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
@@ -29,7 +28,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @ActiveProfiles("integration-test")
 @WebMvcTest(ManageHearingsController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class ManageHearingsControllerAboutToStartTest extends AbstractControllerTest {
+class ManageHearingsControllerAboutToStartTest extends AbstractControllerTest {
 
     private static final String CASE_ID = "12345";
 

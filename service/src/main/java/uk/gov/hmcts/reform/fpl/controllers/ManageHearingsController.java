@@ -164,9 +164,11 @@ public class ManageHearingsController extends CallbackController {
         }
 
         //TODO Refactor during removal of legacy code (now only ever one hearing sent, list not needed) (FPLA-2280)
+        //Also rename NewHearingsAdded event as this can be triggered for edited hearings too
         List<Element<HearingBooking>> hearingsToBeSent = caseData.getHearingDetails();
-        hearingsToBeSent.removeAll(caseDataBefore.getHearingDetails());
-
+        if (caseDataBefore.getHearingDetails() != null) {
+            hearingsToBeSent.removeAll(caseDataBefore.getHearingDetails());
+        }
         if (!hearingsToBeSent.isEmpty() && hearingsToBeSent.get(0).getValue().getNoticeOfHearing() != null) {
             publishEvent(new NewHearingsAdded(caseData, hearingsToBeSent));
         }

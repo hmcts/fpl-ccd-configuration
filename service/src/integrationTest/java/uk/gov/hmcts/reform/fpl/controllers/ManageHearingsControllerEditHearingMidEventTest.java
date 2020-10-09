@@ -29,7 +29,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @ActiveProfiles("integration-test")
 @WebMvcTest(ManageHearingsController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class ManageHearingsControllerEditHearingMidEventTest extends AbstractControllerTest {
+class ManageHearingsControllerEditHearingMidEventTest extends AbstractControllerTest {
 
     private static final String CASE_ID = "12345";
 
@@ -80,6 +80,7 @@ public class ManageHearingsControllerEditHearingMidEventTest extends AbstractCon
             mapper.convertValue(dynamicList, new TypeReference<Map<String, Object>>() {}));
 
         assertThat(caseData.getFirstHearingFlag()).isNull();
+        assertThat(caseData.getPreviousVenueId()).isNull();
         assertHearingCaseFields(caseData, hearings.get(3).getValue());
     }
 
@@ -107,6 +108,7 @@ public class ManageHearingsControllerEditHearingMidEventTest extends AbstractCon
             mapper.convertValue(dynamicList, new TypeReference<Map<String, Object>>() {}));
 
         assertThat(caseData.getFirstHearingFlag()).isEqualTo("Yes");
+        assertThat(caseData.getPreviousVenueId()).isNull();
         assertHearingCaseFields(caseData, hearings.get(0).getValue());
 
     }

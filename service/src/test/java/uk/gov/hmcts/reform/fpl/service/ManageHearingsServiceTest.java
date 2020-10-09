@@ -37,7 +37,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 
 @ExtendWith(MockitoExtension.class)
-public class ManageHearingsServiceTest {
+class ManageHearingsServiceTest {
 
     private static final String VENUE = "31";
     private static final HearingVenue HEARING_VENUE = HearingVenue.builder()
