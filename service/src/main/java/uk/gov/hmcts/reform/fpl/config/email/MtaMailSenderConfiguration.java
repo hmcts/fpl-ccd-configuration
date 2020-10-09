@@ -18,13 +18,13 @@ import java.util.Properties;
 @Configuration
 @ConfigurationProperties(prefix = "spring.mail")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class EmailConfiguration {
+public class MtaMailSenderConfiguration {
     private String host;
     private int port;
 
     private final SmtpPropertiesConfiguration smtpPropertiesConfiguration;
 
-    @Bean
+    @Bean("mtaMailSender")
     public JavaMailSender javaMailSender() {
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
         javaMailSender.setHost(host);
