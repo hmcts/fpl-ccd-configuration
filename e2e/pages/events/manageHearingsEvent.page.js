@@ -6,8 +6,8 @@ module.exports = {
 
   fields: {
     hearingOptions: {
-      addNewHearing: '#useExistingHearing-NEW_HEARING',
-      editHearing: '#useExistingHearing-EDIT_HEARING',
+      addNewHearing: '#hearingOption-NEW_HEARING',
+      editHearing: '#hearingOption-EDIT_HEARING',
     },
     hearingDateList: '#hearingDateList',
     hearingType: {

@@ -530,6 +530,6 @@ public class CaseData {
     @Future(message = "Enter an end date in the future", groups = HearingDatesGroup.class)
     private final LocalDateTime hearingEndDate;
     private final String sendNoticeOfHearing;
-    private final HearingOptions useExistingHearing;
+    private final HearingOptions hearingOption;
     private final List<ProceedingType> proceedingType;
 }

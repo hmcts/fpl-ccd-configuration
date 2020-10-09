@@ -43,7 +43,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends AbstractController
 
         CaseDetails caseDetails = CaseDetails.builder()
             .id(parseLong(CASE_ID))
-            .data(Map.of("useExistingHearing", "NEW_HEARING",
+            .data(Map.of("hearingOption", "NEW_HEARING",
                 "hearingDetails", hearings))
             .build();
 
@@ -68,7 +68,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends AbstractController
 
         CaseDetails caseDetails = CaseDetails.builder()
             .id(parseLong(CASE_ID))
-            .data(Map.of("useExistingHearing", "EDIT_HEARING",
+            .data(Map.of("hearingOption", "EDIT_HEARING",
                 "hearingDateList", dynamicList,
                 "hearingDetails", hearings))
             .build();
@@ -96,7 +96,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends AbstractController
 
         CaseDetails caseDetails = CaseDetails.builder()
             .id(parseLong(CASE_ID))
-            .data(Map.of("useExistingHearing", "EDIT_HEARING",
+            .data(Map.of("hearingOption", "EDIT_HEARING",
                 "hearingDateList", dynamicList,
                 "hearingDetails", hearings))
             .build();

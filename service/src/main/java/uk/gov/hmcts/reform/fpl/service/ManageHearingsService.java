@@ -142,7 +142,7 @@ public class ManageHearingsService {
             "judgeAndLegalAdvisor",
             "hasExistingHearings",
             "hearingDateList",
-            "useExistingHearing",
+            "hearingOption",
             "noticeOfHearingNotes");
     }
 

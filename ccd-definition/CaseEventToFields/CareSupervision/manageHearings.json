@@ -9,14 +9,14 @@
     "PageID": "SelectHearingOption",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 1,
-    "FieldShowCondition": "useExistingHearing=\"DO_NOT_SHOW\"",
+    "FieldShowCondition": "hearingOption=\"DO_NOT_SHOW\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-hearings/edit-hearing/mid-event"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageHearings",
-    "CaseFieldID": "useExistingHearing",
+    "CaseFieldID": "hearingOption",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
     "PageID": "SelectHearingOption",
@@ -34,7 +34,7 @@
     "PageID": "SelectHearingOption",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 1,
-    "FieldShowCondition": "useExistingHearing=\"DO_NOT_SHOW\""
+    "FieldShowCondition": "hearingOption=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -46,7 +46,7 @@
     "PageID": "SelectHearingOption",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 1,
-    "FieldShowCondition": "useExistingHearing=\"EDIT_HEARING\""
+    "FieldShowCondition": "hearingOption=\"EDIT_HEARING\""
   },
   {
     "LiveFrom": "01/01/2017",

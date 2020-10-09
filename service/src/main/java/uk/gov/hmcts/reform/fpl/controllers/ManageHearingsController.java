@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -79,9 +80,9 @@ public class ManageHearingsController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         //If new hearing, populate previous venue - if editing existing hearing, populate page with existing hearing
-        if (NEW_HEARING == caseData.getUseExistingHearing()) {
+        if (NEW_HEARING == caseData.getHearingOption()) {
             caseDetails.getData().putAll(manageHearingsService.populatePreviousVenueFields(caseData));
-        } else if (EDIT_HEARING == caseData.getUseExistingHearing()) {
+        } else if (EDIT_HEARING == caseData.getHearingOption()) {
             UUID hearingBookingId = getDynamicListValueCode(caseData.getHearingDateList(), mapper);
 
             List<Element<HearingBooking>> futureHearings = caseData.getFutureHearings();
@@ -132,14 +133,14 @@ public class ManageHearingsController extends CallbackController {
         List<Element<HearingBooking>> hearingBookingElements;
 
         // Editing previous hearing
-        if (EDIT_HEARING == caseData.getUseExistingHearing()) {
+        if (EDIT_HEARING == caseData.getHearingOption()) {
             UUID editedHearingId = getDynamicListValueCode(caseData.getHearingDateList(), mapper);
 
             hearingBookingElements = manageHearingsService.updateEditedHearingEntry(
                 hearingBooking, editedHearingId, caseData.getHearingDetails());
         } else {
             List<Element<HearingBooking>> currentHearingBookings = defaultIfNull(
-                caseData.getHearingDetails(), List.of()
+                caseData.getHearingDetails(), new ArrayList<>()
             );
             currentHearingBookings.add(element(hearingBooking));
             hearingBookingElements = currentHearingBookings;
