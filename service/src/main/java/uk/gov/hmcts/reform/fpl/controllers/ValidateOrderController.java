@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
@@ -39,8 +40,17 @@ public class ValidateOrderController extends CallbackController {
 
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        List<String> errors = validateGroupService.validateGroup(caseData, DateOfIssueGroup.class);
 
-        return respond(caseDetails, validateGroupService.validateGroup(caseData, DateOfIssueGroup.class));
+        if (GeneratedOrderSubtype.INTERIM.equals(caseData.getOrderTypeAndDocument().getSubtype())) {
+            if (caseData.getInterimEndDate() != null) { // TODO: IF To be removed after FPLA-2202 goes live
+                errors.addAll(validateGroupService.validateGroup(
+                    caseData.getInterimEndDate(), InterimEndDateGroup.class
+                ));
+            }
+        }
+
+        return respond(caseDetails, errors);
     }
 
     @PostMapping("/address/mid-event")
@@ -74,6 +84,7 @@ public class ValidateOrderController extends CallbackController {
         return respond(callbackRequest.getCaseDetails(), errors);
     }
 
+    @Deprecated // TODO: endpoint to be removed after FPLA-2202 goes live
     @PostMapping("/interim-end-date/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEventValidateInterimEndDate(
         @RequestBody CallbackRequest callbackRequest) {
