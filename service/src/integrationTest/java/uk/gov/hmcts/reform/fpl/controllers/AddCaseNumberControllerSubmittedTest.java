@@ -12,7 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.email.EmailData;
-import uk.gov.hmcts.reform.fpl.service.EmailService;
+import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
