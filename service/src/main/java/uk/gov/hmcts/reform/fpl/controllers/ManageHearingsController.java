@@ -121,7 +121,9 @@ public class ManageHearingsController extends CallbackController {
         if (caseData.getHearingDetails() != null) {
             HearingVenue previousHearingVenue = manageHearingsService.getPreviousHearingVenue(caseData);
             caseData.setPreviousVenueId(previousHearingVenue.getHearingVenueId());
-            caseData.setHearingVenueCustom(previousHearingVenue.getAddress());
+            if (previousHearingVenue.getHearingVenueId().equals("OTHER")) {
+                caseData.setHearingVenueCustom(previousHearingVenue.getAddress());
+            }
         }
 
         HearingBooking hearingBooking = manageHearingsService.buildHearingBooking(caseData);

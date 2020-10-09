@@ -20,7 +20,7 @@
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
     "PageID": "SelectHearingOption",
-    "ShowSummaryChangeOption": "Y",
+    "ShowSummaryChangeOption": "N",
     "PageDisplayOrder": 1,
     "PageShowCondition": "hasExistingHearings=\"Yes\""
   },

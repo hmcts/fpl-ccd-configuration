@@ -73,7 +73,6 @@ public class ManageHearingsService {
                 .previousVenue(hearingVenueLookUpService.buildHearingVenue(previousHearingVenue))
                 .newVenueCustomAddress(customAddress)
                 .build());
-        data.put("previousVenueId", previousHearingVenue.getHearingVenueId());
 
         return data;
     }
@@ -91,8 +90,8 @@ public class ManageHearingsService {
     public Map<String, Object> populateHearingCaseFields(HearingBooking hearingBooking) {
         return Map.of(
             "hearingType", hearingBooking.getType(),
-            "hearingVenue", hearingBooking.getVenue(),
-            "hearingVenueCustom", hearingBooking.getVenueCustomAddress(),
+            //"hearingVenue", hearingBooking.getVenue(),
+            //"hearingVenueCustom", hearingBooking.getVenueCustomAddress(),
             "hearingStartDate", hearingBooking.getStartDate(),
             "hearingEndDate", hearingBooking.getEndDate(),
             "judgeAndLegalAdvisor", hearingBooking.getJudgeAndLegalAdvisor(),

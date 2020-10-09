@@ -168,6 +168,7 @@ Scenario('HMCTS admin manages hearings', async (I, caseViewPage, manageHearingsE
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageHearings);
 
+  I.wait(10);
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   await manageHearingsEventPage.selectAddNewHearing();
   await I.retryUntilExists(() => I.click('Continue'), '#hearingType');
