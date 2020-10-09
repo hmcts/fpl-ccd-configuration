@@ -17,6 +17,14 @@ module.exports = {
       },
     },
     directions: '#orderFurtherDirections_directions',
+    exclusionClauseNeeded: {
+      id: '#orderExclusionClause_exclusionClauseNeeded',
+      options: {
+        yes: '#orderExclusionClause_exclusionClauseNeeded-Yes',
+        no: '#orderExclusionClause_exclusionClauseNeeded-No',
+      },
+    },
+    exclusionClause: '#orderExclusionClause_exclusionClause',
     dateOfIssue: {
       id: '#dateOfIssue',
     },
@@ -118,6 +126,11 @@ module.exports = {
   enterDirections(directions) {
     I.click(this.fields.directionsNeeded.options.yes);
     I.fillField(this.fields.directions, directions);
+  },
+
+  enterExclusionClause(exclusionClause) {
+    I.click(this.fields.exclusionClauseNeeded.options.yes);
+    I.fillField(this.fields.exclusionClause, exclusionClause);
   },
 
   enterNumberOfMonths(numOfMonths) {

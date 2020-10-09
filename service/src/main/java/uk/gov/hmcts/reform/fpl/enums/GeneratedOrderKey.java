@@ -10,6 +10,7 @@ public enum GeneratedOrderKey {
     ORDER("order"),
     JUDGE_AND_LEGAL_ADVISOR("judgeAndLegalAdvisor"),
     ORDER_FURTHER_DIRECTIONS("orderFurtherDirections"),
+    ORDER_EXCLUSION_CLAUSE("orderExclusionClause"),
     ORDER_MONTHS("orderMonths"),
     DATE_OF_ISSUE("dateOfIssue"),
     PAGE_SHOW("pageShow"),
