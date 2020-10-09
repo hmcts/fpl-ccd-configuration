@@ -34,15 +34,11 @@ public class MigrateCaseController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if ("LE20C50002".equals(caseData.getFamilyManCaseNumber())) {
+        if ("SA20C50002".equals(caseData.getFamilyManCaseNumber())) {
             data.put("hearingDetails", removeHearingLinkedToCmo(caseData.getHearingDetails(),
-                caseData.getSealedCMOs().get(0).getId()));
+                caseData.getSealedCMOs().get(1).getId()));
 
-            if (caseData.getSealedCMOs().size() > 1) {
-                data.put("sealedCMOs", removeCaseManagementOrder(caseData.getSealedCMOs()));
-            } else {
-                data.remove("sealedCMOs");
-            }
+            data.put("sealedCMOs", removeCaseManagementOrder(caseData.getSealedCMOs()));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -51,7 +47,7 @@ public class MigrateCaseController {
     }
 
     private List<Element<CaseManagementOrder>> removeCaseManagementOrder(List<Element<CaseManagementOrder>> orders) {
-        orders.remove(0);
+        orders.remove(1);
         return orders;
     }
 
