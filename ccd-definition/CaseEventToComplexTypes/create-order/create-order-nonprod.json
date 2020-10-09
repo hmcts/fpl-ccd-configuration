@@ -14,9 +14,29 @@
     "ID": "OrderTypeAndDocumentComplexType",
     "CaseEventID": "createOrder",
     "CaseFieldID": "orderTypeAndDocument",
+    "ListElementCode": "orderName",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "Comment": "to be merged when toggling on FPLA-1592"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTypeAndDocumentComplexType",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "orderTypeAndDocument",
+    "ListElementCode": "orderDescription",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "OPTIONAL",
+    "Comment": "to be merged when toggling on FPLA-1592"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTypeAndDocumentComplexType",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "orderTypeAndDocument",
     "ListElementCode": "document",
     "EventElementLabel": "Order document",
-    "FieldDisplayOrder": 4,
+    "FieldDisplayOrder": 6,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "document=\"DO_NOT_SHOW\""
   }

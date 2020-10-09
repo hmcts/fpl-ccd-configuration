@@ -19,6 +19,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "GeneratedOrder",
+    "ListElementCode": "uploadedOrderDescription",
+    "FieldType": "TextArea",
+    "ElementLabel": "Order description",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
     "ListElementCode": "details",
     "FieldType": "TextArea",
     "ElementLabel": "Order details",
@@ -41,7 +49,7 @@
     "ID": "GeneratedOrder",
     "ListElementCode": "dateOfIssue",
     "FieldType": "Text",
-    "ElementLabel": "Date of issue",
+    "ElementLabel": "Date on order",
     "SecurityClassification": "Public"
   },
   {

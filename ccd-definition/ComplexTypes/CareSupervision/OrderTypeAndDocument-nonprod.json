@@ -9,5 +9,25 @@
     "FieldShowCondition": "type=\"UPLOAD\"",
     "SecurityClassification": "Public",
     "Comment": "to be merged when toggling on FPLA-1592"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTypeAndDocument",
+    "ListElementCode": "orderName",
+    "FieldType": "Text",
+    "ElementLabel": "Order name",
+    "FieldShowCondition": "uploadedOrderType=\"OTHER\"",
+    "SecurityClassification": "Public",
+    "Comment": "to be merged when toggling on FPLA-1592"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTypeAndDocument",
+    "ListElementCode": "orderDescription",
+    "FieldType": "TextArea",
+    "ElementLabel": "Order description",
+    "FieldShowCondition": "uploadedOrderType=\"OTHER\"",
+    "SecurityClassification": "Public",
+    "Comment": "to be merged when toggling on FPLA-1592"
   }
 ]
