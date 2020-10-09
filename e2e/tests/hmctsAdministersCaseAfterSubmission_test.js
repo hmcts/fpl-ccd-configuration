@@ -234,7 +234,8 @@ Scenario('HMCTS admin manages hearings', async (I, caseViewPage, manageHearingsE
   I.seeInTab(['Hearing 2', 'Notice of hearing'], `Notice_of_hearing_${dateFormat(submittedAt, 'ddmmmm')}.pdf`);
 });
 
-Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, addHearingBookingDetailsEventPage) => {
+//Delete+cleanup in FPLA-2280
+xScenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, addHearingBookingDetailsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
   await addHearingBookingDetailsEventPage.useAllocatedJudge();
