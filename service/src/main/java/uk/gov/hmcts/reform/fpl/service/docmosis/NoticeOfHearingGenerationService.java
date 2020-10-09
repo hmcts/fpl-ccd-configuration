@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 
 import java.time.LocalDate;
