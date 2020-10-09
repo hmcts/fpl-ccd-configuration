@@ -26,7 +26,6 @@ public class NoticeOfHearingGenerationService {
     private final CaseDataExtractionService dataService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
-    private final FeatureToggleService featureToggleService;
 
     public DocmosisNoticeOfHearing getTemplateData(CaseData caseData, HearingBooking hearingBooking) {
         HearingVenue venue = hearingVenueLookUpService.getHearingVenue(hearingBooking);
@@ -42,7 +41,7 @@ public class NoticeOfHearingGenerationService {
             .preHearingAttendance(dataService.extractPrehearingAttendance(hearingBooking))
             .judgeAndLegalAdvisor(dataService.getJudgeAndLegalAdvisor(hearingBooking.getJudgeAndLegalAdvisor()))
             .postingDate(formatLocalDateToString(LocalDate.now(), DATE))
-            .additionalNotes(getHearingNotes(caseData.getNoticeOfHearingNotes(), hearingBooking.getAdditionalNotes()))
+            .additionalNotes(caseData.getNoticeOfHearingNotes())
             .courtseal(COURT_SEAL.getValue())
             .crest(CREST.getValue())
             .build();
@@ -51,14 +50,5 @@ public class NoticeOfHearingGenerationService {
     private String getHearingType(HearingBooking hearingBooking) {
         return hearingBooking.getType() != OTHER ? hearingBooking.getType().getLabel().toLowerCase() :
             hearingBooking.getTypeDetails();
-    }
-
-    //feature toggle
-    private String getHearingNotes(String multiHearingNotes, String singleHearingNotes) {
-        if (featureToggleService.isMultiPageHearingEnabled()) {
-            return multiHearingNotes;
-        } else {
-            return singleHearingNotes;
-        }
     }
 }

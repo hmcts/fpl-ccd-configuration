@@ -70,10 +70,6 @@ public class FeatureToggleService {
             createLDUser(Map.of("localAuthorityName", LDValue.of(localAuthorityName))), false);
     }
 
-    public boolean isMultiPageHearingEnabled() {
-        return ldClient.boolVariation("multi-page-hearing", createLDUser(), false);
-    }
-
     private LDUser createLDUser() {
         return createLDUser(Map.of());
     }

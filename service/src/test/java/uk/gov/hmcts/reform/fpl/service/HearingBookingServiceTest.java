@@ -67,9 +67,6 @@ class HearingBookingServiceTest {
     @MockBean
     private UploadDocumentService uploadDocumentService;
 
-    @MockBean
-    private FeatureToggleService featureToggleService;
-
     @BeforeEach
     void setUp() {
         futureDate = time.now().plusDays(1);

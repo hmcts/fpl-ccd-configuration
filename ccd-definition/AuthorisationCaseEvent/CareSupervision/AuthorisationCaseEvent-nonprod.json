@@ -54,33 +54,5 @@
     "CaseEventID": "placement-PREPARE_FOR_HEARING",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "manageHearings",
-    "AccessControl": [
-      {
-        "UserRoles": ["caseworker-publiclaw-courtadmin", "caseworker-publiclaw-gatekeeper"],
-        "CRUD": "CRU"
-      },
-      {
-        "UserRoles": ["caseworker-publiclaw-judiciary", "caseworker-publiclaw-magistrate", "caseworker-publiclaw-solicitor"],
-        "CRUD": "R"
-      }
-      ],
-    "Comment": "Move when toggling on FPLA-2158"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "hearingBookingDetails",
-    "AccessControl": [
-      {
-        "UserRoles": ["caseworker-publiclaw-courtadmin", "caseworker-publiclaw-gatekeeper", "caseworker-publiclaw-judiciary", "caseworker-publiclaw-magistrate", "caseworker-publiclaw-solicitor"],
-        "CRUD": "R"
-      }
-    ],
-    "Comment": "Move when toggling on FPLA-2158"
   }
 ]
