@@ -39,7 +39,9 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
@@ -82,7 +84,7 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
                 .jurisdiction(JURISDICTION)
                 .caseTypeId(CASE_TYPE)
                 .id(parseLong(CASE_ID))
-                .data(buildDataWithHearing(hearingWithoutNotice))
+                .data(buildData(hearingWithoutNotice))
                 .state("Gatekeeping")
                 .build())
             .caseDetailsBefore(CaseDetails.builder().data(Map.of()).build())
@@ -108,7 +110,7 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
                 .jurisdiction(JURISDICTION)
                 .caseTypeId(CASE_TYPE)
                 .id(parseLong(CASE_ID))
-                .data(buildDataWithHearing(hearingWithoutNotice))
+                .data(buildData(hearingWithoutNotice))
                 .state("Submitted")
                 .build())
             .caseDetailsBefore(CaseDetails.builder().data(Map.of()).build())
@@ -121,8 +123,9 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldTriggerNewHearingsAddedEventWhenNoticeOfHearingPresent() throws NotificationClientException {
-        List<Element<HearingBooking>> hearingWithNotice = wrapElements(HearingBooking.builder()
+    void shouldTriggerNewHearingsAddedEventForNewHearingWhenNoticeOfHearingPresent()
+        throws NotificationClientException {
+        Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
             .type(CASE_MANAGEMENT)
             .startDate(LocalDateTime.of(2050, 5, 20, 13, 00))
             .endDate(LocalDateTime.of(2050, 5, 20, 14, 00))
@@ -130,15 +133,24 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
             .venue("96")
             .build());
 
+        Element<HearingBooking> existingHearing = element(HearingBooking.builder()
+            .type(ISSUE_RESOLUTION)
+            .startDate(LocalDateTime.of(2020, 5, 20, 13, 00))
+            .endDate(LocalDateTime.of(2020, 5, 20, 14, 00))
+            .noticeOfHearing(testDocumentReference())
+            .venue("162")
+            .build());
+
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .jurisdiction(JURISDICTION)
                 .caseTypeId(CASE_TYPE)
                 .id(parseLong(CASE_ID))
-                .data(buildDataWithHearing(hearingWithNotice))
+                .data(buildData(List.of(hearingWithNotice, existingHearing)))
                 .state("Submitted")
                 .build())
-            .caseDetailsBefore(CaseDetails.builder().data(Map.of()).build())
+            .caseDetailsBefore(CaseDetails.builder()
+                .data(buildData(List.of(existingHearing))).build())
             .build();
 
         given(documentDownloadService.downloadDocument(anyString())).willReturn(DOCUMENT_CONTENT);
@@ -166,7 +178,7 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
             eq(NOTIFICATION_REFERENCE));
     }
 
-    private Map<String, Object> buildDataWithHearing(List<Element<HearingBooking>> hearings) {
+    private Map<String, Object> buildData(List<Element<HearingBooking>> hearings) {
         return Map.of("hearingDetails", hearings,
             "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
             "representatives", createRepresentatives(RepresentativeServingPreferences.EMAIL),
