@@ -113,6 +113,9 @@ Custom configuration parameters:
 |gateway.url|ENV|URL for CCD gateway, currently used to prepare URL leading directly to the document, used in notifications|
 |rd_professional.api.url|ENV|URL for Professional Reference Data service|
 |send-letter.url|ENV|URL for service delivering Bulk Print functionality|
+|send-grid.host|ENV|SendGrid host|
+|send-grid.port|ENV|SendGrid port|
+|send-grid.api_key|SECRET|SendGrid API key|
 |ccd.ui.base.url|ENV|URL for CCD Web UI, used in notifications|
 |fpl.local_authority_email_to_code.mapping|SECRET|Explained below.|
 |fpl.local_authority_code_to_name.mapping|SECRET|Explained below.|
@@ -228,3 +231,10 @@ Upcoming hearing jobs can be configured with environment variables
 UPCOMING_HEARINGS_CRON[default 0 0 2 ? * MON-FRI] - quartz expression, e.g 0/30 * * ? * MON-FRI
 UPCOMING_HEARINGS_DAYS[default 2] - number of working days notification is sent before hearing
 Elastic search must be enable in ccd-docker for Upcoming hearings job to work
+
+### Emails
+
+Emails to Robotics are sent using SMTP protocol via MTA (Mail Transfer Agent) or SendGrid depending on feature toggle *send-grid*. 
+On local environment test mailhog server is available. Sent emails can be checked at http://localhost:8025/ 
+
+Emails to users are sent via gov.notify
