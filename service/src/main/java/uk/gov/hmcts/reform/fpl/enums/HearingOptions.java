@@ -7,5 +7,5 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum HearingOptions {
     NEW_HEARING,
-    EDIT_DRAFT
+    EDIT_HEARING
 }

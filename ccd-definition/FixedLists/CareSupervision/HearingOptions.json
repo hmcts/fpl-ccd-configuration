@@ -9,8 +9,8 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingOptions",
-    "ListElementCode": "EDIT_DRAFT",
-    "ListElement": "Edit or issue a draft hearing",
+    "ListElementCode": "EDIT_HEARING",
+    "ListElement": "Edit a listed hearing",
     "DisplayOrder": 2
   }
 ]

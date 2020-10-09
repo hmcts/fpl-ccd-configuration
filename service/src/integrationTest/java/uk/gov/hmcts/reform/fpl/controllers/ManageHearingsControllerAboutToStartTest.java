@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -22,6 +23,7 @@ import java.util.Map;
 import static java.lang.Long.parseLong;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ActiveProfiles("integration-test")
@@ -47,7 +49,24 @@ public class ManageHearingsControllerAboutToStartTest extends AbstractController
 
         assertThat(caseData.getFirstHearingFlag()).isEqualTo("Yes");
         assertThat(caseData.getHasExistingHearings()).isNull();
+    }
 
+    @Test
+    void shouldSetJudgeWhenAllocatedJudgePresent() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(parseLong(CASE_ID))
+            .data(Map.of("allocatedJudge", Judge.builder()
+                .judgeTitle(HIS_HONOUR_JUDGE)
+                .judgeLastName("Richards")
+                .judgeEmailAddress("richards@example.com")
+                .build()))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        assertThat(caseData.getJudgeAndLegalAdvisor()).isEqualTo(JudgeAndLegalAdvisor.builder()
+            .allocatedJudgeLabel("Case assigned to: His Honour Judge Richards").build());
     }
 
     @Test

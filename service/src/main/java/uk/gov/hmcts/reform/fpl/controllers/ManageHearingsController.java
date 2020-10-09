@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
@@ -81,7 +81,7 @@ public class ManageHearingsController extends CallbackController {
         //If new hearing, populate previous venue - if editing existing hearing, populate page with existing hearing
         if (NEW_HEARING == caseData.getUseExistingHearing()) {
             caseDetails.getData().putAll(manageHearingsService.populatePreviousVenueFields(caseData));
-        } else if (EDIT_DRAFT == caseData.getUseExistingHearing()) {
+        } else if (EDIT_HEARING == caseData.getUseExistingHearing()) {
             UUID hearingBookingId = getDynamicListValueCode(caseData.getHearingDateList(), mapper);
 
             List<Element<HearingBooking>> futureHearings = caseData.getFutureHearings();
@@ -132,7 +132,7 @@ public class ManageHearingsController extends CallbackController {
         List<Element<HearingBooking>> hearingBookingElements;
 
         // Editing previous hearing
-        if (EDIT_DRAFT == caseData.getUseExistingHearing()) {
+        if (EDIT_HEARING == caseData.getUseExistingHearing()) {
             UUID editedHearingId = getDynamicListValueCode(caseData.getHearingDateList(), mapper);
 
             hearingBookingElements = manageHearingsService.updateEditedHearingEntry(

@@ -7,7 +7,7 @@ module.exports = {
   fields: {
     hearingOptions: {
       addNewHearing: '#useExistingHearing-NEW_HEARING',
-      editDraftHearing: '#useExistingHearing-EDIT_DRAFT',
+      editHearing: '#useExistingHearing-EDIT_HEARING',
     },
     hearingDateList: '#hearingDateList',
     hearingType: {
@@ -30,7 +30,7 @@ module.exports = {
   },
 
   async selectEditHearing(hearing) {
-    I.click(this.fields.hearingOptions.editDraftHearing);
+    I.click(this.fields.hearingOptions.editHearing);
     I.selectOption(this.fields.hearingDateList, hearing);
   },
 

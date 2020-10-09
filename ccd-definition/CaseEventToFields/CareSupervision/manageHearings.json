@@ -46,7 +46,7 @@
     "PageID": "SelectHearingOption",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 1,
-    "FieldShowCondition": "useExistingHearing=\"EDIT_DRAFT\""
+    "FieldShowCondition": "useExistingHearing=\"EDIT_HEARING\""
   },
   {
     "LiveFrom": "01/01/2017",
