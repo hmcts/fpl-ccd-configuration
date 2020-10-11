@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsTemplateDataGenerationService;
@@ -140,10 +141,12 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerT
             .applicantName("James Nelson")
             .orderTypes("Care order")
             .childrenNames("James Nelson")
-            .hearingDate("1 Jan 2001")
-            .hearingVenue("Aldgate Tower floor 3")
-            .preHearingAttendance("test")
-            .hearingTime("09.00pm")
+            .hearingBooking(DocmosisHearingBooking.builder()
+                .hearingDate("1 Jan 2001")
+                .hearingVenue("Aldgate Tower floor 3")
+                .preHearingAttendance("test")
+                .hearingTime("09.00pm")
+                .build())
             .build();
     }
 }

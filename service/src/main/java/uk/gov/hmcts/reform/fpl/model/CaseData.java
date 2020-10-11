@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.generated.ExclusionClause;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
@@ -249,6 +250,7 @@ public class CaseData {
     private final Map<String, C2ApplicationType> c2ApplicationType;
     private final OrderTypeAndDocument orderTypeAndDocument;
     private final FurtherDirections orderFurtherDirections;
+    private final ExclusionClause orderExclusionClause;
     private final GeneratedOrder order;
     @JsonIgnore
     private OrderStatus generatedOrderStatus;
@@ -348,6 +350,11 @@ public class CaseData {
     @JsonIgnore
     public String getFurtherDirectionsText() {
         return Optional.ofNullable(orderFurtherDirections).map(FurtherDirections::getDirections).orElse("");
+    }
+
+    @JsonIgnore
+    public String getExclusionClauseText() {
+        return Optional.ofNullable(orderExclusionClause).map(ExclusionClause::getExclusionClause).orElse("");
     }
 
     private final List<Element<Child>> confidentialChildren;

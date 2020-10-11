@@ -2,6 +2,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "BSC",
+    "ListElement": "Buckinghamshire Council",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "CDF",
     "ListElement": "Cardiff Council",
     "DisplayOrder": 5
@@ -9,9 +16,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "DBC",
+    "ListElement": "Darlington Borough Council",
+    "DisplayOrder": 6
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "DCC",
     "ListElement": "Durham County Council",
-    "DisplayOrder": 6
+    "DisplayOrder": 7
   },
   {
     "LiveFrom": "01/01/2017",
@@ -26,6 +40,13 @@
     "ListElementCode": "FPLA",
     "ListElement": "FPLA team",
     "DisplayOrder": 15
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "HCC",
+    "ListElement": "Hertfordshire County Council",
+    "DisplayOrder": 16
   },
   {
     "LiveFrom": "01/01/2017",
@@ -138,6 +159,13 @@
     "ListElementCode": "STF",
     "ListElement": "Staffordshire County Council",
     "DisplayOrder": 80
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SOT",
+    "ListElement": "Stockton-on-Tees Borough Council",
+    "DisplayOrder": 82
   },
   {
     "LiveFrom": "01/01/2017",

@@ -15,11 +15,14 @@ public class FeatureToggleService {
 
     private final LDClient ldClient;
     private final String ldUserKey;
+    private final String environment;
 
     @Autowired
-    public FeatureToggleService(LDClient ldClient, @Value("${ld.user_key}") String ldUserKey) {
+    public FeatureToggleService(LDClient ldClient, @Value("${ld.user_key}") String ldUserKey,
+                                @Value("${fpl.env}") String environment) {
         this.ldClient = ldClient;
         this.ldUserKey = ldUserKey;
+        this.environment = environment;
     }
 
     public boolean isTaskListInProgressTagsEnabled() {
@@ -70,15 +73,21 @@ public class FeatureToggleService {
             createLDUser(Map.of("localAuthorityName", LDValue.of(localAuthorityName))), false);
     }
 
+    public boolean isSendGridEnabled() {
+        return ldClient.boolVariation("send-grid", createLDUser(), false);
+    }
+
     private LDUser createLDUser() {
         return createLDUser(Map.of());
     }
 
     private LDUser createLDUser(Map<String, LDValue> values) {
         LDUser.Builder builder = new LDUser.Builder(ldUserKey)
-            .custom("timestamp", String.valueOf(System.currentTimeMillis()));
+            .custom("timestamp", String.valueOf(System.currentTimeMillis()))
+            .custom("environment", environment);
 
         values.forEach(builder::custom);
         return builder.build();
     }
+
 }

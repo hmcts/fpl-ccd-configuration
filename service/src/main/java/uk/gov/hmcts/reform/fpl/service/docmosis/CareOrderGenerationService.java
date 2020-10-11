@@ -28,7 +28,8 @@ public class CareOrderGenerationService extends GeneratedOrderTemplateDataGenera
         if (subtype == INTERIM) {
             orderBuilder
                 .orderTitle(getFullOrderType(orderTypeAndDocument))
-                .childrenAct("Section 38 Children Act 1989");
+                .childrenAct("Section 38 Children Act 1989")
+                .exclusionClause(caseData.getExclusionClauseText());
         } else if (subtype == FINAL) {
             orderBuilder
                 .orderTitle(getFullOrderType(orderTypeAndDocument.getType()))
