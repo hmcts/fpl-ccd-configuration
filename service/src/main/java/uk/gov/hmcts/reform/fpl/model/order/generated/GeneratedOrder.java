@@ -28,6 +28,8 @@ public class GeneratedOrder {
     private final FurtherDirections furtherDirections;
     private final String expiryDate;
     private final String courtName;
+    private final String uploader;
+    private final String uploadedOrderDescription;
     @JsonSerialize(contentConverter = BasicChildConverter.class)
     private final List<Element<Child>> children;
     private String removalReason;
