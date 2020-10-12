@@ -9,6 +9,11 @@ module.exports = {
     details: '#order_details',
     orderTypeList: '#orderTypeAndDocument_type',
     orderSubtypeList: '#orderTypeAndDocument_subtype',
+    orderUploadedTypeList: '#orderTypeAndDocument_uploadedOrderType',
+    order: {
+      name: '#orderTypeAndDocument_orderName',
+      description: '#orderTypeAndDocument_orderDescription',
+    },
     directionsNeeded: {
       id: '#orderFurtherDirections_directionsNeeded',
       options: {
@@ -89,16 +94,37 @@ module.exports = {
         no: '#closeCaseFromOrder-No',
       },
     },
+    uploadedOrder: '#uploadedOrder',
+    checkYourOrder: '#checkYourOrder_label',
   },
 
-  selectType(type, subtype) {
+  selectType(type, subtype, orderType) {
     within(this.fields.orderTypeList, () => {
       I.click(locate('label').withText(type));
     });
-    if (subtype)
+    if (subtype) {
       within(this.fields.orderSubtypeList, () => {
         I.click(locate('label').withText(subtype));
       });
+    }
+    if (orderType) {
+      I.selectOption(this.fields.orderUploadedTypeList, orderType);
+    }
+  },
+
+  enterOrderNameAndDescription(name, description) {
+    I.fillField(this.fields.order.name, name);
+    I.fillField(this.fields.order.description, description);
+  },
+
+  async uploadOrder(order) {
+    await I.attachFile(this.fields.uploadedOrder, order);
+  },
+
+  checkOrder(orderChecks) {
+    I.see(orderChecks.familyManCaseNumber);
+    I.see(orderChecks.children);
+    I.see(orderChecks.order);
   },
 
   enterC21OrderDetails() {
@@ -164,12 +190,7 @@ module.exports = {
   },
 
   enterEpoEndDate(date) {
-    I.fillField(this.fields.epo.endDate.day, date.getDate());
-    I.fillField(this.fields.epo.endDate.month, date.getMonth() + 1);
-    I.fillField(this.fields.epo.endDate.year, date.getFullYear());
-    I.fillField(this.fields.epo.endDate.hour, date.getHours());
-    I.fillField(this.fields.epo.endDate.minute, date.getMinutes());
-    I.fillField(this.fields.epo.endDate.second, date.getSeconds());
+    I.fillDateAndTime(date, this.fields.epo.endDate.id);
   },
 
   async selectEndOfProceedings() {

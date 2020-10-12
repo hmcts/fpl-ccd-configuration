@@ -4,6 +4,7 @@ const blankOrder = require('../fixtures/orders/blankOrder.js');
 const interimSuperVisionOrder = require('../fixtures/orders/interimSupervision.js');
 const finalSuperVisionOrder = require('../fixtures/orders/finalSupervisionOrder.js');
 const emergencyProtectionOrder = require('../fixtures/orders/emergencyProtectionOrder.js');
+const uploadedOrder = require('../fixtures/orders/uploadedOrder.js');
 const interimCareOrder = require('../fixtures/orders/interimCareOrder.js');
 const finalCareOrder = require('../fixtures/orders/finalCareOrder.js');
 const dischargeOfCareOrder = require('../fixtures/orders/dischargeOfCareOrder.js');
@@ -378,6 +379,10 @@ Scenario('HMCTS admin creates emergency protection order', async (I, caseViewPag
 
 Scenario('HMCTS admin creates interim care order', async (I, caseViewPage, createOrderEventPage) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, interimCareOrder);
+});
+
+Scenario('HMCTS admin uploads order', async (I, caseViewPage, createOrderEventPage) => {
+  await verifyOrderCreation(I, caseViewPage, createOrderEventPage, uploadedOrder);
 });
 
 Scenario('HMCTS admin creates final care order', async (I, caseViewPage, createOrderEventPage) => {
