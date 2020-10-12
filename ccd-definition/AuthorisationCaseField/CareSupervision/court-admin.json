@@ -9,6 +9,104 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingType",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingVenue",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingVenueCustom",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingStartDate",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingEndDate",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sendNoticeOfHearing",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "noticeOfHearingNotes",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hasExistingHearings",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingOption",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingDateList",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "firstHearingFlag",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "previousHearingVenue",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "previousVenueId",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "proceedingType",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "caseName",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": " R"
@@ -1265,5 +1363,19 @@
     "CaseFieldID": "checkYourOrder_label",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageHearingsLink",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingTypeDetails",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
   }
 ]

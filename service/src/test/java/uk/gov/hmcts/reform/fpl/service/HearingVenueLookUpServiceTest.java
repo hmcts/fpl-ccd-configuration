@@ -161,4 +161,15 @@ public class HearingVenueLookUpServiceTest {
             assertThat(actualFormattedHearingVenue).isEqualTo(expectedFormattedHearingVenue);
         }
     }
+
+    @Test
+    void shouldReturnVenueIdWhenValidVenueProvided() {
+        assertThat(hearingVenueLookUpService.getVenueId(
+            "Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW")).isEqualTo("Venue");
+    }
+
+    @Test
+    void shouldReturnOtherWhenNoVenueFound() {
+        assertThat(hearingVenueLookUpService.getVenueId("Custom House, Custom Street")).isEqualTo("OTHER");
+    }
 }
