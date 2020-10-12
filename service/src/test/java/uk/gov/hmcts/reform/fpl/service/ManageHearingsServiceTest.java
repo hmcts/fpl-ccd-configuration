@@ -32,6 +32,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -274,12 +275,12 @@ class ManageHearingsServiceTest {
         LocalDateTime startDate = TIME.now();
         LocalDateTime endDate = TIME.now().plusHours(1);
         PreviousHearingVenue previousHearingVenue = PreviousHearingVenue.builder()
+            .previousVenue("Custom House, Custom Street")
             .usePreviousVenue("Yes")
             .build();
 
         CaseData caseData = CaseData.builder()
             .previousVenueId("OTHER")
-            .hearingVenueCustom(VENUE_CUSTOM_ADDRESS)
             .hearingType(CASE_MANAGEMENT)
             .hearingStartDate(startDate)
             .hearingEndDate(endDate)
@@ -293,7 +294,7 @@ class ManageHearingsServiceTest {
         HearingBooking expectedHearingBooking = HearingBooking.builder()
             .type(CASE_MANAGEMENT)
             .venue("OTHER")
-            .venueCustomAddress(VENUE_CUSTOM_ADDRESS)
+            .customPreviousVenue("Custom House, Custom Street")
             .startDate(startDate)
             .endDate(endDate)
             .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
@@ -302,6 +303,49 @@ class ManageHearingsServiceTest {
             .build();
 
         assertThat(hearingBooking).isEqualTo(expectedHearingBooking);
+    }
+
+    @Test
+    void shouldFindAndSetPreviousVenueIdWhenFlagSet() {
+        PreviousHearingVenue previousHearingVenue = PreviousHearingVenue.builder()
+            .previousVenue("Custom House, Custom Street")
+            .usePreviousVenue("Yes")
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(List.of(element(HearingBooking.builder().build())))
+            .previousHearingVenue(previousHearingVenue)
+            .build();
+
+        service.findAndSetPreviousVenueId(caseData);
+
+        verify(hearingVenueLookUpService).getVenueId(previousHearingVenue.getPreviousVenue());
+    }
+
+    @Test
+    void shouldFindAndSetPreviousVenueIdWhenFlagNotSet() {
+        PreviousHearingVenue previousHearingVenue = PreviousHearingVenue.builder()
+            .previousVenue("Custom House, Custom Street")
+            .usePreviousVenue("No")
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(List.of(element(HearingBooking.builder().build())))
+            .previousHearingVenue(previousHearingVenue)
+            .build();
+
+        service.findAndSetPreviousVenueId(caseData);
+
+        assertThat(caseData.getPreviousVenueId()).isNull();
+    }
+
+    @Test
+    void shouldNotFindAndSetPreviousVenueIdWhenNoHearings() {
+        CaseData caseData = CaseData.builder().build();
+
+        service.findAndSetPreviousVenueId(caseData);
+
+        assertThat(caseData.getPreviousVenueId()).isNull();
     }
 
     @Test

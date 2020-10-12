@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.events.NewHearingsAdded;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -118,13 +117,7 @@ public class ManageHearingsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        if (caseData.getHearingDetails() != null) {
-            HearingVenue previousHearingVenue = manageHearingsService.getPreviousHearingVenue(caseData);
-            caseData.setPreviousVenueId(previousHearingVenue.getHearingVenueId());
-            if (previousHearingVenue.getHearingVenueId().equals("OTHER")) {
-                caseData.setHearingVenueCustom(previousHearingVenue.getAddress());
-            }
-        }
+        manageHearingsService.findAndSetPreviousVenueId(caseData);
 
         HearingBooking hearingBooking = manageHearingsService.buildHearingBooking(caseData);
 

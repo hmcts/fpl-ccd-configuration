@@ -521,7 +521,7 @@ public class CaseData {
 
     private final HearingType hearingType;
     private final String hearingVenue;
-    private Address hearingVenueCustom;
+    private final Address hearingVenueCustom;
     private final String firstHearingFlag;
     private final PreviousHearingVenue previousHearingVenue;
     private String previousVenueId;

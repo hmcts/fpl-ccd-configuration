@@ -97,6 +97,17 @@ public class ManageHearingsService {
         );
     }
 
+    public void findAndSetPreviousVenueId(CaseData caseData) {
+        if (caseData.getHearingDetails() != null && caseData.getPreviousHearingVenue() != null
+            && caseData.getPreviousHearingVenue().getUsePreviousVenue().equals("Yes")) {
+
+            PreviousHearingVenue previousVenueForEditedHearing = caseData.getPreviousHearingVenue();
+
+            caseData.setPreviousVenueId(hearingVenueLookUpService.getVenueId(
+                previousVenueForEditedHearing.getPreviousVenue()));
+        }
+    }
+
     public HearingBooking buildHearingBooking(CaseData caseData) {
         if (caseData.getPreviousHearingVenue() == null
             || caseData.getPreviousHearingVenue().getUsePreviousVenue() == null) {
@@ -140,7 +151,8 @@ public class ManageHearingsService {
             "hasExistingHearings",
             "hearingDateList",
             "hearingOption",
-            "noticeOfHearingNotes");
+            "noticeOfHearingNotes",
+            "previousHearingVenue");
     }
 
     private HearingBooking buildFirstHearing(CaseData caseData) {
@@ -156,20 +168,26 @@ public class ManageHearingsService {
     }
 
     private HearingBooking buildFollowingHearings(CaseData caseData) {
-        Address venueCustomAddress;
+        String customPreviousVenue = null;
         String venue;
 
-        venue = "Yes".equals(caseData.getPreviousHearingVenue().getUsePreviousVenue())
-            ? caseData.getPreviousVenueId() : caseData.getPreviousHearingVenue().getNewVenue();
+        String usePreviousVenue = caseData.getPreviousHearingVenue().getUsePreviousVenue();
 
-        //Handles situation where user entered a custom hearing venue after selecting 'Other'
-        venueCustomAddress = "No".equals(caseData.getPreviousHearingVenue().getUsePreviousVenue())
-            ? caseData.getPreviousHearingVenue().getNewVenueCustomAddress() : caseData.getHearingVenueCustom();
+        //Set venue fields based on what the user chose on the venue screen
+        if ("Yes".equals(usePreviousVenue)) {
+            venue = caseData.getPreviousVenueId();
+            if ("OTHER".equals(venue)) {
+                customPreviousVenue = caseData.getPreviousHearingVenue().getPreviousVenue();
+            }
+        } else {
+            venue = caseData.getPreviousHearingVenue().getNewVenue();
+        }
 
         return HearingBooking.builder()
             .type(caseData.getHearingType())
             .venue(venue)
-            .venueCustomAddress(venueCustomAddress)
+            .venueCustomAddress(caseData.getPreviousHearingVenue().getNewVenueCustomAddress())
+            .customPreviousVenue(customPreviousVenue)
             .startDate(caseData.getHearingStartDate())
             .endDate(caseData.getHearingEndDate())
             .judgeAndLegalAdvisor(caseData.getJudgeAndLegalAdvisor())

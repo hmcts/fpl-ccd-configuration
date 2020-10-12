@@ -30,6 +30,9 @@ public class NoticeOfHearingGenerationService {
     public DocmosisNoticeOfHearing getTemplateData(CaseData caseData, HearingBooking hearingBooking) {
         HearingVenue venue = hearingVenueLookUpService.getHearingVenue(hearingBooking);
 
+        String hearingVenue = venue.getAddress() != null
+            ? hearingVenueLookUpService.buildHearingVenue(venue) : hearingBooking.getCustomPreviousVenue();
+
         return DocmosisNoticeOfHearing.builder()
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .courtName(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName())
@@ -38,7 +41,7 @@ public class NoticeOfHearingGenerationService {
                 .hearingDate(dataService.getHearingDateIfHearingsOnSameDay(hearingBooking).orElse(""))
                 .hearingTime(dataService.getHearingTime(hearingBooking))
                 .hearingType(getHearingType(hearingBooking))
-                .hearingVenue(hearingVenueLookUpService.buildHearingVenue(venue))
+                .hearingVenue(hearingVenue)
                 .preHearingAttendance(dataService.extractPrehearingAttendance(hearingBooking))
                 .build())
             .judgeAndLegalAdvisor(dataService.getJudgeAndLegalAdvisor(hearingBooking.getJudgeAndLegalAdvisor()))

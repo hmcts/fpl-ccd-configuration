@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 @Slf4j
 @Service
@@ -55,6 +56,16 @@ public class HearingVenueLookUpService {
             .filter(hearingVenue -> venueId.equalsIgnoreCase(hearingVenue.getHearingVenueId()))
             .findFirst()
             .orElse(HearingVenue.builder().build());
+    }
+
+    //reverse lookup - this might be slow? TODO: needs looking at (FPLA-2280)
+    public String getVenueId(final String venueAsString) {
+        for (HearingVenue hearingVenue : hearingVenues) {
+            if (venueAsString.equalsIgnoreCase(buildHearingVenue(hearingVenue))) {
+                return hearingVenue.getHearingVenueId();
+            }
+        }
+        return "OTHER";
     }
 
     public String buildHearingVenue(final HearingVenue hearingVenue) {
