@@ -169,7 +169,7 @@ Scenario('HMCTS admin manages hearings', async (I, caseViewPage, manageHearingsE
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageHearings);
 
-  I.wait(10);
+  I.wait(5);
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   await manageHearingsEventPage.selectAddNewHearing();
   await I.retryUntilExists(() => I.click('Continue'), '#hearingType');
@@ -202,9 +202,10 @@ Scenario('HMCTS admin manages hearings', async (I, caseViewPage, manageHearingsE
 
   I.seeInTab(['Hearing 2', 'Start date and time'], dateFormat(startDate, 'd mmm yyyy, h:MM:ss TT'));
   I.seeInTab(['Hearing 2', 'End date and time'], dateFormat(endDate, 'd mmm yyyy, h:MM:ss TT'));
-  I.seeInTab(['Hearing 2', 'Judge and Justices\' Legal Adviser', ''], 'Case assigned to: Her Honour Judge Moley');
-  I.seeInTab(['Hearing 2', 'Judge and Justices\' Legal Adviser', 'Is this judge issuing the order?'], 'Yes');
+  I.seeInTab(['Hearing 2', 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], 'Her Honour Judge');
+  I.seeInTab(['Hearing 2', 'Judge and Justices\' Legal Adviser', 'Last name'], 'Moley');
 
+  I.wait(5);
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   await manageHearingsEventPage.selectEditHearing('Case management hearing, 1 January 2060');
   await I.retryUntilExists(() => I.click('Continue'), '#hearingType');
@@ -230,8 +231,8 @@ Scenario('HMCTS admin manages hearings', async (I, caseViewPage, manageHearingsE
 
   I.seeInTab(['Hearing 2', 'Start date and time'], dateFormat(startDate, 'd mmm yyyy, h:MM:ss TT'));
   I.seeInTab(['Hearing 2', 'End date and time'], dateFormat(endDate, 'd mmm yyyy, h:MM:ss TT'));
-  I.seeInTab(['Hearing 2', 'Judge and Justices\' Legal Adviser', ''], 'Case assigned to: Her Honour Judge Moley');
-  I.seeInTab(['Hearing 2', 'Judge and Justices\' Legal Adviser', 'Is this judge issuing the order?'], 'Yes');
+  I.seeInTab(['Hearing 2', 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], 'Her Honour Judge');
+  I.seeInTab(['Hearing 2', 'Judge and Justices\' Legal Adviser', 'Last name'], 'Moley');
   I.seeInTab(['Hearing 2', 'Additional notes'], 'The venue has changed');
   I.seeInTab(['Hearing 2', 'Notice of hearing'], `Notice_of_hearing_${dateFormat(submittedAt, 'ddmmmm')}.pdf`);
 });

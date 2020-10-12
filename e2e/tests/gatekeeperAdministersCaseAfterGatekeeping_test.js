@@ -84,7 +84,6 @@ Scenario('Gatekeeper manages hearings', async (I, caseViewPage, manageHearingsEv
   I.seeInTab(['Hearing 1', 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name'], hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
   I.seeInTab(['Hearing 1', 'Additional notes'], hearingDetails[0].additionalNotes);
   I.seeInTab(['Hearing 1', 'Notice of hearing'], `Notice_of_hearing_${dateFormat(submittedAt, 'ddmmmm')}.pdf`);
-
 });
 
 xScenario('Gatekeeper enters hearing details and submits', async (I, caseViewPage, addHearingBookingDetailsEventPage) => {
