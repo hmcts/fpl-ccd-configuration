@@ -94,7 +94,9 @@ public class ManageHearingsController extends CallbackController {
 
             caseDetails.getData().putAll(manageHearingsService.populateHearingCaseFields(hearingBooking));
 
-            if (hearingBookingId.equals(caseData.getHearingDetails().get(0).getId())) {
+            if (hearingBookingId.equals(caseData.getHearingDetails().get(0).getId())
+                || hearingBooking.getPreviousHearingVenue() == null
+                || hearingBooking.getPreviousHearingVenue().getPreviousVenue() == null) {
                 caseDetails.getData().put(FIRST_HEARING_FLAG, "Yes");
             }
         }

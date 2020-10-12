@@ -522,7 +522,7 @@ public class CaseData {
     private final HearingType hearingType;
     private final String hearingVenue;
     private final Address hearingVenueCustom;
-    private final String firstHearingFlag;
+    private final String firstHearingFlag; //also used for logic surrounding legacy hearings
     private final PreviousHearingVenue previousHearingVenue;
     private String previousVenueId;
     private final String noticeOfHearingNotes;

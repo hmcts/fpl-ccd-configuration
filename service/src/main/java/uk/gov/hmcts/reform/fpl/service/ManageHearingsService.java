@@ -88,13 +88,22 @@ public class ManageHearingsService {
     }
 
     public Map<String, Object> populateHearingCaseFields(HearingBooking hearingBooking) {
-        return Map.of(
-            "hearingType", hearingBooking.getType(),
-            "hearingStartDate", hearingBooking.getStartDate(),
-            "hearingEndDate", hearingBooking.getEndDate(),
-            "judgeAndLegalAdvisor", hearingBooking.getJudgeAndLegalAdvisor(),
-            "previousHearingVenue", hearingBooking.getPreviousHearingVenue()
-        );
+        Map<String, Object> caseFields = new HashMap<>();
+
+        caseFields.put("hearingType", hearingBooking.getType());
+        caseFields.put("hearingStartDate", hearingBooking.getStartDate());
+        caseFields.put("hearingEndDate", hearingBooking.getEndDate());
+        caseFields.put("judgeAndLegalAdvisor", hearingBooking.getJudgeAndLegalAdvisor());
+
+        if (hearingBooking.getPreviousHearingVenue() == null
+            || hearingBooking.getPreviousHearingVenue().getPreviousVenue() == null) {
+            caseFields.put("hearingVenue", hearingBooking.getVenue());
+            caseFields.put("hearingVenueCustom", hearingBooking.getVenueCustomAddress());
+        } else {
+            caseFields.put("previousHearingVenue", hearingBooking.getPreviousHearingVenue());
+        }
+
+        return caseFields;
     }
 
     public void findAndSetPreviousVenueId(CaseData caseData) {

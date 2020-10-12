@@ -107,7 +107,8 @@
     "ID": "firstHearingFlag",
     "FieldType": "YesOrNo",
     "Label": " ",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Comment": "Used for show/hide logic surrounding venue+previousVenue. This is relevant when adding the first hearing to a case, editing that first hearing, or editing any legacy hearings entered before 12/10/2020"
   },
   {
     "LiveFrom": "01/01/2017",

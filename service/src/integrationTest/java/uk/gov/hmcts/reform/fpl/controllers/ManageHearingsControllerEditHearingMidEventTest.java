@@ -78,7 +78,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends AbstractController
         assertThat(caseData.getHearingDateList()).isEqualTo(
             mapper.convertValue(dynamicList, new TypeReference<Map<String, Object>>() {}));
 
-        assertThat(caseData.getFirstHearingFlag()).isNull();
+        assertThat(caseData.getFirstHearingFlag()).isEqualTo("Yes");
         assertHearingCaseFields(caseData, hearings.get(3).getValue());
     }
 
@@ -137,7 +137,6 @@ class ManageHearingsControllerEditHearingMidEventTest extends AbstractController
                 .judgeLastName("Judy")
                 .build())
             .venueCustomAddress(Address.builder().build())
-            .previousHearingVenue(PreviousHearingVenue.builder().build())
             .venue(venue)
             .build();
     }

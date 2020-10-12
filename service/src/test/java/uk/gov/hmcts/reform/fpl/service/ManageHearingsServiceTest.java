@@ -184,7 +184,7 @@ class ManageHearingsServiceTest {
         LocalDateTime startDate = TIME.now().plusDays(1);
         LocalDateTime endDate = TIME.now().plusHours(25);
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = testJudgeAndLegalAdviser();
-        PreviousHearingVenue previousHearingVenue = PreviousHearingVenue.builder().build();
+        PreviousHearingVenue previousHearingVenue = PreviousHearingVenue.builder().previousVenue("prev venue").build();
 
         HearingBooking hearing = HearingBooking.builder()
             .type(CASE_MANAGEMENT)
@@ -204,6 +204,36 @@ class ManageHearingsServiceTest {
             "hearingEndDate", endDate,
             "judgeAndLegalAdvisor", judgeAndLegalAdvisor,
             "previousHearingVenue", previousHearingVenue
+        );
+
+        assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(expectedCaseFields);
+    }
+
+    @Test
+    void shouldSplitOutHearingIntoSeparateFieldsWhenNoPreviousVenueOnHearing() {
+        LocalDateTime startDate = TIME.now().plusDays(1);
+        LocalDateTime endDate = TIME.now().plusHours(25);
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = testJudgeAndLegalAdviser();
+
+        HearingBooking hearing = HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .venue("OTHER")
+            .venueCustomAddress(VENUE_CUSTOM_ADDRESS)
+            .startDate(startDate)
+            .endDate(endDate)
+            .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
+            .previousHearingVenue(PreviousHearingVenue.builder().build())
+            .build();
+
+        Map<String, Object> hearingCaseFields = service.populateHearingCaseFields(hearing);
+
+        Map<String, Object> expectedCaseFields = Map.of(
+            "hearingType", CASE_MANAGEMENT,
+            "hearingStartDate", startDate,
+            "hearingEndDate", endDate,
+            "judgeAndLegalAdvisor", judgeAndLegalAdvisor,
+            "hearingVenue", "OTHER",
+            "hearingVenueCustom", VENUE_CUSTOM_ADDRESS
         );
 
         assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(expectedCaseFields);
