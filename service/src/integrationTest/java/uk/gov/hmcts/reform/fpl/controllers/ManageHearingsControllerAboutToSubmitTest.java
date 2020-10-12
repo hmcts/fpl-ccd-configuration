@@ -6,7 +6,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -15,6 +14,8 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
@@ -22,13 +23,13 @@ import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
-import static java.lang.Long.parseLong;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -104,16 +105,31 @@ class ManageHearingsControllerAboutToSubmitTest extends AbstractControllerTest {
         assertThat(caseData.getFirstHearingFlag()).isEqualTo("No");
     }
 
-    //TODO
     @Test
     void shouldUpdateExistingHearingInHearingDetailsListWhenEditHearingSelected() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .id(parseLong(CASE_ID))
-            .data(Map.of("data", "some data"))
+        HearingBooking existingHearing = hearing(LocalDateTime.of(2020, 2, 2, 20, 20), "96");
+
+        Element<HearingBooking> hearingElement = element(existingHearing);
+
+        CaseData initialData = CaseData.builder()
+            .hearingOption(EDIT_HEARING)
+            .hearingDateList(dynamicList(List.of(hearingElement)))
+            .hearingDetails(List.of(hearingElement))
+            .hearingType(ISSUE_RESOLUTION)
+            .hearingVenue(existingHearing.getVenue())
+            .hearingVenueCustom(existingHearing.getVenueCustomAddress())
+            .hearingStartDate(existingHearing.getStartDate())
+            .hearingEndDate(existingHearing.getEndDate())
+            .judgeAndLegalAdvisor(existingHearing.getJudgeAndLegalAdvisor())
+            .noticeOfHearingNotes(existingHearing.getAdditionalNotes())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(asCaseDetails(initialData));
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        HearingBooking expectedHearing = existingHearing.toBuilder().type(ISSUE_RESOLUTION).build();
+        assertThat(unwrapElements(caseData.getHearingDetails())).containsExactly(expectedHearing);
+
     }
 
     private List<Element<HearingBooking>> hearings() {
@@ -134,6 +150,21 @@ class ManageHearingsControllerAboutToSubmitTest extends AbstractControllerTest {
                 .build())
             .venueCustomAddress(Address.builder().build())
             .venue(venue)
+            .build();
+    }
+
+    private DynamicList dynamicList(List<Element<HearingBooking>> hearings) {
+        return DynamicList.builder()
+            .value(DynamicListElement.builder()
+                .code(hearings.get(0).getId())
+                .label("Case management hearing, 25 June 2099")
+                .build())
+            .listItems(List.of(
+                DynamicListElement.builder()
+                    .code(hearings.get(0).getId())
+                    .label("Case management hearing, 25 June 2099")
+                    .build()
+            ))
             .build();
     }
 }
