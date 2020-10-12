@@ -11,7 +11,8 @@ public enum GeneratedOrderType {
     CARE_ORDER("Care order", "care_order.pdf"),
     EMERGENCY_PROTECTION_ORDER("Emergency protection order", "emergency_protection_order.pdf"),
     DISCHARGE_OF_CARE_ORDER("Discharge of care order", "discharge_of_care_order.pdf"),
-    SUPERVISION_ORDER("Supervision order", "supervision_order.pdf");
+    SUPERVISION_ORDER("Supervision order", "supervision_order.pdf"),
+    UPLOAD(null, null);
 
     private final String label;
     private final String fileName;

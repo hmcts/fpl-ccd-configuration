@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
+import uk.gov.hmcts.reform.fpl.enums.UploadedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -43,6 +44,8 @@ import uk.gov.hmcts.reform.fpl.utils.OrderHelper;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -66,17 +69,19 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.DISCHARGE_OF_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(GeneratedOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-@SuppressWarnings("unchecked")
 class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
 
     private Document document;
@@ -151,10 +156,7 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
             .orderTypeAndDocument(OrderTypeAndDocument.builder().type(type).subtype(subType).build())
             .build();
 
-        return CaseDetails.builder()
-            .data(mapper.convertValue(caseData, new TypeReference<>() {
-            }))
-            .build();
+        return asCaseDetails(caseData);
     }
 
     @Nested
@@ -180,7 +182,7 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
             AboutToStartOrSubmitCallbackResponse response = postMidEvent(
                 buildCaseDetails("No", CARE_ORDER, FINAL), callbackType);
 
-            CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
+            CaseData caseData = extractCaseData(response);
 
             assertThat(response.getData().get("children_label"))
                 .isEqualTo("Child 1: Wallace\nChild 2: Gromit\n");
@@ -349,6 +351,7 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
             assertThat(callbackResponse.getErrors()).isEmpty();
         }
 
+        @SafeVarargs
         private GeneratedOrder order(GeneratedOrderType type, GeneratedOrderSubtype subType, String issueDate,
                                      Element<Child>... children) {
             return GeneratedOrder.builder()
@@ -358,6 +361,7 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
                 .build();
         }
 
+        @SafeVarargs
         private GeneratedOrder order(GeneratedOrderType type, String issueDate, Element<Child>... children) {
             return order(type, null, issueDate, children);
         }
@@ -406,6 +410,39 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
 
             assertThat(response.getData()).extracting("showCloseCaseFromOrderPage", "close_case_label")
                 .containsOnly("NO", null);
+        }
+
+        @Test
+        void shouldAddCheckYourOrderDetailsWhenOrderTypeIsSubmitted() {
+            given(toggleService.isCloseCaseEnabled()).willReturn(true);
+
+            List<Element<Child>> children = testChildren();
+            String familyManCaseNumber = "famNum";
+            DocumentReference uploadedOrder = testDocumentReference();
+
+            CaseData caseData = CaseData.builder()
+                .dateOfIssue(dateNow())
+                .orderTypeAndDocument(OrderTypeAndDocument.builder()
+                    .type(UPLOAD)
+                    .uploadedOrderType(UploadedOrderType.C27)
+                    .build())
+                .uploadedOrder(uploadedOrder)
+                .children1(children)
+                .orderAppliesToAllChildren("Yes")
+                .familyManCaseNumber(familyManCaseNumber)
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, callbackType);
+
+            String childrenNames = children.stream()
+                .map(child -> child.getValue().getParty().getFullName())
+                .collect(Collectors.joining("\n"));
+
+            Map<String, Object> documentMap = mapper.convertValue(uploadedOrder, new TypeReference<>() {});
+
+            assertThat(response.getData())
+                .extracting("readOnlyFamilyManCaseNumber", "readOnlyOrder", "readOnlyChildren")
+                .containsExactly(familyManCaseNumber, documentMap, childrenNames);
         }
 
         @ParameterizedTest
