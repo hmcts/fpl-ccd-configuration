@@ -71,12 +71,12 @@ class NoticeOfHearingGenerationServiceTest {
         DocmosisNoticeOfHearing.DocmosisNoticeOfHearingBuilder docmosisNoticeOfHearingBuilder
             = getDocmosisNoticeOfHearingBuilder(now.toLocalDate())
             .hearingBooking(getDocmosisHearingBookingBuilder()
-            .hearingTime(String.format("%s - %s",
-                formatLocalDateTime(hearingBooking.getStartDate(), HEARING_DATE_AND_TIME_FORMAT),
-                formatLocalDateTime(hearingBooking.getEndDate(), HEARING_DATE_AND_TIME_FORMAT)))
-            .preHearingAttendance(formatLocalDateTime(now.minusHours(1), DATE_TIME))
-            .hearingDate("")
-            .build());
+                .hearingTime(String.format("%s - %s",
+                    formatLocalDateTime(hearingBooking.getStartDate(), HEARING_DATE_AND_TIME_FORMAT),
+                    formatLocalDateTime(hearingBooking.getEndDate(), HEARING_DATE_AND_TIME_FORMAT)))
+                .preHearingAttendance(formatLocalDateTime(now.minusHours(1), DATE_TIME))
+                .hearingDate("")
+                .build());
 
         DocmosisNoticeOfHearing expectedDocmosisNoticeOfHearing = docmosisNoticeOfHearingBuilder.build();
 
@@ -93,12 +93,40 @@ class NoticeOfHearingGenerationServiceTest {
         DocmosisNoticeOfHearing.DocmosisNoticeOfHearingBuilder docmosisNoticeOfHearingBuilder
             = getDocmosisNoticeOfHearingBuilder(now.toLocalDate())
             .hearingBooking(getDocmosisHearingBookingBuilder()
-            .hearingDate(formatLocalDateTime(now, DATE))
-            .preHearingAttendance(formatLocalDateTime(now.minusHours(1), "h:mma"))
-            .hearingTime(String.format("%s - %s",
-                formatLocalDateTime(now, HEARING_TIME_FORMAT),
-                formatLocalDateTime(now, HEARING_TIME_FORMAT)))
-            .build());
+                .hearingDate(formatLocalDateTime(now, DATE))
+                .preHearingAttendance(formatLocalDateTime(now.minusHours(1), "h:mma"))
+                .hearingTime(String.format("%s - %s",
+                    formatLocalDateTime(now, HEARING_TIME_FORMAT),
+                    formatLocalDateTime(now, HEARING_TIME_FORMAT)))
+                .build());
+
+        DocmosisNoticeOfHearing expectedDocmosisNoticeOfHearing = docmosisNoticeOfHearingBuilder.build();
+
+        assertThat(actualDocmosisNoticeOfHearing).isEqualToComparingFieldByField(expectedDocmosisNoticeOfHearing);
+    }
+
+    @Test
+    void shouldBuildExpectedTemplateDataWhenHearingVenueIsCustomPreviousVenue() {
+        LocalDateTime now = LocalDateTime.now();
+
+        CaseData caseData = buildCaseData(now.toLocalDate());
+        HearingBooking hearingBooking = buildHearingBooking(now, now).toBuilder()
+            .venue("OTHER")
+            .venueCustomAddress(null)
+            .customPreviousVenue("Custom House, Custom Street")
+            .build();
+
+        final DocmosisNoticeOfHearing actualDocmosisNoticeOfHearing = service.getTemplateData(caseData, hearingBooking);
+        DocmosisNoticeOfHearing.DocmosisNoticeOfHearingBuilder docmosisNoticeOfHearingBuilder
+            = getDocmosisNoticeOfHearingBuilder(now.toLocalDate())
+            .hearingBooking(getDocmosisHearingBookingBuilder()
+                .hearingVenue("Custom House, Custom Street")
+                .hearingDate(formatLocalDateTime(now, DATE))
+                .preHearingAttendance(formatLocalDateTime(now.minusHours(1), "h:mma"))
+                .hearingTime(String.format("%s - %s",
+                    formatLocalDateTime(now, HEARING_TIME_FORMAT),
+                    formatLocalDateTime(now, HEARING_TIME_FORMAT)))
+                .build());
 
         DocmosisNoticeOfHearing expectedDocmosisNoticeOfHearing = docmosisNoticeOfHearingBuilder.build();
 
