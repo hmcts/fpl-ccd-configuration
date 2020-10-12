@@ -107,6 +107,19 @@ const createDischargeCareOrder = async (I, createOrderEventPage, order, hasAlloc
   await I.completeEvent('Save and continue');
 };
 
+const uploadOrder = async (I, createOrderEventPage, order) => {
+  I.see(order.orderChecks.familyManCaseNumber);
+  await createOrderEventPage.selectType(order.type, undefined, order.uploadedOrderType);
+  createOrderEventPage.enterOrderNameAndDescription(order.orderName, order.orderDescription);
+  await fillDateOfIssue(I, createOrderEventPage, order);
+  await selectChildren(I, createOrderEventPage, order);
+  await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.uploadedOrder);
+  await createOrderEventPage.uploadOrder(order.orderFile);
+  await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.checkYourOrder);
+  createOrderEventPage.checkOrder(order.orderChecks);
+  await I.completeEvent('Save and continue');
+};
+
 const fillInterimEndDate = async (I, createOrderEventPage, order) => {
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.interimEndDate.id);
   if (order.interimEndDate.isNamedDate) {
@@ -168,6 +181,9 @@ module.exports = {
       case 'Discharge of care order':
         await createDischargeCareOrder(I, createOrderEventPage, order, hasAllocatedJudge);
         break;
+      case 'Upload':
+        await uploadOrder(I, createOrderEventPage, order);
+        break;
     }
   },
 
@@ -179,19 +195,25 @@ module.exports = {
     if (order.type === 'Blank order (C21)') {
       I.seeInTab([orderHeading, 'Order title'], order.title);
       I.seeInTab([orderHeading, 'Order document'], order.document);
-      I.seeInTab([orderHeading, 'Date of issue'], dateFormat(defaultIssuedDate, 'd mmmm yyyy'));
+      I.seeInTab([orderHeading, 'Date on order'], dateFormat(defaultIssuedDate, 'd mmmm yyyy'));
     } else {
       I.seeInTab([orderHeading, 'Order document'], order.document);
-      I.seeInTab([orderHeading, 'Date of issue'], dateFormat(dateToString(order.dateOfIssue), 'd mmmm yyyy'));
+      I.seeInTab([orderHeading, 'Date on order'], dateFormat(dateToString(order.dateOfIssue), 'd mmmm yyyy'));
     }
 
-    if (hasAllocatedJudge) {
-      I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], 'Her Honour Judge');
-      I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Last name'], 'Moley');
+    if (order.type !== 'Upload') {
+      if (hasAllocatedJudge) {
+        I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], 'Her Honour Judge');
+        I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Last name'], 'Moley');
+      } else {
+        I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], order.judgeAndLegalAdvisor.judgeTitle);
+        I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Last name'], order.judgeAndLegalAdvisor.judgeLastName);
+        I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name'], order.judgeAndLegalAdvisor.legalAdvisorName);
+      }
     } else {
-      I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], order.judgeAndLegalAdvisor.judgeTitle);
-      I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Last name'], order.judgeAndLegalAdvisor.judgeLastName);
-      I.seeInTab([orderHeading, 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name'], order.judgeAndLegalAdvisor.legalAdvisorName);
+      I.seeInTab([orderHeading, 'Order description'], order.orderDescription);
+      I.seeTextInTab([orderHeading, 'Date and time of upload']);
+      I.seeTextInTab([orderHeading, 'Uploaded by']);
     }
 
     isOrderRemoved && I.seeInTab([orderHeading, 'Reason for removal'], order.reasonForRemoval);

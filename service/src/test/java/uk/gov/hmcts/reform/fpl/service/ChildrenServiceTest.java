@@ -5,10 +5,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
+import uk.gov.hmcts.reform.fpl.enums.UploadedOrderType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
@@ -25,6 +27,7 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -83,13 +86,28 @@ class ChildrenServiceTest {
 
     @Test
     void shouldUpdateFinalOrderIssuedWhenAppliesToAllChildren() {
-        List<Element<Child>> result = service.updateFinalOrderIssued(CARE_ORDER, testChildren(), "Yes", null, null);
+        List<Element<Child>> result = service.updateFinalOrderIssued(
+            orderOfType(CARE_ORDER), testChildren(), "Yes", null, null
+        );
 
         assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
             .containsExactly("Yes", "Yes", "Yes");
 
         assertThat(result).extracting(element -> element.getValue().getFinalOrderIssuedType())
             .containsExactly("Care order", "Care order", "Care order");
+    }
+
+    @Test
+    void shouldUseUploadDocumentLabelWhenTypeIsUpload() {
+        List<Element<Child>> result = service.updateFinalOrderIssued(
+            orderOfType(UPLOAD, UploadedOrderType.C37), testChildren(), "Yes", null, null
+        );
+
+        assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
+            .containsExactly("Yes", "Yes", "Yes");
+
+        assertThat(result).extracting(child -> child.getValue().getFinalOrderIssuedType())
+            .containsOnly("Education supervision order (C37)");
     }
 
     @Test
@@ -101,8 +119,9 @@ class ChildrenServiceTest {
             .selected(List.of(1))
             .build();
 
-        List<Element<Child>> result = service.updateFinalOrderIssued(CARE_ORDER,
-            children, "No", childSelector, null);
+        List<Element<Child>> result = service.updateFinalOrderIssued(
+            orderOfType(CARE_ORDER), children, "No", childSelector, null
+        );
 
         assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
             .containsExactly("No", "Yes", "No");
@@ -122,8 +141,9 @@ class ChildrenServiceTest {
             .selected(List.of(0, 2))
             .build();
 
-        List<Element<Child>> result = service.updateFinalOrderIssued(CARE_ORDER,
-            children, "No", childSelector, null);
+        List<Element<Child>> result = service.updateFinalOrderIssued(
+            orderOfType(CARE_ORDER), children, "No", childSelector, null
+        );
 
         assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
             .containsExactly("Yes", "Yes", "Yes", "No", "No");
@@ -138,8 +158,9 @@ class ChildrenServiceTest {
             childWithoutFinalOrderIssued(),
             childWithFinalOrderIssued());
 
-        List<Element<Child>> result = service.updateFinalOrderIssued(SUPERVISION_ORDER,
-            children, "No", null, "1");
+        List<Element<Child>> result = service.updateFinalOrderIssued(
+            orderOfType(SUPERVISION_ORDER), children, "No", null, "1"
+        );
 
         assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
             .containsExactly("Yes", "Yes", "Yes");
@@ -285,7 +306,7 @@ class ChildrenServiceTest {
 
         @Test
         void shouldReturnSelectedChildrenOnly() {
-            Integer selectedChild = 1;
+            int selectedChild = 1;
             CaseData caseData = CaseData.builder()
                 .children1(List.of(testChild(), testChild(), testChild()))
                 .childSelector(Selector.builder().selected(List.of(selectedChild)).build())
@@ -349,6 +370,17 @@ class ChildrenServiceTest {
             .finalOrderIssued(ofNullable(orderType).map(o -> YES).orElse(NO).getValue())
             .finalOrderIssuedType(ofNullable(orderType).map(GeneratedOrderType::getLabel).orElse(null))
             .build());
+    }
+
+    private static OrderTypeAndDocument orderOfType(GeneratedOrderType type) {
+        return orderOfType(type, null);
+    }
+
+    private static OrderTypeAndDocument orderOfType(GeneratedOrderType type, UploadedOrderType uploadedOrderType) {
+        return OrderTypeAndDocument.builder()
+            .type(type)
+            .uploadedOrderType(uploadedOrderType)
+            .build();
     }
 
 }

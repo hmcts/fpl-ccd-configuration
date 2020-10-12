@@ -247,6 +247,7 @@ public class CaseData {
     private final FurtherDirections orderFurtherDirections;
     private final ExclusionClause orderExclusionClause;
     private final GeneratedOrder order;
+    private final DocumentReference uploadedOrder;
     @JsonIgnore
     private OrderStatus generatedOrderStatus;
     private final Integer orderMonths;
