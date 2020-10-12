@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService
 import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -98,7 +97,7 @@ public class ManageHearingsService {
 
         //Reconstruct judge fields for editing
         JudgeAndLegalAdvisor judgeAndLegalAdvisor;
-        if (allocatedJudge != null && allocatedJudge.getJudgeLastName() != null) {
+        if (allocatedJudge != null) {
             judgeAndLegalAdvisor = prepareJudgeFields(hearingBooking.getJudgeAndLegalAdvisor(), allocatedJudge);
             judgeAndLegalAdvisor.setAllocatedJudgeLabel(buildAllocatedJudgeLabel(allocatedJudge));
         } else {

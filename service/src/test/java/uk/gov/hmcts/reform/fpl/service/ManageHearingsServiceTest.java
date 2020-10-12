@@ -199,7 +199,7 @@ class ManageHearingsServiceTest {
             .previousHearingVenue(previousHearingVenue)
             .build();
 
-        Map<String, Object> hearingCaseFields = service.populateHearingCaseFields(hearing, Judge.builder().build());
+        Map<String, Object> hearingCaseFields = service.populateHearingCaseFields(hearing, null);
 
         Map<String, Object> expectedCaseFields = Map.of(
             "hearingType", CASE_MANAGEMENT,
@@ -213,7 +213,7 @@ class ManageHearingsServiceTest {
     }
 
     @Test
-    void shouldSplitOutHearingIntoSeparateFieldsWhenNoPreviousVenueAndCustomHearingTypeUsedAndAllocatedJudgeUsed() {
+    void shouldSplitOutHearingIntoCorrectFieldsWhenNoPreviousVenueAndCustomHearingTypeUsedAndAllocatedJudgeUsed() {
         LocalDateTime startDate = TIME.now().plusDays(1);
         LocalDateTime endDate = TIME.now().plusHours(25);
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = testJudgeAndLegalAdviser();
