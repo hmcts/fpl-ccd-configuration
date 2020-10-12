@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -89,6 +90,10 @@ public class ManageHearingsService {
 
     public Map<String, Object> populateHearingCaseFields(HearingBooking hearingBooking) {
         Map<String, Object> caseFields = new HashMap<>();
+
+        if (OTHER.equals(hearingBooking.getType())) {
+            caseFields.put("hearingTypeDetails", hearingBooking.getTypeDetails());
+        }
 
         caseFields.put("hearingType", hearingBooking.getType());
         caseFields.put("hearingStartDate", hearingBooking.getStartDate());
@@ -151,6 +156,7 @@ public class ManageHearingsService {
     public Set<String> caseFieldsToBeRemoved() {
         return Set.of(
             "hearingType",
+            "hearingTypeDetails",
             "hearingVenue",
             "hearingVenueCustom",
             "hearingStartDate",
@@ -167,6 +173,7 @@ public class ManageHearingsService {
     private HearingBooking buildFirstHearing(CaseData caseData) {
         return HearingBooking.builder()
             .type(caseData.getHearingType())
+            .typeDetails(caseData.getHearingTypeDetails())
             .venue(caseData.getHearingVenue())
             .venueCustomAddress(caseData.getHearingVenueCustom())
             .startDate(caseData.getHearingStartDate())
@@ -194,6 +201,7 @@ public class ManageHearingsService {
 
         return HearingBooking.builder()
             .type(caseData.getHearingType())
+            .typeDetails(caseData.getHearingTypeDetails())
             .venue(venue)
             .venueCustomAddress(caseData.getPreviousHearingVenue().getNewVenueCustomAddress())
             .customPreviousVenue(customPreviousVenue)

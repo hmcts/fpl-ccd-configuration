@@ -35,6 +35,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
@@ -210,13 +211,14 @@ class ManageHearingsServiceTest {
     }
 
     @Test
-    void shouldSplitOutHearingIntoSeparateFieldsWhenNoPreviousVenueOnHearing() {
+    void shouldSplitOutHearingIntoSeparateFieldsWhenNoPreviousVenueAndCustomHearingTypeUsed() {
         LocalDateTime startDate = TIME.now().plusDays(1);
         LocalDateTime endDate = TIME.now().plusHours(25);
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = testJudgeAndLegalAdviser();
 
         HearingBooking hearing = HearingBooking.builder()
-            .type(CASE_MANAGEMENT)
+            .type(OTHER)
+            .typeDetails("Fact finding")
             .venue("OTHER")
             .venueCustomAddress(VENUE_CUSTOM_ADDRESS)
             .startDate(startDate)
@@ -228,7 +230,8 @@ class ManageHearingsServiceTest {
         Map<String, Object> hearingCaseFields = service.populateHearingCaseFields(hearing);
 
         Map<String, Object> expectedCaseFields = Map.of(
-            "hearingType", CASE_MANAGEMENT,
+            "hearingType", OTHER,
+            "hearingTypeDetails", "Fact finding",
             "hearingStartDate", startDate,
             "hearingEndDate", endDate,
             "judgeAndLegalAdvisor", judgeAndLegalAdvisor,
