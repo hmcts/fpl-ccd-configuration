@@ -34,7 +34,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 public class HearingBooking {
     private final HearingType type;
     private final String typeDetails;
-    private String venue;
+    private final String venue;
     private final String customPreviousVenue;
     private final Address venueCustomAddress;
     @TimeNotMidnight(message = "Enter a valid start time", groups = HearingBookingDetailsGroup.class)

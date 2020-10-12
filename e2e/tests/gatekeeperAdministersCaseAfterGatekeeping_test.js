@@ -73,8 +73,6 @@ Scenario('Gatekeeper manages hearings', async (I, caseViewPage, manageHearingsEv
   I.seeEventSubmissionConfirmation(config.administrationActions.manageHearings);
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
 
-  I.wait(10);
-
   let startDate = dateToString(hearingDetails[0].startDate);
   let endDate = dateToString(hearingDetails[0].endDate);
   I.seeInTab(['Hearing 1', 'Type of hearing'], hearingDetails[0].caseManagement);

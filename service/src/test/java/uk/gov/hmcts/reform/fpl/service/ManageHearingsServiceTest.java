@@ -183,7 +183,7 @@ class ManageHearingsServiceTest {
     }
 
     @Test
-    void shouldSplitOutHearingIntoSeparateFields() {
+    void shouldUnwrapHearingIntoSeparateFields() {
         LocalDateTime startDate = TIME.now().plusDays(1);
         LocalDateTime endDate = TIME.now().plusHours(25);
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = testJudgeAndLegalAdviser();
@@ -213,7 +213,7 @@ class ManageHearingsServiceTest {
     }
 
     @Test
-    void shouldSplitOutHearingIntoCorrectFieldsWhenNoPreviousVenueAndCustomHearingTypeUsedAndAllocatedJudgeUsed() {
+    void shouldUnwrapHearingWhenNoPreviousVenueAndCustomHearingTypeUsedAndAllocatedJudgeUsed() {
         LocalDateTime startDate = TIME.now().plusDays(1);
         LocalDateTime endDate = TIME.now().plusHours(25);
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = testJudgeAndLegalAdviser();

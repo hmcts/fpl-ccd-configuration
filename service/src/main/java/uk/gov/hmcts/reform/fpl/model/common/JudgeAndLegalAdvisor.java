@@ -16,7 +16,7 @@ public class JudgeAndLegalAdvisor extends AbstractJudge {
     private final String otherTitle;
     private final String judgeLastName;
     private final String judgeFullName;
-    private String legalAdvisorName;
+    private final String legalAdvisorName;
     private String allocatedJudgeLabel;
     private String useAllocatedJudge;
     private String judgeEmailAddress;
