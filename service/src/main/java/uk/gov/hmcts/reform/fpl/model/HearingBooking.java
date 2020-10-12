@@ -35,6 +35,7 @@ public class HearingBooking {
     private final HearingType type;
     private final String typeDetails;
     private final String venue;
+    private final String customPreviousVenue;
     private final Address venueCustomAddress;
     @TimeNotMidnight(message = "Enter a valid start time", groups = HearingBookingDetailsGroup.class)
     @Future(message = "Enter a start date in the future", groups = HearingBookingDetailsGroup.class)
@@ -48,6 +49,7 @@ public class HearingBooking {
     private JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private UUID caseManagementOrderId;
     private DocumentReference noticeOfHearing;
+    private final PreviousHearingVenue previousHearingVenue;
 
     public boolean hasDatesOnSameDay() {
         return this.startDate.toLocalDate().isEqual(this.endDate.toLocalDate());
