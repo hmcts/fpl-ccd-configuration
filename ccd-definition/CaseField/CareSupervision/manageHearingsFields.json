@@ -131,7 +131,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearingTypeDetails",
-    "Label": "Add hearing type, if it's not listed above",
+    "Label": "Add hearing type",
     "HintText": "For example, C2 application or fact finding hearing",
     "FieldType": "Text",
     "SecurityClassification": "Public"
