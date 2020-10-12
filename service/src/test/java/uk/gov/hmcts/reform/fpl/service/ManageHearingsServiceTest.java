@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -39,6 +40,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudgeAndLegalAdviser;
 
 @ExtendWith(MockitoExtension.class)
@@ -197,7 +199,7 @@ class ManageHearingsServiceTest {
             .previousHearingVenue(previousHearingVenue)
             .build();
 
-        Map<String, Object> hearingCaseFields = service.populateHearingCaseFields(hearing);
+        Map<String, Object> hearingCaseFields = service.populateHearingCaseFields(hearing, Judge.builder().build());
 
         Map<String, Object> expectedCaseFields = Map.of(
             "hearingType", CASE_MANAGEMENT,
@@ -211,10 +213,11 @@ class ManageHearingsServiceTest {
     }
 
     @Test
-    void shouldSplitOutHearingIntoSeparateFieldsWhenNoPreviousVenueAndCustomHearingTypeUsed() {
+    void shouldSplitOutHearingIntoSeparateFieldsWhenNoPreviousVenueAndCustomHearingTypeUsedAndAllocatedJudgeUsed() {
         LocalDateTime startDate = TIME.now().plusDays(1);
         LocalDateTime endDate = TIME.now().plusHours(25);
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = testJudgeAndLegalAdviser();
+        Judge allocatedJudge = testJudge();
 
         HearingBooking hearing = HearingBooking.builder()
             .type(OTHER)
@@ -227,7 +230,7 @@ class ManageHearingsServiceTest {
             .previousHearingVenue(PreviousHearingVenue.builder().build())
             .build();
 
-        Map<String, Object> hearingCaseFields = service.populateHearingCaseFields(hearing);
+        Map<String, Object> hearingCaseFields = service.populateHearingCaseFields(hearing, allocatedJudge);
 
         Map<String, Object> expectedCaseFields = Map.of(
             "hearingType", OTHER,

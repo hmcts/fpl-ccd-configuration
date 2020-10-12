@@ -92,7 +92,8 @@ public class ManageHearingsController extends CallbackController {
             HearingBooking hearingBooking = manageHearingsService.findHearingBooking(
                 hearingBookingId, caseData.getHearingDetails());
 
-            caseDetails.getData().putAll(manageHearingsService.populateHearingCaseFields(hearingBooking));
+            caseDetails.getData().putAll(manageHearingsService.populateHearingCaseFields(
+                hearingBooking, caseData.getAllocatedJudge()));
 
             if (hearingBookingId.equals(caseData.getHearingDetails().get(0).getId())
                 || hearingBooking.getPreviousHearingVenue() == null

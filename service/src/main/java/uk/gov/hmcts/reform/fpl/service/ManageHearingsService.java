@@ -9,10 +9,12 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
@@ -33,6 +35,9 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getJudgeForTabView;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.prepareJudgeFields;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -88,8 +93,17 @@ public class ManageHearingsService {
         return HearingBooking.builder().build();
     }
 
-    public Map<String, Object> populateHearingCaseFields(HearingBooking hearingBooking) {
+    public Map<String, Object> populateHearingCaseFields(HearingBooking hearingBooking, Judge allocatedJudge) {
         Map<String, Object> caseFields = new HashMap<>();
+
+        //Reconstruct judge fields for editing
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor;
+        if (allocatedJudge != null && allocatedJudge.getJudgeLastName() != null) {
+            judgeAndLegalAdvisor = prepareJudgeFields(hearingBooking.getJudgeAndLegalAdvisor(), allocatedJudge);
+            judgeAndLegalAdvisor.setAllocatedJudgeLabel(buildAllocatedJudgeLabel(allocatedJudge));
+        } else {
+            judgeAndLegalAdvisor = hearingBooking.getJudgeAndLegalAdvisor();
+        }
 
         if (OTHER.equals(hearingBooking.getType())) {
             caseFields.put("hearingTypeDetails", hearingBooking.getTypeDetails());
@@ -98,7 +112,7 @@ public class ManageHearingsService {
         caseFields.put("hearingType", hearingBooking.getType());
         caseFields.put("hearingStartDate", hearingBooking.getStartDate());
         caseFields.put("hearingEndDate", hearingBooking.getEndDate());
-        caseFields.put("judgeAndLegalAdvisor", hearingBooking.getJudgeAndLegalAdvisor());
+        caseFields.put("judgeAndLegalAdvisor", judgeAndLegalAdvisor);
 
         if (hearingBooking.getPreviousHearingVenue() == null
             || hearingBooking.getPreviousHearingVenue().getPreviousVenue() == null) {
@@ -178,7 +192,7 @@ public class ManageHearingsService {
             .venueCustomAddress(caseData.getHearingVenueCustom())
             .startDate(caseData.getHearingStartDate())
             .endDate(caseData.getHearingEndDate())
-            .judgeAndLegalAdvisor(caseData.getJudgeAndLegalAdvisor())
+            .judgeAndLegalAdvisor(getJudgeForTabView(caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()))
             .additionalNotes(caseData.getNoticeOfHearingNotes())
             .build();
     }
@@ -207,7 +221,7 @@ public class ManageHearingsService {
             .customPreviousVenue(customPreviousVenue)
             .startDate(caseData.getHearingStartDate())
             .endDate(caseData.getHearingEndDate())
-            .judgeAndLegalAdvisor(caseData.getJudgeAndLegalAdvisor())
+            .judgeAndLegalAdvisor(getJudgeForTabView(caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()))
             .previousHearingVenue(caseData.getPreviousHearingVenue())
             .additionalNotes(caseData.getNoticeOfHearingNotes())
             .build();
