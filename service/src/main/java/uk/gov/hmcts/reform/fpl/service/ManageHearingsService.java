@@ -57,7 +57,7 @@ public class ManageHearingsService {
         HearingBooking previousHearingBooking;
         if (hearingsList.stream().anyMatch(hearing -> hearing.getStartDate().isBefore(time.now()))) {
             previousHearingBooking = hearingsList.stream()
-                .filter(hearing -> hearing.getStartDate().isBefore(LocalDateTime.now()))
+                .filter(hearing -> hearing.getStartDate().isBefore(time.now()))
                 .max(comparing(HearingBooking::getStartDate))
                 .orElseThrow(NoHearingBookingException::new);
         } else {
