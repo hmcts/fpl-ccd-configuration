@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +18,7 @@ public class NoticeOfProceedings {
     private final List<ProceedingType> proceedingTypes;
     private JudgeAndLegalAdvisor judgeAndLegalAdvisor;
 
+    @JsonIgnore
     public List<DocmosisTemplates> mapProceedingTypesToDocmosisTemplate() {
         if (proceedingTypes == null) {
             return List.of();

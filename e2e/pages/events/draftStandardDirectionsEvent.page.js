@@ -6,7 +6,7 @@ module.exports = {
   fields: {
     statusRadioGroup: {
       groupName: '#standardDirectionOrder_orderStatus',
-      sealed: 'Yes, it can be sealed and sent to parties',
+      sealed: 'Yes, seal it and send to the local authority',
       draft: 'No, just save it on the system',
     },
     routingRadioGroup: {
