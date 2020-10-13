@@ -47,12 +47,10 @@ public class NewHearingsAddedHandler {
         final CaseData caseData = event.getCaseData();
         Collection<String> emails = inboxLookupService.getRecipients(caseData);
 
-        event.getNewHearings().forEach(hearing -> {
-            NoticeOfHearingTemplate templateData = newHearingContent.buildNewNoticeOfHearingNotification(caseData,
-                hearing.getValue(), DIGITAL_SERVICE);
+        NoticeOfHearingTemplate templateData = newHearingContent.buildNewNoticeOfHearingNotification(caseData,
+            event.getSelectedHearing(), DIGITAL_SERVICE);
 
-            notificationService.sendEmail(NOTICE_OF_NEW_HEARING, emails, templateData, caseData.getId().toString());
-        });
+        notificationService.sendEmail(NOTICE_OF_NEW_HEARING, emails, templateData, caseData.getId().toString());
     }
 
     @Async
@@ -61,12 +59,10 @@ public class NewHearingsAddedHandler {
         final CaseData caseData = event.getCaseData();
         String email = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
 
-        event.getNewHearings().forEach(hearing -> {
-            NoticeOfHearingTemplate templateData = newHearingContent.buildNewNoticeOfHearingNotification(caseData,
-                hearing.getValue(), EMAIL);
+        NoticeOfHearingTemplate templateData = newHearingContent.buildNewNoticeOfHearingNotification(caseData,
+            event.getSelectedHearing(), EMAIL);
 
-            notificationService.sendEmail(NOTICE_OF_NEW_HEARING, email, templateData, caseData.getId().toString());
-        });
+        notificationService.sendEmail(NOTICE_OF_NEW_HEARING, email, templateData, caseData.getId().toString());
     }
 
     @Async
@@ -74,28 +70,25 @@ public class NewHearingsAddedHandler {
     public void sendEmailToRepresentatives(final NewHearingsAdded event) {
         final CaseData caseData = event.getCaseData();
 
-        event.getNewHearings().forEach(hearing -> SERVING_PREFERENCES.forEach(
-            servingPreference -> {
-                NoticeOfHearingTemplate templateParameters =
-                    newHearingContent.buildNewNoticeOfHearingNotification(
-                        caseData, hearing.getValue(), servingPreference);
+        SERVING_PREFERENCES.forEach(servingPreference -> {
+            NoticeOfHearingTemplate templateParameters =
+                newHearingContent.buildNewNoticeOfHearingNotification(
+                    caseData, event.getSelectedHearing(), servingPreference);
 
-                representativeNotificationService
-                    .sendToRepresentativesByServedPreference(servingPreference, NOTICE_OF_NEW_HEARING,
-                        templateParameters.toMap(mapper), caseData);
-            }
-        ));
+            representativeNotificationService
+                .sendToRepresentativesByServedPreference(servingPreference, NOTICE_OF_NEW_HEARING,
+                    templateParameters.toMap(mapper), caseData);
+        });
     }
 
     @Async
     @EventListener
     public void sendDocumentToRepresentatives(final NewHearingsAdded event) {
-        event.getNewHearings().forEach(hearing ->
-            coreCaseDataService.triggerEvent(
-                JURISDICTION,
-                CASE_TYPE,
-                event.getCaseData().getId(),
-                "internal-change-SEND_DOCUMENT",
-                Map.of("documentToBeSent", hearing.getValue().getNoticeOfHearing())));
+        coreCaseDataService.triggerEvent(
+            JURISDICTION,
+            CASE_TYPE,
+            event.getCaseData().getId(),
+            "internal-change-SEND_DOCUMENT",
+            Map.of("documentToBeSent", event.getSelectedHearing().getNoticeOfHearing()));
     }
 }

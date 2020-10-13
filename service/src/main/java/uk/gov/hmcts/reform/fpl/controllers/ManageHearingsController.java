@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.NewHearingsAdded;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
+import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
@@ -25,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -38,6 +40,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInGatekeepingSta
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListValueCode;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 
@@ -136,12 +139,17 @@ public class ManageHearingsController extends CallbackController {
 
             hearingBookingElements = manageHearingsService.updateEditedHearingEntry(
                 hearingBooking, editedHearingId, caseData.getHearingDetails());
+            caseDetails.getData().put("selectedHearingId", editedHearingId);
+
         } else {
             List<Element<HearingBooking>> currentHearingBookings = defaultIfNull(
                 caseData.getHearingDetails(), new ArrayList<>()
             );
-            currentHearingBookings.add(element(hearingBooking));
+            Element<HearingBooking> hearingBookingElement = element(hearingBooking);
+            currentHearingBookings.add(hearingBookingElement);
             hearingBookingElements = currentHearingBookings;
+
+            caseDetails.getData().put("selectedHearingId", hearingBookingElement.getId());
         }
 
         caseDetails.getData().put(HEARING_DETAILS_KEY, hearingBookingElements);
@@ -155,21 +163,22 @@ public class ManageHearingsController extends CallbackController {
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = getCaseData(callbackRequest);
-        CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
         if (isInGatekeepingState(callbackRequest.getCaseDetails())
             && standardDirectionsService.hasEmptyDates(caseData)) {
             publishEvent(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
         }
 
-        //TODO Refactor during removal of legacy code (now only ever one hearing sent, list not needed) (FPLA-2280)
-        //Also rename NewHearingsAdded event as this can be triggered for edited hearings too
-        List<Element<HearingBooking>> hearingsToBeSent = caseData.getHearingDetails();
-        if (caseDataBefore.getHearingDetails() != null) {
-            hearingsToBeSent.removeAll(caseDataBefore.getHearingDetails());
-        }
-        if (!hearingsToBeSent.isEmpty() && hearingsToBeSent.get(0).getValue().getNoticeOfHearing() != null) {
-            publishEvent(new NewHearingsAdded(caseData, hearingsToBeSent));
+        UUID selectedHearingId = caseData.getSelectedHearingId();
+
+        Optional<Element<HearingBooking>> hearingElement = findElement(selectedHearingId, caseData.getHearingDetails());
+
+        if (hearingElement.isPresent()) {
+            if (hearingElement.get().getValue().getNoticeOfHearing() != null) {
+                publishEvent(new NewHearingsAdded(caseData, hearingElement.get().getValue()));
+            }
+        } else {
+            throw new NoHearingBookingException();
         }
     }
 
