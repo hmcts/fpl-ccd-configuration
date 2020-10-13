@@ -34,7 +34,6 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ActiveProfiles("integration-test")
@@ -143,7 +142,7 @@ public class UploadCMOSubmittedControllerTest extends AbstractControllerTest {
     private CaseManagementOrder order(List<Element<HearingBooking>> hearings) {
         return CaseManagementOrder.builder()
             .status(SEND_TO_JUDGE)
-            .hearing(hearings.get(0).getValue().toLabel(DATE))
+            .hearing(hearings.get(0).getValue().toLabel())
             .order(DOCUMENT_REFERENCE)
             .dateSent(dateNow())
             .build();

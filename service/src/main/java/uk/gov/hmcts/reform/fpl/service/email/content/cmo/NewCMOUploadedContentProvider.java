@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentPr
 import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.uncapitalize;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
@@ -32,6 +31,6 @@ public class NewCMOUploadedContentProvider extends AbstractEmailContentProvider 
     private String subjectLine(HearingBooking hearing, List<Element<Respondent>> respondents,
                                String familyManCaseNumber) {
         return String.format("%s, %s", buildSubjectLine(familyManCaseNumber, respondents),
-            uncapitalize(hearing.toLabel(DATE)));
+            uncapitalize(hearing.toLabel()));
     }
 }

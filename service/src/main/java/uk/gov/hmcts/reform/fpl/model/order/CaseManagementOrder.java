@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import java.time.LocalDate;
 
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
 @Data
@@ -26,7 +25,7 @@ public class CaseManagementOrder {
     public static CaseManagementOrder from(DocumentReference order, HearingBooking hearing, LocalDate date) {
         return CaseManagementOrder.builder()
             .order(order)
-            .hearing(hearing.toLabel(DATE))
+            .hearing(hearing.toLabel())
             .dateSent(date)
             .status(SEND_TO_JUDGE)
             .judgeTitleAndName(formatJudgeTitleAndName(hearing.getJudgeAndLegalAdvisor()))
