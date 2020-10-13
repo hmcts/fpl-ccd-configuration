@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOptions",
+    "ListElementCode": "NEW_HEARING",
+    "ListElement": "Add a new hearing",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOptions",
+    "ListElementCode": "EDIT_HEARING",
+    "ListElement": "Edit a listed hearing",
+    "DisplayOrder": 2
+  }
+]

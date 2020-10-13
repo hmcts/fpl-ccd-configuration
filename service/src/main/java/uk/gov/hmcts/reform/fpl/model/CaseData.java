@@ -9,7 +9,10 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
+import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
+import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
@@ -36,6 +39,7 @@ import uk.gov.hmcts.reform.fpl.validation.groups.CaseExtensionGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.SealedSDOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.UploadDocumentsGroup;
@@ -198,6 +202,7 @@ public class CaseData {
         return children1 != null ? children1 : new ArrayList<>();
     }
 
+    //TODO add null-checker getter for hearingDetails during refactor/removal of legacy code (FPLA-2280)
     @NotNull(message = "Enter hearing details", groups = NoticeOfProceedingsGroup.class)
     @NotEmpty(message = "You need to enter a hearing date.", groups = SealedSDOGroup.class)
     private final List<Element<HearingBooking>> hearingDetails;
@@ -247,6 +252,7 @@ public class CaseData {
     private final FurtherDirections orderFurtherDirections;
     private final ExclusionClause orderExclusionClause;
     private final GeneratedOrder order;
+    private final DocumentReference uploadedOrder;
     @JsonIgnore
     private OrderStatus generatedOrderStatus;
     private final Integer orderMonths;
@@ -473,6 +479,13 @@ public class CaseData {
             .collect(toList());
     }
 
+    @JsonIgnore
+    public List<Element<HearingBooking>> getFutureHearings() {
+        return defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()).stream()
+            .filter(hearingBooking -> hearingBooking.getValue().startsAfterToday())
+            .collect(toList());
+    }
+
     private final Object cmoToReviewList;
     private final ReviewDecision reviewCMODecision;
     private final String numDraftCMOs;
@@ -506,4 +519,26 @@ public class CaseData {
     public DynamicList buildDynamicHearingList(UUID selected) {
         return asDynamicList(getHearingDetails(), selected, hearingBooking -> hearingBooking.toLabel(DATE));
     }
+
+    private final HearingType hearingType;
+    private final String hearingTypeDetails;
+    private final String hearingVenue;
+    private final Address hearingVenueCustom;
+    private final String firstHearingFlag; //also used for logic surrounding legacy hearings
+    private final PreviousHearingVenue previousHearingVenue;
+    private String previousVenueId;
+    private final String noticeOfHearingNotes;
+    private final Object hearingDateList;
+    private final String hasExistingHearings;
+
+    @TimeNotMidnight(message = "Enter a valid start time", groups = HearingDatesGroup.class)
+    @Future(message = "Enter a start date in the future", groups = HearingDatesGroup.class)
+    private final LocalDateTime hearingStartDate;
+
+    @TimeNotMidnight(message = "Enter a valid end time", groups = HearingDatesGroup.class)
+    @Future(message = "Enter an end date in the future", groups = HearingDatesGroup.class)
+    private final LocalDateTime hearingEndDate;
+    private final String sendNoticeOfHearing;
+    private final HearingOptions hearingOption;
+    private final List<ProceedingType> proceedingType;
 }
