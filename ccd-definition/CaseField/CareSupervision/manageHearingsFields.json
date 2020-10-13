@@ -143,5 +143,61 @@
     "Label": " ",
     "FieldType": "Text",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "pastAndTodayHearingDateList",
+    "Label": "Which hearing?",
+    "FieldType": "DynamicList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "pastAndTodayHearingDateListInfo",
+    "Label": "If you dont know yet if or when this hearing will be re-listed, it's better to wait so you can add all the information in one go.<br><br>If you do have the new hearing details, go ahead to adjourn and re-list-now.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "cancelledHearingDetails",
+    "Label": "Adjourned or vacated hearing",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "CancelledHearingBooking",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "adjournmentReason",
+    "Label": " ",
+    "FieldType": "AdjournmentReason",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hearingReListOption",
+    "Label": "Will the hearing be re-listed?",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "HearingReListOption",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hearingReListHint",
+    "Label": "If no new hearing dates are added now:\n * the hearing will need to be created again when the re-list date is known\n * all associated documents will be stored in the Documents tab - they will need to be re-uploaded after new hearing is added",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]

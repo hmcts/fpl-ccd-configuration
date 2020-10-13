@@ -25,7 +25,6 @@ import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.from;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
@@ -191,13 +190,13 @@ public class UploadCMOService {
     }
 
     private DynamicList buildDynamicList(List<Element<HearingBooking>> hearings, UUID selected) {
-        return asDynamicList(hearings, selected, hearing -> hearing.toLabel(DATE));
+        return asDynamicList(hearings, selected, HearingBooking::toLabel);
     }
 
     private Map<String, Object> getJudgeAndHearingDetails(HearingBooking hearing) {
         return Map.of(
             CMO_JUDGE_INFO_FIELD, formatJudgeTitleAndName(hearing.getJudgeAndLegalAdvisor()),
-            CMO_HEARING_INFO_FIELD, hearing.toLabel(DATE)
+            CMO_HEARING_INFO_FIELD, hearing.toLabel()
         );
     }
 
@@ -221,6 +220,6 @@ public class UploadCMOService {
         );
 
         filtered.sort(Comparator.comparing(HearingBooking::getStartDate));
-        return filtered.stream().map(value -> value.toLabel(DATE)).collect(Collectors.joining("\n"));
+        return filtered.stream().map(HearingBooking::toLabel).collect(Collectors.joining("\n"));
     }
 }

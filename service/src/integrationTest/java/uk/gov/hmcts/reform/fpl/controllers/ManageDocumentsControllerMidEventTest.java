@@ -37,7 +37,6 @@ import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUM
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -79,7 +78,7 @@ public class ManageDocumentsControllerMidEventTest extends AbstractControllerTes
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
         DynamicList expectedDynamicList = ElementUtils
-            .asDynamicList(hearingBookings, selectHearingId, hearingBooking -> hearingBooking.toLabel(DATE));
+            .asDynamicList(hearingBookings, selectHearingId, HearingBooking::toLabel);
 
         DynamicList hearingList
             = mapper.convertValue(callbackResponse.getData().get(MANAGE_DOCUMENTS_HEARING_LIST_KEY),
@@ -88,7 +87,7 @@ public class ManageDocumentsControllerMidEventTest extends AbstractControllerTes
         assertThat(hearingList).isEqualTo(expectedDynamicList);
 
         assertThat(callbackResponse.getData().get(MANAGE_DOCUMENTS_HEARING_LABEL_KEY))
-            .isEqualTo(selectedHearingBooking.toLabel(DATE));
+            .isEqualTo(selectedHearingBooking.toLabel());
 
         assertThat(caseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(furtherEvidenceBundle);
     }
@@ -163,7 +162,7 @@ public class ManageDocumentsControllerMidEventTest extends AbstractControllerTes
 
     private CaseDetails buildCaseDetails(String key, LocalDateTime dateTimeReceived) {
         return buildCaseDetails(Map.of(key, List.of(
-                element(SupportingEvidenceBundle.builder().dateTimeReceived(dateTimeReceived).build()))));
+            element(SupportingEvidenceBundle.builder().dateTimeReceived(dateTimeReceived).build()))));
     }
 
     private ManageDocument buildManagementDocument(ManageDocumentType type) {

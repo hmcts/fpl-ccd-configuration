@@ -26,7 +26,6 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
@@ -127,7 +126,7 @@ public class UploadCMOAboutToSubmitControllerTest extends AbstractControllerTest
     private CaseManagementOrder order(List<Element<HearingBooking>> hearings) {
         return CaseManagementOrder.builder()
             .status(SEND_TO_JUDGE)
-            .hearing(hearings.get(0).getValue().toLabel(DATE))
+            .hearing(hearings.get(0).getValue().toLabel())
             .order(DOCUMENT_REFERENCE)
             .dateSent(dateNow())
             .judgeTitleAndName(formatJudgeTitleAndName(hearings.get(0).getValue().getJudgeAndLegalAdvisor()))
@@ -138,16 +137,16 @@ public class UploadCMOAboutToSubmitControllerTest extends AbstractControllerTest
         return DynamicList.builder()
             .value(DynamicListElement.builder()
                 .code(hearings.get(0).getId())
-                .label(hearings.get(0).getValue().toLabel(DATE))
+                .label(hearings.get(0).getValue().toLabel())
                 .build()
             ).listItems(List.of(
                 DynamicListElement.builder()
                     .code(hearings.get(0).getId())
-                    .label(hearings.get(0).getValue().toLabel(DATE))
+                    .label(hearings.get(0).getValue().toLabel())
                     .build(),
                 DynamicListElement.builder()
                     .code(hearings.get(1).getId())
-                    .label(hearings.get(1).getValue().toLabel(DATE))
+                    .label(hearings.get(1).getValue().toLabel())
                     .build()
             ))
             .build();

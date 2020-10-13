@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -74,6 +76,9 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
     @MockBean
     private DocumentDownloadService documentDownloadService;
 
+    @SpyBean
+    private EventService eventPublisher;
+
     ManageHearingsControllerSubmittedTest() {
         super("manage-hearings");
     }
@@ -121,6 +126,19 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
 
         verifyNoInteractions(coreCaseDataService);
         verifyNoInteractions(notificationClient);
+    }
+
+    @Test
+    void shouldDoNothingWhenNoHearingAddedOrUpdated() {
+        CallbackRequest callbackRequest = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .data(buildData(List.of(hearingWithoutNotice), hearingWithoutNotice.getId()))
+                .build())
+            .build();
+
+        postSubmittedEvent(callbackRequest);
+
+        verifyNoInteractions(coreCaseDataService, notificationClient, eventPublisher);
     }
 
     @Test

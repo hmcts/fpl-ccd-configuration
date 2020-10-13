@@ -36,8 +36,18 @@
     "TabID": "HearingTab",
     "TabLabel": "Hearings",
     "TabDisplayOrder": 3,
+    "CaseFieldID": "cancelledHearingDetails",
+    "TabFieldDisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "HearingTab",
+    "TabLabel": "Hearings",
+    "TabDisplayOrder": 3,
     "CaseFieldID": "hearing",
     "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\"",
-    "TabFieldDisplayOrder": 4
+    "TabFieldDisplayOrder": 5
   }
 ]

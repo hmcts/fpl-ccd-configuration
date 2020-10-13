@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
+import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
@@ -77,7 +78,6 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -205,7 +205,10 @@ public class CaseData {
     //TODO add null-checker getter for hearingDetails during refactor/removal of legacy code (FPLA-2280)
     @NotNull(message = "Enter hearing details", groups = NoticeOfProceedingsGroup.class)
     @NotEmpty(message = "You need to enter a hearing date.", groups = SealedSDOGroup.class)
-    private final List<Element<HearingBooking>> hearingDetails;
+    @JsonProperty
+    private List<Element<HearingBooking>> hearingDetails;
+    @JsonProperty
+    private List<Element<HearingBooking>> cancelledHearingDetails;
     private final List<Element<UUID>> selectedHearingIds;
 
     private LocalDate dateSubmitted;
@@ -457,6 +460,37 @@ public class CaseData {
             .orElseThrow(NoHearingBookingException::new);
     }
 
+    @JsonIgnore
+    public List<Element<HearingBooking>> addCancelledHearingBooking(Element<HearingBooking> hearing) {
+        if (cancelledHearingDetails == null) {
+            cancelledHearingDetails = new ArrayList<>();
+        }
+        this.cancelledHearingDetails.add(hearing);
+        return this.cancelledHearingDetails;
+    }
+
+    @JsonIgnore
+    public List<Element<HearingBooking>> addHearingBooking(Element<HearingBooking> hearing) {
+        if (hearingDetails == null) {
+            hearingDetails = new ArrayList<>();
+        }
+        hearingDetails.add(hearing);
+        return hearingDetails;
+    }
+
+    @JsonIgnore
+    public List<Element<HearingBooking>> setHearingDetails(List<Element<HearingBooking>> hearings) {
+        this.hearingDetails = hearings;
+        return hearingDetails;
+    }
+
+    @JsonIgnore
+    public void removeHearingDetails(Element<HearingBooking> hearing) {
+        if (hearingDetails != null) {
+            hearingDetails.remove(hearing);
+        }
+    }
+
     public boolean hasFutureHearing(List<Element<HearingBooking>> hearingBookings) {
         return isNotEmpty(hearingBookings) && hearingBookings.stream()
             .anyMatch(hearingBooking -> hearingBooking.getValue().startsAfterToday());
@@ -480,10 +514,31 @@ public class CaseData {
     }
 
     @JsonIgnore
+    public List<Element<HearingBooking>> getPastAndTodayHearings() {
+        return defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()).stream()
+            .filter(hearingBooking -> !hearingBooking.getValue().getStartDate().toLocalDate().isAfter(LocalDate.now()))
+            .collect(toList());
+    }
+
+    @JsonIgnore
     public List<Element<HearingBooking>> getFutureHearings() {
         return defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()).stream()
             .filter(hearingBooking -> hearingBooking.getValue().startsAfterToday())
             .collect(toList());
+    }
+
+    @JsonIgnore
+    public List<Element<HearingBooking>> getAllHearings() {
+        List<Element<HearingBooking>> allHearings = new ArrayList<>();
+        if (isNotEmpty(getHearingDetails())) {
+            allHearings.addAll(getHearingDetails());
+        }
+
+        if (isNotEmpty(getCancelledHearingDetails())) {
+            allHearings.addAll(getCancelledHearingDetails());
+        }
+
+        return allHearings;
     }
 
     private final Object cmoToReviewList;
@@ -517,7 +572,7 @@ public class CaseData {
     }
 
     public DynamicList buildDynamicHearingList(UUID selected) {
-        return asDynamicList(getHearingDetails(), selected, hearingBooking -> hearingBooking.toLabel(DATE));
+        return asDynamicList(getHearingDetails(), selected, HearingBooking::toLabel);
     }
 
     private final HearingType hearingType;
@@ -529,6 +584,7 @@ public class CaseData {
     private String previousVenueId;
     private final String noticeOfHearingNotes;
     private final Object hearingDateList;
+    private final Object pastAndTodayHearingDateList;
     private final String hasExistingHearings;
     private final UUID selectedHearingId;
 
@@ -541,5 +597,7 @@ public class CaseData {
     private final LocalDateTime hearingEndDate;
     private final String sendNoticeOfHearing;
     private final HearingOptions hearingOption;
+    private final HearingReListOption hearingReListOption;
+    private final HearingCancellationReason adjournmentReason;
     private final List<ProceedingType> proceedingType;
 }
