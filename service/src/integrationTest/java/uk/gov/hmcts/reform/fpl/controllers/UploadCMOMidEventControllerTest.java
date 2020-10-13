@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.event.UploadCMOEventData;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,7 +39,9 @@ public class UploadCMOMidEventControllerTest extends AbstractControllerTest {
         DynamicList dynamicList = dynamicList(hearings);
 
         CaseData caseData = CaseData.builder()
-            .hearingsWithoutApprovedCMO(dynamicList)
+            .uploadCMOEventData(UploadCMOEventData.builder()
+                .hearingsWithoutApprovedCMO(dynamicList)
+                .build())
             .hearingDetails(hearings)
             .build();
 
@@ -59,8 +62,10 @@ public class UploadCMOMidEventControllerTest extends AbstractControllerTest {
         DynamicList dynamicList = dynamicList(hearings);
 
         CaseData caseData = CaseData.builder()
-            .uploadedCaseManagementOrder(DocumentReference.builder().binaryUrl(null).filename(null).url(null).build())
-            .hearingsWithoutApprovedCMO(dynamicList)
+            .uploadCMOEventData(UploadCMOEventData.builder()
+                .hearingsWithoutApprovedCMO(dynamicList)
+                .uploadedCaseManagementOrder(DocumentReference.builder().build())
+                .build())
             .hearingDetails(hearings)
             .build();
 

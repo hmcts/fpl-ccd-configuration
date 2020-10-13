@@ -7,12 +7,14 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.event.UploadCMOEventData;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -23,7 +25,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,16 +53,16 @@ class UploadCMOServiceTest {
     void shouldReturnMultiPageDataWhenThereAreMultipleHearings() {
         List<Element<HearingBooking>> hearings = hearings();
 
-        Map<String, Object> initialPageData = service.getInitialPageData(hearings, List.of());
+        UploadCMOEventData initialPageData = service.getInitialPageData(hearings, List.of());
 
-        Map<String, Object> expected = Map.of(
-            "hearingsWithoutApprovedCMO",
-            dynamicList(hearings.get(0).getId(), hearings.get(1).getId(), hearings.get(2).getId()),
-            "numHearingsWithoutCMO",
-            "MULTI"
-        );
+        UploadCMOEventData expectedEventData = UploadCMOEventData.builder()
+            .hearingsWithoutApprovedCMO(dynamicList(hearings.get(0).getId(),
+                hearings.get(1).getId(),
+                hearings.get(2).getId()))
+            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.MULTI)
+            .build();
 
-        assertThat(initialPageData).isEqualTo(expected);
+        assertThat(initialPageData).isEqualTo(expectedEventData);
     }
 
     @Test
@@ -75,20 +76,18 @@ class UploadCMOServiceTest {
 
         hearings.add(hearing);
 
-        Map<String, Object> initialPageData = service.getInitialPageData(hearings, List.of(cmo));
+        UploadCMOEventData initialPageData = service.getInitialPageData(hearings, List.of(cmo));
 
-        Map<String, Object> expected = Map.of(
-            "hearingsWithoutApprovedCMO",
-            dynamicList(hearings.get(0).getId(), hearings.get(1).getId(), hearings.get(2).getId()),
-            "numHearingsWithoutCMO",
-            "MULTI",
-            "multiHearingsWithCMOs",
-            "Case management hearing, 15 January 2020",
-            "showHearingsMultiTextArea",
-            "YES"
-        );
+        UploadCMOEventData expectedEventData = UploadCMOEventData.builder()
+            .hearingsWithoutApprovedCMO(dynamicList(hearings.get(0).getId(),
+                hearings.get(1).getId(),
+                hearings.get(2).getId()))
+            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.MULTI)
+            .multiHearingsWithCMOs("Case management hearing, 15 January 2020")
+            .showHearingsMultiTextArea(YesNo.YES)
+            .build();
 
-        assertThat(initialPageData).isEqualTo(expected);
+        assertThat(initialPageData).isEqualTo(expectedEventData);
     }
 
     @Test
@@ -97,16 +96,16 @@ class UploadCMOServiceTest {
             hearing(CASE_MANAGEMENT, LocalDateTime.of(2020, 2, 1, 0, 0))
         ));
 
-        Map<String, Object> initialPageData = service.getInitialPageData(hearings, List.of());
+        UploadCMOEventData initialPageData = service.getInitialPageData(hearings, List.of());
 
-        Map<String, Object> expected = Map.of(
-            "numHearingsWithoutCMO", "SINGLE",
-            "cmoHearingInfo", "Send agreed CMO for Case management hearing, 1 February 2020."
-                + "\nThis must have been discussed by all parties at the hearing.",
-            "cmoJudgeInfo", "His Honour Judge Dredd"
-        );
+        UploadCMOEventData expectedEventData = UploadCMOEventData.builder()
+            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.SINGLE)
+            .cmoHearingInfo("Send agreed CMO for Case management hearing, 1 February 2020."
+                + "\nThis must have been discussed by all parties at the hearing.")
+            .cmoJudgeInfo("His Honour Judge Dredd")
+            .build();
 
-        assertThat(initialPageData).isEqualTo(expected);
+        assertThat(initialPageData).isEqualTo(expectedEventData);
     }
 
     @Test
@@ -117,29 +116,29 @@ class UploadCMOServiceTest {
             element(hearing(CASE_MANAGEMENT, LocalDateTime.of(2020, 2, 2, 0, 0), cmo.getId()))
         );
 
-        Map<String, Object> initialPageData = service.getInitialPageData(hearings, List.of(cmo));
+        UploadCMOEventData initialPageData = service.getInitialPageData(hearings, List.of(cmo));
 
-        Map<String, Object> expected = Map.of(
-            "numHearingsWithoutCMO", "SINGLE",
-            "cmoHearingInfo", "Send agreed CMO for Case management hearing, 1 February 2020."
-                + "\nThis must have been discussed by all parties at the hearing.",
-            "cmoJudgeInfo", "His Honour Judge Dredd",
-            "singleHearingWithCMO", "Case management hearing, 2 February 2020",
-            "showHearingsSingleTextArea", "YES"
-        );
+        UploadCMOEventData expectedEventData = UploadCMOEventData.builder()
+            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.SINGLE)
+            .cmoHearingInfo("Send agreed CMO for Case management hearing, 1 February 2020."
+                + "\nThis must have been discussed by all parties at the hearing.")
+            .cmoJudgeInfo("His Honour Judge Dredd")
+            .singleHearingWithCMO("Case management hearing, 2 February 2020")
+            .showHearingsSingleTextArea(YesNo.YES)
+            .build();
 
-        assertThat(initialPageData).isEqualTo(expected);
+        assertThat(initialPageData).isEqualTo(expectedEventData);
     }
 
     @Test
     void shouldReturnPageShowHideFieldOnlyWhenThereAreNoRemainingHearingsWithoutCmoMappings() {
-        Map<String, Object> initialPageData = service.getInitialPageData(List.of(), List.of());
+        UploadCMOEventData initialPageData = service.getInitialPageData(List.of(), List.of());
 
-        Map<String, String> expected = Map.of(
-            "numHearingsWithoutCMO", "NONE"
-        );
+        UploadCMOEventData expectedEventData = UploadCMOEventData.builder()
+            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.NONE)
+            .build();
 
-        assertThat(initialPageData).isEqualTo(expected);
+        assertThat(initialPageData).isEqualTo(expectedEventData);
     }
 
     @Test
@@ -159,7 +158,7 @@ class UploadCMOServiceTest {
 
         hearings.addAll(additionalHearings);
 
-        Map<String, Object> initialPageData = service.getInitialPageData(hearings, List.of(cmo, returnedCMO));
+        UploadCMOEventData initialPageData = service.getInitialPageData(hearings, List.of(cmo, returnedCMO));
 
         DynamicListElement listElement = DynamicListElement.builder()
             .code(additionalHearings.get(1).getId())
@@ -173,14 +172,14 @@ class UploadCMOServiceTest {
             listElement
         );
 
-        Map<String, Object> expected = Map.of(
-            "hearingsWithoutApprovedCMO", dynamicList,
-            "numHearingsWithoutCMO", "MULTI",
-            "multiHearingsWithCMOs", "Case management hearing, 15 January 2020",
-            "showHearingsMultiTextArea", "YES"
-        );
+        UploadCMOEventData expectedEventData = UploadCMOEventData.builder()
+            .hearingsWithoutApprovedCMO(dynamicList)
+            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.MULTI)
+            .multiHearingsWithCMOs("Case management hearing, 15 January 2020")
+            .showHearingsMultiTextArea(YesNo.YES)
+            .build();
 
-        assertThat(initialPageData).isEqualTo(expected);
+        assertThat(initialPageData).isEqualTo(expectedEventData);
     }
 
     @Test
@@ -194,12 +193,14 @@ class UploadCMOServiceTest {
             true
         );
 
-        Map<String, Object> preparedData = service.prepareJudgeAndHearingDetails(dynamicList, hearings, List.of());
+        UploadCMOEventData preparedData = service.prepareJudgeAndHearingDetails(dynamicList, hearings, List.of());
 
-        assertThat(preparedData).isEqualTo(Map.of(
-            "cmoHearingInfo", "Case management hearing, 2 March 2020",
-            "cmoJudgeInfo", "His Honour Judge Dredd"
-        ));
+        UploadCMOEventData expectedData = UploadCMOEventData.builder()
+            .cmoHearingInfo("Case management hearing, 2 March 2020")
+            .cmoJudgeInfo("His Honour Judge Dredd")
+            .build();
+
+        assertThat(preparedData).isEqualTo(expectedData);
     }
 
     @Test
@@ -207,7 +208,7 @@ class UploadCMOServiceTest {
         List<Element<HearingBooking>> hearings = hearings();
         String malformedData = hearings.get(0).getId().toString();
 
-        Map<String, Object> preparedData = service.prepareJudgeAndHearingDetails(malformedData, hearings, List.of());
+        UploadCMOEventData preparedData = service.prepareJudgeAndHearingDetails(malformedData, hearings, List.of());
 
         DynamicList dynamicList = dynamicList(
             hearings.get(0).getId(),
@@ -216,7 +217,7 @@ class UploadCMOServiceTest {
             true
         );
 
-        assertThat(preparedData).extracting("hearingsWithoutApprovedCMO")
+        assertThat(preparedData).extracting(UploadCMOEventData::getHearingsWithoutApprovedCMO)
             .isEqualTo(dynamicList);
     }
 
@@ -231,9 +232,9 @@ class UploadCMOServiceTest {
             true
         );
 
-        Map<String, Object> preparedData = service.prepareJudgeAndHearingDetails(dynamicList, hearings, List.of());
+        UploadCMOEventData preparedData = service.prepareJudgeAndHearingDetails(dynamicList, hearings, List.of());
 
-        assertThat(preparedData).isNotEmpty().doesNotContainKey("hearingsWithoutApprovedCMO");
+        assertThat(preparedData).extracting(UploadCMOEventData::getHearingsWithoutApprovedCMO).isNull();
     }
 
     @Test

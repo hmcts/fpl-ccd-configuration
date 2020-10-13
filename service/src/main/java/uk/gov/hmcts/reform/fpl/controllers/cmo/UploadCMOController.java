@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers.cmo;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.event.UploadCMOEventData;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.cmo.UploadCMOService;
 
@@ -28,42 +31,42 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFie
 @RequestMapping("/callback/upload-cmo")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class UploadCMOController extends CallbackController {
-    private static final String[] TRANSIENT_FIELDS = {
-        "uploadedCaseManagementOrder", "hearingsWithoutApprovedCMO", "cmoJudgeInfo", "cmoHearingInfo",
-        "numHearingsWithoutCMO", "singleHearingWithCMO", "multiHearingsWithCMOs", "showHearingsSingleTextArea",
-        "showHearingsMultiTextArea"
-    };
 
-    private final UploadCMOService cmoService;
+    private final UploadCMOService service;
+    private final ObjectMapper mapper;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData()
-            .putAll(cmoService.getInitialPageData(caseData.getPastHearings(), caseData.getDraftUploadedCMOs()));
+        UploadCMOEventData pageData = service.getInitialPageData(
+            caseData.getPastHearings(), caseData.getDraftUploadedCMOs()
+        );
+
+        caseDetails.getData().putAll(mapper.convertValue(pageData, new TypeReference<>() {}));
 
         return respond(caseDetails);
     }
 
     @PostMapping("/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleLabelMidEvent(@RequestBody CallbackRequest request) {
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        UploadCMOEventData eventData = caseData.getUploadCMOEventData();
 
         // handle document fields being set to null when clicking previous button
-        DocumentReference uploadedCMO = caseData.getUploadedCaseManagementOrder();
+        DocumentReference uploadedCMO = eventData.getUploadedCaseManagementOrder();
         if (uploadedCMO != null && uploadedCMO.isEmpty()) {
             caseDetails.getData().remove("uploadedCaseManagementOrder");
         }
 
         // update judge and hearing labels
-        caseDetails.getData().putAll(cmoService.prepareJudgeAndHearingDetails(
-            caseData.getHearingsWithoutApprovedCMO(),
-            caseData.getPastHearings(),
-            caseData.getDraftUploadedCMOs()
-        ));
+        UploadCMOEventData judgeAndHearingDetails = service.prepareJudgeAndHearingDetails(
+            eventData.getHearingsWithoutApprovedCMO(), caseData.getPastHearings(), caseData.getDraftUploadedCMOs()
+        );
+
+        caseDetails.getData().putAll(mapper.convertValue(judgeAndHearingDetails, new TypeReference<>() {}));
 
         return respond(caseDetails);
     }
@@ -72,33 +75,32 @@ public class UploadCMOController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        UploadCMOEventData eventData = caseData.getUploadCMOEventData();
         List<Element<CaseManagementOrder>> draftCMOs = caseData.getDraftUploadedCMOs();
-        DocumentReference uploadedCaseManagementOrder = caseData.getUploadedCaseManagementOrder();
+        DocumentReference uploadedCaseManagementOrder = eventData.getUploadedCaseManagementOrder();
 
         if (uploadedCaseManagementOrder != null) {
             List<Element<HearingBooking>> hearings = caseData.getPastHearings();
-            cmoService.updateHearingsAndUnsealedCMOs(
-                hearings,
-                draftCMOs,
-                uploadedCaseManagementOrder,
-                caseData.getHearingsWithoutApprovedCMO()
+            service.updateHearingsAndUnsealedCMOs(
+                hearings, draftCMOs, uploadedCaseManagementOrder, eventData.getHearingsWithoutApprovedCMO()
             );
             // update case data
             caseDetails.getData().put("draftUploadedCMOs", draftCMOs);
             caseDetails.getData().put("hearingDetails", hearings);
         }
+
         // remove transient fields
-        removeTemporaryFields(caseDetails, TRANSIENT_FIELDS);
+        removeTemporaryFields(caseDetails, UploadCMOEventData.transientFields());
 
         return respond(caseDetails);
     }
 
     @PostMapping("/submitted")
-    public void handelSubmitted(@RequestBody CallbackRequest request) {
+    public void handleSubmitted(@RequestBody CallbackRequest request) {
         CaseData caseDataBefore = getCaseDataBefore(request);
         CaseData caseData = getCaseData(request);
 
-        if (cmoService.isNewCmoUploaded(caseData.getDraftUploadedCMOs(), caseDataBefore.getDraftUploadedCMOs())) {
+        if (service.isNewCmoUploaded(caseData.getDraftUploadedCMOs(), caseDataBefore.getDraftUploadedCMOs())) {
             List<Element<HearingBooking>> hearings = caseData.getHearingDetails();
             List<Element<HearingBooking>> hearingsBefore = caseDataBefore.getHearingDetails();
             hearings.removeAll(hearingsBefore);
