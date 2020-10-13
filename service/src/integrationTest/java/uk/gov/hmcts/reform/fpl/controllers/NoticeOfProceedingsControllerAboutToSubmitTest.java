@@ -1,20 +1,16 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Judge;
-import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
@@ -23,11 +19,8 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
-import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
-import static uk.gov.hmcts.reform.fpl.enums.ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
@@ -38,7 +31,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerT
 
     private static final String C6_DOCUMENT_TITLE = C6.getDocumentTitle();
     private static final byte[] PDF = {1, 2, 3, 4, 5};
-    @MockBean
+    @Autowired
     private NoticeOfProceedingsService noticeOfProceedingsService;
     @MockBean
     private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
@@ -70,7 +63,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerT
         given(uploadDocumentService.uploadPDF(PDF, C6_DOCUMENT_TITLE))
             .willReturn(document);
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest());
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
 
         CaseData responseCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
@@ -82,55 +75,6 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerT
         assertThat(noticeOfProceedingBundle.getUrl()).isEqualTo(document.links.self.href);
         assertThat(noticeOfProceedingBundle.getFilename()).isEqualTo(document.originalDocumentName);
         assertThat(noticeOfProceedingBundle.getBinaryUrl()).isEqualTo(document.links.binary.href);
-    }
-
-    @Test
-    void shouldMigrateJudgeAndLegalAdvisorWhenUsingAllocatedJudge() {
-        Document document = document();
-        DocmosisDocument docmosisDocument = DocmosisDocument.builder()
-            .bytes(PDF)
-            .documentTitle(C6_DOCUMENT_TITLE)
-            .build();
-
-        CallbackRequest callbackRequest = buildCallbackRequest();
-
-        DocmosisNoticeOfProceeding templateData = createTemplatePlaceholders();
-
-        given(noticeOfProceedingsTemplateDataGenerationService.getTemplateData(any()))
-            .willReturn(templateData);
-        given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(DocmosisNoticeOfProceeding.class), any()))
-            .willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(any(), any()))
-            .willReturn(document);
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
-
-        CaseData responseCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = responseCaseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor();
-
-        assertThat(judgeAndLegalAdvisor).isNotNull();
-        assertThat(judgeAndLegalAdvisor.getJudgeTitle()).isEqualTo(HER_HONOUR_JUDGE);
-        assertThat(judgeAndLegalAdvisor.getJudgeFullName()).isEqualTo("Davidson");
-    }
-
-    private CallbackRequest buildCallbackRequest() {
-        CallbackRequest callbackRequest = callbackRequest();
-
-        callbackRequest.getCaseDetails().getData().put("noticeOfProceedings", NoticeOfProceedings.builder()
-            .proceedingTypes(ImmutableList.of(NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES))
-            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                .useAllocatedJudge("Yes")
-                .build())
-            .build());
-
-        callbackRequest.getCaseDetails().getData().put("allocatedJudge", Judge.builder()
-            .judgeTitle(HER_HONOUR_JUDGE)
-            .judgeFullName("Davidson")
-            .judgeEmailAddress("davidson@example.com")
-            .build());
-
-        return callbackRequest;
     }
 
     private DocmosisNoticeOfProceeding createTemplatePlaceholders() {

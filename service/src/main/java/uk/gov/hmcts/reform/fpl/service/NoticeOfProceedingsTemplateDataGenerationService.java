@@ -40,7 +40,7 @@ public class NoticeOfProceedingsTemplateDataGenerationService
 
     @Override
     public DocmosisNoticeOfProceeding getTemplateData(CaseData caseData) {
-        return getTemplateData(caseData, caseData.getJudgeAndLegalAdvisor());
+        return getTemplateData(caseData, caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor());
     }
 
     public DocmosisNoticeOfProceeding getTemplateData(CaseData caseData, JudgeAndLegalAdvisor judgeAndLegalAdvisor) {

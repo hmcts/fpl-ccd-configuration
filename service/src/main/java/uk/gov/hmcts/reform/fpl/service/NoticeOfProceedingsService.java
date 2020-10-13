@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
@@ -22,7 +21,6 @@ import java.time.format.FormatStyle;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -57,23 +55,24 @@ public class NoticeOfProceedingsService {
         return listAndLabel;
     }
 
-    public NoticeOfProceedings prepareNoticeOfProceedings(CaseData caseData) {
+    public NoticeOfProceedings setNoticeOfProceedingJudge(CaseData caseData) {
+        NoticeOfProceedings noticeOfProceedings = caseData.getNoticeOfProceedings();
+
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
-            caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge());
+            noticeOfProceedings.getJudgeAndLegalAdvisor(),
+            caseData.getAllocatedJudge()
+        );
 
         removeAllocatedJudgeProperties(judgeAndLegalAdvisor);
-
-        NoticeOfProceedings noticeOfProceedings = caseData.getNoticeOfProceedings();
-        noticeOfProceedings = noticeOfProceedings.toBuilder().judgeAndLegalAdvisor(judgeAndLegalAdvisor).build();
+        noticeOfProceedings.setJudgeAndLegalAdvisor(judgeAndLegalAdvisor);
 
         return noticeOfProceedings;
     }
 
-    public List<Element<DocumentBundle>> prepareNoticeOfProceedingsBundle(
-        List<Document> documentReferences, List<DocmosisTemplates> templateTypes,
-        List<Element<DocumentBundle>> noticeOfProceedingBundleBefore) {
-        List<Element<DocumentBundle>> updatedNoticeOfProceedings
-            = createNoticeOfProceedingsCaseData(documentReferences);
+    public List<Element<DocumentBundle>> prepareNoticeOfProceedingBundle(
+        List<Element<DocumentBundle>> updatedNoticeOfProceedings,
+        List<Element<DocumentBundle>> noticeOfProceedingBundleBefore,
+        List<DocmosisTemplates> templateTypes) {
 
         if (isNotEmpty(noticeOfProceedingBundleBefore)) {
             updatedNoticeOfProceedings.addAll(getRemovedDocumentBundles(noticeOfProceedingBundleBefore, templateTypes));
@@ -95,8 +94,8 @@ public class NoticeOfProceedingsService {
             .collect(Collectors.toList());
     }
 
-    private List<Element<DocumentBundle>> getRemovedDocumentBundles(List<Element<DocumentBundle>> noticeOfProceedingBundle,
-                                                                    List<DocmosisTemplates> templateTypes) {
+    private List<Element<DocumentBundle>> getRemovedDocumentBundles(
+        List<Element<DocumentBundle>> noticeOfProceedingBundle, List<DocmosisTemplates> templateTypes) {
         List<String> templateTypeTitles = templateTypes.stream().map(DocmosisTemplates::getDocumentTitle)
             .collect(Collectors.toList());
 
@@ -111,21 +110,6 @@ public class NoticeOfProceedingsService {
         });
 
         return removedDocumentBundles.build();
-    }
-
-    private List<Element<DocumentBundle>> createNoticeOfProceedingsCaseData(List<Document> uploadedDocuments) {
-        return uploadedDocuments.stream()
-            .map(document -> Element.<DocumentBundle>builder()
-                .id(UUID.randomUUID())
-                .value(DocumentBundle.builder()
-                    .document(DocumentReference.builder()
-                        .filename(document.originalDocumentName)
-                        .url(document.links.self.href)
-                        .binaryUrl(document.links.binary.href)
-                        .build())
-                    .build())
-                .build())
-            .collect(Collectors.toList());
     }
 
     private String buildProceedingLabel(HearingBooking hearingBooking) {

@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class NoticeOfProceedings {
     private final List<ProceedingType> proceedingTypes;
-    private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
+    private JudgeAndLegalAdvisor judgeAndLegalAdvisor;
 
     public List<DocmosisTemplates> mapProceedingTypesToDocmosisTemplate() {
         if (proceedingTypes == null) {
