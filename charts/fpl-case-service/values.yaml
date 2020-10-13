@@ -38,6 +38,7 @@ java:
       secrets:
         - notify-api-key
         - docmosis-api-key
+        - send-grid-api-key
         - fpl-case-service-s2s-secret
         - fpl-case-service-idam-client-secret
         - local-authority-email-to-code-mapping
