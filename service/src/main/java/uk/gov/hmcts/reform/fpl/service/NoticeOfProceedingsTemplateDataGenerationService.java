@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
@@ -39,7 +40,10 @@ public class NoticeOfProceedingsTemplateDataGenerationService
 
     @Override
     public DocmosisNoticeOfProceeding getTemplateData(CaseData caseData) {
+        return getTemplateData(caseData, caseData.getJudgeAndLegalAdvisor());
+    }
 
+    public DocmosisNoticeOfProceeding getTemplateData(CaseData caseData, JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
         HearingBooking prioritisedHearingBooking = caseData.getMostUrgentHearingBookingAfter(time.now());
         HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(prioritisedHearingBooking);
 
@@ -50,12 +54,7 @@ public class NoticeOfProceedingsTemplateDataGenerationService
             .applicantName(PeopleInCaseHelper.getFirstApplicantName(caseData.getApplicants()))
             .orderTypes(getOrderTypes(caseData.getOrders()))
             .childrenNames(getAllChildrenNames(caseData.getAllChildren()))
-            .judgeAndLegalAdvisor(DocmosisJudgeAndLegalAdvisor.builder()
-                .judgeTitleAndName(JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
-                    caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()))
-                .legalAdvisorName(JudgeAndLegalAdvisorHelper.getLegalAdvisorName(
-                    caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()))
-                .build())
+            .judgeAndLegalAdvisor(buildDocmosisJudgeAndLegalAdvisor(judgeAndLegalAdvisor))
             .hearingBooking(DocmosisHearingBooking.builder()
                 .hearingDate(caseDataExtractionService.getHearingDateIfHearingsOnSameDay(
                     prioritisedHearingBooking)
@@ -67,6 +66,13 @@ public class NoticeOfProceedingsTemplateDataGenerationService
                 .build())
             .crest(getCrestData())
             .courtseal(getCourtSealData())
+            .build();
+    }
+
+    private DocmosisJudgeAndLegalAdvisor buildDocmosisJudgeAndLegalAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+        return DocmosisJudgeAndLegalAdvisor.builder()
+            .judgeTitleAndName(JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(judgeAndLegalAdvisor))
+            .legalAdvisorName(JudgeAndLegalAdvisorHelper.getLegalAdvisorName(judgeAndLegalAdvisor))
             .build();
     }
 
