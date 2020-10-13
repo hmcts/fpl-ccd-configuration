@@ -35,6 +35,13 @@ public class JudgeAndLegalAdvisorHelper {
         }
     }
 
+    public static JudgeAndLegalAdvisor getJudgeForTabView(JudgeAndLegalAdvisor judgeAndLegalAdvisor,
+                                                          Judge allocatedJudge) {
+        JudgeAndLegalAdvisor judgeForTabView = getSelectedJudge(judgeAndLegalAdvisor, allocatedJudge);
+        removeAllocatedJudgeProperties(judgeForTabView);
+        return judgeForTabView;
+    }
+
     private static JudgeAndLegalAdvisor migrateJudgeAndLegalAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor,
                                                                     Judge allocatedJudge) {
         return JudgeAndLegalAdvisor.builder()
