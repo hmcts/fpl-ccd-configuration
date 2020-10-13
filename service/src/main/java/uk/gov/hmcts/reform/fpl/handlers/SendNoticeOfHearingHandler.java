@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
-import uk.gov.hmcts.reform.fpl.events.NewHearingsAdded;
+import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.NoticeOfHearingTemplate;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
@@ -29,7 +29,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMA
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class NewHearingsAddedHandler {
+public class SendNoticeOfHearingHandler {
 
     private static final List<RepresentativeServingPreferences> SERVING_PREFERENCES = List.of(EMAIL, DIGITAL_SERVICE);
 
@@ -43,7 +43,7 @@ public class NewHearingsAddedHandler {
 
     @Async
     @EventListener
-    public void sendEmailToLA(final NewHearingsAdded event) {
+    public void sendEmailToLA(final SendNoticeOfHearing event) {
         final CaseData caseData = event.getCaseData();
         Collection<String> emails = inboxLookupService.getRecipients(caseData);
 
@@ -55,7 +55,7 @@ public class NewHearingsAddedHandler {
 
     @Async
     @EventListener
-    public void sendEmailToCafcass(final NewHearingsAdded event) {
+    public void sendEmailToCafcass(final SendNoticeOfHearing event) {
         final CaseData caseData = event.getCaseData();
         String email = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
 
@@ -67,7 +67,7 @@ public class NewHearingsAddedHandler {
 
     @Async
     @EventListener
-    public void sendEmailToRepresentatives(final NewHearingsAdded event) {
+    public void sendEmailToRepresentatives(final SendNoticeOfHearing event) {
         final CaseData caseData = event.getCaseData();
 
         SERVING_PREFERENCES.forEach(servingPreference -> {
@@ -83,7 +83,7 @@ public class NewHearingsAddedHandler {
 
     @Async
     @EventListener
-    public void sendDocumentToRepresentatives(final NewHearingsAdded event) {
+    public void sendDocumentToRepresentatives(final SendNoticeOfHearing event) {
         coreCaseDataService.triggerEvent(
             JURISDICTION,
             CASE_TYPE,

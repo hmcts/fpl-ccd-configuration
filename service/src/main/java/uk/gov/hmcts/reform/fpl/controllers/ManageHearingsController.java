@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.events.NewHearingsAdded;
+import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -175,7 +175,7 @@ public class ManageHearingsController extends CallbackController {
 
         if (hearingElement.isPresent()) {
             if (hearingElement.get().getValue().getNoticeOfHearing() != null) {
-                publishEvent(new NewHearingsAdded(caseData, hearingElement.get().getValue()));
+                publishEvent(new SendNoticeOfHearing(caseData, hearingElement.get().getValue()));
             }
         } else {
             throw new NoHearingBookingException();

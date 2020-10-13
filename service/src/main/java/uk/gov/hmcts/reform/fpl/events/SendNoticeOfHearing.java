@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 
 @Getter
 @RequiredArgsConstructor
-public class NewHearingsAdded {
+public class SendNoticeOfHearing {
     private final CaseData caseData;
     private final HearingBooking selectedHearing;
 }

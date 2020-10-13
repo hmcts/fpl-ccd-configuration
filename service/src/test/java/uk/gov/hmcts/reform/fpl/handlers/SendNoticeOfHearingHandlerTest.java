@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
-import uk.gov.hmcts.reform.fpl.events.NewHearingsAdded;
+import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -40,12 +40,12 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {NewHearingsAddedHandler.class, JacksonAutoConfiguration.class, LookupTestConfig.class,
+@SpringBootTest(classes = {SendNoticeOfHearingHandler.class, JacksonAutoConfiguration.class, LookupTestConfig.class,
     FixedTimeConfiguration.class})
-class NewHearingsAddedHandlerTest {
+class SendNoticeOfHearingHandlerTest {
 
     @Autowired
-    private NewHearingsAddedHandler newHearingsAddedHandler;
+    private SendNoticeOfHearingHandler sendNoticeOfHearingHandler;
 
     @Autowired
     private Time time;
@@ -88,7 +88,7 @@ class NewHearingsAddedHandlerTest {
         given(inboxLookupService.getRecipients(caseData))
             .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
-        newHearingsAddedHandler.sendEmailToLA(new NewHearingsAdded(caseData, hearing));
+        sendNoticeOfHearingHandler.sendEmailToLA(new SendNoticeOfHearing(caseData, hearing));
 
         verify(notificationService).sendEmail(
             NOTICE_OF_NEW_HEARING,
@@ -101,7 +101,7 @@ class NewHearingsAddedHandlerTest {
     void shouldSendNotificationToCafcassWhenNewHearingIsAdded() {
         final CaseData caseData = caseData();
 
-        newHearingsAddedHandler.sendEmailToCafcass(new NewHearingsAdded(caseData, hearing));
+        sendNoticeOfHearingHandler.sendEmailToCafcass(new SendNoticeOfHearing(caseData, hearing));
 
         verify(notificationService).sendEmail(
             NOTICE_OF_NEW_HEARING,
@@ -114,7 +114,7 @@ class NewHearingsAddedHandlerTest {
     void shouldSendNotificationToRepresentativesWhenNewHearingIsAdded() {
         final CaseData caseData = caseData();
 
-        newHearingsAddedHandler.sendEmailToRepresentatives(new NewHearingsAdded(caseData, hearing));
+        sendNoticeOfHearingHandler.sendEmailToRepresentatives(new SendNoticeOfHearing(caseData, hearing));
 
         verify(representativeNotificationService)
             .sendToRepresentativesByServedPreference(
@@ -145,7 +145,7 @@ class NewHearingsAddedHandlerTest {
             .id(RandomUtils.nextLong())
             .build();
 
-        newHearingsAddedHandler.sendDocumentToRepresentatives(new NewHearingsAdded(caseData, hearing));
+        sendNoticeOfHearingHandler.sendDocumentToRepresentatives(new SendNoticeOfHearing(caseData, hearing));
 
         verify(coreCaseDataService).triggerEvent(JURISDICTION, CASE_TYPE, caseData.getId(),
             "internal-change-SEND_DOCUMENT", Map.of("documentToBeSent", noticeOfHearing));
