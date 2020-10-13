@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,25 +14,18 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfProceedingsIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsTemplateDataGenerationService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
 
-import java.time.format.FormatStyle;
 import java.util.List;
 import javax.validation.constraints.NotNull;
 
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.NOTICE_OF_PROCEEDINGS;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
-import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 
 @Api
 @RestController
@@ -42,7 +34,6 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllo
 public class NoticeOfProceedingsController extends CallbackController {
     private final ValidateGroupService eventValidationService;
     private final NoticeOfProceedingsService noticeOfProceedingsService;
-    private final HearingBookingService hearingBookingService;
     private final NoticeOfProceedingsTemplateDataGenerationService noticeOfProceedingsTemplateDataGenerationService;
     private final FeatureToggleService featureToggleService;
 
@@ -51,23 +42,13 @@ public class NoticeOfProceedingsController extends CallbackController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        if (eventValidationService.validateGroup(caseData, NoticeOfProceedingsGroup.class).isEmpty()) {
-            hearingBookingService.getFirstHearing(caseData.getHearingDetails())
-                .ifPresent(hearingBooking ->
-                    caseDetails.getData().put("proceedingLabel", buildProceedingLabel(hearingBooking)));
+        List<String> errors = eventValidationService.validateGroup(caseData, NoticeOfProceedingsGroup.class);
+
+        if (errors.isEmpty()) {
+            caseDetails.getData().putAll(noticeOfProceedingsService.initNoticeOfProceeding(caseData));
         }
 
-        if (isNotEmpty(caseData.getAllocatedJudge())) {
-            String assignedJudgeLabel = buildAllocatedJudgeLabel(caseData.getAllocatedJudge());
-
-            caseDetails.getData().put("noticeOfProceedings", ImmutableMap.of(
-                "judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder()
-                    .allocatedJudgeLabel(assignedJudgeLabel)
-                    .build()
-            ));
-        }
-
-        return respond(caseDetails, eventValidationService.validateGroup(caseData, NoticeOfProceedingsGroup.class));
+        return respond(caseDetails, errors);
     }
 
     @PostMapping("/about-to-submit")
@@ -82,11 +63,11 @@ public class NoticeOfProceedingsController extends CallbackController {
 
         caseData = getCaseData(caseDetails);
 
-        DocmosisNoticeOfProceeding templateData = noticeOfProceedingsTemplateDataGenerationService
-            .getTemplateData(caseData);
-
         List<DocmosisTemplates> docmosisTemplateTypes = caseData.getNoticeOfProceedings()
             .mapProceedingTypesToDocmosisTemplate();
+
+        DocmosisNoticeOfProceeding templateData = noticeOfProceedingsTemplateDataGenerationService
+            .getTemplateData(caseData);
 
         List<DocmosisDocument> noticeOfProceedingDocuments =
             noticeOfProceedingsService.buildNoticeOfProceedingDocuments(templateData, docmosisTemplateTypes);
@@ -94,7 +75,7 @@ public class NoticeOfProceedingsController extends CallbackController {
         List<Document> documentReferences = noticeOfProceedingsService.uploadDocuments(noticeOfProceedingDocuments);
 
         caseDetails.getData().put("noticeOfProceedingsBundle",
-            noticeOfProceedingsService.prepapreNoticeOfProceedingsBundle(documentReferences, docmosisTemplateTypes,
+            noticeOfProceedingsService.prepareNoticeOfProceedingsBundle(documentReferences, docmosisTemplateTypes,
                 caseDataBefore.getNoticeOfProceedingsBundle()));
 
         return respond(caseDetails);
@@ -105,10 +86,5 @@ public class NoticeOfProceedingsController extends CallbackController {
         if (featureToggleService.isAllocatedJudgeNotificationEnabled(NOTICE_OF_PROCEEDINGS)) {
             publishEvent(new NoticeOfProceedingsIssuedEvent(getCaseData(callbackRequest)));
         }
-    }
-
-    private String buildProceedingLabel(HearingBooking hearingBooking) {
-        return String.format("The case management hearing will be on the %s.",
-            formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG));
     }
 }

@@ -1,12 +1,14 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
@@ -16,11 +18,16 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 
+import java.time.format.FormatStyle;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
 
@@ -29,18 +36,25 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAll
 public class NoticeOfProceedingsService {
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
+    private final HearingBookingService hearingBookingService;
 
-    public List<Element<DocumentBundle>> prepapreNoticeOfProceedingsBundle(
-        List<Document> documentReferences, List<DocmosisTemplates> templateTypes,
-        List<Element<DocumentBundle>> noticeOfProceedingBundleBefore) {
-        List<Element<DocumentBundle>> updatedNoticeOfProceedings
-            = createNoticeOfProceedingsCaseData(documentReferences);
+    public Map<String, Object> initNoticeOfProceeding(CaseData caseData) {
+        Map<String, Object> listAndLabel = new HashMap<>();
 
-        if (isNotEmpty(noticeOfProceedingBundleBefore)) {
-            updatedNoticeOfProceedings.addAll(getRemovedDocumentBundles(noticeOfProceedingBundleBefore, templateTypes));
+        hearingBookingService.getFirstHearing(caseData.getHearingDetails())
+            .ifPresent(hearingBooking -> listAndLabel.put("proceedingLabel", buildProceedingLabel(hearingBooking)));
+
+        if (caseData.allocatedJudgeExists()) {
+            String assignedJudgeLabel = buildAllocatedJudgeLabel(caseData.getAllocatedJudge());
+
+            listAndLabel.put("noticeOfProceedings", ImmutableMap.of(
+                "judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder()
+                    .allocatedJudgeLabel(assignedJudgeLabel)
+                    .build()
+            ));
         }
 
-        return updatedNoticeOfProceedings;
+        return listAndLabel;
     }
 
     public NoticeOfProceedings prepareNoticeOfProceedings(CaseData caseData) {
@@ -53,6 +67,19 @@ public class NoticeOfProceedingsService {
         noticeOfProceedings = noticeOfProceedings.toBuilder().judgeAndLegalAdvisor(judgeAndLegalAdvisor).build();
 
         return noticeOfProceedings;
+    }
+
+    public List<Element<DocumentBundle>> prepareNoticeOfProceedingsBundle(
+        List<Document> documentReferences, List<DocmosisTemplates> templateTypes,
+        List<Element<DocumentBundle>> noticeOfProceedingBundleBefore) {
+        List<Element<DocumentBundle>> updatedNoticeOfProceedings
+            = createNoticeOfProceedingsCaseData(documentReferences);
+
+        if (isNotEmpty(noticeOfProceedingBundleBefore)) {
+            updatedNoticeOfProceedings.addAll(getRemovedDocumentBundles(noticeOfProceedingBundleBefore, templateTypes));
+        }
+
+        return updatedNoticeOfProceedings;
     }
 
     public List<DocmosisDocument> buildNoticeOfProceedingDocuments(DocmosisNoticeOfProceeding templateData,
@@ -99,5 +126,10 @@ public class NoticeOfProceedingsService {
                     .build())
                 .build())
             .collect(Collectors.toList());
+    }
+
+    private String buildProceedingLabel(HearingBooking hearingBooking) {
+        return String.format("The case management hearing will be on the %s.",
+            formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG));
     }
 }
