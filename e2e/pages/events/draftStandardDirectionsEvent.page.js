@@ -18,6 +18,11 @@ module.exports = {
       preparedSDO: '#preparedSDO',
       replacementSDO: '#replacementSDO',
     },
+    noticeOfProceedings: {
+      groupName: '#noticeOfProceedings_proceedingTypes',
+      c6: locate('input').withAttr({id: 'noticeOfProceedings_proceedingTypes-NOTICE_OF_PROCEEDINGS_FOR_PARTIES'}),
+      c6a: locate('input').withAttr({id: 'noticeOfProceedings_proceedingTypes-NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES'}),
+    },
   },
 
   async createSDOThroughService() {
@@ -76,9 +81,18 @@ module.exports = {
     });
   },
 
-  markAsFinal() {
+  async markAsFinal() {
     within(this.fields.statusRadioGroup.groupName, () => {
       I.click(locate('label').withText(this.fields.statusRadioGroup.sealed));
     });
+    await I.retryUntilExists(() => I.click('Continue'), this.fields.noticeOfProceedings.groupName);
+  },
+
+  checkC6() {
+    I.checkOption(this.fields.noticeOfProceedings.c6);
+  },
+
+  checkC6A() {
+    I.checkOption(this.fields.noticeOfProceedings.c6a);
   },
 };

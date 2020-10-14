@@ -31,10 +31,15 @@ Scenario('Gatekeeper uploads final standard directions', async (I, caseViewPage,
   I.see('mockFile.pdf');
   await draftStandardDirectionsEventPage.uploadReplacementSDO(config.testWordFile);
   await draftStandardDirectionsEventPage.markAsFinal();
+  draftStandardDirectionsEventPage.checkC6();
+  draftStandardDirectionsEventPage.checkC6A();
   await I.completeEvent('Save and continue');
 
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   I.seeInTab(['Gatekeeping order', 'File'], 'mockFile.pdf');
   I.seeInTab(['Gatekeeping order', 'Date uploaded'], dateFormat('d mmm yyyy'));
   I.seeInTab(['Gatekeeping order', 'Uploaded by'], 'Uploaded by'); // Asserting row is there, data in local and aat are different
+  caseViewPage.selectTab(caseViewPage.tabs.hearings);
+  I.seeInTab(['Notice of proceedings 1', 'File name'], 'Notice_of_proceedings_c6.pdf');
+  I.seeInTab(['Notice of proceedings 2', 'File name'], 'Notice_of_proceedings_c6a.pdf');
 });
