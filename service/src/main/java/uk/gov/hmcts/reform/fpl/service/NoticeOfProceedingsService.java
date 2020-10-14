@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
@@ -21,6 +22,7 @@ import java.time.format.FormatStyle;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -35,6 +37,7 @@ public class NoticeOfProceedingsService {
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
     private final HearingBookingService hearingBookingService;
+    private final NoticeOfProceedingsTemplateDataGenerationService noticeOfProceedingsTemplateDataGenerationService;
 
     public Map<String, Object> initNoticeOfProceeding(CaseData caseData) {
         Map<String, Object> listAndLabel = new HashMap<>();
@@ -69,6 +72,19 @@ public class NoticeOfProceedingsService {
         return noticeOfProceedings;
     }
 
+    public List<Element<DocumentBundle>> uploadAndPrepareNoticeOfProceedingBundle(
+        CaseData caseData, JudgeAndLegalAdvisor judgeAndLegalAdvisor, List<DocmosisTemplates> docmosisTemplatesTypes) {
+        DocmosisNoticeOfProceeding templateData = noticeOfProceedingsTemplateDataGenerationService
+            .getTemplateData(caseData, judgeAndLegalAdvisor);
+
+        List<DocmosisDocument> noticeOfProceedingDocuments =
+            buildNoticeOfProceedingDocuments(templateData, docmosisTemplatesTypes);
+
+        List<Document> documentReferences = uploadDocuments(noticeOfProceedingDocuments);
+
+        return createNoticeOfProceedingsCaseData(documentReferences);
+    }
+
     public List<Element<DocumentBundle>> prepareNoticeOfProceedingBundle(
         List<Element<DocumentBundle>> updatedNoticeOfProceedings,
         List<Element<DocumentBundle>> noticeOfProceedingBundleBefore,
@@ -81,16 +97,39 @@ public class NoticeOfProceedingsService {
         return updatedNoticeOfProceedings;
     }
 
-    public List<DocmosisDocument> buildNoticeOfProceedingDocuments(DocmosisNoticeOfProceeding templateData,
+    public List<Element<DocumentBundle>> getPreviousNoticeOfProceedings(CaseData caseDataBefore) {
+        if (caseDataBefore == null || caseDataBefore.getNoticeOfProceedingsBundle() == null) {
+            return List.of();
+        }
+
+        return caseDataBefore.getNoticeOfProceedingsBundle();
+    }
+
+    private List<DocmosisDocument> buildNoticeOfProceedingDocuments(DocmosisNoticeOfProceeding templateData,
                                                                    List<DocmosisTemplates> templateTypes) {
         return templateTypes.stream()
             .map(template -> docmosisDocumentGeneratorService.generateDocmosisDocument(templateData, template))
             .collect(Collectors.toList());
     }
 
-    public List<Document> uploadDocuments(List<DocmosisDocument> documents) {
+    private List<Document> uploadDocuments(List<DocmosisDocument> documents) {
         return documents.stream()
             .map(document -> uploadDocumentService.uploadPDF(document.getBytes(), document.getDocumentTitle()))
+            .collect(Collectors.toList());
+    }
+
+    private List<Element<DocumentBundle>> createNoticeOfProceedingsCaseData(List<Document> uploadedDocuments) {
+        return uploadedDocuments.stream()
+            .map(document -> Element.<DocumentBundle>builder()
+                .id(UUID.randomUUID())
+                .value(DocumentBundle.builder()
+                    .document(DocumentReference.builder()
+                        .filename(document.originalDocumentName)
+                        .url(document.links.self.href)
+                        .binaryUrl(document.links.binary.href)
+                        .build())
+                    .build())
+                .build())
             .collect(Collectors.toList());
     }
 

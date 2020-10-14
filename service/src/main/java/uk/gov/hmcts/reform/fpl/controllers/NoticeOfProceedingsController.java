@@ -10,24 +10,17 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfProceedingsIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
-import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsTemplateDataGenerationService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
 
 import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.NOTICE_OF_PROCEEDINGS;
@@ -39,7 +32,6 @@ import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.NOTIC
 public class NoticeOfProceedingsController extends CallbackController {
     private final ValidateGroupService eventValidationService;
     private final NoticeOfProceedingsService noticeOfProceedingsService;
-    private final NoticeOfProceedingsTemplateDataGenerationService noticeOfProceedingsTemplateDataGenerationService;
     private final FeatureToggleService featureToggleService;
 
     @PostMapping("/about-to-start")
@@ -61,7 +53,7 @@ public class NoticeOfProceedingsController extends CallbackController {
         @RequestBody @NotNull CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
-        CaseData caseDataBefore = getCaseData(callbackRequest.getCaseDetailsBefore());
+        CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
         caseDetails.getData().put("noticeOfProceedings",
             noticeOfProceedingsService.setNoticeOfProceedingJudge(caseData));
@@ -71,19 +63,14 @@ public class NoticeOfProceedingsController extends CallbackController {
         List<DocmosisTemplates> docmosisTemplateTypes = caseData.getNoticeOfProceedings()
             .mapProceedingTypesToDocmosisTemplate();
 
-        DocmosisNoticeOfProceeding templateData = noticeOfProceedingsTemplateDataGenerationService
-            .getTemplateData(caseData);
-
-        List<DocmosisDocument> noticeOfProceedingDocuments =
-            noticeOfProceedingsService.buildNoticeOfProceedingDocuments(templateData, docmosisTemplateTypes);
-
-        List<Document> documentReferences = noticeOfProceedingsService.uploadDocuments(noticeOfProceedingDocuments);
-
-        List<Element<DocumentBundle>> newNoticeOfProceedings = createNoticeOfProceedingsCaseData(documentReferences);
+        List<Element<DocumentBundle>> newNoticeOfProceedings =
+            noticeOfProceedingsService.uploadAndPrepareNoticeOfProceedingBundle(caseData,
+                caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor(), docmosisTemplateTypes
+        );
 
         caseDetails.getData().put("noticeOfProceedingsBundle",
             noticeOfProceedingsService.prepareNoticeOfProceedingBundle(newNoticeOfProceedings,
-                getPreviousNoticeOfProceedings(caseDataBefore), docmosisTemplateTypes));
+                noticeOfProceedingsService.getPreviousNoticeOfProceedings(caseDataBefore), docmosisTemplateTypes));
 
         return respond(caseDetails);
     }
@@ -93,28 +80,5 @@ public class NoticeOfProceedingsController extends CallbackController {
         if (featureToggleService.isAllocatedJudgeNotificationEnabled(NOTICE_OF_PROCEEDINGS)) {
             publishEvent(new NoticeOfProceedingsIssuedEvent(getCaseData(callbackRequest)));
         }
-    }
-
-    private List<Element<DocumentBundle>> createNoticeOfProceedingsCaseData(List<Document> uploadedDocuments) {
-        return uploadedDocuments.stream()
-            .map(document -> Element.<DocumentBundle>builder()
-                .id(UUID.randomUUID())
-                .value(DocumentBundle.builder()
-                    .document(DocumentReference.builder()
-                        .filename(document.originalDocumentName)
-                        .url(document.links.self.href)
-                        .binaryUrl(document.links.binary.href)
-                        .build())
-                    .build())
-                .build())
-            .collect(Collectors.toList());
-    }
-
-    private List<Element<DocumentBundle>> getPreviousNoticeOfProceedings(CaseData caseDataBefore) {
-        if (caseDataBefore == null || caseDataBefore.getNoticeOfProceedingsBundle() == null) {
-            return List.of();
-        }
-
-        return caseDataBefore.getNoticeOfProceedingsBundle();
     }
 }

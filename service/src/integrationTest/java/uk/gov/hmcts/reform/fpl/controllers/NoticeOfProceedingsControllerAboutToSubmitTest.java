@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsTemplateDataGenerationService;
@@ -28,9 +27,8 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 @WebMvcTest(NoticeOfProceedingsController.class)
 @OverrideAutoConfiguration(enabled = true)
 class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerTest {
-
-    private static final String C6_DOCUMENT_TITLE = C6.getDocumentTitle();
     private static final byte[] PDF = {1, 2, 3, 4, 5};
+
     @Autowired
     private NoticeOfProceedingsService noticeOfProceedingsService;
     @MockBean
@@ -49,18 +47,21 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerT
         Document document = document();
         DocmosisDocument docmosisDocument = DocmosisDocument.builder()
             .bytes(PDF)
-            .documentTitle(C6_DOCUMENT_TITLE)
+            .documentTitle(C6.getDocumentTitle())
             .build();
 
         CaseData caseData = caseConverter.convert(callbackRequest().getCaseDetails());
 
-        DocmosisNoticeOfProceeding templateData = createTemplatePlaceholders();
+        DocmosisNoticeOfProceeding templateData = DocmosisNoticeOfProceeding.builder().build();
 
-        given(noticeOfProceedingsTemplateDataGenerationService.getTemplateData(caseData))
+        given(noticeOfProceedingsTemplateDataGenerationService.getTemplateData(caseData,
+            caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()))
             .willReturn(templateData);
+
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(templateData, C6))
             .willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(PDF, C6_DOCUMENT_TITLE))
+
+        given(uploadDocumentService.uploadPDF(PDF, C6.getDocumentTitle()))
             .willReturn(document);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
@@ -75,22 +76,5 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerT
         assertThat(noticeOfProceedingBundle.getUrl()).isEqualTo(document.links.self.href);
         assertThat(noticeOfProceedingBundle.getFilename()).isEqualTo(document.originalDocumentName);
         assertThat(noticeOfProceedingBundle.getBinaryUrl()).isEqualTo(document.links.binary.href);
-    }
-
-    private DocmosisNoticeOfProceeding createTemplatePlaceholders() {
-
-        return DocmosisNoticeOfProceeding.builder()
-            .courtName("Swansea Family Court")
-            .familyManCaseNumber("SW123123")
-            .applicantName("James Nelson")
-            .orderTypes("Care order")
-            .childrenNames("James Nelson")
-            .hearingBooking(DocmosisHearingBooking.builder()
-                .hearingDate("1 Jan 2001")
-                .hearingVenue("Aldgate Tower floor 3")
-                .preHearingAttendance("test")
-                .hearingTime("09.00pm")
-                .build())
-            .build();
     }
 }

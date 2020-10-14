@@ -41,6 +41,8 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6A;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
@@ -70,6 +72,9 @@ class NoticeOfProceedingsServiceTest {
 
     @MockBean
     private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
+
+    @MockBean
+    private NoticeOfProceedingsTemplateDataGenerationService noticeOfProceedingsTemplateDataGenerationService;
 
     @MockBean
     private UploadDocumentService uploadDocumentService;
@@ -190,17 +195,38 @@ class NoticeOfProceedingsServiceTest {
     }
 
     @Test
-    void shouldGenerateNoticeOfProceedingDocmosisDocuments() {
+    void shouldGenerateAndUploadNoticeOfProceedingDocmosisDocuments() {
+        CaseData caseData = CaseData.builder()
+            .allocatedJudge(buildAllocatedJudge())
+            .noticeOfProceedings(NoticeOfProceedings.builder()
+                .proceedingTypes(List.of(NOTICE_OF_PROCEEDINGS_FOR_PARTIES, NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES))
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                    .judgeTitle(HER_HONOUR_JUDGE)
+                    .judgeLastName("Wilson")
+                    .allocatedJudgeLabel("Allocated judge label")
+                    .useAllocatedJudge(NO.getValue())
+                    .build())
+                .build())
+            .build();
+
+        Document document = document();
+
         DocmosisDocument c6Document = DocmosisDocument.builder()
-            .documentTitle("c6.pdf")
+            .documentTitle(C6.getDocumentTitle())
+            .bytes(PDF)
             .build();
 
         DocmosisDocument c6aDocument = DocmosisDocument.builder()
-            .documentTitle("c6a.pdf")
+            .documentTitle(C6.getDocumentTitle())
+            .bytes(PDF)
             .build();
 
-        List<DocmosisTemplates> templateTypes = List.of(C6, C6A);
         DocmosisNoticeOfProceeding templateData = DocmosisNoticeOfProceeding.builder().build();
+
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor();
+
+        given(noticeOfProceedingsTemplateDataGenerationService.getTemplateData(caseData, judgeAndLegalAdvisor))
+            .willReturn(templateData);
 
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(templateData, C6))
             .willReturn(c6Document);
@@ -208,27 +234,53 @@ class NoticeOfProceedingsServiceTest {
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(templateData, C6A))
             .willReturn(c6aDocument);
 
-        List<DocmosisDocument> noticeOfProceedings
-            = noticeOfProceedingService.buildNoticeOfProceedingDocuments(templateData, templateTypes);
+        given(uploadDocumentService.uploadPDF(PDF, C6.getDocumentTitle()))
+            .willReturn(document);
 
-        assertThat(noticeOfProceedings.get(0).getDocumentTitle()).isEqualTo("c6.pdf");
-        assertThat(noticeOfProceedings.get(1).getDocumentTitle()).isEqualTo("c6a.pdf");
+        given(uploadDocumentService.uploadPDF(PDF, C6A.getDocumentTitle()))
+            .willReturn(document);
+
+        List<Element<DocumentBundle>> noticeOfProceedings
+            = noticeOfProceedingService.uploadAndPrepareNoticeOfProceedingBundle(caseData, judgeAndLegalAdvisor,
+            List.of(C6, C6A));
+
+        assertThat(noticeOfProceedings.size()).isEqualTo(2);
     }
 
     @Test
-    void shouldUploadDocumentsWhenProvidedListOfDocumentsToUpload() {
-        Document document = document();
-        List<DocmosisDocument> docmosisDocuments = List.of(DocmosisDocument.builder()
-            .bytes(PDF)
-            .documentTitle(C6_DOCUMENT_TITLE)
-            .build());
+    void shouldReturnNoticeOfProceedingsWhenExistingOnCaseDataBefore() {
+        List<Element<DocumentBundle>> noticeOfProceedingsBundle = List.of(
+            element(DocumentBundle.builder()
+                .document(DocumentReference.builder()
+                    .filename("test.pdf")
+                    .build())
+                .build()));
 
-        given(uploadDocumentService.uploadPDF(PDF, C6_DOCUMENT_TITLE))
-            .willReturn(document);
+        CaseData caseDataBefore = CaseData.builder()
+            .noticeOfProceedingsBundle(noticeOfProceedingsBundle)
+            .build();
 
-        List<Document> uploadedDocuments = noticeOfProceedingService.uploadDocuments(docmosisDocuments);
+        List<Element<DocumentBundle>> previousNoticeOfProceedings
+            = noticeOfProceedingService.getPreviousNoticeOfProceedings(caseDataBefore);
 
-        assertThat(uploadedDocuments).size().isEqualTo(1);
+        assertThat(previousNoticeOfProceedings).isEqualTo(noticeOfProceedingsBundle);
+    }
+
+    @Test
+    void shouldReturnAnEmptyListIfCaseDataBeforeIsNull() {
+        List<Element<DocumentBundle>> previousNoticeOfProceedings
+            = noticeOfProceedingService.getPreviousNoticeOfProceedings(null);
+
+        assertThat(previousNoticeOfProceedings).isEqualTo(List.of());
+    }
+
+    @Test
+    void shouldReturnAnEmptyListWhenNoticeOfProceedingsDoNotExistOnCaseDataBefore() {
+        CaseData caseData = CaseData.builder().build();
+        List<Element<DocumentBundle>> previousNoticeOfProceedings =
+            noticeOfProceedingService.getPreviousNoticeOfProceedings(caseData);
+
+        assertThat(previousNoticeOfProceedings).isEqualTo(List.of());
     }
 
     private List<Element<DocumentBundle>> generateNoticeOfProceedingBundle(List<DocmosisTemplates> templateTypes) {

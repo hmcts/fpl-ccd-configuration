@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
+import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
@@ -20,12 +21,14 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.DocumentService;
+import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
 import uk.gov.hmcts.reform.fpl.service.OrderValidationService;
 import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForDataStoreService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
@@ -70,6 +73,7 @@ public class StandardDirectionsOrderController extends CallbackController {
     private final ValidateGroupService validateGroupService;
     private final StandardDirectionsService standardDirectionsService;
     private final StandardDirectionsOrderService sdoService;
+    private final NoticeOfProceedingsService noticeOfProceedingsService;
 
     private static final String JUDGE_AND_LEGAL_ADVISOR_KEY = "judgeAndLegalAdvisor";
 
@@ -197,6 +201,7 @@ public class StandardDirectionsOrderController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = getCaseData(caseDetails);
+        CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
         List<String> errors = orderValidationService.validate(caseData);
         if (!errors.isEmpty()) {
@@ -258,6 +263,20 @@ public class StandardDirectionsOrderController extends CallbackController {
         if (order.getOrderStatus() == SEALED) {
             data.put("state", State.CASE_MANAGEMENT);
             removeTemporaryFields(caseDetails, "sdoRouter");
+        }
+
+        if (order.isSendingNoticeOfProceedings()) {
+            List<DocmosisTemplates> docmosisTemplateTypes =
+                order.getNoticeOfProceedings().mapProceedingTypesToDocmosisTemplate();
+
+            List<Element<DocumentBundle>> newNoticeOfProceedings
+                = noticeOfProceedingsService.uploadAndPrepareNoticeOfProceedingBundle(caseData,
+                order.getJudgeAndLegalAdvisor(), docmosisTemplateTypes
+            );
+
+            caseDetails.getData().put("noticeOfProceedingsBundle",
+                noticeOfProceedingsService.prepareNoticeOfProceedingBundle(newNoticeOfProceedings,
+                    noticeOfProceedingsService.getPreviousNoticeOfProceedings(caseDataBefore), docmosisTemplateTypes));
         }
 
         return respond(caseDetails);
