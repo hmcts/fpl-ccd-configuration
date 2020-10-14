@@ -18,6 +18,7 @@ public class AllocatedJudgeContentProvider extends AbstractEmailContentProvider 
         allocatedJudgeTemplate.setJudgeName(caseData.getAllocatedJudge().getJudgeName());
         allocatedJudgeTemplate.setCaseName(caseData.getCaseName());
         allocatedJudgeTemplate.setCaseUrl(getCaseUrl(caseData.getId()));
+        allocatedJudgeTemplate.setFamilyManCaseNumber(caseData.getFamilyManCaseNumber());
 
         return allocatedJudgeTemplate;
     }
