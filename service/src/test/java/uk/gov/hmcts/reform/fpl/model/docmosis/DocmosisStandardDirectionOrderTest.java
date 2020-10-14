@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
-import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
-import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 
 import java.util.List;
 import java.util.Map;
@@ -21,7 +19,6 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
-import static uk.gov.hmcts.reform.fpl.enums.ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_PARTIES;
 
 class DocmosisStandardDirectionOrderTest {
     private static final Set<String> DOCMOSIS_KEYS = Set.of("judgeAndLegalAdvisor", "courtName",
@@ -61,24 +58,6 @@ class DocmosisStandardDirectionOrderTest {
         Stream.of(DirectionAssignee.values()).forEach(assignee -> modifiedKeys.remove(assignee.getValue()));
 
         assertThat(order.toMap(mapper)).containsOnlyKeys(modifiedKeys);
-    }
-
-    @Test
-    void shouldReturnTrueWhenSendingNoticeOfProceedingsOnStandardDirectionOrder() {
-        StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
-            .noticeOfProceedings(NoticeOfProceedings.builder()
-                .proceedingTypes(List.of(NOTICE_OF_PROCEEDINGS_FOR_PARTIES))
-                .build())
-            .build();
-
-        assertThat(standardDirectionOrder.isSendingNoticeOfProceedings()).isTrue();
-    }
-
-    @Test
-    void shouldReturnFalseWhenNotSendingNoticeOfProceedingsOnStandardDirectionOrder() {
-        StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder().build();
-
-        assertThat(standardDirectionOrder.isSendingNoticeOfProceedings()).isFalse();
     }
 
     private List<DocmosisDirection> directionsForAllAssignees() {

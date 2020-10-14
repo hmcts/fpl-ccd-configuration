@@ -257,24 +257,27 @@ public class StandardDirectionsOrderController extends CallbackController {
             "currentSDO",
             "replacementSDO",
             "useServiceRoute",
-            "useUploadRoute"
+            "useUploadRoute",
+            "noticeOfProceedings"
         );
 
-        if (order.getOrderStatus() == SEALED) {
+        if (isOrderSealed(order)) {
             data.put("state", State.CASE_MANAGEMENT);
             removeTemporaryFields(caseDetails, "sdoRouter");
-        }
 
-        if (order.isSendingNoticeOfProceedings()) {
-            List<DocmosisTemplates> docmosisTemplateTypes =
-                order.getNoticeOfProceedings().mapProceedingTypesToDocmosisTemplate();
+            if (caseData.isSendingNoticeOfProceedings()) {
+                List<DocmosisTemplates> docmosisTemplateTypes =
+                    caseData.getNoticeOfProceedings().mapProceedingTypesToDocmosisTemplate();
 
-            List<Element<DocumentBundle>> newNoticeOfProceedings
-                = noticeOfProceedingsService.uploadAndPrepareNoticeOfProceedingBundle(caseData, docmosisTemplateTypes);
+                List<Element<DocumentBundle>> newNoticeOfProceedings
+                    = noticeOfProceedingsService.uploadAndPrepareNoticeOfProceedingBundle(caseData,
+                    docmosisTemplateTypes);
 
-            caseDetails.getData().put("noticeOfProceedingsBundle",
-                noticeOfProceedingsService.prepareNoticeOfProceedingBundle(newNoticeOfProceedings,
-                    noticeOfProceedingsService.getPreviousNoticeOfProceedings(caseDataBefore), docmosisTemplateTypes));
+                caseDetails.getData().put("noticeOfProceedingsBundle",
+                    noticeOfProceedingsService.prepareNoticeOfProceedingBundle(newNoticeOfProceedings,
+                        noticeOfProceedingsService.getPreviousNoticeOfProceedings(caseDataBefore),
+                        docmosisTemplateTypes));
+            }
         }
 
         return respond(caseDetails);
@@ -330,5 +333,9 @@ public class StandardDirectionsOrderController extends CallbackController {
         List<Element<Direction>> standardDirections = standardDirectionsService.getDirections(firstHearing);
 
         prepareDirectionsForDataStoreService.persistHiddenDirectionValues(standardDirections, directions);
+    }
+
+    private boolean isOrderSealed(StandardDirectionOrder order) {
+        return SEALED.equals(order.getOrderStatus());
     }
 }

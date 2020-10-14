@@ -23,7 +23,6 @@ public class StandardDirectionOrder extends OrderForHearing implements IssuableO
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final LocalDate dateOfUpload;
     private final String uploader;
-    private final NoticeOfProceedings noticeOfProceedings;
 
     @Builder
     public StandardDirectionOrder(String hearingDate,
@@ -33,14 +32,12 @@ public class StandardDirectionOrder extends OrderForHearing implements IssuableO
                                   OrderStatus orderStatus,
                                   JudgeAndLegalAdvisor judgeAndLegalAdvisor,
                                   LocalDate dateOfUpload,
-                                  String uploader,
-                                  NoticeOfProceedings noticeOfProceedings) {
+                                  String uploader) {
         super(hearingDate, dateOfIssue, directions, orderDoc);
         this.orderStatus = orderStatus;
         this.judgeAndLegalAdvisor = judgeAndLegalAdvisor;
         this.dateOfUpload = dateOfUpload;
         this.uploader = uploader;
-        this.noticeOfProceedings = noticeOfProceedings;
     }
 
     @JsonIgnore
@@ -51,10 +48,5 @@ public class StandardDirectionOrder extends OrderForHearing implements IssuableO
     @JsonIgnore
     public void setDirectionsToEmptyList() {
         this.directions = emptyList();
-    }
-
-    @JsonIgnore
-    public boolean isSendingNoticeOfProceedings() {
-        return noticeOfProceedings != null && !noticeOfProceedings.getProceedingTypes().isEmpty();
     }
 }
