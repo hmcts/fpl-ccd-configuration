@@ -29,7 +29,6 @@ public class StandardDirectionOrderIssuedEmailContentProvider extends StandardDi
     private final CaseDataExtractionService caseDataExtractionService;
     @Value("${manage-case.ui.base.url}")
     private String xuiBaseUrl;
-    private final CafcassLookupConfiguration config;
 
     public AllocatedJudgeTemplateForSDO buildNotificationParametersForAllocatedJudge(CaseData caseData) {
         Map<String, Object> commonSDOParameters = super.getSDOPersonalisationBuilder(caseData).build();

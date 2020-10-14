@@ -33,7 +33,6 @@ public abstract class StandardDirectionOrderContent extends AbstractEmailContent
             .orElse("");
     }
 
-
     private String buildCallout(final CaseData caseData) {
         return "^" + buildSubjectLineWithHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
             caseData.getRespondents1(),

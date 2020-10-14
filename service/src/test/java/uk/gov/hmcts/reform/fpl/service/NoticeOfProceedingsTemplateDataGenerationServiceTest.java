@@ -115,32 +115,6 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
     }
 
     @Test
-    void shouldSetJudgeTitleAndNameToEmptyStringWhenJudgeTitleAndNameIsEmpty() {
-        CaseData caseData = prepareCaseData()
-            .noticeOfProceedings(NoticeOfProceedings.builder()
-                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
-                .proceedingTypes(emptyList())
-                .build())
-            .build();
-        DocmosisNoticeOfProceeding templateData = noticeOfProceedingsTemplateDataGenerationService
-            .getTemplateData(caseData);
-    }
-
-    @Test
-    void shouldReturnFirstApplicantNameWhenMultipleApplicantsArePresent() {
-        CaseData caseData = prepareCaseData()
-            .noticeOfProceedings(NoticeOfProceedings.builder()
-                .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor())
-                .proceedingTypes(emptyList())
-                .build())
-            .build();
-
-        DocmosisNoticeOfProceeding templateData = noticeOfProceedingsTemplateDataGenerationService
-            .getTemplateData(caseData);
-        assertThat(templateData.getApplicantName()).isEqualTo("Bran Stark");
-    }
-
-    @Test
     void shouldMapCaseDataPropertiesToTemplatePlaceholderDataWhenCaseDataIsFullyPopulated() {
         CaseData caseData = prepareCaseData()
             .noticeOfProceedings(NoticeOfProceedings.builder()
