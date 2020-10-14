@@ -59,7 +59,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 class NoticeOfProceedingsServiceTest {
     private static final String JUDGE_SURNAME = "Davidson";
     private static final byte[] PDF = {1, 2, 3, 4, 5};
-    private static final String C6_DOCUMENT_TITLE = C6.getDocumentTitle();
 
     @Autowired
     private NoticeOfProceedingsService noticeOfProceedingService;
@@ -223,9 +222,7 @@ class NoticeOfProceedingsServiceTest {
 
         DocmosisNoticeOfProceeding templateData = DocmosisNoticeOfProceeding.builder().build();
 
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor();
-
-        given(noticeOfProceedingsTemplateDataGenerationService.getTemplateData(caseData, judgeAndLegalAdvisor))
+        given(noticeOfProceedingsTemplateDataGenerationService.getTemplateData(caseData))
             .willReturn(templateData);
 
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(templateData, C6))
@@ -241,8 +238,7 @@ class NoticeOfProceedingsServiceTest {
             .willReturn(document);
 
         List<Element<DocumentBundle>> noticeOfProceedings
-            = noticeOfProceedingService.uploadAndPrepareNoticeOfProceedingBundle(caseData, judgeAndLegalAdvisor,
-            List.of(C6, C6A));
+            = noticeOfProceedingService.uploadAndPrepareNoticeOfProceedingBundle(caseData, List.of(C6, C6A));
 
         assertThat(noticeOfProceedings.size()).isEqualTo(2);
     }

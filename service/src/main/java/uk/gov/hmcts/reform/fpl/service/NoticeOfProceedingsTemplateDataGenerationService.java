@@ -11,14 +11,11 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisTemplateDataGeneration;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 import uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper;
 
 import java.time.format.FormatStyle;
@@ -40,10 +37,6 @@ public class NoticeOfProceedingsTemplateDataGenerationService
 
     @Override
     public DocmosisNoticeOfProceeding getTemplateData(CaseData caseData) {
-        return getTemplateData(caseData, caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor());
-    }
-
-    public DocmosisNoticeOfProceeding getTemplateData(CaseData caseData, JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
         HearingBooking prioritisedHearingBooking = caseData.getMostUrgentHearingBookingAfter(time.now());
         HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(prioritisedHearingBooking);
 
@@ -54,7 +47,6 @@ public class NoticeOfProceedingsTemplateDataGenerationService
             .applicantName(PeopleInCaseHelper.getFirstApplicantName(caseData.getApplicants()))
             .orderTypes(getOrderTypes(caseData.getOrders()))
             .childrenNames(getAllChildrenNames(caseData.getAllChildren()))
-            .judgeAndLegalAdvisor(buildDocmosisJudgeAndLegalAdvisor(judgeAndLegalAdvisor))
             .hearingBooking(DocmosisHearingBooking.builder()
                 .hearingDate(caseDataExtractionService.getHearingDateIfHearingsOnSameDay(
                     prioritisedHearingBooking)
@@ -66,13 +58,6 @@ public class NoticeOfProceedingsTemplateDataGenerationService
                 .build())
             .crest(getCrestData())
             .courtseal(getCourtSealData())
-            .build();
-    }
-
-    private DocmosisJudgeAndLegalAdvisor buildDocmosisJudgeAndLegalAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
-        return DocmosisJudgeAndLegalAdvisor.builder()
-            .judgeTitleAndName(JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(judgeAndLegalAdvisor))
-            .legalAdvisorName(JudgeAndLegalAdvisorHelper.getLegalAdvisorName(judgeAndLegalAdvisor))
             .build();
     }
 

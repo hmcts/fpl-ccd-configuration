@@ -270,9 +270,7 @@ public class StandardDirectionsOrderController extends CallbackController {
                 order.getNoticeOfProceedings().mapProceedingTypesToDocmosisTemplate();
 
             List<Element<DocumentBundle>> newNoticeOfProceedings
-                = noticeOfProceedingsService.uploadAndPrepareNoticeOfProceedingBundle(caseData,
-                order.getJudgeAndLegalAdvisor(), docmosisTemplateTypes
-            );
+                = noticeOfProceedingsService.uploadAndPrepareNoticeOfProceedingBundle(caseData, docmosisTemplateTypes);
 
             caseDetails.getData().put("noticeOfProceedingsBundle",
                 noticeOfProceedingsService.prepareNoticeOfProceedingBundle(newNoticeOfProceedings,

@@ -54,8 +54,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerT
 
         DocmosisNoticeOfProceeding templateData = DocmosisNoticeOfProceeding.builder().build();
 
-        given(noticeOfProceedingsTemplateDataGenerationService.getTemplateData(caseData,
-            caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()))
+        given(noticeOfProceedingsTemplateDataGenerationService.getTemplateData(caseData))
             .willReturn(templateData);
 
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(templateData, C6))
