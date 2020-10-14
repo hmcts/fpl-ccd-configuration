@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -80,10 +79,10 @@ public class StandardDirectionsOrderControllerSubmittedTest extends AbstractCont
         postSubmittedEvent(buildCallbackRequest(SEALED));
 
         verify(notificationClient).sendEmail(
-            STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE,
-            "cafcass@cafcass.com",
-            cafcassParameters(),
-            NOTIFICATION_REFERENCE
+            eq(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE),
+            eq("cafcass@cafcass.com"),
+            anyMap(),
+            eq(NOTIFICATION_REFERENCE)
         );
 
         verify(notificationClient).sendEmail(
@@ -103,17 +102,6 @@ public class StandardDirectionsOrderControllerSubmittedTest extends AbstractCont
             CASE_ID,
             SEND_DOCUMENT_EVENT,
             Map.of("documentToBeSent", DOCUMENT_REFERENCE));
-    }
-
-    private Map<String, Object> cafcassParameters() {
-        return ImmutableMap.<String, Object>builder()
-            .put("title", "cafcass")
-            .put("familyManCaseNumber", "")
-            .put("leadRespondentsName", "Moley")
-            .put("hearingDate", "20 October 2020")
-            .put("reference", String.valueOf(CASE_ID))
-            .put("caseUrl", String.format("http://fake-url/cases/case-details/%s", CASE_ID))
-            .build();
     }
 
     private CallbackRequest buildCallbackRequest(OrderStatus status) {

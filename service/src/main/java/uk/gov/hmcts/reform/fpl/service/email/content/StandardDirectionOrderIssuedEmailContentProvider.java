@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -28,6 +29,7 @@ public class StandardDirectionOrderIssuedEmailContentProvider extends StandardDi
     private final CaseDataExtractionService caseDataExtractionService;
     @Value("${manage-case.ui.base.url}")
     private String xuiBaseUrl;
+    private final CafcassLookupConfiguration config;
 
     public AllocatedJudgeTemplateForSDO buildNotificationParametersForAllocatedJudge(CaseData caseData) {
         Map<String, Object> commonSDOParameters = super.getSDOPersonalisationBuilder(caseData).build();
@@ -37,6 +39,7 @@ public class StandardDirectionOrderIssuedEmailContentProvider extends StandardDi
         allocatedJudgeTemplate.setLeadRespondentsName(commonSDOParameters.get("leadRespondentsName").toString());
         allocatedJudgeTemplate.setHearingDate(commonSDOParameters.get("hearingDate").toString());
         allocatedJudgeTemplate.setCaseUrl(commonSDOParameters.get("caseUrl").toString());
+        allocatedJudgeTemplate.setCallout(buildCallout(caseData));
         allocatedJudgeTemplate.setJudgeTitle(caseData.getStandardDirectionOrder()
             .getJudgeAndLegalAdvisor()
             .getJudgeOrMagistrateTitle());

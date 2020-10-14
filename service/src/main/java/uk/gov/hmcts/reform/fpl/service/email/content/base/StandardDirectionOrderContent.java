@@ -8,6 +8,7 @@ import java.time.format.FormatStyle;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang.StringUtils.capitalize;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
 
 public abstract class StandardDirectionOrderContent extends AbstractEmailContentProvider {
 
@@ -22,6 +23,7 @@ public abstract class StandardDirectionOrderContent extends AbstractEmailContent
                 .getLastName()))
             .put("hearingDate", getHearingBooking(caseData))
             .put("reference", String.valueOf(caseData.getId()))
+            .put("callout", buildCallout(caseData))
             .put("caseUrl", getCaseUrl(caseData.getId()));
     }
 
@@ -29,5 +31,12 @@ public abstract class StandardDirectionOrderContent extends AbstractEmailContent
         return data.getFirstHearing()
             .map(hearing -> formatLocalDateToString(hearing.getStartDate().toLocalDate(), FormatStyle.LONG))
             .orElse("");
+    }
+
+
+    private String buildCallout(final CaseData caseData) {
+        return "^" + buildSubjectLineWithHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
+            caseData.getRespondents1(),
+            caseData.getFirstHearing().orElse(null));
     }
 }

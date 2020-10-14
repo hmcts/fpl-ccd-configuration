@@ -233,6 +233,18 @@ class FeatureToggleServiceTest {
             eq(false));
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForIsSendNoticeOfProceedingsFromSdo(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isSendNoticeOfProceedingsFromSdo()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("send-notice-of-proceedings-from-sdo"),
+            ldUser(ENVIRONMENT).build(),
+            eq(false));
+    }
+
     private static Stream<Arguments> userAttributesTestSource() {
         return Stream.of(
             Arguments.of(

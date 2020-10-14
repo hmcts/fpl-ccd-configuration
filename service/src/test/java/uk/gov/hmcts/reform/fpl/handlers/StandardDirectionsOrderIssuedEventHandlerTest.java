@@ -25,10 +25,14 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CAFCASS;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_JUDGE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.SDO;
@@ -68,7 +72,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
     private StandardDirectionsOrderIssuedEventHandler standardDirectionsOrderIssuedEventHandler;
 
     @Test
-    void shouldNotifyCafcassOfIssuedStandardDirectionsOrder() {
+    void shouldNotifyCafcassOfIssuedStandardDirectionsOrdersWhenNoticeOfProceedingsIsDisabled() {
         final Map<String, Object> expectedParameters = getStandardDirectionTemplateParameters();
 
         CaseData caseData = caseData();
@@ -79,6 +83,9 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
         given(cafcassEmailContentProviderSDOIssued.buildCafcassStandardDirectionOrderIssuedNotification(caseData))
             .willReturn(expectedParameters);
 
+        given(featureToggleService.isSendNoticeOfProceedingsFromSdo())
+            .willReturn(false);
+
         standardDirectionsOrderIssuedEventHandler.notifyCafcassOfIssuedStandardDirectionsOrder(
             new StandardDirectionsOrderIssuedEvent(caseData));
 
@@ -87,10 +94,47 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
             CAFCASS_EMAIL_ADDRESS,
             expectedParameters,
             "12345");
+
+        verify(notificationService, never()).sendEmail(
+            SDO_AND_NOP_ISSUED_CAFCASS,
+            CAFCASS_EMAIL_ADDRESS,
+            expectedParameters,
+            "12345");
     }
 
     @Test
-    void shouldNotifyLocalAuthorityOfIssuedStandardDirectionsOrder() {
+    void shouldNotifyCafcassOfIssuedStandardDirectionsOrderAndNoticeOfProceedingsWhenNoticeOfProceedingsIsEnabled() {
+        final Map<String, Object> expectedParameters = getStandardDirectionTemplateParameters();
+
+        CaseData caseData = caseData();
+
+        given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
+            .willReturn(new CafcassLookupConfiguration.Cafcass(CAFCASS_NAME, CAFCASS_EMAIL_ADDRESS));
+
+        given(cafcassEmailContentProviderSDOIssued.buildCafcassStandardDirectionOrderIssuedNotification(caseData))
+            .willReturn(expectedParameters);
+
+        given(featureToggleService.isSendNoticeOfProceedingsFromSdo())
+            .willReturn(true);
+
+        standardDirectionsOrderIssuedEventHandler.notifyCafcassOfIssuedStandardDirectionsOrder(
+            new StandardDirectionsOrderIssuedEvent(caseData));
+
+        verify(notificationService).sendEmail(
+            SDO_AND_NOP_ISSUED_CAFCASS,
+            CAFCASS_EMAIL_ADDRESS,
+            expectedParameters,
+            "12345");
+
+        verify(notificationService, never()).sendEmail(
+            STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE,
+            CAFCASS_EMAIL_ADDRESS,
+            expectedParameters,
+            "12345");
+    }
+
+    @Test
+    void shouldNotifyLocalAuthorityOfIssuedStandardDirectionsOrderWhenNoticeOfProceedingsIsDisabled() {
         final Map<String, Object> expectedParameters = getStandardDirectionTemplateParameters();
         CaseData caseData = caseData();
         given(localAuthorityEmailContentProvider.buildLocalAuthorityStandardDirectionOrderIssuedNotification(caseData))
@@ -99,10 +143,48 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
         given(inboxLookupService.getRecipients(caseData))
             .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
+        given(featureToggleService.isSendNoticeOfProceedingsFromSdo())
+            .willReturn(false);
+
         standardDirectionsOrderIssuedEventHandler.notifyLocalAuthorityOfIssuedStandardDirectionsOrder(
             new StandardDirectionsOrderIssuedEvent(caseData));
 
         verify(notificationService).sendEmail(
+            STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE,
+            Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            expectedParameters,
+            "12345");
+
+        verify(notificationService, never()).sendEmail(
+            SDO_AND_NOP_ISSUED_LA,
+            Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            expectedParameters,
+            "12345");
+    }
+
+    @Test
+    void shouldNotifyLocalAuthorityOfIssuedStandardDirectionsOrderWhenNoticeOfProceedingsIsEnabled() {
+        final Map<String, Object> expectedParameters = getStandardDirectionTemplateParameters();
+        CaseData caseData = caseData();
+        given(localAuthorityEmailContentProvider.buildLocalAuthorityStandardDirectionOrderIssuedNotification(caseData))
+            .willReturn(expectedParameters);
+
+        given(inboxLookupService.getRecipients(caseData))
+            .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
+
+        given(featureToggleService.isSendNoticeOfProceedingsFromSdo())
+            .willReturn(true);
+
+        standardDirectionsOrderIssuedEventHandler.notifyLocalAuthorityOfIssuedStandardDirectionsOrder(
+            new StandardDirectionsOrderIssuedEvent(caseData));
+
+        verify(notificationService).sendEmail(
+            SDO_AND_NOP_ISSUED_LA,
+            Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            expectedParameters,
+            "12345");
+
+        verify(notificationService, never()).sendEmail(
             STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE,
             Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             expectedParameters,
@@ -120,10 +202,43 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
         given(standardDirectionOrderIssuedEmailContentProvider.buildNotificationParametersForAllocatedJudge(caseData))
             .willReturn(expectedParameters);
 
+        given(featureToggleService.isSendNoticeOfProceedingsFromSdo())
+            .willReturn(false);
+
         standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(
             new StandardDirectionsOrderIssuedEvent(caseData));
 
         verify(notificationService).sendEmail(
+            STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE, ALLOCATED_JUDGE_EMAIL_ADDRESS, expectedParameters,
+            "12345");
+
+        verify(notificationService, never()).sendEmail(
+            SDO_AND_NOP_ISSUED_JUDGE, ALLOCATED_JUDGE_EMAIL_ADDRESS, expectedParameters,
+            "12345");
+    }
+
+    @Test
+    void shouldNotifyAllocatedJudgeOfIssuedStandardDirectionsOrderAndNoticeOfProceedingsWhenNotificationEnabled() {
+        final AllocatedJudgeTemplateForSDO expectedParameters = getAllocatedJudgeSDOTemplateParameters();
+
+        final CaseData caseData = caseData();
+
+        given(featureToggleService.isAllocatedJudgeNotificationEnabled(SDO)).willReturn(true);
+
+        given(standardDirectionOrderIssuedEmailContentProvider.buildNotificationParametersForAllocatedJudge(caseData))
+            .willReturn(expectedParameters);
+
+        given(featureToggleService.isSendNoticeOfProceedingsFromSdo())
+            .willReturn(true);
+
+        standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(
+            new StandardDirectionsOrderIssuedEvent(caseData));
+
+        verify(notificationService).sendEmail(
+            SDO_AND_NOP_ISSUED_JUDGE, ALLOCATED_JUDGE_EMAIL_ADDRESS, expectedParameters,
+            "12345");
+
+        verify(notificationService, never()).sendEmail(
             STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE, ALLOCATED_JUDGE_EMAIL_ADDRESS, expectedParameters,
             "12345");
     }

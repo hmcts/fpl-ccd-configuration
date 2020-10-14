@@ -73,6 +73,10 @@ public class FeatureToggleService {
             createLDUser(Map.of("localAuthorityName", LDValue.of(localAuthorityName))), false);
     }
 
+    public boolean isSendNoticeOfProceedingsFromSdo() {
+        return ldClient.boolVariation("send-notice-of-proceedings-from-sdo", createLDUser(), false);
+    }
+
     public boolean isSendGridEnabled() {
         return ldClient.boolVariation("send-grid", createLDUser(), false);
     }
