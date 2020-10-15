@@ -30,7 +30,7 @@ public class NoticeOfHearingEmailContentProvider extends AbstractEmailContentPro
     public NoticeOfHearingTemplate buildNewNoticeOfHearingNotification(
         CaseData caseData,
         HearingBooking hearingBooking,
-        RepresentativeServingPreferences representativeServingPreferences) {
+        RepresentativeServingPreferences servingPreference) {
         HearingVenue venue = hearingVenueLookUpService.getHearingVenue(hearingBooking);
 
         return NoticeOfHearingTemplate.builder()
@@ -39,12 +39,11 @@ public class NoticeOfHearingEmailContentProvider extends AbstractEmailContentPro
             .hearingVenue(hearingVenueLookUpService.buildHearingVenue(venue))
             .hearingTime(caseDataExtractionService.getHearingTime(hearingBooking))
             .preHearingTime(caseDataExtractionService.extractPrehearingAttendance(hearingBooking))
-            .caseUrl(getCaseUrl(caseData.getId()))
             .documentLink(linkToAttachedDocument(hearingBooking.getNoticeOfHearing()))
             .familyManCaseNumber(defaultIfNull(caseData.getFamilyManCaseNumber(), ""))
             .respondentLastName(getFirstRespondentLastName(caseData.getRespondents1()))
-            .digitalPreference(representativeServingPreferences == DIGITAL_SERVICE ? "Yes" : "No")
-            .caseUrl(representativeServingPreferences == DIGITAL_SERVICE ? getCaseUrl(caseData.getId()) : "")
+            .digitalPreference(servingPreference == DIGITAL_SERVICE ? "Yes" : "No")
+            .caseUrl(servingPreference == DIGITAL_SERVICE ? getCaseUrl(caseData.getId(), "HearingTab") : "")
             .build();
     }
 
