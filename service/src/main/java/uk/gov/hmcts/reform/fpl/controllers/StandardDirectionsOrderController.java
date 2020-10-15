@@ -261,7 +261,7 @@ public class StandardDirectionsOrderController extends CallbackController {
             "noticeOfProceedings"
         );
 
-        if (isOrderSealed(order)) {
+        if (order.isSealed()) {
             data.put("state", State.CASE_MANAGEMENT);
             removeTemporaryFields(caseDetails, "sdoRouter");
 
@@ -333,9 +333,5 @@ public class StandardDirectionsOrderController extends CallbackController {
         List<Element<Direction>> standardDirections = standardDirectionsService.getDirections(firstHearing);
 
         prepareDirectionsForDataStoreService.persistHiddenDirectionValues(standardDirections, directions);
-    }
-
-    private boolean isOrderSealed(StandardDirectionOrder order) {
-        return SEALED.equals(order.getOrderStatus());
     }
 }

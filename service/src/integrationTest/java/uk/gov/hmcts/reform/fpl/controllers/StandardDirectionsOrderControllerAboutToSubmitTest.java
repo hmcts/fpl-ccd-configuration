@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -12,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
@@ -22,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
@@ -62,6 +65,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_PARTIES;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
@@ -82,6 +86,9 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
     private static final String DIRECTION_TYPE = "Identify alternative carers";
     private static final String DIRECTION_TEXT = "Contact the parents to make sure there is a complete family tree "
         + "showing family members who could be alternative carers.";
+    private static final String LA_NAME = "example";
+    private static final String COURT_NAME = "Family Court";
+    private static final String COURT_CODE = "11";
 
     @MockBean
     private DocmosisDocumentGeneratorService docmosisService;
@@ -96,6 +103,9 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
     private DocumentSealingService sealingService;
 
     @MockBean
+    private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+
+    @Autowired
     private NoticeOfProceedingsTemplateDataGenerationService noticeOfProceedingsTemplateDataGenerationService;
 
     @Captor
@@ -108,19 +118,19 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
     @BeforeEach
     void setup() {
         DocmosisDocument docmosisDocument = new DocmosisDocument(SEALED_ORDER_FILE_NAME, PDF);
-        DocmosisNoticeOfProceeding templateData = DocmosisNoticeOfProceeding.builder().build();
 
         given(docmosisService.generateDocmosisDocument(any(DocmosisData.class), any())).willReturn(docmosisDocument);
         given(uploadDocumentService.uploadPDF(eq(PDF), filename.capture())).willReturn(DOCUMENT);
 
-        given(noticeOfProceedingsTemplateDataGenerationService.getTemplateData(any()))
-            .willReturn(templateData);
-
-        given(docmosisService.generateDocmosisDocument(templateData, C6))
+        given(docmosisService.generateDocmosisDocument(any(DocmosisNoticeOfProceeding.class), eq(C6)))
             .willReturn(docmosisDocument);
 
         given(uploadDocumentService.uploadPDF(PDF, C6.getDocumentTitle()))
             .willReturn(DOCUMENT);
+
+        given(hmctsCourtLookupConfiguration.getCourt(LA_NAME))
+            .willReturn(new HmctsCourtLookupConfiguration.Court(COURT_NAME, "hmcts-non-admin@test.com",
+                COURT_CODE));
     }
 
     @Test
@@ -286,13 +296,15 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
             .put("standardDirectionOrder", StandardDirectionOrder.builder().orderStatus(SEALED).build())
             .putAll(buildJudgeAndLegalAdvisorDetails())
             .put(HEARING_DETAILS_KEY, wrapElements(HearingBooking.builder()
-                .startDate(HEARING_START_DATE)
-                .endDate(HEARING_END_DATE)
+                .startDate(LocalDateTime.now())
+                .endDate(LocalDateTime.now().plusDays(1))
                 .venue("EXAMPLE")
                 .build()))
-            .put("caseLocalAuthority", "example")
+            .put("caseLocalAuthority", LA_NAME)
             .put("dateSubmitted", dateNow())
             .put("applicants", getApplicant())
+            .put("familyManCaseNumber", "1234")
+            .put("orders", Orders.builder().orderType(List.of(CARE_ORDER)).build())
             .put("sdoRouter", SDORoute.SERVICE);
 
         return CaseDetails.builder()
@@ -304,14 +316,17 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
         ImmutableMap.Builder<String, Object> data = ImmutableMap.<String, Object>builder()
             .putAll(buildJudgeAndLegalAdvisorDetails())
             .put(HEARING_DETAILS_KEY, wrapElements(HearingBooking.builder()
-                .startDate(HEARING_START_DATE)
-                .endDate(HEARING_END_DATE)
+                .startDate(LocalDateTime.now())
+                .endDate(LocalDateTime.now().plusDays(1))
                 .venue("EXAMPLE")
                 .build()))
             .put("standardDirectionOrder", StandardDirectionOrder.builder()
                 .orderStatus(status)
                 .orderDoc(document)
                 .build())
+            .put("caseLocalAuthority", LA_NAME)
+            .put("familyManCaseNumber", "1234")
+            .put("orders", Orders.builder().orderType(List.of(CARE_ORDER)).build())
             .put("noticeOfProceedings", buildNoticeOfProceedings())
             .put("sdoRouter", SDORoute.UPLOAD);
 
@@ -407,7 +422,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
             .directionRemovable("Yes")
             .directionNeeded("Yes")
             .readOnly("Yes")
-            .dateToBeCompletedBy(HEARING_START_DATE.toLocalDate().atStartOfDay())
+            .dateToBeCompletedBy(LocalDateTime.now().toLocalDate().atStartOfDay())
             .build();
     }
 
