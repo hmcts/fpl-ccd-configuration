@@ -57,7 +57,7 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
         allocatedJudgeTemplate.setFamilyManCaseNumber("12345,");
         allocatedJudgeTemplate.setLeadRespondentsName("Smith");
         allocatedJudgeTemplate.setHearingDate("1 January 2020");
-        allocatedJudgeTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
+        allocatedJudgeTemplate.setCaseUrl(caseUrl(CASE_REFERENCE, "OrdersTab"));
         allocatedJudgeTemplate.setJudgeTitle("Her Honour Judge");
         allocatedJudgeTemplate.setJudgeName("Byrne");
 
@@ -74,7 +74,7 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
         ctscTemplateForSDO.setCourtName(COURT_NAME);
         ctscTemplateForSDO.setCallout("^Smith, 12345, hearing 1 Jan 2020");
         ctscTemplateForSDO.setRespondentLastName("Smith");
-        ctscTemplateForSDO.setCaseUrl(caseUrl(CASE_REFERENCE));
+        ctscTemplateForSDO.setCaseUrl(caseUrl(CASE_REFERENCE, "OrdersTab"));
 
         return ctscTemplateForSDO;
     }
@@ -89,7 +89,7 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
         ctscTemplateForSDO.setCourtName(COURT_NAME);
         ctscTemplateForSDO.setCallout("^Smith, 12345L, hearing 1 Jan 2020");
         ctscTemplateForSDO.setRespondentLastName("Smith");
-        ctscTemplateForSDO.setCaseUrl(caseUrl(CASE_REFERENCE));
+        ctscTemplateForSDO.setCaseUrl(caseUrl(CASE_REFERENCE, "OrdersTab"));
 
         return ctscTemplateForSDO;
     }
