@@ -43,10 +43,10 @@ public class StandardDirectionsOrderIssuedEventHandler {
     private final StandardDirectionOrderIssuedEmailContentProvider standardDirectionOrderIssuedEmailContentProvider;
     private final FeatureToggleService featureToggleService;
 
-    // TODO - ticket number
+    // TODO - add ticket number
     // Needs refactored to use NotifyObject rather than Map<String, Object>
     @EventListener
-    public void notifyCafcassOfIssuedStandardDirectionsOrder(StandardDirectionsOrderIssuedEvent event) {
+    public void notifyCafcassOfIssuedSDOAndNoticeOfProceedings(StandardDirectionsOrderIssuedEvent event) {
         String notifyTemplate = STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
 
         if (featureToggleService.isSendNoticeOfProceedingsFromSdo()) {
@@ -61,10 +61,10 @@ public class StandardDirectionsOrderIssuedEventHandler {
         notificationService.sendEmail(notifyTemplate, email, parameters, caseData.getId().toString());
     }
 
-    // TODO - ticket number
+    // TODO - add ticket number
     // Needs refactored to use NotifyObject rather than Map<String, Object>
     @EventListener
-    public void notifyLocalAuthorityOfIssuedStandardDirectionsOrder(StandardDirectionsOrderIssuedEvent event) {
+    public void notifyLocalAuthorityOfIssuedSDOAndNoticeOfProceedings(StandardDirectionsOrderIssuedEvent event) {
         String notifyTemplate = STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
 
         if (featureToggleService.isSendNoticeOfProceedingsFromSdo()) {
@@ -80,7 +80,7 @@ public class StandardDirectionsOrderIssuedEventHandler {
     }
 
     @EventListener
-    public void notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(StandardDirectionsOrderIssuedEvent event) {
+    public void notifyAllocatedJudgeOfIssuedSDOandNoticeOfProceedings(StandardDirectionsOrderIssuedEvent event) {
         String notifyTemplate = STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE;
 
         if (featureToggleService.isSendNoticeOfProceedingsFromSdo()) {
@@ -101,7 +101,7 @@ public class StandardDirectionsOrderIssuedEventHandler {
     }
 
     @EventListener
-    public void notifyCTSCOfIssuedStandardDirectionsOrder(StandardDirectionsOrderIssuedEvent event) {
+    public void notifyCTSCOfIssuedSDOandNoticeOfProceedings(StandardDirectionsOrderIssuedEvent event) {
         String notifyTemplate = STANDARD_DIRECTION_ORDER_ISSUED_CTSC_TEMPLATE;
 
         if (featureToggleService.isSendNoticeOfProceedingsFromSdo()) {

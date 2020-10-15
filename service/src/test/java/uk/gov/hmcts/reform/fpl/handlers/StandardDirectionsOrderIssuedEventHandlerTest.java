@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForSDO;
+import uk.gov.hmcts.reform.fpl.model.notify.sdo.CTSCTemplateForSDO;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
@@ -31,14 +32,17 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CAFCASS;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_JUDGE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_LA;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_CTSC_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.SDO;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.ALLOCATED_JUDGE_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_NAME;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
@@ -72,7 +76,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
     private StandardDirectionsOrderIssuedEventHandler standardDirectionsOrderIssuedEventHandler;
 
     @Test
-    void shouldNotifyCafcassOfIssuedStandardDirectionsOrdersWhenNoticeOfProceedingsIsDisabled() {
+    void shouldNotifyCafcassOfIssuedSDOWhenNoticeOfProceedingsIsDisabled() {
         final Map<String, Object> expectedParameters = getStandardDirectionTemplateParameters();
 
         CaseData caseData = caseData();
@@ -86,7 +90,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
         given(featureToggleService.isSendNoticeOfProceedingsFromSdo())
             .willReturn(false);
 
-        standardDirectionsOrderIssuedEventHandler.notifyCafcassOfIssuedStandardDirectionsOrder(
+        standardDirectionsOrderIssuedEventHandler.notifyCafcassOfIssuedSDOAndNoticeOfProceedings(
             new StandardDirectionsOrderIssuedEvent(caseData));
 
         verify(notificationService).sendEmail(
@@ -103,7 +107,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyCafcassOfIssuedStandardDirectionsOrderAndNoticeOfProceedingsWhenNoticeOfProceedingsIsEnabled() {
+    void shouldNotifyCafcassOfIssuedSDOAndNoticeOfProceedingsWhenSendNoticeOfProceedingsIsEnabled() {
         final Map<String, Object> expectedParameters = getStandardDirectionTemplateParameters();
 
         CaseData caseData = caseData();
@@ -117,7 +121,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
         given(featureToggleService.isSendNoticeOfProceedingsFromSdo())
             .willReturn(true);
 
-        standardDirectionsOrderIssuedEventHandler.notifyCafcassOfIssuedStandardDirectionsOrder(
+        standardDirectionsOrderIssuedEventHandler.notifyCafcassOfIssuedSDOAndNoticeOfProceedings(
             new StandardDirectionsOrderIssuedEvent(caseData));
 
         verify(notificationService).sendEmail(
@@ -134,7 +138,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyLocalAuthorityOfIssuedStandardDirectionsOrderWhenNoticeOfProceedingsIsDisabled() {
+    void shouldNotifyLocalAuthorityOfIssuedSDOWhenSendNoticeOfProceedingsIsDisabled() {
         final Map<String, Object> expectedParameters = getStandardDirectionTemplateParameters();
         CaseData caseData = caseData();
         given(localAuthorityEmailContentProvider.buildLocalAuthorityStandardDirectionOrderIssuedNotification(caseData))
@@ -146,7 +150,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
         given(featureToggleService.isSendNoticeOfProceedingsFromSdo())
             .willReturn(false);
 
-        standardDirectionsOrderIssuedEventHandler.notifyLocalAuthorityOfIssuedStandardDirectionsOrder(
+        standardDirectionsOrderIssuedEventHandler.notifyLocalAuthorityOfIssuedSDOAndNoticeOfProceedings(
             new StandardDirectionsOrderIssuedEvent(caseData));
 
         verify(notificationService).sendEmail(
@@ -163,7 +167,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyLocalAuthorityOfIssuedStandardDirectionsOrderWhenNoticeOfProceedingsIsEnabled() {
+    void shouldNotifyLocalAuthorityOfSDOAndNoticeOfProceedingsWhenSendNoticeOfProceedingsIsEnabled() {
         final Map<String, Object> expectedParameters = getStandardDirectionTemplateParameters();
         CaseData caseData = caseData();
         given(localAuthorityEmailContentProvider.buildLocalAuthorityStandardDirectionOrderIssuedNotification(caseData))
@@ -175,7 +179,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
         given(featureToggleService.isSendNoticeOfProceedingsFromSdo())
             .willReturn(true);
 
-        standardDirectionsOrderIssuedEventHandler.notifyLocalAuthorityOfIssuedStandardDirectionsOrder(
+        standardDirectionsOrderIssuedEventHandler.notifyLocalAuthorityOfIssuedSDOAndNoticeOfProceedings(
             new StandardDirectionsOrderIssuedEvent(caseData));
 
         verify(notificationService).sendEmail(
@@ -192,7 +196,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyAllocatedJudgeOfIssuedStandardDirectionsOrderWhenNotificationEnabled() {
+    void shouldNotifyAllocatedJudgeOfIssuedSDOWhenNotificationEnabled() {
         final AllocatedJudgeTemplateForSDO expectedParameters = getAllocatedJudgeSDOTemplateParameters();
 
         final CaseData caseData = caseData();
@@ -205,7 +209,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
         given(featureToggleService.isSendNoticeOfProceedingsFromSdo())
             .willReturn(false);
 
-        standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(
+        standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedSDOandNoticeOfProceedings(
             new StandardDirectionsOrderIssuedEvent(caseData));
 
         verify(notificationService).sendEmail(
@@ -218,7 +222,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyAllocatedJudgeOfIssuedStandardDirectionsOrderAndNoticeOfProceedingsWhenNotificationEnabled() {
+    void shouldNotifyAllocatedJudgeOfIssuedSDOAndNoticeOfProceedingsWhenNotificationEnabled() {
         final AllocatedJudgeTemplateForSDO expectedParameters = getAllocatedJudgeSDOTemplateParameters();
 
         final CaseData caseData = caseData();
@@ -231,7 +235,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
         given(featureToggleService.isSendNoticeOfProceedingsFromSdo())
             .willReturn(true);
 
-        standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(
+        standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedSDOandNoticeOfProceedings(
             new StandardDirectionsOrderIssuedEvent(caseData));
 
         verify(notificationService).sendEmail(
@@ -244,7 +248,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
     }
 
     @Test
-    void shouldNotNotifyAllocatedJudgeOfIssuedStandardDirectionsOrderWhenNotificationDisabled() {
+    void shouldNotNotifyAllocatedJudgeOfIssuedSDOWhenNotificationDisabled() {
         final AllocatedJudgeTemplateForSDO expectedParameters = getAllocatedJudgeSDOTemplateParameters();
         final CaseData caseData = caseData();
 
@@ -253,14 +257,14 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
         given(standardDirectionOrderIssuedEmailContentProvider.buildNotificationParametersForAllocatedJudge(caseData))
             .willReturn(expectedParameters);
 
-        standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(
+        standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedSDOandNoticeOfProceedings(
             new StandardDirectionsOrderIssuedEvent(caseData));
 
         verifyNoInteractions(notificationService);
     }
 
     @Test
-    void shouldNotNotifyAllocatedJudgeOfIssuedStandardDirectionsOrderWhenJudgeNotAllocated() {
+    void shouldNotNotifyAllocatedJudgeOfIssuedSDOWhenJudgeNotAllocated() {
         final AllocatedJudgeTemplateForSDO expectedParameters = getAllocatedJudgeSDOTemplateParameters();
 
         final CaseData caseData = CaseData.builder()
@@ -273,10 +277,56 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
         given(standardDirectionOrderIssuedEmailContentProvider.buildNotificationParametersForAllocatedJudge(caseData))
             .willReturn(expectedParameters);
 
-        standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(
+        standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedSDOandNoticeOfProceedings(
             new StandardDirectionsOrderIssuedEvent(caseData));
 
         verifyNoInteractions(notificationService);
+    }
+
+    @Test
+    void shouldNotifyCTSCOfIssuedSDOWhenSendNoticeOfProceedingsIsToggledOff() {
+        final CaseData caseData = caseData();
+        CTSCTemplateForSDO templateForSDO = getCTSCTemplateForSDO();
+
+        given(featureToggleService.isSendNoticeOfProceedingsFromSdo())
+            .willReturn(false);
+
+        given(standardDirectionOrderIssuedEmailContentProvider.buildNotificationParametersForCTSC(caseData))
+            .willReturn(templateForSDO);
+
+        standardDirectionsOrderIssuedEventHandler.notifyCTSCOfIssuedSDOandNoticeOfProceedings(
+            new StandardDirectionsOrderIssuedEvent(caseData));
+
+        verify(notificationService).sendEmail(
+            STANDARD_DIRECTION_ORDER_ISSUED_CTSC_TEMPLATE, CTSC_INBOX, templateForSDO,
+            "12345");
+
+        verify(notificationService, never()).sendEmail(
+            SDO_AND_NOP_ISSUED_CTSC, CTSC_INBOX, templateForSDO,
+            "12345");
+    }
+
+    @Test
+    void shouldNotifyCTSCOfIssuedSDOAndNoticeOfProceedingsWhenSendNoticeOfProceedingsIsToggledOff() {
+        final CaseData caseData = caseData();
+        CTSCTemplateForSDO templateForSDO = getCTSCTemplateForSDO();
+
+        given(featureToggleService.isSendNoticeOfProceedingsFromSdo())
+            .willReturn(true);
+
+        given(standardDirectionOrderIssuedEmailContentProvider.buildNotificationParametersForCTSC(caseData))
+            .willReturn(templateForSDO);
+
+        standardDirectionsOrderIssuedEventHandler.notifyCTSCOfIssuedSDOandNoticeOfProceedings(
+            new StandardDirectionsOrderIssuedEvent(caseData));
+
+        verify(notificationService).sendEmail(
+            SDO_AND_NOP_ISSUED_CTSC, CTSC_INBOX, templateForSDO,
+            "12345");
+
+        verify(notificationService, never()).sendEmail(
+            STANDARD_DIRECTION_ORDER_ISSUED_CTSC_TEMPLATE, CTSC_INBOX, templateForSDO,
+            "12345");
     }
 
     private Map<String, Object> getStandardDirectionTemplateParameters() {
@@ -299,5 +349,9 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
         allocatedJudgeTemplate.setJudgeName("Byrne");
 
         return allocatedJudgeTemplate;
+    }
+
+    private CTSCTemplateForSDO getCTSCTemplateForSDO() {
+        return new CTSCTemplateForSDO();
     }
 }
