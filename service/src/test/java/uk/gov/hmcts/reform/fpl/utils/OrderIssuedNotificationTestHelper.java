@@ -41,7 +41,7 @@ public class OrderIssuedNotificationTestHelper {
             "callout", withCallout ? callout : "",
             "courtName", EXAMPLE_COURT,
             "documentLink", jsonFileObject,
-            "caseUrl", formatCaseUrl("http://fake-url", 12345L),
+            "caseUrl", formatCaseUrl("http://fake-url", 12345L, "OrdersTab"),
             "respondentLastName", "Jones");
     }
 
@@ -65,7 +65,7 @@ public class OrderIssuedNotificationTestHelper {
         allocatedJudgeTemplate.setRespondentLastName("Jones");
         allocatedJudgeTemplate.setJudgeTitle("Deputy District Judge");
         allocatedJudgeTemplate.setJudgeName("Scott");
-        allocatedJudgeTemplate.setCaseUrl("http://fake-url/cases/case-details/12345");
+        allocatedJudgeTemplate.setCaseUrl(formatCaseUrl("http://fake-url", 12345L, "OrdersTab"));
 
         return allocatedJudgeTemplate;
     }
