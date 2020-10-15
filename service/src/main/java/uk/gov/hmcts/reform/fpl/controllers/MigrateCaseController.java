@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
 import java.util.List;
 import java.util.Map;
@@ -38,7 +39,10 @@ public class MigrateCaseController {
             data.put("hearingDetails", removeHearingLinkedToCmo(caseData.getHearingDetails(),
                 caseData.getSealedCMOs().get(1).getId()));
 
+
             data.put("sealedCMOs", removeCaseManagementOrder(caseData.getSealedCMOs()));
+
+            data.put("orderCollection", removeFinalOrder(caseData.getOrderCollection()));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -48,6 +52,13 @@ public class MigrateCaseController {
 
     private List<Element<CaseManagementOrder>> removeCaseManagementOrder(List<Element<CaseManagementOrder>> orders) {
         orders.remove(1);
+        return orders;
+    }
+
+    private List<Element<GeneratedOrder>> removeFinalOrder(List<Element<GeneratedOrder>> orders) {
+        if ("Final care order".equals(orders.get(7).getValue().getType())) {
+            orders.remove(7);
+        }
         return orders;
     }
 
