@@ -67,7 +67,7 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
     @Test
     void shouldReturnExpectedPbaPaymentNotTakenNotification() {
         Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
-            .put("caseUrl", caseUrl(CASE_REFERENCE))
+            .put("caseUrl", caseUrl(CASE_REFERENCE, "C2Tab"))
             .build();
 
         CaseData caseData = CaseData.builder()
@@ -92,7 +92,7 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
     private AllocatedJudgeTemplateForC2 getAllocatedJudgeParametersForC2() {
         AllocatedJudgeTemplateForC2 allocatedJudgeTemplateForC2 = new AllocatedJudgeTemplateForC2();
 
-        allocatedJudgeTemplateForC2.setCaseUrl("http://fake-url/cases/case-details/12345");
+        allocatedJudgeTemplateForC2.setCaseUrl("http://fake-url/cases/case-details/12345#C2Tab");
         allocatedJudgeTemplateForC2.setCallout(format("Smith, %s", CASE_REFERENCE));
         allocatedJudgeTemplateForC2.setJudgeTitle("Her Honour Judge");
         allocatedJudgeTemplateForC2.setJudgeName("Moley");
@@ -106,7 +106,7 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
 
         c2UploadedTemplate.setCallout(format("Smith, %s", CASE_REFERENCE));
         c2UploadedTemplate.setRespondentLastName("Smith");
-        c2UploadedTemplate.setCaseUrl("http://fake-url/cases/case-details/12345");
+        c2UploadedTemplate.setCaseUrl("http://fake-url/cases/case-details/12345#C2Tab");
         c2UploadedTemplate.setDocumentUrl("http://fake-url/documents/b28f859b-7521-4c84-9057-47e56afd773f/binary");
 
         return c2UploadedTemplate;

@@ -33,7 +33,7 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
         C2UploadedTemplate adminTemplateForC2 = new C2UploadedTemplate();
         adminTemplateForC2.setCallout(buildCallout(caseData));
         adminTemplateForC2.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
-        adminTemplateForC2.setCaseUrl(getCaseUrl(caseData.getId()));
+        adminTemplateForC2.setCaseUrl(getCaseUrl(caseData.getId(), "C2Tab"));
         adminTemplateForC2.setDocumentUrl(concatUrlAndMostRecentUploadedDocumentPath(xuiBaseUrl,
             latestC2.getBinaryUrl()));
 
@@ -43,7 +43,7 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
     public AllocatedJudgeTemplateForC2 buildC2UploadNotificationForAllocatedJudge(final CaseData caseData) {
 
         AllocatedJudgeTemplateForC2 allocatedJudgeTemplateForC2 = new AllocatedJudgeTemplateForC2();
-        allocatedJudgeTemplateForC2.setCaseUrl(getCaseUrl(caseData.getId()));
+        allocatedJudgeTemplateForC2.setCaseUrl(getCaseUrl(caseData.getId(), "C2Tab"));
         allocatedJudgeTemplateForC2.setCallout(buildCallout(caseData));
         allocatedJudgeTemplateForC2.setJudgeTitle(caseData.getAllocatedJudge().getJudgeOrMagistrateTitle());
         allocatedJudgeTemplateForC2.setJudgeName(caseData.getAllocatedJudge().getJudgeName());
@@ -67,6 +67,6 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
     }
 
     private Map<String, Object> buildCommonNotificationParameters(final CaseData caseData) {
-        return Map.of("caseUrl", getCaseUrl(caseData.getId()));
+        return Map.of("caseUrl", getCaseUrl(caseData.getId(), "C2Tab"));
     }
 }
