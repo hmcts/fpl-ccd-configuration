@@ -7,6 +7,8 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AllocatedJudgeContentProvider extends AbstractEmailContentProvider {
@@ -18,9 +20,7 @@ public class AllocatedJudgeContentProvider extends AbstractEmailContentProvider 
         allocatedJudgeTemplate.setJudgeName(caseData.getAllocatedJudge().getJudgeName());
         allocatedJudgeTemplate.setCaseName(caseData.getCaseName());
         allocatedJudgeTemplate.setCaseUrl(getCaseUrl(caseData.getId()));
-        allocatedJudgeTemplate.setFamilyManCaseNumber(
-            caseData.getFamilyManCaseNumber() != null ? caseData.getFamilyManCaseNumber() : ""
-        );
+        allocatedJudgeTemplate.setFamilyManCaseNumber(defaultIfNull(caseData.getFamilyManCaseNumber(), ""));
 
         return allocatedJudgeTemplate;
     }
