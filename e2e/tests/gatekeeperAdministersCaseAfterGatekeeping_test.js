@@ -158,8 +158,14 @@ Scenario('Gatekeeper submits final version of standard directions', async (I, ca
   await draftStandardDirectionsEventPage.useAllocatedJudge('Bob Ross');
   await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
   await draftStandardDirectionsEventPage.markAsFinal();
+  draftStandardDirectionsEventPage.checkC6();
+  draftStandardDirectionsEventPage.checkC6A();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.draftStandardDirections);
+
+  caseViewPage.selectTab(caseViewPage.tabs.hearings);
+  I.seeInTab(['Notice of proceedings 1', 'File name'], 'Notice_of_proceedings_c6.pdf');
+  I.seeInTab(['Notice of proceedings 2', 'File name'], 'Notice_of_proceedings_c6a.pdf');
 
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   I.seeInTab(['Gatekeeping order', 'File'], 'standard-directions-order.pdf');
