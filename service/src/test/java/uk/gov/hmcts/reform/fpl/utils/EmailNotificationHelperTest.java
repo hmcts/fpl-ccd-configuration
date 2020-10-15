@@ -215,7 +215,7 @@ class EmailNotificationHelperTest {
 
         assertThat(buildCallout(caseData)).isEqualTo(expectedContent);
     }
-    
+
     private static String buildHearingDateText(HearingBooking hearingBooking) {
         return " hearing " + formatLocalDateToString(hearingBooking
             .getStartDate().toLocalDate(), FormatStyle.MEDIUM);
