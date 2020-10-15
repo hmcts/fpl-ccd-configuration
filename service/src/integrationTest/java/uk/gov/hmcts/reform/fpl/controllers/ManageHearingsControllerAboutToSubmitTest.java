@@ -41,8 +41,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
 @OverrideAutoConfiguration(enabled = true)
 class ManageHearingsControllerAboutToSubmitTest extends AbstractControllerTest {
 
-    private static final String CASE_ID = "12345";
-
     @MockBean
     private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
 
@@ -71,6 +69,7 @@ class ManageHearingsControllerAboutToSubmitTest extends AbstractControllerTest {
 
         assertThat(unwrapElements(caseData.getHearingDetails())).containsExactly(newHearing);
         assertThat(caseData.getFirstHearingFlag()).isEqualTo("No");
+        assertThat(caseData.getSelectedHearingId()).isNotNull();
     }
 
     @Test
@@ -129,14 +128,8 @@ class ManageHearingsControllerAboutToSubmitTest extends AbstractControllerTest {
 
         HearingBooking expectedHearing = existingHearing.toBuilder().type(ISSUE_RESOLUTION).build();
         assertThat(unwrapElements(caseData.getHearingDetails())).containsExactly(expectedHearing);
+        assertThat(caseData.getSelectedHearingId()).isEqualTo(hearingElement.getId());
 
-    }
-
-    private List<Element<HearingBooking>> hearings() {
-        return List.of(
-            element(hearing(LocalDateTime.of(2099, 6, 25, 20, 20), "162")),
-            element(hearing(LocalDateTime.of(2020, 2, 2, 20, 20), "96"))
-        );
     }
 
     private HearingBooking hearing(LocalDateTime startDate, String venue) {
