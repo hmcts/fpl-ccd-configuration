@@ -42,6 +42,7 @@ public class NotifyTemplates {
     public static final String UPCOMING_HEARINGS_TEMPLATE = "c24308e9-cc0b-4548-8927-33c0a8a3cdb8";
     public static final String NOTICE_OF_PROCEEDINGS_ISSUED_JUDGE_TEMPLATE = "406ddb81-0b23-438c-ab5c-cfd45726419f";
     public static final String ALLOCATED_JUDGE_TEMPLATE = "ac2e2309-49cf-47ed-b1b0-7552d76bef85";
+    public static final String ALLOCATED_JUDGE_TEMPLATE_WITH_FM_ID = "f2dd8407-09df-4f62-81d6-ac15f1f2e63b";
     public static final String APPLICATION_RETURNED_TO_THE_LA = "2d8b5486-7527-42ea-9b56-e79bfc0f6c27";
     public static final String AMENDED_APPLICATION_RETURNED_ADMIN_TEMPLATE = "7d72d10b-155f-4a27-94ad-8e8be71d1265";
     public static final String AMENDED_APPLICATION_RETURNED_CAFCASS_TEMPLATE = "d2e44b62-436c-4bb6-b3b9-afa4f2bca7b5";
