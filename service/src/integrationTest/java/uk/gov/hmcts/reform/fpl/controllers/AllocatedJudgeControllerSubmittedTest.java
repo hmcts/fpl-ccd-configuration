@@ -10,7 +10,7 @@ import uk.gov.service.notify.NotificationClient;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ALLOCATED_JUDGE_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ALLOCATED_JUDGE_TEMPLATE_WITH_FM_ID;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @ActiveProfiles("integration-test")
@@ -32,7 +32,7 @@ public class AllocatedJudgeControllerSubmittedTest extends AbstractControllerTes
         postSubmittedEvent(callbackRequest());
 
         verify(notificationClient).sendEmail(
-            eq(ALLOCATED_JUDGE_TEMPLATE), eq(ALLOCATED_JUDGE_EMAIL),
+            eq(ALLOCATED_JUDGE_TEMPLATE_WITH_FM_ID), eq(ALLOCATED_JUDGE_EMAIL),
             anyMap(), eq(NOTIFICATION_REFERENCE));
     }
 }
