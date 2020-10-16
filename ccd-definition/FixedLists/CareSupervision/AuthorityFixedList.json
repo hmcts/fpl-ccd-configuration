@@ -156,6 +156,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "SOC",
+    "ListElement": "Somerset County Council",
+    "DisplayOrder": 71
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "SCC",
     "ListElement": "Southampton City Council",
     "DisplayOrder": 75
