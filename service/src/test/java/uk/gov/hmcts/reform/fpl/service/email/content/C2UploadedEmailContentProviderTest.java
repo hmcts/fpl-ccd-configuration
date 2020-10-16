@@ -38,7 +38,7 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
     private static final byte[] C2_DOCUMENT_BINARY = testDocumentBinaries();
     private static DocumentReference applicationDocument;
     private DocumentReference uploadedC2 = testDocumentReference();
-    private final String C2 = "C2Tab";
+    private static final String C2 = "C2Tab";
 
     @BeforeEach
     void init() {

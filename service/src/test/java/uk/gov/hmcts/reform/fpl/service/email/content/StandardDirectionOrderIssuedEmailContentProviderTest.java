@@ -25,7 +25,7 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
     @Autowired
     private StandardDirectionOrderIssuedEmailContentProvider standardDirectionOrderIssuedEmailContentProvider;
 
-    private final String ORDERS = "OrdersTab";
+    private static final String ORDERS = "OrdersTab";
 
     @Test
     void shouldReturnExpectedMapForJudgeWithValidSDODetails() {
