@@ -19,6 +19,7 @@ import uk.gov.service.notify.NotificationClientException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static java.lang.Long.parseLong;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -58,7 +59,7 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
     private static final String CAFCASS_EMAIL = "cafcass@cafcass.com";
     private static final String NOTIFICATION_REFERENCE = "localhost/" + parseLong(CASE_ID);
 
-    private List<Element<HearingBooking>> hearingWithoutNotice = wrapElements(HearingBooking.builder()
+    private Element<HearingBooking> hearingWithoutNotice = element(HearingBooking.builder()
         .type(CASE_MANAGEMENT)
         .startDate(LocalDateTime.of(2050, 5, 20, 13, 00))
         .noticeOfHearing(null)
@@ -84,7 +85,7 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
                 .jurisdiction(JURISDICTION)
                 .caseTypeId(CASE_TYPE)
                 .id(parseLong(CASE_ID))
-                .data(buildData(hearingWithoutNotice))
+                .data(buildData(List.of(hearingWithoutNotice), hearingWithoutNotice.getId()))
                 .state("Gatekeeping")
                 .build())
             .caseDetailsBefore(CaseDetails.builder().data(Map.of()).build())
@@ -110,7 +111,7 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
                 .jurisdiction(JURISDICTION)
                 .caseTypeId(CASE_TYPE)
                 .id(parseLong(CASE_ID))
-                .data(buildData(hearingWithoutNotice))
+                .data(buildData(List.of(hearingWithoutNotice), hearingWithoutNotice.getId()))
                 .state("Submitted")
                 .build())
             .caseDetailsBefore(CaseDetails.builder().data(Map.of()).build())
@@ -146,11 +147,11 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
                 .jurisdiction(JURISDICTION)
                 .caseTypeId(CASE_TYPE)
                 .id(parseLong(CASE_ID))
-                .data(buildData(List.of(hearingWithNotice, existingHearing)))
+                .data(buildData(List.of(hearingWithNotice, existingHearing), hearingWithNotice.getId()))
                 .state("Submitted")
                 .build())
             .caseDetailsBefore(CaseDetails.builder()
-                .data(buildData(List.of(existingHearing))).build())
+                .data(buildData(List.of(existingHearing), hearingWithoutNotice.getId())).build())
             .build();
 
         given(documentDownloadService.downloadDocument(anyString())).willReturn(DOCUMENT_CONTENT);
@@ -178,8 +179,9 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
             eq(NOTIFICATION_REFERENCE));
     }
 
-    private Map<String, Object> buildData(List<Element<HearingBooking>> hearings) {
+    private Map<String, Object> buildData(List<Element<HearingBooking>> hearings, UUID selectedHearing) {
         return Map.of("hearingDetails", hearings,
+            "selectedHearingId", selectedHearing,
             "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
             "representatives", createRepresentatives(RepresentativeServingPreferences.EMAIL),
             ALL_PARTIES.getValue(),
