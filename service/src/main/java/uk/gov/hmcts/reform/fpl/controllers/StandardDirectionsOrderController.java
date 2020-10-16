@@ -273,10 +273,7 @@ public class StandardDirectionsOrderController extends CallbackController {
                     = noticeOfProceedingsService.uploadAndPrepareNoticeOfProceedingBundle(caseData,
                     docmosisTemplateTypes);
 
-                caseDetails.getData().put("noticeOfProceedingsBundle",
-                    noticeOfProceedingsService.prepareNoticeOfProceedingBundle(newNoticeOfProceedings,
-                        noticeOfProceedingsService.getPreviousNoticeOfProceedings(caseDataBefore),
-                        docmosisTemplateTypes));
+                caseDetails.getData().put("noticeOfProceedingsBundle", newNoticeOfProceedings);
             }
         }
 
