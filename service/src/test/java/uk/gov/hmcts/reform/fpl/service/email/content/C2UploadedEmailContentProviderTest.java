@@ -38,7 +38,7 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
     private static final byte[] C2_DOCUMENT_BINARY = testDocumentBinaries();
     private static DocumentReference applicationDocument;
     private DocumentReference uploadedC2 = testDocumentReference();
-    private final String C2_TAB = "C2Tab";
+    private final String C2 = "C2Tab";
 
     @BeforeEach
     void init() {
@@ -67,7 +67,7 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
     @Test
     void shouldReturnExpectedPbaPaymentNotTakenNotification() {
         Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
-            .put("caseUrl", caseUrl(CASE_REFERENCE, C2_TAB))
+            .put("caseUrl", caseUrl(CASE_REFERENCE, C2))
             .build();
 
         CaseData caseData = CaseData.builder()
@@ -92,7 +92,7 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
     private AllocatedJudgeTemplateForC2 getAllocatedJudgeParametersForC2() {
         AllocatedJudgeTemplateForC2 allocatedJudgeTemplateForC2 = new AllocatedJudgeTemplateForC2();
 
-        allocatedJudgeTemplateForC2.setCaseUrl(caseUrl(CASE_REFERENCE, C2_TAB));
+        allocatedJudgeTemplateForC2.setCaseUrl(caseUrl(CASE_REFERENCE, C2));
         allocatedJudgeTemplateForC2.setCallout(format("Smith, %s", CASE_REFERENCE));
         allocatedJudgeTemplateForC2.setJudgeTitle("Her Honour Judge");
         allocatedJudgeTemplateForC2.setJudgeName("Moley");
@@ -106,7 +106,7 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
 
         c2UploadedTemplate.setCallout(format("Smith, %s", CASE_REFERENCE));
         c2UploadedTemplate.setRespondentLastName("Smith");
-        c2UploadedTemplate.setCaseUrl(caseUrl(CASE_REFERENCE, C2_TAB));
+        c2UploadedTemplate.setCaseUrl(caseUrl(CASE_REFERENCE, C2));
         c2UploadedTemplate.setDocumentUrl("http://fake-url/documents/b28f859b-7521-4c84-9057-47e56afd773f/binary");
 
         return c2UploadedTemplate;
