@@ -72,7 +72,7 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
         expectedTemplate.setRespondentLastName("lastName");
         expectedTemplate.setFamilyManCaseNumber("11");
         expectedTemplate.setDigitalPreference("Yes");
-        expectedTemplate.setCaseUrl("http://fake-url/cases/case-details/" + CASE_REFERENCE + "#OrdersTab");
+        expectedTemplate.setCaseUrl(caseUrl(CASE_REFERENCE, "OrdersTab"));
         expectedTemplate.setHearing("test hearing, 20th June");
         expectedTemplate.setDocumentLink(generateAttachedDocumentLink(TestDataHelper.DOCUMENT_CONTENT)
             .map(JSONObject::toMap)
