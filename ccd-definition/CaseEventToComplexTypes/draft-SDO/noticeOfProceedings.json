@@ -5,7 +5,7 @@
     "CaseEventID": "draftSDO",
     "CaseFieldID": "noticeOfProceedings",
     "ListElementCode": "proceedingTypes",
-    "EventElementLabel": "Which notice of hearings need to be sent with this order?",
+    "EventElementLabel": "Which notice of proceedings need to be sent with this order?",
     "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY"
   }

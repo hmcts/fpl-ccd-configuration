@@ -36,14 +36,13 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAll
 public class NoticeOfProceedingsService {
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
-    private final HearingBookingService hearingBookingService;
     private final NoticeOfProceedingsTemplateDataGenerationService noticeOfProceedingsTemplateDataGenerationService;
 
     public Map<String, Object> initNoticeOfProceeding(CaseData caseData) {
         Map<String, Object> listAndLabel = new HashMap<>();
 
-        hearingBookingService.getFirstHearing(caseData.getHearingDetails())
-            .ifPresent(hearingBooking -> listAndLabel.put("proceedingLabel", buildProceedingLabel(hearingBooking)));
+        caseData.getFirstHearing().ifPresent(hearingBooking -> listAndLabel.put("proceedingLabel",
+            buildProceedingLabel(hearingBooking)));
 
         if (caseData.allocatedJudgeExists()) {
             String assignedJudgeLabel = buildAllocatedJudgeLabel(caseData.getAllocatedJudge());
