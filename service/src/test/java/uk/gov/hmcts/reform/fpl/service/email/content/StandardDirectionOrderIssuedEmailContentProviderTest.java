@@ -25,6 +25,8 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
     @Autowired
     private StandardDirectionOrderIssuedEmailContentProvider standardDirectionOrderIssuedEmailContentProvider;
 
+    private final String ORDERS_TAB = "OrdersTab";
+
     @Test
     void shouldReturnExpectedMapForJudgeWithValidSDODetails() {
         AllocatedJudgeTemplateForSDO expectedMap = allocatedJudgeSDOTemplateParameters();
@@ -57,7 +59,7 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
         allocatedJudgeTemplate.setFamilyManCaseNumber("12345,");
         allocatedJudgeTemplate.setLeadRespondentsName("Smith");
         allocatedJudgeTemplate.setHearingDate("1 January 2020");
-        allocatedJudgeTemplate.setCaseUrl(caseUrl(CASE_REFERENCE, "OrdersTab"));
+        allocatedJudgeTemplate.setCaseUrl(caseUrl(CASE_REFERENCE, ORDERS_TAB));
         allocatedJudgeTemplate.setJudgeTitle("Her Honour Judge");
         allocatedJudgeTemplate.setJudgeName("Byrne");
 
@@ -74,7 +76,7 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
         ctscTemplateForSDO.setCourtName(COURT_NAME);
         ctscTemplateForSDO.setCallout("^Smith, 12345, hearing 1 Jan 2020");
         ctscTemplateForSDO.setRespondentLastName("Smith");
-        ctscTemplateForSDO.setCaseUrl(caseUrl(CASE_REFERENCE, "OrdersTab"));
+        ctscTemplateForSDO.setCaseUrl(caseUrl(CASE_REFERENCE, ORDERS_TAB));
 
         return ctscTemplateForSDO;
     }
@@ -89,7 +91,7 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
         ctscTemplateForSDO.setCourtName(COURT_NAME);
         ctscTemplateForSDO.setCallout("^Smith, 12345L, hearing 1 Jan 2020");
         ctscTemplateForSDO.setRespondentLastName("Smith");
-        ctscTemplateForSDO.setCaseUrl(caseUrl(CASE_REFERENCE, "OrdersTab"));
+        ctscTemplateForSDO.setCaseUrl(caseUrl(CASE_REFERENCE, ORDERS_TAB));
 
         return ctscTemplateForSDO;
     }
