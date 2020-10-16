@@ -43,7 +43,7 @@ public class StandardDirectionsOrderIssuedEventHandler {
     private final StandardDirectionOrderIssuedEmailContentProvider standardDirectionOrderIssuedEmailContentProvider;
     private final FeatureToggleService featureToggleService;
 
-    // TODO - add ticket number
+    // FPLA-1513
     // Needs refactored to use NotifyObject rather than Map<String, Object>
     @EventListener
     public void notifyCafcassOfIssuedSDOAndNoticeOfProceedings(StandardDirectionsOrderIssuedEvent event) {
@@ -61,7 +61,7 @@ public class StandardDirectionsOrderIssuedEventHandler {
         notificationService.sendEmail(notifyTemplate, email, parameters, caseData.getId().toString());
     }
 
-    // TODO - add ticket number
+    // FPLA-1513
     // Needs refactored to use NotifyObject rather than Map<String, Object>
     @EventListener
     public void notifyLocalAuthorityOfIssuedSDOAndNoticeOfProceedings(StandardDirectionsOrderIssuedEvent event) {
