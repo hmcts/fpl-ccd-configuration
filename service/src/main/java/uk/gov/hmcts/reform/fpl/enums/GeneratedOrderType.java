@@ -21,7 +21,11 @@ public enum GeneratedOrderType {
         type = type.replaceAll("(Final|Interim|\\(C21\\))", "").strip();
         type = type.toUpperCase();
         type = type.replace(" ", "_");
-        return GeneratedOrderType.valueOf(type);
+        try {
+            return GeneratedOrderType.valueOf(type);
+        } catch (IllegalArgumentException e) {
+            return UPLOAD;
+        }
     }
 
     @JsonIgnore
