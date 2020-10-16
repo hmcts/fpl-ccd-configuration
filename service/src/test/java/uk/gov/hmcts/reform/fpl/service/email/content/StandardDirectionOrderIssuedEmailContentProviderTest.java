@@ -69,9 +69,7 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
         CTSCTemplateForSDO ctscTemplateForSDO = new CTSCTemplateForSDO();
         ctscTemplateForSDO.setDocumentLink("http://fake-url/documents/be17a76e-38ed-4448-8b83-45de1aa93f55/binary");
         ctscTemplateForSDO.setHearingNeeds(List.of("Intermediary"));
-        ctscTemplateForSDO.setHearingNeedsDetails("Some details about what needs to be booked");
         ctscTemplateForSDO.setHearingNeedsPresent("Yes");
-        ctscTemplateForSDO.setShowDetailsLabel("Yes");
         ctscTemplateForSDO.setCourtName(COURT_NAME);
         ctscTemplateForSDO.setCallout("^Smith, 12345, hearing 1 Jan 2020");
         ctscTemplateForSDO.setRespondentLastName("Smith");
@@ -85,8 +83,6 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
         ctscTemplateForSDO.setDocumentLink("http://fake-url/documents/be17a76e-38ed-4448-8b83-45de1aa93f55/binary");
         ctscTemplateForSDO.setHearingNeedsPresent("No");
         ctscTemplateForSDO.setHearingNeeds(List.of());
-        ctscTemplateForSDO.setHearingNeedsDetails("");
-        ctscTemplateForSDO.setShowDetailsLabel("No");
         ctscTemplateForSDO.setCourtName(COURT_NAME);
         ctscTemplateForSDO.setCallout("^Smith, 12345L, hearing 1 Jan 2020");
         ctscTemplateForSDO.setRespondentLastName("Smith");
