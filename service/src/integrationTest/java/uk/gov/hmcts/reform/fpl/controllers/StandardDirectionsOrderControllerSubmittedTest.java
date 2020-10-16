@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.service.notify.NotificationClient;
@@ -30,6 +32,7 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_CTSC_TEMPLATE;
@@ -46,6 +49,7 @@ public class StandardDirectionsOrderControllerSubmittedTest extends AbstractCont
     private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
     private static final DocumentReference DOCUMENT_REFERENCE = TestDataHelper.testDocumentReference();
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
+    private static final byte[] APPLICATION_BINARY = TestDataHelper.DOCUMENT_CONTENT;
 
     @Mock
     private ApplicationEventPublisher applicationEventPublisher;
@@ -56,8 +60,17 @@ public class StandardDirectionsOrderControllerSubmittedTest extends AbstractCont
     @MockBean
     private CoreCaseDataService coreCaseDataService;
 
+    @MockBean
+    private DocumentDownloadService documentDownloadService;
+
     StandardDirectionsOrderControllerSubmittedTest() {
         super("draft-standard-directions");
+    }
+
+    @BeforeEach
+    void init() {
+        when(documentDownloadService.downloadDocument(any()))
+            .thenReturn(APPLICATION_BINARY);
     }
 
     @Test
