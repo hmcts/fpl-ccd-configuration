@@ -201,7 +201,6 @@ public class StandardDirectionsOrderController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = getCaseData(caseDetails);
-        CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
         List<String> errors = orderValidationService.validate(caseData);
         if (!errors.isEmpty()) {
