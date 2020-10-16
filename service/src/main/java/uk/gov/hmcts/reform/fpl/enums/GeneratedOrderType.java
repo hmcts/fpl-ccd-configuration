@@ -1,8 +1,11 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.EnumUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Optional;
 
 @Getter
 @RequiredArgsConstructor
@@ -21,11 +24,10 @@ public enum GeneratedOrderType {
         type = type.replaceAll("(Final|Interim|\\(C21\\))", "").strip();
         type = type.toUpperCase();
         type = type.replace(" ", "_");
-        try {
-            return GeneratedOrderType.valueOf(type);
-        } catch (IllegalArgumentException e) {
-            return UPLOAD;
-        }
+
+        return Optional.ofNullable(
+            EnumUtils.getEnum(GeneratedOrderType.class, type)
+        ).orElse(UPLOAD);
     }
 
     @JsonIgnore
