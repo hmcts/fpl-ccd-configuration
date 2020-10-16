@@ -81,7 +81,7 @@ public class NoticeOfProceedingsService {
 
         List<Document> documentReferences = uploadDocuments(noticeOfProceedingDocuments);
 
-        return createNoticeOfProceedingsCaseData(documentReferences);
+        return createNoticeOfProceedingDocumentBundle(documentReferences);
     }
 
     public List<Element<DocumentBundle>> prepareNoticeOfProceedingBundle(
@@ -117,7 +117,7 @@ public class NoticeOfProceedingsService {
             .collect(Collectors.toList());
     }
 
-    private List<Element<DocumentBundle>> createNoticeOfProceedingsCaseData(List<Document> uploadedDocuments) {
+    private List<Element<DocumentBundle>> createNoticeOfProceedingDocumentBundle(List<Document> uploadedDocuments) {
         return uploadedDocuments.stream()
             .map(document -> Element.<DocumentBundle>builder()
                 .id(UUID.randomUUID())

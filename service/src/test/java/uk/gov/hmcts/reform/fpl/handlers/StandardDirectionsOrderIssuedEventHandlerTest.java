@@ -213,11 +213,15 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
             new StandardDirectionsOrderIssuedEvent(caseData));
 
         verify(notificationService).sendEmail(
-            STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE, ALLOCATED_JUDGE_EMAIL_ADDRESS, expectedParameters,
+            STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE,
+            ALLOCATED_JUDGE_EMAIL_ADDRESS,
+            expectedParameters,
             "12345");
 
         verify(notificationService, never()).sendEmail(
-            SDO_AND_NOP_ISSUED_JUDGE, ALLOCATED_JUDGE_EMAIL_ADDRESS, expectedParameters,
+            SDO_AND_NOP_ISSUED_JUDGE,
+            ALLOCATED_JUDGE_EMAIL_ADDRESS,
+            expectedParameters,
             "12345");
     }
 
@@ -239,11 +243,15 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
             new StandardDirectionsOrderIssuedEvent(caseData));
 
         verify(notificationService).sendEmail(
-            SDO_AND_NOP_ISSUED_JUDGE, ALLOCATED_JUDGE_EMAIL_ADDRESS, expectedParameters,
+            SDO_AND_NOP_ISSUED_JUDGE,
+            ALLOCATED_JUDGE_EMAIL_ADDRESS,
+            expectedParameters,
             "12345");
 
         verify(notificationService, never()).sendEmail(
-            STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE, ALLOCATED_JUDGE_EMAIL_ADDRESS, expectedParameters,
+            STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE,
+            ALLOCATED_JUDGE_EMAIL_ADDRESS,
+            expectedParameters,
             "12345");
     }
 
@@ -298,11 +306,15 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
             new StandardDirectionsOrderIssuedEvent(caseData));
 
         verify(notificationService).sendEmail(
-            STANDARD_DIRECTION_ORDER_ISSUED_CTSC_TEMPLATE, CTSC_INBOX, templateForSDO,
+            STANDARD_DIRECTION_ORDER_ISSUED_CTSC_TEMPLATE,
+            CTSC_INBOX,
+            templateForSDO,
             "12345");
 
         verify(notificationService, never()).sendEmail(
-            SDO_AND_NOP_ISSUED_CTSC, CTSC_INBOX, templateForSDO,
+            SDO_AND_NOP_ISSUED_CTSC,
+            CTSC_INBOX,
+            templateForSDO,
             "12345");
     }
 
@@ -321,11 +333,15 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
             new StandardDirectionsOrderIssuedEvent(caseData));
 
         verify(notificationService).sendEmail(
-            SDO_AND_NOP_ISSUED_CTSC, CTSC_INBOX, templateForSDO,
+            SDO_AND_NOP_ISSUED_CTSC,
+            CTSC_INBOX,
+            templateForSDO,
             "12345");
 
         verify(notificationService, never()).sendEmail(
-            STANDARD_DIRECTION_ORDER_ISSUED_CTSC_TEMPLATE, CTSC_INBOX, templateForSDO,
+            STANDARD_DIRECTION_ORDER_ISSUED_CTSC_TEMPLATE,
+            CTSC_INBOX,
+            templateForSDO,
             "12345");
     }
 

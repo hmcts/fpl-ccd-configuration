@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
@@ -123,6 +124,8 @@ class NoticeOfProceedingsServiceTest {
 
     @Test
     void shouldSetNoticeOfProceedingJudgeToAllocatedJudgeWhenUseAllocatedJudgeHasBeenSelected() {
+        JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(HIS_HONOUR_JUDGE, JUDGE_SURNAME);
+
         CaseData caseData = CaseData.builder()
             .allocatedJudge(buildAllocatedJudge())
             .noticeOfProceedings(NoticeOfProceedings.builder()
@@ -135,14 +138,13 @@ class NoticeOfProceedingsServiceTest {
 
         NoticeOfProceedings noticeOfProceedings = noticeOfProceedingService.setNoticeOfProceedingJudge(caseData);
 
-        assertThat(noticeOfProceedings.getJudgeAndLegalAdvisor().getJudgeTitle()).isEqualTo(HIS_HONOUR_JUDGE);
-        assertThat(noticeOfProceedings.getJudgeAndLegalAdvisor().getJudgeLastName()).isEqualTo(JUDGE_SURNAME);
-        assertThat(noticeOfProceedings.getJudgeAndLegalAdvisor().getUseAllocatedJudge()).isNull();
-        assertThat(noticeOfProceedings.getJudgeAndLegalAdvisor().getAllocatedJudgeLabel()).isNull();
+        assertThat(noticeOfProceedings.getJudgeAndLegalAdvisor()).isEqualTo(expectedJudgeAndLegalAdvisor);
     }
 
     @Test
-    void shouldSetNoticeOfProceedingJudgeToTempoaryJudgeWhenUseAllocatedJudgeHasNotBeenSelected() {
+    void shouldSetNoticeOfProceedingJudgeToTemporaryJudgeWhenUseAllocatedJudgeHasNotBeenSelected() {
+        JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(HER_HONOUR_JUDGE, "Wilson");
+
         CaseData caseData = CaseData.builder()
             .allocatedJudge(buildAllocatedJudge())
             .noticeOfProceedings(NoticeOfProceedings.builder()
@@ -157,10 +159,7 @@ class NoticeOfProceedingsServiceTest {
 
         NoticeOfProceedings noticeOfProceedings = noticeOfProceedingService.setNoticeOfProceedingJudge(caseData);
 
-        assertThat(noticeOfProceedings.getJudgeAndLegalAdvisor().getJudgeTitle()).isEqualTo(HER_HONOUR_JUDGE);
-        assertThat(noticeOfProceedings.getJudgeAndLegalAdvisor().getJudgeLastName()).isEqualTo("Wilson");
-        assertThat(noticeOfProceedings.getJudgeAndLegalAdvisor().getUseAllocatedJudge()).isNull();
-        assertThat(noticeOfProceedings.getJudgeAndLegalAdvisor().getAllocatedJudgeLabel()).isNull();
+        assertThat(noticeOfProceedings.getJudgeAndLegalAdvisor()).isEqualTo(expectedJudgeAndLegalAdvisor);
     }
 
     @Test
@@ -310,5 +309,12 @@ class NoticeOfProceedingsServiceTest {
                 .allocatedJudgeLabel("Case assigned to: His Honour Judge Davidson")
                 .build()
         );
+    }
+
+    private JudgeAndLegalAdvisor buildJudgeAndLegalAdvisor(JudgeOrMagistrateTitle title, String lastName) {
+        return JudgeAndLegalAdvisor.builder()
+            .judgeTitle(title)
+            .judgeLastName(lastName)
+            .build();
     }
 }
