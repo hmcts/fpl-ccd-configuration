@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,6 +27,7 @@ import java.util.List;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 
 @Api
+@Slf4j
 @RestController
 @RequestMapping("/callback/send-document")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -47,6 +49,7 @@ public class SendDocumentController extends CallbackController {
         if (!representativesServedByPost.isEmpty()) {
             DocumentReference documentToBeSent = mapper.convertValue(caseDetails.getData()
                 .get(DOCUMENT_TO_BE_SENT_KEY), DocumentReference.class);
+            log.info("Sending to representatives served by POST for case {}", caseDetails.getId());
 
             List<SentDocument> sentDocuments = documentSenderService.send(documentToBeSent,
                 representativesServedByPost,
@@ -54,6 +57,8 @@ public class SendDocumentController extends CallbackController {
                 caseData.getFamilyManCaseNumber());
 
             updateSentDocumentsHistory(caseDetails, sentDocuments);
+        } else {
+            log.info("There are no representatives served by POST for case {}", caseDetails.getId());
         }
         caseDetails.getData().remove(DOCUMENT_TO_BE_SENT_KEY);
 
