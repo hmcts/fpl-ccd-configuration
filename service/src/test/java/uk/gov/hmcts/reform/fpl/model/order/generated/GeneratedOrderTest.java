@@ -1,38 +1,32 @@
 package uk.gov.hmcts.reform.fpl.model.order.generated;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import uk.gov.hmcts.reform.fpl.model.GeneratedOrderTypeDescriptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class GeneratedOrderTest {
 
+    public static final String AN_ORDER_TYPE = "anOrderType";
+    public static final boolean IS_REMOVABLE = true;
+
+    private final GeneratedOrderTypeDescriptor generatedOrderTypeDescriptor = mock(GeneratedOrderTypeDescriptor.class);
+
     @Test
-    void shouldMarkBlankOrdersAsRemovable() {
-        GeneratedOrder order = GeneratedOrder.builder()
-            .type(BLANK_ORDER.getLabel())
-            .build();
+    void testIsRemovable() {
+        try (MockedStatic<GeneratedOrderTypeDescriptor> orderTypeDescriptor =
+                 Mockito.mockStatic(GeneratedOrderTypeDescriptor.class)) {
 
-        assertThat(order.isRemovable()).isTrue();
-    }
+            orderTypeDescriptor.when(() -> GeneratedOrderTypeDescriptor.fromType(AN_ORDER_TYPE))
+                .thenReturn(generatedOrderTypeDescriptor);
+            when(generatedOrderTypeDescriptor.isRemovable()).thenReturn(IS_REMOVABLE);
 
-    @ParameterizedTest
-    @ValueSource(strings = {
-        "Final care order",
-        "Interim care order",
-        "Final supervision order",
-        "Interim supervision order",
-        "Emergency protection order",
-        "Discharge of care order"
-    })
-    void shouldNotMarkOtherOrdersAreRemovable(String type) {
-        GeneratedOrder order = GeneratedOrder.builder()
-            .type(type)
-            .build();
-
-        assertThat(order.isRemovable()).isFalse();
+            assertThat(GeneratedOrder.builder().type(AN_ORDER_TYPE).build().isRemovable()).isEqualTo(IS_REMOVABLE);
+        }
     }
 
     @Test

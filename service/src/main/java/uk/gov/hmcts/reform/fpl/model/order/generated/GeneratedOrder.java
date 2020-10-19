@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Builder;
 import lombok.Data;
-import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.json.converter.BasicChildConverter;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.GeneratedOrderTypeDescriptor;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -36,7 +36,7 @@ public class GeneratedOrder {
 
     @JsonIgnore
     public boolean isRemovable() {
-        return GeneratedOrderType.fromType(type).isRemovable();
+        return GeneratedOrderTypeDescriptor.fromType(type).isRemovable();
     }
 
     public String asLabel() {
