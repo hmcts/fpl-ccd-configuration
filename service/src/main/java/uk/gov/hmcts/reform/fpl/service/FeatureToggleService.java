@@ -77,10 +77,6 @@ public class FeatureToggleService {
             createLDUser(Map.of("localAuthorityName", LDValue.of(localAuthorityName))), false);
     }
 
-    public boolean isSendGridEnabled() {
-        return ldClient.boolVariation("send-grid", createLDUser(), false);
-    }
-
     private LDUser createLDUser() {
         return createLDUser(Map.of());
     }

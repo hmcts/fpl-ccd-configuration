@@ -98,10 +98,6 @@ Custom configuration parameters:
 |idam.client.secret|SECRET|Secret portion of OAuth 2 flow.|
 |auth.idam.client.baseUrl|ENV|Configuration required by auth-checker-library to communicate with IDAM |
 |auth.provider.service.client.baseUrl|ENV|Configuration required by auth-checker-library to communicate with s2s auth service|
-|spring.mail.host|ENV|Mail server host used for robotics (non Gov notify emails)|
-|spring.mail.port|ENV|Port of the mail server|
-|spring.mail.properties.mail.smtp.starttls.enable|ENV|Is mail TLS enabled|
-|spring.mail.properties.mail.smtp.ssl.trust|ENV|TLS mail config|
 |spring.security.enabled|ENV|Indicates if spring security should be enabled|
 |spring.security.oauth2.resourceserver.jwt.issuer-uri|ENV|Expected IDAM issuer-uri|
 |spring.security.oauth2.resourceserver.jwt.jwk-set-uri|ENV|Expected IDAM jwk-set-uri|

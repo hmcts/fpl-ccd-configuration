@@ -233,18 +233,6 @@ class FeatureToggleServiceTest {
             eq(false));
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsSendGridEnabled(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isSendGridEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("send-grid"),
-            ldUser(ENVIRONMENT).build(),
-            eq(false));
-    }
-
     private static Stream<Arguments> userAttributesTestSource() {
         return Stream.of(
             Arguments.of(
