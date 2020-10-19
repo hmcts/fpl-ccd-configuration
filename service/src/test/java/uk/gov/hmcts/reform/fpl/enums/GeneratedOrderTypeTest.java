@@ -14,6 +14,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.DISCHARGE_OF_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.UPLOAD;
 
 class GeneratedOrderTypeTest {
 
@@ -42,7 +43,8 @@ class GeneratedOrderTypeTest {
             Arguments.of("Interim supervision order", SUPERVISION_ORDER),
             Arguments.of("Final supervision order", SUPERVISION_ORDER),
             Arguments.of("Emergency protection order", EMERGENCY_PROTECTION_ORDER),
-            Arguments.of("Discharge of care order", DISCHARGE_OF_CARE_ORDER)
+            Arguments.of("Discharge of care order", DISCHARGE_OF_CARE_ORDER),
+            Arguments.of("Title of an upload", UPLOAD)
         );
     }
 }
