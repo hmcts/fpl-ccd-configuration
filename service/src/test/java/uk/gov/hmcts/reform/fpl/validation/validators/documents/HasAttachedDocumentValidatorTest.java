@@ -18,7 +18,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.TO_FOLLOW;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createDocumentWithStatus;
 
 @ExtendWith(SpringExtension.class)
-public class HasAttachedDocumentValidatorTest {
+class HasAttachedDocumentValidatorTest {
     private Validator validator;
     private ValidateGroupService validateGroupService;
 

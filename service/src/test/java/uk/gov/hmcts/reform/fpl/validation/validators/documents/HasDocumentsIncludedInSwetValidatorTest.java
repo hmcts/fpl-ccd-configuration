@@ -23,7 +23,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.TO_FOLLOW;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ExtendWith(SpringExtension.class)
-public class HasDocumentsIncludedInSwetValidatorTest {
+class HasDocumentsIncludedInSwetValidatorTest {
     private Validator validator;
     private ValidateGroupService validateGroupService;
 
