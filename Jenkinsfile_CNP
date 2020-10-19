@@ -80,8 +80,6 @@ withPipeline(type, product, component) {
   enableAksStagingDeployment()
   enableSlackNotifications('#fpla-tech')
 
-  env.PROXY_SERVER = "proxyout.reform.hmcts.net:8080"
-
   after('checkout') {
     onMaster {
       withCredentials([usernamePassword(credentialsId: 'jenkins-github-hmcts-api-token', usernameVariable: 'USERNAME', passwordVariable: 'BEARER_TOKEN')]) {
