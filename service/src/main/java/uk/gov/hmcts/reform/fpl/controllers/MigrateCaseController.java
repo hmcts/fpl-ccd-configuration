@@ -36,6 +36,7 @@ public class MigrateCaseController {
             data.put("c2DocumentBundle", removeC2Document(caseData.getC2DocumentBundle()));
         }
 
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
             .build();
