@@ -1,32 +1,59 @@
 package uk.gov.hmcts.reform.fpl.model.order.generated;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import uk.gov.hmcts.reform.fpl.model.GeneratedOrderTypeDescriptor;
 
+import java.util.stream.Stream;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.DISCHARGE_OF_CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.UPLOAD;
+import static uk.gov.hmcts.reform.fpl.model.GeneratedOrderTypeDescriptor.builder;
 
 class GeneratedOrderTest {
 
     public static final String AN_ORDER_TYPE = "anOrderType";
-    public static final boolean IS_REMOVABLE = true;
 
-    private final GeneratedOrderTypeDescriptor generatedOrderTypeDescriptor = mock(GeneratedOrderTypeDescriptor.class);
-
-    @Test
-    void testIsRemovable() {
-        try (MockedStatic<GeneratedOrderTypeDescriptor> orderTypeDescriptor =
+    @ParameterizedTest
+    @MethodSource("typeToEnumSource")
+    void testOrderTypesThatCanBeRemoved(
+        GeneratedOrderTypeDescriptor orderTypeDescriptor,
+        boolean removable
+    ) {
+        try (MockedStatic<GeneratedOrderTypeDescriptor> generatedOrderTypeDescriptorMockedStatic =
                  Mockito.mockStatic(GeneratedOrderTypeDescriptor.class)) {
 
-            orderTypeDescriptor.when(() -> GeneratedOrderTypeDescriptor.fromType(AN_ORDER_TYPE))
-                .thenReturn(generatedOrderTypeDescriptor);
-            when(generatedOrderTypeDescriptor.isRemovable()).thenReturn(IS_REMOVABLE);
+            generatedOrderTypeDescriptorMockedStatic.when(() -> GeneratedOrderTypeDescriptor.fromType(AN_ORDER_TYPE))
+                .thenReturn(orderTypeDescriptor);
 
-            assertThat(GeneratedOrder.builder().type(AN_ORDER_TYPE).build().isRemovable()).isEqualTo(IS_REMOVABLE);
+            assertThat(GeneratedOrder.builder().type(AN_ORDER_TYPE).build().isRemovable()).isEqualTo(removable);
         }
+    }
+
+    private static Stream<Arguments> typeToEnumSource() {
+        return Stream.of(
+            Arguments.of(builder().type(BLANK_ORDER).build(), true),
+            Arguments.of(builder().type(CARE_ORDER).subtype(INTERIM).build(),true),
+            Arguments.of(builder().type(CARE_ORDER).subtype(FINAL).build(), false),
+            Arguments.of(builder().type(SUPERVISION_ORDER).subtype(INTERIM).build(), true),
+            Arguments.of(builder().type(SUPERVISION_ORDER).subtype(FINAL).build(), false),
+            Arguments.of(builder().type(EMERGENCY_PROTECTION_ORDER).build(), false),
+            Arguments.of(builder().type(DISCHARGE_OF_CARE_ORDER).build(), false),
+            Arguments.of(builder().type(UPLOAD).build(),false)
+        );
     }
 
     @Test

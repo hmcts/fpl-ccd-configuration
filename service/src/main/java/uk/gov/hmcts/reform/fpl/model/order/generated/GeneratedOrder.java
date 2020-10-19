@@ -14,6 +14,10 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
 
 @Data
 @Builder(toBuilder = true)
@@ -36,7 +40,10 @@ public class GeneratedOrder {
 
     @JsonIgnore
     public boolean isRemovable() {
-        return GeneratedOrderTypeDescriptor.fromType(type).isRemovable();
+        GeneratedOrderTypeDescriptor descriptor = GeneratedOrderTypeDescriptor.fromType(this.type);
+        return (descriptor.getType() == BLANK_ORDER)
+                || (descriptor.getType() == CARE_ORDER && descriptor.getSubtype() == INTERIM)
+                || (descriptor.getType() == SUPERVISION_ORDER && descriptor.getSubtype() == INTERIM);
     }
 
     public String asLabel() {
