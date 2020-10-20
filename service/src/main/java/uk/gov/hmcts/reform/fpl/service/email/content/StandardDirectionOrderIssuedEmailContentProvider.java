@@ -54,7 +54,7 @@ public class StandardDirectionOrderIssuedEmailContentProvider extends StandardDi
         ctscTemplateForSDO.setCourtName(caseDataExtractionService.getCourtName(caseData.getCaseLocalAuthority()));
         ctscTemplateForSDO.setHearingNeedsPresent(getHearingNeedsPresent(hearing));
         ctscTemplateForSDO.setHearingNeeds(hearing.buildHearingNeedsList());
-        ctscTemplateForSDO.setCaseUrl(getCaseUrl(caseData.getId()));
+        ctscTemplateForSDO.setCaseUrl(getCaseUrl(caseData.getId(), "OrdersTab"));
         ctscTemplateForSDO.setDocumentLink(concatUrlAndMostRecentUploadedDocumentPath(xuiBaseUrl,
             caseData.getStandardDirectionOrder().getOrderDoc().getBinaryUrl()));
 
