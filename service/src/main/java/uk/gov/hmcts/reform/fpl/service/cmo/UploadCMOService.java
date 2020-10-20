@@ -2,11 +2,20 @@ package uk.gov.hmcts.reform.fpl.service.cmo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.events.cmo.AgreedCMOUploaded;
+import uk.gov.hmcts.reform.fpl.events.cmo.DraftCMOUploaded;
+import uk.gov.hmcts.reform.fpl.events.cmo.UploadCMOEvent;
+import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -23,7 +32,9 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.from;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
@@ -32,6 +43,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListValueCode;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
+// TODO: 19/10/2020 Cleanup when FPLA-2019 is toggled on
+@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UploadCMOService {
@@ -39,12 +52,71 @@ public class UploadCMOService {
     private final ObjectMapper mapper;
     private final Time time;
 
-    public UploadCMOEventData getInitialPageData(List<Element<HearingBooking>> hearings,
+    public UploadCMOEventData getInitialPageData(CaseData caseData) {
+        List<Element<HearingBooking>> futureHearings = caseData.getFutureHearings();
+        List<Element<HearingBooking>> pastHearings = caseData.getPastHearings();
+        List<Element<CaseManagementOrder>> unsealedOrders = caseData.getDraftUploadedCMOs();
+
+        DynamicList futureHearingsList = buildDynamicList(futureHearings);
+        DynamicList pastHearingsList = buildDynamicList(getHearingsWithoutCMO(pastHearings, unsealedOrders));
+
+        String hearingsInfo = buildHearingsWithCMOsText(unsealedOrders, pastHearings);
+
+        return UploadCMOEventData.builder()
+            .futureHearingsForCMO(futureHearingsList)
+            .pastHearingsForCMO(pastHearingsList)
+            .cmosSentToJudge(hearingsInfo)
+            .showCMOsSentToJudge(YesNo.from(!hearingsInfo.isBlank()))
+            .build();
+    }
+
+    public UploadCMOEventData getCMOInfo(CaseData caseData) {
+        UploadCMOEventData eventData = caseData.getUploadCMOEventData();
+
+        UUID selectedHearingId = eventData.getSelectedHearingId(mapper);
+
+        HearingBooking hearing = getSelectedHearing(selectedHearingId, caseData.getHearingDetails());
+
+        UploadCMOEventData.UploadCMOEventDataBuilder newEventDataBuilder = UploadCMOEventData.builder();
+
+        if (hearing.hasCMOAssociation()) {
+            CaseManagementOrder cmo = findElement(hearing.getCaseManagementOrderId(), caseData.getDraftUploadedCMOs())
+                .map(Element::getValue)
+                .orElseThrow(() -> new CMONotFoundException("CMO for related hearing could not be found"));
+
+            newEventDataBuilder.showReplacementCMO(YES)
+                .previousCMO(cmo.getOrder())
+                .cmoSupportingDocs(cmo.getSupportingDocs());
+        }
+
+        return newEventDataBuilder
+            .futureHearingsForCMO(regenerateList(eventData.getFutureHearingsForCMO(), caseData.getFutureHearings()))
+            .pastHearingsForCMO(regenerateList(eventData.getPastHearingsForCMO(), caseData.getPastHearings()))
+            .cmoHearingInfo(hearing.toLabel(DATE))
+            .build();
+    }
+
+    public UploadCMOEventData getReviewData(CaseData caseData) {
+        UploadCMOEventData eventData = caseData.getUploadCMOEventData();
+
+        UUID selectedHearingId = eventData.getSelectedHearingId(mapper);
+        HearingBooking hearing = getSelectedHearing(selectedHearingId, caseData.getHearingDetails());
+
+        return UploadCMOEventData.builder()
+            .cmoJudgeInfo(formatJudgeTitleAndName(hearing.getJudgeAndLegalAdvisor()))
+            .cmoToSend(getUploadedCMO(eventData, hearing, caseData.getDraftUploadedCMOs()))
+            .futureHearingsForCMO(regenerateList(eventData.getFutureHearingsForCMO(), caseData.getFutureHearings()))
+            .pastHearingsForCMO(regenerateList(eventData.getPastHearingsForCMO(), caseData.getPastHearings()))
+            .build();
+    }
+
+    @Deprecated
+    public UploadCMOEventData getInitialPageData(List<Element<HearingBooking>> pastHearings,
                                                  List<Element<CaseManagementOrder>> unsealedOrders) {
 
-        List<Element<HearingBooking>> hearingsWithoutCMOs = getHearingsWithoutCMO(hearings, unsealedOrders);
+        List<Element<HearingBooking>> hearingsWithoutCMOs = getHearingsWithoutCMO(pastHearings, unsealedOrders);
         UploadCMOEventData.UploadCMOEventDataBuilder eventBuilder = UploadCMOEventData.builder();
-        String textAreaContent = buildHearingsWithCMOsText(unsealedOrders, hearings);
+        String textAreaContent = buildHearingsWithCMOsText(unsealedOrders, pastHearings);
 
         switch (hearingsWithoutCMOs.size()) {
             case 0:
@@ -55,7 +127,7 @@ public class UploadCMOService {
 
                 if (textAreaContent.length() != 0) {
                     eventBuilder.singleHearingWithCMO(textAreaContent);
-                    eventBuilder.showHearingsSingleTextArea(YesNo.YES);
+                    eventBuilder.showHearingsSingleTextArea(YES);
                 }
 
                 addJudgeAndHearingDetails(hearingsWithoutCMOs.get(0).getValue(), eventBuilder, true);
@@ -65,15 +137,16 @@ public class UploadCMOService {
 
                 if (textAreaContent.length() != 0) {
                     eventBuilder.multiHearingsWithCMOs(textAreaContent);
-                    eventBuilder.showHearingsMultiTextArea(YesNo.YES);
+                    eventBuilder.showHearingsMultiTextArea(YES);
                 }
 
-                eventBuilder.hearingsWithoutApprovedCMO(buildDynamicList(hearingsWithoutCMOs));
+                eventBuilder.pastHearingsForCMO(buildDynamicList(hearingsWithoutCMOs));
         }
 
         return eventBuilder.build();
     }
 
+    @Deprecated
     public UploadCMOEventData prepareJudgeAndHearingDetails(Object dynamicList,
                                                             List<Element<HearingBooking>> hearings,
                                                             List<Element<CaseManagementOrder>> unsealedOrders) {
@@ -96,65 +169,121 @@ public class UploadCMOService {
              reconstruct dynamic list
              see RDM-5696 and RDM-6651
             */
-            eventBuilder.hearingsWithoutApprovedCMO(buildDynamicList(hearingsWithoutCMO, selectedHearingId));
+            eventBuilder.pastHearingsForCMO(buildDynamicList(hearingsWithoutCMO, selectedHearingId));
         }
 
         return eventBuilder.build();
     }
 
-    public void updateHearingsAndUnsealedCMOs(List<Element<HearingBooking>> hearings,
-                                              List<Element<CaseManagementOrder>> unsealedOrders,
-                                              DocumentReference uploadedOrder,
-                                              Object dynamicList) {
-        List<Element<HearingBooking>> filteredHearings = getHearingsWithoutCMO(hearings, unsealedOrders);
-        UUID selectedHearingId = getSelectedHearingId(dynamicList, filteredHearings);
-        HearingBooking hearing = getSelectedHearing(selectedHearingId, filteredHearings);
+    public void updateHearingsAndOrders(UploadCMOEventData eventData, List<Element<HearingBooking>> hearings,
+                                        List<Element<CaseManagementOrder>> unsealedOrders,
+                                        List<Element<HearingFurtherEvidenceBundle>> evidenceBundles) {
+        UUID selectedHearingId = null;
+        HearingBooking hearing;
 
-        Element<CaseManagementOrder> element = element(from(uploadedOrder, hearing, time.now().toLocalDate()));
-
-        Optional<UUID> uuid = updateHearingWithCmoId(selectedHearingId, hearings, element);
-
-        if (uuid.isPresent()) {
-            // overwrite old draft CMO
-            int index = -1;
-            for (int i = 0; i < unsealedOrders.size(); i++) {
-                if (unsealedOrders.get(i).getId().equals(uuid.get())) {
-                    index = i;
-                    break;
-                }
-            }
-            unsealedOrders.set(index, element);
+        if (eventData.getCmoUploadType() == null) {
+            // TODO: 19/10/2020 Delete when FPLA-2019 is toggled on
+            List<Element<HearingBooking>> filteredHearings = hearings.stream()
+                .filter(hearingBooking -> !hearingBooking.getValue().startsAfterToday())
+                .collect(toList());
+            hearing = getHearingsWithoutCMO(filteredHearings, unsealedOrders).get(0).getValue();
         } else {
-            unsealedOrders.add(element);
+            selectedHearingId = eventData.getSelectedHearingId(mapper);
+            hearing = getSelectedHearing(selectedHearingId, hearings);
+        }
+
+        List<Element<SupportingEvidenceBundle>> supportingDocs = eventData.getCmoSupportingDocs();
+
+        Element<CaseManagementOrder> order = element(from(
+            getUploadedCMO(eventData, hearing, unsealedOrders),
+            hearing,
+            time.now().toLocalDate(),
+            eventData.isAgreed() ? SEND_TO_JUDGE : DRAFT, // send to judge if agreed
+            eventData.isAgreed() ? null : supportingDocs // migrate docs if agreed
+        ));
+
+        Optional<UUID> uuid = updateHearingWithCmoId(hearing, order);
+
+        insertOrder(unsealedOrders, order, uuid);
+
+        if (eventData.isAgreed() && !supportingDocs.isEmpty()) {
+            migrateDocuments(evidenceBundles, selectedHearingId, hearing, supportingDocs);
         }
     }
 
-    public boolean isNewCmoUploaded(List<Element<CaseManagementOrder>> cmosCurrent,
-                                    List<Element<CaseManagementOrder>> cmosBefore) {
-        // Duplicate to not effect passed list
-        List<Element<CaseManagementOrder>> current = new ArrayList<>(cmosCurrent);
+    public UploadCMOEvent buildEventToPublish(CaseData caseData, CaseData caseDataBefore) {
+        List<Element<CaseManagementOrder>> unsealedCMOs = new ArrayList<>(caseData.getDraftUploadedCMOs());
+        unsealedCMOs.removeAll(caseDataBefore.getDraftUploadedCMOs());
 
-        current.removeAll(cmosBefore);
+        if (unsealedCMOs.size() == 1) {
+            Element<CaseManagementOrder> cmo = unsealedCMOs.get(0);
 
-        return !current.isEmpty();
+            Optional<Element<HearingBooking>> optionalHearing = caseData.getHearingDetails().stream()
+                .filter(hearingElement -> cmo.getId().equals(hearingElement.getValue().getCaseManagementOrderId()))
+                .findFirst();
+
+            if (optionalHearing.isPresent()) {
+                HearingBooking hearing = optionalHearing.get().getValue();
+                CMOStatus status = cmo.getValue().getStatus();
+
+                if (SEND_TO_JUDGE == status) {
+                    return new AgreedCMOUploaded(caseData, hearing);
+                } else if (DRAFT == status){
+                    return new DraftCMOUploaded(caseData, hearing);
+                }
+            } else {
+                throw new HearingNotFoundException("No hearing found for cmo: " + cmo.getId());
+            }
+        }
+        return null;
+    }
+
+    private void migrateDocuments(List<Element<HearingFurtherEvidenceBundle>> evidenceBundles, UUID selectedHearingId,
+                                  HearingBooking hearing, List<Element<SupportingEvidenceBundle>> supportingDocs) {
+        Optional<Element<HearingFurtherEvidenceBundle>> bundle = findElement(selectedHearingId, evidenceBundles);
+
+        if (bundle.isPresent()) {
+            bundle.get().getValue().getSupportingEvidenceBundle().addAll(supportingDocs);
+        } else {
+            evidenceBundles.add(element(selectedHearingId, HearingFurtherEvidenceBundle.builder()
+                .hearingName(hearing.toLabel(DATE))
+                .supportingEvidenceBundle(supportingDocs)
+                .build()));
+        }
     }
 
     private List<Element<HearingBooking>> getHearingsWithoutCMO(List<Element<HearingBooking>> hearings,
                                                                 List<Element<CaseManagementOrder>> unsealedOrders) {
         return hearings.stream()
-            .filter(hearing -> associatedToReturnedCMO(hearing, unsealedOrders)
+            .filter(hearing -> associatedToUnreviewedCMO(hearing, unsealedOrders)
                 || !hearing.getValue().hasCMOAssociation())
             .collect(toList());
     }
 
-    private Optional<UUID> updateHearingWithCmoId(UUID selectedHearing, List<Element<HearingBooking>> hearings,
-                                                  Element<CaseManagementOrder> cmo) {
-        HearingBooking hearing = getSelectedHearing(selectedHearing, hearings);
+    private void insertOrder(List<Element<CaseManagementOrder>> unsealedOrders, Element<CaseManagementOrder> order,
+                             Optional<UUID> id) {
+        if (id.isPresent()) {
+            // overwrite old draft CMO
+            int index = -1;
+            for (int i = 0; i < unsealedOrders.size(); i++) {
+                if (unsealedOrders.get(i).getId().equals(id.get())) {
+                    index = i;
+                    break;
+                }
+            }
+            unsealedOrders.set(index, order);
+        } else {
+            unsealedOrders.add(order);
+        }
+    }
+
+    private Optional<UUID> updateHearingWithCmoId(HearingBooking hearing, Element<CaseManagementOrder> cmo) {
         UUID previousCMOId = hearing.getCaseManagementOrderId();
         hearing.setCaseManagementOrderId(cmo.getId());
         return Optional.ofNullable(previousCMOId);
     }
 
+    @Deprecated
     private UUID getSelectedHearingId(Object dynamicList, List<Element<HearingBooking>> hearings) {
         if (hearings.size() == 1) {
             return hearings.get(0).getId();
@@ -169,6 +298,37 @@ public class UploadCMOService {
             .getValue();
     }
 
+    private DocumentReference getUploadedCMO(UploadCMOEventData currentEventData,
+                                             HearingBooking selectedHearing,
+                                             List<Element<CaseManagementOrder>> unsealedCMOs) {
+
+        DocumentReference uploadedCMO = currentEventData.getUploadedCaseManagementOrder();
+
+        if (uploadedCMO == null) {
+            if ((uploadedCMO = currentEventData.getReplacementCMO()) == null) {
+                // search for the cmo to get the previous order
+                uploadedCMO = findElement(selectedHearing.getCaseManagementOrderId(), unsealedCMOs)
+                    .map(cmo -> cmo.getValue().getOrder())
+                    .orElseThrow(() -> new CMONotFoundException("CMO for related hearing could not be found"));
+            }
+        }
+
+        return uploadedCMO;
+    }
+
+    /*
+     reconstruct dynamic list
+     see RDM-5696 and RDM-6651
+     can be deleted when above is fixed
+    */
+    private DynamicList regenerateList(Object dynamicList, List<Element<HearingBooking>> hearings) {
+        if (!(dynamicList instanceof DynamicList)) {
+            UUID selectedId = dynamicList == null ? null : getDynamicListValueCode(dynamicList, mapper);
+            return buildDynamicList(hearings, selectedId);
+        }
+        return null;
+    }
+
     private DynamicList buildDynamicList(List<Element<HearingBooking>> hearings) {
         return buildDynamicList(hearings, null);
     }
@@ -177,6 +337,7 @@ public class UploadCMOService {
         return asDynamicList(hearings, selected, hearing -> hearing.toLabel(DATE));
     }
 
+    @Deprecated
     private void addJudgeAndHearingDetails(HearingBooking hearing,
                                            UploadCMOEventData.UploadCMOEventDataBuilder builder,
                                            boolean initialPage) {
@@ -194,10 +355,10 @@ public class UploadCMOService {
 
     }
 
-    private boolean associatedToReturnedCMO(Element<HearingBooking> hearing,
-                                            List<Element<CaseManagementOrder>> unsealedCMOs) {
+    private boolean associatedToUnreviewedCMO(Element<HearingBooking> hearing,
+                                              List<Element<CaseManagementOrder>> unsealedCMOs) {
         return unsealedCMOs.stream()
-            .filter(cmo -> cmo.getValue().getStatus() == RETURNED)
+            .filter(cmo -> cmo.getValue().getStatus() != SEND_TO_JUDGE)
             .anyMatch(cmo -> cmo.getId().equals(hearing.getValue().getCaseManagementOrderId()));
     }
 
@@ -206,8 +367,7 @@ public class UploadCMOService {
 
         List<HearingBooking> filtered = new ArrayList<>();
         hearings.forEach(hearing -> unsealedOrders.stream()
-            .filter(order -> RETURNED != order.getValue().getStatus()
-                && order.getId().equals(hearing.getValue().getCaseManagementOrderId()))
+            .filter(order -> includeHearing(order, hearing.getValue()))
             .map(order -> hearing.getValue())
             .findFirst()
             .ifPresent(filtered::add)
@@ -215,5 +375,9 @@ public class UploadCMOService {
 
         filtered.sort(Comparator.comparing(HearingBooking::getStartDate));
         return filtered.stream().map(value -> value.toLabel(DATE)).collect(Collectors.joining("\n"));
+    }
+
+    private boolean includeHearing(Element<CaseManagementOrder> cmo, HearingBooking hearing) {
+        return SEND_TO_JUDGE == cmo.getValue().getStatus() && cmo.getId().equals(hearing.getCaseManagementOrderId());
     }
 }
