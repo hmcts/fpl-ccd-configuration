@@ -24,7 +24,7 @@ class HasGenderValidatorTest extends AbstractValidationTest {
 
         List<String> validationErrors = validate(child);
 
-        assertThat(validationErrors).doesNotContain(ERROR_MESSAGE);
+        assertThat(validationErrors).isNotEmpty().doesNotContain(ERROR_MESSAGE);
     }
 
     @Test
@@ -36,7 +36,7 @@ class HasGenderValidatorTest extends AbstractValidationTest {
 
         List<String> validationErrors = validate(child);
 
-        assertThat(validationErrors).doesNotContain(ERROR_MESSAGE);
+        assertThat(validationErrors).isNotEmpty().doesNotContain(ERROR_MESSAGE);
     }
 
     @Test

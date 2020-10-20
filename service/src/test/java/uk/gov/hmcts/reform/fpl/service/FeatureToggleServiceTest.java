@@ -91,6 +91,18 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForCaseUserAssignment(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isCaseUserBulkAssignmentEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("case-user-assignment"),
+            ldUser(ENVIRONMENT).build(),
+            eq(false));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
     void shouldMakeCorrectCallForCloseCase(Boolean toggleState) {
         givenToggle(toggleState);
 

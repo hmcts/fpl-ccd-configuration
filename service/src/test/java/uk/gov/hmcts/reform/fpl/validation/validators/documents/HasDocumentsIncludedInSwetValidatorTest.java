@@ -23,7 +23,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.TO_FOLLOW;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ExtendWith(SpringExtension.class)
-public class HasDocumentsIncludedInSwetValidatorTest {
+class HasDocumentsIncludedInSwetValidatorTest {
     private Validator validator;
     private ValidateGroupService validateGroupService;
 
@@ -57,14 +57,14 @@ public class HasDocumentsIncludedInSwetValidatorTest {
             getDocument(testDocumentReference(), ATTACHED), getDocument(null, INCLUDED_IN_SWET));
 
         List<String> errorMessages = validateGroupService.validateGroup(caseData, UploadDocumentsGroup.class);
-        assertThat(errorMessages).doesNotContain(ERROR_MESSAGE);
+        assertThat(errorMessages).isEmpty();
     }
 
     @Test
     void shouldNotReturnAnErrorIfDocumentStatusIsNotIncludedInSwet() {
         CaseData caseData = getCaseData(null, getDocument(null, ATTACHED));
         List<String> errorMessages = validateGroupService.validateGroup(caseData, UploadDocumentsGroup.class);
-        assertThat(errorMessages).doesNotContain(ERROR_MESSAGE);
+        assertThat(errorMessages).isNotEmpty().doesNotContain(ERROR_MESSAGE);
     }
 
     private static Document getDocument(DocumentReference reference, DocumentStatus status) {

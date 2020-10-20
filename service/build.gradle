@@ -167,7 +167,8 @@ def versions = [
   springBoot      : springBoot.class.package.implementationVersion,
   springfoxSwagger: '2.9.2',
   log4j           : '2.13.2',
-  pdfbox          : '2.0.20'
+  pdfbox          : '2.0.20',
+  mockito         : '3.4.4'
 ]
 
 dependencies {
@@ -200,7 +201,7 @@ dependencies {
 
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '11.0'
 
-  implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.17'
+  implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.18'
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '6.5.7'
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
@@ -213,13 +214,13 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'pdf-generator', version: '1.0.2'
   compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: 'v1.5.5'
   compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
-  compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.3'
+  compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.5'
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.2'
   compile group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4'
   compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '3.0.1'
   compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.0-RELEASE'
 
-  implementation group: 'com.google.guava', name: 'guava', version: '29.0-jre'
+  implementation group: 'com.google.guava', name: 'guava', version: '30.0-jre'
   implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
 
   implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
@@ -239,6 +240,10 @@ dependencies {
   testCompile group: 'org.awaitility', name: 'awaitility', version: '4.0.3'
 
   testCompile group: 'org.springframework.security', name: 'spring-security-test'
+
+  testCompile group: 'org.mockito', name: 'mockito-core', version: versions.mockito
+  testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: versions.mockito
+  testCompile group: 'org.mockito', name: 'mockito-inline', version: versions.mockito
 
   integrationTestCompile configurations.testRuntime {
     exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-netflix-hystrix'

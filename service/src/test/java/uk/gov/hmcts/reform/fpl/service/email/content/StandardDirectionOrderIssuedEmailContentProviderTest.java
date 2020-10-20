@@ -25,6 +25,8 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
     @Autowired
     private StandardDirectionOrderIssuedEmailContentProvider standardDirectionOrderIssuedEmailContentProvider;
 
+    private static final String ORDERS = "OrdersTab";
+
     @Test
     void shouldReturnExpectedMapForJudgeWithValidSDODetails() {
         AllocatedJudgeTemplateForSDO expectedMap = allocatedJudgeSDOTemplateParameters();
@@ -57,7 +59,7 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
         allocatedJudgeTemplate.setFamilyManCaseNumber("12345,");
         allocatedJudgeTemplate.setLeadRespondentsName("Smith");
         allocatedJudgeTemplate.setHearingDate("1 January 2020");
-        allocatedJudgeTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
+        allocatedJudgeTemplate.setCaseUrl(caseUrl(CASE_REFERENCE, ORDERS));
         allocatedJudgeTemplate.setJudgeTitle("Her Honour Judge");
         allocatedJudgeTemplate.setJudgeName("Byrne");
 
@@ -68,13 +70,11 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
         CTSCTemplateForSDO ctscTemplateForSDO = new CTSCTemplateForSDO();
         ctscTemplateForSDO.setDocumentLink("http://fake-url/documents/be17a76e-38ed-4448-8b83-45de1aa93f55/binary");
         ctscTemplateForSDO.setHearingNeeds(List.of("Intermediary"));
-        ctscTemplateForSDO.setHearingNeedsDetails("Some details about what needs to be booked");
         ctscTemplateForSDO.setHearingNeedsPresent("Yes");
-        ctscTemplateForSDO.setShowDetailsLabel("Yes");
         ctscTemplateForSDO.setCourtName(COURT_NAME);
         ctscTemplateForSDO.setCallout("^Smith, 12345, hearing 1 Jan 2020");
         ctscTemplateForSDO.setRespondentLastName("Smith");
-        ctscTemplateForSDO.setCaseUrl(caseUrl(CASE_REFERENCE));
+        ctscTemplateForSDO.setCaseUrl(caseUrl(CASE_REFERENCE, ORDERS));
 
         return ctscTemplateForSDO;
     }
@@ -84,12 +84,10 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
         ctscTemplateForSDO.setDocumentLink("http://fake-url/documents/be17a76e-38ed-4448-8b83-45de1aa93f55/binary");
         ctscTemplateForSDO.setHearingNeedsPresent("No");
         ctscTemplateForSDO.setHearingNeeds(List.of());
-        ctscTemplateForSDO.setHearingNeedsDetails("");
-        ctscTemplateForSDO.setShowDetailsLabel("No");
         ctscTemplateForSDO.setCourtName(COURT_NAME);
         ctscTemplateForSDO.setCallout("^Smith, 12345L, hearing 1 Jan 2020");
         ctscTemplateForSDO.setRespondentLastName("Smith");
-        ctscTemplateForSDO.setCaseUrl(caseUrl(CASE_REFERENCE));
+        ctscTemplateForSDO.setCaseUrl(caseUrl(CASE_REFERENCE, ORDERS));
 
         return ctscTemplateForSDO;
     }

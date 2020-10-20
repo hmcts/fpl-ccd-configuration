@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.OrganisationPolicy;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
 import uk.gov.hmcts.reform.fpl.exceptions.UserOrganisationLookupException;
@@ -199,7 +199,7 @@ class OrganisationServiceTest {
         @Test
         void shouldReturnOrganisationPolicyWhenUserRegisteredInOrganisation() {
             OrganisationPolicy expectedOrganisationPolicy = OrganisationPolicy.builder()
-                .organisation(uk.gov.hmcts.reform.ccd.Organisation.builder()
+                .organisation(uk.gov.hmcts.reform.ccd.model.Organisation.builder()
                     .organisationName(POPULATED_ORGANISATION.getName())
                     .organisationID(POPULATED_ORGANISATION.getOrganisationIdentifier())
                     .build())
