@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.exceptions.OrderLookupException;
 import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
 
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
@@ -24,7 +25,7 @@ public class JsonOrdersLookupService implements OrdersLookupService {
         try {
             return this.objectMapper.readValue(content, OrderDefinition.class);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Could not read file " + ORDERS_CONFIG_FILENAME);
+            throw new OrderLookupException("Could not read file " + ORDERS_CONFIG_FILENAME);
         }
     }
 }

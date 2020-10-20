@@ -40,7 +40,7 @@ class DocumentSealingServiceTest {
     private DocumentSealingService documentSealingService;
 
     @Test
-    void shouldSealAndUploadDocumentWithFileConversion() throws Exception {
+    void shouldSealAndUploadDocumentWithFileConversion() {
         final String fileName = "test.doc";
         final String newFileName = "test.pdf";
         final byte[] inputDocumentBinaries = readBytes("documents/document.pdf");
@@ -63,7 +63,7 @@ class DocumentSealingServiceTest {
     }
 
     @Test
-    void shouldSealAndUploadDocumentWithoutFileConversion() throws Exception {
+    void shouldSealAndUploadDocumentWithoutFileConversion() {
         final String fileName = "test.pdf";
         final byte[] inputDocumentBinaries = readBytes("documents/document.pdf");
         final byte[] expectedSealedDocumentBinaries = readBytes("documents/document-sealed.pdf");
