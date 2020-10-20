@@ -49,6 +49,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJud
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UploadCMOService {
 
+
     private final ObjectMapper mapper;
     private final Time time;
 
@@ -56,6 +57,9 @@ public class UploadCMOService {
         List<Element<HearingBooking>> futureHearings = caseData.getFutureHearings();
         List<Element<HearingBooking>> pastHearings = caseData.getPastHearings();
         List<Element<CaseManagementOrder>> unsealedOrders = caseData.getDraftUploadedCMOs();
+
+        sortHearings(futureHearings);
+        sortHearings(pastHearings);
 
         DynamicList futureHearingsList = buildDynamicList(futureHearings);
         DynamicList pastHearingsList = buildDynamicList(getHearingsWithoutCMO(pastHearings, unsealedOrders));
@@ -91,7 +95,10 @@ public class UploadCMOService {
 
         return newEventDataBuilder
             .futureHearingsForCMO(regenerateList(eventData.getFutureHearingsForCMO(), caseData.getFutureHearings()))
-            .pastHearingsForCMO(regenerateList(eventData.getPastHearingsForCMO(), caseData.getPastHearings()))
+            .pastHearingsForCMO(regenerateList(
+                eventData.getPastHearingsForCMO(),
+                getHearingsWithoutCMO(caseData.getPastHearings(), caseData.getDraftUploadedCMOs())
+            ))
             .cmoHearingInfo(hearing.toLabel(DATE))
             .build();
     }
@@ -106,7 +113,10 @@ public class UploadCMOService {
             .cmoJudgeInfo(formatJudgeTitleAndName(hearing.getJudgeAndLegalAdvisor()))
             .cmoToSend(getUploadedCMO(eventData, hearing, caseData.getDraftUploadedCMOs()))
             .futureHearingsForCMO(regenerateList(eventData.getFutureHearingsForCMO(), caseData.getFutureHearings()))
-            .pastHearingsForCMO(regenerateList(eventData.getPastHearingsForCMO(), caseData.getPastHearings()))
+            .pastHearingsForCMO(regenerateList(
+                eventData.getPastHearingsForCMO(),
+                getHearingsWithoutCMO(caseData.getPastHearings(), caseData.getDraftUploadedCMOs())
+            ))
             .build();
     }
 
@@ -324,6 +334,7 @@ public class UploadCMOService {
     private DynamicList regenerateList(Object dynamicList, List<Element<HearingBooking>> hearings) {
         if (!(dynamicList instanceof DynamicList)) {
             UUID selectedId = dynamicList == null ? null : getDynamicListValueCode(dynamicList, mapper);
+            sortHearings(hearings);
             return buildDynamicList(hearings, selectedId);
         }
         return null;
@@ -379,5 +390,9 @@ public class UploadCMOService {
 
     private boolean includeHearing(Element<CaseManagementOrder> cmo, HearingBooking hearing) {
         return SEND_TO_JUDGE == cmo.getValue().getStatus() && cmo.getId().equals(hearing.getCaseManagementOrderId());
+    }
+
+    private void sortHearings(List<Element<HearingBooking>> hearings) {
+        hearings.sort(Comparator.comparing(hearing -> hearing.getValue().getStartDate()));
     }
 }
