@@ -22,7 +22,7 @@ public abstract class StandardDirectionOrderContent extends AbstractEmailContent
                 .getLastName()))
             .put("hearingDate", getHearingBooking(caseData))
             .put("reference", String.valueOf(caseData.getId()))
-            .put("caseUrl", getCaseUrl(caseData.getId()));
+            .put("caseUrl", getCaseUrl(caseData.getId(), "OrdersTab"));
     }
 
     private String getHearingBooking(CaseData data) {

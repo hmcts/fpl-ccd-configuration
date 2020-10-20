@@ -239,7 +239,7 @@ class C2UploadedEventHandlerTest {
 
             uploadC2Template.setCallout(subjectLine);
             uploadC2Template.setRespondentLastName("Smith");
-            uploadC2Template.setCaseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345");
+            uploadC2Template.setCaseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345#C2Tab");
             uploadC2Template.setDocumentLink(jsonFileObject.toMap());
 
             return uploadC2Template;

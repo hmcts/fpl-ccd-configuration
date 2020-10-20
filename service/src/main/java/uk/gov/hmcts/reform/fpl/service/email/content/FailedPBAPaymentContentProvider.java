@@ -6,13 +6,16 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.payment.FailedPBANotificationData;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
+
 @Service
 public class FailedPBAPaymentContentProvider extends AbstractEmailContentProvider {
 
     public FailedPBANotificationData buildCtscNotificationParameters(CaseData caseData,
                                                                      ApplicationType applicationType) {
+        String tab = applicationType.equals(C2_APPLICATION) ? "C2Tab" : "";
         return FailedPBANotificationData.builder()
-            .caseUrl(getCaseUrl(caseData.getId()))
+            .caseUrl(getCaseUrl(caseData.getId(), tab))
             .applicationType(applicationType.getType())
             .build();
     }
