@@ -112,7 +112,7 @@ public class StandardDirectionsOrderControllerSubmittedTest extends AbstractCont
             .put("leadRespondentsName", "Moley")
             .put("hearingDate", "20 October 2020")
             .put("reference", String.valueOf(CASE_ID))
-            .put("caseUrl", String.format("http://fake-url/cases/case-details/%s", CASE_ID))
+            .put("caseUrl", String.format("http://fake-url/cases/case-details/%s#%s", CASE_ID, "OrdersTab"))
             .build();
     }
 

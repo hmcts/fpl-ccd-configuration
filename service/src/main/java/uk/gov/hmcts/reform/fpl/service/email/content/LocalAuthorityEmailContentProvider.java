@@ -25,6 +25,6 @@ public class LocalAuthorityEmailContentProvider extends StandardDirectionOrderCo
     public Map<String, Object> buildNoticeOfPlacementOrderUploadedNotification(CaseData caseData) {
         return Map.of(
             "respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()),
-            "caseUrl", getCaseUrl(caseData.getId()));
+            "caseUrl", getCaseUrl(caseData.getId(), "PlacementTab"));
     }
 }
