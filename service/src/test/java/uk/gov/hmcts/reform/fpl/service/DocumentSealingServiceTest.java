@@ -11,7 +11,10 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 
+import java.io.UncheckedIOException;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -83,5 +86,22 @@ class DocumentSealingServiceTest {
             .uploadPDF(actualDocumentBinaries.capture(), eq(inputDocumentReference.getFilename()));
         assertThat(actualSealedDocumentReference).isEqualTo(sealedDocumentReference);
         assertThat(actualDocumentBinaries.getValue()).isEqualTo(expectedSealedDocumentBinaries);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenDocumentIsNotPdf() {
+        final String fileName = "test.pdf";
+        final byte[] notPdf = new byte[]{1};
+        final byte[] inputDocumentBinaries = readBytes("documents/document.pdf");
+        final DocumentReference inputDocumentReference = testDocumentReference(fileName);
+
+        when(documentDownloadService.downloadDocument(inputDocumentReference.getBinaryUrl()))
+            .thenReturn(inputDocumentBinaries);
+        when(documentConversionService.convertToPdf(inputDocumentBinaries, fileName)).thenReturn(notPdf);
+
+        final Exception exception = assertThrows(Exception.class,
+            () -> documentSealingService.sealDocument(inputDocumentReference));
+
+        assertThat(exception).isInstanceOf(UncheckedIOException.class);
     }
 }
