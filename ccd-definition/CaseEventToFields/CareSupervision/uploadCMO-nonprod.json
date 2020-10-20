@@ -23,7 +23,7 @@
     "PageColumnNumber": 1,
     "PageDisplayOrder": 1,
     "DisplayContext": "READONLY",
-    "FieldShowCondition": "cmosSentToJudge = \"YES\"",
+    "FieldShowCondition": "showCMOsSentToJudge = \"YES\"",
     "ShowSummaryChangeOption": "N"
   },
   {
@@ -106,7 +106,8 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "replacementCMO",
+    "CaseEventID": "uploadCMO",
+    "CaseFieldID": "replacementCMO",
     "PageID": "Upload",
     "PageFieldDisplayOrder": 4,
     "PageColumnNumber": 1,
@@ -118,7 +119,8 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "uploadedCaseManagementOrder",
+    "CaseEventID": "uploadCMO",
+    "CaseFieldID": "uploadedCaseManagementOrder",
     "PageID": "Upload",
     "PageFieldDisplayOrder": 5,
     "PageColumnNumber": 1,
@@ -130,7 +132,8 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "cmoSupportingDocs",
+    "CaseEventID": "uploadCMO",
+    "CaseFieldID": "cmoSupportingDocs",
     "PageID": "Upload",
     "PageFieldDisplayOrder": 6,
     "PageColumnNumber": 1,
@@ -141,7 +144,8 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "cmoToSend",
+    "CaseEventID": "uploadCMO",
+    "CaseFieldID": "cmoToSend",
     "PageID": "Review",
     "PageFieldDisplayOrder": 1,
     "PageColumnNumber": 1,
@@ -152,7 +156,8 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "cmoJudgeInfo",
+    "CaseEventID": "uploadCMO",
+    "CaseFieldID": "cmoJudgeInfo",
     "PageID": "Review",
     "PageFieldDisplayOrder": 2,
     "PageColumnNumber": 1,
