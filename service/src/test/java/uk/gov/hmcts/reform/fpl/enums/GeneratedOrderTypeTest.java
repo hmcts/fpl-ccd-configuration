@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
@@ -22,17 +20,6 @@ class GeneratedOrderTypeTest {
     @MethodSource("typeToEnumSource")
     void shouldConvertTypeStringToOrder(String type, GeneratedOrderType expectedOrderType) {
         assertThat(GeneratedOrderType.fromType(type)).isEqualTo(expectedOrderType);
-    }
-
-    @Test
-    void blankOrdersAreRemovable() {
-        assertThat(BLANK_ORDER.isRemovable()).isTrue();
-    }
-
-    @ParameterizedTest
-    @EnumSource(mode = EnumSource.Mode.EXCLUDE, value = GeneratedOrderType.class, names = {"BLANK_ORDER"})
-    void orderTypesThatAreNotBlankOrdersAreNotRemovable(GeneratedOrderType orderType) {
-        assertThat(orderType.isRemovable()).isFalse();
     }
 
     private static Stream<Arguments> typeToEnumSource() {
