@@ -56,7 +56,7 @@
     "ListElementCode": "supportingDocs",
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
-    "ElementLabel": "Care summary or supporting documents",
+    "ElementLabel": "Case summary or supporting documents",
     "SecurityClassification": "Public"
   },
   {
