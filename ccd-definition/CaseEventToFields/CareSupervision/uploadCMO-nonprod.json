@@ -100,7 +100,7 @@
     "PageColumnNumber": 1,
     "PageDisplayOrder": 2,
     "DisplayContext": "READONLY",
-    "FieldShowCondition": "showReplacementCMO = \"YES\"",
+    "FieldShowCondition": "showReplacementCMO != \"NO\"",
     "ShowSummaryChangeOption": "N"
   },
   {
@@ -113,7 +113,7 @@
     "PageColumnNumber": 1,
     "PageDisplayOrder": 2,
     "DisplayContext": "OPTIONAL",
-    "FieldShowCondition": "showReplacementCMO = \"YES\"",
+    "FieldShowCondition": "showReplacementCMO != \"NO\"",
     "ShowSummaryChangeOption": "Y"
   },
   {

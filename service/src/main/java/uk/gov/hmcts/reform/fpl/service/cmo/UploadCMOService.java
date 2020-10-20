@@ -88,12 +88,12 @@ public class UploadCMOService {
                 .map(Element::getValue)
                 .orElseThrow(() -> new CMONotFoundException("CMO for related hearing could not be found"));
 
-            newEventDataBuilder.showReplacementCMO(YES)
-                .previousCMO(cmo.getOrder())
+            newEventDataBuilder.previousCMO(cmo.getOrder())
                 .cmoSupportingDocs(cmo.getSupportingDocs());
         }
 
         return newEventDataBuilder
+            .showReplacementCMO(YesNo.from(hearing.hasCMOAssociation()))
             .futureHearingsForCMO(regenerateList(eventData.getFutureHearingsForCMO(), caseData.getFutureHearings()))
             .pastHearingsForCMO(regenerateList(
                 eventData.getPastHearingsForCMO(),
