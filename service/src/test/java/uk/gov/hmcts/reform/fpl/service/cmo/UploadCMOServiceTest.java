@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.enums.CMOType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -43,6 +44,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 })
 class UploadCMOServiceTest {
 
+    private static final DocumentReference DOCUMENT = DocumentReference.builder().build();
     @Autowired
     private UploadCMOService service;
 
@@ -56,7 +58,7 @@ class UploadCMOServiceTest {
         UploadCMOEventData initialPageData = service.getInitialPageData(hearings, List.of());
 
         UploadCMOEventData expectedEventData = UploadCMOEventData.builder()
-            .hearingsWithoutApprovedCMO(dynamicList(hearings.get(0).getId(),
+            .pastHearingsForCMO(dynamicList(hearings.get(0).getId(),
                 hearings.get(1).getId(),
                 hearings.get(2).getId()))
             .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.MULTI)
@@ -69,7 +71,7 @@ class UploadCMOServiceTest {
     void shouldReturnMultiPageDataWhenThereAreMultipleHearingsWithSomeHearingsAlreadyMappedToCMOs() {
         List<Element<HearingBooking>> hearings = new ArrayList<>(hearings());
 
-        Element<CaseManagementOrder> cmo = element(CaseManagementOrder.builder().build());
+        Element<CaseManagementOrder> cmo = element(CaseManagementOrder.builder().status(SEND_TO_JUDGE).build());
         Element<HearingBooking> hearing = element(
             hearing(CASE_MANAGEMENT, LocalDateTime.of(2020, 1, 15, 0, 0), cmo.getId())
         );
@@ -79,7 +81,7 @@ class UploadCMOServiceTest {
         UploadCMOEventData initialPageData = service.getInitialPageData(hearings, List.of(cmo));
 
         UploadCMOEventData expectedEventData = UploadCMOEventData.builder()
-            .hearingsWithoutApprovedCMO(dynamicList(hearings.get(0).getId(),
+            .pastHearingsForCMO(dynamicList(hearings.get(0).getId(),
                 hearings.get(1).getId(),
                 hearings.get(2).getId()))
             .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.MULTI)
@@ -110,7 +112,7 @@ class UploadCMOServiceTest {
 
     @Test
     void shouldReturnSinglePageDataWhenThereIsOneRemainingHearingWithSomeHearingsAlreadyMappedToCMOs() {
-        Element<CaseManagementOrder> cmo = element(CaseManagementOrder.builder().build());
+        Element<CaseManagementOrder> cmo = element(CaseManagementOrder.builder().status(SEND_TO_JUDGE).build());
         List<Element<HearingBooking>> hearings = List.of(
             element(hearing(CASE_MANAGEMENT, LocalDateTime.of(2020, 2, 1, 0, 0))),
             element(hearing(CASE_MANAGEMENT, LocalDateTime.of(2020, 2, 2, 0, 0), cmo.getId()))
@@ -145,7 +147,7 @@ class UploadCMOServiceTest {
     void shouldNotIncludeReturnedHearingsInCMOTextArea() {
         List<Element<HearingBooking>> hearings = new ArrayList<>(hearings());
 
-        Element<CaseManagementOrder> cmo = element(CaseManagementOrder.builder().build());
+        Element<CaseManagementOrder> cmo = element(CaseManagementOrder.builder().status(SEND_TO_JUDGE).build());
         Element<CaseManagementOrder> returnedCMO = element(CaseManagementOrder.builder().status(RETURNED).build());
         List<Element<HearingBooking>> additionalHearings = List.of(
             element(hearing(
@@ -173,7 +175,7 @@ class UploadCMOServiceTest {
         );
 
         UploadCMOEventData expectedEventData = UploadCMOEventData.builder()
-            .hearingsWithoutApprovedCMO(dynamicList)
+            .pastHearingsForCMO(dynamicList)
             .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.MULTI)
             .multiHearingsWithCMOs("Case management hearing, 15 January 2020")
             .showHearingsMultiTextArea(YesNo.YES)
@@ -217,8 +219,7 @@ class UploadCMOServiceTest {
             true
         );
 
-        assertThat(preparedData).extracting(UploadCMOEventData::getHearingsWithoutApprovedCMO)
-            .isEqualTo(dynamicList);
+        assertThat(preparedData).extracting(UploadCMOEventData::getPastHearingsForCMO).isEqualTo(dynamicList);
     }
 
     @Test
@@ -234,7 +235,7 @@ class UploadCMOServiceTest {
 
         UploadCMOEventData preparedData = service.prepareJudgeAndHearingDetails(dynamicList, hearings, List.of());
 
-        assertThat(preparedData).extracting(UploadCMOEventData::getHearingsWithoutApprovedCMO).isNull();
+        assertThat(preparedData).extracting(UploadCMOEventData::getPastHearingsForCMO).isNull();
     }
 
     @Test
@@ -247,27 +248,30 @@ class UploadCMOServiceTest {
             true
         );
         List<Element<CaseManagementOrder>> unsealedOrders = new ArrayList<>();
-        DocumentReference order = DocumentReference.builder().build();
 
-        service.updateHearingsAndUnsealedCMOs(hearings, unsealedOrders, order, dynamicList);
+        UploadCMOEventData eventData = UploadCMOEventData.builder()
+            .pastHearingsForCMO(dynamicList)
+            .uploadedCaseManagementOrder(DOCUMENT)
+            .build();
+
+        service.updateHearingsAndOrders(eventData, hearings, unsealedOrders, List.of());
 
         CaseManagementOrder expectedOrder = CaseManagementOrder.builder()
             .status(SEND_TO_JUDGE)
             .dateSent(time.now().toLocalDate())
-            .order(order)
+            .order(DOCUMENT)
             .hearing("Case management hearing, 2 March 2020")
             .judgeTitleAndName("His Honour Judge Dredd")
             .build();
 
         assertThat(unsealedOrders).isNotEmpty()
             .first()
-            .extracting("value")
+            .extracting(Element::getValue)
             .isEqualTo(expectedOrder);
 
         assertThat(hearings).hasSize(3)
             .first()
-            .extracting("value")
-            .extracting("caseManagementOrderId")
+            .extracting(hearing -> hearing.getValue().getCaseManagementOrderId())
             .isEqualTo(unsealedOrders.get(0).getId());
     }
 
@@ -289,28 +293,31 @@ class UploadCMOServiceTest {
             true
         );
 
-        DocumentReference order = DocumentReference.builder().build();
+        UploadCMOEventData eventData = UploadCMOEventData.builder()
+            .cmoUploadType(CMOType.AGREED)
+            .pastHearingsForCMO(dynamicList)
+            .uploadedCaseManagementOrder(DOCUMENT)
+            .build();
 
-        service.updateHearingsAndUnsealedCMOs(hearings, unsealedOrders, order, dynamicList);
+        service.updateHearingsAndOrders(eventData, hearings, unsealedOrders, List.of());
 
         CaseManagementOrder expectedOrder = CaseManagementOrder.builder()
             .status(SEND_TO_JUDGE)
             .dateSent(time.now().toLocalDate())
-            .order(order)
+            .order(DOCUMENT)
             .hearing("Case management hearing, 2 March 2020")
             .judgeTitleAndName("His Honour Judge Dredd")
             .build();
 
         assertThat(unsealedOrders).hasSize(2)
             .first()
-            .extracting("value")
+            .extracting(Element::getValue)
             .isNotEqualTo(oldOrder.getValue())
             .isEqualTo(expectedOrder);
 
         assertThat(hearings).hasSize(3)
             .first()
-            .extracting("value")
-            .extracting("caseManagementOrderId")
+            .extracting(hearing -> hearing.getValue().getCaseManagementOrderId())
             .isNotEqualTo(oldOrder.getId())
             .isEqualTo(unsealedOrders.get(0).getId());
     }
@@ -320,30 +327,12 @@ class UploadCMOServiceTest {
         List<Element<CaseManagementOrder>> current = wrapElements(CaseManagementOrder.builder().build());
         List<Element<CaseManagementOrder>> before = List.of();
 
-        assertThat(service.isNewCmoUploaded(current, before)).isTrue();
-    }
+        // Duplicate to not effect passed list
+        List<Element<CaseManagementOrder>> current1 = new ArrayList<>(current);
 
-    @Test
-    void shouldReturnTrueIfTheCMOListsAreBothPopulatedButWithDifferentElements() {
-        List<Element<CaseManagementOrder>> current = wrapElements(
-            CaseManagementOrder.builder()
-                .status(SEND_TO_JUDGE)
-                .build()
-        );
-        List<Element<CaseManagementOrder>> before = wrapElements(
-            CaseManagementOrder.builder()
-                .status(RETURNED)
-                .build()
-        );
+        current1.removeAll(before);
 
-        assertThat(service.isNewCmoUploaded(current, before)).isTrue();
-    }
-
-    @Test
-    void shouldReturnFalseIfCmoListsAreTheSame() {
-        List<Element<CaseManagementOrder>> current = wrapElements(CaseManagementOrder.builder().build());
-
-        assertThat(service.isNewCmoUploaded(current, current)).isFalse();
+        assertThat(!current1.isEmpty()).isTrue();
     }
 
     private DynamicList dynamicList(UUID uuid1, UUID uuid2, UUID uuid3, DynamicListElement... additional) {
