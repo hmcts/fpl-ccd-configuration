@@ -96,7 +96,7 @@ class CareOrderGenerationServiceTest extends AbstractOrderGenerationServiceTest 
             .orderAppliesToAllChildren(YES.getValue())
             .orderExclusionClause(ExclusionClause.builder()
                 .exclusionClauseNeeded("Yes")
-                .exclusionClause(EXAMPLE_EXCLUSION_CLAUSE)
+                .exclusionClauseText(EXAMPLE_EXCLUSION_CLAUSE)
                 .build())
             .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build());
 

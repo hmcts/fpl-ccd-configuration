@@ -7,5 +7,5 @@ import lombok.Data;
 @Builder
 public class ExclusionClause {
     private final String exclusionClauseNeeded;
-    private final String exclusionClause;
+    private final String exclusionClauseText;
 }

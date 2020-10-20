@@ -330,7 +330,7 @@ class CaseDataTest {
     @Test
     void testGetExclusionClauseTextIfExists() {
         CaseData underTest = CaseData.builder().orderExclusionClause(ExclusionClause.builder()
-            .exclusionClause(EXCLUSION_CLAUSE)
+            .exclusionClauseText(EXCLUSION_CLAUSE)
             .build()).build();
 
         assertThat(underTest.getExclusionClauseText()).isEqualTo(EXCLUSION_CLAUSE);

@@ -23,6 +23,8 @@ public class HearingVenueLookUpService {
     private final ObjectMapper objectMapper;
     private List<HearingVenue> hearingVenues;
 
+    private static final String HEARING_VENUE_ID_OTHER = "OTHER";
+
     @Autowired
     public HearingVenueLookUpService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
@@ -43,7 +45,7 @@ public class HearingVenueLookUpService {
             return getHearingVenue(hearingBooking.getVenue());
         } else {
             return HearingVenue.builder()
-                .hearingVenueId("OTHER")
+                .hearingVenueId(HEARING_VENUE_ID_OTHER)
                 .venue("Other")
                 .address(hearingBooking.getVenueCustomAddress())
                 .build();

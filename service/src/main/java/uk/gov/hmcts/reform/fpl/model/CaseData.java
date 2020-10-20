@@ -355,7 +355,7 @@ public class CaseData {
 
     @JsonIgnore
     public String getExclusionClauseText() {
-        return Optional.ofNullable(orderExclusionClause).map(ExclusionClause::getExclusionClause).orElse("");
+        return Optional.ofNullable(orderExclusionClause).map(ExclusionClause::getExclusionClauseText).orElse("");
     }
 
     private final List<Element<Child>> confidentialChildren;
@@ -452,7 +452,7 @@ public class CaseData {
 
     public HearingBooking getMostUrgentHearingBookingAfter(LocalDateTime time) {
         return unwrapElements(hearingDetails).stream()
-            .filter(hearing -> hearing.getStartDate().isAfter(time))
+            .filter(hearingBooking -> hearingBooking.getStartDate().isAfter(time))
             .min(comparing(HearingBooking::getStartDate))
             .orElseThrow(NoHearingBookingException::new);
     }

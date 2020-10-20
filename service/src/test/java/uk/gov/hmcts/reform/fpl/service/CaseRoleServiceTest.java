@@ -162,8 +162,10 @@ class CaseRoleServiceTest {
             GrantCaseAccessException expectedException =
                 new GrantCaseAccessException(CASE_ID, Set.of(USER_1_ID, USER_2_ID), CASE_ROLES);
 
+            Set<String> excludeUsers = emptySet();
+
             GrantCaseAccessException actualException = assertThrows(GrantCaseAccessException.class,
-                () -> caseRoleService.grantAccessToLocalAuthority(CASE_ID, LOCAL_AUTHORITY, CASE_ROLES, emptySet()));
+                () -> caseRoleService.grantAccessToLocalAuthority(CASE_ID, LOCAL_AUTHORITY, CASE_ROLES, excludeUsers));
 
             assertThat(actualException).isEqualTo(expectedException);
         }
@@ -177,8 +179,10 @@ class CaseRoleServiceTest {
             GrantCaseAccessException expectedException =
                 new GrantCaseAccessException(CASE_ID, LOCAL_AUTHORITY, CASE_ROLES, fetchUsersException);
 
+            Set<String> excludeUsers = emptySet();
+
             GrantCaseAccessException actualException = assertThrows(GrantCaseAccessException.class,
-                () -> caseRoleService.grantAccessToLocalAuthority(CASE_ID, LOCAL_AUTHORITY, CASE_ROLES, emptySet()));
+                () -> caseRoleService.grantAccessToLocalAuthority(CASE_ID, LOCAL_AUTHORITY, CASE_ROLES, excludeUsers));
 
             assertThat(actualException).isEqualTo(expectedException);
         }

@@ -2,9 +2,12 @@ package uk.gov.hmcts.reform.fpl.json.deserializer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,24 +17,19 @@ class SelectorDeserializerTest extends DeserializerTest {
         super(Selector.class, new SelectorDeserializer());
     }
 
-    @Test
-    void shouldCreateSelectorWhenArraysAreEmpty() throws JsonProcessingException {
-        String jsonString = "{"
-            + "\"optionCount\":\"\","
-            + "\"option1\":[],\"option2\":[],"
-            + "\"option3\":[],\"option4\":[],"
-            + "\"option5\":[],\"option6\":[],"
-            + "\"option7\":[],\"option8\":[],"
-            + "\"option9\":[],\"option10\":[]"
-            + "}";
-        Selector actual = mapper.readValue(jsonString, Selector.class);
-        Selector expected = Selector.builder().build();
-        assertThat(actual).isEqualTo(expected);
+    private static Stream<String> createSelectorWithArrays() {
+        return Stream.of(
+            getSelectorDataWithEmptyArrays(),
+            getSelectorDataWithNullCountContainer(),
+            getSelectorDataWithNullArrays(),
+            "{\"optionCount\":\"\"}", // json with no arrays
+            "{}" // empty json
+        );
     }
 
-    @Test
-    void shouldCreateSelectorWhenNoArraysPresent() throws JsonProcessingException {
-        String jsonString = "{\"optionCount\":\"\"}";
+    @ParameterizedTest
+    @MethodSource("createSelectorWithArrays")
+    void testSelectorDataCreatedWithArrays(String jsonString) throws JsonProcessingException {
         Selector actual = mapper.readValue(jsonString, Selector.class);
         Selector expected = Selector.builder().build();
         assertThat(actual).isEqualTo(expected);
@@ -53,9 +51,19 @@ class SelectorDeserializerTest extends DeserializerTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test
-    void shouldCreateSelectorWhenCountContainerIsNull() throws JsonProcessingException {
-        String jsonString = "{"
+    private static String getSelectorDataWithEmptyArrays() {
+        return "{"
+            + "\"optionCount\":\"\","
+            + "\"option1\":[],\"option2\":[],"
+            + "\"option3\":[],\"option4\":[],"
+            + "\"option5\":[],\"option6\":[],"
+            + "\"option7\":[],\"option8\":[],"
+            + "\"option9\":[],\"option10\":[]"
+            + "}";
+    }
+
+    private static String getSelectorDataWithNullCountContainer() {
+        return "{"
             + "\"optionCount\":null,"
             + "\"option1\":[],\"option2\":[],"
             + "\"option3\":[],\"option4\":[],"
@@ -63,14 +71,10 @@ class SelectorDeserializerTest extends DeserializerTest {
             + "\"option7\":[],\"option8\":[],"
             + "\"option9\":[],\"option10\":[]"
             + "}";
-        Selector actual = mapper.readValue(jsonString, Selector.class);
-        Selector expected = Selector.builder().build();
-        assertThat(actual).isEqualTo(expected);
     }
 
-    @Test
-    void shouldCreateSelectorWhenArraysAreNull() throws JsonProcessingException {
-        String jsonString = "{"
+    private static String getSelectorDataWithNullArrays() {
+        return "{"
             + "\"optionCount\":null,"
             + "\"option1\":[],\"option2\":null,"
             + "\"option3\":[],\"option4\":[],"
@@ -78,17 +82,6 @@ class SelectorDeserializerTest extends DeserializerTest {
             + "\"option7\":[],\"option8\":[],"
             + "\"option9\":[],\"option10\":[]"
             + "}";
-        Selector actual = mapper.readValue(jsonString, Selector.class);
-        Selector expected = Selector.builder().build();
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    void shouldCreateDefaultSelectorWhenJsonObjectIsEmpty() throws JsonProcessingException {
-        String jsonString = "{}";
-        Selector actual = mapper.readValue(jsonString, Selector.class);
-        Selector expected = Selector.builder().build();
-        assertThat(actual).isEqualTo(expected);
     }
 }
 
