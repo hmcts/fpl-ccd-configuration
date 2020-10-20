@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl;
 
-public class NotifyTemplates {
+public final class NotifyTemplates {
 
     private NotifyTemplates() {
         //NO-OP
@@ -22,6 +22,7 @@ public class NotifyTemplates {
     public static final String ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES =
         "1827ae2d-d7c3-4094-8978-c2f77d7713fa";
     public static final String CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE = "0ec7f651-4f0e-4f95-bff1-6ec232b9baf6";
+    public static final String CMO_DRAFT_UPLOADED_NOTIFICATION_TEMPLATE = "00111d3e-a001-4d68-9630-4b3ba8894e66";
     public static final String CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE =
         "90c5f4b3-738b-4c8d-b433-c8c90095f815";
     public static final String CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE =
