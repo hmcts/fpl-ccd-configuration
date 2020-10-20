@@ -8,7 +8,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
-import uk.gov.hmcts.reform.fpl.events.cmo.NewCMOUploaded;
+import uk.gov.hmcts.reform.fpl.events.cmo.AgreedCMOUploaded;
 import uk.gov.hmcts.reform.fpl.handlers.HmctsAdminNotificationHandler;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.CMOReadyToSealTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
-import uk.gov.hmcts.reform.fpl.service.email.content.cmo.NewCMOUploadedContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.cmo.AgreedCMOUploadedContentProvider;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,8 +38,8 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {NewCMOUploadedEventHandler.class})
-class NewCMOUploadedEventHandlerTest {
+@ContextConfiguration(classes = {AgreedCMOUploadedEventHandler.class})
+class AgreedCMOUploadedEventHandlerTest {
 
     private static final String HMCTS_ADMIN_EMAIL = "admin@hmcts.gov.uk";
     private static final String HMCTS_JUDGE_EMAIL = "judge@hmcts.gov.uk";
@@ -52,10 +52,10 @@ class NewCMOUploadedEventHandlerTest {
     private HmctsAdminNotificationHandler adminNotificationHandler;
 
     @MockBean
-    private NewCMOUploadedContentProvider contentProvider;
+    private AgreedCMOUploadedContentProvider contentProvider;
 
     @Autowired
-    private NewCMOUploadedEventHandler eventHandler;
+    private AgreedCMOUploadedEventHandler eventHandler;
 
     @BeforeEach
     void setUp() {
@@ -76,7 +76,7 @@ class NewCMOUploadedEventHandlerTest {
             template
         );
 
-        NewCMOUploaded event = new NewCMOUploaded(caseData, hearing);
+        AgreedCMOUploaded event = new AgreedCMOUploaded(caseData, hearing);
         eventHandler.sendNotificationForAdmin(event);
 
         verify(notificationService).sendEmail(
@@ -101,7 +101,7 @@ class NewCMOUploadedEventHandlerTest {
             template
         );
 
-        NewCMOUploaded event = new NewCMOUploaded(caseData, hearing);
+        AgreedCMOUploaded event = new AgreedCMOUploaded(caseData, hearing);
         eventHandler.sendNotificationForJudge(event);
 
         verify(notificationService).sendEmail(
@@ -116,7 +116,7 @@ class NewCMOUploadedEventHandlerTest {
     void shouldNotSendNotificationForJudgeWhenNoEmailIsProvided() {
         CaseData caseData = caseDataWithoutAllocatedJudgeEmail();
         HearingBooking hearing = buildHearing();
-        NewCMOUploaded event = new NewCMOUploaded(caseData, hearing);
+        AgreedCMOUploaded event = new AgreedCMOUploaded(caseData, hearing);
 
         eventHandler.sendNotificationForJudge(event);
 

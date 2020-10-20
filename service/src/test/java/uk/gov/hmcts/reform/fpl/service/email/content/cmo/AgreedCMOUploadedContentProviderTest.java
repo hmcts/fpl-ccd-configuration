@@ -21,11 +21,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ContextConfiguration(classes = {NewCMOUploadedContentProvider.class})
-class NewCMOUploadedContentProviderTest extends AbstractEmailContentProviderTest {
+@ContextConfiguration(classes = {AgreedCMOUploadedContentProvider.class})
+class AgreedCMOUploadedContentProviderTest extends AbstractEmailContentProviderTest {
 
     @Autowired
-    private NewCMOUploadedContentProvider contentProvider;
+    private AgreedCMOUploadedContentProvider contentProvider;
 
     private static final LocalDate SOME_DATE = LocalDate.of(2020, 2, 20);
     private static final Long CASE_NUMBER = 12345L;

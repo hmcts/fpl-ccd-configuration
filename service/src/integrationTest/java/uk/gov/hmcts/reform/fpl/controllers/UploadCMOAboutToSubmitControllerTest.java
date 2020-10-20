@@ -50,7 +50,7 @@ public class UploadCMOAboutToSubmitControllerTest extends AbstractControllerTest
         CaseData caseData = CaseData.builder()
             .hearingDetails(hearings)
             .uploadCMOEventData(UploadCMOEventData.builder()
-                .hearingsWithoutApprovedCMO(dynamicList(hearings))
+                .pastHearingsForCMO(dynamicList(hearings))
                 .uploadedCaseManagementOrder(DOCUMENT_REFERENCE)
                 .build())
             .build();
@@ -93,7 +93,7 @@ public class UploadCMOAboutToSubmitControllerTest extends AbstractControllerTest
         CaseData caseData = CaseData.builder()
             .uploadCMOEventData(UploadCMOEventData.builder()
                 .uploadedCaseManagementOrder(DOCUMENT_REFERENCE)
-                .hearingsWithoutApprovedCMO(dynamicList(hearings))
+                .pastHearingsForCMO(dynamicList(hearings))
                 .cmoJudgeInfo("DUMMY DATA")
                 .cmoHearingInfo("DUMMY DATA")
                 .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.MULTI)
