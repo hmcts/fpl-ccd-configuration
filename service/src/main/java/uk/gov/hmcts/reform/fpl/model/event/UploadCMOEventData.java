@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +17,7 @@ import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.CMOType.AGREED;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListValueCode;
 
 // TODO: 19/10/2020 Delete deprecated when FPLA-2019 toggled
 @Value
@@ -64,14 +64,13 @@ public class UploadCMOEventData {
 
     @JsonIgnore
     public boolean isAgreed() {
-        // TODO: 19/10/2020 remove second condition when FPLA-2019 is toggled on
-        return AGREED == cmoUploadType || null == cmoUploadType;
+        return AGREED == cmoUploadType;
     }
 
     @JsonIgnore
     public UUID getSelectedHearingId(ObjectMapper mapper) {
         Object dynamicList = defaultIfNull(pastHearingsForCMO, futureHearingsForCMO);
-        return ElementUtils.getDynamicListValueCode(dynamicList, mapper);
+        return getDynamicListValueCode(dynamicList, mapper);
     }
 
     public static String[] transientFields() {
