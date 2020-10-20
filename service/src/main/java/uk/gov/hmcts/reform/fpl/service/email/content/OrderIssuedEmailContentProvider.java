@@ -49,7 +49,7 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
                                                           final IssuedOrderType issuedOrderType) {
         return ImmutableMap.<String, Object>builder()
             .putAll(buildParametersWithoutCaseUrl(caseData, documentContents, issuedOrderType))
-            .put("caseUrl", getCaseUrl(caseData.getId()))
+            .put("caseUrl", getCaseUrl(caseData.getId(), "OrdersTab"))
             .build();
     }
 
@@ -60,7 +60,7 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
         AllocatedJudgeTemplateForGeneratedOrder judgeTemplate = new AllocatedJudgeTemplateForGeneratedOrder();
         judgeTemplate.setOrderType(getTypeOfOrder(caseData, GENERATED_ORDER));
         judgeTemplate.setCallout(buildCallout(caseData));
-        judgeTemplate.setCaseUrl(getCaseUrl(caseData.getId()));
+        judgeTemplate.setCaseUrl(getCaseUrl(caseData.getId(), "OrdersTab"));
         judgeTemplate.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
         judgeTemplate.setJudgeTitle(judge.getJudgeOrMagistrateTitle());
         judgeTemplate.setJudgeName(judge.getJudgeName());
