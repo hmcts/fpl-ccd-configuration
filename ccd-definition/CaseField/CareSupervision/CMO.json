@@ -6,7 +6,8 @@
     "Label": "Draft Case Management Order",
     "FieldType": "Collection",
     "FieldTypeParameter": "UploadedCaseManagementOrder",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -15,7 +16,8 @@
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "CMOType",
     "Label": "Which CMO are you uploading, and what do you want the judge to do?",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -23,7 +25,8 @@
     "ID": "futureHearingsForCMO",
     "Label": "Which hearing does this CMO relate to?",
     "FieldType": "DynamicList",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -32,7 +35,8 @@
     "Label": "Attach agreed draft CMO",
     "FieldType": "Document",
     "SecurityClassification": "Public",
-    "RegularExpression": ".doc,.docx"
+    "RegularExpression": ".doc,.docx",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -41,7 +45,8 @@
     "FieldType": "Document",
     "Label": "Or upload an updated order",
     "SecurityClassification": "Public",
-    "RegularExpression": ".doc,.docx"
+    "RegularExpression": ".doc,.docx",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -50,7 +55,8 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
     "Label": "Care summary or supporting documents",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -58,7 +64,8 @@
     "ID": "cmosSentToJudge",
     "Label": "Hearings with CMOs already being reviewed",
     "FieldType": "TextArea",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -66,7 +73,8 @@
     "ID": "previousCMO",
     "FieldType": "Document",
     "Label": "Send this order",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -74,7 +82,8 @@
     "ID": "cmoJudgeInfo",
     "Label": "This CMO will now be sent to:",
     "FieldType": "Text",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -82,7 +91,8 @@
     "ID": "cmoHearingInfo",
     "Label": " ",
     "FieldType": "Text",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -90,7 +100,8 @@
     "ID": "cmoToSend",
     "Label": "Check the order",
     "FieldType": "Document",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -98,7 +109,8 @@
     "ID": "showReplacementCMO",
     "FieldType": "Text",
     "Label": " ",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -106,7 +118,8 @@
     "ID": "showCMOsSentToJudge",
     "Label": " ",
     "FieldType": "Text",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -115,7 +128,8 @@
     "Label": "Sealed Case Management Order",
     "FieldType": "Collection",
     "FieldTypeParameter": "UploadedCaseManagementOrder",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -124,7 +138,8 @@
     "Label": "CMO for approval",
     "FieldType": "ReviewDecision",
     "FieldTypeParameter": "UploadedCaseManagementOrder",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -132,7 +147,8 @@
     "ID": "cmoToReviewList",
     "Label": "Select the CMO you want to review first",
     "FieldType": "DynamicList",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -140,7 +156,8 @@
     "ID": "numDraftCMOs",
     "Label": "Number of draft CMOs ready for approval",
     "FieldType": "Text",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -148,6 +165,7 @@
     "ID": "noDraftCMOs",
     "Label": "There are no CMOs to review.",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]
