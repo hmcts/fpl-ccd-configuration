@@ -24,7 +24,7 @@ public class NoticeOfProceedingsEmailContentProvider extends AbstractEmailConten
         allocatedJudgeTemplate.setFamilyManCaseNumber(caseData.getFamilyManCaseNumber());
         allocatedJudgeTemplate.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
         allocatedJudgeTemplate.setHearingDate(getHearingBookingStartDate(caseData));
-        allocatedJudgeTemplate.setCaseUrl(getCaseUrl(caseData.getId()));
+        allocatedJudgeTemplate.setCaseUrl(getCaseUrl(caseData.getId(), "HearingTab"));
         allocatedJudgeTemplate.setJudgeTitle(caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()
             .getJudgeOrMagistrateTitle());
         allocatedJudgeTemplate.setJudgeName(caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor().getJudgeName());

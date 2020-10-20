@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 
@@ -28,6 +29,10 @@ public abstract class AbstractEmailContentProviderTest {
         return formatCaseUrl(UI_URL, Long.valueOf(caseId));
     }
 
+    protected String caseUrl(String caseId, String tab) {
+        return formatCaseUrl(UI_URL, Long.valueOf(caseId), tab);
+    }
+
     @MockBean
     CaseUrlService caseUrlService;
 
@@ -41,5 +46,8 @@ public abstract class AbstractEmailContentProviderTest {
     void initCaseUrlService() {
         when(caseUrlService.getCaseUrl(anyLong()))
             .thenAnswer(invocation -> caseUrl(invocation.getArgument(0).toString()));
+
+        when(caseUrlService.getCaseUrl(anyLong(), anyString()))
+            .thenAnswer(invocation -> caseUrl(invocation.getArgument(0).toString(), invocation.getArgument(1)));
     }
 }
