@@ -2,7 +2,7 @@ const { I } = inject();
 
 module.exports = {
   fields: {
-    pastHearingDropdown: '#hearingsWithoutApprovedCMO',
+    pastHearingDropdown: '#pastHearingsForCMO',
     uploadCmo: '#uploadedCaseManagementOrder',
   },
 

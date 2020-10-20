@@ -1093,7 +1093,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "hearingsWithoutApprovedCMO",
+    "CaseFieldID": "pastHearingsForCMO",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "CRU"
   },
@@ -1206,6 +1206,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "uploadCMOLink",
+    "UserRole": "[LASOLICITOR]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "orderTabHeading",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "R"
   }
