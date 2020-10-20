@@ -44,7 +44,7 @@ class CafcassEmailContentProviderSDOIssuedTest extends AbstractEmailContentProvi
             .put("leadRespondentsName", "Smith")
             .put("hearingDate", "1 January 2020")
             .put("reference", CASE_REFERENCE)
-            .put("caseUrl", caseUrl(CASE_REFERENCE))
+            .put("caseUrl", caseUrl(CASE_REFERENCE, "OrdersTab"))
             .put("documentLink", generateAttachedDocumentLink(APPLICATION_BINARY).get().toMap())
             .put("callout", "^Smith, 12345, hearing 1 Jan 2020")
             .build();

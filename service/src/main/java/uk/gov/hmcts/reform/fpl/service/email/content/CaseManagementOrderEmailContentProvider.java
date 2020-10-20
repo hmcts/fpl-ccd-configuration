@@ -25,7 +25,8 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
         template.setHearing(uncapitalize(cmo.getHearing()));
         template.setDigitalPreference(hasDigitalServingPreference(servingPreference) ? "Yes" : "No");
         template.setDocumentLink(linkToAttachedDocument(cmo.getOrder()));
-        template.setCaseUrl((hasDigitalServingPreference(servingPreference) ? getCaseUrl(caseData.getId()) : ""));
+        template.setCaseUrl((hasDigitalServingPreference(servingPreference)
+            ? getCaseUrl(caseData.getId(), "OrdersTab") : ""));
 
         return template;
     }
@@ -37,7 +38,7 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
         template.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
         template.setFamilyManCaseNumber(caseData.getFamilyManCaseNumber());
         template.setHearing(uncapitalize(cmo.getHearing()));
-        template.setCaseUrl(getCaseUrl(caseData.getId()));
+        template.setCaseUrl(getCaseUrl(caseData.getId(), "OrdersTab"));
         template.setRequestedChanges(cmo.getRequestedChanges());
 
         return template;

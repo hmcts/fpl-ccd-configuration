@@ -19,7 +19,7 @@ public class PlacementApplicationContentProvider extends AbstractEmailContentPro
 
         return ImmutableMap.of(
             "respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()),
-            "caseUrl", getCaseUrl(caseData.getId())
+            "caseUrl", getCaseUrl(caseData.getId(), "PlacementTab")
         );
     }
 }

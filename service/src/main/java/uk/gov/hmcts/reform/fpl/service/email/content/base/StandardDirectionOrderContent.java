@@ -24,7 +24,7 @@ public abstract class StandardDirectionOrderContent extends AbstractEmailContent
             .put("hearingDate", getHearingBooking(caseData))
             .put("reference", String.valueOf(caseData.getId()))
             .put("callout", buildCallout(caseData))
-            .put("caseUrl", getCaseUrl(caseData.getId()));
+            .put("caseUrl", getCaseUrl(caseData.getId(), "OrdersTab"));
     }
 
     private String getHearingBooking(CaseData data) {
