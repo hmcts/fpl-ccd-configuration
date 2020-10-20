@@ -1,3 +1,4 @@
+
 const config = require('../config.js');
 const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 const blankOrder = require('../fixtures/orders/blankOrder.js');
@@ -31,7 +32,7 @@ BeforeSuite(async (I) => {
 
 Before(async I => await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId));
 
-Scenario('HMCTS admin enters FamilyMan reference number', async (I, caseViewPage, enterFamilyManCaseNumberEventPage) => {
+Scenario('HMCTS admin enters FamilyMan reference number @epo-test', async (I, caseViewPage, enterFamilyManCaseNumberEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
   enterFamilyManCaseNumberEventPage.enterCaseID('mockCaseID');
   await I.completeEvent('Save and continue');
@@ -374,7 +375,7 @@ Scenario('HMCTS admin creates final supervision order', async (I, caseViewPage, 
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, finalSuperVisionOrder);
 });
 
-Scenario('HMCTS admin creates emergency protection order', async (I, caseViewPage, createOrderEventPage) => {
+Scenario('HMCTS admin creates emergency protection order @epo-test', async (I, caseViewPage, createOrderEventPage) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, emergencyProtectionOrder);
 });
 

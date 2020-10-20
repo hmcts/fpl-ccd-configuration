@@ -14,7 +14,7 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 /**
  * Indicates that the annotated value should be within a specified range of the current time.
  */
-@Target(ElementType.FIELD)
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = TimeRangeValidator.class)
 public @interface TimeRange {

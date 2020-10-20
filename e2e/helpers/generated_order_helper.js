@@ -63,10 +63,11 @@ const createSupervisionOrder = async (I, createOrderEventPage, order, hasAllocat
 };
 
 const createEmergencyProtectionOrder = async (I, createOrderEventPage, order, hasAllocatedJudge = false) => {
+  const today = new Date(Date.now());
   const tomorrow = new Date(Date.now() + (3600 * 1000 * 24));
 
   await createOrderEventPage.selectType(order.type);
-  await fillDateOfIssue(I, createOrderEventPage, order);
+  await fillDateAndTimeOfIssue(I, createOrderEventPage, today);
   await selectChildren(I, createOrderEventPage, order);
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.epo.childrenDescription.radioGroup);
   await createOrderEventPage.enterChildrenDescription(order.childrenDescription);
@@ -134,6 +135,11 @@ const fillDateOfIssue = async (I, createOrderEventPage, order) => {
   await createOrderEventPage.enterDateOfIssue(order.dateOfIssue);
 };
 
+const fillDateAndTimeOfIssue = async (I, createOrderEventPage, dateAndTime) => {
+  await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.dateAndTimeOfIssue.id);
+  await createOrderEventPage.enterDateAndTimeOfIssue(dateAndTime);
+};
+
 const selectChildren = async (I, createOrderEventPage, order) => {
   if (order.children === 'Single') {
     return I.click('Continue');
@@ -196,6 +202,8 @@ module.exports = {
       I.seeInTab([orderHeading, 'Order title'], order.title);
       I.seeInTab([orderHeading, 'Order document'], order.document);
       I.seeInTab([orderHeading, 'Date on order'], dateFormat(defaultIssuedDate, 'd mmmm yyyy'));
+    } else if (order.type === 'Emergency protection order') {
+      I.seeTextInTab([orderHeading, 'Date on order']);
     } else {
       I.seeInTab([orderHeading, 'Order document'], order.document);
       I.seeInTab([orderHeading, 'Date on order'], dateFormat(dateToString(order.dateOfIssue), 'd mmmm yyyy'));

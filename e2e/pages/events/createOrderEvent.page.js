@@ -33,6 +33,9 @@ module.exports = {
     dateOfIssue: {
       id: '#dateOfIssue',
     },
+    dateAndTimeOfIssue: {
+      id: '#dateAndTimeOfIssue',
+    },
     interimEndDate: {
       id: '#interimEndDate_interimEndDate',
       options: {
@@ -201,6 +204,10 @@ module.exports = {
 
   async enterDateOfIssue(date) {
     I.fillDate(date);
+  },
+
+  async enterDateAndTimeOfIssue(dateAndTime) {
+    I.fillDateAndTime(dateAndTime, this.fields.dateAndTimeOfIssue.id);
   },
 
   async selectAndEnterNamedDate(date) {

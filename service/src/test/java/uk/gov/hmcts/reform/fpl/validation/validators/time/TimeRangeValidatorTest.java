@@ -2,16 +2,16 @@ package uk.gov.hmcts.reform.fpl.validation.validators.time;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ContextConfiguration;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
-import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeDifference;
-import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeRange;
+import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOEndDateGroup;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-import static java.time.temporal.ChronoUnit.DAYS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ContextConfiguration(classes = {FixedTimeConfiguration.class})
@@ -20,35 +20,26 @@ public class TimeRangeValidatorTest extends TimeValidatorTest {
     @Autowired
     private Time time;
 
+    @SpyBean
+    private ValidateGroupService validateGroupService;
+
     @Test
     void shouldReturnAnErrorWhenDateTimeExceedsRange() {
-        InvalidTimeRangeValidation invalidTimeRangeValidation = new InvalidTimeRangeValidation(time);
-        final List<String> violations = validate(invalidTimeRangeValidation);
-        assertThat(violations).hasSize(1);
+        CaseData caseData = CaseData.builder()
+            .dateAndTimeOfIssue(time.now())
+            .epoEndDate(time.now().plusDays(9))
+            .build();
+        List<String> errorMessages = validateGroupService.validateGroup(caseData, EPOEndDateGroup.class);
+        assertThat(errorMessages).containsExactly("Date must be within the next 8 days");
     }
 
     @Test
     void shouldNotReturnAnErrorWhenDateTimeDoesNotExceedRange() {
-        ValidTimeRangeValidation validTimeRangeValidation = new ValidTimeRangeValidation(time);
-        final List<String> violations = validate(validTimeRangeValidation);
-        assertThat(violations).isEmpty();
-    }
-
-    class ValidTimeRangeValidation {
-        @TimeRange(maxDate = @TimeDifference(amount = 7, unit = DAYS))
-        final LocalDateTime nowPlusTwoDays;
-
-        ValidTimeRangeValidation(Time time) {
-            nowPlusTwoDays = time.now().plusDays(2);
-        }
-    }
-
-    class InvalidTimeRangeValidation {
-        @TimeRange(maxDate = @TimeDifference(amount = 7, unit = DAYS))
-        final LocalDateTime nowPlusNineDays;
-
-        InvalidTimeRangeValidation(Time time) {
-            nowPlusNineDays = time.now().plusDays(9);
-        }
+        CaseData caseData = CaseData.builder()
+            .dateAndTimeOfIssue(time.now())
+            .epoEndDate(time.now().plusDays(4))
+            .build();
+        List<String> errorMessages = validateGroupService.validateGroup(caseData, EPOEndDateGroup.class);
+        assertThat(errorMessages).isEmpty();
     }
 }

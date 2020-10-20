@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.Address;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
@@ -140,17 +141,15 @@ class ValidateOrderControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldReturnErrorsWhenTheEPOEndDateIsNotWithinTheNextEightDays() {
-        LocalDateTime nowPlusNineDays = now().plusDays(9);
-        CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, nowPlusNineDays);
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "epo-end-date");
+        CaseData caseData = CaseData.builder().dateAndTimeOfIssue(now()).epoEndDate(now().plusDays(9)).build();
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "epo-end-date");
         assertThat(callbackResponse.getErrors()).containsOnlyOnce("Date must be within the next 8 days");
     }
 
     @Test
     void shouldNotReturnErrorsWhenTheEPOEndDateIsWithinTheNextEightDays() {
-        LocalDateTime nowPlusSevenDays = now().plusDays(7);
-        CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, nowPlusSevenDays);
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "epo-end-date");
+        CaseData caseData = CaseData.builder().dateAndTimeOfIssue(now()).epoEndDate(now().plusDays(7)).build();
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "epo-end-date");
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 

@@ -44,6 +44,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.DISCHARGE_OF_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
@@ -80,6 +81,7 @@ public class GeneratedOrderService {
         GeneratedOrder.GeneratedOrderBuilder orderBuilder = GeneratedOrder.builder();
         GeneratedOrderType orderType = typeAndDocument.getType();
         String expiryDate = null;
+        String date = null;
 
         switch (orderType) {
             case BLANK_ORDER:
@@ -99,6 +101,9 @@ public class GeneratedOrderService {
                 expiryDate = getSupervisionOrderExpiryDate(typeAndDocument, caseData.getOrderMonths(),
                     caseData.getInterimEndDate());
                 break;
+            case EMERGENCY_PROTECTION_ORDER:
+                date = formatLocalDateTimeBaseUsingFormat(caseData.getDateAndTimeOfIssue(), DATE_TIME);
+                break;
             case UPLOAD:
                 return GeneratedOrder.builder()
                     .document(typeAndDocument.getDocument())
@@ -112,7 +117,7 @@ public class GeneratedOrderService {
         }
 
         orderBuilder.expiryDate(expiryDate)
-            .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
+            .dateOfIssue(date != null ? date : formatLocalDateToString(caseData.getDateOfIssue(), DATE))
             .type(OrderHelper.getFullOrderType(typeAndDocument))
             .document(typeAndDocument.getDocument())
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
