@@ -6,13 +6,13 @@ let caseId;
 
 Feature('Gatekeeper uploads standard directions order');
 
-BeforeSuite(async (I) => {
+BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData(gatekeeping);
 
   await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
 });
 
-Scenario('Gatekeeper uploads draft standard directions', async (I, caseViewPage, draftStandardDirectionsEventPage) => {
+Scenario('Gatekeeper uploads draft standard directions', async ({I, caseViewPage, draftStandardDirectionsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
   await draftStandardDirectionsEventPage.createSDOThroughUpload();
   await draftStandardDirectionsEventPage.uploadPreparedSDO(config.testPdfFile);
@@ -26,7 +26,7 @@ Scenario('Gatekeeper uploads draft standard directions', async (I, caseViewPage,
   I.seeInTab(['Gatekeeping order', 'Uploaded by'], 'Uploaded by'); // Asserting row is there, data in local and aat are different
 });
 
-Scenario('Gatekeeper uploads final standard directions', async (I, caseViewPage, draftStandardDirectionsEventPage) => {
+Scenario('Gatekeeper uploads final standard directions', async ({I, caseViewPage, draftStandardDirectionsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
   I.see('mockFile.pdf');
   await draftStandardDirectionsEventPage.uploadReplacementSDO(config.testWordFile);
