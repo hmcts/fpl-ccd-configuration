@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplat
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.AllocatedJudgeContentProvider;
 
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ALLOCATED_JUDGE_TEMPLATE_WITH_FM_ID;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ALLOCATED_JUDGE_TEMPLATE;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -27,7 +27,7 @@ public class NotifyAllocatedJudgeEventHandler {
         String email = caseData.getAllocatedJudge().getJudgeEmailAddress();
 
         notificationService.sendEmail(
-            ALLOCATED_JUDGE_TEMPLATE_WITH_FM_ID, email, parameters, caseData.getId().toString()
+            ALLOCATED_JUDGE_TEMPLATE, email, parameters, caseData.getId().toString()
         );
     }
 }
