@@ -22,7 +22,7 @@ public class NewCMOUploadedContentProvider extends AbstractEmailContentProvider 
                                                 AbstractJudge judge, List<Element<Respondent>> respondents,
                                                 String familyManCaseNumber) {
         return new CMOReadyToSealTemplate()
-            .setCaseUrl(getCaseUrl(caseId))
+            .setCaseUrl(getCaseUrl(caseId, "DraftOrdersTab"))
             .setJudgeName(judge.getJudgeName())
             .setJudgeTitle(judge.getJudgeOrMagistrateTitle())
             .setRespondentLastName(getFirstRespondentLastName(respondents))

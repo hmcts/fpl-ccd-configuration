@@ -167,12 +167,13 @@ def versions = [
   springBoot      : springBoot.class.package.implementationVersion,
   springfoxSwagger: '2.9.2',
   log4j           : '2.13.2',
-  pdfbox          : '2.0.20'
+  pdfbox          : '2.0.20',
+  mockito         : '3.4.4'
 ]
 
 dependencies {
-  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.14'
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.16'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.16'
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
@@ -239,6 +240,10 @@ dependencies {
   testCompile group: 'org.awaitility', name: 'awaitility', version: '4.0.3'
 
   testCompile group: 'org.springframework.security', name: 'spring-security-test'
+
+  testCompile group: 'org.mockito', name: 'mockito-core', version: versions.mockito
+  testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: versions.mockito
+  testCompile group: 'org.mockito', name: 'mockito-inline', version: versions.mockito
 
   integrationTestCompile configurations.testRuntime {
     exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-netflix-hystrix'
