@@ -516,7 +516,7 @@ public class CaseData {
     @JsonIgnore
     public List<Element<HearingBooking>> getPastAndTodayHearings() {
         return defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()).stream()
-            .filter(hearingBooking -> !hearingBooking.getValue().getStartDate().toLocalDate().isAfter(LocalDate.now()))
+            .filter(hearingBooking -> hearingBooking.getValue().startsTodayOrBefore())
             .collect(toList());
     }
 
