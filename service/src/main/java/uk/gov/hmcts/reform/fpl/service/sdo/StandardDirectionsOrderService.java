@@ -72,7 +72,7 @@ public class StandardDirectionsOrderService {
         return builder.build();
     }
 
-    public StandardDirectionOrder buildOrderFromUpload(StandardDirectionOrder currentOrder) throws Exception {
+    public StandardDirectionOrder buildOrderFromUpload(StandardDirectionOrder currentOrder) {
         UserInfo userInfo = idamClient.getUserInfo(requestData.authorisation());
 
         StandardDirectionOrder.StandardDirectionOrderBuilder builder = StandardDirectionOrder.builder()
@@ -118,7 +118,7 @@ public class StandardDirectionsOrderService {
         return judgeAndLegalAdvisor;
     }
 
-    private DocumentReference prepareOrderDocument(DocumentReference document, OrderStatus status) throws Exception {
+    private DocumentReference prepareOrderDocument(DocumentReference document, OrderStatus status) {
         if (status != OrderStatus.SEALED) {
             return document;
         }
