@@ -247,6 +247,65 @@ class UploadCMOServiceTest {
     }
 
     @Test
+    void shouldPullReplacementDocumentWhenUploadedFieldIsNull() {
+        List<Element<HearingBooking>> hearings = hearings();
+
+        UploadCMOEventData eventData = UploadCMOEventData.builder()
+            .replacementCMO(DOCUMENT)
+            .pastHearingsForCMO(dynamicList(
+                hearings.get(0).getId(), hearings.get(1).getId(), hearings.get(2).getId(), true
+            ))
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(hearings)
+            .uploadCMOEventData(eventData)
+            .build();
+
+        UploadCMOEventData reviewData = service.getReviewData(caseData);
+
+        UploadCMOEventData expectedData = UploadCMOEventData.builder()
+            .cmoToSend(DOCUMENT)
+            .cmoJudgeInfo("His Honour Judge Dredd")
+            .build();
+
+        assertThat(reviewData).isEqualTo(expectedData);
+    }
+
+    @Test
+    void shouldPullPreviousDocumentWhenReplacementAndMainAndUploadedFileFieldAreNull() {
+        UUID orderID = UUID.randomUUID();
+        List<Element<HearingBooking>> hearings = hearings();
+
+        hearings.get(0).getValue().setCaseManagementOrderId(orderID);
+
+        List<Element<CaseManagementOrder>> unsealedOrders = List.of(
+            element(orderID, CaseManagementOrder.builder().order(DOCUMENT).status(DRAFT).build())
+        );
+
+        UploadCMOEventData eventData = UploadCMOEventData.builder()
+            .pastHearingsForCMO(dynamicList(
+                hearings.get(0).getId(), hearings.get(1).getId(), hearings.get(2).getId(), true
+            ))
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(hearings)
+            .uploadCMOEventData(eventData)
+            .draftUploadedCMOs(unsealedOrders)
+            .build();
+
+        UploadCMOEventData reviewData = service.getReviewData(caseData);
+
+        UploadCMOEventData expectedData = UploadCMOEventData.builder()
+            .cmoToSend(DOCUMENT)
+            .cmoJudgeInfo("His Honour Judge Dredd")
+            .build();
+
+        assertThat(reviewData).isEqualTo(expectedData);
+    }
+
+    @Test
     void shouldAddNewCMOToListAndUpdateHearingIfCMOWasNotAlreadyInList() {
         List<Element<HearingBooking>> hearings = hearings();
 
