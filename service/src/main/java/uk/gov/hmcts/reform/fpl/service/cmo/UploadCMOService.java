@@ -313,13 +313,11 @@ public class UploadCMOService {
 
         DocumentReference uploadedCMO = currentEventData.getUploadedCaseManagementOrder();
 
-        if (uploadedCMO == null) {
-            if ((uploadedCMO = currentEventData.getReplacementCMO()) == null) {
-                // search for the cmo to get the previous order
-                uploadedCMO = findElement(selectedHearing.getCaseManagementOrderId(), unsealedCMOs)
-                    .map(cmo -> cmo.getValue().getOrder())
-                    .orElseThrow(() -> new CMONotFoundException("CMO for related hearing could not be found"));
-            }
+        if (uploadedCMO == null && (uploadedCMO = currentEventData.getReplacementCMO()) == null) {
+            // search for the cmo to get the previous order
+            uploadedCMO = findElement(selectedHearing.getCaseManagementOrderId(), unsealedCMOs)
+                .map(cmo -> cmo.getValue().getOrder())
+                .orElseThrow(() -> new CMONotFoundException("CMO for related hearing could not be found"));
         }
 
         return uploadedCMO;
