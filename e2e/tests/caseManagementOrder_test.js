@@ -19,7 +19,7 @@ BeforeSuite(async (I) => {
   today = new Date();
 });
 
-Scenario('Local authority sends agreed CMOs to judge @f', async (I, caseViewPage, uploadCaseManagementOrderEventPage) => {
+Scenario('Local authority sends agreed CMOs to judge', async (I, caseViewPage, uploadCaseManagementOrderEventPage) => {
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   await cmoHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, 'Case management hearing, 1 January 2020');
   await cmoHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, 'Case management hearing, 1 March 2020');
@@ -33,7 +33,7 @@ Scenario('Local authority sends agreed CMOs to judge @f', async (I, caseViewPage
   assertDraftCMO(I, '3', '1 January 2050', draftStatus, );
 });
 
-Scenario('Judge makes changes to agreed CMO and seals @f', async (I, caseViewPage, reviewAgreedCaseManagementOrderEventPage) => {
+Scenario('Judge makes changes to agreed CMO and seals', async (I, caseViewPage, reviewAgreedCaseManagementOrderEventPage) => {
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.reviewAgreedCmo);
   reviewAgreedCaseManagementOrderEventPage.selectCMOToReview('1 March 2020');
@@ -47,7 +47,7 @@ Scenario('Judge makes changes to agreed CMO and seals @f', async (I, caseViewPag
   assertSealedCMO(I, '1', '1 March 2020');
 });
 
-Scenario('Judge sends agreed CMO back to the local authority @f', async (I, caseViewPage, reviewAgreedCaseManagementOrderEventPage) => {
+Scenario('Judge sends agreed CMO back to the local authority', async (I, caseViewPage, reviewAgreedCaseManagementOrderEventPage) => {
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   await I.startEventViaHyperlink(linkLabel);
@@ -64,8 +64,7 @@ Scenario('Local authority makes changes requested by the judge', async (I, caseV
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   assertDraftCMO(I, '1', '1 January 2020', returnedStatus);
-  await cmoHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage);
-  I.seeEventSubmissionConfirmation(config.applicationActions.uploadCMO);
+  await cmoHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, 'Case management hearing, 1 January 2020');
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   assertDraftCMO(I, '1', '1 January 2020', withJudgeStatus);
   I.dontSee(linkLabel);
