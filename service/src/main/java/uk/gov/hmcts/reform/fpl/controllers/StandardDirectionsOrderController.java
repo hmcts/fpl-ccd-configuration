@@ -91,7 +91,7 @@ public class StandardDirectionsOrderController extends CallbackController {
                     data.put("useUploadRoute", YES);
 
                     if (featureToggleService.isSendNoticeOfProceedingsFromSdo()) {
-                        data.put(JUDGE_AND_LEGAL_ADVISOR_KEY, sdoService.getSdoJudgeAndLegalAdvisor(caseData));
+                        data.put(JUDGE_AND_LEGAL_ADVISOR_KEY, sdoService.getJudgeAndLegalAdvisorFromSDO(caseData));
                     }
                     break;
                 case SERVICE:
@@ -123,7 +123,7 @@ public class StandardDirectionsOrderController extends CallbackController {
         }
 
         if (featureToggleService.isSendNoticeOfProceedingsFromSdo()) {
-            caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, sdoService.getSdoJudgeAndLegalAdvisor(caseData));
+            caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, sdoService.getJudgeAndLegalAdvisorFromSDO(caseData));
         }
 
         return respond(caseDetails);
@@ -145,7 +145,7 @@ public class StandardDirectionsOrderController extends CallbackController {
         Stream.of(DirectionAssignee.values()).forEach(assignee ->
             caseDetails.getData().put(assignee.toHearingDateField(), hearingDate));
 
-        caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, sdoService.getSdoJudgeAndLegalAdvisor(caseData));
+        caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, sdoService.getJudgeAndLegalAdvisorFromSDO(caseData));
 
         return respond(caseDetails);
     }

@@ -44,7 +44,7 @@ import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETA
 @ActiveProfiles("integration-test")
 @WebMvcTest(StandardDirectionsOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class StandardDirectionsOrderControllerSubmittedTest extends AbstractControllerTest {
+class StandardDirectionsOrderControllerSubmittedTest extends AbstractControllerTest {
     private static final Long CASE_ID = 1L;
     private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
     private static final DocumentReference DOCUMENT_REFERENCE = TestDataHelper.testDocumentReference();

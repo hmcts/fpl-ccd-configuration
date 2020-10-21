@@ -80,7 +80,7 @@ public class StandardDirectionsOrderIssuedEventHandler {
     }
 
     @EventListener
-    public void notifyAllocatedJudgeOfIssuedSDOandNoticeOfProceedings(StandardDirectionsOrderIssuedEvent event) {
+    public void notifyAllocatedJudgeOfIssuedSDOAndNoticeOfProceedings(StandardDirectionsOrderIssuedEvent event) {
         String notifyTemplate = STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE;
 
         if (featureToggleService.isSendNoticeOfProceedingsFromSdo()) {

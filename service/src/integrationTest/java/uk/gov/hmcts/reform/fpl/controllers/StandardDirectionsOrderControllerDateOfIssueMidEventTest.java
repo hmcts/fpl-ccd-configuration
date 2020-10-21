@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDateTime;
@@ -26,6 +28,7 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -41,6 +44,8 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
 @WebMvcTest(StandardDirectionsOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
 class StandardDirectionsOrderControllerDateOfIssueMidEventTest extends AbstractControllerTest {
+    @MockBean
+    FeatureToggleService featureToggleService;
 
     StandardDirectionsOrderControllerDateOfIssueMidEventTest() {
         super("draft-standard-directions");
@@ -75,6 +80,46 @@ class StandardDirectionsOrderControllerDateOfIssueMidEventTest extends AbstractC
 
             assertThat(response.getData()).isNotEmpty()
                 .doesNotContainKey("preparedSDO");
+        }
+
+        @Test
+        void shouldSetJudgeAndLegalAdvisorWhenSendNoticeOfProceedingsViaSDOIsToggledOn() {
+            given(featureToggleService.isSendNoticeOfProceedingsFromSdo()).willReturn(true);
+
+            JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor();
+
+            CaseData caseData = CaseData.builder()
+                .standardDirectionOrder(StandardDirectionOrder.builder()
+                    .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postMidEvent(
+                asCaseDetails(caseData), "populate-date-of-issue"
+            );
+
+            CaseData responseCaseData = mapper.convertValue(response.getData(), CaseData.class);
+
+            assertThat(responseCaseData.getJudgeAndLegalAdvisor()).isEqualTo(judgeAndLegalAdvisor);
+        }
+
+        @Test
+        void shouldSetJudgeAndLegalAdvisorWhenSendNoticeOfProceedingsViaSDOIsToggledOff() {
+            given(featureToggleService.isSendNoticeOfProceedingsFromSdo()).willReturn(false);
+
+            CaseData caseData = CaseData.builder()
+                .standardDirectionOrder(StandardDirectionOrder.builder()
+                    .judgeAndLegalAdvisor(buildJudgeAndLegalAdvisor())
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postMidEvent(
+                asCaseDetails(caseData), "populate-date-of-issue"
+            );
+
+            CaseData responseCaseData = mapper.convertValue(response.getData(), CaseData.class);
+
+            assertThat(responseCaseData.getJudgeAndLegalAdvisor()).isNull();
         }
     }
 
@@ -231,5 +276,12 @@ class StandardDirectionsOrderControllerDateOfIssueMidEventTest extends AbstractC
 
     private List<Element<Direction>> buildDirections(List<Direction> directions) {
         return directions.stream().map(ElementUtils::element).collect(toList());
+    }
+
+    private JudgeAndLegalAdvisor buildJudgeAndLegalAdvisor() {
+        return JudgeAndLegalAdvisor.builder()
+            .judgeTitle(HIS_HONOUR_JUDGE)
+            .judgeLastName("Davidson")
+            .build();
     }
 }

@@ -209,7 +209,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
         given(featureToggleService.isSendNoticeOfProceedingsFromSdo())
             .willReturn(false);
 
-        standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedSDOandNoticeOfProceedings(
+        standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedSDOAndNoticeOfProceedings(
             new StandardDirectionsOrderIssuedEvent(caseData));
 
         verify(notificationService).sendEmail(
@@ -239,7 +239,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
         given(featureToggleService.isSendNoticeOfProceedingsFromSdo())
             .willReturn(true);
 
-        standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedSDOandNoticeOfProceedings(
+        standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedSDOAndNoticeOfProceedings(
             new StandardDirectionsOrderIssuedEvent(caseData));
 
         verify(notificationService).sendEmail(
@@ -265,7 +265,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
         given(standardDirectionOrderIssuedEmailContentProvider.buildNotificationParametersForAllocatedJudge(caseData))
             .willReturn(expectedParameters);
 
-        standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedSDOandNoticeOfProceedings(
+        standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedSDOAndNoticeOfProceedings(
             new StandardDirectionsOrderIssuedEvent(caseData));
 
         verifyNoInteractions(notificationService);
@@ -285,7 +285,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
         given(standardDirectionOrderIssuedEmailContentProvider.buildNotificationParametersForAllocatedJudge(caseData))
             .willReturn(expectedParameters);
 
-        standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedSDOandNoticeOfProceedings(
+        standardDirectionsOrderIssuedEventHandler.notifyAllocatedJudgeOfIssuedSDOAndNoticeOfProceedings(
             new StandardDirectionsOrderIssuedEvent(caseData));
 
         verifyNoInteractions(notificationService);

@@ -80,19 +80,20 @@ public class StandardDirectionsOrderService {
         return builder.build();
     }
 
-
-    public JudgeAndLegalAdvisor getSdoJudgeAndLegalAdvisor(CaseData caseData) {
+    public JudgeAndLegalAdvisor getJudgeAndLegalAdvisorFromSDO(CaseData caseData) {
         StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
 
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder().build();
+
         if (standardDirectionOrder != null) {
-            return caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor();
+            judgeAndLegalAdvisor = standardDirectionOrder.getJudgeAndLegalAdvisor();
         }
 
         if (isNotEmpty(caseData.getAllocatedJudge())) {
-            return prepareJudge(caseData);
+            judgeAndLegalAdvisor = prepareJudge(caseData);
         }
 
-        return JudgeAndLegalAdvisor.builder().build();
+        return judgeAndLegalAdvisor;
     }
 
     private JudgeAndLegalAdvisor prepareJudge(CaseData caseData) {
