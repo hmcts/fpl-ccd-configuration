@@ -22,7 +22,9 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFromStringUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.prepareJudgeFields;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -58,7 +60,13 @@ public class StandardDirectionsOrderService {
             .orderDoc(document);
 
         if (featureToggleService.isSendNoticeOfProceedingsFromSdo()) {
-            builder.judgeAndLegalAdvisor(caseData.getJudgeAndLegalAdvisor());
+            JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
+                caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()
+            );
+
+            removeAllocatedJudgeProperties(judgeAndLegalAdvisor);
+
+            builder.judgeAndLegalAdvisor(judgeAndLegalAdvisor);
         }
 
         return builder.build();
