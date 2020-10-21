@@ -6,6 +6,7 @@ const dateFormat = require('dateformat');
 const changeRequestReason = 'Timetable for the proceedings is incomplete';
 const returnedStatus = 'Returned';
 const withJudgeStatus = 'With judge for approval';
+const draftStatus = 'Draft order, to review before hearing';
 const linkLabel = 'Review agreed CMO';
 
 let caseId;
@@ -18,18 +19,21 @@ BeforeSuite(async (I) => {
   today = new Date();
 });
 
-Scenario('Local authority sends agreed CMOs to judge', async (I, caseViewPage, uploadCaseManagementOrderEventPage) => {
+Scenario('Local authority sends agreed CMOs to judge @f', async (I, caseViewPage, uploadCaseManagementOrderEventPage) => {
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
-  await cmoHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, '1 January 2020', true);
-  I.seeEventSubmissionConfirmation(config.applicationActions.uploadCMO);
-  await cmoHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage);
-  I.seeEventSubmissionConfirmation(config.applicationActions.uploadCMO);
+  await cmoHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, 'Case management hearing, 1 January 2020');
+  await cmoHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, 'Case management hearing, 1 March 2020');
+
+  const supportingDocs = {name: 'case summary', notes: 'this is the case summary', file: config.testFile};
+
+  await cmoHelper.localAuthorityUploadsDraftCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, 'Case management hearing, 1 January 2050', supportingDocs);
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   assertDraftCMO(I, '1', '1 January 2020', withJudgeStatus);
   assertDraftCMO(I, '2', '1 March 2020', withJudgeStatus);
+  assertDraftCMO(I, '3', '1 January 2050', draftStatus, );
 });
 
-Scenario('Judge makes changes to agreed CMO and seals', async (I, caseViewPage, reviewAgreedCaseManagementOrderEventPage) => {
+Scenario('Judge makes changes to agreed CMO and seals @f', async (I, caseViewPage, reviewAgreedCaseManagementOrderEventPage) => {
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.reviewAgreedCmo);
   reviewAgreedCaseManagementOrderEventPage.selectCMOToReview('1 March 2020');
@@ -43,7 +47,7 @@ Scenario('Judge makes changes to agreed CMO and seals', async (I, caseViewPage, 
   assertSealedCMO(I, '1', '1 March 2020');
 });
 
-Scenario('Judge sends agreed CMO back to the local authority', async (I, caseViewPage, reviewAgreedCaseManagementOrderEventPage) => {
+Scenario('Judge sends agreed CMO back to the local authority @f', async (I, caseViewPage, reviewAgreedCaseManagementOrderEventPage) => {
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   await I.startEventViaHyperlink(linkLabel);
@@ -80,8 +84,8 @@ Scenario('Judge seals and sends the agreed CMO to parties', async (I, caseViewPa
   assertDocumentSentToParties(I);
 });
 
-const assertDraftCMO = function (I, collectionId, hearingDate, status) {
-  const draftCMO = `Draft Case Management Order ${collectionId}`;
+const assertDraftCMO = function (I, collectionId, hearingDate, status, supportingDocs) {
+  const draftCMO = `Draft case management order ${collectionId}`;
 
   I.seeInTab([draftCMO, 'Order'], 'mockFile.docx');
   I.seeInTab([draftCMO, 'Hearing'], `Case management hearing, ${hearingDate}`);
@@ -91,6 +95,12 @@ const assertDraftCMO = function (I, collectionId, hearingDate, status) {
 
   if (status === returnedStatus) {
     I.seeInTab([draftCMO, 'Changes requested by judge'], changeRequestReason);
+  }
+
+  if (supportingDocs) {
+    I.seeInTab([draftCMO, 'Case summary or supporting documents 1', 'Document name'], supportingDocs.name);
+    I.seeInTab([draftCMO, 'Case summary or supporting documents 1', 'Notes'], supportingDocs.notes);
+    I.seeInTab([draftCMO, 'Case summary or supporting documents 1', 'File'], supportingDocs.file);
   }
 };
 
