@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.DocumentService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
 import uk.gov.hmcts.reform.fpl.service.OrderValidationService;
 import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForDataStoreService;
@@ -42,7 +43,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -53,9 +53,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
-import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
-import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.prepareJudgeFields;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
 
 // TODO: 03/09/2020 refactor logic into sdo service
@@ -74,6 +72,7 @@ public class StandardDirectionsOrderController extends CallbackController {
     private final StandardDirectionsService standardDirectionsService;
     private final StandardDirectionsOrderService sdoService;
     private final NoticeOfProceedingsService noticeOfProceedingsService;
+    private final FeatureToggleService featureToggleService;
 
     private static final String JUDGE_AND_LEGAL_ADVISOR_KEY = "judgeAndLegalAdvisor";
 
@@ -90,6 +89,10 @@ public class StandardDirectionsOrderController extends CallbackController {
                 case UPLOAD:
                     data.put("currentSDO", standardDirectionOrder.getOrderDoc());
                     data.put("useUploadRoute", YES);
+
+                    if (featureToggleService.isSendNoticeOfProceedingsFromSdo()) {
+                        data.put(JUDGE_AND_LEGAL_ADVISOR_KEY, sdoService.getSdoJudgeAndLegalAdvisor(caseData));
+                    }
                     break;
                 case SERVICE:
                     data.put("dateOfIssue", sdoService.generateDateOfIssue(standardDirectionOrder));
@@ -119,6 +122,10 @@ public class StandardDirectionsOrderController extends CallbackController {
             data.remove("preparedSDO");
         }
 
+        if (featureToggleService.isSendNoticeOfProceedingsFromSdo()) {
+            caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, sdoService.getSdoJudgeAndLegalAdvisor(caseData));
+        }
+
         return respond(caseDetails);
     }
 
@@ -138,15 +145,7 @@ public class StandardDirectionsOrderController extends CallbackController {
         Stream.of(DirectionAssignee.values()).forEach(assignee ->
             caseDetails.getData().put(assignee.toHearingDateField(), hearingDate));
 
-        StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
-
-        if (standardDirectionOrder != null) {
-            caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, standardDirectionOrder.getJudgeAndLegalAdvisor());
-        }
-
-        if (isNotEmpty(caseData.getAllocatedJudge())) {
-            caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, prepareJudge(caseData));
-        }
+        caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, sdoService.getSdoJudgeAndLegalAdvisor(caseData));
 
         return respond(caseDetails);
     }
@@ -296,20 +295,6 @@ public class StandardDirectionsOrderController extends CallbackController {
             Map.of("documentToBeSent", standardDirectionOrder.getOrderDoc())
         );
         publishEvent(new StandardDirectionsOrderIssuedEvent(caseData));
-    }
-
-    private JudgeAndLegalAdvisor prepareJudge(CaseData caseData) {
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder().build();
-
-        if (isNotEmpty(caseData.getStandardDirectionOrder())
-            && isNotEmpty(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor())) {
-            judgeAndLegalAdvisor = prepareJudgeFields(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor(),
-                caseData.getAllocatedJudge());
-        }
-
-        judgeAndLegalAdvisor.setAllocatedJudgeLabel(buildAllocatedJudgeLabel(caseData.getAllocatedJudge()));
-
-        return judgeAndLegalAdvisor;
     }
 
     private String getFirstHearingStartDate(CaseData caseData) {

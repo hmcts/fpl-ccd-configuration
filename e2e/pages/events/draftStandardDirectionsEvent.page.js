@@ -32,7 +32,7 @@ module.exports = {
 
   async createSDOThroughUpload() {
     await I.click(this.fields.routingRadioGroup.upload);
-    await I.retryUntilExists(() => I.click('Continue'), this.fields.file.preparedSDO);
+    await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeAndLegalAdvisor');
   },
 
   async uploadPreparedSDO(file) {
@@ -57,7 +57,6 @@ module.exports = {
   async useAllocatedJudge(legalAdvisorName) {
     judgeAndLegalAdvisor.useAllocatedJudge();
     judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName);
-    await I.retryUntilExists(() => I.click('Continue'), '#allParties');
   },
 
   async enterDatesForDirections(direction) {

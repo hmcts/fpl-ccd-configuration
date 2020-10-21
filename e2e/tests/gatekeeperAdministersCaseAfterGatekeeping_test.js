@@ -142,6 +142,7 @@ Scenario('Gatekeeper drafts standard directions', async (I, caseViewPage, draftS
   await draftStandardDirectionsEventPage.createSDOThroughService();
   await draftStandardDirectionsEventPage.skipDateOfIssue();
   await draftStandardDirectionsEventPage.useAllocatedJudge('Bob Ross');
+  await I.retryUntilExists(() => I.click('Continue'), '#allParties');
   await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
   await draftStandardDirectionsEventPage.markAsDraft();
   await I.completeEvent('Save and continue');
@@ -156,6 +157,7 @@ Scenario('Gatekeeper submits final version of standard directions', async (I, ca
   await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
   await draftStandardDirectionsEventPage.enterDateOfIssue({day: 11, month: 1, year: 2020});
   await draftStandardDirectionsEventPage.useAllocatedJudge('Bob Ross');
+  await I.retryUntilExists(() => I.click('Continue'), '#allParties');
   await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
   await draftStandardDirectionsEventPage.markAsFinal();
   draftStandardDirectionsEventPage.checkC6();
