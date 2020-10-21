@@ -8,13 +8,13 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.cmo.UploadCMOController;
+import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.service.notify.NotificationClient;
 
@@ -28,10 +28,11 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_DRAFT_UPLOADED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -40,7 +41,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @ActiveProfiles("integration-test")
 @WebMvcTest(UploadCMOController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class UploadCMOSubmittedControllerTest extends AbstractControllerTest {
+class UploadCMOSubmittedControllerTest extends AbstractUploadCMOControllerTest {
 
     private static final DocumentReference DOCUMENT_REFERENCE = DocumentReference.builder()
         .binaryUrl("FAKE BINARY")
@@ -60,6 +61,7 @@ public class UploadCMOSubmittedControllerTest extends AbstractControllerTest {
         super("upload-cmo");
     }
 
+    // TODO: 21/10/2020 Can be removed when FPLA-2019 toggled on
     @Test
     void shouldNotSendNotificationIfNoChange() {
         CaseData caseData = CaseData.builder()
@@ -78,8 +80,8 @@ public class UploadCMOSubmittedControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldSendNotificationsIfNewCMOUploaded() {
-        CallbackRequest callbackRequest = callbackRequest();
+    void shouldSendNotificationsIfNewAgreedCMOUploaded() {
+        CallbackRequest callbackRequest = callbackRequest(SEND_TO_JUDGE);
 
         postSubmittedEvent(callbackRequest);
 
@@ -100,7 +102,21 @@ public class UploadCMOSubmittedControllerTest extends AbstractControllerTest {
         });
     }
 
-    private CallbackRequest callbackRequest() {
+    @Test
+    void shouldSendToJudgeIfDraftCMOUploaded() {
+        CallbackRequest callbackRequest = callbackRequest(DRAFT);
+
+        postSubmittedEvent(callbackRequest);
+
+        checkUntil(() -> verify(notificationClient).sendEmail(
+            eq(CMO_DRAFT_UPLOADED_NOTIFICATION_TEMPLATE),
+            eq(JUDGE_EMAIL),
+            anyMap(),
+            eq(NOTIFICATION_REFERENCE)
+        ));
+    }
+
+    private CallbackRequest callbackRequest(CMOStatus status) {
         List<Element<HearingBooking>> hearingsBefore = hearings(LocalDateTime.of(2020, 11, 3, 12, 0));
         List<Element<HearingBooking>> hearings = hearings(
             LocalDateTime.of(2020, 11, 3, 12, 0),
@@ -113,7 +129,7 @@ public class UploadCMOSubmittedControllerTest extends AbstractControllerTest {
             .draftUploadedCMOs(List.of())
             .build();
 
-        Element<CaseManagementOrder> order = element(order(hearings));
+        Element<CaseManagementOrder> order = element(order(hearings.get(0).getValue(), status));
 
         hearings.get(0).getValue().setCaseManagementOrderId(order.getId());
 
@@ -134,16 +150,13 @@ public class UploadCMOSubmittedControllerTest extends AbstractControllerTest {
         CaseDetails caseDetails = asCaseDetails(caseData);
         caseDetails.setId(CASE_ID);
 
-        return CallbackRequest.builder()
-            .caseDetails(caseDetails)
-            .caseDetailsBefore(asCaseDetails(caseDataBefore))
-            .build();
+        return toCallBackRequest(caseDetails, asCaseDetails(caseDataBefore));
     }
 
-    private CaseManagementOrder order(List<Element<HearingBooking>> hearings) {
+    private CaseManagementOrder order(HearingBooking hearing, CMOStatus status) {
         return CaseManagementOrder.builder()
-            .status(SEND_TO_JUDGE)
-            .hearing(hearings.get(0).getValue().toLabel(DATE))
+            .status(status)
+            .hearing(hearing.toLabel(DATE))
             .order(DOCUMENT_REFERENCE)
             .dateSent(dateNow())
             .build();
@@ -151,26 +164,15 @@ public class UploadCMOSubmittedControllerTest extends AbstractControllerTest {
 
     private List<Element<HearingBooking>> hearings(LocalDateTime startDate) {
         return List.of(
-            element(hearing(startDate)),
-            element(hearing(startDate.plusDays(1)))
+            hearing(startDate),
+            hearing(startDate.plusDays(1))
         );
     }
 
     private List<Element<HearingBooking>> hearings(LocalDateTime startDate, UUID id1, UUID id2) {
         return List.of(
-            element(id1, hearing(startDate)),
-            element(id2, hearing(startDate.plusDays(1)))
+            hearing(id1, startDate),
+            hearing(id2, startDate.plusDays(1))
         );
-    }
-
-    private HearingBooking hearing(LocalDateTime startDate) {
-        return HearingBooking.builder()
-            .type(CASE_MANAGEMENT)
-            .startDate(startDate)
-            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
-                .judgeLastName("Judy")
-                .build())
-            .build();
     }
 }
