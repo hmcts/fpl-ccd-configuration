@@ -76,16 +76,16 @@ public abstract class AbstractUploadCMOControllerTest extends AbstractController
         );
     }
 
+    protected Element<HearingBooking> hearingWithCMOId(LocalDateTime startDate, UUID cmoId) {
+        return element(hearing(startDate, cmoId));
+    }
+
     protected Element<HearingBooking> hearing(UUID hearingId, LocalDateTime startDate) {
         return element(hearingId, hearing(startDate, null));
     }
 
     protected Element<HearingBooking> hearing(LocalDateTime startDate) {
         return hearingWithCMOId(startDate, null);
-    }
-
-    protected Element<HearingBooking> hearingWithCMOId(LocalDateTime startDate, UUID cmoId) {
-        return element(hearing(startDate, cmoId));
     }
 
     private HearingBooking hearing(LocalDateTime startDate, UUID cmoId) {

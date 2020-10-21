@@ -280,8 +280,7 @@ class UploadCMOServiceTest {
                 .dateSent(time.now().toLocalDate())
                 .order(DOCUMENT)
                 .status(DRAFT)
-                .build()
-            );
+                .build());
 
         assertThat(hearings).hasSize(3)
             .first()
@@ -631,8 +630,7 @@ class UploadCMOServiceTest {
                 .order(DOCUMENT)
                 .status(SEND_TO_JUDGE)
                 .supportingDocs(List.of())
-                .build()
-            );
+                .build());
 
         assertThat(hearings).hasSize(3)
             .first()
