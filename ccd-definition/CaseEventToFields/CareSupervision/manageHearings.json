@@ -159,7 +159,7 @@
     "CaseEventID": "manageHearings",
     "CaseFieldID": "noticeOfHearingNotes",
     "PageFieldDisplayOrder": 2,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "OPTIONAL",
     "PageID": "SendNoticeOfHearing",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 4,
