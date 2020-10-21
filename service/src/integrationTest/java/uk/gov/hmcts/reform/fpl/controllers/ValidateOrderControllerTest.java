@@ -143,7 +143,7 @@ class ValidateOrderControllerTest extends AbstractControllerTest {
     void shouldReturnErrorsWhenTheEPOEndDateIsNotWithinTheNextEightDays() {
         CaseData caseData = CaseData.builder().dateAndTimeOfIssue(now()).epoEndDate(now().plusDays(9)).build();
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "epo-end-date");
-        assertThat(callbackResponse.getErrors()).containsOnlyOnce("Date must be within the next 8 days");
+        assertThat(callbackResponse.getErrors()).containsOnlyOnce("Date must be within 8 days of the order date");
     }
 
     @Test

@@ -39,6 +39,8 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -93,6 +95,7 @@ public class GeneratedOrderController extends CallbackController {
             data.put("pageShow", caseData.getAllChildren().size() <= 1 ? "No" : "Yes");
 
             data.put("dateOfIssue", time.now().toLocalDate());
+            data.put("dateAndTimeOfIssue", LocalDateTime.of(time.now().toLocalDate(), LocalTime.of(0, 0, 0)));
 
             if (caseData.getAllocatedJudge() != null) {
                 data.put("judgeAndLegalAdvisor", setAllocatedJudgeLabel(caseData.getAllocatedJudge()));
@@ -246,6 +249,7 @@ public class GeneratedOrderController extends CallbackController {
             removeAllocatedJudgeProperties(judgeAndLegalAdvisor);
 
             orders.add(element(service.buildCompleteOrder(orderTypeAndDocument, judgeAndLegalAdvisor, caseData)));
+            orders.add(element(service.buildCompleteOrder(orderTypeAndDocument, judgeAndLegalAdvisor, caseData)));
         } else {
             typeAndDocument.setDocument(caseData.getUploadedOrder());
 
@@ -310,7 +314,6 @@ public class GeneratedOrderController extends CallbackController {
 
         DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(
             orderTemplateData, typeAndDoc.getDocmosisTemplate());
-
 
         Document document = uploadDocumentService.uploadPDF(docmosisDocument.getBytes(),
             service.generateOrderDocumentFileName(typeAndDoc.getType(), typeAndDoc.getSubtype()));

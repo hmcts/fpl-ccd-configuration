@@ -30,7 +30,7 @@ public class TimeRangeValidatorTest extends TimeValidatorTest {
             .epoEndDate(time.now().plusDays(9))
             .build();
         List<String> errorMessages = validateGroupService.validateGroup(caseData, EPOEndDateGroup.class);
-        assertThat(errorMessages).containsExactly("Date must be within the next 8 days");
+        assertThat(errorMessages).containsExactly("Date must be within 8 days of the order date");
     }
 
     @Test

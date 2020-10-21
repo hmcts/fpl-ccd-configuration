@@ -56,9 +56,11 @@ public class GeneratedOrderControllerAboutToStartTest extends AbstractController
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
         assertThat(callbackResponse.getErrors()).isEmpty();
-        assertThat(callbackResponse.getData().get("dateOfIssue")).isEqualTo(dateNow().toString());
+        assertThat(caseData.getDateOfIssue()).isEqualTo(dateNow().toString());
+        assertThat(caseData.getDateAndTimeOfIssue()).isEqualToIgnoringSeconds(dateNow().atStartOfDay());
     }
 
     @Test
