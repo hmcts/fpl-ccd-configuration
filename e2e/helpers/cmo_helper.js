@@ -5,23 +5,6 @@ const localAuthoritySendsAgreedCmo = async (I, caseViewPage, uploadCMOEventPage,
     uploadCMOEventPage.selectAgreedCMO();
     uploadCMOEventPage.selectPastHearing(hearing);
   });
-
-  // await caseViewPage.goToNewActions(config.applicationActions.uploadCMO);
-  // await I.waitFor(uploadCMOEventPage.fields.cmoUploadType.id);
-  // uploadCMOEventPage.selectAgreedCMO();
-  // uploadCMOEventPage.selectPastHearing(hearing);
-  // await I.retryUntilExists(() => I.click('Continue'), '#uploadedCaseManagementOrder');
-  // uploadCMOEventPage.checkCMOInfo(hearing);
-  // await uploadCMOEventPage.uploadCaseManagementOrder(config.testWordFile);
-  //
-  // if (supportingDocs) {
-  //   await uploadCMOEventPage.attachSupportingDocs(supportingDocs);
-  // }
-  //
-  // await I.retryUntilExists(() => I.click('Continue'), 'ccd-read-document-field');
-  // uploadCMOEventPage.checkCMOInfo('mockFile.docx', 'Her Honour Judge Reed');
-  // await I.completeEvent('Submit');
-  // I.seeEventSubmissionConfirmation(config.applicationActions.uploadCMO);
 };
 
 const localAuthorityUploadsDraftCmo = async (I, caseViewPage, uploadCMOEventPage, hearing, supportingDocs) => {
@@ -29,21 +12,6 @@ const localAuthorityUploadsDraftCmo = async (I, caseViewPage, uploadCMOEventPage
     uploadCMOEventPage.selectDraftCMO();
     uploadCMOEventPage.selectFutureHearing(hearing);
   });
-
-  // await caseViewPage.goToNewActions(config.applicationActions.uploadCMO);
-  // await I.waitFor(uploadCMOEventPage.fields.cmoUploadType.id);
-  // uploadCMOEventPage.selectDraftCMO();
-  // uploadCMOEventPage.selectFutureHearing(hearing);
-  // await I.retryUntilExists(() => I.click('Continue'), '#uploadedCaseManagementOrder');
-  // await uploadCMOEventPage.uploadCaseManagementOrder(config.testWordFile);
-  //
-  // if (supportingDocs) {
-  //   await uploadCMOEventPage.attachSupportingDocs(supportingDocs);
-  // }
-  // await I.retryUntilExists(() => I.click('Continue'), 'ccd-read-document-field');
-  // uploadCMOEventPage.checkCMOInfo('mockFile.docx', 'Her Honour Judge Reed');
-  // await I.completeEvent('Submit');
-  // I.seeEventSubmissionConfirmation(config.applicationActions.uploadCMO);
 };
 
 const judgeSendsReviewedCmoToAllParties = async (I, caseId, caseViewPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage) => {
