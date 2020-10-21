@@ -29,7 +29,7 @@ class SelectorDeserializerTest extends DeserializerTest {
 
     @ParameterizedTest
     @MethodSource("createSelectorWithArrays")
-    void testSelectorDataCreatedWithArrays(String jsonString) throws JsonProcessingException {
+    void shouldCreateEmptySelector(String jsonString) throws JsonProcessingException {
         Selector actual = mapper.readValue(jsonString, Selector.class);
         Selector expected = Selector.builder().build();
         assertThat(actual).isEqualTo(expected);

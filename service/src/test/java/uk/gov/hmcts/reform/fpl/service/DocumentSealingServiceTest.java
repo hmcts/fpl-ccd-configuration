@@ -99,9 +99,7 @@ class DocumentSealingServiceTest {
             .thenReturn(inputDocumentBinaries);
         when(documentConversionService.convertToPdf(inputDocumentBinaries, fileName)).thenReturn(notPdf);
 
-        final Exception exception = assertThrows(Exception.class,
-            () -> documentSealingService.sealDocument(inputDocumentReference));
-
-        assertThat(exception).isInstanceOf(UncheckedIOException.class);
+        assertThrows(UncheckedIOException.class, () ->
+            documentSealingService.sealDocument(inputDocumentReference));
     }
 }
