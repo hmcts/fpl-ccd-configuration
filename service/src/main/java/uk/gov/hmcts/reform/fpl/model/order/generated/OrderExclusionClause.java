@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class ExclusionClause {
+public class OrderExclusionClause {
     private final String exclusionClauseNeeded;
     private final String exclusionClause;
 }

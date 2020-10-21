@@ -98,7 +98,8 @@ class FeeServiceTest {
                     "", Request.create(GET, EMPTY, Map.of(), new byte[]{}, UTF_8), new byte[]{})
                 );
 
-            assertThrows(FeeRegisterException.class, () -> feeService.getFees(List.of(CARE_ORDER)));
+            List<FeeType> feeTypes = List.of(CARE_ORDER);
+            assertThrows(FeeRegisterException.class, () -> feeService.getFees(feeTypes));
         }
 
         @AfterEach
@@ -167,8 +168,9 @@ class FeeServiceTest {
                     "", Request.create(GET, EMPTY, Map.of(), new byte[] {}, UTF_8), new byte[] {})
                 );
 
-            assertThrows(FeeRegisterException.class, () -> feeService.getFeesDataForOrders(Orders.builder()
-                .orderType(List.of(OrderType.CARE_ORDER)).build()));
+            Orders orders = Orders.builder()
+                .orderType(List.of(OrderType.CARE_ORDER)).build();
+            assertThrows(FeeRegisterException.class, () -> feeService.getFeesDataForOrders(orders));
         }
 
         @Test

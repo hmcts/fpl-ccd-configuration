@@ -30,10 +30,10 @@ import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.event.UploadCMOEventData;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.model.order.generated.ExclusionClause;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
+import uk.gov.hmcts.reform.fpl.model.order.generated.OrderExclusionClause;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.IncrementalInteger;
@@ -252,7 +252,7 @@ public class CaseData {
     private final Map<String, C2ApplicationType> c2ApplicationType;
     private final OrderTypeAndDocument orderTypeAndDocument;
     private final FurtherDirections orderFurtherDirections;
-    private final ExclusionClause orderExclusionClause;
+    private final OrderExclusionClause orderExclusionClause;
     private final GeneratedOrder order;
     private final DocumentReference uploadedOrder;
     @JsonIgnore
@@ -357,7 +357,7 @@ public class CaseData {
 
     @JsonIgnore
     public String getExclusionClauseText() {
-        return Optional.ofNullable(orderExclusionClause).map(ExclusionClause::getExclusionClause).orElse("");
+        return Optional.ofNullable(orderExclusionClause).map(OrderExclusionClause::getExclusionClause).orElse("");
     }
 
     private final List<Element<Child>> confidentialChildren;
@@ -454,7 +454,7 @@ public class CaseData {
 
     public HearingBooking getMostUrgentHearingBookingAfter(LocalDateTime time) {
         return unwrapElements(hearingDetails).stream()
-            .filter(hearing -> hearing.getStartDate().isAfter(time))
+            .filter(hearingBooking -> hearingBooking.getStartDate().isAfter(time))
             .min(comparing(HearingBooking::getStartDate))
             .orElseThrow(NoHearingBookingException::new);
     }
