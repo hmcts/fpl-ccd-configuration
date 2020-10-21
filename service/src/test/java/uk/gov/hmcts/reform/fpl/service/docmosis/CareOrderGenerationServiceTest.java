@@ -12,9 +12,9 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
-import uk.gov.hmcts.reform.fpl.model.order.generated.ExclusionClause;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
+import uk.gov.hmcts.reform.fpl.model.order.generated.OrderExclusionClause;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
@@ -94,9 +94,9 @@ class CareOrderGenerationServiceTest extends AbstractOrderGenerationServiceTest 
                 .directions("Example Directions")
                 .build())
             .orderAppliesToAllChildren(YES.getValue())
-            .orderExclusionClause(ExclusionClause.builder()
+            .orderExclusionClause(OrderExclusionClause.builder()
                 .exclusionClauseNeeded("Yes")
-                .exclusionClauseText(EXAMPLE_EXCLUSION_CLAUSE)
+                .exclusionClause(EXAMPLE_EXCLUSION_CLAUSE)
                 .build())
             .interimEndDate(InterimEndDate.builder().type(END_OF_PROCEEDINGS).build());
 

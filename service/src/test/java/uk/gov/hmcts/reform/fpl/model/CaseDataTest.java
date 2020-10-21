@@ -12,8 +12,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.model.order.generated.ExclusionClause;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
+import uk.gov.hmcts.reform.fpl.model.order.generated.OrderExclusionClause;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -329,8 +329,8 @@ class CaseDataTest {
 
     @Test
     void testGetExclusionClauseTextIfExists() {
-        CaseData underTest = CaseData.builder().orderExclusionClause(ExclusionClause.builder()
-            .exclusionClauseText(EXCLUSION_CLAUSE)
+        CaseData underTest = CaseData.builder().orderExclusionClause(OrderExclusionClause.builder()
+            .exclusionClause(EXCLUSION_CLAUSE)
             .build()).build();
 
         assertThat(underTest.getExclusionClauseText()).isEqualTo(EXCLUSION_CLAUSE);
