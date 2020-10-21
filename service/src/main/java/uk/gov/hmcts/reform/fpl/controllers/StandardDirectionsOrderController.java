@@ -72,6 +72,8 @@ public class StandardDirectionsOrderController extends CallbackController {
     private final StandardDirectionsOrderService sdoService;
 
     private static final String JUDGE_AND_LEGAL_ADVISOR_KEY = "judgeAndLegalAdvisor";
+    private static final String STANDARD_DIRECTION_ORDER_KEY = "standardDirectionOrder";
+    private static final String DATE_OF_ISSUE_KEY = "dateOfIssue";
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -88,7 +90,7 @@ public class StandardDirectionsOrderController extends CallbackController {
                     data.put("useUploadRoute", YES);
                     break;
                 case SERVICE:
-                    data.put("dateOfIssue", sdoService.generateDateOfIssue(standardDirectionOrder));
+                    data.put(DATE_OF_ISSUE_KEY, sdoService.generateDateOfIssue(standardDirectionOrder));
                     data.put("useServiceRoute", YES);
                     break;
                 default:
@@ -106,7 +108,7 @@ public class StandardDirectionsOrderController extends CallbackController {
         Map<String, Object> data = caseDetails.getData();
 
         if (caseData.getSdoRouter() == SERVICE) {
-            data.put("dateOfIssue", sdoService.generateDateOfIssue(caseData.getStandardDirectionOrder()));
+            data.put(DATE_OF_ISSUE_KEY, sdoService.generateDateOfIssue(caseData.getStandardDirectionOrder()));
         }
 
         // see RDM-9147
@@ -171,7 +173,7 @@ public class StandardDirectionsOrderController extends CallbackController {
         order.setDirectionsToEmptyList();
         order.setOrderDocReferenceFromDocument(document);
 
-        caseDetails.getData().put("standardDirectionOrder", order);
+        caseDetails.getData().put(STANDARD_DIRECTION_ORDER_KEY, order);
 
         return respond(caseDetails);
     }
@@ -187,7 +189,7 @@ public class StandardDirectionsOrderController extends CallbackController {
             caseDataBefore.getStandardDirectionOrder()
         );
 
-        caseDetails.getData().put("standardDirectionOrder", order);
+        caseDetails.getData().put(STANDARD_DIRECTION_ORDER_KEY, order);
 
         return respond(caseDetails);
     }
@@ -244,10 +246,10 @@ public class StandardDirectionsOrderController extends CallbackController {
             order = sdoService.buildOrderFromUpload(currentOrder);
         }
 
-        data.put("standardDirectionOrder", order);
+        data.put(STANDARD_DIRECTION_ORDER_KEY, order);
         removeTemporaryFields(caseDetails,
             JUDGE_AND_LEGAL_ADVISOR_KEY,
-            "dateOfIssue",
+            DATE_OF_ISSUE_KEY,
             "preparedSDO",
             "currentSDO",
             "replacementSDO",
