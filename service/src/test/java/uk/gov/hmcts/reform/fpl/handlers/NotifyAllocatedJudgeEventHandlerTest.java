@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.AllocatedJudgeContentProvid
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ALLOCATED_JUDGE_TEMPLATE_WITH_FM_ID;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ALLOCATED_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.getExpectedAllocatedJudgeNotificationParameters;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 
@@ -44,7 +44,7 @@ class NotifyAllocatedJudgeEventHandlerTest {
         notifyAllocatedJudgeEventHandler.notifyAllocatedJudge(new NotifyAllocatedJudgeEvent(caseData));
 
         verify(notificationService).sendEmail(
-            ALLOCATED_JUDGE_TEMPLATE_WITH_FM_ID,
+            ALLOCATED_JUDGE_TEMPLATE,
             ALLOCATED_JUDGE_EMAIL_ADDRESS,
             expectedParameters,
             caseData.getId().toString());
