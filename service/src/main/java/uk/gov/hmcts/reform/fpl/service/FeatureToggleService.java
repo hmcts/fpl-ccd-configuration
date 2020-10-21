@@ -17,6 +17,8 @@ public class FeatureToggleService {
     private final String ldUserKey;
     private final String environment;
 
+    private static final String LOCAL_AUTHORITY_NAME_KEY = "localAuthorityName";
+
     @Autowired
     public FeatureToggleService(LDClient ldClient, @Value("${ld.user_key}") String ldUserKey,
                                 @Value("${fpl.env}") String environment) {
@@ -31,7 +33,7 @@ public class FeatureToggleService {
 
     public boolean isCtscEnabled(String localAuthorityName) {
         return ldClient.boolVariation("CTSC",
-            createLDUser(Map.of("localAuthorityName", LDValue.of(localAuthorityName))), false);
+            createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
     }
 
     public boolean isCtscReportEnabled() {
@@ -64,17 +66,17 @@ public class FeatureToggleService {
 
     public boolean isAllowCaseCreationForUsersNotOnboardedToMOEnabled(String localAuthorityName) {
         return ldClient.boolVariation("allow-case-creation-for-users-not-onboarded-to-mo",
-            createLDUser(Map.of("localAuthorityName", LDValue.of(localAuthorityName))), false);
+            createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
     }
 
     public boolean isRestrictedFromCaseSubmission(String localAuthorityName) {
         return ldClient.boolVariation("restrict-case-submission",
-            createLDUser(Map.of("localAuthorityName", LDValue.of(localAuthorityName))), false);
+            createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
     }
 
     public boolean isSendLAEmailsToSolicitorEnabled(String localAuthorityName) {
         return ldClient.boolVariation("send-la-emails-to-solicitor",
-            createLDUser(Map.of("localAuthorityName", LDValue.of(localAuthorityName))), false);
+            createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
     }
 
     public boolean isSendNoticeOfProceedingsFromSdo() {

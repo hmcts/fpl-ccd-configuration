@@ -47,6 +47,7 @@ public class ManageHearingsService {
     private final HearingVenueLookUpService hearingVenueLookUpService;
     private final Time time;
 
+    private static final String PREVIOUS_HEARING_VENUE = "previousHearingVenue";
     public static final String FIRST_HEARING_FLAG = "firstHearingFlag";
     public static final String HEARING_DATE_LIST = "hearingDateList";
 
@@ -73,7 +74,7 @@ public class ManageHearingsService {
         Address customAddress = "OTHER".equals(previousHearingVenue.getHearingVenueId())
             ? previousHearingVenue.getAddress() : null;
 
-        data.put("previousHearingVenue",
+        data.put(PREVIOUS_HEARING_VENUE,
             PreviousHearingVenue.builder()
                 .previousVenue(hearingVenueLookUpService.buildHearingVenue(previousHearingVenue))
                 .newVenueCustomAddress(customAddress)
@@ -118,7 +119,7 @@ public class ManageHearingsService {
             caseFields.put("hearingVenue", hearingBooking.getVenue());
             caseFields.put("hearingVenueCustom", hearingBooking.getVenueCustomAddress());
         } else {
-            caseFields.put("previousHearingVenue", hearingBooking.getPreviousHearingVenue());
+            caseFields.put(PREVIOUS_HEARING_VENUE, hearingBooking.getPreviousHearingVenue());
         }
 
         return caseFields;
@@ -177,10 +178,10 @@ public class ManageHearingsService {
             "sendNoticeOfHearing",
             "judgeAndLegalAdvisor",
             "hasExistingHearings",
-            "hearingDateList",
+            HEARING_DATE_LIST,
             "hearingOption",
             "noticeOfHearingNotes",
-            "previousHearingVenue");
+            PREVIOUS_HEARING_VENUE);
     }
 
     private HearingBooking buildFirstHearing(CaseData caseData) {

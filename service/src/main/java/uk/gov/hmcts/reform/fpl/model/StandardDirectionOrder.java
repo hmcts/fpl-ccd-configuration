@@ -25,6 +25,7 @@ public class StandardDirectionOrder extends OrderForHearing implements IssuableO
     private final String uploader;
 
     @Builder
+    @SuppressWarnings("java:S107")
     public StandardDirectionOrder(String hearingDate,
                                   String dateOfIssue,
                                   List<Element<Direction>> directions,
