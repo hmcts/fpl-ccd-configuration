@@ -67,7 +67,7 @@ class StandardDirectionsOrderControllerUploadRouteMidEventTest extends AbstractC
     void shouldAppendJudgeAndLegalAdvisorToSDOWhenSendNoticeOfProceedingsFromSDOIsToggledOn() {
         given(featureToggleService.isSendNoticeOfProceedingsFromSdo()).willReturn(true);
 
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor();
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor("some label");
 
         CaseData caseDataBefore = CaseData.builder()
             .standardDirectionOrder(StandardDirectionOrder.builder().orderDoc(DOCUMENT).build())
@@ -79,10 +79,14 @@ class StandardDirectionsOrderControllerUploadRouteMidEventTest extends AbstractC
                 .build()),
             asCaseDetails(caseDataBefore)
         );
+
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(request, "upload-route");
         StandardDirectionOrder builtOrder = extractCaseData(response).getStandardDirectionOrder();
 
-        assertThat(builtOrder.getJudgeAndLegalAdvisor()).isEqualTo(judgeAndLegalAdvisor);
+        JudgeAndLegalAdvisor actualJudgeAndLegalAdvisor = builtOrder.getJudgeAndLegalAdvisor();
+
+        assertThat(actualJudgeAndLegalAdvisor.getAllocatedJudgeLabel()).isNull();
+        assertThat(actualJudgeAndLegalAdvisor).isEqualTo(buildJudgeAndLegalAdvisor());
     }
 
     @Test
@@ -109,6 +113,12 @@ class StandardDirectionsOrderControllerUploadRouteMidEventTest extends AbstractC
         return JudgeAndLegalAdvisor.builder()
             .judgeTitle(HIS_HONOUR_JUDGE)
             .judgeLastName("Davidson")
+            .build();
+    }
+
+    private JudgeAndLegalAdvisor buildJudgeAndLegalAdvisor(String allocatedJudgeLabel) {
+        return buildJudgeAndLegalAdvisor().toBuilder()
+            .allocatedJudgeLabel(allocatedJudgeLabel)
             .build();
     }
 }

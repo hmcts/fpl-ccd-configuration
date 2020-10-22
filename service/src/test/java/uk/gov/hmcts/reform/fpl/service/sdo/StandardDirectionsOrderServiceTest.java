@@ -28,9 +28,12 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.Constants.USER_AUTH_TOKEN;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @ExtendWith(MockitoExtension.class)
 class StandardDirectionsOrderServiceTest {
@@ -39,6 +42,8 @@ class StandardDirectionsOrderServiceTest {
     private static final DocumentReference WORD_DOC = DocumentReference.builder().filename("word.docx").build();
     private static final DocumentReference PDF_DOC = DocumentReference.builder().filename("doc.pdf").build();
     private static final Time TIME = new FixedTimeConfiguration().stoppedTime();
+    private static final String JUDGE_NAME = "Davidson";
+    private static final JudgeOrMagistrateTitle JUDGE_TITLE = HIS_HONOUR_JUDGE;
 
     @Mock
     private DocumentConversionService conversionService;
@@ -147,6 +152,7 @@ class StandardDirectionsOrderServiceTest {
 
         StandardDirectionOrder order = service.buildTemporarySDO(caseData, previousSDO);
 
+        assertThat(order.getJudgeAndLegalAdvisor().getAllocatedJudgeLabel()).isNull();
         assertThat(order.getJudgeAndLegalAdvisor()).isEqualTo(judgeAndLegalAdvisor);
     }
 
@@ -213,7 +219,7 @@ class StandardDirectionsOrderServiceTest {
     }
 
     @Test
-    void shouldSetJudgeAndLegalAdvisorWhenSendNoticeOfProceedingsToggleIsOn() throws Exception {
+    void shouldPersistJudgeAndLegalAdvisorWhenSendNoticeOfProceedingsToggleIsOn() throws Exception {
         given(sealingService.sealDocument(WORD_DOC)).willReturn(SEALED_DOC);
         mockIdamAndRequestData();
 
@@ -226,7 +232,7 @@ class StandardDirectionsOrderServiceTest {
     }
 
     @Test
-    void shouldNotSetJudgeAndLegalAdvisorWhenSendNoticeOfProceedingsToggleIsOff() throws Exception {
+    void shouldNotPersistJudgeAndLegalAdvisorWhenSendNoticeOfProceedingsToggleIsOff() throws Exception {
         given(sealingService.sealDocument(WORD_DOC)).willReturn(SEALED_DOC);
         mockIdamAndRequestData();
 
@@ -241,8 +247,8 @@ class StandardDirectionsOrderServiceTest {
     @Test
     void shouldReturnJudgeAndLegalAdvisorFromSDOWhenSDOContainsJudgeAndLegalAdvisor() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
-            .judgeTitle(HIS_HONOUR_JUDGE)
-            .judgeLastName("Davidson")
+            .judgeTitle(JUDGE_TITLE)
+            .judgeLastName(JUDGE_NAME)
             .build();
 
         CaseData caseData = CaseData.builder()
@@ -258,20 +264,68 @@ class StandardDirectionsOrderServiceTest {
 
     @Test
     void shouldPrepareJudgeAndLegalAdvisorLabelFromAllocatedJudgeWhenCMODoesNotExist() {
-        String judgeName = "Davidson";
-        JudgeOrMagistrateTitle judgeTitle = HIS_HONOUR_JUDGE;
-
         CaseData caseData = CaseData.builder()
             .allocatedJudge(Judge.builder()
-                .judgeTitle(judgeTitle)
-                .judgeLastName(judgeName)
+                .judgeTitle(JUDGE_TITLE)
+                .judgeLastName(JUDGE_NAME)
                 .build())
             .build();
 
-        JudgeAndLegalAdvisor judgeAndLegalAdvisorFields = service.getJudgeAndLegalAdvisorFromSDO(caseData);
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = service.getJudgeAndLegalAdvisorFromSDO(caseData);
 
-        assertThat(judgeAndLegalAdvisorFields.getAllocatedJudgeLabel())
-            .isEqualTo(String.format("Case assigned to: %s %s", judgeTitle.getLabel(), judgeName));
+        assertThat(judgeAndLegalAdvisor.getAllocatedJudgeLabel())
+            .isEqualTo(String.format("Case assigned to: %s %s", JUDGE_TITLE.getLabel(), JUDGE_NAME));
+    }
+
+    @Test
+    void shouldUpdateAllocatedJudgePropertiesOnSDOJudgeWhenAllocatedJudgeExists() {
+        CaseData caseData = CaseData.builder()
+            .standardDirectionOrder(StandardDirectionOrder.builder()
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                    .judgeLastName("Watson")
+                    .judgeTitle(HER_HONOUR_JUDGE)
+                    .build())
+                .build())
+            .allocatedJudge(Judge.builder()
+                .judgeTitle(JUDGE_TITLE)
+                .judgeLastName(JUDGE_NAME)
+                .build())
+            .build();
+
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = service.getJudgeAndLegalAdvisorFromSDO(caseData);
+
+        assertThat(judgeAndLegalAdvisor.getAllocatedJudgeLabel())
+            .isEqualTo(String.format("Case assigned to: %s %s", JUDGE_TITLE.getLabel(), JUDGE_NAME));
+
+        assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isEqualTo(NO.getValue());
+    }
+
+    @Test
+    void shouldSetIsUsingAllocatedJudgePropertyToYesWhenJudgeOnBothSDOAndAllocatedJudgeMatch() {
+        CaseData caseData = CaseData.builder()
+            .standardDirectionOrder(StandardDirectionOrder.builder()
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                    .judgeLastName(JUDGE_NAME)
+                    .judgeTitle(JUDGE_TITLE)
+                    .build())
+                .build())
+            .allocatedJudge(Judge.builder()
+                .judgeTitle(JUDGE_TITLE)
+                .judgeLastName(JUDGE_NAME)
+                .build())
+            .build();
+
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = service.getJudgeAndLegalAdvisorFromSDO(caseData);
+
+        assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isEqualTo(YES.getValue());
+    }
+
+    @Test
+    void shouldReturnEmptyJudgeIfJudgeOnSDOAndAllocatedJudgeDoNotExist() {
+        CaseData caseData = CaseData.builder().build();
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = service.getJudgeAndLegalAdvisorFromSDO(caseData);
+
+        assertThat(judgeAndLegalAdvisor).isEqualTo(JudgeAndLegalAdvisor.builder().build());
     }
 
     private StandardDirectionOrder buildStandardDirectionOrder(DocumentReference document, OrderStatus status,
@@ -302,8 +356,9 @@ class StandardDirectionsOrderServiceTest {
 
     private JudgeAndLegalAdvisor buildJudgeAndLegalAdvisor() {
         return JudgeAndLegalAdvisor.builder()
-            .judgeTitle(HIS_HONOUR_JUDGE)
-            .judgeLastName("Davidson")
+            .judgeTitle(JUDGE_TITLE)
+            .allocatedJudgeLabel("Some label")
+            .judgeLastName(JUDGE_NAME)
             .build();
     }
 }

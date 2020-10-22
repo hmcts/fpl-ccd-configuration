@@ -98,13 +98,13 @@ public class StandardDirectionsOrderService {
         }
 
         if (isNotEmpty(caseData.getAllocatedJudge())) {
-            judgeAndLegalAdvisor = prepareJudge(caseData);
+            judgeAndLegalAdvisor = prepareSDOJudgeFields(caseData);
         }
 
         return judgeAndLegalAdvisor;
     }
 
-    private JudgeAndLegalAdvisor prepareJudge(CaseData caseData) {
+    private JudgeAndLegalAdvisor prepareSDOJudgeFields(CaseData caseData) {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder().build();
 
         if (isNotEmpty(caseData.getStandardDirectionOrder())
