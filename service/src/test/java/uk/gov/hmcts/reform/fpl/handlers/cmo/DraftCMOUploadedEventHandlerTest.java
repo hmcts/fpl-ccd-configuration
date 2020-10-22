@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.fpl.handlers.cmo;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
@@ -42,13 +42,8 @@ class DraftCMOUploadedEventHandlerTest {
     private NotificationService notificationService;
     @Mock
     private DraftCMOUploadedContentProvider contentProvider;
-
+    @InjectMocks
     private DraftCMOUploadedEventHandler eventHandler;
-
-    @BeforeEach
-    void construct() {
-        eventHandler = new DraftCMOUploadedEventHandler(notificationService, contentProvider);
-    }
 
     @Test
     void shouldSendNotificationToJudgeOnHearingIfEmailPresent() {

@@ -39,22 +39,24 @@ public class DraftCMOUploadedEventHandler {
             email = caseData.getAllocatedJudge().getJudgeEmailAddress();
         }
 
-        if (email != null) {
-            Long caseId = caseData.getId();
-            DraftCMOUploadedTemplate content = contentProvider.buildTemplate(
-                hearing,
-                caseId,
-                judge,
-                caseData.getAllRespondents(),
-                caseData.getFamilyManCaseNumber()
-            );
-
-            notificationService.sendEmail(
-                CMO_DRAFT_UPLOADED_NOTIFICATION_TEMPLATE,
-                email,
-                content,
-                caseId.toString()
-            );
+        if (email == null) {
+            return;
         }
+
+        Long caseId = caseData.getId();
+        DraftCMOUploadedTemplate content = contentProvider.buildTemplate(
+            hearing,
+            caseId,
+            judge,
+            caseData.getAllRespondents(),
+            caseData.getFamilyManCaseNumber()
+        );
+
+        notificationService.sendEmail(
+            CMO_DRAFT_UPLOADED_NOTIFICATION_TEMPLATE,
+            email,
+            content,
+            caseId.toString()
+        );
     }
 }
