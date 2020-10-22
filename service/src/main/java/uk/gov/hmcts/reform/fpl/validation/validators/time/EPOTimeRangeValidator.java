@@ -2,20 +2,20 @@ package uk.gov.hmcts.reform.fpl.validation.validators.time;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.time.EPOTimeRange;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeDifference;
-import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeRange;
 
 import java.time.LocalDateTime;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 @Component
-public class TimeRangeValidator implements ConstraintValidator<TimeRange, CaseData> {
+public class EPOTimeRangeValidator implements ConstraintValidator<EPOTimeRange, CaseData> {
 
     private TimeDifference maxDate;
 
     @Override
-    public void initialize(TimeRange annotation) {
+    public void initialize(EPOTimeRange annotation) {
         maxDate = annotation.maxDate();
     }
 

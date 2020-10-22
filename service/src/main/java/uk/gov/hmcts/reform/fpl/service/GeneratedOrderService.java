@@ -44,7 +44,6 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.DISCHARGE_OF_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
@@ -102,7 +101,8 @@ public class GeneratedOrderService {
                     caseData.getInterimEndDate());
                 break;
             case EMERGENCY_PROTECTION_ORDER:
-                date = formatLocalDateTimeBaseUsingFormat(caseData.getDateAndTimeOfIssue(), DATE_TIME);
+                date = formatLocalDateTimeBaseUsingFormat(caseData.getDateAndTimeOfIssue(), TIME_DATE);
+                orderBuilder.expiryDate(formatLocalDateTimeBaseUsingFormat(caseData.getEpoEndDate(), TIME_DATE));
                 break;
             case UPLOAD:
                 return GeneratedOrder.builder()

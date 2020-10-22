@@ -100,7 +100,7 @@ public class GeneratedOrderControllerAboutToStartTest extends AbstractController
             )).build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        CaseData caseData = extractCaseData(callbackResponse);
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
 
         assertThat(judgeAndLegalAdvisor.getAllocatedJudgeLabel())

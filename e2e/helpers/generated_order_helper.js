@@ -201,12 +201,14 @@ module.exports = {
     if (order.type === 'Blank order (C21)') {
       I.seeInTab([orderHeading, 'Order title'], order.title);
       I.seeInTab([orderHeading, 'Order document'], order.document);
-      I.seeInTab([orderHeading, 'Date on order'], dateFormat(defaultIssuedDate, 'd mmmm yyyy'));
+      I.seeInTab([orderHeading, 'Starts on'], dateFormat(defaultIssuedDate, 'd mmmm yyyy'));
     } else if (order.type === 'Emergency protection order') {
-      I.seeTextInTab([orderHeading, 'Date on order']);
+      I.seeInTab([orderHeading, 'Order document'], order.document);
+      I.seeTextInTab([orderHeading, 'Starts on']);
+      I.seeTextInTab([orderHeading, 'Ends on']);
     } else {
       I.seeInTab([orderHeading, 'Order document'], order.document);
-      I.seeInTab([orderHeading, 'Date on order'], dateFormat(dateToString(order.dateOfIssue), 'd mmmm yyyy'));
+      I.seeInTab([orderHeading, 'Starts on'], dateFormat(dateToString(order.dateOfIssue), 'd mmmm yyyy'));
     }
 
     if (order.type !== 'Upload') {

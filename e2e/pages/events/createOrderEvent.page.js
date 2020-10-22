@@ -206,7 +206,7 @@ module.exports = {
     I.fillDate(date);
   },
 
-  async enterDateAndTimeOfIssue(dateAndTime) {
+  enterDateAndTimeOfIssue(dateAndTime) {
     I.fillDateAndTime(dateAndTime, this.fields.dateAndTimeOfIssue.id);
   },
 
