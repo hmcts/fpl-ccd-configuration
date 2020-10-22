@@ -93,7 +93,7 @@ public class StandardDirectionsOrderService {
 
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder().build();
 
-        if (standardDirectionOrder != null) {
+        if (standardDirectionOrder != null && isNotEmpty(standardDirectionOrder.getJudgeAndLegalAdvisor())) {
             judgeAndLegalAdvisor = standardDirectionOrder.getJudgeAndLegalAdvisor();
         }
 

@@ -322,7 +322,10 @@ class StandardDirectionsOrderServiceTest {
 
     @Test
     void shouldReturnEmptyJudgeIfJudgeOnSDOAndAllocatedJudgeDoNotExist() {
-        CaseData caseData = CaseData.builder().build();
+        CaseData caseData = CaseData.builder()
+            .standardDirectionOrder(StandardDirectionOrder.builder().build())
+            .build();
+
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = service.getJudgeAndLegalAdvisorFromSDO(caseData);
 
         assertThat(judgeAndLegalAdvisor).isEqualTo(JudgeAndLegalAdvisor.builder().build());
