@@ -1,11 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.cmo;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.CMOType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
@@ -44,18 +40,12 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.FURTHER_CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, FixedTimeConfiguration.class, UploadCMOService.class
-})
 class UploadCMOServiceTest {
 
     private static final DocumentReference DOCUMENT = DocumentReference.builder().build();
-    @Autowired
-    private UploadCMOService service;
 
-    @Autowired
-    private Time time;
+    private final Time time = new FixedTimeConfiguration().stoppedTime();
+    private final UploadCMOService service = new UploadCMOService(new ObjectMapper(), time);
 
     @Test
     void shouldAddHearingTextThatHaveCMOsBeingReviewedByJudge() {
