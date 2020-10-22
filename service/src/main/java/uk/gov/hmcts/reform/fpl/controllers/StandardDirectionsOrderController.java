@@ -265,7 +265,7 @@ public class StandardDirectionsOrderController extends CallbackController {
             data.put("state", State.CASE_MANAGEMENT);
             removeTemporaryFields(caseDetails, "sdoRouter");
 
-            if (caseData.isSendingNoticeOfProceedings()) {
+            if (caseData.isSendingNoticeOfProceedings() && featureToggleService.isSendNoticeOfProceedingsFromSdo()) {
                 List<DocmosisTemplates> docmosisTemplateTypes =
                     caseData.getNoticeOfProceedings().mapProceedingTypesToDocmosisTemplate();
 
