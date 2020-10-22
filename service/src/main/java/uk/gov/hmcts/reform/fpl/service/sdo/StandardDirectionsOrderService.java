@@ -52,7 +52,7 @@ public class StandardDirectionsOrderService {
             .build();
     }
 
-    public StandardDirectionOrder buildOrderFromUpload(StandardDirectionOrder currentOrder) throws Exception {
+    public StandardDirectionOrder buildOrderFromUpload(StandardDirectionOrder currentOrder) {
         UserInfo userInfo = idamClient.getUserInfo(requestData.authorisation());
 
         return StandardDirectionOrder.builder()
@@ -63,7 +63,7 @@ public class StandardDirectionsOrderService {
             .build();
     }
 
-    private DocumentReference prepareOrderDocument(DocumentReference document, OrderStatus status) throws Exception {
+    private DocumentReference prepareOrderDocument(DocumentReference document, OrderStatus status) {
         if (status != OrderStatus.SEALED) {
             return document;
         }

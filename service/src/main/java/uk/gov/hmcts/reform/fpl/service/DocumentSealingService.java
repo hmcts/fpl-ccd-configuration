@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 
 import static org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode.APPEND;
 import static org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject.createFromByteArray;
@@ -37,7 +38,7 @@ public class DocumentSealingService {
     private final DocumentConversionService documentConversionService;
     private final DocumentDownloadService documentDownloadService;
 
-    public DocumentReference sealDocument(DocumentReference document) throws Exception {
+    public DocumentReference sealDocument(DocumentReference document) {
         byte[] documentContents = documentDownloadService.downloadDocument(document.getBinaryUrl());
         documentContents = documentConversionService.convertToPdf(documentContents, document.getFilename());
         documentContents = sealDocument(documentContents);
@@ -47,7 +48,7 @@ public class DocumentSealingService {
         return buildFromDocument(uploadDocumentService.uploadPDF(documentContents, newFilename));
     }
 
-    private static byte[] sealDocument(byte[] binaries) throws Exception {
+    private static byte[] sealDocument(byte[] binaries) {
         byte[] seal = readBytes(SEAL);
 
         try (final PDDocument document = PDDocument.load(binaries)) {
@@ -57,13 +58,15 @@ public class DocumentSealingService {
             try (PDPageContentStream pdfStream = new PDPageContentStream(document, firstPage, APPEND, true, true)) {
                 final PDImageXObject courtSealImage = createFromByteArray(document, seal, null);
                 pdfStream.drawImage(courtSealImage,
-                        pageSize.getUpperRightX() - (SEAL_WIDTH + MARGIN_RIGHT),
-                        pageSize.getUpperRightY() - (SEAL_HEIGHT + MARGIN_TOP),
-                        SEAL_WIDTH,
-                        SEAL_HEIGHT);
+                    pageSize.getUpperRightX() - (SEAL_WIDTH + MARGIN_RIGHT),
+                    pageSize.getUpperRightY() - (SEAL_HEIGHT + MARGIN_TOP),
+                    SEAL_WIDTH,
+                    SEAL_HEIGHT);
             }
 
             return getBinary(document);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
     }
 
