@@ -54,6 +54,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
@@ -248,21 +249,18 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
     }
 
     @Test
-    void shouldNotSendNoticeOfProceedingsWhenSendToNoticeOfProceedingsIsToggledOff()
-        throws Exception {
+    void shouldNotSendNoticeOfProceedingsWhenSendToNoticeOfProceedingsIsToggledOff() {
         DocumentReference document = DocumentReference.builder().filename("final.pdf").build();
         CaseDetails caseDetails = validCaseDetailsForUploadRoute(document, SEALED);
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         given(idamClient.getUserInfo(anyString())).willReturn(UserInfo.builder().name("adam").build());
-        given(sealingService.sealDocument(document)).willReturn(document);
         given(featureToggleService.isSendNoticeOfProceedingsFromSdo()).willReturn(false);
-
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
-
-        CaseData responseCaseData = mapper.convertValue(response.getData(), CaseData.class);
+        
+        CaseData responseCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
         assertThat(responseCaseData.getNoticeOfProceedingsBundle()).isNull();
+        verifyNoInteractions(uploadDocumentService, docmosisService);
     }
 
     @Test
