@@ -178,8 +178,9 @@ public class CalendarServiceTest {
 
         @Test
         public void shouldThrowExceptionWhenNumberOfWorkingDaysIs0() {
+            LocalDate now = time.now().toLocalDate();
             assertThrows(IllegalArgumentException.class, () ->
-                workingDayService.getWorkingDayFrom(time.now().toLocalDate(), 0));
+                workingDayService.getWorkingDayFrom(now, 0));
         }
     }
 }
