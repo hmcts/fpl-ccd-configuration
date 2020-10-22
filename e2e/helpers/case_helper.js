@@ -1,16 +1,5 @@
-/*global process*/
 const config = require('../config');
 const fetch = require('node-fetch');
-const HttpsProxyAgent = require('https-proxy-agent');
-const HttpProxyAgent = require('http-proxy-agent');
-
-const proxy = process.env.proxy || process.env.http_proxy || process.env.https_proxy;
-
-const getAgent = function (url) {
-  if(proxy){
-    return url.startsWith('https:') ? new HttpsProxyAgent(proxy) : new HttpProxyAgent(proxy);
-  }
-};
 
 const wait = duration => new Promise(resolve => setTimeout(resolve, duration));
 
@@ -19,7 +8,6 @@ const post = async (url, data, headers, retry = 2, backoff = 500) => {
     method: 'POST',
     body: JSON.stringify(data),
     headers: headers,
-    agent: getAgent(url),
   }).then(res => {
     if (res.ok) {
       return res;
