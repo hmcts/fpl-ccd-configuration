@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.json.converter.BasicChildConverter;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.GeneratedOrderTypeDescriptor;
@@ -17,6 +18,7 @@ import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
 
 @Data
@@ -42,8 +44,9 @@ public class GeneratedOrder {
     public boolean isRemovable() {
         GeneratedOrderTypeDescriptor descriptor = GeneratedOrderTypeDescriptor.fromType(this.type);
         return (descriptor.getType() == BLANK_ORDER)
-                || (descriptor.getType() == CARE_ORDER && descriptor.getSubtype() == INTERIM)
-                || (descriptor.getType() == SUPERVISION_ORDER && descriptor.getSubtype() == INTERIM);
+            || (descriptor.getType() == EMERGENCY_PROTECTION_ORDER)
+            || (descriptor.getType() == CARE_ORDER)
+            || (descriptor.getType() == SUPERVISION_ORDER);
     }
 
     public String asLabel() {

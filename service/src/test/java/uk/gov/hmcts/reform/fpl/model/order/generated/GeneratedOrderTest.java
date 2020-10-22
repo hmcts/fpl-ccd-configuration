@@ -44,13 +44,13 @@ class GeneratedOrderTest {
     private static Stream<Arguments> typeToEnumSource() {
         return Stream.of(
             Arguments.of(builder().type(BLANK_ORDER).build(), true),
-            Arguments.of(builder().type(CARE_ORDER).subtype(INTERIM).build(),true),
-            Arguments.of(builder().type(CARE_ORDER).subtype(FINAL).build(), false),
+            Arguments.of(builder().type(CARE_ORDER).subtype(INTERIM).build(), true),
+            Arguments.of(builder().type(CARE_ORDER).subtype(FINAL).build(), true),
             Arguments.of(builder().type(SUPERVISION_ORDER).subtype(INTERIM).build(), true),
-            Arguments.of(builder().type(SUPERVISION_ORDER).subtype(FINAL).build(), false),
-            Arguments.of(builder().type(EMERGENCY_PROTECTION_ORDER).build(), false),
+            Arguments.of(builder().type(SUPERVISION_ORDER).subtype(FINAL).build(), true),
+            Arguments.of(builder().type(EMERGENCY_PROTECTION_ORDER).build(), true),
             Arguments.of(builder().type(DISCHARGE_OF_CARE_ORDER).build(), false),
-            Arguments.of(builder().type(UPLOAD).build(),false)
+            Arguments.of(builder().type(UPLOAD).build(), false)
         );
     }
 
