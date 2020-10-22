@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -13,13 +14,17 @@ import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.notify.cmo.DraftCMOUploadedTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.service.notify.NotificationClient;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -109,11 +114,22 @@ class UploadCMOSubmittedControllerTest extends AbstractUploadCMOControllerTest {
         postSubmittedEvent(callbackRequest);
 
         checkUntil(() -> verify(notificationClient).sendEmail(
-            eq(CMO_DRAFT_UPLOADED_NOTIFICATION_TEMPLATE),
-            eq(JUDGE_EMAIL),
-            anyMap(),
-            eq(NOTIFICATION_REFERENCE)
+            CMO_DRAFT_UPLOADED_NOTIFICATION_TEMPLATE,
+            JUDGE_EMAIL,
+            draftEmailTemplate(),
+            NOTIFICATION_REFERENCE
         ));
+    }
+
+    private Map<String, Object> draftEmailTemplate() {
+        DraftCMOUploadedTemplate template = new DraftCMOUploadedTemplate()
+            .setSubjectLineWithHearingDate(String.format("Davidson, %s, case management hearing, 3 November 2020",
+                FAMILY_MAN_CASE_NUMBER))
+            .setRespondentLastName("Davidson")
+            .setJudgeTitle("Her Honour Judge")
+            .setJudgeName("Judy")
+            .setCaseUrl(String.format("http://fake-url/cases/case-details/%s#DraftOrdersTab", CASE_ID));
+        return mapper.convertValue(template, new TypeReference<>() {});
     }
 
     private CallbackRequest callbackRequest(CMOStatus status) {
@@ -140,6 +156,9 @@ class UploadCMOSubmittedControllerTest extends AbstractUploadCMOControllerTest {
             .build();
 
         CaseData caseData = CaseData.builder()
+            .respondents1(List.of(element(Respondent.builder()
+                .party(RespondentParty.builder().lastName("Davidson").build())
+                .build())))
             .draftUploadedCMOs(List.of(order))
             .allocatedJudge(judy)
             .hearingDetails(hearings)
