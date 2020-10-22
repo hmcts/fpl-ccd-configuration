@@ -248,6 +248,24 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
     }
 
     @Test
+    void shouldNotSendNoticeOfProceedingsWhenSendToNoticeOfProceedingsIsToggledOff()
+        throws Exception {
+        DocumentReference document = DocumentReference.builder().filename("final.pdf").build();
+        CaseDetails caseDetails = validCaseDetailsForUploadRoute(document, SEALED);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        given(idamClient.getUserInfo(anyString())).willReturn(UserInfo.builder().name("adam").build());
+        given(sealingService.sealDocument(document)).willReturn(document);
+        given(featureToggleService.isSendNoticeOfProceedingsFromSdo()).willReturn(false);
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
+
+        CaseData responseCaseData = mapper.convertValue(response.getData(), CaseData.class);
+
+        assertThat(responseCaseData.getNoticeOfProceedingsBundle()).isNull();
+    }
+
+    @Test
     void shouldRemoveTemporaryFields() {
         DocumentReference order = DocumentReference.builder().filename("order.pdf").build();
 
