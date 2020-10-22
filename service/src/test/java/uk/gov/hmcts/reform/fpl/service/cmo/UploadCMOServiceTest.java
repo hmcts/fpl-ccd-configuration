@@ -396,6 +396,7 @@ class UploadCMOServiceTest {
             .order(DOCUMENT)
             .hearing("Case management hearing, 2 March 2020")
             .judgeTitleAndName("His Honour Judge Dredd")
+            .supportingDocs(List.of())
             .build();
 
         assertThat(unsealedOrders).hasSize(2)

@@ -159,7 +159,7 @@ class UploadCMOAboutToSubmitControllerTest extends AbstractUploadCMOControllerTe
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
-        CaseManagementOrder cmo = orderWithDocs(hearings.get(0).getValue(), SEND_TO_JUDGE, null);
+        CaseManagementOrder cmo = orderWithDocs(hearings.get(0).getValue(), SEND_TO_JUDGE, bundles);
 
         List<Element<CaseManagementOrder>> unsealedCMOs = responseData.getDraftUploadedCMOs();
 

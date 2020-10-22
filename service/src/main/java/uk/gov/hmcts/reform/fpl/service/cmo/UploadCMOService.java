@@ -178,7 +178,7 @@ public class UploadCMOService {
             time.now().toLocalDate(),
             // TODO: 19/10/2020 remove second condition when FPLA-2019 is toggled on
             eventData.isAgreed() || eventData.getCmoUploadType() == null ? SEND_TO_JUDGE : DRAFT,
-            eventData.isAgreed() ? null : supportingDocs // migrate docs if agreed
+            supportingDocs
         ));
 
         Optional<UUID> uuid = updateHearingWithCmoId(hearing, order);
