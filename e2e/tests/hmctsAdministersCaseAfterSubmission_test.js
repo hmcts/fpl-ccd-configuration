@@ -1,4 +1,3 @@
-
 const config = require('../config.js');
 const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 const blankOrder = require('../fixtures/orders/blankOrder.js');

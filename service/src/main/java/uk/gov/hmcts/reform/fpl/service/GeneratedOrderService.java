@@ -102,7 +102,7 @@ public class GeneratedOrderService {
                 break;
             case EMERGENCY_PROTECTION_ORDER:
                 date = formatLocalDateTimeBaseUsingFormat(caseData.getDateAndTimeOfIssue(), TIME_DATE);
-                orderBuilder.expiryDate(formatLocalDateTimeBaseUsingFormat(caseData.getEpoEndDate(), TIME_DATE));
+                expiryDate = formatLocalDateTimeBaseUsingFormat(caseData.getEpoEndDate(), TIME_DATE);
                 break;
             case UPLOAD:
                 return GeneratedOrder.builder()

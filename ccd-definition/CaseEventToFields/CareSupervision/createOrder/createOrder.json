@@ -353,7 +353,8 @@
     "PageDisplayOrder": 13,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "orderTypeAndDocument.type=\"CARE_ORDER\" AND orderTypeAndDocument.subtype=\"INTERIM\""
+    "FieldShowCondition": "orderTypeAndDocument.type=\"CARE_ORDER\" AND orderTypeAndDocument.subtype=\"INTERIM\"",
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/create-order/generate-document/mid-event"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -366,8 +367,7 @@
     "PageDisplayOrder": 13,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "PageShowCondition": "orderTypeAndDocument.type!=\"BLANK_ORDER\" AND orderTypeAndDocument.type!=\"UPLOAD\"",
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/create-order/generate-document/mid-event"
+    "PageShowCondition": "orderTypeAndDocument.type!=\"BLANK_ORDER\" AND orderTypeAndDocument.type!=\"UPLOAD\""
   },
   {
     "LiveFrom": "01/01/2017",
