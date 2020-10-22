@@ -25,16 +25,16 @@ let hearingEndDate;
 
 Feature('Case administration after submission');
 
-BeforeSuite(async (I) => {
+BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
   submittedAt = new Date();
 
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 });
 
-Before(async I => await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId));
+Before(async ({I}) => await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId));
 
-Scenario('HMCTS admin enters FamilyMan reference number', async (I, caseViewPage, enterFamilyManCaseNumberEventPage) => {
+Scenario('HMCTS admin enters FamilyMan reference number', async ({I, caseViewPage, enterFamilyManCaseNumberEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
   enterFamilyManCaseNumberEventPage.enterCaseID('mockCaseID');
   await I.completeEvent('Save and continue');
@@ -42,7 +42,7 @@ Scenario('HMCTS admin enters FamilyMan reference number', async (I, caseViewPage
   I.seeFamilyManNumber('mockCaseID');
 });
 
-Scenario('HMCTS admin amends children, respondents, others, international element, other proceedings and attending hearing', async (I, caseViewPage, enterOtherProceedingsEventPage) => {
+Scenario('HMCTS admin amends children, respondents, others, international element, other proceedings and attending hearing', async ({I, caseViewPage, enterOtherProceedingsEventPage}) => {
   async function I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(event, summary, description, I_doActionsOnEditPage = () => {
   }) {
     await caseViewPage.goToNewActions(event);
@@ -75,7 +75,7 @@ Scenario('HMCTS admin amends children, respondents, others, international elemen
     summaryText, descriptionText);
 });
 
-Scenario('HMCTS admin uploads correspondence documents', async (I, caseViewPage, manageDocumentsEventPage) => {
+Scenario('HMCTS admin uploads correspondence documents', async ({I, caseViewPage, manageDocumentsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
   await manageDocumentsEventPage.selectCorrespondence();
   await I.retryUntilExists(() => I.click('Continue'), manageDocumentsEventPage.fields.supportingDocumentsCollectionId);
@@ -99,7 +99,7 @@ Scenario('HMCTS admin uploads correspondence documents', async (I, caseViewPage,
   I.seeInTab(['Correspondence document 2', 'File'], 'mockFile.txt');
 });
 
-Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage, uploadC2DocumentsEventPage, paymentHistoryPage) => {
+Scenario('HMCTS admin uploads C2 documents to the case', async ({I, caseViewPage, uploadC2DocumentsEventPage, paymentHistoryPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.uploadC2Documents);
   uploadC2DocumentsEventPage.selectApplicationType('WITH_NOTICE');
   await I.retryUntilExists(() => I.click('Continue'), '#temporaryC2Document_document');
@@ -143,7 +143,7 @@ Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage,
   I.seeInTab(['C2 Application 2', 'Paid with PBA'], 'No');
 });
 
-Scenario('HMCTS admin edits supporting evidence document on C2 application', async (I, caseViewPage, manageDocumentsEventPage) => {
+Scenario('HMCTS admin edits supporting evidence document on C2 application', async({I, caseViewPage, manageDocumentsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
   await manageDocumentsEventPage.selectC2SupportingDocuments();
   await manageDocumentsEventPage.select2FromDropdown();
@@ -161,7 +161,7 @@ Scenario('HMCTS admin edits supporting evidence document on C2 application', asy
   I.seeTextInTab(['C2 Application 1', 'Uploaded by']);
 });
 
-Scenario('HMCTS admin manages hearings', async (I, caseViewPage, manageHearingsEventPage) => {
+Scenario('HMCTS admin manages hearings', async ({I, caseViewPage, manageHearingsEventPage}) => {
   hearingStartDate = moment().add(5,'m').toDate();
   hearingEndDate = moment(hearingStartDate).add(5,'m').toDate();
 
@@ -238,7 +238,7 @@ Scenario('HMCTS admin manages hearings', async (I, caseViewPage, manageHearingsE
 });
 
 //Delete+cleanup in FPLA-2280
-xScenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, addHearingBookingDetailsEventPage) => {
+xScenario('HMCTS admin enters hearing details and submits', async ({I, caseViewPage, addHearingBookingDetailsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
   await addHearingBookingDetailsEventPage.useAllocatedJudge();
@@ -290,7 +290,7 @@ xScenario('HMCTS admin enters hearing details and submits', async (I, caseViewPa
   I.seeInTab(['Hearing 2', 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name'], hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
 });
 
-Scenario('HMCTS admin uploads further hearing evidence documents', async (I, caseViewPage, manageDocumentsEventPage) => {
+Scenario('HMCTS admin uploads further hearing evidence documents', async ({I, caseViewPage, manageDocumentsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
   await manageDocumentsEventPage.selectFurtherEvidence();
   await manageDocumentsEventPage.selectFurtherEvidenceIsRelatedToHearing();
@@ -318,7 +318,7 @@ Scenario('HMCTS admin uploads further hearing evidence documents', async (I, cas
 }).retry(1); // async send letters call in submitted of previous event
 
 
-Scenario('HMCTS admin adjourn and re-list hearing', async (I, caseViewPage, manageHearingsEventPage) => {
+Scenario('HMCTS admin adjourn and re-list hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
   const reListedHearingJudgeName = 'Brown';
 
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
@@ -355,7 +355,7 @@ Scenario('HMCTS admin adjourn and re-list hearing', async (I, caseViewPage, mana
   I.seeInTab(['Further evidence documents 1', 'Hearing'], 'Case management hearing, 1 January 2050');
 });
 
-Scenario('HMCTS admin share case with representatives', async (I, caseViewPage, enterRepresentativesEventPage) => {
+Scenario('HMCTS admin share case with representatives', async ({I, caseViewPage, enterRepresentativesEventPage}) => {
   const representative1 = representatives.servedByDigitalService;
   const representative2 = representatives.servedByPost;
 
@@ -387,7 +387,7 @@ Scenario('HMCTS admin share case with representatives', async (I, caseViewPage, 
   I.see(caseId);
 });
 
-Scenario('HMCTS admin revoke case access from representative', async (I, caseViewPage) => {
+Scenario('HMCTS admin revoke case access from representative', async ({I, caseViewPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.amendRepresentatives);
 
   await I.removeElementFromCollection('Representatives');
@@ -400,39 +400,39 @@ Scenario('HMCTS admin revoke case access from representative', async (I, caseVie
   I.see('No cases found.');
 });
 
-Scenario('HMCTS admin creates blank order', async (I, caseViewPage, createOrderEventPage) => {
+Scenario('HMCTS admin creates blank order', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, blankOrder);
 });
 
-Scenario('HMCTS admin creates interim supervision order', async (I, caseViewPage, createOrderEventPage) => {
+Scenario('HMCTS admin creates interim supervision order', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, interimSuperVisionOrder);
 });
 
-Scenario('HMCTS admin creates final supervision order', async (I, caseViewPage, createOrderEventPage) => {
+Scenario('HMCTS admin creates final supervision order', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, finalSuperVisionOrder);
 });
 
-Scenario('HMCTS admin creates emergency protection order', async (I, caseViewPage, createOrderEventPage) => {
+Scenario('HMCTS admin creates emergency protection order', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, emergencyProtectionOrder);
 });
 
-Scenario('HMCTS admin creates interim care order', async (I, caseViewPage, createOrderEventPage) => {
+Scenario('HMCTS admin creates interim care order', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, interimCareOrder);
 });
 
-Scenario('HMCTS admin uploads order', async (I, caseViewPage, createOrderEventPage) => {
+Scenario('HMCTS admin uploads order', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, uploadedOrder);
 });
 
-Scenario('HMCTS admin creates final care order', async (I, caseViewPage, createOrderEventPage) => {
+Scenario('HMCTS admin creates final care order', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, finalCareOrder);
 });
 
-Scenario('HMCTS admin creates discharge of care order', async (I, caseViewPage, createOrderEventPage) => {
+Scenario('HMCTS admin creates discharge of care order', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, dischargeOfCareOrder);
 });
 
-Scenario('HMCTS admin creates notice of proceedings documents', async (I, caseViewPage, createNoticeOfProceedingsEventPage) => {
+Scenario('HMCTS admin creates notice of proceedings documents', async ({I, caseViewPage, createNoticeOfProceedingsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.createNoticeOfProceedings);
   createNoticeOfProceedingsEventPage.checkC6();
   createNoticeOfProceedingsEventPage.checkC6A();
@@ -448,7 +448,7 @@ Scenario('HMCTS admin creates notice of proceedings documents', async (I, caseVi
   I.seeInTab(['Notice of proceedings 2', 'File name'], 'Notice_of_proceedings_c6a.pdf');
 });
 
-Scenario('HMCTS admin creates notice of proceedings documents with allocated judge', async (I, caseViewPage, createNoticeOfProceedingsEventPage) => {
+Scenario('HMCTS admin creates notice of proceedings documents with allocated judge', async ({I, caseViewPage, createNoticeOfProceedingsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.createNoticeOfProceedings);
   await createNoticeOfProceedingsEventPage.checkC6();
   await createNoticeOfProceedingsEventPage.useAllocatedJudge();
@@ -468,7 +468,7 @@ Scenario('HMCTS admin creates notice of proceedings documents with allocated jud
   I.seeInTab(['Notice of proceedings 2', 'File name'], 'Notice_of_proceedings_c6.pdf');
 });
 
-Scenario('HMCTS admin handles supplementary evidence', async (I, caseListPage, caseViewPage, handleSupplementaryEvidenceEventPage) => {
+Scenario('HMCTS admin handles supplementary evidence', async ({I, caseListPage, caseViewPage, handleSupplementaryEvidenceEventPage}) => {
   await I.navigateToCaseList();
   await caseListPage.searchForCasesWithHandledEvidences(submittedAt);
   await I.dontSeeCaseInSearchResult(caseId);
@@ -484,7 +484,7 @@ Scenario('HMCTS admin handles supplementary evidence', async (I, caseListPage, c
   await I.seeCaseInSearchResult(caseId);
 });
 
-Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async (I, caseViewPage, sendCaseToGatekeeperEventPage) => {
+Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async ({I, caseViewPage, sendCaseToGatekeeperEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
   await sendCaseToGatekeeperEventPage.enterEmail();
   await I.addAnotherElementToCollection();
@@ -493,7 +493,7 @@ Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async 
   I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
 });
 
-Scenario('HMCTS admin adds a note to the case', async (I, caseViewPage, addNoteEventPage) => {
+Scenario('HMCTS admin adds a note to the case', async ({I, caseViewPage, addNoteEventPage}) => {
   const note = 'Example note';
   await caseViewPage.goToNewActions(config.administrationActions.addNote);
   addNoteEventPage.addNote(note);
@@ -503,7 +503,7 @@ Scenario('HMCTS admin adds a note to the case', async (I, caseViewPage, addNoteE
   I.seeInTab(['Note 1', 'Note'], note);
 });
 
-Scenario('HMCTS admin adds expert report log', async (I, caseViewPage, addExpertReportEventPage) => {
+Scenario('HMCTS admin adds expert report log', async ({I, caseViewPage, addExpertReportEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.addExpertReportLog);
   addExpertReportEventPage.addExpertReportLog(expertReportLog[0]);
   await I.completeEvent('Save and continue');
@@ -515,7 +515,7 @@ Scenario('HMCTS admin adds expert report log', async (I, caseViewPage, addExpert
   I.seeInTab(['Report 1', 'Date approved'], '2 Apr 2020');
 });
 
-Scenario('HMCTS admin makes 26-week case extension', async (I, caseViewPage, addExtend26WeekTimelineEventPage) => {
+Scenario('HMCTS admin makes 26-week case extension', async ({I, caseViewPage, addExtend26WeekTimelineEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.extend26WeekTimeline);
   addExtend26WeekTimelineEventPage.selectEightWeekExtensionTime();
   addExtend26WeekTimelineEventPage.selectTimetableForChildExtensionReason();
@@ -531,7 +531,7 @@ Scenario('HMCTS admin makes 26-week case extension', async (I, caseViewPage, add
   I.see('Comment');
 });
 
-Scenario('HMCTS admin closes the case', async (I, caseViewPage, closeTheCaseEventPage) => {
+Scenario('HMCTS admin closes the case', async ({I, caseViewPage, closeTheCaseEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.closeTheCase);
   closeTheCaseEventPage.closeCase({day: 12, month: 3, year: 2020}, true, closeTheCaseEventPage.fields.radioGroup.partialReason.options.deprivation);
   await I.completeEvent('Submit');

@@ -10,22 +10,22 @@ let submittedAt;
 
 Feature('Gatekeeper Case administration after gatekeeping');
 
-BeforeSuite(async (I) => {
+BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData(gatekeepingNoHearingDetails);
   submittedAt = new Date();
   await I.signIn(config.gateKeeperUser);
 });
 
-Before(async I => await I.navigateToCaseDetails(caseId));
+Before(async ({I}) => await I.navigateToCaseDetails(caseId));
 
-Scenario('Gatekeeper notifies another gatekeeper with a link to the case', async (I, caseViewPage, notifyGatekeeperEventPage) => {
+Scenario('Gatekeeper notifies another gatekeeper with a link to the case', async ({I, caseViewPage, notifyGatekeeperEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.notifyGatekeeper);
   await notifyGatekeeperEventPage.enterEmail('gatekeeper@mailnesia.com');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.notifyGatekeeper);
 });
 
-Scenario('Gatekeeper adds allocated judge', async (I, caseViewPage, allocatedJudgeEventPage) => {
+Scenario('Gatekeeper adds allocated judge', async ({I, caseViewPage, allocatedJudgeEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
   await allocatedJudgeEventPage.enterAllocatedJudge('Moley', 'moley@example.com');
   await I.completeEvent('Save and continue');
@@ -45,14 +45,14 @@ Scenario('Gatekeeper adds allocated judge', async (I, caseViewPage, allocatedJud
   await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
 });
 
-Scenario('Gatekeeper make allocation decision based on proposal', async (I, caseViewPage, enterAllocationDecisionEventPage) => {
+Scenario('Gatekeeper make allocation decision based on proposal', async ({I, caseViewPage, enterAllocationDecisionEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterAllocationDecision);
   enterAllocationDecisionEventPage.selectCorrectLevelOfJudge('Yes');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationDecision);
 });
 
-Scenario('Gatekeeper enters allocation decision', async (I, caseViewPage, enterAllocationDecisionEventPage) => {
+Scenario('Gatekeeper enters allocation decision', async ({I, caseViewPage, enterAllocationDecisionEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterAllocationDecision);
   enterAllocationDecisionEventPage.selectCorrectLevelOfJudge('No');
   enterAllocationDecisionEventPage.selectAllocationDecision('Lay justices');
@@ -61,7 +61,7 @@ Scenario('Gatekeeper enters allocation decision', async (I, caseViewPage, enterA
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationDecision);
 });
 
-Scenario('Gatekeeper manages hearings', async (I, caseViewPage, manageHearingsEventPage) => {
+Scenario('Gatekeeper manages hearings', async ({I, caseViewPage, manageHearingsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   await manageHearingsEventPage.enterHearingDetails(hearingDetails[0]);
   await manageHearingsEventPage.enterVenue(hearingDetails[0]);
@@ -86,7 +86,7 @@ Scenario('Gatekeeper manages hearings', async (I, caseViewPage, manageHearingsEv
   I.seeInTab(['Hearing 1', 'Notice of hearing'], `Notice_of_hearing_${dateFormat(submittedAt, 'ddmmmm')}.pdf`);
 });
 
-xScenario('Gatekeeper enters hearing details and submits', async (I, caseViewPage, addHearingBookingDetailsEventPage) => {
+xScenario('Gatekeeper enters hearing details and submits', async ({I, caseViewPage, addHearingBookingDetailsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
   await addHearingBookingDetailsEventPage.useAllocatedJudge();
@@ -136,7 +136,7 @@ xScenario('Gatekeeper enters hearing details and submits', async (I, caseViewPag
   I.seeInTab(['Hearing 2', 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name'], hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
 });
 
-Scenario('Gatekeeper drafts standard directions', async (I, caseViewPage, draftStandardDirectionsEventPage) => {
+Scenario('Gatekeeper drafts standard directions', async ({I, caseViewPage, draftStandardDirectionsEventPage}) => {
   const today = new Date();
   await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
   await draftStandardDirectionsEventPage.createSDOThroughService();
@@ -152,7 +152,7 @@ Scenario('Gatekeeper drafts standard directions', async (I, caseViewPage, draftS
   I.seeInTab(['Gatekeeping order', 'Date of issue'], dateFormat(today, 'd mmmm yyyy'));
 }).retry(1); // Send letter is async for the hearing details event, if things are running slow then a data altered outside of transaction error may be raised at the end of this scenario.
 
-Scenario('Gatekeeper submits final version of standard directions', async (I, caseViewPage, draftStandardDirectionsEventPage) => {
+Scenario('Gatekeeper submits final version of standard directions', async ({I, caseViewPage, draftStandardDirectionsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
   await draftStandardDirectionsEventPage.enterDateOfIssue({day: 11, month: 1, year: 2020});
   await draftStandardDirectionsEventPage.useAllocatedJudge('Bob Ross');
