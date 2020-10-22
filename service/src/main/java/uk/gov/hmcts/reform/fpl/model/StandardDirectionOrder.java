@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
@@ -16,6 +17,7 @@ import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 
 @Getter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class StandardDirectionOrder extends OrderForHearing implements IssuableOrder {
     private final OrderStatus orderStatus;
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;

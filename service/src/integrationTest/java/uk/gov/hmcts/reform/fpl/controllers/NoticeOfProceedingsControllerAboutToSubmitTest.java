@@ -1,51 +1,65 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsTemplateDataGenerationService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
-import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
-import static uk.gov.hmcts.reform.fpl.enums.ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_PARTIES;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(NoticeOfProceedingsController.class)
 @OverrideAutoConfiguration(enabled = true)
 class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerTest {
-
-    private static final String C6_DOCUMENT_TITLE = C6.getDocumentTitle();
     private static final byte[] PDF = {1, 2, 3, 4, 5};
-    @MockBean
-    private NoticeOfProceedingsService noticeOfProceedingsService;
+    private static final String LA_NAME = "SW";
+    private static final String COURT_NAME = "Family Court";
+    private static final String COURT_CODE = "11";
+    private static final LocalDateTime NOW = LocalDateTime.now();
+
     @MockBean
     private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
-    @MockBean
-    private NoticeOfProceedingsTemplateDataGenerationService noticeOfProceedingsTemplateDataGenerationService;
+
     @MockBean
     private UploadDocumentService uploadDocumentService;
+
+    @MockBean
+    private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+
+    @Autowired
+    private NoticeOfProceedingsService noticeOfProceedingsService;
+
+    @Autowired
+    private NoticeOfProceedingsTemplateDataGenerationService noticeOfProceedingsTemplateDataGenerationService;
 
     NoticeOfProceedingsControllerAboutToSubmitTest() {
         super("notice-of-proceedings");
@@ -56,21 +70,20 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerT
         Document document = document();
         DocmosisDocument docmosisDocument = DocmosisDocument.builder()
             .bytes(PDF)
-            .documentTitle(C6_DOCUMENT_TITLE)
+            .documentTitle(C6.getDocumentTitle())
             .build();
 
-        CaseData caseData = caseConverter.convert(callbackRequest().getCaseDetails());
+        given(hmctsCourtLookupConfiguration.getCourt(LA_NAME))
+            .willReturn(new HmctsCourtLookupConfiguration.Court(COURT_NAME, "hmcts-non-admin@test.com",
+                COURT_CODE));
 
-        DocmosisNoticeOfProceeding templateData = createTemplatePlaceholders();
-
-        given(noticeOfProceedingsTemplateDataGenerationService.getTemplateData(caseData))
-            .willReturn(templateData);
-        given(docmosisDocumentGeneratorService.generateDocmosisDocument(templateData, C6))
+        given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(DocmosisNoticeOfProceeding.class), eq(C6)))
             .willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(PDF, C6_DOCUMENT_TITLE))
+
+        given(uploadDocumentService.uploadPDF(PDF, C6.getDocumentTitle()))
             .willReturn(document);
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest());
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(buildCaseData());
 
         CaseData responseCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
@@ -84,68 +97,24 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerT
         assertThat(noticeOfProceedingBundle.getBinaryUrl()).isEqualTo(document.links.binary.href);
     }
 
-    @Test
-    void shouldMigrateJudgeAndLegalAdvisorWhenUsingAllocatedJudge() {
-        Document document = document();
-        DocmosisDocument docmosisDocument = DocmosisDocument.builder()
-            .bytes(PDF)
-            .documentTitle(C6_DOCUMENT_TITLE)
-            .build();
-
-        CallbackRequest callbackRequest = buildCallbackRequest();
-
-        DocmosisNoticeOfProceeding templateData = createTemplatePlaceholders();
-
-        given(noticeOfProceedingsTemplateDataGenerationService.getTemplateData(any()))
-            .willReturn(templateData);
-        given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(DocmosisNoticeOfProceeding.class), any()))
-            .willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(any(), any()))
-            .willReturn(document);
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
-
-        CaseData responseCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = responseCaseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor();
-
-        assertThat(judgeAndLegalAdvisor).isNotNull();
-        assertThat(judgeAndLegalAdvisor.getJudgeTitle()).isEqualTo(HER_HONOUR_JUDGE);
-        assertThat(judgeAndLegalAdvisor.getJudgeFullName()).isEqualTo("Davidson");
-    }
-
-    private CallbackRequest buildCallbackRequest() {
-        CallbackRequest callbackRequest = callbackRequest();
-
-        callbackRequest.getCaseDetails().getData().put("noticeOfProceedings", NoticeOfProceedings.builder()
-            .proceedingTypes(ImmutableList.of(NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES))
-            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                .useAllocatedJudge("Yes")
-                .build())
-            .build());
-
-        callbackRequest.getCaseDetails().getData().put("allocatedJudge", Judge.builder()
-            .judgeTitle(HER_HONOUR_JUDGE)
-            .judgeFullName("Davidson")
-            .judgeEmailAddress("davidson@example.com")
-            .build());
-
-        return callbackRequest;
-    }
-
-    private DocmosisNoticeOfProceeding createTemplatePlaceholders() {
-
-        return DocmosisNoticeOfProceeding.builder()
-            .courtName("Swansea Family Court")
+    private CaseData buildCaseData() {
+        return CaseData.builder()
+            .caseLocalAuthority(LA_NAME)
             .familyManCaseNumber("SW123123")
-            .applicantName("James Nelson")
-            .orderTypes("Care order")
-            .childrenNames("James Nelson")
-            .hearingBooking(DocmosisHearingBooking.builder()
-                .hearingDate("1 Jan 2001")
-                .hearingVenue("Aldgate Tower floor 3")
-                .preHearingAttendance("test")
-                .hearingTime("09.00pm")
+            .noticeOfProceedings(NoticeOfProceedings.builder()
+                .proceedingTypes(List.of(NOTICE_OF_PROCEEDINGS_FOR_PARTIES))
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                    .judgeLastName("Wilson")
+                    .judgeTitle(HIS_HONOUR_JUDGE)
+                    .build())
+                .build())
+            .hearingDetails(List.of(ElementUtils.element(HearingBooking.builder()
+                .startDate(NOW.plusDays(1))
+                .endDate(NOW.plusDays(2))
+                .venue("Some venue")
+                .build())))
+            .orders(Orders.builder()
+                .orderType(List.of(CARE_ORDER))
                 .build())
             .build();
     }

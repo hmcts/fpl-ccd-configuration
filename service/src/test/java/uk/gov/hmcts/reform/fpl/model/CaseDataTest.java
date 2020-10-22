@@ -31,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
+import static uk.gov.hmcts.reform.fpl.enums.ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_PARTIES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -545,6 +546,31 @@ class CaseDataTest {
             CaseData caseData = CaseData.builder().build();
             assertThat(caseData.hasC2DocumentBundle()).isFalse();
         }
+    }
+
+    @Test
+    void shouldReturnTrueWhenSendingNoticeOfProceedings() {
+        CaseData caseData = CaseData.builder()
+            .noticeOfProceedings(NoticeOfProceedings.builder()
+                .proceedingTypes(List.of(NOTICE_OF_PROCEEDINGS_FOR_PARTIES))
+                .build())
+            .build();
+
+        assertThat(caseData.isSendingNoticeOfProceedings()).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenProceedingTypesDoNotExistOnNoticeOfProceedings() {
+        CaseData caseData = CaseData.builder()
+            .noticeOfProceedings(NoticeOfProceedings.builder().build())
+            .build();
+        assertThat(caseData.isSendingNoticeOfProceedings()).isFalse();
+    }
+
+    @Test
+    void shouldReturnFalseWhenNotSendingNoticeOfProceedings() {
+        CaseData caseData = CaseData.builder().build();
+        assertThat(caseData.isSendingNoticeOfProceedings()).isFalse();
     }
 
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {

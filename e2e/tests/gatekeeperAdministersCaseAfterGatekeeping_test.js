@@ -142,6 +142,7 @@ Scenario('Gatekeeper drafts standard directions', async ({I, caseViewPage, draft
   await draftStandardDirectionsEventPage.createSDOThroughService();
   await draftStandardDirectionsEventPage.skipDateOfIssue();
   await draftStandardDirectionsEventPage.useAllocatedJudge('Bob Ross');
+  await I.retryUntilExists(() => I.click('Continue'), '#allParties');
   await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
   await draftStandardDirectionsEventPage.markAsDraft();
   await I.completeEvent('Save and continue');
@@ -156,10 +157,17 @@ Scenario('Gatekeeper submits final version of standard directions', async ({I, c
   await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
   await draftStandardDirectionsEventPage.enterDateOfIssue({day: 11, month: 1, year: 2020});
   await draftStandardDirectionsEventPage.useAllocatedJudge('Bob Ross');
+  await I.retryUntilExists(() => I.click('Continue'), '#allParties');
   await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
   await draftStandardDirectionsEventPage.markAsFinal();
+  draftStandardDirectionsEventPage.checkC6();
+  draftStandardDirectionsEventPage.checkC6A();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.draftStandardDirections);
+
+  caseViewPage.selectTab(caseViewPage.tabs.hearings);
+  I.seeInTab(['Notice of proceedings 1', 'File name'], 'Notice_of_proceedings_c6.pdf');
+  I.seeInTab(['Notice of proceedings 2', 'File name'], 'Notice_of_proceedings_c6a.pdf');
 
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   I.seeInTab(['Gatekeeping order', 'File'], 'standard-directions-order.pdf');

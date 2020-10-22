@@ -9,9 +9,11 @@ public final class NotifyTemplates {
     public static final String HMCTS_COURT_SUBMISSION_TEMPLATE = "a1562b56-4ff7-4e3e-b62d-5fb9f086ee8f";
     public static final String CAFCASS_SUBMISSION_TEMPLATE = "e5630e8b-3b25-4773-a41a-a42af123bebc";
     public static final String GATEKEEPER_SUBMISSION_TEMPLATE = "1e8f7e14-64aa-44ce-a5c1-83affff5f1a0";
+    // TODO - TO be removed once FPLA-1754 is live
     public static final String STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE = "c06968ea-048b-49d6-a4b5-1f13ee995ba1";
     public static final String STANDARD_DIRECTION_ORDER_ISSUED_CTSC_TEMPLATE = "1ea10d41-30b8-4f5d-8c8f-a9c53e57517a";
     public static final String STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE = "f9551e87-f646-4e5e-b7be-7a00e498934b";
+
     public static final String C2_UPLOAD_NOTIFICATION_TEMPLATE = "23d406cb-73fb-42c2-93b8-87b74a91c6e8";
     public static final String C2_UPLOAD_NOTIFICATION_TEMPLATE_JUDGE = "9e4d4365-bc82-4a94-a752-a75a9abe78ad";
     public static final String C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE = "137255d6-69c8-4eab-9971-ec788275c390";
@@ -45,4 +47,8 @@ public final class NotifyTemplates {
     public static final String AMENDED_APPLICATION_RETURNED_ADMIN_TEMPLATE = "7d72d10b-155f-4a27-94ad-8e8be71d1265";
     public static final String AMENDED_APPLICATION_RETURNED_CAFCASS_TEMPLATE = "d2e44b62-436c-4bb6-b3b9-afa4f2bca7b5";
     public static final String NOTICE_OF_NEW_HEARING = "c5525d1b-6431-489d-be0e-51de3f163583";
+    public static final String SDO_AND_NOP_ISSUED_CTSC = "16fbe2b8-a8e5-4b75-8a0c-0bf274a9a461";
+    public static final String SDO_AND_NOP_ISSUED_JUDGE = "3ef9348f-66eb-4431-8bfb-2548e65aa0e9";
+    public static final String SDO_AND_NOP_ISSUED_LA = "3a1d72c7-61cf-4cf9-8fbd-071ffe90dbf0";
+    public static final String SDO_AND_NOP_ISSUED_CAFCASS = "a84e75e9-a468-442d-a8c5-c7981d9fdc7c";
 }
