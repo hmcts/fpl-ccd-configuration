@@ -9,14 +9,14 @@ Feature('Case administration by super user');
 
 let caseId;
 
-BeforeSuite(async I => {
+BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData(orderCaseData);
   await I.signIn(config.hmctsSuperUser);
 });
 
-Before(async I => await I.navigateToCaseDetails(caseId));
+Before(async ({I}) => await I.navigateToCaseDetails(caseId));
 
-Scenario('HMCTS super user updates FamilyMan reference number', async (I, caseViewPage, enterFamilyManCaseNumberEventPage) => {
+Scenario('HMCTS super user updates FamilyMan reference number', async ({I, caseViewPage, enterFamilyManCaseNumberEventPage}) => {
   I.seeFamilyManNumber('mockcaseID');
   await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
   enterFamilyManCaseNumberEventPage.enterCaseID('newMockCaseID');
@@ -25,7 +25,7 @@ Scenario('HMCTS super user updates FamilyMan reference number', async (I, caseVi
   I.seeFamilyManNumber('newMockCaseID');
 });
 
-Scenario('HMCTS super user removes an order from a case', async (I, caseViewPage, removeOrderEventPage) => {
+Scenario('HMCTS super user removes an order from a case', async ({I, caseViewPage, removeOrderEventPage}) => {
   await caseViewPage.goToNewActions(config.superUserActions.removeOrder);
   let order = orderCaseData.caseData.orderCollection[0];
   const labelToSelect = order.value.title + ' - ' + order.value.dateOfIssue;
@@ -42,7 +42,7 @@ Scenario('HMCTS super user removes an order from a case', async (I, caseViewPage
   await orderFunctions.assertOrder(I, caseViewPage, order, issuedDate, false, true);
 });
 
-Scenario('HMCTS super user changes state from case management to final hearing', async (I, caseViewPage, changeCaseStateEventPage) => {
+Scenario('HMCTS super user changes state from case management to final hearing', async ({I, caseViewPage, changeCaseStateEventPage}) => {
   const newCaseId = await I.submitNewCaseWithData(caseManagementCaseData);
   await I.navigateToCaseDetailsAs(config.hmctsSuperUser, newCaseId);
 
