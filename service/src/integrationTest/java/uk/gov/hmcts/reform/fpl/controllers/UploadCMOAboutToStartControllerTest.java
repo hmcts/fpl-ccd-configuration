@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.cmo.UploadCMOController;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
@@ -47,16 +46,21 @@ class UploadCMOAboutToStartControllerTest extends AbstractUploadCMOControllerTes
             .hearingDetails(hearings)
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(asCaseDetails(caseData));
+        CaseData responseData = extractCaseData(postAboutToStartEvent(asCaseDetails(caseData)));
 
         Map<String, Object> dynamicList = dynamicListMap(
             "Case management hearing, 15 March 2020", hearings.get(0).getId(),
             "Case management hearing, 16 March 2020", hearings.get(1).getId()
         );
 
-        assertThat(response.getData())
-            .extracting("numHearingsWithoutCMO", "pastHearingsForCMO")
-            .containsOnly("MULTI", dynamicList);
+        UploadCMOEventData eventData = UploadCMOEventData.builder()
+            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.MULTI)
+            .pastHearingsForCMO(dynamicList)
+            .build();
+
+        CaseData expectedCaseData = caseData.toBuilder().uploadCMOEventData(eventData).build();
+
+        assertThat(responseData).isEqualTo(expectedCaseData);
     }
 
     @Test
@@ -66,16 +70,18 @@ class UploadCMOAboutToStartControllerTest extends AbstractUploadCMOControllerTes
             .hearingDetails(List.of(hearing(LocalDateTime.of(2020, 3, 15, 20, 20))))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(asCaseDetails(caseData));
+        CaseData responseData = extractCaseData(postAboutToStartEvent(asCaseDetails(caseData)));
 
-        assertThat(response.getData())
-            .extracting("numHearingsWithoutCMO", "cmoJudgeInfo", "cmoHearingInfo")
-            .containsOnly(
-                "SINGLE",
-                "Her Honour Judge Judy",
-                "Send agreed CMO for Case management hearing, 15 March 2020.\n"
-                    + "This must have been discussed by all parties at the hearing."
-            );
+        UploadCMOEventData eventData = UploadCMOEventData.builder()
+            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.SINGLE)
+            .cmoJudgeInfo("Her Honour Judge Judy")
+            .cmoHearingInfo("Send agreed CMO for Case management hearing, 15 March 2020.\n"
+                + "This must have been discussed by all parties at the hearing.")
+            .build();
+
+        CaseData expectedCaseData = caseData.toBuilder().uploadCMOEventData(eventData).build();
+
+        assertThat(responseData).isEqualTo(expectedCaseData);
     }
 
     @Test
@@ -85,9 +91,15 @@ class UploadCMOAboutToStartControllerTest extends AbstractUploadCMOControllerTes
             .hearingDetails(List.of(hearing(now().plusDays(3))))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(asCaseDetails(caseData));
+        CaseData responseData = extractCaseData(postAboutToStartEvent(asCaseDetails(caseData)));
 
-        assertThat(response.getData()).extracting("numHearingsWithoutCMO").isEqualTo("NONE");
+        UploadCMOEventData eventData = UploadCMOEventData.builder()
+            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.NONE)
+            .build();
+
+        CaseData expectedCaseData = caseData.toBuilder().uploadCMOEventData(eventData).build();
+
+        assertThat(responseData).isEqualTo(expectedCaseData);
     }
 
     @Test
@@ -119,7 +131,9 @@ class UploadCMOAboutToStartControllerTest extends AbstractUploadCMOControllerTes
             .cmosSentToJudge("Case management hearing, 2 March 2020")
             .build();
 
-        assertThat(responseData.getUploadCMOEventData()).isEqualTo(expectedEventData);
+        CaseData expectedCaseData = caseData.toBuilder().uploadCMOEventData(expectedEventData).build();
+
+        assertThat(responseData).isEqualTo(expectedCaseData);
     }
 
     private Map<String, Object> dynamicListMap(String label, UUID code) {
