@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
 import org.apache.commons.lang3.StringUtils;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -52,6 +53,12 @@ public class EmailNotificationHelper {
     public static String formatCaseUrl(String uiBaseUrl, Long caseId, String tab) {
         String caseUrl = formatCaseUrl(uiBaseUrl, caseId);
         return isBlank(tab) ? caseUrl : String.format("%s#%s", caseUrl, tab);
+    }
+
+    public static String buildCallout(final CaseData caseData) {
+        return "^" + buildSubjectLineWithHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
+            caseData.getRespondents1(),
+            caseData.getFirstHearing().orElse(null));
     }
 
     private static String buildHearingDateText(HearingBooking hearingBooking) {

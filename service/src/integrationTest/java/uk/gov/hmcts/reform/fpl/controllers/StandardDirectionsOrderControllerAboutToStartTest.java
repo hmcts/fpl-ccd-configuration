@@ -3,18 +3,24 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute.SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute.UPLOAD;
 
@@ -22,6 +28,8 @@ import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute.UPLOAD;
 @WebMvcTest(StandardDirectionsOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
 class StandardDirectionsOrderControllerAboutToStartTest extends AbstractControllerTest {
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     private static final DocumentReference SDO = DocumentReference.builder().filename("sdo.pdf").build();
 
@@ -80,6 +88,44 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractControll
             .containsEntry("useUploadRoute", "YES");
     }
 
+    @Test
+    void shouldPopulateJudgeAndLegalAdvisorInUploadRouteWhenSendNoticeOfProceedingsViaSDOIsToggledOn() {
+        given(featureToggleService.isSendNoticeOfProceedingsFromSdo()).willReturn(true);
+
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor();
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of(
+                "sdoRouter", UPLOAD,
+                "standardDirectionOrder", StandardDirectionOrder.builder()
+                    .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
+                    .build()
+            )).build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
+        CaseData responseCaseData = mapper.convertValue(response.getData(), CaseData.class);
+
+        assertThat(responseCaseData.getJudgeAndLegalAdvisor()).isEqualTo(judgeAndLegalAdvisor);
+    }
+
+    @Test
+    void shouldNotPopulateJudgeAndLegalAdvisorInUploadRouteWhenSendNoticeOfProceedingsViaSDOIsToggledOff() {
+        given(featureToggleService.isSendNoticeOfProceedingsFromSdo()).willReturn(false);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of(
+                "sdoRouter", UPLOAD,
+                "standardDirectionOrder", StandardDirectionOrder.builder()
+                    .judgeAndLegalAdvisor(buildJudgeAndLegalAdvisor())
+                    .build()
+            )).build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
+
+        assertThat(response.getData())
+            .doesNotContainKey("judgeAndLegalAdvisor");
+    }
+
     private CaseDetails buildCaseDetailsWithDateOfIssueAndRoute(String date, SDORoute route) {
         return buildCaseDetails(date, null, route);
     }
@@ -97,6 +143,13 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractControll
 
         return CaseDetails.builder()
             .data(data)
+            .build();
+    }
+
+    private JudgeAndLegalAdvisor buildJudgeAndLegalAdvisor() {
+        return JudgeAndLegalAdvisor.builder()
+            .judgeTitle(HIS_HONOUR_JUDGE)
+            .judgeLastName("Davidson")
             .build();
     }
 }

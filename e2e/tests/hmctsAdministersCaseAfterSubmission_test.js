@@ -432,7 +432,8 @@ Scenario('HMCTS admin creates discharge of care order', async ({I, caseViewPage,
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, dischargeOfCareOrder);
 });
 
-Scenario('HMCTS admin creates notice of proceedings documents', async ({I, caseViewPage, createNoticeOfProceedingsEventPage}) => {
+// Disabled as part of FPLA-1754 - TBD if super user will have access to notice of proceedings event
+xScenario('HMCTS admin creates notice of proceedings documents', async (I, caseViewPage, createNoticeOfProceedingsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.createNoticeOfProceedings);
   createNoticeOfProceedingsEventPage.checkC6();
   createNoticeOfProceedingsEventPage.checkC6A();
@@ -448,7 +449,8 @@ Scenario('HMCTS admin creates notice of proceedings documents', async ({I, caseV
   I.seeInTab(['Notice of proceedings 2', 'File name'], 'Notice_of_proceedings_c6a.pdf');
 });
 
-Scenario('HMCTS admin creates notice of proceedings documents with allocated judge', async ({I, caseViewPage, createNoticeOfProceedingsEventPage}) => {
+// Disabled as part of FPLA-1754 - TBD if super user will have access to notice of proceedings event
+xScenario('HMCTS admin creates notice of proceedings documents with allocated judge', async (I, caseViewPage, createNoticeOfProceedingsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.createNoticeOfProceedings);
   await createNoticeOfProceedingsEventPage.checkC6();
   await createNoticeOfProceedingsEventPage.useAllocatedJudge();

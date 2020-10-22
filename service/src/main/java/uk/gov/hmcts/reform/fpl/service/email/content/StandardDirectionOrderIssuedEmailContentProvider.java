@@ -16,7 +16,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked.NONE;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.concatUrlAndMostRecentUploadedDocumentPath;
-import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCallout;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 @Service
@@ -34,6 +34,7 @@ public class StandardDirectionOrderIssuedEmailContentProvider extends StandardDi
         allocatedJudgeTemplate.setLeadRespondentsName(commonSDOParameters.get("leadRespondentsName").toString());
         allocatedJudgeTemplate.setHearingDate(commonSDOParameters.get("hearingDate").toString());
         allocatedJudgeTemplate.setCaseUrl(commonSDOParameters.get("caseUrl").toString());
+        allocatedJudgeTemplate.setCallout(buildCallout(caseData));
         allocatedJudgeTemplate.setJudgeTitle(caseData.getStandardDirectionOrder()
             .getJudgeAndLegalAdvisor()
             .getJudgeOrMagistrateTitle());
@@ -59,12 +60,6 @@ public class StandardDirectionOrderIssuedEmailContentProvider extends StandardDi
             caseData.getStandardDirectionOrder().getOrderDoc().getBinaryUrl()));
 
         return ctscTemplateForSDO;
-    }
-
-    private String buildCallout(final CaseData caseData) {
-        return "^" + buildSubjectLineWithHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
-            caseData.getRespondents1(),
-            caseData.getFirstHearing().orElse(null));
     }
 
     private String getHearingNeedsPresent(HearingBooking hearingBooking) {
