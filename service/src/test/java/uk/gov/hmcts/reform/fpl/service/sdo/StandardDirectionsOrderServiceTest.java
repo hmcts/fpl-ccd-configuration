@@ -157,6 +157,24 @@ class StandardDirectionsOrderServiceTest {
     }
 
     @Test
+    void shouldNotSetJudgeAndLegalAdvisorOnSDOWhenWhenJudgeAndLegalAdvisorIsNotPopulated() {
+        given(featureToggleService.isSendNoticeOfProceedingsFromSdo()).willReturn(true);
+
+        StandardDirectionOrder previousSDO = StandardDirectionOrder.builder()
+            .orderDoc(SEALED_DOC)
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .preparedSDO(null)
+            .replacementSDO(null)
+            .build();
+
+        StandardDirectionOrder order = service.buildTemporarySDO(caseData, previousSDO);
+
+        assertThat(order.getJudgeAndLegalAdvisor()).isNull();
+    }
+
+    @Test
     void shouldNotSetJudgeAndLegalAdvisoronSDOWhenWhenSendNoticeOfProceedingsToggleIsOff() {
         given(featureToggleService.isSendNoticeOfProceedingsFromSdo()).willReturn(false);
 

@@ -59,7 +59,7 @@ public class StandardDirectionsOrderService {
         StandardDirectionOrder.StandardDirectionOrderBuilder builder = StandardDirectionOrder.builder()
             .orderDoc(document);
 
-        if (featureToggleService.isSendNoticeOfProceedingsFromSdo()) {
+        if (featureToggleService.isSendNoticeOfProceedingsFromSdo() && caseData.getJudgeAndLegalAdvisor() != null) {
             JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
                 caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()
             );
