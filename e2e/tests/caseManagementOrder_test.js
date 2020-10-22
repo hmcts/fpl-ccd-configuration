@@ -20,17 +20,20 @@ BeforeSuite(async (I) => {
 });
 
 Scenario('Local authority sends agreed CMOs to judge', async (I, caseViewPage, uploadCaseManagementOrderEventPage) => {
+  const supportingDocs = {name: 'case summary', notes: 'this is the case summary', file: config.testFile, fileName: 'mockFile.txt'};
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   await cmoHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, 'Case management hearing, 1 January 2020');
-  await cmoHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, 'Case management hearing, 1 March 2020');
-
-  const supportingDocs = {name: 'case summary', notes: 'this is the case summary', file: config.testFile};
-
+  await cmoHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, 'Case management hearing, 1 March 2020', supportingDocs);
   await cmoHelper.localAuthorityUploadsDraftCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, 'Case management hearing, 1 January 2050', supportingDocs);
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   assertDraftCMO(I, '1', '1 January 2020', withJudgeStatus);
   assertDraftCMO(I, '2', '1 March 2020', withJudgeStatus);
-  assertDraftCMO(I, '3', '1 January 2050', draftStatus, );
+  assertDraftCMO(I, '3', '1 January 2050', draftStatus, supportingDocs);
+  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  I.seeInTab(['Further evidence documents 1', 'Hearing'], 'Case management hearing, 1 March 2020');
+  I.seeInTab(['Further evidence documents 1', 'Documents 1', 'Document name'], supportingDocs.name);
+  I.seeInTab(['Further evidence documents 1', 'Documents 1', 'Notes'], supportingDocs.notes);
+  I.seeInTab(['Further evidence documents 1', 'Documents 1', 'File'], supportingDocs.fileName);
 });
 
 Scenario('Judge makes changes to agreed CMO and seals', async (I, caseViewPage, reviewAgreedCaseManagementOrderEventPage) => {
@@ -99,7 +102,7 @@ const assertDraftCMO = function (I, collectionId, hearingDate, status, supportin
   if (supportingDocs) {
     I.seeInTab([draftCMO, 'Case summary or supporting documents 1', 'Document name'], supportingDocs.name);
     I.seeInTab([draftCMO, 'Case summary or supporting documents 1', 'Notes'], supportingDocs.notes);
-    I.seeInTab([draftCMO, 'Case summary or supporting documents 1', 'File'], supportingDocs.file);
+    I.seeInTab([draftCMO, 'Case summary or supporting documents 1', 'File'], supportingDocs.fileName);
   }
 };
 
