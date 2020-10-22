@@ -22,6 +22,7 @@ public class JudgeAndLegalAdvisor extends AbstractJudge {
     private String judgeEmailAddress;
 
     @Builder(toBuilder = true)
+    @SuppressWarnings("java:S107")
     private JudgeAndLegalAdvisor(JudgeOrMagistrateTitle judgeTitle, String otherTitle, String judgeLastName,
                                 String judgeFullName, String legalAdvisorName, String allocatedJudgeLabel,
         String useAllocatedJudge, String judgeEmailAddress) {
