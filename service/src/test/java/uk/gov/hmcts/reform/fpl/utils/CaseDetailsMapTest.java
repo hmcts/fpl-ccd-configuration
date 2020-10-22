@@ -24,6 +24,18 @@ class CaseDetailsMapTest {
     }
 
     @Test
+    void shouldOverrideExistingValueWithNonEmptyValue() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("K0", "V0"))
+            .build();
+
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails)
+            .putIfNotEmpty("K0", "V1");
+
+        assertThat(caseDetailsMap).containsEntry("K0", "V1");
+    }
+
+    @Test
     void shouldNotAddEmptyValue() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("K0", "V0"))
