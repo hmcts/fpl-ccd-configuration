@@ -21,8 +21,11 @@ public class EPOTimeRangeValidator implements ConstraintValidator<EPOTimeRange, 
 
     @Override
     public boolean isValid(CaseData caseData, ConstraintValidatorContext context) {
-        LocalDateTime startDate = caseData.getDateAndTimeOfIssue();
-        LocalDateTime rangeEnd = startDate.plus(maxDate.amount(), maxDate.unit());
+        if (caseData.getDateAndTimeOfIssue() == null || caseData.getEpoEndDate() == null) {
+            return true;
+        }
+
+        LocalDateTime rangeEnd = caseData.getDateAndTimeOfIssue().plus(maxDate.amount(), maxDate.unit());
 
         return !caseData.getEpoEndDate().isAfter(rangeEnd);
     }

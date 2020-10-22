@@ -27,7 +27,7 @@ class EPOTimeRangeValidatorTest extends TimeValidatorTest {
     void shouldReturnAnErrorWhenDateTimeExceedsRange() {
         CaseData caseData = CaseData.builder()
             .dateAndTimeOfIssue(time.now())
-            .epoEndDate(time.now().plusDays(9))
+            .epoEndDate(time.now().plusDays(8).plusMinutes(1))
             .build();
         List<String> errorMessages = validateGroupService.validateGroup(caseData, EPOEndDateGroup.class);
         assertThat(errorMessages).containsExactly("Date must be within 8 days of the order date");
