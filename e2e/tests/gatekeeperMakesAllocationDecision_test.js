@@ -5,15 +5,15 @@ let caseId;
 
 Feature('Gatekeeper makes allocation decision');
 
-BeforeSuite(async (I) => {
+BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData(gatekeeping);
 
   await I.signIn(config.gateKeeperUser);
 });
 
-Before(async I => await I.navigateToCaseDetails(caseId));
+Before(async ({I}) => await I.navigateToCaseDetails(caseId));
 
-Scenario('gatekeeper enters allocation decision with incorrect allocation proposal', async (I, caseViewPage, enterAllocationDecisionEventPage) => {
+Scenario('gatekeeper enters allocation decision with incorrect allocation proposal', async ({I, caseViewPage, enterAllocationDecisionEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterAllocationDecision);
   enterAllocationDecisionEventPage.selectCorrectLevelOfJudge('No');
   enterAllocationDecisionEventPage.selectAllocationDecision('District judge');
@@ -25,7 +25,7 @@ Scenario('gatekeeper enters allocation decision with incorrect allocation propos
   I.seeInTab(['Allocation decision', 'Give reason'], 'test');
 });
 
-Scenario('gatekeeper enters allocation decision with correct allocation proposal', async (I, caseViewPage, enterAllocationDecisionEventPage) => {
+Scenario('gatekeeper enters allocation decision with correct allocation proposal', async ({I, caseViewPage, enterAllocationDecisionEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterAllocationDecision);
   enterAllocationDecisionEventPage.selectCorrectLevelOfJudge('Yes');
   await I.completeEvent('Save and continue');
