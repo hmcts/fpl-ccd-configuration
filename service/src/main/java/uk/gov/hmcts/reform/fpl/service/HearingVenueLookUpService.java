@@ -41,7 +41,7 @@ public class HearingVenueLookUpService {
     }
 
     public HearingVenue getHearingVenue(final HearingBooking hearingBooking) {
-        if (!"OTHER".equals(hearingBooking.getVenue())) {
+        if (!HEARING_VENUE_ID_OTHER.equals(hearingBooking.getVenue())) {
             return getHearingVenue(hearingBooking.getVenue());
         } else {
             return HearingVenue.builder()
@@ -66,7 +66,7 @@ public class HearingVenueLookUpService {
                 return hearingVenue.getHearingVenueId();
             }
         }
-        return "OTHER";
+        return HEARING_VENUE_ID_OTHER;
     }
 
     public String buildHearingVenue(final HearingVenue hearingVenue) {
