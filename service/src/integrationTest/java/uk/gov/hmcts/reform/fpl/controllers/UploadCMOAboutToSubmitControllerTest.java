@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -22,6 +23,8 @@ import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
@@ -216,14 +219,18 @@ class UploadCMOAboutToSubmitControllerTest extends AbstractUploadCMOControllerTe
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(asCaseDetails(caseData));
 
-        assertThat(response.getData()).doesNotContainKeys(
+        Set<String> keys = mapper.convertValue(caseData, new TypeReference<Map<String, Object>>() {}).keySet();
+
+        keys.removeAll(List.of(
             "showCMOsSentToJudge", "cmosSentToJudge", "cmoUploadType", "pastHearingsForCMO", "futureHearingsForCMO",
             "cmoHearingInfo", "showReplacementCMO", "previousCMO", "uploadedCaseManagementOrder", "replacementCMO",
             "cmoSupportingDocs", "cmoJudgeInfo", "cmoToSend",
             // Delete these ones below when cleaning up
             "numHearingsWithoutCMO", "singleHearingWithCMO", "multiHearingsWithCMOs", "showHearingsSingleTextArea",
             "showHearingsMultiTextArea"
-        );
+        ));
+
+        assertThat(response.getData().keySet()).isEqualTo(keys);
     }
 
     private CaseManagementOrder order(HearingBooking hearing, CMOStatus status) {
