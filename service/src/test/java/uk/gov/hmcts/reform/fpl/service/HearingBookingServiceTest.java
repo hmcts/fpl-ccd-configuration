@@ -334,10 +334,9 @@ class HearingBookingServiceTest {
 
             List<Element<HearingBooking>> selectedHearings = service.getSelectedHearings(selector, hearingBookings);
 
-            assertThat(selectedHearings).hasSize(1)
-                .first()
+            assertThat(selectedHearings)
                 .extracting(hearing -> hearing.getValue().getType())
-                .isEqualTo(CASE_MANAGEMENT);
+                .containsExactly(CASE_MANAGEMENT);
         }
 
         @Test

@@ -87,8 +87,7 @@ class FeeServiceTest {
 
             List<FeeResponse> fees = feeService.getFees(List.of(CARE_ORDER, OTHER, PLACEMENT));
 
-            assertThat(fees).hasSize(3)
-                .containsOnly(careOrderResponse, otherResponse, placementResponse);
+            assertThat(fees).containsOnly(careOrderResponse, otherResponse, placementResponse);
         }
 
         @Test
