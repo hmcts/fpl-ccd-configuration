@@ -74,8 +74,7 @@
     "ID": "cmoJudgeInfo",
     "Label": "This CMO will now be sent to:",
     "FieldType": "Text",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -83,8 +82,7 @@
     "ID": "cmoHearingInfo",
     "Label": " ",
     "FieldType": "Text",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -92,8 +90,7 @@
     "ID": "cmoToSend",
     "Label": "Check the order",
     "FieldType": "Document",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -109,8 +106,7 @@
     "ID": "showCMOsSentToJudge",
     "Label": " ",
     "FieldType": "Text",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
