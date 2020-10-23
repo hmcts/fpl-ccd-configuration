@@ -17,6 +17,7 @@ public class CafcassEmailContentProviderSDOIssued extends StandardDirectionOrder
     public Map<String, Object> buildCafcassStandardDirectionOrderIssuedNotification(CaseData caseData) {
         return super.getSDOPersonalisationBuilder(caseData)
             .put("title", config.getCafcass(caseData.getCaseLocalAuthority()).getName())
+            .put("documentLink", linkToAttachedDocument(caseData.getStandardDirectionOrder().orderDoc))
             .build();
     }
 }

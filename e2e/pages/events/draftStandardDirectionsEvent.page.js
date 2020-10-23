@@ -6,7 +6,7 @@ module.exports = {
   fields: {
     statusRadioGroup: {
       groupName: '#standardDirectionOrder_orderStatus',
-      sealed: 'Yes, it can be sealed and sent to parties',
+      sealed: 'Yes, seal it and send to the local authority',
       draft: 'No, just save it on the system',
     },
     routingRadioGroup: {
@@ -18,6 +18,11 @@ module.exports = {
       preparedSDO: '#preparedSDO',
       replacementSDO: '#replacementSDO',
     },
+    noticeOfProceedings: {
+      groupName: '#noticeOfProceedings_proceedingTypes',
+      c6: locate('input').withAttr({id: 'noticeOfProceedings_proceedingTypes-NOTICE_OF_PROCEEDINGS_FOR_PARTIES'}),
+      c6a: locate('input').withAttr({id: 'noticeOfProceedings_proceedingTypes-NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES'}),
+    },
   },
 
   async createSDOThroughService() {
@@ -27,7 +32,7 @@ module.exports = {
 
   async createSDOThroughUpload() {
     await I.click(this.fields.routingRadioGroup.upload);
-    await I.retryUntilExists(() => I.click('Continue'), this.fields.file.preparedSDO);
+    await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeAndLegalAdvisor');
   },
 
   async uploadPreparedSDO(file) {
@@ -52,7 +57,6 @@ module.exports = {
   async useAllocatedJudge(legalAdvisorName) {
     judgeAndLegalAdvisor.useAllocatedJudge();
     judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName);
-    await I.retryUntilExists(() => I.click('Continue'), '#allParties');
   },
 
   async enterDatesForDirections(direction) {
@@ -76,9 +80,18 @@ module.exports = {
     });
   },
 
-  markAsFinal() {
+  async markAsFinal() {
     within(this.fields.statusRadioGroup.groupName, () => {
       I.click(locate('label').withText(this.fields.statusRadioGroup.sealed));
     });
+    await I.retryUntilExists(() => I.click('Continue'), this.fields.noticeOfProceedings.groupName);
+  },
+
+  checkC6() {
+    I.checkOption(this.fields.noticeOfProceedings.c6);
+  },
+
+  checkC6A() {
+    I.checkOption(this.fields.noticeOfProceedings.c6a);
   },
 };

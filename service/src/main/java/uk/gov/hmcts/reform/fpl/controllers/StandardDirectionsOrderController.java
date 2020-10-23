@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
+import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
@@ -20,12 +21,15 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.DocumentService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
 import uk.gov.hmcts.reform.fpl.service.OrderValidationService;
 import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForDataStoreService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
@@ -39,7 +43,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -50,9 +53,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
-import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
-import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.prepareJudgeFields;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
 
 // TODO: 03/09/2020 refactor logic into sdo service
@@ -70,6 +71,8 @@ public class StandardDirectionsOrderController extends CallbackController {
     private final ValidateGroupService validateGroupService;
     private final StandardDirectionsService standardDirectionsService;
     private final StandardDirectionsOrderService sdoService;
+    private final NoticeOfProceedingsService noticeOfProceedingsService;
+    private final FeatureToggleService featureToggleService;
 
     private static final String JUDGE_AND_LEGAL_ADVISOR_KEY = "judgeAndLegalAdvisor";
     private static final String STANDARD_DIRECTION_ORDER_KEY = "standardDirectionOrder";
@@ -88,6 +91,10 @@ public class StandardDirectionsOrderController extends CallbackController {
                 case UPLOAD:
                     data.put("currentSDO", standardDirectionOrder.getOrderDoc());
                     data.put("useUploadRoute", YES);
+
+                    if (featureToggleService.isSendNoticeOfProceedingsFromSdo()) {
+                        data.put(JUDGE_AND_LEGAL_ADVISOR_KEY, sdoService.getJudgeAndLegalAdvisorFromSDO(caseData));
+                    }
                     break;
                 case SERVICE:
                     data.put(DATE_OF_ISSUE_KEY, sdoService.generateDateOfIssue(standardDirectionOrder));
@@ -117,6 +124,10 @@ public class StandardDirectionsOrderController extends CallbackController {
             data.remove("preparedSDO");
         }
 
+        if (featureToggleService.isSendNoticeOfProceedingsFromSdo()) {
+            caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, sdoService.getJudgeAndLegalAdvisorFromSDO(caseData));
+        }
+
         return respond(caseDetails);
     }
 
@@ -136,15 +147,7 @@ public class StandardDirectionsOrderController extends CallbackController {
         Stream.of(DirectionAssignee.values()).forEach(assignee ->
             caseDetails.getData().put(assignee.toHearingDateField(), hearingDate));
 
-        StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
-
-        if (standardDirectionOrder != null) {
-            caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, standardDirectionOrder.getJudgeAndLegalAdvisor());
-        }
-
-        if (isNotEmpty(caseData.getAllocatedJudge())) {
-            caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, prepareJudge(caseData));
-        }
+        caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, sdoService.getJudgeAndLegalAdvisorFromSDO(caseData));
 
         return respond(caseDetails);
     }
@@ -254,12 +257,24 @@ public class StandardDirectionsOrderController extends CallbackController {
             "currentSDO",
             "replacementSDO",
             "useServiceRoute",
-            "useUploadRoute"
+            "useUploadRoute",
+            "noticeOfProceedings"
         );
 
-        if (order.getOrderStatus() == SEALED) {
+        if (order.isSealed()) {
             data.put("state", State.CASE_MANAGEMENT);
             removeTemporaryFields(caseDetails, "sdoRouter");
+
+            if (caseData.isSendingNoticeOfProceedings() && featureToggleService.isSendNoticeOfProceedingsFromSdo()) {
+                List<DocmosisTemplates> docmosisTemplateTypes =
+                    caseData.getNoticeOfProceedings().mapProceedingTypesToDocmosisTemplate();
+
+                List<Element<DocumentBundle>> newNoticeOfProceedings
+                    = noticeOfProceedingsService.uploadAndPrepareNoticeOfProceedingBundle(caseData,
+                    docmosisTemplateTypes);
+
+                caseDetails.getData().put("noticeOfProceedingsBundle", newNoticeOfProceedings);
+            }
         }
 
         return respond(caseDetails);
@@ -282,20 +297,6 @@ public class StandardDirectionsOrderController extends CallbackController {
             Map.of("documentToBeSent", standardDirectionOrder.getOrderDoc())
         );
         publishEvent(new StandardDirectionsOrderIssuedEvent(caseData));
-    }
-
-    private JudgeAndLegalAdvisor prepareJudge(CaseData caseData) {
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder().build();
-
-        if (isNotEmpty(caseData.getStandardDirectionOrder())
-            && isNotEmpty(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor())) {
-            judgeAndLegalAdvisor = prepareJudgeFields(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor(),
-                caseData.getAllocatedJudge());
-        }
-
-        judgeAndLegalAdvisor.setAllocatedJudgeLabel(buildAllocatedJudgeLabel(caseData.getAllocatedJudge()));
-
-        return judgeAndLegalAdvisor;
     }
 
     private String getFirstHearingStartDate(CaseData caseData) {
