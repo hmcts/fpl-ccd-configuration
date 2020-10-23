@@ -15,7 +15,7 @@ import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubject
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 @Service
-public class NewCMOUploadedContentProvider extends AbstractEmailContentProvider {
+public class AgreedCMOUploadedContentProvider extends AbstractEmailContentProvider {
 
     public CMOReadyToSealTemplate buildTemplate(HearingBooking hearing, Long caseId,
                                                 AbstractJudge judge, List<Element<Respondent>> respondents,

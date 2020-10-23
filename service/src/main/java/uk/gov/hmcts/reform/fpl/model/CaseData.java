@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.model;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
+import uk.gov.hmcts.reform.fpl.model.event.UploadCMOEventData;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
@@ -506,9 +508,9 @@ public class CaseData {
 
     private final DocumentReference submittedForm;
 
-    private final DocumentReference uploadedCaseManagementOrder;
     private final List<Element<CaseManagementOrder>> draftUploadedCMOs;
-    private final Object hearingsWithoutApprovedCMO; // Could be dynamic list or string
+    @JsonUnwrapped
+    private final UploadCMOEventData uploadCMOEventData;
 
     public List<Element<CaseManagementOrder>> getDraftUploadedCMOs() {
         return defaultIfNull(draftUploadedCMOs, new ArrayList<>());

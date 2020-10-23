@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 
 @Getter
 @RequiredArgsConstructor
-public class NewCMOUploaded {
+public class AgreedCMOUploaded implements UploadCMOEvent {
     private final CaseData caseData;
     private final HearingBooking hearing;
 }
