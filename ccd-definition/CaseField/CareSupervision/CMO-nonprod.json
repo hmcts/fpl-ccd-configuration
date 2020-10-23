@@ -5,7 +5,6 @@
     "ID": "pastHearingsForCMO",
     "Label": "Which hearing does this CMO relate to?",
     "FieldType": "DynamicList",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
+    "SecurityClassification": "Public"
   }
 ]
