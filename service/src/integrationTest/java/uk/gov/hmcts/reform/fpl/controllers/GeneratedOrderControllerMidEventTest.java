@@ -489,7 +489,7 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
             final CaseData.CaseDataBuilder dataBuilder = CaseData.builder()
                 .order(GeneratedOrder.builder().details("").build())
                 .orderTypeAndDocument(OrderTypeAndDocument.builder().type(EMERGENCY_PROTECTION_ORDER).build())
-                .dateOfIssue(dateNow())
+                .dateAndTimeOfIssue(now())
                 .orderFurtherDirections(FurtherDirections.builder()
                     .directionsNeeded("Yes")
                     .directions("Some directions")

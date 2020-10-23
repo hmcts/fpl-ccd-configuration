@@ -48,9 +48,9 @@ import uk.gov.hmcts.reform.fpl.validation.groups.UploadDocumentsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOEndDateGroup;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.HasDocumentsIncludedInSwet;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.time.EPOTimeRange;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeDifference;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeNotMidnight;
-import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeRange;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -88,6 +88,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @HasDocumentsIncludedInSwet(groups = UploadDocumentsGroup.class)
+@EPOTimeRange(message = "Date must be within 8 days of the order date", groups = EPOEndDateGroup.class,
+    maxDate = @TimeDifference(amount = 8, unit = DAYS))
 public class CaseData {
     private final Long id;
     private final State state;
@@ -298,11 +300,11 @@ public class CaseData {
     private final List<Element<Representative>> representatives;
 
     // EPO Order
+    @PastOrPresent(message = "Date of issue cannot be in the future", groups = DateOfIssueGroup.class)
+    private final LocalDateTime dateAndTimeOfIssue;
     private final EPOChildren epoChildren;
     @TimeNotMidnight(message = "Enter a valid end time", groups = EPOEndDateGroup.class)
     @Future(message = "Enter an end date in the future", groups = EPOEndDateGroup.class)
-    @TimeRange(message = "Date must be within the next 8 days", groups = EPOEndDateGroup.class,
-        maxDate = @TimeDifference(amount = 8, unit = DAYS))
     private final LocalDateTime epoEndDate;
     private final EPOPhrase epoPhrase;
     private final EPOType epoType;
