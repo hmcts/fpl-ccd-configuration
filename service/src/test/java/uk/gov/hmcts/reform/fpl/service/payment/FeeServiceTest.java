@@ -87,15 +87,15 @@ class FeeServiceTest {
 
             List<FeeResponse> fees = feeService.getFees(List.of(CARE_ORDER, OTHER, PLACEMENT));
 
-            assertThat(fees).hasSize(3);
-            assertThat(fees).containsOnly(careOrderResponse, otherResponse, placementResponse);
+            assertThat(fees).hasSize(3)
+                .containsOnly(careOrderResponse, otherResponse, placementResponse);
         }
 
         @Test
         void shouldPropagateExceptionWhenThereIsAnErrorInTheResponse() {
             when(feesRegisterApi.findFee(anyString(), anyString(), anyString(), anyString(), anyString(), anyString()))
                 .thenThrow(new FeignException.BadRequest(
-                    "", Request.create(GET, EMPTY, Map.of(), new byte[]{}, UTF_8), new byte[]{})
+                    "", Request.create(GET, EMPTY, Map.of(), new byte[]{}, UTF_8, null), new byte[]{})
                 );
 
             List<FeeType> feeTypes = List.of(CARE_ORDER);
@@ -130,7 +130,7 @@ class FeeServiceTest {
             List<FeeResponse> feeResponses = List.of(buildFee(12), buildFee(73.4), buildFee(45));
             Optional<FeeResponse> mostExpensive = feeService.extractFeeToUse(feeResponses);
             assertThat(mostExpensive).isPresent();
-            assertThat(mostExpensive.get()).isEqualTo(feeResponses.get(1));
+            assertThat(mostExpensive).contains(feeResponses.get(1));
         }
 
         private FeeResponse buildFee(double amount) {
@@ -165,7 +165,7 @@ class FeeServiceTest {
         void shouldPropagateExceptionWhenThereIsAnErrorInTheResponse() {
             when(feesRegisterApi.findFee(anyString(), anyString(), anyString(), anyString(), anyString(), anyString()))
                 .thenThrow(new FeignException.BadRequest(
-                    "", Request.create(GET, EMPTY, Map.of(), new byte[] {}, UTF_8), new byte[] {})
+                    "", Request.create(GET, EMPTY, Map.of(), new byte[]{}, UTF_8, null), new byte[] {})
                 );
 
             Orders orders = Orders.builder()

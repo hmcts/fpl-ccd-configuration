@@ -27,7 +27,7 @@ import static uk.gov.hmcts.reform.fpl.enums.UserRole.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ExtendWith(SpringExtension.class)
-public class DocumentDownloadServiceTest {
+class DocumentDownloadServiceTest {
 
     private static final String AUTH_TOKEN = "token";
     private static final String SERVICE_AUTH_TOKEN = "service-token";
@@ -92,8 +92,8 @@ public class DocumentDownloadServiceTest {
 
         byte[] documentContents = documentDownloadService.downloadDocument(document.links.binary.href);
 
-        assertThat(documentContents).isNotEmpty();
-        assertThat(documentContents).isEqualTo(expectedDocumentContents);
+        assertThat(documentContents).isNotEmpty()
+            .isEqualTo(expectedDocumentContents);
 
         verify(documentDownloadClient).downloadBinary(AUTH_TOKEN,
             SERVICE_AUTH_TOKEN,

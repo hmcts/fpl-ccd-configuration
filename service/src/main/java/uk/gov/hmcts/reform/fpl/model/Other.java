@@ -26,9 +26,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @EqualsAndHashCode
 @Builder(toBuilder = true)
 public class Other implements Representable, ConfidentialParty<Other> {
-    @SuppressWarnings("membername")
     @JsonProperty("DOB")
-    private final String DOB;
+    private final String dateOfBirth;
     private final String name;
     private final String gender;
     private final Address address;

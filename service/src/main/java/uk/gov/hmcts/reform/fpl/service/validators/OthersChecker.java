@@ -43,7 +43,7 @@ public class OthersChecker implements EventChecker {
 
         return isEmptyAddress(other.getAddress()) && allEmpty(
                 other.getName(),
-                other.getDOB(),
+                other.getDateOfBirth(),
                 other.getGender(),
                 other.getBirthPlace(),
                 other.getChildInformation(),
