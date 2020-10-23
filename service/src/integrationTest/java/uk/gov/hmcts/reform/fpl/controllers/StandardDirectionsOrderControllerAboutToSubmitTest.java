@@ -35,6 +35,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsTemplateDataGenerationService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
@@ -53,6 +54,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
@@ -89,6 +91,9 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
     private static final String LA_NAME = "example";
     private static final String COURT_NAME = "Family Court";
     private static final String COURT_CODE = "11";
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     @MockBean
     private DocmosisDocumentGeneratorService docmosisService;
@@ -193,6 +198,8 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
 
     @Test
     void shouldUpdateStateWhenOrderIsSealedThroughServiceRouteAndRemoveRouterAndSendNoticeOfProceedings() {
+        given(featureToggleService.isSendNoticeOfProceedingsFromSdo()).willReturn(true);
+
         CaseDetails caseDetails = validSealedCaseDetailsForServiceRoute();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -222,6 +229,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
 
         given(idamClient.getUserInfo(anyString())).willReturn(UserInfo.builder().name("adam").build());
         given(sealingService.sealDocument(document)).willReturn(document);
+        given(featureToggleService.isSendNoticeOfProceedingsFromSdo()).willReturn(true);
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
 
@@ -238,6 +246,21 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
         assertThat(response.getData())
             .containsEntry("state", "PREPARE_FOR_HEARING")
             .doesNotContainKey("sdoRouter");
+    }
+
+    @Test
+    void shouldNotSendNoticeOfProceedingsWhenSendToNoticeOfProceedingsIsToggledOff() {
+        DocumentReference document = DocumentReference.builder().filename("final.pdf").build();
+        CaseDetails caseDetails = validCaseDetailsForUploadRoute(document, SEALED);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        given(idamClient.getUserInfo(anyString())).willReturn(UserInfo.builder().name("adam").build());
+        given(featureToggleService.isSendNoticeOfProceedingsFromSdo()).willReturn(false);
+        
+        CaseData responseCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
+
+        assertThat(responseCaseData.getNoticeOfProceedingsBundle()).isNull();
+        verifyNoInteractions(uploadDocumentService, docmosisService);
     }
 
     @Test
