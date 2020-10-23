@@ -1245,5 +1245,13 @@
     "Label": "Organisation policy",
     "FieldType": "OrganisationPolicy",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderTabHeading",
+    "Label": "## Orders",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
   }
 ]
