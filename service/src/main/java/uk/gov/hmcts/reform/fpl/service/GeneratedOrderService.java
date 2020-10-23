@@ -80,6 +80,7 @@ public class GeneratedOrderService {
         GeneratedOrder.GeneratedOrderBuilder orderBuilder = GeneratedOrder.builder();
         GeneratedOrderType orderType = typeAndDocument.getType();
         String expiryDate = null;
+        String date = null;
 
         switch (orderType) {
             case BLANK_ORDER:
@@ -99,6 +100,10 @@ public class GeneratedOrderService {
                 expiryDate = getSupervisionOrderExpiryDate(typeAndDocument, caseData.getOrderMonths(),
                     caseData.getInterimEndDate());
                 break;
+            case EMERGENCY_PROTECTION_ORDER:
+                date = formatLocalDateTimeBaseUsingFormat(caseData.getDateAndTimeOfIssue(), TIME_DATE);
+                expiryDate = formatLocalDateTimeBaseUsingFormat(caseData.getEpoEndDate(), TIME_DATE);
+                break;
             case UPLOAD:
                 return GeneratedOrder.builder()
                     .document(typeAndDocument.getDocument())
@@ -112,7 +117,7 @@ public class GeneratedOrderService {
         }
 
         orderBuilder.expiryDate(expiryDate)
-            .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
+            .dateOfIssue(date != null ? date : formatLocalDateToString(caseData.getDateOfIssue(), DATE))
             .type(OrderHelper.getFullOrderType(typeAndDocument))
             .document(typeAndDocument.getDocument())
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)

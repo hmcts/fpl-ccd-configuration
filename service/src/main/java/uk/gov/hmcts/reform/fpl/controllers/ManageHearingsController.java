@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -67,7 +68,7 @@ public class ManageHearingsController extends CallbackController {
             caseDetails.getData().put("judgeAndLegalAdvisor", setAllocatedJudgeLabel(caseData.getAllocatedJudge()));
         }
 
-        caseDetails.getData().put(FIRST_HEARING_FLAG, (caseData.getAllHearings().isEmpty() ? YES : NO).getValue());
+        caseDetails.getData().put(FIRST_HEARING_FLAG, (ObjectUtils.isEmpty(caseData.getHearingDetails()) ? YES : NO).getValue());
 
         if (isNotEmpty(caseData.getHearingDetails())) {
             caseDetails.getData().put(HEARING_DATE_LIST, hearingsService.asDynamicList(caseData.getFutureHearings()));

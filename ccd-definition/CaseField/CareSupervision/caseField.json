@@ -844,6 +844,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "dateAndTimeOfIssue",
+    "Label": "Enter the date and time that the order was issued",
+    "FieldType": "DateTime",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "paymentHistory",
     "Label": "A history of payments associated with a the case",
     "FieldType": "CasePaymentHistoryViewer",
