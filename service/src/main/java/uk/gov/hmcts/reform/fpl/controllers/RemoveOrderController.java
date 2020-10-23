@@ -72,6 +72,8 @@ public class RemoveOrderController {
         List<Element<GeneratedOrder>> orders = caseData.getOrderCollection();
         List<Element<GeneratedOrder>> hiddenOrders = caseData.getHiddenOrders();
 
+        data.put("children1", service.removeFinalOrderPropertiesFromChildren(caseData));
+
         service.hideOrder(orders, hiddenOrders, caseData.getRemovableOrderList(), caseData.getReasonToRemoveOrder());
 
         data.put("orderCollection", orders);

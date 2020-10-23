@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
@@ -11,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -61,5 +64,30 @@ public class RemoveOrderService {
                 order.getValue().setRemovalReason(reason);
                 hiddenOrders.add(order);
             });
+    }
+
+    public List<Element<Child>> removeFinalOrderPropertiesFromChildren(CaseData caseData) {
+        UUID id = getDynamicListValueCode(caseData.getRemovableOrderList(), mapper);
+
+        Optional<GeneratedOrder> removedOrder = caseData.getOrderFromUUID(id);
+
+        if (removedOrder.isEmpty() || !removedOrder.get().isFinalOrder()) {
+            return caseData.getAllChildren();
+        }
+
+        List<UUID> removedChildrenIDList = removedOrder.get().getChildrenIDs();
+
+        return caseData.getAllChildren().stream()
+            .map(element -> {
+                if (removedChildrenIDList.contains(element.getId())) {
+                    Child child = element.getValue();
+
+                    child.setFinalOrderIssued(null);
+                    child.setFinalOrderIssuedType(null);
+                }
+
+                return element;
+            })
+            .collect(Collectors.toList());
     }
 }

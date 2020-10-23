@@ -277,6 +277,14 @@ public class CaseData {
         return orderCollection != null ? orderCollection : new ArrayList<>();
     }
 
+    @JsonIgnore
+    public Optional<GeneratedOrder> getOrderFromUUID(UUID elementId) {
+        return getOrderCollection().stream()
+            .filter(orderElement -> elementId.equals(orderElement.getId()))
+            .findFirst()
+            .map(Element::getValue);
+    }
+
     private final Object removableOrderList;
     private final String reasonToRemoveOrder;
     private final List<Element<GeneratedOrder>> hiddenOrders;
