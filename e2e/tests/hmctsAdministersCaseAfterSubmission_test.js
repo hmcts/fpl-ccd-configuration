@@ -75,7 +75,7 @@ Scenario('HMCTS admin amends children, respondents, others, international elemen
 Scenario('HMCTS admin uploads correspondence documents', async ({I, caseViewPage, manageDocumentsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
   await manageDocumentsEventPage.selectCorrespondence();
-  await I.retryUntilExists(() => I.click('Continue'), manageDocumentsEventPage.fields.supportingDocumentsCollectionId);
+  await I.goToNextPage();
   await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[0]);
   await I.addAnotherElementToCollection();
   await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[1]);
@@ -99,7 +99,7 @@ Scenario('HMCTS admin uploads correspondence documents', async ({I, caseViewPage
 Scenario('HMCTS admin uploads C2 documents to the case', async ({I, caseViewPage, uploadC2DocumentsEventPage, paymentHistoryPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.uploadC2Documents);
   uploadC2DocumentsEventPage.selectApplicationType('WITH_NOTICE');
-  await I.retryUntilExists(() => I.click('Continue'), '#temporaryC2Document_document');
+  await I.goToNextPage();
   const feeToPay = await uploadC2DocumentsEventPage.getFeeToPay();
   uploadC2DocumentsEventPage.usePbaPayment();
   uploadC2DocumentsEventPage.enterPbaPaymentDetails(c2Payment);
@@ -129,7 +129,7 @@ Scenario('HMCTS admin uploads C2 documents to the case', async ({I, caseViewPage
   await I.startEventViaHyperlink('Upload a new C2 application');
 
   uploadC2DocumentsEventPage.selectApplicationType('WITHOUT_NOTICE');
-  await I.retryUntilExists(() => I.click('Continue'), '#temporaryC2Document_document');
+  await I.goToNextPage();
   uploadC2DocumentsEventPage.usePbaPayment(false);
   uploadC2DocumentsEventPage.uploadC2Document(config.testFile, 'Jessica Pearson C2');
   await I.completeEvent('Save and continue');
@@ -144,7 +144,7 @@ Scenario('HMCTS admin edits supporting evidence document on C2 application', asy
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
   await manageDocumentsEventPage.selectC2SupportingDocuments();
   await manageDocumentsEventPage.select2FromDropdown();
-  await I.retryUntilExists(() => I.click('Continue'), manageDocumentsEventPage.fields.supportingDocumentsCollectionId);
+  await I.goToNextPage();
   await manageDocumentsEventPage.enterDocumentName('Updated document name');
   await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
   I.seeEventSubmissionConfirmation(config.administrationActions.manageDocuments);
@@ -162,9 +162,9 @@ Scenario('HMCTS admin manages hearings', async ({I, caseViewPage, manageHearings
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   await manageHearingsEventPage.enterHearingDetails(hearingDetails[0]);
   await manageHearingsEventPage.enterVenue(hearingDetails[0]);
-  await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
+  await I.goToNextPage();
   await manageHearingsEventPage.enterJudgeAndLegalAdvisorDetails(hearingDetails[0]);
-  await I.retryUntilExists(() => I.click('Continue'), '#sendNoticeOfHearing');
+  await I.goToNextPage();
   await manageHearingsEventPage.sendNoticeOfHearingWithNotes(hearingDetails[0].additionalNotes);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageHearings);
@@ -172,12 +172,12 @@ Scenario('HMCTS admin manages hearings', async ({I, caseViewPage, manageHearings
   I.wait(5);
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   await manageHearingsEventPage.selectAddNewHearing();
-  await I.retryUntilExists(() => I.click('Continue'), '#hearingType');
+  await I.goToNextPage();
   await manageHearingsEventPage.enterHearingDetails(hearingDetails[1]);
   await manageHearingsEventPage.selectPreviousVenue();
-  await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
+  await I.goToNextPage();
   await manageHearingsEventPage.selectedAllocatedJudge();
-  await I.retryUntilExists(() => I.click('Continue'), '#sendNoticeOfHearing');
+  await I.goToNextPage();
   await manageHearingsEventPage.dontSendNoticeOfHearing();
   await I.completeEvent('Save and continue');
 
@@ -208,11 +208,11 @@ Scenario('HMCTS admin manages hearings', async ({I, caseViewPage, manageHearings
   I.wait(5);
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   await manageHearingsEventPage.selectEditHearing('Case management hearing, 1 January 2060');
-  await I.retryUntilExists(() => I.click('Continue'), '#hearingType');
+  await I.goToNextPage();
   await manageHearingsEventPage.enterNewVenue(hearingDetails[1]);
-  await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
+  await I.goToNextPage();
   await manageHearingsEventPage.selectedAllocatedJudge();
-  await I.retryUntilExists(() => I.click('Continue'), '#sendNoticeOfHearing');
+  await I.goToNextPage();
   await manageHearingsEventPage.sendNoticeOfHearingWithNotes('The venue has changed');
   await I.completeEvent('Save and continue');
 
@@ -248,7 +248,7 @@ xScenario('HMCTS admin enters hearing details and submits', async ({I, caseViewP
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);
   await addHearingBookingDetailsEventPage.enterJudge(hearingDetails[1].judgeAndLegalAdvisor);
   await addHearingBookingDetailsEventPage.enterLegalAdvisor(hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
-  await I.retryUntilExists(() => I.click('Continue'), '#newHearingSelector_newHearingSelector');
+  await I.goToNextPage();
   addHearingBookingDetailsEventPage.sendNoticeOfHearing(hearingDetails[0].sendNoticeOfHearing);
   addHearingBookingDetailsEventPage.sendNoticeOfHearing(hearingDetails[1].sendNoticeOfHearing, 1);
   await I.completeEvent('Save and continue');
@@ -295,7 +295,7 @@ Scenario('HMCTS admin uploads further hearing evidence documents', async ({I, ca
   await manageDocumentsEventPage.selectFurtherEvidence();
   await manageDocumentsEventPage.selectFurtherEvidenceIsRelatedToHearing();
   await manageDocumentsEventPage.selectHearing('1 January 2050');
-  await I.retryUntilExists(() => I.click('Continue'), manageDocumentsEventPage.fields.supportingDocumentsCollectionId);
+  await I.goToNextPage();
   await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[0]);
   await I.addAnotherElementToCollection();
   await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[1]);
@@ -484,7 +484,7 @@ Scenario('HMCTS admin makes 26-week case extension', async ({I, caseViewPage, ad
   addExtend26WeekTimelineEventPage.selectEightWeekExtensionTime();
   addExtend26WeekTimelineEventPage.selectTimetableForChildExtensionReason();
   addExtend26WeekTimelineEventPage.addExtensionComment('Comment');
-  I.click('Continue');
+  await I.goToNextPage();
   addExtend26WeekTimelineEventPage.addCaseExtensionTimeConfirmation();
   addExtend26WeekTimelineEventPage.addCaseExtensionDate();
   await I.completeEvent('Save and continue');

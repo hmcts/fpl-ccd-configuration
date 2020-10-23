@@ -29,7 +29,7 @@ module.exports = {
 
   async selectChild(childName){
     await I.selectOption(this.fields().childList, childName);
-    await I.click('Continue');
+    await I.goToNextPage();
   },
 
   async addApplication(file) {

@@ -15,6 +15,7 @@ const normalizeCaseId = caseId => caseId.toString().replace(/\D/g, '');
 const baseUrl = process.env.URL || 'http://localhost:3333';
 const signedInSelector = 'exui-header';
 const signedOutSelector = '#global-header';
+const maxRetries = 5;
 let currentUser = {};
 
 'use strict';
@@ -288,6 +289,19 @@ module.exports = function () {
       return caseId;
     },
 
+    async goToNextPage(nextButtonLabel = 'Continue' ){
+      const currentUrl = await this.grabCurrentUrl();
+      for (let tryNumber = 1; tryNumber <= maxRetries; tryNumber++) {
+        this.click(nextButtonLabel);
+        if(await this.grabCurrentUrl() !== currentUrl){
+          break;
+        } else {
+          output.log(`Navigation attempt failed for ${tryNumber} time(s)`);
+          this.wait(2);
+        }
+      }
+    },
+
     /**
      * Retries defined action util element described by the locator is present. If element is not present
      * after 4 tries (run + 3 retries) this step throws an error.
@@ -299,7 +313,7 @@ module.exports = function () {
      * @param locator - locator for an element that is expected to be present upon successful execution of an action
      * @returns {Promise<void>} - promise holding no result if resolved or error if rejected
      */
-    async retryUntilExists(action, locator, maxNumberOfTries = 6) {
+    async retryUntilExists(action, locator, maxNumberOfTries = maxRetries) {
       for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
         output.log(`retryUntilExists(${locator}): starting try #${tryNumber}`);
         if (tryNumber > 1 && await this.hasSelector(locator)) {

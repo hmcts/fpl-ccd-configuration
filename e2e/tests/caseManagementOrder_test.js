@@ -43,7 +43,7 @@ Scenario('Judge makes changes to agreed CMO and seals', async ({I, caseViewPage,
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.reviewAgreedCmo);
   reviewAgreedCaseManagementOrderEventPage.selectCMOToReview('1 March 2020');
-  await I.retryUntilExists(() => I.click('Continue'), '#reviewCMODecision_decision');
+  await I.goToNextPage();
   I.see('mockFile.docx');
   reviewAgreedCaseManagementOrderEventPage.selectMakeChangesToCmo();
   reviewAgreedCaseManagementOrderEventPage.uploadAmendedCmo(config.testWordFile);

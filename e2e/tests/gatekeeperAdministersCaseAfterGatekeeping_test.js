@@ -65,9 +65,9 @@ Scenario('Gatekeeper manages hearings', async ({I, caseViewPage, manageHearingsE
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   await manageHearingsEventPage.enterHearingDetails(hearingDetails[0]);
   await manageHearingsEventPage.enterVenue(hearingDetails[0]);
-  await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
+  await I.goToNextPage();
   await manageHearingsEventPage.enterJudgeAndLegalAdvisorDetails(hearingDetails[0]);
-  await I.retryUntilExists(() => I.click('Continue'), '#sendNoticeOfHearing');
+  await I.goToNextPage();
   await manageHearingsEventPage.sendNoticeOfHearingWithNotes(hearingDetails[0].additionalNotes);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageHearings);
@@ -95,7 +95,7 @@ xScenario('Gatekeeper enters hearing details and submits', async ({I, caseViewPa
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);
   await addHearingBookingDetailsEventPage.enterJudge(hearingDetails[1].judgeAndLegalAdvisor);
   await addHearingBookingDetailsEventPage.enterLegalAdvisor(hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
-  await I.retryUntilExists(() => I.click('Continue'), '#newHearingSelector_newHearingSelector');
+  await I.goToNextPage();
   addHearingBookingDetailsEventPage.sendNoticeOfHearing('No');
   addHearingBookingDetailsEventPage.sendNoticeOfHearing('No', 1);
   await I.completeEvent('Save and continue');
@@ -142,7 +142,7 @@ Scenario('Gatekeeper drafts standard directions', async ({I, caseViewPage, draft
   await draftStandardDirectionsEventPage.createSDOThroughService();
   await draftStandardDirectionsEventPage.skipDateOfIssue();
   await draftStandardDirectionsEventPage.useAllocatedJudge('Bob Ross');
-  await I.retryUntilExists(() => I.click('Continue'), '#allParties');
+  await I.goToNextPage();
   await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
   await draftStandardDirectionsEventPage.markAsDraft();
   await I.completeEvent('Save and continue');
@@ -157,7 +157,7 @@ Scenario('Gatekeeper submits final version of standard directions', async ({I, c
   await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
   await draftStandardDirectionsEventPage.enterDateOfIssue({day: 11, month: 1, year: 2020});
   await draftStandardDirectionsEventPage.useAllocatedJudge('Bob Ross');
-  await I.retryUntilExists(() => I.click('Continue'), '#allParties');
+  await I.goToNextPage();
   await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
   await draftStandardDirectionsEventPage.markAsFinal();
   draftStandardDirectionsEventPage.checkC6();
