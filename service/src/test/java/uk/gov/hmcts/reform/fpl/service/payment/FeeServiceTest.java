@@ -129,8 +129,7 @@ class FeeServiceTest {
         void shouldReturnTheFeeResponseWithMaxFeeWhenPassedAPopulatedList() {
             List<FeeResponse> feeResponses = List.of(buildFee(12), buildFee(73.4), buildFee(45));
             Optional<FeeResponse> mostExpensive = feeService.extractFeeToUse(feeResponses);
-            assertThat(mostExpensive).isPresent();
-            assertThat(mostExpensive).contains(feeResponses.get(1));
+            assertThat(mostExpensive).isPresent().contains(feeResponses.get(1));
         }
 
         private FeeResponse buildFee(double amount) {
