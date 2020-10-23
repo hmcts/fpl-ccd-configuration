@@ -92,8 +92,7 @@ class DocumentDownloadServiceTest {
 
         byte[] documentContents = documentDownloadService.downloadDocument(document.links.binary.href);
 
-        assertThat(documentContents).isNotEmpty()
-            .isEqualTo(expectedDocumentContents);
+        assertThat(documentContents).isEqualTo(expectedDocumentContents);
 
         verify(documentDownloadClient).downloadBinary(AUTH_TOKEN,
             SERVICE_AUTH_TOKEN,

@@ -23,7 +23,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Data
 @AllArgsConstructor
-@EqualsAndHashCode
 @Builder(toBuilder = true)
 public class Other implements Representable, ConfidentialParty<Other> {
     @JsonProperty("DOB")

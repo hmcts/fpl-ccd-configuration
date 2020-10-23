@@ -17,7 +17,6 @@ public class Hearing {
     private final String timeFrame;
     private final String reducedNotice;
     private final String withoutNotice;
-    @SuppressWarnings("membername")
     @JsonProperty("type_GiveReason")
     private final String typeGiveReason;
     private final String respondentsAware;
