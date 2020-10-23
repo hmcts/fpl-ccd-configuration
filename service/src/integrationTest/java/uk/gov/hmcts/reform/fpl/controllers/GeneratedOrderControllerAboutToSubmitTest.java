@@ -344,11 +344,13 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
     @Test
     void shouldSetFinalOrderIssuedForEmergencyProtectionOrder() {
         final CaseData caseData = commonCaseData(EMERGENCY_PROTECTION_ORDER, false)
+            .dateOfIssue(null)
+            .dateAndTimeOfIssue(now())
             .orderAppliesToAllChildren("Yes")
             .epoChildren(EPOChildren.builder().descriptionNeeded("No").build())
             .epoType(EPOType.PREVENT_REMOVAL)
             .epoPhrase(EPOPhrase.builder().includePhrase("PHRASE").build())
-            .epoEndDate(now())
+            .epoEndDate(now().plusDays(5))
             .build();
 
         final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData));

@@ -19,9 +19,11 @@ import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import java.util.List;
 import java.util.Optional;
 
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
@@ -46,6 +48,12 @@ public abstract class GeneratedOrderTemplateDataGeneration
     public DocmosisGeneratedOrder getTemplateData(CaseData caseData) {
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
         GeneratedOrderType orderType = orderTypeAndDocument.getType();
+        String dateOfIssue;
+        if (EMERGENCY_PROTECTION_ORDER.equals(orderType)) {
+            dateOfIssue = formatLocalDateTimeBaseUsingFormat(caseData.getDateAndTimeOfIssue(), DATE_TIME);
+        } else {
+            dateOfIssue = formatLocalDateToString(caseData.getDateOfIssue(), DATE);
+        }
 
         var docmosisGeneratedOrderBuilder = populateCustomOrderFields(caseData).toBuilder();
 
@@ -68,7 +76,7 @@ public abstract class GeneratedOrderTemplateDataGeneration
             .orderType(orderType)
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .courtName(caseDataExtractionService.getCourtName(caseData.getCaseLocalAuthority()))
-            .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
+            .dateOfIssue(dateOfIssue)
             .judgeAndLegalAdvisor(docmosisJudgeAndLegalAdvisor)
             .children(getChildrenDetails(caseData))
             .furtherDirections(caseData.getFurtherDirectionsText())
