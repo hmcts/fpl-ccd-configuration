@@ -177,8 +177,7 @@ class ChildrenServiceTest {
 
         Optional<Integer> result = service.getRemainingChildIndex(children);
 
-        assertThat(result.isPresent()).isTrue();
-        assertThat(result.get()).isEqualTo(1);
+        assertThat(result).contains(1);
     }
 
     @Test
@@ -187,7 +186,7 @@ class ChildrenServiceTest {
 
         Optional<Integer> result = service.getRemainingChildIndex(children);
 
-        assertThat(result.isPresent()).isFalse();
+        assertThat(result).isNotPresent();
     }
 
     @Test
@@ -197,7 +196,7 @@ class ChildrenServiceTest {
 
         Optional<Integer> result = service.getRemainingChildIndex(children);
 
-        assertThat(result.isPresent()).isFalse();
+        assertThat(result).isNotPresent();
     }
 
     @Test
