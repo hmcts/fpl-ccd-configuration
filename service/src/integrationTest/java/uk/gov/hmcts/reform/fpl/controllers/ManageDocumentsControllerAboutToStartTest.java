@@ -26,7 +26,6 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ActiveProfiles("integration-test")
@@ -58,7 +57,7 @@ public class ManageDocumentsControllerAboutToStartTest extends AbstractControlle
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
 
         DynamicList expectedHearingDynamicList = ElementUtils
-            .asDynamicList(hearingBookings, null, hearingBooking -> hearingBooking.toLabel(DATE));
+            .asDynamicList(hearingBookings, null, HearingBooking::toLabel);
 
         IncrementalInteger i = new IncrementalInteger(1);
         DynamicList expectedC2DocumentsDynamicList = ElementUtils

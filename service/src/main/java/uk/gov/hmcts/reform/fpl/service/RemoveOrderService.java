@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListValueCode;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -55,7 +55,7 @@ public class RemoveOrderService {
 
     public void hideOrder(List<Element<GeneratedOrder>> orders, List<Element<GeneratedOrder>> hiddenOrders,
                           Object removableOrderList, String reason) {
-        UUID id = getDynamicListValueCode(removableOrderList, mapper);
+        UUID id = getDynamicListSelectedValue(removableOrderList, mapper);
 
         orders.stream()
             .filter(order -> id.equals(order.getId()))
@@ -68,7 +68,7 @@ public class RemoveOrderService {
     }
 
     public List<Element<Child>> removeFinalOrderPropertiesFromChildren(CaseData caseData) {
-        UUID id = getDynamicListValueCode(caseData.getRemovableOrderList(), mapper);
+        UUID id = getDynamicListSelectedValue(caseData.getRemovableOrderList(), mapper);
         List<Element<Child>> children = caseData.getAllChildren();
 
         findElement(id, caseData.getOrderCollection());

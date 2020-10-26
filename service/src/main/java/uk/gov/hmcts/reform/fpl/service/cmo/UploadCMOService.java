@@ -35,11 +35,10 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.from;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListValueCode;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
 // TODO: 19/10/2020 Cleanup when FPLA-2019 is toggled on
@@ -132,7 +131,7 @@ public class UploadCMOService {
                 eventData.getPastHearingsForCMO(),
                 getHearingsWithoutCMO(caseData.getPastHearings(), caseData.getDraftUploadedCMOs())
             ))
-            .cmoHearingInfo(hearing.toLabel(DATE))
+            .cmoHearingInfo(hearing.toLabel())
             .build();
     }
 
@@ -255,7 +254,7 @@ public class UploadCMOService {
             bundle.get().getValue().getSupportingEvidenceBundle().addAll(supportingDocs);
         } else {
             evidenceBundles.add(element(selectedHearingId, HearingFurtherEvidenceBundle.builder()
-                .hearingName(hearing.toLabel(DATE))
+                .hearingName(hearing.toLabel())
                 .supportingEvidenceBundle(supportingDocs)
                 .build()));
         }
@@ -298,7 +297,7 @@ public class UploadCMOService {
             return hearings.get(0).getId();
         }
 
-        return getDynamicListValueCode(dynamicList, mapper);
+        return getDynamicListSelectedValue(dynamicList, mapper);
     }
 
     private HearingBooking getSelectedHearing(UUID id, List<Element<HearingBooking>> hearings) {
@@ -330,7 +329,7 @@ public class UploadCMOService {
     */
     private DynamicList regenerateList(Object dynamicList, List<Element<HearingBooking>> hearings) {
         if (dynamicList instanceof String) {
-            UUID selectedId = getDynamicListValueCode(dynamicList, mapper);
+            UUID selectedId = getDynamicListSelectedValue(dynamicList, mapper);
             sortHearings(hearings);
             return buildDynamicList(hearings, selectedId);
         }
@@ -342,7 +341,7 @@ public class UploadCMOService {
     }
 
     private DynamicList buildDynamicList(List<Element<HearingBooking>> hearings, UUID selected) {
-        return asDynamicList(hearings, selected, hearing -> hearing.toLabel(DATE));
+        return asDynamicList(hearings, selected, HearingBooking::toLabel);
     }
 
     @Deprecated
@@ -355,10 +354,10 @@ public class UploadCMOService {
         if (initialPage) {
             builder.cmoHearingInfo(format(
                 "Send agreed CMO for %s.%nThis must have been discussed by all parties at the hearing.",
-                hearing.toLabel(DATE)
+                hearing.toLabel()
             ));
         } else {
-            builder.cmoHearingInfo(hearing.toLabel(DATE));
+            builder.cmoHearingInfo(hearing.toLabel());
         }
 
     }
@@ -382,7 +381,7 @@ public class UploadCMOService {
         );
 
         filtered.sort(Comparator.comparing(HearingBooking::getStartDate));
-        return filtered.stream().map(value -> value.toLabel(DATE)).collect(Collectors.joining("\n"));
+        return filtered.stream().map(HearingBooking::toLabel).collect(Collectors.joining("\n"));
     }
 
     private boolean includeHearing(Element<CaseManagementOrder> cmo, HearingBooking hearing) {

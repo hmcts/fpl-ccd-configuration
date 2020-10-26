@@ -17,7 +17,7 @@ import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.CMOType.AGREED;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListValueCode;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
 
 // TODO: 19/10/2020 Delete deprecated when FPLA-2019 toggled
 @Value
@@ -70,7 +70,7 @@ public class UploadCMOEventData {
     @JsonIgnore
     public UUID getSelectedHearingId(ObjectMapper mapper) {
         Object dynamicList = defaultIfNull(pastHearingsForCMO, futureHearingsForCMO);
-        return getDynamicListValueCode(dynamicList, mapper);
+        return getDynamicListSelectedValue(dynamicList, mapper);
     }
 
     public static String[] transientFields() {

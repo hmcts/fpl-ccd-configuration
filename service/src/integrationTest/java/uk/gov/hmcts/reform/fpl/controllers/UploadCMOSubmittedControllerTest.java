@@ -40,7 +40,6 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ActiveProfiles("integration-test")
@@ -129,7 +128,8 @@ class UploadCMOSubmittedControllerTest extends AbstractUploadCMOControllerTest {
             .setJudgeTitle("Her Honour Judge")
             .setJudgeName("Judy")
             .setCaseUrl(String.format("http://fake-url/cases/case-details/%s#DraftOrdersTab", CASE_ID));
-        return mapper.convertValue(template, new TypeReference<>() {});
+        return mapper.convertValue(template, new TypeReference<>() {
+        });
     }
 
     private CallbackRequest callbackRequest(CMOStatus status) {
@@ -175,7 +175,7 @@ class UploadCMOSubmittedControllerTest extends AbstractUploadCMOControllerTest {
     private CaseManagementOrder order(HearingBooking hearing, CMOStatus status) {
         return CaseManagementOrder.builder()
             .status(status)
-            .hearing(hearing.toLabel(DATE))
+            .hearing(hearing.toLabel())
             .order(DOCUMENT_REFERENCE)
             .dateSent(dateNow())
             .build();

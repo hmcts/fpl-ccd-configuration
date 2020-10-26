@@ -1,13 +1,16 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
@@ -15,24 +18,33 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
+import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED_AND_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getJudgeForTabView;
@@ -41,15 +53,38 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.prepareJu
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ManageHearingsService {
+
     private final NoticeOfHearingGenerationService noticeOfHearingGenerationService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
+    private final ObjectMapper mapper;
+    private final IdentityService identityService;
     private final Time time;
 
-    private static final String PREVIOUS_HEARING_VENUE = "previousHearingVenue";
-    public static final String FIRST_HEARING_FLAG = "firstHearingFlag";
-    public static final String HEARING_DATE_LIST = "hearingDateList";
+    public UUID getSelectedHearingId(Object dynamicList) {
+        return getDynamicListSelectedValue(dynamicList, mapper);
+    }
+
+    public DynamicList asDynamicList(List<Element<HearingBooking>> hearingBooking) {
+        return asDynamicList(hearingBooking, null);
+    }
+
+    public DynamicList asDynamicList(List<Element<HearingBooking>> hearingBooking, UUID selectedId) {
+        return ElementUtils.asDynamicList(hearingBooking, selectedId, HearingBooking::toLabel);
+    }
+
+    public UUID adjournAndReListHearing(CaseData caseData, UUID hearingId, HearingBooking hearingToBeReListed) {
+        Element<HearingBooking> adjournedBooking = adjourn(caseData, hearingId, ADJOURNED_AND_RE_LISTED);
+        Element<HearingBooking> reListedBooking = reList(caseData, hearingToBeReListed);
+
+        reassignDocumentsBundle(caseData, adjournedBooking, reListedBooking);
+        return reListedBooking.getId();
+    }
+
+    public void adjournHearing(CaseData caseData, UUID hearingToBeAdjourned) {
+        adjourn(caseData, hearingToBeAdjourned, ADJOURNED);
+    }
 
     public HearingVenue getPreviousHearingVenue(CaseData caseData) {
         List<HearingBooking> hearingsList = unwrapElements(caseData.getHearingDetails());
@@ -74,7 +109,7 @@ public class ManageHearingsService {
         Address customAddress = "OTHER".equals(previousHearingVenue.getHearingVenueId())
             ? previousHearingVenue.getAddress() : null;
 
-        data.put(PREVIOUS_HEARING_VENUE,
+        data.put("previousHearingVenue",
             PreviousHearingVenue.builder()
                 .previousVenue(hearingVenueLookUpService.buildHearingVenue(previousHearingVenue))
                 .newVenueCustomAddress(customAddress)
@@ -83,14 +118,12 @@ public class ManageHearingsService {
         return data;
     }
 
-    public HearingBooking findHearingBooking(UUID id, List<Element<HearingBooking>> hearingBookings) {
-        Optional<Element<HearingBooking>> hearingBookingElement = findElement(id, hearingBookings);
+    public Optional<HearingBooking> findHearingBooking(UUID id, List<Element<HearingBooking>> hearingBookings) {
+        return findElement(id, hearingBookings).map(Element::getValue);
+    }
 
-        if (hearingBookingElement.isPresent()) {
-            return hearingBookingElement.get().getValue();
-        }
-
-        return HearingBooking.builder().build();
+    public HearingBooking getHearingBooking(UUID id, List<Element<HearingBooking>> hearingBookings) {
+        return findHearingBooking(id, hearingBookings).orElseThrow(() -> new NoHearingBookingException(id));
     }
 
     public Map<String, Object> populateHearingCaseFields(HearingBooking hearingBooking, Judge allocatedJudge) {
@@ -119,15 +152,15 @@ public class ManageHearingsService {
             caseFields.put("hearingVenue", hearingBooking.getVenue());
             caseFields.put("hearingVenueCustom", hearingBooking.getVenueCustomAddress());
         } else {
-            caseFields.put(PREVIOUS_HEARING_VENUE, hearingBooking.getPreviousHearingVenue());
+            caseFields.put("previousHearingVenue", hearingBooking.getPreviousHearingVenue());
         }
 
         return caseFields;
     }
 
     public void findAndSetPreviousVenueId(CaseData caseData) {
-        if (caseData.getHearingDetails() != null && caseData.getPreviousHearingVenue() != null
-            && caseData.getPreviousHearingVenue().getUsePreviousVenue().equals("Yes")) {
+        if (isNotEmpty(caseData.getHearingDetails()) && caseData.getPreviousHearingVenue() != null
+            && caseData.getPreviousHearingVenue().getUsePreviousVenue().equals(YES.getValue())) {
 
             PreviousHearingVenue previousVenueForEditedHearing = caseData.getPreviousHearingVenue();
 
@@ -136,7 +169,7 @@ public class ManageHearingsService {
         }
     }
 
-    public HearingBooking buildHearingBooking(CaseData caseData) {
+    public HearingBooking getCurrentHearingBooking(CaseData caseData) {
         if (caseData.getPreviousHearingVenue() == null
             || caseData.getPreviousHearingVenue().getUsePreviousVenue() == null) {
             return buildFirstHearing(caseData);
@@ -145,26 +178,31 @@ public class ManageHearingsService {
         }
     }
 
-    public void addNoticeOfHearing(CaseData caseData, HearingBooking hearingBooking) {
-        DocmosisNoticeOfHearing notice = noticeOfHearingGenerationService.getTemplateData(caseData, hearingBooking);
-        DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(notice,
-            NOTICE_OF_HEARING);
-        Document document = uploadDocumentService.uploadPDF(docmosisDocument.getBytes(),
-            NOTICE_OF_HEARING.getDocumentTitle(time.now().toLocalDate()));
 
-        hearingBooking.setNoticeOfHearing(DocumentReference.buildFromDocument(document));
+    public void sendNoticeOfHearing(CaseData caseData, HearingBooking hearingBooking) {
+        if (YES.getValue().equals(caseData.getSendNoticeOfHearing())) {
+            DocmosisNoticeOfHearing notice = noticeOfHearingGenerationService.getTemplateData(caseData, hearingBooking);
+            DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(notice,
+                NOTICE_OF_HEARING);
+            Document document = uploadDocumentService.uploadPDF(docmosisDocument.getBytes(),
+                NOTICE_OF_HEARING.getDocumentTitle(time.now().toLocalDate()));
+
+            hearingBooking.setNoticeOfHearing(DocumentReference.buildFromDocument(document));
+        }
     }
 
-    public List<Element<HearingBooking>> updateEditedHearingEntry(HearingBooking hearingBooking,
-                                                                  UUID hearingId,
-                                                                  List<Element<HearingBooking>> hearings) {
-        return hearings.stream()
-            .map(hearingBookingElement -> {
-                if (hearingBookingElement.getId().equals(hearingId)) {
-                    hearingBookingElement = element(hearingBookingElement.getId(), hearingBooking);
-                }
-                return hearingBookingElement;
-            }).collect(Collectors.toList());
+    public void addOrUpdate(Element<HearingBooking> hearingBooking, CaseData caseData) {
+        List<Element<HearingBooking>> hearingBookings = defaultIfNull(caseData.getHearingDetails(), new ArrayList<>());
+        boolean exists = isNotEmpty(hearingBooking.getId()) && hearingBookings.stream()
+            .anyMatch(hearing -> hearingBooking.getId().equals(hearing.getId()));
+
+        if (exists) {
+            caseData.setHearingDetails(hearingBookings.stream()
+                .map(hearing -> hearing.getId().equals(hearingBooking.getId()) ? hearingBooking : hearing)
+                .collect(toList()));
+        } else {
+            caseData.addHearingBooking(hearingBooking);
+        }
     }
 
     public Set<String> caseFieldsToBeRemoved() {
@@ -178,10 +216,13 @@ public class ManageHearingsService {
             "sendNoticeOfHearing",
             "judgeAndLegalAdvisor",
             "hasExistingHearings",
-            HEARING_DATE_LIST,
+            "hearingDateList",
             "hearingOption",
             "noticeOfHearingNotes",
-            PREVIOUS_HEARING_VENUE);
+            "previousHearingVenue",
+            "firstHearingFlag",
+            "adjournmentReason",
+            "hearingReListOption");
     }
 
     private HearingBooking buildFirstHearing(CaseData caseData) {
@@ -225,5 +266,42 @@ public class ManageHearingsService {
             .previousHearingVenue(caseData.getPreviousHearingVenue())
             .additionalNotes(caseData.getNoticeOfHearingNotes())
             .build();
+    }
+
+    private Element<HearingBooking> reList(CaseData caseData, HearingBooking hearingBooking) {
+        Element<HearingBooking> reListedBooking = element(identityService.generateId(), hearingBooking);
+        caseData.addHearingBooking(reListedBooking);
+        return reListedBooking;
+    }
+
+    private Element<HearingBooking> adjourn(CaseData caseData, UUID adjournedHearingId, HearingStatus hearingStatus) {
+        Element<HearingBooking> originalHearingBooking = findElement(adjournedHearingId, caseData.getHearingDetails())
+            .orElseThrow(() -> new NoHearingBookingException(adjournedHearingId));
+
+        Element<HearingBooking> adjournedBooking = element(adjournedHearingId, originalHearingBooking.getValue()
+            .toBuilder()
+            .status(hearingStatus)
+            .cancellationReason(caseData.getAdjournmentReason().getReason())
+            .build());
+
+        caseData.addCancelledHearingBooking(adjournedBooking);
+        caseData.removeHearingDetails(originalHearingBooking);
+
+        return adjournedBooking;
+    }
+
+    private void reassignDocumentsBundle(CaseData caseData,
+                                         Element<HearingBooking> sourceHearing,
+                                         Element<HearingBooking> targetHearing) {
+        findElement(sourceHearing.getId(), caseData.getHearingFurtherEvidenceDocuments()).ifPresent(
+            sourceHearingBundle -> {
+                Element<HearingFurtherEvidenceBundle> targetHearingBundle = element(targetHearing.getId(),
+                    sourceHearingBundle.getValue().toBuilder()
+                        .hearingName(targetHearing.getValue().toLabel())
+                        .build());
+
+                caseData.getHearingFurtherEvidenceDocuments().remove(sourceHearingBundle);
+                caseData.getHearingFurtherEvidenceDocuments().add(targetHearingBundle);
+            });
     }
 }

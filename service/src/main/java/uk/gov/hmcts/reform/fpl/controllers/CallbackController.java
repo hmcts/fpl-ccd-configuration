@@ -1,14 +1,15 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
+import uk.gov.hmcts.reform.fpl.service.EventService;
 
 import java.util.List;
+import java.util.Map;
 
 public abstract class CallbackController {
 
@@ -16,7 +17,7 @@ public abstract class CallbackController {
     private CaseConverter caseConverter;
 
     @Autowired
-    private ApplicationEventPublisher eventPublisher;
+    private EventService eventPublisher;
 
     protected CaseData getCaseData(CaseDetails caseDetails) {
         return caseConverter.convert(caseDetails);
@@ -33,6 +34,12 @@ public abstract class CallbackController {
     protected AboutToStartOrSubmitCallbackResponse respond(CaseDetails caseDetails) {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
+            .build();
+    }
+
+    protected AboutToStartOrSubmitCallbackResponse respond(Map<String, Object> caseDetailsMap) {
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetailsMap)
             .build();
     }
 

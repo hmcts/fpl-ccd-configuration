@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
-import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
@@ -22,26 +20,24 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.ManageHearingsService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingReListOption.RE_LIST_NOW;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
-import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.FIRST_HEARING_FLAG;
-import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInGatekeepingState;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListValueCode;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 
 @Api
@@ -49,27 +45,35 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllo
 @RequestMapping("/callback/manage-hearings")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ManageHearingsController extends CallbackController {
-    private final ObjectMapper mapper;
+
+    private static final String FIRST_HEARING_FLAG = "firstHearingFlag";
+    private static final String HEARING_DATE_LIST = "hearingDateList";
+    private static final String PAST_HEARING_LIST = "pastAndTodayHearingDateList";
+    private static final String SELECTED_HEARING_ID = "selectedHearingId";
+    private static final String CANCELLED_HEARING_DETAILS_KEY = "cancelledHearingDetails";
+    private static final String HEARING_DOCUMENT_BUNDLE_KEY = "hearingFurtherEvidenceDocuments";
+
     private final ValidateGroupService validateGroupService;
     private final StandardDirectionsService standardDirectionsService;
-    private final ManageHearingsService manageHearingsService;
+    private final ManageHearingsService hearingsService;
 
     @PostMapping("/about-to-start")
     public CallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
+        caseDetails.getData().remove(SELECTED_HEARING_ID);
+
         if (caseData.getAllocatedJudge() != null) {
             caseDetails.getData().put("judgeAndLegalAdvisor", setAllocatedJudgeLabel(caseData.getAllocatedJudge()));
         }
 
-        List<Element<HearingBooking>> hearings = defaultIfNull(caseData.getHearingDetails(), List.of());
+        caseDetails.getData().put(FIRST_HEARING_FLAG, (isEmpty(caseData.getHearingDetails()) ? YES : NO).getValue());
 
-        if (hearings.isEmpty()) {
-            caseDetails.getData().put(FIRST_HEARING_FLAG, "Yes");
-        } else {
-            caseDetails.getData().put(HEARING_DATE_LIST,
-                asDynamicList(caseData.getFutureHearings(), hearing -> hearing.toLabel(DATE)));
+        if (isNotEmpty(caseData.getHearingDetails())) {
+            caseDetails.getData().put(HEARING_DATE_LIST, hearingsService.asDynamicList(caseData.getFutureHearings()));
+            caseDetails.getData()
+                .put(PAST_HEARING_LIST, hearingsService.asDynamicList(caseData.getPastAndTodayHearings()));
             caseDetails.getData().put("hasExistingHearings", YES.getValue());
         }
 
@@ -81,21 +85,20 @@ public class ManageHearingsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        //If new hearing, populate previous venue - if editing existing hearing, populate page with existing hearing
         if (NEW_HEARING == caseData.getHearingOption()) {
-            caseDetails.getData().putAll(manageHearingsService.populatePreviousVenueFields(caseData));
+            caseDetails.getData().putAll(hearingsService.populatePreviousVenueFields(caseData));
         } else if (EDIT_HEARING == caseData.getHearingOption()) {
-            UUID hearingBookingId = getDynamicListValueCode(caseData.getHearingDateList(), mapper);
+            final UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData.getHearingDateList());
+            final List<Element<HearingBooking>> futureHearings = caseData.getFutureHearings();
 
-            List<Element<HearingBooking>> futureHearings = caseData.getFutureHearings();
+            caseDetails.getData()
+                .put(HEARING_DATE_LIST, hearingsService.asDynamicList(futureHearings, hearingBookingId));
 
-            caseDetails.getData().put(HEARING_DATE_LIST,
-                asDynamicList(futureHearings, hearingBookingId, hearing -> hearing.toLabel(DATE)));
+            HearingBooking hearingBooking = hearingsService
+                .findHearingBooking(hearingBookingId, caseData.getHearingDetails())
+                .orElse(HearingBooking.builder().build());
 
-            HearingBooking hearingBooking = manageHearingsService.findHearingBooking(
-                hearingBookingId, caseData.getHearingDetails());
-
-            caseDetails.getData().putAll(manageHearingsService.populateHearingCaseFields(
+            caseDetails.getData().putAll(hearingsService.populateHearingCaseFields(
                 hearingBooking, caseData.getAllocatedJudge()));
 
             if (hearingBookingId.equals(caseData.getHearingDetails().get(0).getId())
@@ -103,7 +106,36 @@ public class ManageHearingsController extends CallbackController {
                 || hearingBooking.getPreviousHearingVenue().getPreviousVenue() == null) {
                 caseDetails.getData().put(FIRST_HEARING_FLAG, "Yes");
             }
+        } else if (ADJOURN_HEARING == caseData.getHearingOption()) {
+            UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData.getPastAndTodayHearingDateList());
+
+            caseDetails.getData().put(PAST_HEARING_LIST,
+                hearingsService.asDynamicList(caseData.getPastAndTodayHearings(), hearingBookingId));
         }
+
+        return respond(caseDetails);
+    }
+
+    @PostMapping("/re-list/mid-event")
+    public CallbackResponse reListHearing(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData.getPastAndTodayHearingDateList());
+
+        HearingBooking adjournedHearingBooking = hearingsService
+            .getHearingBooking(hearingBookingId, caseData.getHearingDetails());
+
+        HearingBooking reListedHearingBooking = adjournedHearingBooking.toBuilder()
+            .previousHearingVenue(null)
+            .startDate(null)
+            .endDate(null)
+            .build();
+
+        caseDetails.getData().putAll(hearingsService.populateHearingCaseFields(
+            reListedHearingBooking, caseData.getAllocatedJudge()));
+
+        caseDetails.getData().put(FIRST_HEARING_FLAG, YES.getValue());
 
         return respond(caseDetails);
     }
@@ -120,69 +152,71 @@ public class ManageHearingsController extends CallbackController {
 
     @PostMapping("/about-to-submit")
     public CallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
+        final CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        final CaseData caseData = getCaseData(caseDetails);
+        final CaseDetailsMap data = caseDetailsMap(caseDetails);
 
-        manageHearingsService.findAndSetPreviousVenueId(caseData);
+        hearingsService.findAndSetPreviousVenueId(caseData);
 
-        HearingBooking hearingBooking = manageHearingsService.buildHearingBooking(caseData);
-
-        if ("Yes".equals(caseData.getSendNoticeOfHearing())) {
-            manageHearingsService.addNoticeOfHearing(caseData, hearingBooking);
-        }
-
-        List<Element<HearingBooking>> hearingBookingElements;
-
-        // Editing previous hearing
         if (EDIT_HEARING == caseData.getHearingOption()) {
-            UUID editedHearingId = getDynamicListValueCode(caseData.getHearingDateList(), mapper);
+            final UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData.getHearingDateList());
+            final HearingBooking hearingBooking = hearingsService.getCurrentHearingBooking(caseData);
+            final Element<HearingBooking> hearingBookingElement = element(hearingBookingId, hearingBooking);
 
-            hearingBookingElements = manageHearingsService.updateEditedHearingEntry(
-                hearingBooking, editedHearingId, caseData.getHearingDetails());
-            caseDetails.getData().put("selectedHearingId", editedHearingId);
+            hearingsService.addOrUpdate(hearingBookingElement, caseData);
+            hearingsService.sendNoticeOfHearing(caseData, hearingBooking);
 
+            data.put(SELECTED_HEARING_ID, hearingBookingId);
+        } else if (ADJOURN_HEARING == caseData.getHearingOption()) {
+            UUID adjournedHearingId = hearingsService.getSelectedHearingId(caseData.getPastAndTodayHearingDateList());
+
+            if (caseData.getHearingReListOption() == RE_LIST_NOW) {
+                final HearingBooking reListedHearing = hearingsService.getCurrentHearingBooking(caseData);
+                final UUID reListedHearingId = hearingsService
+                    .adjournAndReListHearing(caseData, adjournedHearingId, reListedHearing);
+                hearingsService.sendNoticeOfHearing(caseData, reListedHearing);
+
+                data.put(SELECTED_HEARING_ID, reListedHearingId);
+            } else {
+                hearingsService.adjournHearing(caseData, adjournedHearingId);
+                data.remove(SELECTED_HEARING_ID);
+            }
         } else {
-            List<Element<HearingBooking>> currentHearingBookings = defaultIfNull(
-                caseData.getHearingDetails(), new ArrayList<>()
-            );
-            Element<HearingBooking> hearingBookingElement = element(hearingBooking);
-            currentHearingBookings.add(hearingBookingElement);
-            hearingBookingElements = currentHearingBookings;
+            final HearingBooking hearingBooking = hearingsService.getCurrentHearingBooking(caseData);
+            final Element<HearingBooking> hearingBookingElement = element(hearingBooking);
 
-            caseDetails.getData().put("selectedHearingId", hearingBookingElement.getId());
+            hearingsService.addOrUpdate(hearingBookingElement, caseData);
+            hearingsService.sendNoticeOfHearing(caseData, hearingBooking);
+
+            data.put(SELECTED_HEARING_ID, hearingBookingElement.getId());
         }
 
-        caseDetails.getData().put(HEARING_DETAILS_KEY, hearingBookingElements);
-        caseDetails.getData().put(FIRST_HEARING_FLAG, "No");
+        data.putIfNotEmpty(CANCELLED_HEARING_DETAILS_KEY, caseData.getCancelledHearingDetails());
+        data.putIfNotEmpty(HEARING_DOCUMENT_BUNDLE_KEY, caseData.getHearingFurtherEvidenceDocuments());
+        data.putIfNotEmpty(HEARING_DETAILS_KEY, caseData.getHearingDetails());
 
-        caseDetails.getData().keySet().removeAll(manageHearingsService.caseFieldsToBeRemoved());
+        data.keySet().removeAll(hearingsService.caseFieldsToBeRemoved());
 
-        return respond(caseDetails);
+        return respond(data);
     }
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = getCaseData(callbackRequest);
 
-        if (isInGatekeepingState(callbackRequest.getCaseDetails())
-            && standardDirectionsService.hasEmptyDates(caseData)) {
-            publishEvent(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
-        }
-
-        UUID selectedHearingId = caseData.getSelectedHearingId();
-
-        Optional<Element<HearingBooking>> hearingElement = findElement(selectedHearingId, caseData.getHearingDetails());
-
-        if (hearingElement.isPresent()) {
-            if (hearingElement.get().getValue().getNoticeOfHearing() != null) {
-                publishEvent(new SendNoticeOfHearing(caseData, hearingElement.get().getValue()));
+        if (isNotEmpty(caseData.getSelectedHearingId())) {
+            if (isInGatekeepingState(callbackRequest.getCaseDetails())
+                && standardDirectionsService.hasEmptyDates(caseData)) {
+                publishEvent(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
             }
-        } else {
-            throw new NoHearingBookingException();
+
+            hearingsService.findHearingBooking(caseData.getSelectedHearingId(), caseData.getHearingDetails())
+                .filter(hearing -> isNotEmpty(hearing.getNoticeOfHearing()))
+                .ifPresent(hearing -> publishEvent(new SendNoticeOfHearing(caseData, hearing)));
         }
     }
 
-    private JudgeAndLegalAdvisor setAllocatedJudgeLabel(Judge allocatedJudge) {
+    private static JudgeAndLegalAdvisor setAllocatedJudgeLabel(Judge allocatedJudge) {
         String assignedJudgeLabel = buildAllocatedJudgeLabel(allocatedJudge);
 
         return JudgeAndLegalAdvisor.builder()

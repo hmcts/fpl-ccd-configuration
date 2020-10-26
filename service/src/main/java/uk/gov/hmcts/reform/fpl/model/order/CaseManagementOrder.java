@@ -12,7 +12,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
 @Data
@@ -35,7 +34,7 @@ public class CaseManagementOrder {
                                            CMOStatus status, List<Element<SupportingEvidenceBundle>> supportingDocs) {
         return CaseManagementOrder.builder()
             .order(order)
-            .hearing(hearing.toLabel(DATE))
+            .hearing(hearing.toLabel())
             .dateSent(date)
             .status(status)
             .judgeTitleAndName(formatJudgeTitleAndName(hearing.getJudgeAndLegalAdvisor()))
