@@ -237,59 +237,6 @@ Scenario('HMCTS admin manages hearings', async ({I, caseViewPage, manageHearings
   I.seeInTab(['Hearing 2', 'Notice of hearing'], `Notice_of_hearing_${dateFormat(submittedAt, 'ddmmmm')}.pdf`);
 });
 
-//Delete+cleanup in FPLA-2280
-xScenario('HMCTS admin enters hearing details and submits', async ({I, caseViewPage, addHearingBookingDetailsEventPage}) => {
-  await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
-  await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
-  await addHearingBookingDetailsEventPage.useAllocatedJudge();
-  await addHearingBookingDetailsEventPage.enterLegalAdvisor(hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
-  await addHearingBookingDetailsEventPage.enterAdditionalNotes(hearingDetails[0].additionalNotes);
-  await I.addAnotherElementToCollection();
-  await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);
-  await addHearingBookingDetailsEventPage.enterJudge(hearingDetails[1].judgeAndLegalAdvisor);
-  await addHearingBookingDetailsEventPage.enterLegalAdvisor(hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
-  await I.retryUntilExists(() => I.click('Continue'), '#newHearingSelector_newHearingSelector');
-  addHearingBookingDetailsEventPage.sendNoticeOfHearing(hearingDetails[0].sendNoticeOfHearing);
-  addHearingBookingDetailsEventPage.sendNoticeOfHearing(hearingDetails[1].sendNoticeOfHearing, 1);
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.addHearingBookingDetails);
-  caseViewPage.selectTab(caseViewPage.tabs.hearings);
-
-  let startDate = dateToString(hearingDetails[0].startDate);
-  let endDate = dateToString(hearingDetails[0].endDate);
-  I.seeInTab(['Hearing 1', 'Type of hearing'], hearingDetails[0].caseManagement);
-  I.seeInTab(['Hearing 1', 'Venue'], hearingDetails[0].venue);
-  I.seeInTab(['Hearing 1', 'Start date and time'], dateFormat(startDate, 'd mmm yyyy, h:MM:ss TT'));
-  I.seeInTab(['Hearing 1', 'End date and time'], dateFormat(endDate, 'd mmm yyyy, h:MM:ss TT'));
-  I.seeInTab(['Hearing 1', 'Hearing needs booked'], [hearingDetails[0].type.interpreter, hearingDetails[0].type.welsh, hearingDetails[0].type.somethingElse]);
-  I.seeInTab(['Hearing 1', 'Give details'], hearingDetails[0].giveDetails);
-  I.seeInTab(['Hearing 1', 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], 'Her Honour Judge');
-  I.seeInTab(['Hearing 1', 'Judge and Justices\' Legal Adviser', 'Last name'], 'Moley');
-  I.seeInTab(['Hearing 1', 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name'], hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
-  I.seeInTab(['Hearing 1', 'Additional notes'], hearingDetails[0].additionalNotes);
-  I.seeInTab(['Hearing 1', 'Notice of hearing'], `Notice_of_hearing_${dateFormat(submittedAt, 'ddmmmm')}.pdf`);
-
-  startDate = dateToString(hearingDetails[1].startDate);
-  endDate = dateToString(hearingDetails[1].endDate);
-  I.seeInTab(['Hearing 2', 'Type of hearing'], hearingDetails[1].caseManagement);
-  I.seeInTab(['Hearing 2', 'Venue'], hearingDetails[1].venue);
-  I.seeInTab(['Hearing 2', 'Venue address', 'Building and Street'], hearingDetails[1].venueCustomAddress.buildingAndStreet.lineOne);
-  I.seeInTab(['Hearing 2', 'Venue address', 'Address Line 2'], hearingDetails[1].venueCustomAddress.buildingAndStreet.lineTwo);
-  I.seeInTab(['Hearing 2', 'Venue address', 'Address Line 3'], hearingDetails[1].venueCustomAddress.buildingAndStreet.lineThree);
-  I.seeInTab(['Hearing 2', 'Venue address', 'Town or City'], hearingDetails[1].venueCustomAddress.town);
-  I.seeInTab(['Hearing 2', 'Venue address', 'Postcode/Zipcode'], hearingDetails[1].venueCustomAddress.postcode);
-  I.seeInTab(['Hearing 2', 'Venue address', 'Country'], hearingDetails[1].venueCustomAddress.country);
-
-  I.seeInTab(['Hearing 2', 'Start date and time'], dateFormat(startDate, 'd mmm yyyy, h:MM:ss TT'));
-  I.seeInTab(['Hearing 2', 'End date and time'], dateFormat(endDate, 'd mmm yyyy, h:MM:ss TT'));
-  I.seeInTab(['Hearing 2', 'Hearing needs booked'], [hearingDetails[1].type.interpreter, hearingDetails[1].type.welsh, hearingDetails[1].type.somethingElse]);
-  I.seeInTab(['Hearing 2', 'Give details'], hearingDetails[1].giveDetails);
-  I.seeInTab(['Hearing 2', 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], hearingDetails[1].judgeAndLegalAdvisor.judgeTitle);
-  I.seeInTab(['Hearing 2', 'Judge and Justices\' Legal Adviser', 'Title'], hearingDetails[1].judgeAndLegalAdvisor.otherTitle);
-  I.seeInTab(['Hearing 2', 'Judge and Justices\' Legal Adviser', 'Last name'], hearingDetails[1].judgeAndLegalAdvisor.judgeLastName);
-  I.seeInTab(['Hearing 2', 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name'], hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
-});
-
 Scenario('HMCTS admin uploads further hearing evidence documents', async ({I, caseViewPage, manageDocumentsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
   await manageDocumentsEventPage.selectFurtherEvidence();

@@ -216,18 +216,6 @@ class HearingBookingServiceTest {
     }
 
     @Test
-    void shouldReturnFirstHearingWhenHearingExists() {
-        assertThat(service.getFirstHearing(createHearingBookings()))
-            .isEqualTo(Optional.of(createHearingBooking(pastDate, pastDate.plusDays(1))));
-    }
-
-    @ParameterizedTest
-    @NullAndEmptySource
-    void shouldReturnEmptyWhenEmptyListOfHearings(List<Element<HearingBooking>> hearings) {
-        assertThat(service.getFirstHearing(hearings)).isEmpty();
-    }
-
-    @Test
     void shouldUpdateHearingBookingJudgeWhenHearingIsToUseAllocatedJudge() {
         Judge allocatedJudge = buildAllocatedJudge();
 

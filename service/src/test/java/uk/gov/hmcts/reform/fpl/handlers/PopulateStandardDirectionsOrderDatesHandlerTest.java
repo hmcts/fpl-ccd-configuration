@@ -76,9 +76,6 @@ class PopulateStandardDirectionsOrderDatesHandlerTest {
     private StandardDirectionsService standardDirectionsService;
 
     @MockBean
-    private HearingBookingService hearingBookingService;
-
-    @MockBean
     private RequestData requestData;
 
     @Captor
@@ -89,7 +86,6 @@ class PopulateStandardDirectionsOrderDatesHandlerTest {
     @BeforeEach
     void setup() {
         given(standardDirectionsService.getDirections(any())).willReturn(STANDARD_DIRECTIONS);
-        given(hearingBookingService.getFirstHearing(any())).willReturn(Optional.of(FIRST_HEARING));
 
         callbackRequest = getCallbackRequest();
     }
@@ -97,7 +93,6 @@ class PopulateStandardDirectionsOrderDatesHandlerTest {
     @Test
     void shouldTriggerEventWithCaseDataFilledWithDates() {
         handler.populateDates(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
-        verify(hearingBookingService).getFirstHearing(HEARING_DETAILS);
         verify(standardDirectionsService).getDirections(FIRST_HEARING);
         verify(coreCaseDataService).triggerEvent(
             eq(JURISDICTION),
@@ -113,7 +108,6 @@ class PopulateStandardDirectionsOrderDatesHandlerTest {
     void shouldFillCaseDataWithMissingDatesOnly() {
         callbackRequest.getCaseDetails().setData(getDataWithSomeDatesFilled());
         handler.populateDates(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
-        verify(hearingBookingService).getFirstHearing(HEARING_DETAILS);
         verify(standardDirectionsService).getDirections(FIRST_HEARING);
         verify(coreCaseDataService).triggerEvent(
             eq(JURISDICTION),
