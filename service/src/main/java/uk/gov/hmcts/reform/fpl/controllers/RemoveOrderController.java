@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListValueCode;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
 
 @Api
 @RestController
@@ -51,7 +51,7 @@ public class RemoveOrderController {
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         // When dynamic lists are fixed this can be moved into the below method
-        UUID id = getDynamicListValueCode(caseData.getRemovableOrderList(), mapper);
+        UUID id = getDynamicListSelectedValue(caseData.getRemovableOrderList(), mapper);
 
         data.putAll(service.populateSelectedOrderFields(caseData.getOrderCollection(), id));
 

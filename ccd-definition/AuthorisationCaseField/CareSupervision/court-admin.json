@@ -79,6 +79,20 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "pastAndTodayHearingDateList",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "pastAndTodayHearingDateListInfo",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "firstHearingFlag",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
@@ -325,6 +339,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearingDetails",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "cancelledHearingDetails",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRUD"
   },
@@ -1390,7 +1411,28 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "selectedHearingId",
     "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "adjournmentReason",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingReListOption",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingReListHint",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",

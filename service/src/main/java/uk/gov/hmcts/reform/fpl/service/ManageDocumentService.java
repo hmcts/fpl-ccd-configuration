@@ -26,10 +26,9 @@ import java.util.UUID;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.getHearingBookingByUUID;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListValueCode;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -76,10 +75,10 @@ public class ManageDocumentService {
         Map<String, Object> listAndLabel = new HashMap<>();
 
         if (caseData.getManageDocument().isDocumentRelatedToHearing()) {
-            UUID selectedHearingCode = getDynamicListValueCode(caseData.getManageDocumentsHearingList(), mapper);
+            UUID selectedHearingCode = getDynamicListSelectedValue(caseData.getManageDocumentsHearingList(), mapper);
             HearingBooking hearingBooking = getHearingBookingByUUID(caseData.getHearingDetails(), selectedHearingCode);
 
-            listAndLabel.put(MANAGE_DOCUMENTS_HEARING_LABEL_KEY, hearingBooking.toLabel(DATE));
+            listAndLabel.put(MANAGE_DOCUMENTS_HEARING_LABEL_KEY, hearingBooking.toLabel());
             listAndLabel.put(MANAGE_DOCUMENTS_HEARING_LIST_KEY, caseData.buildDynamicHearingList(selectedHearingCode));
         }
 
@@ -89,17 +88,17 @@ public class ManageDocumentService {
     public Map<String, Object> initialiseC2DocumentListAndLabel(CaseData caseData) {
         Map<String, Object> listAndLabel = new HashMap<>();
 
-        UUID selectedC2DocumentCode = getDynamicListValueCode(caseData.getManageDocumentsSupportingC2List(), mapper);
+        UUID selectedC2DocumentId = getDynamicListSelectedValue(caseData.getManageDocumentsSupportingC2List(), mapper);
         List<Element<C2DocumentBundle>> c2DocumentBundle = caseData.getC2DocumentBundle();
 
         for (int i = 0; i < c2DocumentBundle.size(); i++) {
-            if (c2DocumentBundle.get(i).getId().equals(selectedC2DocumentCode)) {
+            if (c2DocumentBundle.get(i).getId().equals(selectedC2DocumentId)) {
                 listAndLabel.put(SUPPORTING_C2_LABEL, c2DocumentBundle.get(i).getValue().toLabel(i + 1));
                 break;
             }
         }
 
-        listAndLabel.put(SUPPORTING_C2_LIST_KEY, caseData.buildC2DocumentDynamicList(selectedC2DocumentCode));
+        listAndLabel.put(SUPPORTING_C2_LIST_KEY, caseData.buildC2DocumentDynamicList(selectedC2DocumentId));
 
         return listAndLabel;
     }
@@ -108,10 +107,10 @@ public class ManageDocumentService {
         if (caseData.getManageDocument().isDocumentRelatedToHearing()) {
             List<Element<HearingFurtherEvidenceBundle>> bundles = caseData.getHearingFurtherEvidenceDocuments();
             if (!bundles.isEmpty()) {
-                UUID selectedHearingCode = getDynamicListValueCode(caseData.getManageDocumentsHearingList(), mapper);
+                UUID selectedHearingId = getDynamicListSelectedValue(caseData.getManageDocumentsHearingList(), mapper);
 
                 Optional<Element<HearingFurtherEvidenceBundle>> bundle = findElement(
-                    selectedHearingCode, bundles
+                    selectedHearingId, bundles
                 );
 
                 if (bundle.isPresent()) {
@@ -126,7 +125,7 @@ public class ManageDocumentService {
     }
 
     public List<Element<SupportingEvidenceBundle>> getC2SupportingEvidenceBundle(CaseData caseData) {
-        UUID selectedC2 = getDynamicListValueCode(caseData.getManageDocumentsSupportingC2List(), mapper);
+        UUID selectedC2 = getDynamicListSelectedValue(caseData.getManageDocumentsSupportingC2List(), mapper);
         C2DocumentBundle c2DocumentBundle = caseData.getC2DocumentBundleByUUID(selectedC2);
 
         if (c2DocumentBundle.getSupportingEvidenceBundle() != null) {
@@ -151,7 +150,7 @@ public class ManageDocumentService {
         List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceBundle
             = caseData.getHearingFurtherEvidenceDocuments();
 
-        UUID selectedHearingCode = getDynamicListValueCode(caseData.getManageDocumentsHearingList(), mapper);
+        UUID selectedHearingCode = getDynamicListSelectedValue(caseData.getManageDocumentsHearingList(), mapper);
         HearingBooking hearingBooking = getHearingBookingByUUID(caseData.getHearingDetails(), selectedHearingCode);
 
         if (caseData.documentBundleContainsHearingId(selectedHearingCode)) {
@@ -209,7 +208,7 @@ public class ManageDocumentService {
     }
 
     public List<Element<C2DocumentBundle>> buildFinalC2SupportingDocuments(CaseData caseData) {
-        UUID selected = getDynamicListValueCode(caseData.getManageDocumentsSupportingC2List(), mapper);
+        UUID selected = getDynamicListSelectedValue(caseData.getManageDocumentsSupportingC2List(), mapper);
 
         C2DocumentBundle c2DocumentBundle = caseData.getC2DocumentBundleByUUID(selected);
 
@@ -232,7 +231,7 @@ public class ManageDocumentService {
         List<Element<SupportingEvidenceBundle>> currentSupportingDocuments
             = caseData.getSupportingEvidenceDocumentsTemp();
 
-        UUID selectedHearingCode = getDynamicListValueCode(caseData.getManageDocumentsHearingList(), mapper);
+        UUID selectedHearingCode = getDynamicListSelectedValue(caseData.getManageDocumentsHearingList(), mapper);
 
         List<Element<SupportingEvidenceBundle>> previousSupportingDocuments =
             ElementUtils.findElement(selectedHearingCode, caseDataBefore.getHearingFurtherEvidenceDocuments())
@@ -248,7 +247,7 @@ public class ManageDocumentService {
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle) {
 
         return element(hearingId, HearingFurtherEvidenceBundle.builder()
-            .hearingName(hearingBooking.toLabel(DATE))
+            .hearingName(hearingBooking.toLabel())
             .supportingEvidenceBundle(supportingEvidenceBundle)
             .build());
     }
