@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
@@ -122,7 +123,7 @@ class RemoveOrderServiceTest {
     }
 
     @Test
-    void shouldReturnAMapOfExtractedOrderDetailsWhenIdMatchOrderInList() {
+    void shouldReturnAMapOfExtractedOrderDetailsWhenIdMatchesOrderInDynamicList() {
         DocumentReference document = DocumentReference.builder().build();
         String orderTitle = "order title";
         String dateOfIssue = "14 July 2020";
@@ -148,7 +149,7 @@ class RemoveOrderServiceTest {
     }
 
     @Test
-    void shouldReturnEmptyMapWhenIdDoesNotMatchOrderInList() {
+    void shouldReturnEmptyMapWhenIdDoesNotMatchOrderInDynamicList() {
         DocumentReference document = DocumentReference.builder().build();
         String orderTitle = "order title";
         String dateOfIssue = "14 July 2020";
@@ -218,6 +219,30 @@ class RemoveOrderServiceTest {
 
         assertThat(updatedChildren.get(0).getValue()).isNotEqualTo(expectedChild);
         assertThat(updatedChildren.get(1).getValue()).isNotEqualTo(expectedChild);
+    }
+
+    @Test
+    void shouldThrowAnExceptionWhenOrderIntendedToBeRemovedDoesNotExist() {
+        List<Element<Child>> childrenList = buildChildrenList();
+
+        Element<GeneratedOrder> order1 = element(buildOrder(
+            BLANK_ORDER,
+            "order 1",
+            "15 June 2020",
+            childrenList
+        ));
+
+        CaseData caseData = CaseData.builder()
+            .children1(childrenList)
+            .removableOrderList(DynamicList.builder()
+                .value(buildListElement(order1.getId(), "order 1 - 15 June 2020"))
+                .build())
+            .build();
+
+        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+            () -> service.removeFinalOrderPropertiesFromChildren(caseData));
+
+        assertThat(exception.getMessage()).isEqualTo("Failed to find the order to be removed");
     }
 
     private DynamicListElement buildListElement(UUID id, String label) {

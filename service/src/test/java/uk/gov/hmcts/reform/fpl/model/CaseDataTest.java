@@ -6,7 +6,6 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
-import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.OrderExclusionClause;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -527,49 +526,6 @@ class CaseDataTest {
         void shouldReturnFalseIfC2DocumentBundleIsNotPresentOnCaseData() {
             CaseData caseData = CaseData.builder().build();
             assertThat(caseData.hasC2DocumentBundle()).isFalse();
-        }
-    }
-
-    @Nested
-    class GetOrderFromUUID {
-        @Test
-        void shouldReturnGeneratedOrderWhenElementIdMatches() {
-            UUID orderID = randomUUID();
-            GeneratedOrder previousOrder = GeneratedOrder.builder().build();
-
-            CaseData caseData = CaseData.builder()
-                .orderCollection(List.of(
-                    element(orderID, previousOrder),
-                    element(randomUUID(), GeneratedOrder.builder().build())
-                )).build();
-
-            Optional<GeneratedOrder> returnedOrder = caseData.getOrderFromUUID(orderID);
-
-            assertThat(returnedOrder.isPresent()).isTrue();
-            assertThat(returnedOrder.get()).isEqualTo(previousOrder);
-        }
-
-        @Test
-        void shouldReturnAnEmptyOptionalWhenElementIdDoesNotMatch() {
-            UUID orderID = randomUUID();
-            GeneratedOrder previousOrder = GeneratedOrder.builder().build();
-
-            CaseData caseData = CaseData.builder()
-                .orderCollection(List.of(
-                    element(randomUUID(), previousOrder),
-                    element(randomUUID(), GeneratedOrder.builder().build())
-                )).build();
-
-            Optional<GeneratedOrder> returnedOrder = caseData.getOrderFromUUID(orderID);
-
-            assertThat(returnedOrder.isEmpty()).isTrue();
-        }
-
-        @Test
-        void shouldReturnAnEmptyOptionalWhenOrderCollectionIsEmpty() {
-            CaseData caseData = CaseData.builder().build();
-
-            assertThat(caseData.getOrderFromUUID(randomUUID()).isEmpty()).isTrue();
         }
     }
 

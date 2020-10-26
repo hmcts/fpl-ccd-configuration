@@ -18,6 +18,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListValueCode;
 
 @Service
@@ -68,16 +69,23 @@ public class RemoveOrderService {
 
     public List<Element<Child>> removeFinalOrderPropertiesFromChildren(CaseData caseData) {
         UUID id = getDynamicListValueCode(caseData.getRemovableOrderList(), mapper);
+        List<Element<Child>> children = caseData.getAllChildren();
 
-        Optional<GeneratedOrder> removedOrder = caseData.getOrderFromUUID(id);
+        findElement(id, caseData.getOrderCollection());
 
-        if (removedOrder.isEmpty() || !removedOrder.get().isFinalOrder()) {
-            return caseData.getAllChildren();
+        Optional<Element<GeneratedOrder>> removedOrder = findElement(id, caseData.getOrderCollection());
+
+        if (removedOrder.isEmpty()) {
+            throw new IllegalArgumentException("Failed to find the order to be removed");
         }
 
-        List<UUID> removedChildrenIDList = removedOrder.get().getChildrenIDs();
+        if (!removedOrder.get().getValue().isFinalOrder()) {
+            return children;
+        }
 
-        return caseData.getAllChildren().stream()
+        List<UUID> removedChildrenIDList = removedOrder.get().getValue().getChildrenIDs();
+
+        return children.stream()
             .map(element -> {
                 if (removedChildrenIDList.contains(element.getId())) {
                     Child child = element.getValue();
