@@ -8,8 +8,10 @@ module.exports = {
     hearingOptions: {
       addNewHearing: '#hearingOption-NEW_HEARING',
       editHearing: '#hearingOption-EDIT_HEARING',
+      adjournHearing: '#hearingOption-ADJOURN_HEARING',
     },
     hearingDateList: '#hearingDateList',
+    pastAndTodayHearingDateList: '#pastAndTodayHearingDateList',
     hearingType: {
       final: '#hearingType-CASE_MANAGEMENT',
     },
@@ -32,6 +34,23 @@ module.exports = {
   async selectEditHearing(hearing) {
     I.click(this.fields.hearingOptions.editHearing);
     I.selectOption(this.fields.hearingDateList, hearing);
+  },
+
+  selectAdjournHearing(hearing) {
+    I.click(this.fields.hearingOptions.adjournHearing);
+    I.selectOption(this.fields.pastAndTodayHearingDateList, hearing);
+  },
+
+  selectAdjournmentReasonType(type){
+    I.click(type);
+  },
+
+  selectAdjournmentReason(reason){
+    I.selectOption('//select[not(@disabled)]', reason);
+  },
+
+  selectAdjournmentAction(action){
+    I.click(action);
   },
 
   async enterHearingDetails(hearingDetails) {
@@ -65,6 +84,10 @@ module.exports = {
     judgeAndLegalAdvisor.selectJudgeTitle();
     judgeAndLegalAdvisor.enterJudgeLastName(hearingDetails.judgeAndLegalAdvisor.judgeLastName);
     judgeAndLegalAdvisor.enterLegalAdvisorName(hearingDetails.judgeAndLegalAdvisor.legalAdvisorName);
+  },
+
+  async enterJudgeName(name) {
+    judgeAndLegalAdvisor.enterJudgeLastName(name);
   },
 
   async selectedAllocatedJudge() {

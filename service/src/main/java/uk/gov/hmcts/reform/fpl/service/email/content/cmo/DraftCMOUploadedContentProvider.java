@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentPr
 import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.uncapitalize;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
@@ -19,7 +18,7 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 public class DraftCMOUploadedContentProvider extends AbstractEmailContentProvider {
 
     public DraftCMOUploadedTemplate buildTemplate(HearingBooking hearing, Long caseId, AbstractJudge judge,
-                                                List<Element<Respondent>> respondents, String familyManCaseNumber) {
+                                                  List<Element<Respondent>> respondents, String familyManCaseNumber) {
         return new DraftCMOUploadedTemplate()
             .setCaseUrl(getCaseUrl(caseId, "DraftOrdersTab"))
             .setJudgeName(judge.getJudgeName())
@@ -31,6 +30,6 @@ public class DraftCMOUploadedContentProvider extends AbstractEmailContentProvide
     private String subjectLine(HearingBooking hearing, List<Element<Respondent>> respondents,
                                String familyManCaseNumber) {
         return String.format("%s, %s", buildSubjectLine(familyManCaseNumber, respondents),
-            uncapitalize(hearing.toLabel(DATE)));
+            uncapitalize(hearing.toLabel()));
     }
 }
