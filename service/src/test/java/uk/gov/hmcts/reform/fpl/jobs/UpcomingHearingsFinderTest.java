@@ -32,7 +32,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {FixedTimeConfiguration.class})
-public class UpcomingHearingsFinderTest {
+class UpcomingHearingsFinderTest {
 
     private static final int DEFAULT_NOTICE_DAYS_BEFORE_HEARING = 2;
 

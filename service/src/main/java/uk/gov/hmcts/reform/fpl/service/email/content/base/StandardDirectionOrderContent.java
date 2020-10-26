@@ -8,6 +8,7 @@ import java.time.format.FormatStyle;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang.StringUtils.capitalize;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCallout;
 
 public abstract class StandardDirectionOrderContent extends AbstractEmailContentProvider {
 
@@ -22,6 +23,7 @@ public abstract class StandardDirectionOrderContent extends AbstractEmailContent
                 .getLastName()))
             .put("hearingDate", getHearingBooking(caseData))
             .put("reference", String.valueOf(caseData.getId()))
+            .put("callout", buildCallout(caseData))
             .put("caseUrl", getCaseUrl(caseData.getId(), "OrdersTab"));
     }
 

@@ -30,7 +30,7 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {UpcomingHearingsFoundNotificationHandler.class, LookupTestConfig.class,
     FixedTimeConfiguration.class})
-public class UpcomingHearingsFoundNotificationHandlerTest {
+class UpcomingHearingsFoundNotificationHandlerTest {
     @MockBean
     private NotificationService notificationService;
 
