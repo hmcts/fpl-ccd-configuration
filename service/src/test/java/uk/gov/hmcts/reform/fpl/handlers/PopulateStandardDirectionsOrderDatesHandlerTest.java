@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
@@ -26,7 +25,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -48,9 +46,6 @@ class PopulateStandardDirectionsOrderDatesHandlerTest {
     private static final List<Element<HearingBooking>> HEARING_DETAILS = wrapElements(HearingBooking.builder()
         .type(HearingType.CASE_MANAGEMENT)
         .build());
-    private static final HearingBooking FIRST_HEARING = HearingBooking.builder()
-        .startDate(LocalDateTime.of(2050, 10, 6, 13, 0))
-        .build();
     private static final List<Element<Direction>> STANDARD_DIRECTIONS = wrapElements(
         Direction.builder()
             .assignee(ALL_PARTIES)
@@ -93,7 +88,6 @@ class PopulateStandardDirectionsOrderDatesHandlerTest {
     @Test
     void shouldTriggerEventWithCaseDataFilledWithDates() {
         handler.populateDates(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
-        verify(standardDirectionsService).getDirections(FIRST_HEARING);
         verify(coreCaseDataService).triggerEvent(
             eq(JURISDICTION),
             eq(CASE_TYPE),
@@ -108,7 +102,6 @@ class PopulateStandardDirectionsOrderDatesHandlerTest {
     void shouldFillCaseDataWithMissingDatesOnly() {
         callbackRequest.getCaseDetails().setData(getDataWithSomeDatesFilled());
         handler.populateDates(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
-        verify(standardDirectionsService).getDirections(FIRST_HEARING);
         verify(coreCaseDataService).triggerEvent(
             eq(JURISDICTION),
             eq(CASE_TYPE),
