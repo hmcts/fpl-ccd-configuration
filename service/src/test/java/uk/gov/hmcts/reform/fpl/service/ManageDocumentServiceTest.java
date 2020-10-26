@@ -40,7 +40,6 @@ import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUM
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -91,9 +90,7 @@ class ManageDocumentServiceTest {
             .hearingDetails(hearingBookings)
             .build();
 
-        DynamicList expectedHearingDynamicList = asDynamicList(
-            hearingBookings, null, hearingBooking -> hearingBooking.toLabel(DATE)
-        );
+        DynamicList expectedHearingDynamicList = asDynamicList(hearingBookings, HearingBooking::toLabel);
 
         AtomicInteger i = new AtomicInteger(1);
         DynamicList expectedC2DocumentsDynamicList = asDynamicList(c2DocumentBundle, null,
@@ -140,13 +137,11 @@ class ManageDocumentServiceTest {
 
         Map<String, Object> listAndLabel = manageDocumentService.initialiseHearingListAndLabel(caseData);
 
-        DynamicList expectedDynamicList = asDynamicList(
-            hearingBookings, selectHearingId, hearingBooking -> hearingBooking.toLabel(DATE)
-        );
+        DynamicList expectedDynamicList = asDynamicList(hearingBookings, selectHearingId, HearingBooking::toLabel);
 
         assertThat(listAndLabel)
             .extracting(MANAGE_DOCUMENTS_HEARING_LIST_KEY, "manageDocumentsHearingLabel")
-            .containsExactly(expectedDynamicList, selectedHearingBooking.toLabel(DATE));
+            .containsExactly(expectedDynamicList, selectedHearingBooking.toLabel());
     }
 
     @Test
@@ -205,7 +200,7 @@ class ManageDocumentServiceTest {
 
         CaseData caseData = CaseData.builder()
             .hearingDetails(hearingBookings)
-            .manageDocumentsHearingList(asDynamicList(hearingBookings, hearingId, hearing -> hearing.toLabel(DATE)))
+            .manageDocumentsHearingList(asDynamicList(hearingBookings, hearingId, HearingBooking::toLabel))
             .hearingFurtherEvidenceDocuments(List.of(
                 element(hearingId, HearingFurtherEvidenceBundle.builder()
                     .supportingEvidenceBundle(furtherEvidenceBundle)
@@ -328,7 +323,7 @@ class ManageDocumentServiceTest {
         HearingFurtherEvidenceBundle hearingFurtherEvidenceBundle = furtherEvidenceBundleElement.getValue();
 
         assertThat(furtherEvidenceBundleElement.getId()).isEqualTo(hearingId);
-        assertThat(hearingFurtherEvidenceBundle.getHearingName()).isEqualTo(hearingBooking.toLabel(DATE));
+        assertThat(hearingFurtherEvidenceBundle.getHearingName()).isEqualTo(hearingBooking.toLabel());
         assertThat(hearingFurtherEvidenceBundle.getSupportingEvidenceBundle()).isEqualTo(furtherEvidenceBundle);
     }
 
@@ -387,7 +382,7 @@ class ManageDocumentServiceTest {
         HearingFurtherEvidenceBundle hearingFurtherEvidenceBundle = furtherEvidenceBundleElement.getValue();
 
         assertThat(furtherEvidenceBundleElement.getId()).isEqualTo(hearingId);
-        assertThat(hearingFurtherEvidenceBundle.getHearingName()).isEqualTo(hearingBooking.toLabel(DATE));
+        assertThat(hearingFurtherEvidenceBundle.getHearingName()).isEqualTo(hearingBooking.toLabel());
         assertThat(hearingFurtherEvidenceBundle.getSupportingEvidenceBundle()).isEqualTo(supportingEvidenceBundle);
     }
 

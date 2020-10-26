@@ -29,7 +29,6 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
@@ -175,7 +174,7 @@ class UploadCMOAboutToSubmitControllerTest extends AbstractUploadCMOControllerTe
 
         List<Element<HearingFurtherEvidenceBundle>> furtherEvidenceBundle = List.of(
             element(hearings.get(0).getId(), HearingFurtherEvidenceBundle.builder()
-                .hearingName(hearings.get(0).getValue().toLabel(DATE))
+                .hearingName(hearings.get(0).getValue().toLabel())
                 .supportingEvidenceBundle(bundles)
                 .build())
         );
@@ -219,7 +218,8 @@ class UploadCMOAboutToSubmitControllerTest extends AbstractUploadCMOControllerTe
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(asCaseDetails(caseData));
 
-        Set<String> keys = mapper.convertValue(caseData, new TypeReference<Map<String, Object>>() {}).keySet();
+        Set<String> keys = mapper.convertValue(caseData, new TypeReference<Map<String, Object>>() {
+        }).keySet();
 
         keys.removeAll(List.of(
             "showCMOsSentToJudge", "cmosSentToJudge", "cmoUploadType", "pastHearingsForCMO", "futureHearingsForCMO",
@@ -241,7 +241,7 @@ class UploadCMOAboutToSubmitControllerTest extends AbstractUploadCMOControllerTe
                                               List<Element<SupportingEvidenceBundle>> supportingDocs) {
         return CaseManagementOrder.builder()
             .status(status)
-            .hearing(hearing.toLabel(DATE))
+            .hearing(hearing.toLabel())
             .order(DOCUMENT_REFERENCE)
             .dateSent(dateNow())
             .judgeTitleAndName(formatJudgeTitleAndName(hearing.getJudgeAndLegalAdvisor()))
@@ -251,8 +251,8 @@ class UploadCMOAboutToSubmitControllerTest extends AbstractUploadCMOControllerTe
 
     private DynamicList dynamicList(List<Element<HearingBooking>> hearings) {
         return dynamicListWithFirstSelected(
-            Pair.of(hearings.get(0).getValue().toLabel(DATE), hearings.get(0).getId()),
-            Pair.of(hearings.get(1).getValue().toLabel(DATE), hearings.get(1).getId())
+            Pair.of(hearings.get(0).getValue().toLabel(), hearings.get(0).getId()),
+            Pair.of(hearings.get(1).getValue().toLabel(), hearings.get(1).getId())
         );
     }
 
