@@ -67,7 +67,7 @@ class DocmosisCoverDocumentsServiceTest {
         DocmosisCoverDocument coverDocumentData = documentsService.buildCoverDocumentsData(
             NULL_FAMILY_MAN_NUMBER, CCD_CASE_NUMBER,  buildRepresentative());
 
-        assertThat(coverDocumentData.getFamilyManCaseNumber()).isEqualTo("");
+        assertThat(coverDocumentData.getFamilyManCaseNumber()).isEmpty();
     }
 
     private static Representative buildRepresentative() {

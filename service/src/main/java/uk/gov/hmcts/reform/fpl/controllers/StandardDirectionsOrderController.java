@@ -198,7 +198,7 @@ public class StandardDirectionsOrderController extends CallbackController {
     }
 
     @PostMapping("/about-to-submit")
-    public CallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) throws Exception {
+    public CallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = getCaseData(caseDetails);
