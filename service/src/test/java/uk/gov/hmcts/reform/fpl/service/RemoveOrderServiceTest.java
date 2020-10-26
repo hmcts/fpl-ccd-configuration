@@ -239,7 +239,7 @@ class RemoveOrderServiceTest {
                 .build())
             .build();
 
-        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        final IllegalStateException exception = assertThrows(IllegalStateException.class,
             () -> service.removeFinalOrderPropertiesFromChildren(caseData));
 
         assertThat(exception.getMessage()).isEqualTo("Failed to find the order to be removed");

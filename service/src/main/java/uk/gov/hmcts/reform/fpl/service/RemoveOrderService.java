@@ -76,7 +76,7 @@ public class RemoveOrderService {
         Optional<Element<GeneratedOrder>> removedOrder = findElement(id, caseData.getOrderCollection());
 
         if (removedOrder.isEmpty()) {
-            throw new IllegalArgumentException("Failed to find the order to be removed");
+            throw new IllegalStateException("Failed to find the order to be removed");
         }
 
         if (!removedOrder.get().getValue().isFinalOrder()) {
