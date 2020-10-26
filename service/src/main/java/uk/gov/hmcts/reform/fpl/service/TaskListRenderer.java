@@ -37,12 +37,14 @@ import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskSection.newSection;
 @Service
 public class TaskListRenderer {
 
+    private static final String HORIZONTAL_LINE = "<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>";
+    private static final String NEW_LINE = "<br/>";
+
     private final String imagesBaseUrl;
     private final FeatureToggleService featureToggleService;
 
-    public TaskListRenderer(
-            @Value("${resources.images.baseUrl}") String imagesBaseUrl,
-            FeatureToggleService featureToggleService) {
+    public TaskListRenderer(@Value("${resources.images.baseUrl}") String imagesBaseUrl,
+                            FeatureToggleService featureToggleService) {
         this.imagesBaseUrl = imagesBaseUrl;
         this.featureToggleService = featureToggleService;
     }
@@ -54,8 +56,7 @@ public class TaskListRenderer {
 
         lines.add("<div class='width-50'>");
 
-        groupInSections(allTasks)
-                .forEach(section -> lines.addAll(renderSection(section, showInProgressTag)));
+        groupInSections(allTasks).forEach(section -> lines.addAll(renderSection(section, showInProgressTag)));
 
         lines.add("</div>");
 
@@ -114,16 +115,16 @@ public class TaskListRenderer {
     private List<String> renderSection(TaskSection sec, boolean showInProgressTag) {
         final List<String> section = new LinkedList<>();
 
-        section.add(renderNewLine());
+        section.add(NEW_LINE);
         section.add(renderHeader(sec.getName()));
 
         sec.getHint().map(this::renderHint).ifPresent(section::add);
         sec.getInfo().map(this::renderInfo).ifPresent(section::add);
 
-        section.add(renderHorizontalLine());
+        section.add(HORIZONTAL_LINE);
         sec.getTasks().forEach(task -> {
             section.addAll(renderTask(task, showInProgressTag));
-            section.add(renderHorizontalLine());
+            section.add(HORIZONTAL_LINE);
         });
 
         return section;
@@ -177,13 +178,5 @@ public class TaskListRenderer {
 
     private String renderHeader(String text) {
         return format("## %s", text);
-    }
-
-    private String renderHorizontalLine() {
-        return "<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>";
-    }
-
-    private String renderNewLine() {
-        return "<br/>";
     }
 }

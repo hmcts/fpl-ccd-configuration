@@ -5,7 +5,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.AbstractJudge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.notify.cmo.CMOReadyToSealTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.cmo.DraftCMOUploadedTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
 import java.util.List;
@@ -16,12 +16,11 @@ import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubject
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 @Service
-public class NewCMOUploadedContentProvider extends AbstractEmailContentProvider {
+public class DraftCMOUploadedContentProvider extends AbstractEmailContentProvider {
 
-    public CMOReadyToSealTemplate buildTemplate(HearingBooking hearing, Long caseId,
-                                                AbstractJudge judge, List<Element<Respondent>> respondents,
-                                                String familyManCaseNumber) {
-        return new CMOReadyToSealTemplate()
+    public DraftCMOUploadedTemplate buildTemplate(HearingBooking hearing, Long caseId, AbstractJudge judge,
+                                                List<Element<Respondent>> respondents, String familyManCaseNumber) {
+        return new DraftCMOUploadedTemplate()
             .setCaseUrl(getCaseUrl(caseId, "DraftOrdersTab"))
             .setJudgeName(judge.getJudgeName())
             .setJudgeTitle(judge.getJudgeOrMagistrateTitle())

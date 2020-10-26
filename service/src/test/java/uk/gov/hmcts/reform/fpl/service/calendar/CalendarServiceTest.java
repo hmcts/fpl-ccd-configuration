@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {FixedTimeConfiguration.class})
-public class CalendarServiceTest {
+class CalendarServiceTest {
 
     private static final LocalDate SATURDAY = LocalDate.of(2020, APRIL, 4);
     private static final LocalDate SUNDAY = LocalDate.of(2020, APRIL, 5);
@@ -61,7 +61,7 @@ public class CalendarServiceTest {
     private CalendarService workingDayService;
 
     @BeforeEach
-    public void init() {
+    void init() {
         when(bankHolidaysService.getBankHolidays()).thenReturn(BANK_HOLIDAYS);
     }
 
@@ -69,18 +69,18 @@ public class CalendarServiceTest {
     class IsBankHoliday {
 
         @Test
-        public void shouldReturnTrueIfBankHoliday() {
+        void shouldReturnTrueIfBankHoliday() {
             assertThat(workingDayService.isBankHoliday(GOOD_FRIDAY)).isTrue();
         }
 
         @Test
-        public void shouldReturnFalseIfWeekend() {
+        void shouldReturnFalseIfWeekend() {
             assertThat(workingDayService.isBankHoliday(SATURDAY)).isFalse();
             assertThat(workingDayService.isBankHoliday(SUNDAY)).isFalse();
         }
 
         @Test
-        public void shouldReturnFalseIfWeekday() {
+        void shouldReturnFalseIfWeekday() {
             assertThat(workingDayService.isBankHoliday(GOOD_FRIDAY.minusDays(1))).isFalse();
         }
     }
@@ -89,18 +89,18 @@ public class CalendarServiceTest {
     class IsWeekend {
 
         @Test
-        public void shouldReturnTrueIfWeekend() {
+        void shouldReturnTrueIfWeekend() {
             assertThat(workingDayService.isWeekend(SATURDAY)).isTrue();
             assertThat(workingDayService.isWeekend(SUNDAY)).isTrue();
         }
 
         @Test
-        public void shouldReturnFalseIfBankHoliday() {
+        void shouldReturnFalseIfBankHoliday() {
             assertThat(workingDayService.isWeekend(GOOD_FRIDAY)).isFalse();
         }
 
         @Test
-        public void shouldReturnFalseIfWeekday() {
+        void shouldReturnFalseIfWeekday() {
             assertThat(workingDayService.isWeekend(SUNDAY.plusDays(1))).isFalse();
         }
     }
@@ -109,17 +109,17 @@ public class CalendarServiceTest {
     class IsWorkingDay {
 
         @Test
-        public void shouldReturnTrueIfWorkingDay() {
+        void shouldReturnTrueIfWorkingDay() {
             assertThat(workingDayService.isWorkingDay(SUNDAY.plusDays(1))).isTrue();
         }
 
         @Test
-        public void shouldReturnFalseIfBankHoliday() {
+        void shouldReturnFalseIfBankHoliday() {
             assertThat(workingDayService.isWorkingDay(GOOD_FRIDAY)).isFalse();
         }
 
         @Test
-        public void shouldReturnFalseIfWeekend() {
+        void shouldReturnFalseIfWeekend() {
             assertThat(workingDayService.isWorkingDay(SATURDAY)).isFalse();
             assertThat(workingDayService.isWorkingDay(SATURDAY)).isFalse();
         }
@@ -129,7 +129,7 @@ public class CalendarServiceTest {
     class WorkingDaysFromDate {
 
         @Test
-        public void shouldReturnWorkingDayBeforeBankHoliday() {
+        void shouldReturnWorkingDayBeforeBankHoliday() {
             assertThat(workingDayService.getWorkingDayFrom(GOOD_FRIDAY, -2))
                 .isEqualTo(LocalDate.of(2020, APRIL, 8));
 
@@ -138,7 +138,7 @@ public class CalendarServiceTest {
         }
 
         @Test
-        public void shouldReturnWorkingDayAfterBankHoliday() {
+        void shouldReturnWorkingDayAfterBankHoliday() {
             assertThat(workingDayService.getWorkingDayFrom(GOOD_FRIDAY, 2))
                 .isEqualTo(LocalDate.of(2020, APRIL, 15));
 
@@ -147,7 +147,7 @@ public class CalendarServiceTest {
         }
 
         @Test
-        public void shouldReturnWorkingDayBeforeWeekend() {
+        void shouldReturnWorkingDayBeforeWeekend() {
             assertThat(workingDayService.getWorkingDayFrom(GOOD_FRIDAY.plusDays(1), -2))
                 .isEqualTo(LocalDate.of(2020, APRIL, 8));
 
@@ -156,7 +156,7 @@ public class CalendarServiceTest {
         }
 
         @Test
-        public void shouldReturnWorkingDayAfterWeekend() {
+        void shouldReturnWorkingDayAfterWeekend() {
             assertThat(workingDayService.getWorkingDayFrom(SATURDAY.plusDays(1), 2))
                 .isEqualTo(SATURDAY.plusDays(3));
 
@@ -165,19 +165,19 @@ public class CalendarServiceTest {
         }
 
         @Test
-        public void shouldReturnWorkingDayBeforeMixOfWeekendAndBankHoliday() {
+        void shouldReturnWorkingDayBeforeMixOfWeekendAndBankHoliday() {
             assertThat(workingDayService.getWorkingDayFrom(EASTER_MONDAY.plusDays(1), -5))
                 .isEqualTo(EASTER_MONDAY.minusDays(10));
         }
 
         @Test
-        public void shouldReturnWorkingDayAfterMixOfWeekendAndBankHoliday() {
+        void shouldReturnWorkingDayAfterMixOfWeekendAndBankHoliday() {
             assertThat(workingDayService.getWorkingDayFrom(GOOD_FRIDAY.minusDays(1), 5))
                 .isEqualTo(GOOD_FRIDAY.plusDays(10));
         }
 
         @Test
-        public void shouldThrowExceptionWhenNumberOfWorkingDaysIs0() {
+        void shouldThrowExceptionWhenNumberOfWorkingDaysIs0() {
             LocalDate now = time.now().toLocalDate();
             assertThrows(IllegalArgumentException.class, () ->
                 workingDayService.getWorkingDayFrom(now, 0));

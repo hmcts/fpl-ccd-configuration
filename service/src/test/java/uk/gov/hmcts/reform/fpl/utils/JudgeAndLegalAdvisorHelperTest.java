@@ -24,14 +24,14 @@ class JudgeAndLegalAdvisorHelperTest {
     void shouldReturnEmptyLegalAdvisorNameWhenJudgeAndLegalAdvisorIsNull() {
         String legalAdvisorName = getLegalAdvisorName(null);
 
-        assertThat(legalAdvisorName).isEqualTo("");
+        assertThat(legalAdvisorName).isEmpty();
     }
 
     @Test
     void shouldReturnEmptyJudgeNameWhenJudgeAndLegalAdvisorIsNull() {
         String judgeTitleAndName = formatJudgeTitleAndName(null);
 
-        assertThat(judgeTitleAndName).isEqualTo("");
+        assertThat(judgeTitleAndName).isEmpty();
     }
 
     @Test
@@ -43,7 +43,7 @@ class JudgeAndLegalAdvisorHelperTest {
 
         String judgeTitleAndName = formatJudgeTitleAndName(judgeAndLegalAdvisor);
 
-        assertThat(judgeTitleAndName).isEqualTo("");
+        assertThat(judgeTitleAndName).isEmpty();
     }
 
     @Test
@@ -55,7 +55,7 @@ class JudgeAndLegalAdvisorHelperTest {
 
         String judgeTitleAndName = formatJudgeTitleAndName(judgeAndLegalAdvisor);
 
-        assertThat(judgeTitleAndName).isEqualTo("");
+        assertThat(judgeTitleAndName).isEmpty();
     }
 
     @Test

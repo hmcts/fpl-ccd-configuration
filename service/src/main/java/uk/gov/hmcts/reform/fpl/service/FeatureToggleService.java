@@ -79,8 +79,12 @@ public class FeatureToggleService {
             createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
     }
 
-    public boolean isSendGridEnabled() {
-        return ldClient.boolVariation("send-grid", createLDUser(), false);
+    public boolean isSendNoticeOfProceedingsFromSdo() {
+        return ldClient.boolVariation("send-notice-of-proceedings-from-sdo", createLDUser(), false);
+    }
+
+    public boolean isUploadDraftCMOEnabled() {
+        return ldClient.boolVariation("upload-draft-cmo", createLDUser(), false);
     }
 
     private LDUser createLDUser() {

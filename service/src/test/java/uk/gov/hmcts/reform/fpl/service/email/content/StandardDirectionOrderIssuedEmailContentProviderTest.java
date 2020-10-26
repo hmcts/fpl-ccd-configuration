@@ -62,6 +62,7 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
         allocatedJudgeTemplate.setCaseUrl(caseUrl(CASE_REFERENCE, ORDERS));
         allocatedJudgeTemplate.setJudgeTitle("Her Honour Judge");
         allocatedJudgeTemplate.setJudgeName("Byrne");
+        allocatedJudgeTemplate.setCallout("^Smith, 12345, hearing 1 Jan 2020");
 
         return allocatedJudgeTemplate;
     }

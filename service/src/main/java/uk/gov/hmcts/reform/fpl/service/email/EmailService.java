@@ -17,10 +17,9 @@ import javax.mail.internet.MimeMessage;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class EmailService {
 
-    private final EmailSenderProvider emailSenderProvider;
+    private final JavaMailSender mailSender;
 
     public void sendEmail(final String from, final EmailData emailData) {
-        final JavaMailSender mailSender = emailSenderProvider.getMailSender();
         try {
             MimeMessage message = mailSender.createMimeMessage();
 

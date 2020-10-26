@@ -12,7 +12,7 @@ import static uk.gov.hmcts.reform.fpl.enums.UserRole.JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.isHmctsUser;
 
-public class UserRolesTest {
+class UserRolesTest {
 
     @Test
     void shouldProduceAllIdamRoles() {

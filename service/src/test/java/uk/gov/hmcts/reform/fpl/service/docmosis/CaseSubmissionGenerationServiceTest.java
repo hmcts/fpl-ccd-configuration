@@ -224,7 +224,7 @@ class CaseSubmissionGenerationServiceTest {
 
             DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
 
-            assertThat(caseSubmission.getGroundsForEPOReason()).isEqualTo("");
+            assertThat(caseSubmission.getGroundsForEPOReason()).isEmpty();
         }
 
         @Test
@@ -238,7 +238,7 @@ class CaseSubmissionGenerationServiceTest {
 
             DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
 
-            assertThat(caseSubmission.getGroundsForEPOReason()).isEqualTo("");
+            assertThat(caseSubmission.getGroundsForEPOReason()).isEmpty();
         }
 
         @Test
@@ -870,7 +870,7 @@ class CaseSubmissionGenerationServiceTest {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .others(Others.builder()
                     .firstOther(Other.builder()
-                        .DOB("1999-02-02")
+                        .dateOfBirth("1999-02-02")
                         .build())
                     .build())
                 .build();

@@ -103,7 +103,8 @@ public class ReviewCMOService {
     }
 
     public Element<CaseManagementOrder> getSelectedCMO(CaseData caseData) {
-        if (getCMOsReadyForApproval(caseData).size() > 1) {
+        List<Element<CaseManagementOrder>> readyForApproval = getCMOsReadyForApproval(caseData);
+        if (readyForApproval.size() > 1) {
             UUID selectedCMOCode = getSelectedCMOId(caseData.getCmoToReviewList());
 
             return caseData.getDraftUploadedCMOs().stream()
@@ -111,7 +112,7 @@ public class ReviewCMOService {
                 .findFirst()
                 .orElseThrow(() -> new CMONotFoundException("Could not find draft cmo with id " + selectedCMOCode));
         } else {
-            return caseData.getDraftUploadedCMOs().get(caseData.getDraftUploadedCMOs().size() - 1);
+            return readyForApproval.get(0);
         }
     }
 

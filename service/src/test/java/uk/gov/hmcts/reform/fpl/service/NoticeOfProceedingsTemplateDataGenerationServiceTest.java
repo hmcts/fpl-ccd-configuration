@@ -15,9 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -32,8 +30,6 @@ import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
-import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedApplicants;
@@ -65,7 +61,6 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
     void shouldApplySentenceFormattingWhenMultipleChildrenExistOnCase() {
         CaseData caseData = prepareCaseData()
             .noticeOfProceedings(NoticeOfProceedings.builder()
-                .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor())
                 .proceedingTypes(emptyList())
                 .build())
             .build();
@@ -89,7 +84,6 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
                         .build())
                     .build()))
             .noticeOfProceedings(NoticeOfProceedings.builder()
-                .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor())
                 .proceedingTypes(emptyList())
                 .build())
             .build();
@@ -100,54 +94,9 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
     }
 
     @Test
-    void shouldFormatMagistrateFullNameWhenJudgeTitleIsSetToMagistrate() {
-        CaseData caseData = prepareCaseData()
-            .noticeOfProceedings(NoticeOfProceedings.builder()
-                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                    .judgeTitle(MAGISTRATES)
-                    .judgeFullName("James Nelson")
-                    .build())
-                .proceedingTypes(emptyList())
-                .build())
-            .build();
-
-        DocmosisNoticeOfProceeding templateData = noticeOfProceedingsTemplateDataGenerationService
-            .getTemplateData(caseData);
-        assertThat(templateData.getJudgeAndLegalAdvisor().getJudgeTitleAndName()).isEqualTo("James Nelson (JP)");
-    }
-
-    @Test
-    void shouldSetJudgeTitleAndNameToEmptyStringWhenJudgeTitleAndNameIsEmpty() {
-        CaseData caseData = prepareCaseData()
-            .noticeOfProceedings(NoticeOfProceedings.builder()
-                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
-                .proceedingTypes(emptyList())
-                .build())
-            .build();
-        DocmosisNoticeOfProceeding templateData = noticeOfProceedingsTemplateDataGenerationService
-            .getTemplateData(caseData);
-        assertThat(templateData.getJudgeAndLegalAdvisor().getJudgeTitleAndName()).isEmpty();
-    }
-
-    @Test
-    void shouldReturnFirstApplicantNameWhenMultipleApplicantsArePresent() {
-        CaseData caseData = prepareCaseData()
-            .noticeOfProceedings(NoticeOfProceedings.builder()
-                .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor())
-                .proceedingTypes(emptyList())
-                .build())
-            .build();
-
-        DocmosisNoticeOfProceeding templateData = noticeOfProceedingsTemplateDataGenerationService
-            .getTemplateData(caseData);
-        assertThat(templateData.getApplicantName()).isEqualTo("Bran Stark");
-    }
-
-    @Test
     void shouldMapCaseDataPropertiesToTemplatePlaceholderDataWhenCaseDataIsFullyPopulated() {
         CaseData caseData = prepareCaseData()
             .noticeOfProceedings(NoticeOfProceedings.builder()
-                .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor())
                 .proceedingTypes(emptyList())
                 .build())
             .build();
@@ -167,24 +116,12 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
                 .preHearingAttendance("8:30am")
                 .hearingTime("9:30am - 11:30am")
                 .build())
-            .judgeAndLegalAdvisor(DocmosisJudgeAndLegalAdvisor.builder()
-                .judgeTitleAndName("His Honour Judge Samuel Davidson")
-                .legalAdvisorName("John Bishop")
-                .build())
             .todaysDate(formatLocalDateToString(time.now().toLocalDate(), FormatStyle.LONG))
             .crest("[userImage:crest.png]")
             .courtseal("[userImage:familycourtseal.png]")
             .build();
 
         assertThat(templateData).isEqualToComparingFieldByField(expectedData);
-    }
-
-    private JudgeAndLegalAdvisor createJudgeAndLegalAdvisor() {
-        return JudgeAndLegalAdvisor.builder()
-            .judgeTitle(HIS_HONOUR_JUDGE)
-            .judgeLastName("Samuel Davidson")
-            .legalAdvisorName("John Bishop")
-            .build();
     }
 
     private List<Element<HearingBooking>> createHearingBookings() {

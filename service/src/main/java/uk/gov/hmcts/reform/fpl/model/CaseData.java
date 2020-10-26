@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.model;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
+import uk.gov.hmcts.reform.fpl.model.event.UploadCMOEventData;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
@@ -46,9 +48,9 @@ import uk.gov.hmcts.reform.fpl.validation.groups.UploadDocumentsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOEndDateGroup;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.HasDocumentsIncludedInSwet;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.time.EPOTimeRange;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeDifference;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeNotMidnight;
-import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeRange;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -86,6 +88,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @HasDocumentsIncludedInSwet(groups = UploadDocumentsGroup.class)
+@EPOTimeRange(message = "Date must be within 8 days of the order date", groups = EPOEndDateGroup.class,
+    maxDate = @TimeDifference(amount = 8, unit = DAYS))
 public class CaseData {
     private final Long id;
     private final State state;
@@ -186,6 +190,12 @@ public class CaseData {
         ValidateFamilyManCaseNumberGroup.class})
     private final String familyManCaseNumber;
     private final NoticeOfProceedings noticeOfProceedings;
+
+    @JsonIgnore
+    public boolean isSendingNoticeOfProceedings() {
+        return noticeOfProceedings != null && noticeOfProceedings.getProceedingTypes() != null
+            && !noticeOfProceedings.getProceedingTypes().isEmpty();
+    }
 
     @JsonIgnore
     public List<Element<Applicant>> getAllApplicants() {
@@ -298,11 +308,11 @@ public class CaseData {
     private final List<Element<Representative>> representatives;
 
     // EPO Order
+    @PastOrPresent(message = "Date of issue cannot be in the future", groups = DateOfIssueGroup.class)
+    private final LocalDateTime dateAndTimeOfIssue;
     private final EPOChildren epoChildren;
     @TimeNotMidnight(message = "Enter a valid end time", groups = EPOEndDateGroup.class)
     @Future(message = "Enter an end date in the future", groups = EPOEndDateGroup.class)
-    @TimeRange(message = "Date must be within the next 8 days", groups = EPOEndDateGroup.class,
-        maxDate = @TimeDifference(amount = 8, unit = DAYS))
     private final LocalDateTime epoEndDate;
     private final EPOPhrase epoPhrase;
     private final EPOType epoType;
@@ -472,9 +482,9 @@ public class CaseData {
 
     private final DocumentReference submittedForm;
 
-    private final DocumentReference uploadedCaseManagementOrder;
     private final List<Element<CaseManagementOrder>> draftUploadedCMOs;
-    private final Object hearingsWithoutApprovedCMO; // Could be dynamic list or string
+    @JsonUnwrapped
+    private final UploadCMOEventData uploadCMOEventData;
 
     public List<Element<CaseManagementOrder>> getDraftUploadedCMOs() {
         return defaultIfNull(draftUploadedCMOs, new ArrayList<>());

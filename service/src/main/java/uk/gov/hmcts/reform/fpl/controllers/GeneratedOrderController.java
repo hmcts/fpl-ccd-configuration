@@ -93,6 +93,7 @@ public class GeneratedOrderController extends CallbackController {
             data.put("pageShow", caseData.getAllChildren().size() <= 1 ? "No" : "Yes");
 
             data.put("dateOfIssue", time.now().toLocalDate());
+            data.put("dateAndTimeOfIssue", time.now().toLocalDate().atStartOfDay());
 
             if (caseData.getAllocatedJudge() != null) {
                 data.put("judgeAndLegalAdvisor", setAllocatedJudgeLabel(caseData.getAllocatedJudge()));
@@ -310,7 +311,6 @@ public class GeneratedOrderController extends CallbackController {
 
         DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(
             orderTemplateData, typeAndDoc.getDocmosisTemplate());
-
 
         Document document = uploadDocumentService.uploadPDF(docmosisDocument.getBytes(),
             service.generateOrderDocumentFileName(typeAndDoc.getType(), typeAndDoc.getSubtype()));

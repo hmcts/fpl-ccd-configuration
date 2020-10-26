@@ -22,7 +22,7 @@ public class SendGridMailSenderConfiguration {
     private int port;
     private String apiKey;
 
-    @Bean("sendGridMailSender")
+    @Bean
     public JavaMailSender javaMailSender() {
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
         javaMailSender.setHost(host);
@@ -36,5 +36,4 @@ public class SendGridMailSenderConfiguration {
         javaMailSender.setJavaMailProperties(properties);
         return javaMailSender;
     }
-
 }

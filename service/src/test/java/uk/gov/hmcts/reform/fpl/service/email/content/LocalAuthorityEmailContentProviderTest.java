@@ -49,6 +49,7 @@ class LocalAuthorityEmailContentProviderTest extends AbstractEmailContentProvide
             .put("hearingDate", "1 January 2020")
             .put("reference", CASE_REFERENCE)
             .put("caseUrl", caseUrl(CASE_REFERENCE, "OrdersTab"))
+            .put("callout", "^Smith, 12345, hearing 1 Jan 2020")
             .build();
     }
 
@@ -60,6 +61,7 @@ class LocalAuthorityEmailContentProviderTest extends AbstractEmailContentProvide
             .put("leadRespondentsName", "Moley")
             .put("reference", CASE_REFERENCE)
             .put("caseUrl", caseUrl(CASE_REFERENCE, "OrdersTab"))
+            .put("callout", "^Moley")
             .build();
     }
 

@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.validation.interfaces.time;
 
-import uk.gov.hmcts.reform.fpl.validation.validators.time.TimeRangeValidator;
+import uk.gov.hmcts.reform.fpl.validation.validators.time.EPOTimeRangeValidator;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -14,10 +14,10 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 /**
  * Indicates that the annotated value should be within a specified range of the current time.
  */
-@Target(ElementType.FIELD)
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = TimeRangeValidator.class)
-public @interface TimeRange {
+@Constraint(validatedBy = EPOTimeRangeValidator.class)
+public @interface EPOTimeRange {
     String message() default "Enter a valid time";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
