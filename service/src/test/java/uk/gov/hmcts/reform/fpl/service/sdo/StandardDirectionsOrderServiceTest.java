@@ -138,7 +138,7 @@ class StandardDirectionsOrderServiceTest {
 
     @Test
     void shouldSetJudgeAndLegalAdvisorOnSDOWhenWhenSendNoticeOfProceedingsToggleIsOn() {
-        given(featureToggleService.isSendNoticeOfProceedingsFromSdo()).willReturn(true);
+        toggleSendNoticeOfProceedingsFromSdo(true);
 
         StandardDirectionOrder previousSDO = StandardDirectionOrder.builder()
             .orderDoc(SEALED_DOC)
@@ -158,7 +158,7 @@ class StandardDirectionsOrderServiceTest {
 
     @Test
     void shouldNotSetJudgeAndLegalAdvisorOnSDOWhenWhenJudgeAndLegalAdvisorIsNotPopulated() {
-        given(featureToggleService.isSendNoticeOfProceedingsFromSdo()).willReturn(true);
+        toggleSendNoticeOfProceedingsFromSdo(true);
 
         StandardDirectionOrder previousSDO = StandardDirectionOrder.builder()
             .orderDoc(SEALED_DOC)
@@ -175,8 +175,8 @@ class StandardDirectionsOrderServiceTest {
     }
 
     @Test
-    void shouldNotSetJudgeAndLegalAdvisoronSDOWhenWhenSendNoticeOfProceedingsToggleIsOff() {
-        given(featureToggleService.isSendNoticeOfProceedingsFromSdo()).willReturn(false);
+    void shouldNotSetJudgeAndLegalAdvisorOnSDOWhenWhenSendNoticeOfProceedingsToggleIsOff() {
+        toggleSendNoticeOfProceedingsFromSdo(false);
 
         StandardDirectionOrder previousSDO = StandardDirectionOrder.builder()
             .orderDoc(SEALED_DOC)
@@ -194,7 +194,8 @@ class StandardDirectionsOrderServiceTest {
     }
 
     @Test
-    void shouldNotSealDocumentWhenSDOIsDraft() throws Exception {
+    void shouldNotSealDocumentWhenSDOIsDraft() {
+        toggleSendNoticeOfProceedingsFromSdo(true);
         mockIdamAndRequestData();
         StandardDirectionOrder order = buildStandardDirectionOrder(PDF_DOC, DRAFT, judgeAndLegalAdvisor);
 
@@ -209,7 +210,8 @@ class StandardDirectionsOrderServiceTest {
     }
 
     @Test
-    void shouldSealDocumentWhenSDOIsToBeSealed() throws Exception {
+    void shouldSealDocumentWhenSDOIsToBeSealed() {
+        toggleSendNoticeOfProceedingsFromSdo(true);
         mockSealingService();
         mockIdamAndRequestData();
         StandardDirectionOrder order = buildStandardDirectionOrder(PDF_DOC, SEALED, judgeAndLegalAdvisor);
@@ -226,22 +228,22 @@ class StandardDirectionsOrderServiceTest {
     }
 
     @Test
-    void shouldConvertWordDocumentAndSealWhenSDOIsSetToSeal() throws Exception {
+    void shouldConvertWordDocumentAndSealWhenSDOIsSetToSeal() {
         given(sealingService.sealDocument(WORD_DOC)).willReturn(SEALED_DOC);
         mockIdamAndRequestData();
 
         StandardDirectionOrder order = buildStandardDirectionOrder(WORD_DOC, SEALED, judgeAndLegalAdvisor);
         StandardDirectionOrder standardDirectionOrder = service.buildOrderFromUpload(order);
 
-        assertThat(standardDirectionOrder.orderDoc).isEqualTo(SEALED_DOC);
+        assertThat(standardDirectionOrder.getOrderDoc()).isEqualTo(SEALED_DOC);
     }
 
     @Test
-    void shouldPersistJudgeAndLegalAdvisorWhenSendNoticeOfProceedingsToggleIsOn() throws Exception {
+    void shouldPersistJudgeAndLegalAdvisorWhenSendNoticeOfProceedingsToggleIsOn() {
         given(sealingService.sealDocument(WORD_DOC)).willReturn(SEALED_DOC);
         mockIdamAndRequestData();
 
-        given(featureToggleService.isSendNoticeOfProceedingsFromSdo()).willReturn(true);
+        toggleSendNoticeOfProceedingsFromSdo(true);
 
         StandardDirectionOrder order = buildStandardDirectionOrder(WORD_DOC, SEALED, judgeAndLegalAdvisor);
         StandardDirectionOrder standardDirectionOrder = service.buildOrderFromUpload(order);
@@ -250,11 +252,11 @@ class StandardDirectionsOrderServiceTest {
     }
 
     @Test
-    void shouldNotPersistJudgeAndLegalAdvisorWhenSendNoticeOfProceedingsToggleIsOff() throws Exception {
+    void shouldNotPersistJudgeAndLegalAdvisorWhenSendNoticeOfProceedingsToggleIsOff() {
         given(sealingService.sealDocument(WORD_DOC)).willReturn(SEALED_DOC);
         mockIdamAndRequestData();
 
-        given(featureToggleService.isSendNoticeOfProceedingsFromSdo()).willReturn(false);
+        toggleSendNoticeOfProceedingsFromSdo(false);
 
         StandardDirectionOrder order = buildStandardDirectionOrder(WORD_DOC, SEALED, judgeAndLegalAdvisor);
         StandardDirectionOrder standardDirectionOrder = service.buildOrderFromUpload(order);
@@ -371,8 +373,12 @@ class StandardDirectionsOrderServiceTest {
         given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
     }
 
-    private void mockSealingService() throws Exception {
+    private void mockSealingService() {
         given(sealingService.sealDocument(PDF_DOC)).willReturn(SEALED_DOC);
+    }
+
+    private void toggleSendNoticeOfProceedingsFromSdo(boolean toggle) {
+        given(featureToggleService.isSendNoticeOfProceedingsFromSdo()).willReturn(toggle);
     }
 
     private JudgeAndLegalAdvisor buildJudgeAndLegalAdvisor() {

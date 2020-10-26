@@ -10,7 +10,7 @@
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "FieldShowCondition": "hearingsWithoutApprovedCMO=\"DO NOT SHOW\"",
+    "FieldShowCondition": "pastHearingsForCMO=\"DO NOT SHOW\"",
     "PageShowCondition": "numHearingsWithoutCMO=\"MULTI\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-cmo/mid-event"
   },
@@ -31,7 +31,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadCMO",
-    "CaseFieldID": "hearingsWithoutApprovedCMO",
+    "CaseFieldID": "pastHearingsForCMO",
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
     "PageID": 1,
@@ -50,7 +50,7 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "FieldShowCondition": "hearingsWithoutApprovedCMO=\"DO_NOT_SHOW\"",
+    "FieldShowCondition": "pastHearingsForCMO=\"DO_NOT_SHOW\"",
     "PageShowCondition": "numHearingsWithoutCMO!=\"NONE\""
   },
   {
@@ -64,7 +64,7 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "FieldShowCondition": "hearingsWithoutApprovedCMO=\"DO NOT SHOW\""
+    "FieldShowCondition": "pastHearingsForCMO=\"DO NOT SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",

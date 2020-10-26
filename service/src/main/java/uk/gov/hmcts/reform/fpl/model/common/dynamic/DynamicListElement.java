@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.model.common.dynamic;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.jackson.Jacksonized;
 
 import java.util.UUID;
 
@@ -11,6 +12,7 @@ import java.util.UUID;
  * <p>There are two properties which map to the relevant items of an option html tag.
  */
 @Data
+@Jacksonized
 @Builder
 public class DynamicListElement {
     public static final UUID DEFAULT_CODE = UUID.fromString("00000000-0000-0000-0000-000000000000");

@@ -45,12 +45,12 @@ class DocumentsHelperTest {
 
     @Test
     void shouldReturnTrueIfDocumentHasBinaries() {
-        assertThat(hasDocumentUploaded(document(true))).isEqualTo(true);
+        assertThat(hasDocumentUploaded(document(true))).isTrue();
     }
 
     @Test
     void shouldReturnFalseIfDocumentHasNotBinaries() {
-        assertThat(hasDocumentUploaded(document(false))).isEqualTo(false);
+        assertThat(hasDocumentUploaded(document(false))).isFalse();
     }
 
     @Test

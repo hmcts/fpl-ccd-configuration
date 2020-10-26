@@ -148,7 +148,15 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "createOrderLink",
     "FieldType": "Label",
-    "Label": "## Orders\n[Create or upload an order](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/createOrder)",
+    "Label": "[Create or upload an order](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/createOrder)",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "uploadCMOLink",
+    "FieldType": "Label",
+    "Label": "[Upload CMO](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/uploadCMO)",
     "SecurityClassification": "Public"
   }
 ]

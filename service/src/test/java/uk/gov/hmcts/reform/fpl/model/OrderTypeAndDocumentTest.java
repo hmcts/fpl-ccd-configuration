@@ -58,7 +58,7 @@ class OrderTypeAndDocumentTest {
         void shouldReturnFalse(GeneratedOrderType orderType) {
             OrderTypeAndDocument typeAndDoc = OrderTypeAndDocument.builder().type(orderType).build();
 
-            assertThat(typeAndDoc.isClosable()).isEqualTo(false);
+            assertThat(typeAndDoc.isClosable()).isFalse();
         }
 
         @ParameterizedTest
@@ -66,7 +66,7 @@ class OrderTypeAndDocumentTest {
         void shouldReturnTrue(GeneratedOrderType orderType) {
             OrderTypeAndDocument typeAndDoc = OrderTypeAndDocument.builder().type(orderType).build();
 
-            assertThat(typeAndDoc.isClosable()).isEqualTo(true);
+            assertThat(typeAndDoc.isClosable()).isTrue();
         }
 
         @ParameterizedTest
@@ -74,7 +74,7 @@ class OrderTypeAndDocumentTest {
         void shouldReturnTrueWhenOrderIsFinal(GeneratedOrderType orderType) {
             OrderTypeAndDocument typeAndDoc = OrderTypeAndDocument.builder().type(orderType).subtype(FINAL).build();
 
-            assertThat(typeAndDoc.isClosable()).isEqualTo(true);
+            assertThat(typeAndDoc.isClosable()).isTrue();
         }
 
         @ParameterizedTest
@@ -82,7 +82,7 @@ class OrderTypeAndDocumentTest {
         void shouldReturnFalseWhenOrderIsInterim(GeneratedOrderType orderType) {
             OrderTypeAndDocument typeAndDoc = OrderTypeAndDocument.builder().type(orderType).subtype(INTERIM).build();
 
-            assertThat(typeAndDoc.isClosable()).isEqualTo(false);
+            assertThat(typeAndDoc.isClosable()).isFalse();
         }
     }
 }

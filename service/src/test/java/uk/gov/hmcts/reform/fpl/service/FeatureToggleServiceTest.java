@@ -4,15 +4,12 @@ import com.launchdarkly.sdk.LDUser;
 import com.launchdarkly.sdk.UserAttribute;
 import com.launchdarkly.sdk.server.LDClient;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,7 +32,6 @@ import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.NOTIC
 import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.SDO;
 import static uk.gov.hmcts.reform.fpl.utils.matchers.LDUserMatcher.ldUser;
 
-@ExtendWith(MockitoExtension.class)
 class FeatureToggleServiceTest {
 
     private static final String LD_USER_KEY = "test_key";
@@ -44,9 +40,7 @@ class FeatureToggleServiceTest {
 
     private static LDClient ldClient = Mockito.mock(LDClient.class);
     private static FeatureToggleService service = new FeatureToggleService(ldClient, LD_USER_KEY, ENVIRONMENT);
-
-    @Captor
-    private ArgumentCaptor<LDUser> ldUser;
+    private static ArgumentCaptor<LDUser> ldUser = ArgumentCaptor.forClass(LDUser.class);
 
     @AfterEach
     void resetLaunchDarklyClient() {
@@ -235,12 +229,12 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsSendGridEnabled(Boolean toggleState) {
+    void shouldMakeCorrectCallForIsUploadDraftCMOEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
-        assertThat(service.isSendGridEnabled()).isEqualTo(toggleState);
+        assertThat(service.isUploadDraftCMOEnabled()).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
-            eq("send-grid"),
+            eq("upload-draft-cmo"),
             ldUser(ENVIRONMENT).build(),
             eq(false));
     }
