@@ -343,16 +343,13 @@ public class CaseSubmissionGenerationService
         return DocmosisOtherParty.builder()
             .name(other.getName())
             .gender(formatGenderDisplay(other.getGender(), other.getGenderIdentification()))
-            .dateOfBirth(other.getDOB() != null ? formatLocalDateToString(parse(other.getDOB()), DATE) : DEFAULT_STRING)
+            .dateOfBirth(other.getDateOfBirth() != null
+                ? formatLocalDateToString(parse(other.getDateOfBirth()), DATE)
+                : DEFAULT_STRING
+            )
             .placeOfBirth(getDefaultIfNullOrEmpty(other.getBirthPlace()))
-            .address(
-                isConfidential
-                    ? CONFIDENTIAL
-                    : formatAddress(other.getAddress()))
-            .telephoneNumber(
-                isConfidential
-                    ? CONFIDENTIAL
-                    : getDefaultIfNullOrEmpty(other.getTelephone()))
+            .address(isConfidential ? CONFIDENTIAL : formatAddress(other.getAddress()))
+            .telephoneNumber(isConfidential ? CONFIDENTIAL : getDefaultIfNullOrEmpty(other.getTelephone()))
             .detailsHidden(getValidAnswerOrDefaultValue(other.getDetailsHidden()))
             .detailsHiddenReason(
                 concatenateYesOrNoKeyAndValue(
@@ -526,31 +523,23 @@ public class CaseSubmissionGenerationService
 
         return DocmosisHearing.builder()
             .timeFrame(hearingPresent
-                ? concatenateKeyAndValue(
-                    hearing.getTimeFrame(),
-                    addPrefixReason(hearing.getReason()))
+                ? concatenateKeyAndValue(hearing.getTimeFrame(), addPrefixReason(hearing.getReason()))
                 : DEFAULT_STRING)
             .typeAndReason(hearingPresent
-                ? concatenateKeyAndValue(
-                    hearing.getType(),
-                    addPrefixReason(hearing.getType_GiveReason()))
+                ? concatenateKeyAndValue(hearing.getType(), addPrefixReason(hearing.getTypeGiveReason()))
                 : DEFAULT_STRING)
             .withoutNoticeDetails(hearingPresent
-                ? concatenateKeyAndValue(
-                    hearing.getWithoutNotice(),
-                    addPrefixReason(hearing.getWithoutNoticeReason()))
+                ? concatenateKeyAndValue(hearing.getWithoutNotice(), addPrefixReason(hearing.getWithoutNoticeReason()))
                 : DEFAULT_STRING)
             .reducedNoticeDetails(hearingPresent
-                ? concatenateKeyAndValue(
-                    hearing.getReducedNotice(),
-                    addPrefixReason(hearing.getReducedNoticeReason()))
+                ? concatenateKeyAndValue(hearing.getReducedNotice(), addPrefixReason(hearing.getReducedNoticeReason()))
                 : DEFAULT_STRING)
-            .respondentsAware(
-                hearingPresent && StringUtils.isNotEmpty(hearing.getRespondentsAware())
-                    ? hearing.getRespondentsAware() : DEFAULT_STRING)
-            .respondentsAwareReason(
-                hearingPresent && StringUtils.isNotEmpty(hearing.getRespondentsAware())
-                    ? hearing.getRespondentsAwareReason() : DEFAULT_STRING)
+            .respondentsAware(hearingPresent && StringUtils.isNotEmpty(hearing.getRespondentsAware())
+                ? hearing.getRespondentsAware()
+                : DEFAULT_STRING)
+            .respondentsAwareReason(hearingPresent && StringUtils.isNotEmpty(hearing.getRespondentsAware())
+                ? hearing.getRespondentsAwareReason()
+                : DEFAULT_STRING)
             .build();
     }
 

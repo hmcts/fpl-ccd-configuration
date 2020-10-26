@@ -7,7 +7,6 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,9 +51,9 @@ class PbaNumberHelperTest {
         C2DocumentBundle documentWithEmptyPbaNumber = C2DocumentBundle.builder().pbaNumber("").build();
         C2DocumentBundle documentWithNullPbaNumber = C2DocumentBundle.builder().build();
 
-        assertThat(getNonEmptyPbaNumber(documentWithNonEmptyPbaNumber)).isEqualTo(Optional.of("123"));
-        assertThat(getNonEmptyPbaNumber(documentWithEmptyPbaNumber)).isEqualTo(Optional.empty());
-        assertThat(getNonEmptyPbaNumber(documentWithNullPbaNumber)).isEqualTo(Optional.empty());
+        assertThat(getNonEmptyPbaNumber(documentWithNonEmptyPbaNumber)).contains("123");
+        assertThat(getNonEmptyPbaNumber(documentWithEmptyPbaNumber)).isEmpty();
+        assertThat(getNonEmptyPbaNumber(documentWithNullPbaNumber)).isEmpty();
     }
 
     private Element<Applicant> buildApplicantElementWithPbaNumber(String pbaNumber) {

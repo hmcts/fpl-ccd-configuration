@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,8 +17,8 @@ public class Hearing {
     private final String timeFrame;
     private final String reducedNotice;
     private final String withoutNotice;
-    @SuppressWarnings("membername")
-    private final String type_GiveReason;
+    @JsonProperty("type_GiveReason")
+    private final String typeGiveReason;
     private final String respondentsAware;
     private final String reducedNoticeReason;
     private final String withoutNoticeReason;

@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, HearingVenueLookUpService.class})
-public class HearingVenueLookUpServiceTest {
+class HearingVenueLookUpServiceTest {
 
     @Autowired
     private HearingVenueLookUpService hearingVenueLookUpService;

@@ -1,14 +1,7 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -40,25 +33,13 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, FixedTimeConfiguration.class})
 class CaseDataTest {
 
-    public static final String EXCLUSION_CLAUSE = "exclusionClause";
+    private static final String EXCLUSION_CLAUSE = "exclusionClause";
 
-    @Autowired
-    private ObjectMapper mapper;
-
-    @Autowired
-    private Time time;
-
-    private LocalDateTime futureDate;
-    private UUID cmoID = randomUUID();
-
-    @BeforeEach
-    void setUp() {
-        futureDate = time.now().plusDays(1);
-    }
+    private final Time time = new FixedTimeConfiguration().stoppedTime();
+    private final UUID cmoID = randomUUID();
+    private final LocalDateTime futureDate = time.now().plusDays(1);
 
     @Test
     void shouldGetAllOthersWhenFirstAndAdditionalOthersExist() {
@@ -104,7 +85,7 @@ class CaseDataTest {
         Other other1 = otherWithName("John");
         CaseData caseData = caseData(Others.builder().firstOther(other1));
 
-        assertThat(caseData.findOther(0)).isEqualTo(Optional.of(other1));
+        assertThat(caseData.findOther(0)).contains(other1);
     }
 
     @Test
@@ -112,7 +93,7 @@ class CaseDataTest {
         Other other1 = otherWithName("John");
         CaseData caseData = caseData(Others.builder().firstOther(other1));
 
-        assertThat(caseData.findOther(1)).isEqualTo(Optional.empty());
+        assertThat(caseData.findOther(1)).isEmpty();
     }
 
     @Test
@@ -125,7 +106,7 @@ class CaseDataTest {
             .build())
             .build();
 
-        assertThat(caseData.findOther(1)).isEqualTo(Optional.of(other2));
+        assertThat(caseData.findOther(1)).contains(other2);
     }
 
     @Test
@@ -133,7 +114,7 @@ class CaseDataTest {
         Respondent respondent = Respondent.builder().build();
         CaseData caseData = CaseData.builder().respondents1(wrapElements(respondent)).build();
 
-        assertThat(caseData.findRespondent(0)).isEqualTo(Optional.of(respondent));
+        assertThat(caseData.findRespondent(0)).contains(respondent);
     }
 
     @Test
@@ -141,7 +122,7 @@ class CaseDataTest {
         Respondent respondent = Respondent.builder().build();
         CaseData caseData = CaseData.builder().respondents1(wrapElements(respondent)).build();
 
-        assertThat(caseData.findRespondent(1)).isEqualTo(Optional.empty());
+        assertThat(caseData.findRespondent(1)).isEmpty();
     }
 
     @Test
@@ -149,7 +130,7 @@ class CaseDataTest {
         Applicant applicant = Applicant.builder().build();
         CaseData caseData = CaseData.builder().applicants(wrapElements(applicant)).build();
 
-        assertThat(caseData.findApplicant(0)).isEqualTo(Optional.of(applicant));
+        assertThat(caseData.findApplicant(0)).contains(applicant);
     }
 
     @Test
@@ -157,14 +138,14 @@ class CaseDataTest {
         Applicant applicant = Applicant.builder().build();
         CaseData caseData = CaseData.builder().applicants(wrapElements(applicant)).build();
 
-        assertThat(caseData.findApplicant(1)).isEqualTo(Optional.empty());
+        assertThat(caseData.findApplicant(1)).isEmpty();
     }
 
     @Test
     void shouldNotFindApplicantWhenNull() {
         CaseData caseData = CaseData.builder().build();
 
-        assertThat(caseData.findApplicant(0)).isEqualTo(Optional.empty());
+        assertThat(caseData.findApplicant(0)).isEmpty();
     }
 
     @Test
@@ -239,7 +220,7 @@ class CaseDataTest {
         @Test
         void shouldReturnNullIfC2DocumentBundleIsNotPopulated() {
             caseData = CaseData.builder().c2DocumentBundle(null).build();
-            assertThat(caseData.getLastC2DocumentBundle()).isEqualTo(null);
+            assertThat(caseData.getLastC2DocumentBundle()).isNull();
         }
     }
 
@@ -249,14 +230,14 @@ class CaseDataTest {
             .judgeFullName("Test Judge")
             .build()).build();
 
-        assertThat(caseData.allocatedJudgeExists()).isEqualTo(true);
+        assertThat(caseData.allocatedJudgeExists()).isTrue();
     }
 
     @Test
     void shouldReturnFalseWhenAllocatedJudgeDoesNotExist() {
         CaseData caseData = CaseData.builder().build();
 
-        assertThat(caseData.allocatedJudgeExists()).isEqualTo(false);
+        assertThat(caseData.allocatedJudgeExists()).isFalse();
     }
 
     @Test
@@ -267,7 +248,7 @@ class CaseDataTest {
                 .build())
             .build();
 
-        assertThat(caseData.hasAllocatedJudgeEmail()).isEqualTo(true);
+        assertThat(caseData.hasAllocatedJudgeEmail()).isTrue();
     }
 
     @Test
@@ -278,7 +259,7 @@ class CaseDataTest {
                 .build())
             .build();
 
-        assertThat(caseData.hasAllocatedJudgeEmail()).isEqualTo(false);
+        assertThat(caseData.hasAllocatedJudgeEmail()).isFalse();
     }
 
     @Test
@@ -289,7 +270,7 @@ class CaseDataTest {
                 .build())
             .build();
 
-        assertThat(caseData.hasAllocatedJudgeEmail()).isEqualTo(false);
+        assertThat(caseData.hasAllocatedJudgeEmail()).isFalse();
     }
 
     @Test

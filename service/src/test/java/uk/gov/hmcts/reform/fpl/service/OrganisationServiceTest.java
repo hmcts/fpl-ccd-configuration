@@ -128,7 +128,7 @@ class OrganisationServiceTest {
 
             Optional<String> actualUserId = organisationService.findUserByEmail(USER_EMAIL);
 
-            assertThat(actualUserId).isEqualTo(Optional.of(user.getUserIdentifier()));
+            assertThat(actualUserId).contains(user.getUserIdentifier());
         }
 
         @Test
@@ -139,7 +139,7 @@ class OrganisationServiceTest {
 
             Optional<String> actualUserId = organisationService.findUserByEmail(USER_EMAIL);
 
-            assertThat(actualUserId.isPresent()).isFalse();
+            assertThat(actualUserId).isNotPresent();
         }
 
         @Test
