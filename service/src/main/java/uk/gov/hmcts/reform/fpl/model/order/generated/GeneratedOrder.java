@@ -39,7 +39,7 @@ public class GeneratedOrder {
     private final String uploader;
     private final String uploadedOrderDescription;
     @JsonSerialize(contentConverter = BasicChildConverter.class)
-    private List<Element<Child>> children;
+    private final List<Element<Child>> children;
     private String removalReason;
 
     @JsonIgnore

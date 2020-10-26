@@ -84,7 +84,22 @@ public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTe
 
     @Test
     void shouldUpdateChildrenPropertiesWhenRemovingAFinalOrder() {
-        List<Element<Child>> childrenList = buildChildrenList();
+        UUID childOneId = UUID.randomUUID();
+        UUID childTwoId = UUID.randomUUID();
+
+        List<Element<Child>> childrenList = List.of(
+            element(childOneId, Child.builder()
+                .finalOrderIssued("Yes")
+                .finalOrderIssuedType("Some type")
+                .party(ChildParty.builder().build())
+                .build()),
+            element(childTwoId, Child.builder()
+                .finalOrderIssued("Yes")
+                .finalOrderIssuedType("Some type")
+                .party(ChildParty.builder().build())
+                .build())
+        );
+
         Element<GeneratedOrder> order1 = element(buildOrder(EMERGENCY_PROTECTION_ORDER, childrenList));
 
         CaseData caseData = CaseData.builder()
@@ -99,16 +114,34 @@ public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTe
 
         CaseData returnedCaseData = mapper.convertValue(response.getData(), CaseData.class);
         List<Element<Child>> returnedChildren = returnedCaseData.getChildren1();
-        Child expectedChild = Child.builder()
-            .party(ChildParty.builder().build())
-            .build();
 
-        assertThat(returnedChildren.get(0).getValue()).isEqualTo(expectedChild);
+        List<Element<Child>> expectedChildrenList = List.of(
+            element(childOneId, Child.builder()
+                .party(ChildParty.builder().build())
+                .build()),
+            element(childTwoId, Child.builder()
+                .party(ChildParty.builder().build())
+                .build())
+        );
+
+        assertThat(returnedChildren).isEqualTo(expectedChildrenList);
     }
 
     @Test
     void shouldNotUpdateChildrenPropertiesWhenRemovingANonFinalOrder() {
-        List<Element<Child>> childrenList = buildChildrenList();
+        List<Element<Child>> childrenList = List.of(
+            element(UUID.randomUUID(), Child.builder()
+                .finalOrderIssued("Yes")
+                .finalOrderIssuedType("Some type")
+                .party(ChildParty.builder().build())
+                .build()),
+            element(UUID.randomUUID(), Child.builder()
+                .finalOrderIssued("Yes")
+                .finalOrderIssuedType("Some type")
+                .party(ChildParty.builder().build())
+                .build())
+        );
+
         Element<GeneratedOrder> order1 = element(buildOrder(BLANK_ORDER, childrenList));
 
         CaseData caseData = CaseData.builder()
@@ -123,11 +156,8 @@ public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTe
 
         CaseData returnedCaseData = mapper.convertValue(response.getData(), CaseData.class);
         List<Element<Child>> returnedChildren = returnedCaseData.getChildren1();
-        Child expectedChild = Child.builder()
-            .party(ChildParty.builder().build())
-            .build();
 
-        assertThat(returnedChildren.get(0).getValue()).isNotEqualTo(expectedChild);
+        assertThat(returnedChildren).isEqualTo(childrenList);
     }
 
     private CaseData buildCaseData(Element<GeneratedOrder> order) {
@@ -164,21 +194,6 @@ public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTe
             .type(getFullOrderType(type))
             .children(children)
             .build();
-    }
-
-    private List<Element<Child>> buildChildrenList() {
-        return List.of(
-            element(UUID.randomUUID(), Child.builder()
-                .finalOrderIssued("Yes")
-                .finalOrderIssuedType("Some type")
-                .party(ChildParty.builder().build())
-                .build()),
-            element(UUID.randomUUID(), Child.builder()
-                .finalOrderIssued("Yes")
-                .finalOrderIssuedType("Some type")
-                .party(ChildParty.builder().build())
-                .build())
-        );
     }
 
     private DynamicListElement buildListElement(UUID id, String label) {

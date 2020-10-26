@@ -9,6 +9,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -34,6 +35,9 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
     RemoveOrderService.class, JacksonAutoConfiguration.class
 })
 class RemoveOrderServiceTest {
+
+    private static final UUID CHILD_ONE_ID = UUID.randomUUID();
+    private static final UUID CHILD_TWO_ID = UUID.randomUUID();
 
     @Autowired
     private RemoveOrderService service;
@@ -169,7 +173,16 @@ class RemoveOrderServiceTest {
 
     @Test
     void shouldModifyChildrenThatHaveBeenAssociatedWithAFinalOrder() {
-        List<Element<Child>> childrenList = buildChildrenList();
+        List<Element<Child>> childrenList = List.of(
+            element(CHILD_ONE_ID, Child.builder()
+                .finalOrderIssued("Yes")
+                .finalOrderIssuedType("Some type")
+                .build()),
+            element(CHILD_TWO_ID, Child.builder()
+                .finalOrderIssued("Yes")
+                .finalOrderIssuedType("Some type")
+                .build())
+        );
 
         Element<GeneratedOrder> order1 = element(buildOrder(
             EMERGENCY_PROTECTION_ORDER,
@@ -188,15 +201,28 @@ class RemoveOrderServiceTest {
 
         List<Element<Child>> updatedChildren = service.removeFinalOrderPropertiesFromChildren(caseData);
 
-        Child expectedChild = Child.builder().build();
+        List<Element<Child>> expectedChildrenList = List.of(
+            element(CHILD_ONE_ID, Child.builder()
+                .build()),
+            element(CHILD_TWO_ID, Child.builder()
+                .build())
+        );
 
-        assertThat(updatedChildren.get(0).getValue()).isEqualTo(expectedChild);
-        assertThat(updatedChildren.get(1).getValue()).isEqualTo(expectedChild);
+        assertThat(updatedChildren).isEqualTo(expectedChildrenList);
     }
 
     @Test
     void shouldNotModifyChildrenThatHaveNotBeenAssociatedWithAFinalOrder() {
-        List<Element<Child>> childrenList = buildChildrenList();
+        List<Element<Child>> childrenList = List.of(
+            element(UUID.randomUUID(), Child.builder()
+                .finalOrderIssued("Yes")
+                .finalOrderIssuedType("Some type")
+                .build()),
+            element(UUID.randomUUID(), Child.builder()
+                .finalOrderIssued("Yes")
+                .finalOrderIssuedType("Some type")
+                .build())
+        );
 
         Element<GeneratedOrder> order1 = element(buildOrder(
             BLANK_ORDER,
@@ -215,15 +241,69 @@ class RemoveOrderServiceTest {
 
         List<Element<Child>> updatedChildren = service.removeFinalOrderPropertiesFromChildren(caseData);
 
-        Child expectedChild = Child.builder().build();
+        assertThat(updatedChildren).isEqualTo(childrenList);
+    }
 
-        assertThat(updatedChildren.get(0).getValue()).isNotEqualTo(expectedChild);
-        assertThat(updatedChildren.get(1).getValue()).isNotEqualTo(expectedChild);
+    @Test
+    void shouldRemoveFinalOrderOnChildrenAssiocatedToTheOrderOnly() {
+        Element<Child> childToBeRemoved = element(CHILD_ONE_ID, Child.builder()
+            .finalOrderIssued("Yes")
+            .finalOrderIssuedType("Some type")
+            .party(ChildParty.builder().build())
+            .build());
+
+        List<Element<Child>> childrenList = List.of(
+            childToBeRemoved,
+            element(CHILD_TWO_ID, Child.builder()
+                .finalOrderIssued("Yes")
+                .finalOrderIssuedType("Some type")
+                .party(ChildParty.builder().build())
+                .build())
+        );
+
+        Element<GeneratedOrder> order1 = element(buildOrder(
+            EMERGENCY_PROTECTION_ORDER,
+            "order 1",
+            "15 June 2020",
+            List.of(childToBeRemoved)
+        ));
+
+        CaseData caseData = CaseData.builder()
+            .children1(childrenList)
+            .orderCollection(List.of(order1))
+            .removableOrderList(DynamicList.builder()
+                .value(buildListElement(order1.getId(), "order 1 - 15 June 2020"))
+                .build())
+            .build();
+
+        List<Element<Child>> updatedChildren = service.removeFinalOrderPropertiesFromChildren(caseData);
+
+        List<Element<Child>> expectedChildrenList = List.of(
+            element(CHILD_ONE_ID, Child.builder()
+                .party(ChildParty.builder().build())
+                .build()),
+            element(CHILD_TWO_ID, Child.builder()
+                .finalOrderIssued("Yes")
+                .finalOrderIssuedType("Some type")
+                .party(ChildParty.builder().build())
+                .build())
+        );
+
+        assertThat(updatedChildren).isEqualTo(expectedChildrenList);
     }
 
     @Test
     void shouldThrowAnExceptionWhenOrderIntendedToBeRemovedDoesNotExist() {
-        List<Element<Child>> childrenList = buildChildrenList();
+        List<Element<Child>> childrenList = List.of(
+            element(UUID.randomUUID(), Child.builder()
+                .finalOrderIssued("Yes")
+                .finalOrderIssuedType("Some type")
+                .build()),
+            element(UUID.randomUUID(), Child.builder()
+                .finalOrderIssued("Yes")
+                .finalOrderIssuedType("Some type")
+                .build())
+        );
 
         Element<GeneratedOrder> order1 = element(buildOrder(
             BLANK_ORDER,
@@ -265,18 +345,5 @@ class RemoveOrderServiceTest {
         return buildOrder(type, title, dateOfIssue).toBuilder()
             .children(children)
             .build();
-    }
-
-    private List<Element<Child>> buildChildrenList() {
-        return List.of(
-            element(UUID.randomUUID(), Child.builder()
-                .finalOrderIssued("Yes")
-                .finalOrderIssuedType("Some type")
-                .build()),
-            element(UUID.randomUUID(), Child.builder()
-                .finalOrderIssued("Yes")
-                .finalOrderIssuedType("Some type")
-                .build())
-        );
     }
 }
