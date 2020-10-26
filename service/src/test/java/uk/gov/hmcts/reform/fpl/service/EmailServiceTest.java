@@ -9,7 +9,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.exceptions.EmailFailedSendException;
 import uk.gov.hmcts.reform.fpl.model.email.EmailData;
-import uk.gov.hmcts.reform.fpl.service.email.EmailSenderProvider;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 
 import javax.mail.internet.MimeMessage;
@@ -38,17 +37,13 @@ class EmailServiceTest {
     private JavaMailSender javaMailSender;
 
     @Mock
-    private EmailSenderProvider emailSenderProvider;
-
-    @Mock
     private MimeMessage mimeMessage;
 
     private EmailService emailService;
 
     @BeforeEach
     void setup() {
-        emailService = new EmailService(emailSenderProvider);
-        given(emailSenderProvider.getMailSender()).willReturn(javaMailSender);
+        emailService = new EmailService(javaMailSender);
         given(javaMailSender.createMimeMessage()).willReturn(mimeMessage);
     }
 
