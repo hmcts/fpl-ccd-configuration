@@ -4,11 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
@@ -19,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
-import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
@@ -28,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -60,12 +55,6 @@ class HearingBookingServiceTest {
 
     private LocalDateTime futureDate;
     private LocalDateTime pastDate;
-
-    @MockBean
-    private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
-
-    @MockBean
-    private UploadDocumentService uploadDocumentService;
 
     @BeforeEach
     void setUp() {
