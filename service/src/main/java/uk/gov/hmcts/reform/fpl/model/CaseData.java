@@ -415,6 +415,7 @@ public class CaseData {
 
     private final CloseCase closeCase;
     private final String deprivationOfLiberty;
+    private final CloseCase closeCaseTabField;
     private final String closeCaseFromOrder;
 
     private final ManageDocument manageDocument;
@@ -610,4 +611,5 @@ public class CaseData {
     private final HearingReListOption hearingReListOption;
     private final HearingCancellationReason adjournmentReason;
     private final List<ProceedingType> proceedingType;
+    private final State closedStateRadioList;
 }

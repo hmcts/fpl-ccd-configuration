@@ -1,0 +1,98 @@
+package uk.gov.hmcts.reform.fpl.service;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CloseCase;
+
+import java.util.Map;
+import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
+import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.CloseCaseReason.WITHDRAWN;
+import static uk.gov.hmcts.reform.fpl.service.ChangeCaseStateService.LABEL_CONTENT;
+
+class ChangeCaseStateServiceTest {
+    private ChangeCaseStateService changeCaseStateService = new ChangeCaseStateService();
+
+    @ParameterizedTest
+    @MethodSource("stateChangeSource")
+    void shouldPrepareNextStateLabelWhenCurrentCaseStateIsNotClosed(State currentState, State expectedMigratedState) {
+        CaseData caseData = CaseData.builder()
+            .state(currentState)
+            .build();
+
+        assertThat(changeCaseStateService.initialiseEventFields(caseData))
+            .extracting("nextStateLabelContent")
+            .isEqualTo(String.format(LABEL_CONTENT, expectedMigratedState.getLabel().toLowerCase()));
+    }
+
+    @Test
+    void shouldNotPrepareNextStateLabelWhenCurrentCaseStateIsClosed() {
+        CaseData caseData = CaseData.builder()
+            .state(CLOSED)
+            .build();
+
+        assertThat(changeCaseStateService.initialiseEventFields(caseData))
+            .extracting("nextStateLabelContent")
+            .isNull();
+    }
+
+    @Test
+    void shouldRevertStateAndRemoveCasePropertiesAssociatedToClosedStateWhenRevertingAClosedCase() {
+        CaseData caseData = CaseData.builder()
+            .state(CLOSED)
+            .closedStateRadioList(FINAL_HEARING)
+            .deprivationOfLiberty("Test data")
+            .closeCaseTabField(CloseCase.builder()
+                .reason(WITHDRAWN)
+                .build())
+            .build();
+
+        Map<String, Object> updatedCaseData = changeCaseStateService.updateCaseState(caseData);
+
+        assertThat(updatedCaseData)
+            .extracting("state", "deprivationOfLiberty", "closeCaseTabField")
+            .containsExactly(FINAL_HEARING, null, null);
+    }
+
+    @ParameterizedTest
+    @MethodSource("stateChangeSource")
+    void shouldUpdateCaseStateWhenConfirmedChangeStateIsYes(State currentState, State expectedMigratedState) {
+        CaseData caseData = CaseData.builder()
+            .state(currentState)
+            .confirmChangeState(YES.getValue())
+            .build();
+
+        assertThat(changeCaseStateService.updateCaseState(caseData))
+            .extracting("state")
+            .isEqualTo(expectedMigratedState);
+    }
+
+    @Test
+    void shouldNotChangeCaseStateWhenConfirmedChangeStateIsNo() {
+        CaseData caseData = CaseData.builder()
+            .state(FINAL_HEARING)
+            .confirmChangeState(NO.getValue())
+            .build();
+
+        assertThat(changeCaseStateService.updateCaseState(caseData))
+            .extracting("state")
+            .isNull();
+    }
+
+    private static Stream<Arguments> stateChangeSource() {
+        return Stream.of(
+            Arguments.of(FINAL_HEARING, CASE_MANAGEMENT),
+            Arguments.of(CASE_MANAGEMENT, FINAL_HEARING)
+        );
+    }
+}

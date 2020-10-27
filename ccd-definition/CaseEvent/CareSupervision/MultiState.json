@@ -610,7 +610,7 @@
     "ID": "changeState",
     "Name": "Change case state",
     "Description": "Change the state of the case",
-    "PreConditionState(s)": "PREPARE_FOR_HEARING;FINAL_HEARING",
+    "PreConditionState(s)": "PREPARE_FOR_HEARING;FINAL_HEARING;CLOSED",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "ShowSummary": "N",
