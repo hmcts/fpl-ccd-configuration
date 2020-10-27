@@ -17,10 +17,10 @@ public class HasRemainingFinalOrdersValidator implements ConstraintValidator<Has
 
         return caseData.getChildren1().stream()
             .map(Element::getValue)
-            .allMatch(this::hasNotFinalFields);
+            .allMatch(this::hasFinalFields);
     }
 
-    private boolean hasNotFinalFields(Child child) {
-        return child.getFinalOrderIssuedType() == null && child.getFinalOrderIssued() == null;
+    private boolean hasFinalFields(Child child) {
+        return child.getFinalOrderIssuedType() != null && child.getFinalOrderIssued() != null;
     }
 }
