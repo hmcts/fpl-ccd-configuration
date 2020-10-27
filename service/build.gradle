@@ -197,6 +197,9 @@ dependencies {
 
   implementation group: 'org.apache.commons', name: 'commons-text', version: '1.9'
 
+  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.39'
+  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.39'
+
   compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.2.0'
 
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '11.0'
