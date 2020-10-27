@@ -45,11 +45,8 @@ public class ChangeCaseStateService {
     private Map<String, Object> migrateClosedCase(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
 
-        if (CLOSED.equals(caseData.getState())) {
-            data.put(DEPRIVATION_OF_LIBERTY_FLAG, null);
-            data.put(CLOSE_CASE_TAB_FIELD, null);
-        }
-
+        data.put(DEPRIVATION_OF_LIBERTY_FLAG, null);
+        data.put(CLOSE_CASE_TAB_FIELD, null);
         data.put("state", caseData.getClosedStateRadioList());
 
         return data;

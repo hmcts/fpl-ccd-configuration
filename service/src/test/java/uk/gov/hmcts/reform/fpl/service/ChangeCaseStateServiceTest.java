@@ -12,9 +12,11 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.CloseCaseReason.WITHDRAWN;
@@ -44,6 +46,18 @@ class ChangeCaseStateServiceTest {
         assertThat(changeCaseStateService.initialiseEventFields(caseData))
             .extracting("nextStateLabelContent")
             .isNull();
+    }
+
+    @Test
+    void shouldThrowAnErrorWhenCaseIsInAnUnexpectedCaseStateWhenAttemptingToBuildInitialCaseFields() {
+        CaseData caseData = CaseData.builder()
+            .state(SUBMITTED)
+            .build();
+
+        final IllegalStateException exception = assertThrows(IllegalStateException.class,
+            () -> changeCaseStateService.initialiseEventFields(caseData));
+
+        assertThat(exception.getMessage()).isEqualTo("Should not be able to change from: SUBMITTED");
     }
 
     @Test
@@ -87,6 +101,19 @@ class ChangeCaseStateServiceTest {
         assertThat(changeCaseStateService.updateCaseState(caseData))
             .extracting("state")
             .isNull();
+    }
+
+    @Test
+    void shouldThrowAnErrorWhenCaseIsInAnUnexpectedCaseStateWhenAttemptingToUpdateCaseState() {
+        CaseData caseData = CaseData.builder()
+            .state(SUBMITTED)
+            .confirmChangeState(YES.getValue())
+            .build();
+
+        final IllegalStateException exception = assertThrows(IllegalStateException.class,
+            () -> changeCaseStateService.updateCaseState(caseData));
+
+        assertThat(exception.getMessage()).isEqualTo("Should not be able to change from: SUBMITTED");
     }
 
     private static Stream<Arguments> stateChangeSource() {
