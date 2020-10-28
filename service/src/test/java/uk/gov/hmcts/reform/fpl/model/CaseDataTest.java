@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.utils.IncrementalInteger;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -36,6 +37,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
 class CaseDataTest {
 
     private static final String EXCLUSION_CLAUSE = "exclusionClause";
+    private static final UUID[] HEARING_IDS = {randomUUID(), randomUUID(), randomUUID(), randomUUID()};
 
     private final Time time = new FixedTimeConfiguration().stoppedTime();
     private final UUID cmoID = randomUUID();
@@ -679,6 +681,41 @@ class CaseDataTest {
             assertThat(caseData.getHearingDetails())
                 .containsExactly(existingAdjournedHearingBooking, newAdjournedHearingBooking);
         }
+    }
+
+    @Nested
+    class GetHearingBookingByUUID {
+        @Test
+        void shouldGetHearingBookingWhenKeyMatchesHearingBookingElementUUID() {
+            List<Element<HearingBooking>> hearingBookings = createHearingBookings();
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(hearingBookings)
+                .build();
+
+            HearingBooking hearingBooking = caseData.getHearingBookingByUUID(HEARING_IDS[2]);
+            assertThat(hearingBooking.getStartDate()).isEqualTo(futureDate);
+        }
+
+        @Test
+        void shouldReturnNullWhenKeyDoesNotMatchHearingBookingElementUUID() {
+            List<Element<HearingBooking>> hearingBookings = createHearingBookings();
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(hearingBookings)
+                .build();
+
+            HearingBooking hearingBooking = caseData.getHearingBookingByUUID(randomUUID());
+
+            assertThat(hearingBooking).isNull();
+        }
+    }
+
+    private List<Element<HearingBooking>> createHearingBookings() {
+        return new ArrayList<>(List.of(
+            element(HEARING_IDS[0], createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))),
+            element(HEARING_IDS[1], createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3))),
+            element(HEARING_IDS[2], createHearingBooking(futureDate, futureDate.plusDays(1))),
+            element(HEARING_IDS[3], createHearingBooking(futureDate.minusDays(2), futureDate.plusDays(3)))
+        ));
     }
 
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {

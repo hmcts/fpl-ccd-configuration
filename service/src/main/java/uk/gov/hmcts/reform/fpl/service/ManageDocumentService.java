@@ -25,7 +25,6 @@ import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.getHearingBookingByUUID;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
@@ -76,7 +75,7 @@ public class ManageDocumentService {
 
         if (caseData.getManageDocument().isDocumentRelatedToHearing()) {
             UUID selectedHearingCode = getDynamicListSelectedValue(caseData.getManageDocumentsHearingList(), mapper);
-            HearingBooking hearingBooking = getHearingBookingByUUID(caseData.getHearingDetails(), selectedHearingCode);
+            HearingBooking hearingBooking = caseData.getHearingBookingByUUID(selectedHearingCode);
 
             listAndLabel.put(MANAGE_DOCUMENTS_HEARING_LABEL_KEY, hearingBooking.toLabel());
             listAndLabel.put(MANAGE_DOCUMENTS_HEARING_LIST_KEY, caseData.buildDynamicHearingList(selectedHearingCode));
@@ -151,7 +150,7 @@ public class ManageDocumentService {
             = caseData.getHearingFurtherEvidenceDocuments();
 
         UUID selectedHearingCode = getDynamicListSelectedValue(caseData.getManageDocumentsHearingList(), mapper);
-        HearingBooking hearingBooking = getHearingBookingByUUID(caseData.getHearingDetails(), selectedHearingCode);
+        HearingBooking hearingBooking = caseData.getHearingBookingByUUID(selectedHearingCode);
 
         if (caseData.documentBundleContainsHearingId(selectedHearingCode)) {
             List<Element<HearingFurtherEvidenceBundle>> updateEvidenceBundles = new ArrayList<>();

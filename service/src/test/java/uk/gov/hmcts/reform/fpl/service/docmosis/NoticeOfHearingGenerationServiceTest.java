@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
@@ -44,7 +43,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @SpringBootTest(classes = {NoticeOfHearingGenerationService.class})
 @ContextConfiguration(classes = {
     JacksonAutoConfiguration.class, CaseDataExtractionService.class, HearingVenueLookUpService.class,
-    LookupTestConfig.class, HearingBookingService.class, FixedTimeConfiguration.class
+    LookupTestConfig.class, FixedTimeConfiguration.class
 })
 class NoticeOfHearingGenerationServiceTest {
 

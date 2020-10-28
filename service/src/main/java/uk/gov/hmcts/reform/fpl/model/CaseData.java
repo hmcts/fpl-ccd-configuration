@@ -221,6 +221,15 @@ public class CaseData {
     private List<Element<HearingBooking>> cancelledHearingDetails;
     private final List<Element<UUID>> selectedHearingIds;
 
+    @JsonIgnore
+    public HearingBooking getHearingBookingByUUID(UUID elementId) {
+        return hearingDetails.stream()
+            .filter(hearingBookingElement -> hearingBookingElement.getId().equals(elementId))
+            .map(Element::getValue)
+            .findFirst()
+            .orElse(null);
+    }
+
     private LocalDate dateSubmitted;
     private final List<Element<DocumentBundle>> noticeOfProceedingsBundle;
     private final List<Element<Recipients>> statementOfService;
