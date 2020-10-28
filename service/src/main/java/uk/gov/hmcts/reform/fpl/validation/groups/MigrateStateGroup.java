@@ -1,4 +1,4 @@
 package uk.gov.hmcts.reform.fpl.validation.groups;
 
-public @interface MigrateClosedCaseGroup {
+public @interface MigrateStateGroup {
 }

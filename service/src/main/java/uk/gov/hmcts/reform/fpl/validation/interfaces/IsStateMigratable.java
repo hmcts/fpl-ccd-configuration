@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.validation.interfaces;
 
-import uk.gov.hmcts.reform.fpl.validation.validators.HasRemainingFinalOrdersValidator;
+import uk.gov.hmcts.reform.fpl.validation.validators.IsStateMigratableValidator;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -11,8 +11,8 @@ import javax.validation.Payload;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = { HasRemainingFinalOrdersValidator.class })
-public @interface HasRemainingFinalOrders {
+@Constraint(validatedBy = { IsStateMigratableValidator.class })
+public @interface IsStateMigratable {
     String message() default "Final orders have been issued in this case. You must remove the relevant orders before"
         + " changing the case state.";
     Class<?>[] groups() default {};

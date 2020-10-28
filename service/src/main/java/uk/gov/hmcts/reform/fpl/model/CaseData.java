@@ -43,14 +43,14 @@ import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
-import uk.gov.hmcts.reform.fpl.validation.groups.MigrateClosedCaseGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.MigrateStateGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.SealedSDOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.UploadDocumentsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOEndDateGroup;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.HasDocumentsIncludedInSwet;
-import uk.gov.hmcts.reform.fpl.validation.interfaces.HasRemainingFinalOrders;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.IsStateMigratable;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.EPOTimeRange;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeDifference;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeNotMidnight;
@@ -90,7 +90,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @HasDocumentsIncludedInSwet(groups = UploadDocumentsGroup.class)
-@HasRemainingFinalOrders(groups = MigrateClosedCaseGroup.class)
+@IsStateMigratable(groups = MigrateStateGroup.class)
 @EPOTimeRange(message = "Date must be within 8 days of the order date", groups = EPOEndDateGroup.class,
     maxDate = @TimeDifference(amount = 8, unit = DAYS))
 public class CaseData {
