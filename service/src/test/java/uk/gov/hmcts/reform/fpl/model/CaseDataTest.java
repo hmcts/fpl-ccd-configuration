@@ -704,8 +704,7 @@ class CaseDataTest {
             Optional<Element<HearingBooking>> hearingBookingElement
                 = caseData.findHearingBookingElement(HEARING_IDS[2]);
 
-            assertThat(hearingBookingElement.isPresent());
-            assertThat(hearingBookingElement.get()).isEqualTo(expectedHearingBookingElement);
+            assertThat(hearingBookingElement).contains(expectedHearingBookingElement);
         }
 
         @Test
@@ -723,7 +722,7 @@ class CaseDataTest {
 
             Optional<Element<HearingBooking>> hearingBooking = caseData.findHearingBookingElement(randomUUID());
 
-            assertThat(hearingBooking.isEmpty()).isTrue();
+            assertThat(hearingBooking).isNotPresent();
         }
 
         @Test
@@ -731,7 +730,7 @@ class CaseDataTest {
             CaseData caseData = CaseData.builder().build();
             Optional<Element<HearingBooking>> hearingBooking = caseData.findHearingBookingElement(randomUUID());
 
-            assertThat(hearingBooking.isEmpty()).isTrue();
+            assertThat(hearingBooking).isNotPresent();
         }
     }
 
