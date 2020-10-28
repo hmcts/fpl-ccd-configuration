@@ -2450,6 +2450,16 @@
     }
   },
   {
+    "hearingVenueId": 312,
+    "venue": "Newcastle Civil & Family Court",
+    "address": {
+      "AddressLine1": "Newcastle Civil & Family Court",
+      "AddressLine2": "Barras Bridge",
+      "PostTown": "Newcastle-upon-Tyne",
+      "PostCode": "NE1 8QF"
+    }
+  },
+  {
     "hearingVenueId": 67,
     "venue": "Newport County Court and Family Court",
     "address": {
@@ -2793,8 +2803,8 @@
     "hearingVenueId": 91,
     "venue": "Portsmouth Magistrates' Court",
     "address": {
-      "AddressLine1": "Portsmouth Magistrates' Court, Winston Churchill Avenue",
-      "AddressLine2": "The Law Courts",
+      "AddressLine1": "The Law Courts",
+      "AddressLine2": "Winston Churchill Avenue",
       "PostTown": "Portsmouth",
       "PostCode": "PO1 2DQ"
     }

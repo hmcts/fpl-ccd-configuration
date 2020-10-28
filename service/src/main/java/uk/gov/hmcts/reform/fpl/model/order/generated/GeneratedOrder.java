@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Builder;
 import lombok.Data;
+import org.apache.commons.lang3.ObjectUtils;
 import uk.gov.hmcts.reform.fpl.json.converter.BasicChildConverter;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.GeneratedOrderTypeDescriptor;
@@ -12,11 +13,14 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
 
 @Data
@@ -42,11 +46,32 @@ public class GeneratedOrder {
     public boolean isRemovable() {
         GeneratedOrderTypeDescriptor descriptor = GeneratedOrderTypeDescriptor.fromType(this.type);
         return (descriptor.getType() == BLANK_ORDER)
-                || (descriptor.getType() == CARE_ORDER && descriptor.getSubtype() == INTERIM)
-                || (descriptor.getType() == SUPERVISION_ORDER && descriptor.getSubtype() == INTERIM);
+            || (descriptor.getType() == EMERGENCY_PROTECTION_ORDER)
+            || (descriptor.getType() == CARE_ORDER)
+            || (descriptor.getType() == SUPERVISION_ORDER);
+    }
+
+    @JsonIgnore
+    public boolean isFinalOrder() {
+        GeneratedOrderTypeDescriptor descriptor = GeneratedOrderTypeDescriptor.fromType(this.type);
+
+        if (EMERGENCY_PROTECTION_ORDER.equals(descriptor.getType())) {
+            return true;
+        }
+
+        return FINAL.equals(descriptor.getSubtype());
     }
 
     public String asLabel() {
         return defaultIfEmpty(title, type) + " - " + dateOfIssue;
+    }
+
+    @JsonIgnore
+    public List<UUID> getChildrenIDs() {
+        if (ObjectUtils.isEmpty(children)) {
+            return List.of();
+        }
+
+        return children.stream().map(Element::getId).collect(Collectors.toList());
     }
 }
