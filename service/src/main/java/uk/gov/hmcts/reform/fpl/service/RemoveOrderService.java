@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
@@ -11,10 +13,12 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
 
 @Service
@@ -61,5 +65,37 @@ public class RemoveOrderService {
                 order.getValue().setRemovalReason(reason);
                 hiddenOrders.add(order);
             });
+    }
+
+    public List<Element<Child>> removeFinalOrderPropertiesFromChildren(CaseData caseData) {
+        UUID id = getDynamicListSelectedValue(caseData.getRemovableOrderList(), mapper);
+        List<Element<Child>> children = caseData.getAllChildren();
+
+        findElement(id, caseData.getOrderCollection());
+
+        Optional<Element<GeneratedOrder>> removedOrder = findElement(id, caseData.getOrderCollection());
+
+        if (removedOrder.isEmpty()) {
+            throw new IllegalStateException("Failed to find the order to be removed");
+        }
+
+        if (!removedOrder.get().getValue().isFinalOrder()) {
+            return children;
+        }
+
+        List<UUID> removedChildrenIDList = removedOrder.get().getValue().getChildrenIDs();
+
+        return children.stream()
+            .map(element -> {
+                if (removedChildrenIDList.contains(element.getId())) {
+                    Child child = element.getValue();
+
+                    child.setFinalOrderIssued(null);
+                    child.setFinalOrderIssuedType(null);
+                }
+
+                return element;
+            })
+            .collect(Collectors.toList());
     }
 }
