@@ -684,38 +684,55 @@ class CaseDataTest {
     }
 
     @Nested
-    class GetHearingBookingByUUID {
+    class FindHearingBookingElement {
         @Test
-        void shouldGetHearingBookingWhenKeyMatchesHearingBookingElementUUID() {
-            List<Element<HearingBooking>> hearingBookings = createHearingBookings();
+        void shouldFindHearingBookingElementWhenKeyMatchesHearingBookingElementUUID() {
+            Element<HearingBooking> expectedHearingBookingElement
+                = element(HEARING_IDS[2], createHearingBooking(futureDate, futureDate.plusDays(1)));
+
+            List<Element<HearingBooking>> hearingBookings = new ArrayList<>(List.of(
+                element(HEARING_IDS[0], createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))),
+                element(HEARING_IDS[1], createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3))),
+                expectedHearingBookingElement,
+                element(HEARING_IDS[3], createHearingBooking(futureDate.minusDays(2), futureDate.plusDays(3)))
+            ));
+
             CaseData caseData = CaseData.builder()
                 .hearingDetails(hearingBookings)
                 .build();
 
-            HearingBooking hearingBooking = caseData.getHearingBookingByUUID(HEARING_IDS[2]);
-            assertThat(hearingBooking.getStartDate()).isEqualTo(futureDate);
+            Optional<Element<HearingBooking>> hearingBookingElement
+                = caseData.findHearingBookingElement(HEARING_IDS[2]);
+
+            assertThat(hearingBookingElement.isPresent());
+            assertThat(hearingBookingElement.get()).isEqualTo(expectedHearingBookingElement);
         }
 
         @Test
-        void shouldReturnNullWhenKeyDoesNotMatchHearingBookingElementUUID() {
-            List<Element<HearingBooking>> hearingBookings = createHearingBookings();
+        void shouldReturnAnEmptyOptionalWhenKeyDoesNotMatchHearingBookingElementUUID() {
+            List<Element<HearingBooking>> hearingBookings = new ArrayList<>(List.of(
+                element(HEARING_IDS[0], createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))),
+                element(HEARING_IDS[1], createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3))),
+                element(HEARING_IDS[2], createHearingBooking(futureDate, futureDate.plusDays(1))),
+                element(HEARING_IDS[3], createHearingBooking(futureDate.minusDays(2), futureDate.plusDays(3)))
+            ));
+
             CaseData caseData = CaseData.builder()
                 .hearingDetails(hearingBookings)
                 .build();
 
-            HearingBooking hearingBooking = caseData.getHearingBookingByUUID(randomUUID());
+            Optional<Element<HearingBooking>> hearingBooking = caseData.findHearingBookingElement(randomUUID());
 
-            assertThat(hearingBooking).isNull();
+            assertThat(hearingBooking.isEmpty()).isTrue();
         }
-    }
 
-    private List<Element<HearingBooking>> createHearingBookings() {
-        return new ArrayList<>(List.of(
-            element(HEARING_IDS[0], createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))),
-            element(HEARING_IDS[1], createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3))),
-            element(HEARING_IDS[2], createHearingBooking(futureDate, futureDate.plusDays(1))),
-            element(HEARING_IDS[3], createHearingBooking(futureDate.minusDays(2), futureDate.plusDays(3)))
-        ));
+        @Test
+        void shouldReturnAnEmptyOptionalWhenHearingDetailsDoNotExistOnCaseData() {
+            CaseData caseData = CaseData.builder().build();
+            Optional<Element<HearingBooking>> hearingBooking = caseData.findHearingBookingElement(randomUUID());
+
+            assertThat(hearingBooking.isEmpty()).isTrue();
+        }
     }
 
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {

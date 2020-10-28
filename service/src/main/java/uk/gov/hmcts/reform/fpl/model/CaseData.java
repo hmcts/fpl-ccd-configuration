@@ -82,6 +82,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Data
@@ -222,12 +223,8 @@ public class CaseData {
     private final List<Element<UUID>> selectedHearingIds;
 
     @JsonIgnore
-    public HearingBooking getHearingBookingByUUID(UUID elementId) {
-        return hearingDetails.stream()
-            .filter(hearingBookingElement -> hearingBookingElement.getId().equals(elementId))
-            .map(Element::getValue)
-            .findFirst()
-            .orElse(null);
+    public Optional<Element<HearingBooking>> findHearingBookingElement(UUID elementId) {
+        return findElement(elementId, hearingDetails);
     }
 
     private LocalDate dateSubmitted;

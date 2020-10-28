@@ -75,9 +75,13 @@ public class ManageDocumentService {
 
         if (caseData.getManageDocument().isDocumentRelatedToHearing()) {
             UUID selectedHearingCode = getDynamicListSelectedValue(caseData.getManageDocumentsHearingList(), mapper);
-            HearingBooking hearingBooking = caseData.getHearingBookingByUUID(selectedHearingCode);
+            Optional<Element<HearingBooking>> hearingBooking = caseData.findHearingBookingElement(selectedHearingCode);
 
-            listAndLabel.put(MANAGE_DOCUMENTS_HEARING_LABEL_KEY, hearingBooking.toLabel());
+            if (hearingBooking.isEmpty()) {
+                throw new IllegalStateException(formatHearingBookingExceptionMessage(selectedHearingCode));
+            }
+
+            listAndLabel.put(MANAGE_DOCUMENTS_HEARING_LABEL_KEY, hearingBooking.get().getValue().toLabel());
             listAndLabel.put(MANAGE_DOCUMENTS_HEARING_LIST_KEY, caseData.buildDynamicHearingList(selectedHearingCode));
         }
 
@@ -150,7 +154,11 @@ public class ManageDocumentService {
             = caseData.getHearingFurtherEvidenceDocuments();
 
         UUID selectedHearingCode = getDynamicListSelectedValue(caseData.getManageDocumentsHearingList(), mapper);
-        HearingBooking hearingBooking = caseData.getHearingBookingByUUID(selectedHearingCode);
+        Optional<Element<HearingBooking>> hearingBooking = caseData.findHearingBookingElement(selectedHearingCode);
+
+        if (hearingBooking.isEmpty()) {
+            throw new IllegalStateException(formatHearingBookingExceptionMessage(selectedHearingCode));
+        }
 
         if (caseData.documentBundleContainsHearingId(selectedHearingCode)) {
             List<Element<HearingFurtherEvidenceBundle>> updateEvidenceBundles = new ArrayList<>();
@@ -164,7 +172,7 @@ public class ManageDocumentService {
         } else {
             hearingFurtherEvidenceBundle.add(buildHearingSupportingEvidenceBundle(
                 selectedHearingCode,
-                hearingBooking,
+                hearingBooking.get().getValue(),
                 supportingEvidenceBundle
             ));
             return hearingFurtherEvidenceBundle;
@@ -253,5 +261,9 @@ public class ManageDocumentService {
 
     private List<Element<SupportingEvidenceBundle>> getEmptySupportingEvidenceBundle() {
         return List.of(element(SupportingEvidenceBundle.builder().build()));
+    }
+
+    private String formatHearingBookingExceptionMessage(UUID hearingId) {
+        return String.format("Failed to find hearing with ID: %s", hearingId);
     }
 }

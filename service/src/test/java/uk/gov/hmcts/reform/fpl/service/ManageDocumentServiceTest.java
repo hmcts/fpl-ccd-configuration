@@ -32,6 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -142,6 +143,30 @@ class ManageDocumentServiceTest {
         assertThat(listAndLabel)
             .extracting(MANAGE_DOCUMENTS_HEARING_LIST_KEY, "manageDocumentsHearingLabel")
             .containsExactly(expectedDynamicList, selectedHearingBooking.toLabel());
+    }
+
+    @Test
+    void shouldThrowAnIllegalStateExceptionWhenFailingToFindAHearingToInitialiseCaseFieldsWith() {
+        UUID selectedHearingId = randomUUID();
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))),
+            element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3))),
+            element(createHearingBooking(futureDate, futureDate.plusDays(1))),
+            element(createHearingBooking(futureDate, futureDate.plusDays(1)))
+        );
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsHearingList(selectedHearingId.toString())
+            .hearingDetails(hearingBookings)
+            .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
+            .build();
+
+        final IllegalStateException exception = assertThrows(IllegalStateException.class,
+            () -> manageDocumentService.initialiseHearingListAndLabel(caseData));
+
+        assertThat(exception.getMessage()).isEqualTo(
+            String.format("Failed to find hearing with ID: %s", selectedHearingId)
+        );
     }
 
     @Test
@@ -384,6 +409,30 @@ class ManageDocumentServiceTest {
         assertThat(furtherEvidenceBundleElement.getId()).isEqualTo(hearingId);
         assertThat(hearingFurtherEvidenceBundle.getHearingName()).isEqualTo(hearingBooking.toLabel());
         assertThat(hearingFurtherEvidenceBundle.getSupportingEvidenceBundle()).isEqualTo(supportingEvidenceBundle);
+    }
+
+    @Test
+    void shouldThrowAnIllegalStateExceptionWhenFailingToFindAHearingToAssignToFurtherEvidence() {
+        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle = buildSupportingEvidenceBundle();
+        HearingBooking hearingBooking = buildFinalHearingBooking();
+        UUID selectedHearingId = randomUUID();
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(List.of(element(UUID.randomUUID(), hearingBooking)))
+            .manageDocumentsHearingList(buildDynamicList(selectedHearingId))
+            .hearingFurtherEvidenceDocuments(new ArrayList<>(List.of(
+                element(randomUUID(), HearingFurtherEvidenceBundle.builder()
+                    .supportingEvidenceBundle(List.of(element(SupportingEvidenceBundle.builder().build())))
+                    .build()))))
+            .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
+            .build();
+
+        final IllegalStateException exception = assertThrows(IllegalStateException.class,
+            () -> manageDocumentService.buildHearingFurtherEvidenceCollection(caseData, supportingEvidenceBundle));
+
+        assertThat(exception.getMessage()).isEqualTo(
+            String.format("Failed to find hearing with ID: %s", selectedHearingId)
+        );
     }
 
     @Test
