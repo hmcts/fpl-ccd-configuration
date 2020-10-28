@@ -2803,8 +2803,8 @@
     "hearingVenueId": 91,
     "venue": "Portsmouth Magistrates' Court",
     "address": {
-      "AddressLine1": "The Law Courts Winston Churchill Avenue",
-      "AddressLine2": "The Law Courts",
+      "AddressLine1": "The Law Courts",
+      "AddressLine2": "Winston Churchill Avenue",
       "PostTown": "Portsmouth",
       "PostCode": "PO1 2DQ"
     }
