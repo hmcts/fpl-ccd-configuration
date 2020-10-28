@@ -34,7 +34,7 @@ public class MigrateCaseController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if ("SA20C50034".equals(caseData.getFamilyManCaseNumber())) {
+        if ("SA20C50034".equals(caseData.getFamilyManCaseNumber()) && 1600893083735118L == caseDetails.getId()) {
             data.put("hearingDetails", removeHearingLinkedToCmo(caseData.getHearingDetails(),
                 caseData.getSealedCMOs().get(0).getId()));
 
