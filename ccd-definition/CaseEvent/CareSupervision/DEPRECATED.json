@@ -425,17 +425,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "COMPLY_COURT",
-    "Name": "Comply with directions",
-    "Description": "Event gives Court user access to comply with their directions as well as all parties",
-    "DisplayOrder": 11,
-    "PreConditionState(s)": "PREPARE_FOR_HEARING;FINAL_HEARING",
-    "PostConditionState": "*",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "COMPLY_OTHERS",
     "Name": "Comply on behalf of others",
     "Description": "Event gives SOLICITOR user access to comply with directions for other parties",
