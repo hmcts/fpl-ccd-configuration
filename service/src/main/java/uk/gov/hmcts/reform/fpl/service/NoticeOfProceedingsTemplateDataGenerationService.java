@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -37,8 +38,8 @@ public class NoticeOfProceedingsTemplateDataGenerationService
 
     @Override
     public DocmosisNoticeOfProceeding getTemplateData(CaseData caseData) {
-        HearingBooking prioritisedHearingBooking = caseData.getMostUrgentHearingBookingAfter(time.now());
-        HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(prioritisedHearingBooking);
+        HearingBooking hearing = caseData.getFirstHearing().orElseThrow(NoHearingBookingException::new);
+        HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(hearing);
 
         return DocmosisNoticeOfProceeding.builder()
             .courtName(getCourtName(caseData.getCaseLocalAuthority()))
@@ -48,13 +49,10 @@ public class NoticeOfProceedingsTemplateDataGenerationService
             .orderTypes(getOrderTypes(caseData.getOrders()))
             .childrenNames(getAllChildrenNames(caseData.getAllChildren()))
             .hearingBooking(DocmosisHearingBooking.builder()
-                .hearingDate(caseDataExtractionService.getHearingDateIfHearingsOnSameDay(
-                    prioritisedHearingBooking)
-                    .orElse(""))
+                .hearingDate(caseDataExtractionService.getHearingDateIfHearingsOnSameDay(hearing).orElse(""))
                 .hearingVenue(hearingVenueLookUpService.buildHearingVenue(hearingVenue))
-                .preHearingAttendance(caseDataExtractionService.extractPrehearingAttendance(
-                    prioritisedHearingBooking))
-                .hearingTime(caseDataExtractionService.getHearingTime(prioritisedHearingBooking))
+                .preHearingAttendance(caseDataExtractionService.extractPrehearingAttendance(hearing))
+                .hearingTime(caseDataExtractionService.getHearingTime(hearing))
                 .build())
             .crest(getCrestData())
             .courtseal(getCourtSealData())
