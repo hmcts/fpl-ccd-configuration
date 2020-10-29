@@ -30,10 +30,8 @@ public class MigrateCaseController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if ("SN20C50019".equals(caseData.getFamilyManCaseNumber()) && 1603717767912577L == caseDetails.getId()) {
+        if (1603717767912577L == caseDetails.getId()) {
             data.remove("standardDirectionOrder");
-            data.remove("noticeOfProceedingsBundle");
-
             data.put("state", State.GATEKEEPING);
         }
 
