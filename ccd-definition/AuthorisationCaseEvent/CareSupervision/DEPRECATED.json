@@ -219,20 +219,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "limitedUploadDocuments-PREPARE_FOR_HEARING",
-    "UserRole": "[SOLICITOR]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "limitedUploadDocuments-PREPARE_FOR_HEARING",
-    "UserRole": "caseworker-publiclaw-solicitor",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageRepresentativesGatekeeping",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "R"
