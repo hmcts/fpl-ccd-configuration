@@ -13,13 +13,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 
-import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Api
 @RestController
@@ -47,19 +42,4 @@ public class MigrateCaseController {
             .build();
     }
 
-    private List<Element<CaseManagementOrder>> removeCaseManagementOrder(List<Element<CaseManagementOrder>> orders) {
-        orders.remove(0);
-        return orders;
-    }
-
-    private List<Element<HearingBooking>> removeHearingLinkedToCmo(List<Element<HearingBooking>> hearingBookings,
-                                                                   UUID elementId) {
-        for (Element<HearingBooking> hearingBooking : hearingBookings) {
-            if (elementId.equals(hearingBooking.getValue().getCaseManagementOrderId())) {
-                hearingBooking.getValue().setCaseManagementOrderId(null);
-            }
-        }
-
-        return hearingBookings;
-    }
 }
