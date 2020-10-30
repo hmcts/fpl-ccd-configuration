@@ -81,7 +81,7 @@ Scenario('local authority provides a statements of service', async ({I, caseView
   I.seeInTab(['Recipients 2', 'Recipient\'s email address'], recipients[1].email);
 });
 
-Scenario('local authority upload placement application', async ({I, caseViewPage, placementEventPage}) => {
+Scenario('@in-flight local authority upload placement application', async ({I, caseViewPage, placementEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.placement);
   await placementEventPage.selectChild('Timothy Jones');
   await placementEventPage.addApplication(config.testFile);
@@ -106,7 +106,7 @@ Scenario('local authority upload placement application', async ({I, caseViewPage
   I.seeInTab(['Child 1', 'Confidential document 1', 'Document type'], 'Annex B');
   I.seeInTab(['Child 1', 'Confidential document 1', 'Document'], 'mockFile.txt');
   I.seeInTab(['Child 1', 'Order and notices 1', 'Document type'], 'Placement order');
-  I.seeInTab(['Child 1', 'Order and notices 1', 'Document'], 'mockFile.pdf')``;
+  I.seeInTab(['Child 1', 'Order and notices 1', 'Document'], 'mockFile.pdf');
   I.seeInTab(['Child 1', 'Order and notices 1', 'Description'], 'test note');
 
   I.seeInTab(['Child 2', 'Name'], 'John Black');
@@ -119,7 +119,7 @@ Scenario('local authority upload placement application', async ({I, caseViewPage
   await placementHelper.assertCafcassCannotSeePlacementOrder(I, caseViewPage, caseId);
 });
 
-Scenario('@in-flight local authority add an external barrister as a legal representative for the case', async ({I, caseViewPage, manageLegalRepresentativesEventPage}) => {
+Scenario('local authority add an external barrister as a legal representative for the case', async ({I, caseViewPage, manageLegalRepresentativesEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.manageLegalRepresentatives);
   await I.goToNextPage();
   await I.addAnotherElementToCollection();
