@@ -308,6 +308,8 @@ public class CaseData {
 
     private final List<Element<Representative>> representatives;
 
+    private final List<Element<LegalRepresentative>> legalRepresentatives;
+
     // EPO Order
     @PastOrPresent(message = "Date of issue cannot be in the future", groups = DateOfIssueGroup.class)
     private final LocalDateTime dateAndTimeOfIssue;

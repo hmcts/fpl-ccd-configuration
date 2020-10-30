@@ -1,5 +1,6 @@
 const config = require('../config.js');
 const recipients = require('../fixtures/recipients.js');
+const legalRepresentatives = require('../fixtures/legalRepresentatives.js');
 const placementHelper = require('../helpers/placement_helper.js');
 const uploadDocumentsHelper = require('../helpers/upload_case_documents_helper.js');
 const mandatoryWithMultipleChildren = require('../fixtures/caseData/mandatoryWithMultipleChildren.json');
@@ -105,7 +106,7 @@ Scenario('local authority upload placement application', async ({I, caseViewPage
   I.seeInTab(['Child 1', 'Confidential document 1', 'Document type'], 'Annex B');
   I.seeInTab(['Child 1', 'Confidential document 1', 'Document'], 'mockFile.txt');
   I.seeInTab(['Child 1', 'Order and notices 1', 'Document type'], 'Placement order');
-  I.seeInTab(['Child 1', 'Order and notices 1', 'Document'], 'mockFile.pdf');
+  I.seeInTab(['Child 1', 'Order and notices 1', 'Document'], 'mockFile.pdf')``;
   I.seeInTab(['Child 1', 'Order and notices 1', 'Description'], 'test note');
 
   I.seeInTab(['Child 2', 'Name'], 'John Black');
@@ -117,3 +118,21 @@ Scenario('local authority upload placement application', async ({I, caseViewPage
 
   await placementHelper.assertCafcassCannotSeePlacementOrder(I, caseViewPage, caseId);
 });
+
+Scenario('@in-flight local authority add an external barrister as a legal representative for the case', async ({I, caseViewPage, manageLegalRepresentativesEventPage}) => {
+  await caseViewPage.goToNewActions(config.applicationActions.manageLegalRepresentatives);
+  await I.goToNextPage();
+  await I.addAnotherElementToCollection();
+  await manageLegalRepresentativesEventPage.addLegalRepresentative(legalRepresentatives.barrister);
+  await I.completeEvent('Save and continue');
+
+  I.seeEventSubmissionConfirmation(config.applicationActions.manageLegalRepresentatives);
+
+  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+  I.seeInTab(['Legal representatives 1', 'Full name'], legalRepresentatives.barrister.fullName);
+  I.seeInTab(['Legal representatives 1', 'Role'], legalRepresentatives.barrister.role);
+  I.seeInTab(['Legal representatives 1', 'Organisation'], legalRepresentatives.barrister.organisation);
+  I.seeInTab(['Legal representatives 1', 'Email address'], legalRepresentatives.barrister.email);
+  I.seeInTab(['Legal representatives 1', 'Phone number'], legalRepresentatives.barrister.telephone);
+});
+

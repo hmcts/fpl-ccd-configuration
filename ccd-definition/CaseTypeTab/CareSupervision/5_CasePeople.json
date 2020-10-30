@@ -6,6 +6,16 @@
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
     "TabDisplayOrder": 5,
+    "CaseFieldID": "manageLegalRepresentativesLink",
+    "TabFieldDisplayOrder": 0
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "CasePeopleTab",
+    "TabLabel": "People in the case",
+    "TabDisplayOrder": 5,
     "CaseFieldID": "allocatedJudge",
     "TabFieldDisplayOrder": 1
   },
@@ -45,9 +55,9 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
-    "TabLabel": "People in the case",
+    "TabLabel": "Legal representatives",
     "TabDisplayOrder": 5,
-    "CaseFieldID": "solicitor",
+    "CaseFieldID": "legalRepresentatives",
     "TabFieldDisplayOrder": 5
   },
   {
@@ -57,7 +67,7 @@
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
     "TabDisplayOrder": 5,
-    "CaseFieldID": "others",
+    "CaseFieldID": "solicitor",
     "TabFieldDisplayOrder": 6
   },
   {
@@ -67,7 +77,17 @@
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
     "TabDisplayOrder": 5,
-    "CaseFieldID": "representatives",
+    "CaseFieldID": "others",
     "TabFieldDisplayOrder": 7
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "CasePeopleTab",
+    "TabLabel": "People in the case",
+    "TabDisplayOrder": 5,
+    "CaseFieldID": "representatives",
+    "TabFieldDisplayOrder": 8
   }
 ]

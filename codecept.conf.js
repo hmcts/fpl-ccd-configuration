@@ -83,6 +83,7 @@ exports.config = {
     removeOrderEventPage: './e2e/pages/events/removeOrderEvent.page.js',
     manageDocumentsEventPage: './e2e/pages/events/manageDocumentsEvent.page.js',
     changeCaseStateEventPage: './e2e/pages/events/changeCaseStateEvent.page.js',
+    manageLegalRepresentativesEventPage: './e2e/pages/events/manageLegalRepresentativesEvent.page.js',
   },
   plugins: {
     autoDelay: {
