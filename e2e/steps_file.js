@@ -291,13 +291,16 @@ module.exports = function () {
 
     async goToNextPage(maxNumberOfTries = maxRetries){
       const currentUrl = await this.grabCurrentUrl();
+      this.click('Continue');
+
       for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
-        this.click('Continue');
-        if(await this.grabCurrentUrl() != currentUrl){
+        if(await this.grabCurrentUrl() !== currentUrl){
           break;
         } else {
-          output.log(`Navigation attempt failed for ${tryNumber} time(s)`);
           this.wait(1);
+          if(await this.grabCurrentUrl() === currentUrl){
+            this.click('Continue');
+          }
         }
       }
     },
