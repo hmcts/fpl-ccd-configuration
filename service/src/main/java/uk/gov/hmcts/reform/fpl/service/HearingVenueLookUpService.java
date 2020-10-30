@@ -59,7 +59,6 @@ public class HearingVenueLookUpService {
             .orElse(HearingVenue.builder().build());
     }
 
-    //reverse lookup - this might be slow? TODO: needs looking at (FPLA-2280)
     public String getVenueId(final String venueAsString) {
         for (HearingVenue hearingVenue : hearingVenues) {
             if (venueAsString.equalsIgnoreCase(buildHearingVenue(hearingVenue))) {
