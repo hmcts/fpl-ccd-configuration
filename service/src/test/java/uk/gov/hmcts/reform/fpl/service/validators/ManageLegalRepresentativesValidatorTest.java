@@ -19,8 +19,15 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ExtendWith(MockitoExtension.class)
 class ManageLegalRepresentativesValidatorTest {
 
-    public static final String REGISTERED_EMAIL = "email";
-    public static final String NON_REGISTERED_EMAIL = "email2";
+    private static final String REGISTERED_EMAIL = "email";
+    private static final LegalRepresentative VALID_LEGAL_REPRESENTATIVE = LegalRepresentative.builder()
+        .fullName("fullName")
+        .organisation("organisation")
+        .role(EXTERNAL_LA_BARRISTER)
+        .email(REGISTERED_EMAIL)
+        .telephoneNumber("2343252345")
+        .build();
+    private static final String NON_REGISTERED_EMAIL = "email2";
 
     @Mock
     private OrganisationService organisationService;
@@ -32,45 +39,82 @@ class ManageLegalRepresentativesValidatorTest {
     void validateValidElement() {
         when(organisationService.findUserByEmail(REGISTERED_EMAIL)).thenReturn(Optional.of("UserId"));
 
-        List<String> actual = underTest.validate(wrapElements(List.of(LegalRepresentative.builder()
-            .fullName("fullName")
-            .organisation("organisation")
-            .role(EXTERNAL_LA_BARRISTER)
-            .email(REGISTERED_EMAIL)
-            .telephoneNumber("2343252345")
-            .build())));
+        List<String> actualErrors = underTest.validate(wrapElements(List.of(VALID_LEGAL_REPRESENTATIVE)));
 
-        assertThat(actual).isEmpty();
+        assertThat(actualErrors).isEmpty();
     }
 
     @Test
     void validateValidElementButUnregisteredEmail() {
         when(organisationService.findUserByEmail(NON_REGISTERED_EMAIL)).thenReturn(Optional.empty());
 
-        List<String> actual = underTest.validate(wrapElements(List.of(LegalRepresentative.builder()
-            .fullName("fullName")
-            .organisation("organisation")
-            .role(EXTERNAL_LA_BARRISTER)
+        List<String> actualErrors = underTest.validate(wrapElements(List.of(VALID_LEGAL_REPRESENTATIVE.toBuilder()
             .email(NON_REGISTERED_EMAIL)
-            .telephoneNumber("2343252345")
             .build())));
 
-        assertThat(actual).isEqualTo(List.of(
-            "email2 must already have an account with the digital service"
-        ));
+        assertThat(actualErrors).containsExactly(
+            "Email address for Legal representative is not registered on the system.<br/>They can register at <a "
+                + "href='https://manage-org.platform.hmcts.net/register-org/register'>https://manage-org.platform.hmcts"
+                + ".net/register-org/register</a>"
+        );
     }
 
     @Test
     void validateMissingElements() {
 
-        List<String> actual = underTest.validate(wrapElements(List.of(LegalRepresentative.builder().build())));
+        List<String> actualErrors = underTest.validate(wrapElements(List.of(LegalRepresentative.builder().build())));
 
-        assertThat(actual).isEqualTo(List.of(
-            "Enter a full name",
-            "Select a role in the case",
-            "Enter an organisation name",
-            "Enter an email address",
-            "Enter a phone number"
-        ));
+        assertThat(actualErrors).containsExactly(
+            "Enter a full name for Legal representative",
+            "Select a role for Legal representative",
+            "Enter an organisation for Legal representative",
+            "Enter an email address for Legal representative",
+            "Enter a phone number for Legal representative"
+        );
+    }
+
+    @Test
+    void validateMissingElementsForMultipleLegalRepresentatives() {
+
+        List<String> actualErrors = underTest.validate(wrapElements(List.of(
+            LegalRepresentative.builder().build(),
+            LegalRepresentative.builder().build()))
+        );
+
+        assertThat(actualErrors).containsExactly(
+            "Enter a full name for Legal representative 1",
+            "Select a role for Legal representative 1",
+            "Enter an organisation for Legal representative 1",
+            "Enter an email address for Legal representative 1",
+            "Enter a phone number for Legal representative 1",
+            "Enter a full name for Legal representative 2",
+            "Select a role for Legal representative 2",
+            "Enter an organisation for Legal representative 2",
+            "Enter an email address for Legal representative 2",
+            "Enter a phone number for Legal representative 2"
+        );
+    }
+
+    @Test
+    void validateMultipleValidElementButUnregisteredEmail() {
+        when(organisationService.findUserByEmail(NON_REGISTERED_EMAIL)).thenReturn(Optional.empty());
+
+        List<String> actualErrors = underTest.validate(wrapElements(List.of(
+            VALID_LEGAL_REPRESENTATIVE.toBuilder()
+                .email(NON_REGISTERED_EMAIL)
+                .build(),
+            VALID_LEGAL_REPRESENTATIVE.toBuilder()
+                .email(NON_REGISTERED_EMAIL)
+                .build()
+        )));
+
+        assertThat(actualErrors).containsExactly(
+            "Email address for Legal representative 1 is not registered on the system.<br/>They can register at <a "
+                + "href='https://manage-org.platform.hmcts.net/register-org/register'>https://manage-org.platform.hmcts"
+                + ".net/register-org/register</a>",
+            "Email address for Legal representative 2 is not registered on the system.<br/>They can register at <a "
+                + "href='https://manage-org.platform.hmcts.net/register-org/register'>https://manage-org.platform.hmcts"
+                + ".net/register-org/register</a>"
+        );
     }
 }

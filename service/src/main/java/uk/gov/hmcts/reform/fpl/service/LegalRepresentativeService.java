@@ -34,19 +34,23 @@ public class LegalRepresentativeService {
                     userId -> caseService.addUser(Long.toString(caseId),
                         userId,
                         userToBeAdded.getRole().getCaseRoles()),
-                    () -> {
-                        throw new IllegalArgumentException(String.format("Could not find the user with email %s",
-                            userToBeAdded.getEmail()));
-                    })
+                    throwException(userToBeAdded)
+                )
         );
 
         legalRepresentativesChange.getRemoved().forEach(userToBeAdded ->
             organisationService.findUserByEmail(userToBeAdded.getEmail())
-                .ifPresentOrElse(userId -> caseService.addUser(Long.toString(caseId), userId, emptySet()),
-                    () -> {
-                        throw new IllegalArgumentException(String.format("Could not find the user with email %s",
-                            userToBeAdded.getEmail()));
-                    })
+                .ifPresentOrElse(
+                    userId -> caseService.addUser(Long.toString(caseId), userId, emptySet()),
+                    throwException(userToBeAdded)
+                )
         );
+    }
+
+    private Runnable throwException(LegalRepresentative userToBeAdded) {
+        return () -> {
+            throw new IllegalArgumentException(String.format("Could not find the user with email %s",
+                userToBeAdded.getEmail()));
+        };
     }
 }
