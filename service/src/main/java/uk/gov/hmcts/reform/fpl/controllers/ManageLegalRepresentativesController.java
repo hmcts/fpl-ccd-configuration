@@ -27,11 +27,6 @@ public class ManageLegalRepresentativesController extends CallbackController {
     private final LegalRepresentativeService legaRepresentativeService;
     private final ManageLegalRepresentativesValidator manageLegalRepresentativesValidator;
 
-    @PostMapping("/about-to-start")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
-        return respond(callbackRequest.getCaseDetails());
-    }
-
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();

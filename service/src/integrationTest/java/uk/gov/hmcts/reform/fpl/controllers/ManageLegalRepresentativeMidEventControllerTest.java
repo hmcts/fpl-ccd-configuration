@@ -1,0 +1,107 @@
+package uk.gov.hmcts.reform.fpl.controllers;
+
+import feign.FeignException;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.LegalRepresentativeRole;
+import uk.gov.hmcts.reform.fpl.model.LegalRepresentative;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.rd.client.OrganisationApi;
+import uk.gov.hmcts.reform.rd.model.OrganisationUser;
+
+import java.util.List;
+import java.util.Map;
+
+import static java.util.Collections.emptyList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+
+@ActiveProfiles("integration-test")
+@WebMvcTest(RepresentativesController.class)
+@OverrideAutoConfiguration(enabled = true)
+class ManageLegalRepresentativeMidEventControllerTest extends AbstractControllerTest {
+
+    public static final String SERVICE_AUTH_TOKEN = RandomStringUtils.randomAlphanumeric(10);
+    public static final String REPRESENTATIVE_EMAIL = "test@test.com";
+    public static final String REP_NAME = "John Smith";
+    public static final LegalRepresentative LEGAL_REPRESENTATIVE = LegalRepresentative.builder()
+        .fullName(REP_NAME)
+        .role(LegalRepresentativeRole.EXTERNAL_LA_BARRISTER)
+        .email(REPRESENTATIVE_EMAIL)
+        .organisation("organisation")
+        .telephoneNumber("07500045455")
+        .build();
+    private static final Long CASE_ID = 12345L;
+    private static final String USER_ID = RandomStringUtils.randomAlphanumeric(10);
+
+    @MockBean
+    private AuthTokenGenerator authTokenGenerator;
+
+    @MockBean
+    private OrganisationApi organisationApi;
+
+    ManageLegalRepresentativeMidEventControllerTest() {
+        super("manage-legal-representatives");
+    }
+
+    @Test
+    void shouldReturnValidationErrorForNonExistingUser() {
+
+        CaseDetails caseDetailsBefore = buildCaseData(emptyList());
+        CaseDetails caseDetails = buildCaseData(List.of(element(LEGAL_REPRESENTATIVE)));
+
+        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
+        given(organisationApi.findUserByEmail(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, REPRESENTATIVE_EMAIL)).willThrow(
+            mock(FeignException.NotFound.class));
+
+        CallbackRequest callbackRequest = buildCallbackRequest(caseDetailsBefore, caseDetails);
+
+        AboutToStartOrSubmitCallbackResponse actual = postMidEvent(callbackRequest);
+
+        assertThat(actual.getErrors()).containsOnly(
+            "test@test.com must already have an account with the digital service");
+    }
+
+    @Test
+    void shouldValidateAnExistingUser() {
+
+        CaseDetails caseDetailsBefore = buildCaseData(emptyList());
+        CaseDetails caseDetails = buildCaseData(List.of(element(LEGAL_REPRESENTATIVE)));
+
+        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
+        given(organisationApi.findUserByEmail(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, REPRESENTATIVE_EMAIL))
+            .willReturn(new OrganisationUser(USER_ID));
+
+        CallbackRequest callbackRequest = buildCallbackRequest(caseDetailsBefore, caseDetails);
+
+        AboutToStartOrSubmitCallbackResponse actual = postMidEvent(callbackRequest);
+
+        assertThat(actual.getErrors()).isEmpty();
+    }
+
+    private CallbackRequest buildCallbackRequest(CaseDetails originalCaseDetails, CaseDetails caseDetails) {
+        return CallbackRequest.builder()
+            .caseDetailsBefore(originalCaseDetails)
+            .caseDetails(caseDetails)
+            .build();
+    }
+
+    private CaseDetails buildCaseData(List<Element<LegalRepresentative>> legalRepresentatives) {
+        return CaseDetails.builder()
+            .id(CASE_ID)
+            .data(Map.of(
+                "legalRepresentatives", legalRepresentatives
+            ))
+            .build();
+    }
+}
