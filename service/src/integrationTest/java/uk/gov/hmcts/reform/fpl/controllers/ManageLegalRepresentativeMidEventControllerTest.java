@@ -69,7 +69,10 @@ class ManageLegalRepresentativeMidEventControllerTest extends AbstractController
         AboutToStartOrSubmitCallbackResponse actual = postMidEvent(callbackRequest);
 
         assertThat(actual.getErrors()).containsOnly(
-            "test@test.com must already have an account with the digital service");
+            "Email address for Legal representative is not registered on the system.<br/>They can register at <a "
+                + "href='https://manage-org.platform.hmcts.net/register-org/register'>https://manage-org.platform.hmcts"
+                + ".net/register-org/register</a>"
+        );
     }
 
     @Test
