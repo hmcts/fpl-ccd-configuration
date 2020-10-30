@@ -16,6 +16,23 @@ BeforeSuite(async ({I}) => {
 
 Before(async ({I}) => await I.navigateToCaseDetails(caseId));
 
+Scenario('local authority add an external barrister as a legal representative for the case', async ({I, caseViewPage, manageLegalRepresentativesEventPage}) => {
+  await caseViewPage.goToNewActions(config.applicationActions.manageLegalRepresentatives);
+  await I.goToNextPage();
+  await I.addAnotherElementToCollection();
+  await manageLegalRepresentativesEventPage.addLegalRepresentative(legalRepresentatives.barrister);
+  await I.completeEvent('Save and continue');
+
+  I.seeEventSubmissionConfirmation(config.applicationActions.manageLegalRepresentatives);
+
+  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+  I.seeInTab(['Legal representatives 1', 'Full name'], legalRepresentatives.barrister.fullName);
+  I.seeInTab(['Legal representatives 1', 'Role'], legalRepresentatives.barrister.role);
+  I.seeInTab(['Legal representatives 1', 'Organisation'], legalRepresentatives.barrister.organisation);
+  I.seeInTab(['Legal representatives 1', 'Email address'], legalRepresentatives.barrister.email);
+  I.seeInTab(['Legal representatives 1', 'Phone number'], legalRepresentatives.barrister.telephone);
+});
+
 Scenario('local authority uploads documents', async ({I, caseViewPage, uploadDocumentsEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
   uploadDocumentsHelper.uploadCaseDocuments(uploadDocumentsEventPage);
@@ -81,7 +98,7 @@ Scenario('local authority provides a statements of service', async ({I, caseView
   I.seeInTab(['Recipients 2', 'Recipient\'s email address'], recipients[1].email);
 });
 
-Scenario('@in-flight local authority upload placement application', async ({I, caseViewPage, placementEventPage}) => {
+Scenario('local authority upload placement application', async ({I, caseViewPage, placementEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.placement);
   await placementEventPage.selectChild('Timothy Jones');
   await placementEventPage.addApplication(config.testFile);
@@ -119,20 +136,4 @@ Scenario('@in-flight local authority upload placement application', async ({I, c
   await placementHelper.assertCafcassCannotSeePlacementOrder(I, caseViewPage, caseId);
 });
 
-Scenario('local authority add an external barrister as a legal representative for the case', async ({I, caseViewPage, manageLegalRepresentativesEventPage}) => {
-  await caseViewPage.goToNewActions(config.applicationActions.manageLegalRepresentatives);
-  await I.goToNextPage();
-  await I.addAnotherElementToCollection();
-  await manageLegalRepresentativesEventPage.addLegalRepresentative(legalRepresentatives.barrister);
-  await I.completeEvent('Save and continue');
-
-  I.seeEventSubmissionConfirmation(config.applicationActions.manageLegalRepresentatives);
-
-  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
-  I.seeInTab(['Legal representatives 1', 'Full name'], legalRepresentatives.barrister.fullName);
-  I.seeInTab(['Legal representatives 1', 'Role'], legalRepresentatives.barrister.role);
-  I.seeInTab(['Legal representatives 1', 'Organisation'], legalRepresentatives.barrister.organisation);
-  I.seeInTab(['Legal representatives 1', 'Email address'], legalRepresentatives.barrister.email);
-  I.seeInTab(['Legal representatives 1', 'Phone number'], legalRepresentatives.barrister.telephone);
-});
 
