@@ -11,14 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.enums.State;
 
-import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Api
 @RestController
@@ -32,13 +27,10 @@ public class MigrateCaseController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if ("SA20C50034".equals(caseData.getFamilyManCaseNumber()) && 1600893083735118L == caseDetails.getId()) {
-            data.put("hearingDetails", removeHearingLinkedToCmo(caseData.getHearingDetails(),
-                caseData.getSealedCMOs().get(0).getId()));
-
-            data.put("sealedCMOs", removeCaseManagementOrder(caseData.getSealedCMOs()));
+        if (1603717767912577L == caseDetails.getId()) {
+            data.remove("standardDirectionOrder");
+            data.put("state", State.GATEKEEPING);
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -46,19 +38,4 @@ public class MigrateCaseController {
             .build();
     }
 
-    private List<Element<CaseManagementOrder>> removeCaseManagementOrder(List<Element<CaseManagementOrder>> orders) {
-        orders.remove(0);
-        return orders;
-    }
-
-    private List<Element<HearingBooking>> removeHearingLinkedToCmo(List<Element<HearingBooking>> hearingBookings,
-                                                                   UUID elementId) {
-        for (Element<HearingBooking> hearingBooking : hearingBookings) {
-            if (elementId.equals(hearingBooking.getValue().getCaseManagementOrderId())) {
-                hearingBooking.getValue().setCaseManagementOrderId(null);
-            }
-        }
-
-        return hearingBookings;
-    }
 }
