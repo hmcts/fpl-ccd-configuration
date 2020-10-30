@@ -64,7 +64,6 @@ exports.config = {
     sendCaseToGatekeeperEventPage: './e2e/pages/events/sendCaseToGatekeeperEvent.page.js',
     notifyGatekeeperEventPage: './e2e/pages/events/sendCaseToGatekeeperEvent.page.js',
     createNoticeOfProceedingsEventPage: './e2e/pages/events/createNoticeOfProceedingsEvent.page.js',
-    addHearingBookingDetailsEventPage: './e2e/pages/events/addHearingBookingDetailsEvent.page.js',
     manageHearingsEventPage: './e2e/pages/events/manageHearingsEvent.page.js',
     addStatementOfServiceEventPage: './e2e/pages/events/addStatementOfServiceEvent.page.js',
     uploadC2DocumentsEventPage: './e2e/pages/events/uploadC2DocumentsEvent.page.js',

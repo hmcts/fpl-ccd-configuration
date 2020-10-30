@@ -62,6 +62,8 @@ public class ManageHearingsService {
     private final IdentityService identityService;
     private final Time time;
 
+    public static final String HEARING_DETAILS_KEY = "hearingDetails";
+
     public UUID getSelectedHearingId(Object dynamicList) {
         return getDynamicListSelectedValue(dynamicList, mapper);
     }
