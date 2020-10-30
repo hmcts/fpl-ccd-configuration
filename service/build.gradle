@@ -222,7 +222,7 @@ dependencies {
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '11.0'
 
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.18'
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '6.5.7'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.1.1'
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
@@ -237,7 +237,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.5'
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.2'
   compile group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4'
-  compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '3.0.1'
+  compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '3.0.2'
   compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.0-RELEASE'
 
   implementation group: 'com.google.guava', name: 'guava', version: '30.0-jre'
