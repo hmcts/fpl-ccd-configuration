@@ -45,8 +45,6 @@ public class UploadCMOEventData {
     DocumentReference cmoToSend; // (Page 3)
     @Deprecated
     String multiHearingsWithCMOs;
-    @Deprecated
-    String singleHearingWithCMO;
 
     // Conditional control fields
     YesNo showCMOsSentToJudge; // (Page 1)
@@ -79,7 +77,7 @@ public class UploadCMOEventData {
             "cmoHearingInfo", "showReplacementCMO", "previousCMO", "uploadedCaseManagementOrder", "replacementCMO",
             "cmoSupportingDocs", "cmoJudgeInfo", "cmoToSend",
             // TODO: 19/10/2020 Delete after this comment when FPLA-2019 is toggled on
-            "numHearingsWithoutCMO", "singleHearingWithCMO", "multiHearingsWithCMOs", "showHearingsSingleTextArea",
+            "numHearingsWithoutCMO", "multiHearingsWithCMOs", "showHearingsSingleTextArea",
             "showHearingsMultiTextArea"
         };
     }

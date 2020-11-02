@@ -86,7 +86,6 @@ public class UploadCMOService {
                 eventBuilder.numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.SINGLE);
 
                 if (textAreaContent.length() != 0) {
-                    eventBuilder.singleHearingWithCMO(textAreaContent);
                     eventBuilder.showHearingsSingleTextArea(YES);
                 }
 

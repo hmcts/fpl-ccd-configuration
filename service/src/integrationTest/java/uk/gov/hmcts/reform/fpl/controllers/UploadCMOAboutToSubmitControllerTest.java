@@ -210,7 +210,6 @@ class UploadCMOAboutToSubmitControllerTest extends AbstractUploadCMOControllerTe
                 .showHearingsMultiTextArea(YesNo.YES)
                 .multiHearingsWithCMOs("DUMMY DATA")
                 .showHearingsSingleTextArea(YesNo.NO)
-                .singleHearingWithCMO("DUMMY DATA")
                 .build())
             .hearingDetails(hearings)
             .draftUploadedCMOs(draftCMOs)
@@ -226,7 +225,7 @@ class UploadCMOAboutToSubmitControllerTest extends AbstractUploadCMOControllerTe
             "cmoHearingInfo", "showReplacementCMO", "previousCMO", "uploadedCaseManagementOrder", "replacementCMO",
             "cmoSupportingDocs", "cmoJudgeInfo", "cmoToSend",
             // Delete these ones below when cleaning up
-            "numHearingsWithoutCMO", "singleHearingWithCMO", "multiHearingsWithCMOs", "showHearingsSingleTextArea",
+            "numHearingsWithoutCMO", "multiHearingsWithCMOs", "showHearingsSingleTextArea",
             "showHearingsMultiTextArea"
         ));
 
