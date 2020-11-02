@@ -47,7 +47,7 @@ module.exports = {
   },
 
   async enterChildDetails(firstName, lastName, day, month, year, gender = 'Boy') {
-    const elementIndex = await I.getActiveElementIndex();
+    const elementIndex = await this.getActiveElementIndex();
 
     I.fillField(this.fields(elementIndex).child.firstName, firstName);
     I.fillField(this.fields(elementIndex).child.lastName, lastName);
@@ -58,7 +58,7 @@ module.exports = {
   },
 
   async defineChildSituation(day, month, year) {
-    const elementIndex = await I.getActiveElementIndex();
+    const elementIndex = await this.getActiveElementIndex();
 
     within(this.fields(elementIndex).child.situation.radioGroup, () => {
       I.click(locate('label').withText('Living with respondents'));
@@ -69,7 +69,7 @@ module.exports = {
   },
 
   async enterAddress(address) {
-    const elementIndex = await I.getActiveElementIndex();
+    const elementIndex = await this.getActiveElementIndex();
 
     within(this.fields(elementIndex).child.situation.addressOfChild, () => {
       //XXX removed postcode lookup due to instability
@@ -78,25 +78,25 @@ module.exports = {
   },
 
   async enterKeyDatesAffectingHearing(keyDates = 'Tuesday the 11th') {
-    const elementIndex = await I.getActiveElementIndex();
+    const elementIndex = await this.getActiveElementIndex();
 
     I.fillField(this.fields(elementIndex).child.keyDates, keyDates);
   },
 
   async enterSummaryOfCarePlan(carePlan = 'care plan summary') {
-    const elementIndex = await I.getActiveElementIndex();
+    const elementIndex = await this.getActiveElementIndex();
 
     I.fillField(this.fields(elementIndex).child.careAndContactPlan, carePlan);
   },
 
   async defineAdoptionIntention() {
-    const elementIndex = await I.getActiveElementIndex();
+    const elementIndex = await this.getActiveElementIndex();
 
     I.click(this.fields(elementIndex).child.adoptionNo);
   },
 
   async enterParentsDetails(fatherResponsible = 'Yes', motherName = 'Laura Smith', fatherName = 'David Smith') {
-    const elementIndex = await I.getActiveElementIndex();
+    const elementIndex = await this.getActiveElementIndex();
 
     I.fillField(this.fields(elementIndex).child.mothersName, motherName);
     I.fillField(this.fields(elementIndex).child.fathersName, fatherName);
@@ -104,20 +104,20 @@ module.exports = {
   },
 
   async enterSocialWorkerDetails(socialWorkerName = 'James Jackson', socialWorkerTel = '01234567890') {
-    const elementIndex = await I.getActiveElementIndex();
+    const elementIndex = await this.getActiveElementIndex();
 
     I.fillField(this.fields(elementIndex).child.socialWorkerName, socialWorkerName);
     I.fillField(this.fields(elementIndex).child.socialWorkerTel, socialWorkerTel);
   },
 
   async defineChildAdditionalNeeds() {
-    const elementIndex = await I.getActiveElementIndex();
+    const elementIndex = await this.getActiveElementIndex();
 
     I.click(this.fields(elementIndex).child.additionalNeedsNo);
   },
 
   async enterContactDetailsHidden(hideContactDetails) {
-    const elementIndex = await I.getActiveElementIndex();
+    const elementIndex = await this.getActiveElementIndex();
 
     switch (hideContactDetails) {
       case 'Yes':
@@ -130,7 +130,7 @@ module.exports = {
   },
 
   async enterLitigationIssues(litigationIssue = 'No', litigationIssueDetail = 'mock reason') {
-    const elementIndex = await I.getActiveElementIndex();
+    const elementIndex = await this.getActiveElementIndex();
 
     litigationIssue = litigationIssue.toLowerCase();
     switch (litigationIssue) {
@@ -149,5 +149,7 @@ module.exports = {
     }
   },
 
-
+  async getActiveElementIndex() {
+    return await I.grabNumberOfVisibleElements('//button[text()="Remove"]') - 1;
+  },
 };

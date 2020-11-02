@@ -49,22 +49,22 @@ module.exports = {
   },
 
   async enterDocumentName(documentName) {
-    const elementIndex = await I.getActiveElementIndex();
+    const elementIndex = await this.getActiveElementIndex();
     I.fillField(this.fields.supportingDocuments(elementIndex).name, documentName);
   },
 
   async enterDocumentNotes(notes) {
-    const elementIndex = await I.getActiveElementIndex();
+    const elementIndex = await this.getActiveElementIndex();
     I.fillField(this.fields.supportingDocuments(elementIndex).notes, notes);
   },
 
   async enterDateAndTimeReceived(dateAndTime) {
-    const elementIndex = await I.getActiveElementIndex();
+    const elementIndex = await this.getActiveElementIndex();
     I.fillDateAndTime(dateAndTime, this.fields.supportingDocuments(elementIndex).dateAndTime);
   },
 
   async uploadDocument(document) {
-    const elementIndex = await I.getActiveElementIndex();
+    const elementIndex = await this.getActiveElementIndex();
     I.attachFile(this.fields.supportingDocuments(elementIndex).document, document);
   },
 
@@ -75,5 +75,7 @@ module.exports = {
     await this.uploadDocument(supportingEvidenceDocument.document);
   },
 
-
+  async getActiveElementIndex() {
+    return await I.grabNumberOfVisibleElements('//button[text()="Remove"]') - 1;
+  },
 };

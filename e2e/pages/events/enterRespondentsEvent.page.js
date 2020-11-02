@@ -35,7 +35,7 @@ module.exports = {
   },
 
   async enterRespondent(respondent) {
-    const elementIndex = await I.getActiveElementIndex();
+    const elementIndex = await this.getActiveElementIndex();
 
     I.fillField(this.fields(elementIndex).respondent.firstName, respondent.firstName);
     I.fillField(this.fields(elementIndex).respondent.lastName, respondent.lastName);
@@ -56,13 +56,13 @@ module.exports = {
   },
 
   async enterRelationshipToChild(relationship) {
-    const elementIndex = await I.getActiveElementIndex();
+    const elementIndex = await this.getActiveElementIndex();
 
     I.fillField(this.fields(elementIndex).respondent.relationshipToChild, relationship);
   },
 
   async enterContactDetailsHidden(option, reason = '') {
-    const elementIndex = await I.getActiveElementIndex();
+    const elementIndex = await this.getActiveElementIndex();
 
     I.click(this.fields(elementIndex).contactDetailsHidden(option).option);
     if (option === 'Yes') {
@@ -71,7 +71,7 @@ module.exports = {
   },
 
   async enterLitigationIssues(litigationIssue = 'No', litigationIssueDetail = 'mock reason') {
-    const elementIndex = await I.getActiveElementIndex();
+    const elementIndex = await this.getActiveElementIndex();
 
     litigationIssue = litigationIssue.toLowerCase();
     switch (litigationIssue) {
@@ -90,5 +90,7 @@ module.exports = {
     }
   },
 
-
+  async getActiveElementIndex() {
+    return await I.grabNumberOfVisibleElements('//button[text()="Remove"]') - 1;
+  },
 };
