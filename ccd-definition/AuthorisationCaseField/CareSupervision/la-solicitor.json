@@ -543,13 +543,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "respondentsDirectionLabelCMO",
-    "UserRole": "caseworker-publiclaw-solicitor",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respondentDirectionsCustom",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "CRUD"
