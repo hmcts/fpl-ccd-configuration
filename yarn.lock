@@ -834,15 +834,10 @@ devtools-protocol@0.0.809251:
   resolved "https://registry.yarnpkg.com/devtools-protocol/-/devtools-protocol-0.0.809251.tgz#300b3366be107d5c46114ecb85274173e3999518"
   integrity sha512-pf+2OY6ghMDPjKkzSWxHMq+McD+9Ojmq5XVRYpv/kPd9sTMQxzEt21592a31API8qRjro0iYYOc3ag46qF/1FA==
 
-diff@4.0.2:
+diff@4.0.2, diff@^4.0.1:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/diff/-/diff-4.0.2.tgz#60f3aecb89d5fae520c11aa19efc2bb982aade7d"
   integrity sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==
-
-diff@^4.0.1:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/diff/-/diff-4.0.1.tgz#0c667cb467ebbb5cea7f14f135cc2dba7780a8ff"
-  integrity sha512-s2+XdvhPCOF01LRQBC8hf4vhbVmI2CGS5aZnxLJlT5FtdhPCDFq80q++zK2KlrVorVDdL5BOGZ/VfLrVtYNF+Q==
 
 doctrine@^3.0.0:
   version "3.0.0"
@@ -2155,10 +2150,10 @@ mochawesome-report-generator@^5.1.0:
     validator "^10.11.0"
     yargs "^13.2.2"
 
-mochawesome@^6.1.1:
-  version "6.1.1"
-  resolved "https://registry.yarnpkg.com/mochawesome/-/mochawesome-6.1.1.tgz#9155ac13edb42c9eb17a7adbbcbbb5c6ecefb972"
-  integrity sha512-fRGZkSJI+u4ODRQCFg3JqI4pqZGzOpfZqlEjvUoZ78l2JnBWwepPu7dMTAcyAEUsZbTSx7S4eVnsi+/Zh1Qq6A==
+mochawesome@^6.2.0:
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/mochawesome/-/mochawesome-6.2.0.tgz#77170ee2b5b4bd0b9a481b1a60f85009c6bdc931"
+  integrity sha512-wUNEi+BbozihzSI0P4KftLXhh8COHWmLDGHAW6pnpO32YPUOwRrx6Ts3iDFZJoPYwP7agt8/tzEvFiflUdsVOQ==
   dependencies:
     chalk "^4.0.0"
     diff "^4.0.1"
