@@ -11,7 +11,7 @@ BeforeSuite(async ({I, caseViewPage, handleSupplementaryEvidenceEventPage, attac
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await caseViewPage.goToNewActions(config.administrationActions.bulkScan);
   attachScannedDocsEventPage.enterScannedDocument(scannedDocument, config.testFile);
-  await I.click('Continue');
+  await I.goToNextPage();
   handleSupplementaryEvidenceEventPage.handleSupplementaryEvidence();
   await I.completeEvent('Submit');
 });

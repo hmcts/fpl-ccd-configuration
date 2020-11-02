@@ -550,7 +550,7 @@ Scenario('local authority tries to submit without giving consent', async ({I, ca
   await caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationEventPage.seeDraftApplicationFile();
   I.see(`I, ${config.swanseaLocalAuthorityUserOne.forename} ${config.swanseaLocalAuthorityUserOne.surname}, believe that the facts stated in this application are true.`);
-  I.click('Continue');
+  await I.goToNextPage();
   I.seeInCurrentUrl('/submitApplication');
 });
 

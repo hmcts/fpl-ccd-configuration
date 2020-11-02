@@ -78,7 +78,7 @@ Scenario('HMCTS admin amends children, respondents, others, international elemen
 Scenario('HMCTS admin uploads correspondence documents', async ({I, caseViewPage, manageDocumentsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
   await manageDocumentsEventPage.selectCorrespondence();
-  await I.retryUntilExists(() => I.click('Continue'), manageDocumentsEventPage.fields.supportingDocumentsCollectionId);
+  await I.goToNextPage();
   await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[0]);
   await I.addAnotherElementToCollection();
   await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[1]);
@@ -102,7 +102,7 @@ Scenario('HMCTS admin uploads correspondence documents', async ({I, caseViewPage
 Scenario('HMCTS admin uploads C2 documents to the case', async ({I, caseViewPage, uploadC2DocumentsEventPage, paymentHistoryPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.uploadC2Documents);
   uploadC2DocumentsEventPage.selectApplicationType('WITH_NOTICE');
-  await I.retryUntilExists(() => I.click('Continue'), '#temporaryC2Document_document');
+  await I.goToNextPage();
   const feeToPay = await uploadC2DocumentsEventPage.getFeeToPay();
   uploadC2DocumentsEventPage.usePbaPayment();
   uploadC2DocumentsEventPage.enterPbaPaymentDetails(c2Payment);
@@ -132,7 +132,7 @@ Scenario('HMCTS admin uploads C2 documents to the case', async ({I, caseViewPage
   await I.startEventViaHyperlink('Upload a new C2 application');
 
   uploadC2DocumentsEventPage.selectApplicationType('WITHOUT_NOTICE');
-  await I.retryUntilExists(() => I.click('Continue'), '#temporaryC2Document_document');
+  await I.goToNextPage();
   uploadC2DocumentsEventPage.usePbaPayment(false);
   uploadC2DocumentsEventPage.uploadC2Document(config.testFile, 'Jessica Pearson C2');
   await I.completeEvent('Save and continue');
@@ -147,7 +147,7 @@ Scenario('HMCTS admin edits supporting evidence document on C2 application', asy
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
   await manageDocumentsEventPage.selectC2SupportingDocuments();
   await manageDocumentsEventPage.select2FromDropdown();
-  await I.retryUntilExists(() => I.click('Continue'), manageDocumentsEventPage.fields.supportingDocumentsCollectionId);
+  await I.goToNextPage();
   await manageDocumentsEventPage.enterDocumentName('Updated document name');
   await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
   I.seeEventSubmissionConfirmation(config.administrationActions.manageDocuments);
@@ -469,7 +469,7 @@ Scenario('HMCTS admin makes 26-week case extension', async ({I, caseViewPage, ad
   addExtend26WeekTimelineEventPage.selectEightWeekExtensionTime();
   addExtend26WeekTimelineEventPage.selectTimetableForChildExtensionReason();
   addExtend26WeekTimelineEventPage.addExtensionComment('Comment');
-  I.click('Continue');
+  await I.goToNextPage();
   addExtend26WeekTimelineEventPage.addCaseExtensionTimeConfirmation();
   addExtend26WeekTimelineEventPage.addCaseExtensionDate();
   await I.completeEvent('Save and continue');
