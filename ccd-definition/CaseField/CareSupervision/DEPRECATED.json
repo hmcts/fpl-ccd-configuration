@@ -18,14 +18,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "allPartiesLabelCMO",
-    "Label": "## For all parties",
-    "FieldType": "Label",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "cafcassDirectionsLabelCMO",
     "Label": "## For Cafcass",
     "FieldType": "Label",
