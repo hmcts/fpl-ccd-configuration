@@ -8,6 +8,7 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fnp.client.PaymentApi;
+import uk.gov.hmcts.reform.fnp.exception.PaymentRetryException;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fnp.model.payment.CreditAccountPaymentRequest;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
@@ -109,7 +110,7 @@ public class PaymentService {
             .build();
     }
 
-    @Retryable(value = PaymentsApiException.class)
+    @Retryable(value = PaymentRetryException.class)
     //had to make this public for retry to work
     public void callPaymentsApi(CreditAccountPaymentRequest creditAccountPaymentRequest) {
         try {
@@ -117,17 +118,13 @@ public class PaymentService {
                 authTokenGenerator.generate(),
                 creditAccountPaymentRequest);
         } catch (FeignException.InternalServerError ex) {
-            System.out.println("Internal server error caught");
-
-            throw new PaymentsApiException(ex.contentUTF8(), ex);
-        }
-        catch (FeignException ex) {
+            log.error("Internal server error caught, payment will be retried");
+            throw new PaymentRetryException(ex.contentUTF8(), ex);
+        } catch (FeignException ex) {
             log.error("Payments response error for {}\n\tstatus: {} => message: \"{}\"",
                 creditAccountPaymentRequest, ex.status(), ex.contentUTF8(), ex);
-            System.out.println("Feign exception caught");
-
-            //exception type can be changed just using this for now
-            throw new RuntimeException();
+            log.info("Feign exception caught, payment will not be retried");
+            throw new PaymentsApiException(ex.contentUTF8(), ex);
         }
     }
 }

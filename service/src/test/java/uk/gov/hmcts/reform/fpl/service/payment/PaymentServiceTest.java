@@ -20,6 +20,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fnp.client.PaymentApi;
+import uk.gov.hmcts.reform.fnp.exception.PaymentRetryException;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fnp.model.payment.CreditAccountPaymentRequest;
 import uk.gov.hmcts.reform.fnp.model.payment.FeeDto;
@@ -116,7 +117,8 @@ class PaymentServiceTest {
 
             try {
                 paymentService.callPaymentsApi(expectedPaymentRequest);
-            } catch (PaymentsApiException ex) {
+            } catch (PaymentRetryException ex) {
+                ex.printStackTrace();
             } finally {
                 verify(paymentApi, times(3)).createCreditAccountPayment(any(), any(), any());
 
@@ -136,7 +138,8 @@ class PaymentServiceTest {
 
             try {
                 paymentService.callPaymentsApi(expectedPaymentRequest);
-            } catch (RuntimeException ex) {
+            } catch (PaymentsApiException ex) {
+                ex.printStackTrace();
             } finally {
                 verify(paymentApi, times(1)).createCreditAccountPayment(any(), any(), any());
 
