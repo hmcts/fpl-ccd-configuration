@@ -22,7 +22,7 @@ module.exports = {
   },
 
   async enterRepresentative(representative) {
-    const elementIndex = await this.getActiveElementIndex();
+    const elementIndex = await I.getActiveElementIndex();
 
     if(representative.fullName) {
       I.fillField(this.fields(elementIndex).representative.fullName, representative.fullName);
@@ -50,7 +50,7 @@ module.exports = {
   },
 
   async setServingPreferences(servingPreferences) {
-    const elementIndex = await this.getActiveElementIndex();
+    const elementIndex = await I.getActiveElementIndex();
 
     switch (servingPreferences) {
       case 'email':
@@ -67,7 +67,5 @@ module.exports = {
     }
   },
 
-  async getActiveElementIndex() {
-    return await I.grabNumberOfVisibleElements('//button[text()="Remove"]') - 1;
-  },
+
 };

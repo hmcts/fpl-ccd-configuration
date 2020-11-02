@@ -18,7 +18,9 @@ module.exports = {
   },
 
   async addLegalRepresentative(legalRepresentative) {
-    const elementIndex = await this.getActiveElementIndex();
+    await I.addAnotherElementToCollection();
+
+    const elementIndex = await I.getActiveElementIndex();
 
     if(legalRepresentative.fullName) {
       I.fillField(this.fields(elementIndex).legalRepresentative.fullName, legalRepresentative.fullName);
@@ -38,7 +40,7 @@ module.exports = {
   },
 
   async setRolePreferences(rolePreferences) {
-    const elementIndex = await this.getActiveElementIndex();
+    const elementIndex = await I.getActiveElementIndex();
 
     switch (rolePreferences) {
       case 'Barrister':
@@ -52,7 +54,5 @@ module.exports = {
     }
   },
 
-  async getActiveElementIndex() {
-    return await I.grabNumberOfVisibleElements('//button[text()="Remove"]') - 1;
-  },
+
 };

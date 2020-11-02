@@ -5,7 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.fpl.events.LegalRepresentativesChangeToCaseEvent;
+import uk.gov.hmcts.reform.fpl.events.LegalRepresentativesUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LegalRepresentative;
 import uk.gov.hmcts.reform.fpl.model.LegalRepresentativesChange;
@@ -26,7 +26,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LEGAL_REPRESENTATIVE_ADDED
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(MockitoExtension.class)
-class LegalRepresentativesChangeToCaseEventHandlerTest {
+class LegalRepresentativesUpdatedHandlerTest {
 
     public static final List<LegalRepresentative> LEGAL_REPRESENTATIVES_BEFORE =
         List.of(mock(LegalRepresentative.class));
@@ -58,7 +58,7 @@ class LegalRepresentativesChangeToCaseEventHandlerTest {
     private NotificationService notificationService;
 
     @InjectMocks
-    private LegalRepresentativesChangeToCaseEventHandler underTest;
+    private LegalRepresentativesUpdatedHandler underTest;
 
     @Test
     void sendEmailToLegalRepresentativesAddedToCase() {
@@ -73,7 +73,7 @@ class LegalRepresentativesChangeToCaseEventHandlerTest {
             TEMPLATE_PARAMETERS);
 
         underTest.sendEmailToLegalRepresentativesAddedToCase(
-            new LegalRepresentativesChangeToCaseEvent(CASE_DATA, CASE_DATA_BEFORE)
+            new LegalRepresentativesUpdated(CASE_DATA, CASE_DATA_BEFORE)
         );
 
         verify(notificationService).sendEmail(
@@ -98,7 +98,7 @@ class LegalRepresentativesChangeToCaseEventHandlerTest {
             TEMPLATE_PARAMETERS_2);
 
         underTest.sendEmailToLegalRepresentativesAddedToCase(
-            new LegalRepresentativesChangeToCaseEvent(CASE_DATA, CASE_DATA_BEFORE)
+            new LegalRepresentativesUpdated(CASE_DATA, CASE_DATA_BEFORE)
         );
 
         verify(notificationService).sendEmail(
@@ -126,7 +126,7 @@ class LegalRepresentativesChangeToCaseEventHandlerTest {
         );
 
         underTest.sendEmailToLegalRepresentativesAddedToCase(
-            new LegalRepresentativesChangeToCaseEvent(CASE_DATA, CASE_DATA_BEFORE)
+            new LegalRepresentativesUpdated(CASE_DATA, CASE_DATA_BEFORE)
         );
 
         verifyNoInteractions(legalRepresentativeAddedContentProvider,notificationService);

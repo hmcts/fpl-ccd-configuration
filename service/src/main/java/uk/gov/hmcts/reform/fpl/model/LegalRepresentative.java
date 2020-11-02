@@ -8,10 +8,10 @@ import uk.gov.hmcts.reform.fpl.enums.LegalRepresentativeRole;
 @Builder(toBuilder = true)
 public class LegalRepresentative {
 
-    private final String fullName;
-    private final LegalRepresentativeRole role;
-    private final String organisation;
-    private final String email;
-    private final String telephoneNumber;
+    String fullName;
+    LegalRepresentativeRole role;
+    String organisation;
+    String email;
+    String telephoneNumber;
 
 }

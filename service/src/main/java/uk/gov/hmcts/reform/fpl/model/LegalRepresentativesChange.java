@@ -8,6 +8,6 @@ import java.util.Set;
 @Builder
 @Value
 public class LegalRepresentativesChange {
-    private final Set<LegalRepresentative> added;
-    private final Set<LegalRepresentative> removed;
+    Set<LegalRepresentative> added;
+    Set<LegalRepresentative> removed;
 }

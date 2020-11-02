@@ -28,7 +28,7 @@ module.exports = {
   },
 
   async enterRecipientDetails(recipients) {
-    const elementIndex = await this.getActiveElementIndex();
+    const elementIndex = await I.getActiveElementIndex();
 
     I.fillField(this.fields(elementIndex).recipients.name, recipients.name);
     I.click(this.fields(elementIndex).recipients.addressCheck);
@@ -49,9 +49,7 @@ module.exports = {
     I.checkOption('I agree with this statement');
   },
 
-  async getActiveElementIndex() {
-    return await I.grabNumberOfVisibleElements('//button[text()="Remove"]') - 1;
-  },
+
 
   enterRecipientsAddress: function (elementIndex, recipients) {
     within(this.fields(elementIndex).recipients.address, () => {

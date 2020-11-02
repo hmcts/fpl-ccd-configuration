@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.events.LegalRepresentativesChangeToCaseEvent;
+import uk.gov.hmcts.reform.fpl.events.LegalRepresentativesUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.LegalRepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.validators.ManageLegalRepresentativesValidator;
@@ -24,7 +24,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @RequestMapping("/callback/manage-legal-representatives")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ManageLegalRepresentativesController extends CallbackController {
-    private final LegalRepresentativeService legaRepresentativeService;
+    private final LegalRepresentativeService legalRepresentativeService;
     private final ManageLegalRepresentativesValidator manageLegalRepresentativesValidator;
 
     @PostMapping("/mid-event")
@@ -44,7 +44,7 @@ public class ManageLegalRepresentativesController extends CallbackController {
         CaseData updatedCaseData = getCaseData(updatedCaseDetails);
         CaseData originalCaseData = getCaseDataBefore(callbackRequest);
 
-        legaRepresentativeService.updateRepresentatives(
+        legalRepresentativeService.updateRepresentatives(
             updatedCaseData.getId(),
             unwrapElements(originalCaseData.getLegalRepresentatives()),
             unwrapElements(updatedCaseData.getLegalRepresentatives())
@@ -54,7 +54,7 @@ public class ManageLegalRepresentativesController extends CallbackController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        publishEvent(new LegalRepresentativesChangeToCaseEvent(
+        publishEvent(new LegalRepresentativesUpdated(
             getCaseData(callbackRequest),
             getCaseDataBefore(callbackRequest))
         );

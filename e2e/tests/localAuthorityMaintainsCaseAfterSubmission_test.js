@@ -19,7 +19,6 @@ Before(async ({I}) => await I.navigateToCaseDetails(caseId));
 Scenario('local authority add an external barrister as a legal representative for the case', async ({I, caseViewPage, manageLegalRepresentativesEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.manageLegalRepresentatives);
   await I.goToNextPage();
-  await I.addAnotherElementToCollection();
   await manageLegalRepresentativesEventPage.addLegalRepresentative(legalRepresentatives.barrister);
   await I.completeEvent('Save and continue');
 

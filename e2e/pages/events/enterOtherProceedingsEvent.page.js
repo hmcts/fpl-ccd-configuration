@@ -35,7 +35,7 @@ module.exports = {
   },
 
   async selectOngoingProceedingStatus(status = 'ongoing') {
-    const elementIndex = await this.getActiveElementIndex();
+    const elementIndex = await I.getActiveElementIndex();
 
     if(status === 'ongoing') {
       I.click(this.fields(elementIndex).proceedingStatus.ongoing);
@@ -45,7 +45,7 @@ module.exports = {
   },
 
   async enterProceedingInformation(otherProceedingData) {
-    const elementIndex = await this.getActiveElementIndex();
+    const elementIndex = await I.getActiveElementIndex();
 
     await this.selectOngoingProceedingStatus(otherProceedingData.proceedingStatus);
     I.fillField(this.fields(elementIndex).caseNumber, otherProceedingData.caseNumber);

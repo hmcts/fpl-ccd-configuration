@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.events.LegalRepresentativesChangeToCaseEvent;
+import uk.gov.hmcts.reform.fpl.events.LegalRepresentativesUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LegalRepresentativesChange;
 import uk.gov.hmcts.reform.fpl.service.LegalRepresentativesDifferenceCalculator;
@@ -15,15 +15,14 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LEGAL_REPRESENTATIVE_ADDED
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class LegalRepresentativesChangeToCaseEventHandler {
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
+public class LegalRepresentativesUpdatedHandler {
     private final LegalRepresentativeAddedContentProvider legalRepresentativeAddedContentProvider;
     private final LegalRepresentativesDifferenceCalculator differenceCalculator;
     private final NotificationService notificationService;
 
-
     @EventListener
-    public void sendEmailToLegalRepresentativesAddedToCase(final LegalRepresentativesChangeToCaseEvent event) {
+    public void sendEmailToLegalRepresentativesAddedToCase(final LegalRepresentativesUpdated event) {
         CaseData caseData = event.getCaseData();
         CaseData caseDataBefore = event.getCaseDataBefore();
 
@@ -36,7 +35,7 @@ public class LegalRepresentativesChangeToCaseEventHandler {
             legalRepresentative -> notificationService.sendEmail(
                 LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE,
                 legalRepresentative.getEmail(),
-                legalRepresentativeAddedContentProvider.getParameters(legalRepresentative,caseData),
+                legalRepresentativeAddedContentProvider.getParameters(legalRepresentative, caseData),
                 caseData.getId().toString())
         );
     }

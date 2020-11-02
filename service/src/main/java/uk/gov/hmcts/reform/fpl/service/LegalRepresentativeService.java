@@ -18,15 +18,15 @@ public class LegalRepresentativeService {
 
     private final CaseService caseService;
     private final OrganisationService organisationService;
-    private final LegalRepresentativesDifferenceCalculator legalRepresentativesDifferenceCalculator;
+    private final LegalRepresentativesDifferenceCalculator differenceCalculator;
 
     public void updateRepresentatives(Long caseId,
-                                      List<LegalRepresentative> original,
-                                      List<LegalRepresentative> updated) {
+                                      List<LegalRepresentative> originalRepresentatives,
+                                      List<LegalRepresentative> updatedRepresentatives) {
 
-        LegalRepresentativesChange legalRepresentativesChange = legalRepresentativesDifferenceCalculator.calculate(
-            original,
-            updated);
+        LegalRepresentativesChange legalRepresentativesChange = differenceCalculator.calculate(
+            originalRepresentatives,
+            updatedRepresentatives);
 
         legalRepresentativesChange.getAdded().forEach(userToBeAdded ->
             organisationService.findUserByEmail(userToBeAdded.getEmail())

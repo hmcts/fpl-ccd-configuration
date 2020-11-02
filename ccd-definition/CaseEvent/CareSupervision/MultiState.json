@@ -662,7 +662,6 @@
     "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
-    "ShowSummaryChangeOption": "Y",
     "ShowSummary": "Y",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue",

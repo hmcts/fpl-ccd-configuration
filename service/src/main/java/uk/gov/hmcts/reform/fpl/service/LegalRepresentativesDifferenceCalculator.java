@@ -49,8 +49,8 @@ public class LegalRepresentativesDifferenceCalculator {
 
     @Value
     private class RelevantUniqueInformation {
-        private final String email;
+        String email;
         @EqualsAndHashCode.Exclude
-        private final LegalRepresentative legalRepresentative;
+        LegalRepresentative legalRepresentative;
     }
 }

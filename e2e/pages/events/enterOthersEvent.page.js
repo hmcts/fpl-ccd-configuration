@@ -31,7 +31,7 @@ module.exports = {
   },
 
   async enterOtherDetails(other) {
-    const elementIndex = await this.getActiveElementIndex();
+    const elementIndex = await I.getActiveElementIndex();
 
     I.fillField(this.fields(elementIndex).name, other.name);
     I.click(this.fields(elementIndex).DOB.day);
@@ -48,13 +48,13 @@ module.exports = {
   },
 
   async enterRelationshipToChild(childInformation) {
-    const elementIndex = await this.getActiveElementIndex();
+    const elementIndex = await I.getActiveElementIndex();
 
     I.fillField(this.fields(elementIndex).relationshipToChild, childInformation);
   },
 
   async enterContactDetailsHidden(option) {
-    const elementIndex = await this.getActiveElementIndex();
+    const elementIndex = await I.getActiveElementIndex();
 
     I.click(this.fields(elementIndex).detailsHidden(option).option);
     if (option === 'Yes') {
@@ -63,7 +63,7 @@ module.exports = {
   },
 
   async enterLitigationIssues(litigationIssue = 'No', litigationIssueDetail = 'mock reason') {
-    const elementIndex = await this.getActiveElementIndex();
+    const elementIndex = await I.getActiveElementIndex();
 
     litigationIssue = litigationIssue.toLowerCase();
     switch(litigationIssue) {
