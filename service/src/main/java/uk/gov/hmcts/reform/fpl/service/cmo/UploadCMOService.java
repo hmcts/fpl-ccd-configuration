@@ -72,10 +72,8 @@ public class UploadCMOService {
     @Deprecated
     public UploadCMOEventData getInitialPageData(List<Element<HearingBooking>> pastHearings,
                                                  List<Element<CaseManagementOrder>> unsealedOrders) {
-
         List<Element<HearingBooking>> hearingsWithoutCMOs = getHearingsWithoutCMO(pastHearings, unsealedOrders);
         UploadCMOEventData.UploadCMOEventDataBuilder eventBuilder = UploadCMOEventData.builder();
-        String textAreaContent = buildHearingsWithCMOsText(unsealedOrders, pastHearings);
 
         if (hearingsWithoutCMOs.size() == 1) {
             addJudgeAndHearingDetails(hearingsWithoutCMOs.get(0).getValue(), eventBuilder, true);
