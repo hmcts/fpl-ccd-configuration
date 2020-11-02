@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
@@ -56,8 +55,7 @@ public class CaseManagementOrderIssuedEventHandler {
         final IssuedCMOTemplate localAuthorityNotificationParameters = caseManagementOrderEmailContentProvider
             .buildCMOIssuedNotificationParameters(caseData, cmo, DIGITAL_SERVICE);
 
-        Collection<String> emails = inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
+        Collection<String> emails = inboxLookupService.getRecipients(caseData);
 
         notificationService.sendEmail(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, emails,
             localAuthorityNotificationParameters, caseData.getId().toString());

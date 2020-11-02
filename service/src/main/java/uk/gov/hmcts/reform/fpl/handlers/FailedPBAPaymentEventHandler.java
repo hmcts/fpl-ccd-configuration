@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.payment.FailedPBANotificationData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -33,11 +32,7 @@ public class FailedPBAPaymentEventHandler {
         FailedPBANotificationData params = notificationContent
             .buildLANotificationParameters(event.getApplicationType());
 
-        Collection<String> emails = inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder()
-                .excludeLegalRepresentatives(true)
-                .caseData(caseData)
-                .build());
+        Collection<String> emails = inboxLookupService.getRecipients(caseData);
 
         notificationService.sendEmail(APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA, emails, params,
             caseData.getId().toString());

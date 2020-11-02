@@ -10,7 +10,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
@@ -83,8 +82,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
         CaseData caseData = caseData();
         CaseManagementOrder cmo = buildCmo();
 
-        given(inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))
+        given(inboxLookupService.getRecipients(caseData))
             .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         given(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(caseData, cmo,

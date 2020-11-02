@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.service.email.content.ReturnedCaseContentProvider
 import java.util.Collection;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_RETURNED_TO_THE_LA;
-import static uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest.builder;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -29,11 +28,7 @@ public class ReturnedCaseEventHandler {
 
         ReturnedCaseTemplate parameters = returnedCaseContentProvider.parametersWithCaseUrl(caseData);
 
-        Collection<String> emails = inboxLookupService.getRecipients(
-            builder().caseData(caseData)
-                .excludeLegalRepresentatives(true)
-                .build()
-        );
+        Collection<String> emails = inboxLookupService.getRecipients(caseData);
 
         notificationService.sendEmail(APPLICATION_RETURNED_TO_THE_LA, emails, parameters, caseData.getId().toString());
     }

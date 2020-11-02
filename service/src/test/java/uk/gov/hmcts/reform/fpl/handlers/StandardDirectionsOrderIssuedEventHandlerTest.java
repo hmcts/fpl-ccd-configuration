@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForSDO;
 import uk.gov.hmcts.reform.fpl.model.notify.sdo.CTSCTemplateForSDO;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -145,8 +144,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
         given(localAuthorityEmailContentProvider.buildLocalAuthorityStandardDirectionOrderIssuedNotification(caseData))
             .willReturn(expectedParameters);
 
-        given(inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))
+        given(inboxLookupService.getRecipients(caseData))
             .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         given(featureToggleService.isSendNoticeOfProceedingsFromSdo())
@@ -175,8 +173,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
         given(localAuthorityEmailContentProvider.buildLocalAuthorityStandardDirectionOrderIssuedNotification(caseData))
             .willReturn(expectedParameters);
 
-        given(inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))
+        given(inboxLookupService.getRecipients(caseData))
             .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         given(featureToggleService.isSendNoticeOfProceedingsFromSdo())

@@ -27,7 +27,6 @@ import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest.builder;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 
 @ExtendWith(SpringExtension.class)
@@ -57,11 +56,7 @@ class FailedPBAPaymentEventHandlerTest {
 
         given(requestData.authorisation()).willReturn(AUTH_TOKEN);
 
-        given(inboxLookupService.getRecipients(
-            builder()
-                .caseData(caseData)
-                .excludeLegalRepresentatives(true)
-                .build()))
+        given(inboxLookupService.getRecipients(caseData))
             .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
     }
 

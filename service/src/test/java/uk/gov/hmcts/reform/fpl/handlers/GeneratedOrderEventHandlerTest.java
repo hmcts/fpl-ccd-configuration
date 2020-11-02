@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -91,8 +90,7 @@ class GeneratedOrderEventHandlerTest {
     void before() {
         caseData = caseData();
 
-        given(inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))
+        given(inboxLookupService.getRecipients(caseData))
             .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         given(orderIssuedEmailContentProvider.buildParametersWithCaseUrl(caseData, DOCUMENT_CONTENTS, GENERATED_ORDER))

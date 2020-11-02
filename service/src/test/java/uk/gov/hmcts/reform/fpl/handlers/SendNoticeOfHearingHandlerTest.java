@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.NoticeOfHearingTemplate;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -86,8 +85,7 @@ class SendNoticeOfHearingHandlerTest {
     void shouldSendNotificationToLAWhenNewHearingIsAdded() {
         final CaseData caseData = caseData();
 
-        given(inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))
+        given(inboxLookupService.getRecipients(caseData))
             .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         sendNoticeOfHearingHandler.sendEmailToLA(new SendNoticeOfHearing(caseData, hearing));

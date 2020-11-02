@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
@@ -92,8 +91,7 @@ public class GeneratedOrderEventHandler {
 
     private void sendToLocalAuthority(final CaseData caseData,
                                       final Map<String, Object> templateParameters) {
-        Collection<String> emails = inboxLookupService.getRecipients(
-            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
+        Collection<String> emails = inboxLookupService.getRecipients(caseData);
 
         notificationService.sendEmail(
             ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES, emails, templateParameters,
