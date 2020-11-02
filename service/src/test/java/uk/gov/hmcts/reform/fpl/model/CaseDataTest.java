@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.utils.IncrementalInteger;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -36,6 +37,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
 class CaseDataTest {
 
     private static final String EXCLUSION_CLAUSE = "exclusionClause";
+    private static final UUID[] HEARING_IDS = {randomUUID(), randomUUID(), randomUUID(), randomUUID()};
 
     private final Time time = new FixedTimeConfiguration().stoppedTime();
     private final UUID cmoID = randomUUID();
@@ -678,6 +680,57 @@ class CaseDataTest {
 
             assertThat(caseData.getHearingDetails())
                 .containsExactly(existingAdjournedHearingBooking, newAdjournedHearingBooking);
+        }
+    }
+
+    @Nested
+    class FindHearingBookingElement {
+        @Test
+        void shouldFindHearingBookingElementWhenKeyMatchesHearingBookingElementUUID() {
+            Element<HearingBooking> expectedHearingBookingElement
+                = element(HEARING_IDS[2], createHearingBooking(futureDate, futureDate.plusDays(1)));
+
+            List<Element<HearingBooking>> hearingBookings = new ArrayList<>(List.of(
+                element(HEARING_IDS[0], createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))),
+                element(HEARING_IDS[1], createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3))),
+                expectedHearingBookingElement,
+                element(HEARING_IDS[3], createHearingBooking(futureDate.minusDays(2), futureDate.plusDays(3)))
+            ));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(hearingBookings)
+                .build();
+
+            Optional<Element<HearingBooking>> hearingBookingElement
+                = caseData.findHearingBookingElement(HEARING_IDS[2]);
+
+            assertThat(hearingBookingElement).contains(expectedHearingBookingElement);
+        }
+
+        @Test
+        void shouldReturnAnEmptyOptionalWhenKeyDoesNotMatchHearingBookingElementUUID() {
+            List<Element<HearingBooking>> hearingBookings = new ArrayList<>(List.of(
+                element(HEARING_IDS[0], createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))),
+                element(HEARING_IDS[1], createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3))),
+                element(HEARING_IDS[2], createHearingBooking(futureDate, futureDate.plusDays(1))),
+                element(HEARING_IDS[3], createHearingBooking(futureDate.minusDays(2), futureDate.plusDays(3)))
+            ));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(hearingBookings)
+                .build();
+
+            Optional<Element<HearingBooking>> hearingBooking = caseData.findHearingBookingElement(randomUUID());
+
+            assertThat(hearingBooking).isNotPresent();
+        }
+
+        @Test
+        void shouldReturnAnEmptyOptionalWhenHearingDetailsDoNotExistOnCaseData() {
+            CaseData caseData = CaseData.builder().build();
+            Optional<Element<HearingBooking>> hearingBooking = caseData.findHearingBookingElement(randomUUID());
+
+            assertThat(hearingBooking).isNotPresent();
         }
     }
 
