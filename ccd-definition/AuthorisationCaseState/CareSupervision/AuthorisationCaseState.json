@@ -5,8 +5,7 @@
     "CaseStateID": "Open",
     "UserRoles": [
       "caseworker-publiclaw-solicitor",
-      "caseworker-publiclaw-systemupdate",
-      "caseworker-caa"
+      "caseworker-publiclaw-systemupdate"
     ],
     "CRUD": "CRU"
   },
@@ -23,8 +22,7 @@
       "caseworker-publiclaw-gatekeeper",
       "caseworker-publiclaw-systemupdate",
       "caseworker-publiclaw-bulkscan",
-      "caseworker-publiclaw-bulkscansystemupdate",
-      "caseworker-caa"
+      "caseworker-publiclaw-bulkscansystemupdate"
     ],
     "CRUD": "CRU"
   },
@@ -41,8 +39,7 @@
       "caseworker-publiclaw-gatekeeper",
       "caseworker-publiclaw-systemupdate",
       "caseworker-publiclaw-bulkscan",
-      "caseworker-publiclaw-bulkscansystemupdate",
-      "caseworker-caa"
+      "caseworker-publiclaw-bulkscansystemupdate"
     ],
     "CRUD": "CRU"
   },
@@ -59,8 +56,7 @@
       "caseworker-publiclaw-magistrate",
       "caseworker-publiclaw-systemupdate",
       "caseworker-publiclaw-bulkscan",
-      "caseworker-publiclaw-bulkscansystemupdate",
-      "caseworker-caa"
+      "caseworker-publiclaw-bulkscansystemupdate"
     ],
     "CRUD": "CRU"
   },
@@ -76,8 +72,7 @@
       "caseworker-publiclaw-bulkscansystemupdate",
       "caseworker-publiclaw-gatekeeper",
       "caseworker-publiclaw-judiciary",
-      "caseworker-publiclaw-magistrate",
-      "caseworker-caa"
+      "caseworker-publiclaw-magistrate"
     ],
     "CRUD": "CRU"
   },
@@ -87,8 +82,7 @@
     "CaseStateID": "RETURNED",
     "UserRoles": [
       "caseworker-publiclaw-solicitor",
-      "caseworker-publiclaw-courtadmin",
-      "caseworker-caa"
+      "caseworker-publiclaw-courtadmin"
     ],
     "CRUD": "CRU"
   },
@@ -105,8 +99,7 @@
       "caseworker-publiclaw-magistrate",
       "caseworker-publiclaw-systemupdate",
       "caseworker-publiclaw-bulkscan",
-      "caseworker-publiclaw-bulkscansystemupdate",
-      "caseworker-caa"
+      "caseworker-publiclaw-bulkscansystemupdate"
     ],
     "CRUD": "CRU"
   }
