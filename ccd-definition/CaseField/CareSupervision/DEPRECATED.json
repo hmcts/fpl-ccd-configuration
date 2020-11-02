@@ -18,14 +18,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "courtDirectionsLabelCMO",
-    "Label": "## For the court",
-    "FieldType": "Label",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "schedule",
     "Label": "Schedule",
     "FieldType": "Schedule",
