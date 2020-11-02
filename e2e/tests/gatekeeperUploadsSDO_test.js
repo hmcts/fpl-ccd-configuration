@@ -16,7 +16,7 @@ Scenario('Gatekeeper uploads draft standard directions', async ({I, caseViewPage
   await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
   await draftStandardDirectionsEventPage.createSDOThroughUpload();
   await draftStandardDirectionsEventPage.useAllocatedJudge('Bob Ross');
-  await I.retryUntilExists(() => I.click('Continue'), draftStandardDirectionsEventPage.fields.file.preparedSDO);
+  await I.goToNextPage();
   await draftStandardDirectionsEventPage.uploadPreparedSDO(config.testPdfFile);
   await draftStandardDirectionsEventPage.markAsDraft();
   await I.completeEvent('Save and continue');
@@ -31,7 +31,7 @@ Scenario('Gatekeeper uploads draft standard directions', async ({I, caseViewPage
 Scenario('Gatekeeper uploads final standard directions', async ({I, caseViewPage, draftStandardDirectionsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
   await draftStandardDirectionsEventPage.useAllocatedJudge('Bob Ross');
-  await I.retryUntilExists(() => I.click('Continue'), draftStandardDirectionsEventPage.fields.file.replacementSDO);
+  await I.goToNextPage();
   I.see('mockFile.pdf');
   await draftStandardDirectionsEventPage.uploadReplacementSDO(config.testWordFile);
   await draftStandardDirectionsEventPage.markAsFinal();
