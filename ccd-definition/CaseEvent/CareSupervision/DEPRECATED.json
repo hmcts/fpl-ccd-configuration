@@ -234,17 +234,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "COMPLY_CAFCASS",
-    "Name": "Comply with directions",
-    "Description": "Allows Cafcass user access to comply with their directions as well as ones for all parties",
-    "DisplayOrder": 11,
-    "PreConditionState(s)": "PREPARE_FOR_HEARING;FINAL_HEARING",
-    "PostConditionState": "*",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "COMPLY_OTHERS",
     "Name": "Comply on behalf of others",
     "Description": "Event gives SOLICITOR user access to comply with directions for other parties",
