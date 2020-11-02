@@ -289,9 +289,9 @@ module.exports = function () {
       return caseId;
     },
 
-    async goToNextPage(maxNumberOfTries = maxRetries){
+    async goToNextPage(label = 'Continue', maxNumberOfTries = maxRetries){
       const currentUrl = await this.grabCurrentUrl();
-      this.click('Continue');
+      this.click(label);
 
       for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
         if(await this.grabCurrentUrl() !== currentUrl){
@@ -299,7 +299,7 @@ module.exports = function () {
         } else {
           this.wait(1);
           if(await this.grabCurrentUrl() === currentUrl){
-            this.click('Continue');
+            this.click(label);
           }
         }
       }
