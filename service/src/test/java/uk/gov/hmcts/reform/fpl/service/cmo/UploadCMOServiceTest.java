@@ -538,7 +538,6 @@ class UploadCMOServiceTest {
             .cmoHearingInfo("Send agreed CMO for Case management hearing, 1 February 2020."
                 + "\nThis must have been discussed by all parties at the hearing.")
             .cmoJudgeInfo("His Honour Judge Dredd")
-            .showHearingsSingleTextArea(YesNo.YES)
             .build();
 
         assertThat(initialPageData).isEqualTo(expectedEventData);

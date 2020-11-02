@@ -85,10 +85,6 @@ public class UploadCMOService {
             case 1:
                 eventBuilder.numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.SINGLE);
 
-                if (textAreaContent.length() != 0) {
-                    eventBuilder.showHearingsSingleTextArea(YES);
-                }
-
                 addJudgeAndHearingDetails(hearingsWithoutCMOs.get(0).getValue(), eventBuilder, true);
                 break;
             default:
