@@ -48,8 +48,6 @@ public class UploadCMOEventData {
     YesNo showCMOsSentToJudge; // (Page 1)
     YesNo showReplacementCMO; // (Page 2)
     @Deprecated
-    NumberOfHearingsOptions numHearingsWithoutCMO;
-    @Deprecated
     YesNo showHearingsMultiTextArea;
 
     public List<Element<SupportingEvidenceBundle>> getCmoSupportingDocs() {
@@ -73,7 +71,7 @@ public class UploadCMOEventData {
             "cmoHearingInfo", "showReplacementCMO", "previousCMO", "uploadedCaseManagementOrder", "replacementCMO",
             "cmoSupportingDocs", "cmoJudgeInfo", "cmoToSend",
             // TODO: 19/10/2020 Delete after this comment when FPLA-2019 is toggled on
-            "numHearingsWithoutCMO", "showHearingsMultiTextArea"
+            "showHearingsMultiTextArea"
         };
     }
 

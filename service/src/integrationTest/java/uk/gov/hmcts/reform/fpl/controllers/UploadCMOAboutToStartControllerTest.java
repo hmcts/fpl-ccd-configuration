@@ -54,7 +54,6 @@ class UploadCMOAboutToStartControllerTest extends AbstractUploadCMOControllerTes
         );
 
         UploadCMOEventData eventData = UploadCMOEventData.builder()
-            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.MULTI)
             .pastHearingsForCMO(dynamicList)
             .build();
 
@@ -73,28 +72,9 @@ class UploadCMOAboutToStartControllerTest extends AbstractUploadCMOControllerTes
         CaseData responseData = extractCaseData(postAboutToStartEvent(asCaseDetails(caseData)));
 
         UploadCMOEventData eventData = UploadCMOEventData.builder()
-            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.SINGLE)
             .cmoJudgeInfo("Her Honour Judge Judy")
             .cmoHearingInfo("Send agreed CMO for Case management hearing, 15 March 2020.\n"
                 + "This must have been discussed by all parties at the hearing.")
-            .build();
-
-        CaseData expectedCaseData = caseData.toBuilder().uploadCMOEventData(eventData).build();
-
-        assertThat(responseData).isEqualTo(expectedCaseData);
-    }
-
-    @Test
-    void shouldReturnNoHearingData() {
-        givenLegacyFlow();
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(List.of(hearing(now().plusDays(3))))
-            .build();
-
-        CaseData responseData = extractCaseData(postAboutToStartEvent(asCaseDetails(caseData)));
-
-        UploadCMOEventData eventData = UploadCMOEventData.builder()
-            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.NONE)
             .build();
 
         CaseData expectedCaseData = caseData.toBuilder().uploadCMOEventData(eventData).build();

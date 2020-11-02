@@ -206,7 +206,6 @@ class UploadCMOAboutToSubmitControllerTest extends AbstractUploadCMOControllerTe
                 .showCMOsSentToJudge(YesNo.NO)
                 .cmosSentToJudge("DUMMY DATA")
                 .cmoUploadType(CMOType.DRAFT)
-                .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.MULTI)
                 .showHearingsMultiTextArea(YesNo.YES)
                 .build())
             .hearingDetails(hearings)
@@ -223,7 +222,7 @@ class UploadCMOAboutToSubmitControllerTest extends AbstractUploadCMOControllerTe
             "cmoHearingInfo", "showReplacementCMO", "previousCMO", "uploadedCaseManagementOrder", "replacementCMO",
             "cmoSupportingDocs", "cmoJudgeInfo", "cmoToSend",
             // Delete these ones below when cleaning up
-            "numHearingsWithoutCMO", "showHearingsMultiTextArea"
+            "showHearingsMultiTextArea"
         ));
 
         assertThat(response.getData().keySet()).isEqualTo(keys);

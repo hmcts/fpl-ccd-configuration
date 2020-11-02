@@ -78,23 +78,14 @@ public class UploadCMOService {
         UploadCMOEventData.UploadCMOEventDataBuilder eventBuilder = UploadCMOEventData.builder();
         String textAreaContent = buildHearingsWithCMOsText(unsealedOrders, pastHearings);
 
-        switch (hearingsWithoutCMOs.size()) {
-            case 0:
-                eventBuilder.numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.NONE);
-                break;
-            case 1:
-                eventBuilder.numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.SINGLE);
+        if (hearingsWithoutCMOs.size() == 1) {
+            addJudgeAndHearingDetails(hearingsWithoutCMOs.get(0).getValue(), eventBuilder, true);
+        } else {
+            if (textAreaContent.length() != 0) {
+                eventBuilder.showHearingsMultiTextArea(YES);
+            }
 
-                addJudgeAndHearingDetails(hearingsWithoutCMOs.get(0).getValue(), eventBuilder, true);
-                break;
-            default:
-                eventBuilder.numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.MULTI);
-
-                if (textAreaContent.length() != 0) {
-                    eventBuilder.showHearingsMultiTextArea(YES);
-                }
-
-                eventBuilder.pastHearingsForCMO(buildDynamicList(hearingsWithoutCMOs));
+            eventBuilder.pastHearingsForCMO(buildDynamicList(hearingsWithoutCMOs));
         }
 
         return eventBuilder.build();

@@ -475,7 +475,6 @@ class UploadCMOServiceTest {
             .pastHearingsForCMO(dynamicList(hearings.get(0).getId(),
                 hearings.get(1).getId(),
                 hearings.get(2).getId()))
-            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.MULTI)
             .build();
 
         assertThat(initialPageData).isEqualTo(expectedEventData);
@@ -498,7 +497,6 @@ class UploadCMOServiceTest {
             .pastHearingsForCMO(dynamicList(hearings.get(0).getId(),
                 hearings.get(1).getId(),
                 hearings.get(2).getId()))
-            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.MULTI)
             .showHearingsMultiTextArea(YesNo.YES)
             .build();
 
@@ -514,7 +512,6 @@ class UploadCMOServiceTest {
         UploadCMOEventData initialPageData = service.getInitialPageData(hearings, List.of());
 
         UploadCMOEventData expectedEventData = UploadCMOEventData.builder()
-            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.SINGLE)
             .cmoHearingInfo("Send agreed CMO for Case management hearing, 1 February 2020."
                 + "\nThis must have been discussed by all parties at the hearing.")
             .cmoJudgeInfo("His Honour Judge Dredd")
@@ -534,21 +531,9 @@ class UploadCMOServiceTest {
         UploadCMOEventData initialPageData = service.getInitialPageData(hearings, List.of(cmo));
 
         UploadCMOEventData expectedEventData = UploadCMOEventData.builder()
-            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.SINGLE)
             .cmoHearingInfo("Send agreed CMO for Case management hearing, 1 February 2020."
                 + "\nThis must have been discussed by all parties at the hearing.")
             .cmoJudgeInfo("His Honour Judge Dredd")
-            .build();
-
-        assertThat(initialPageData).isEqualTo(expectedEventData);
-    }
-
-    @Test
-    void shouldReturnPageShowHideFieldOnlyWhenThereAreNoRemainingHearingsWithoutCmoMappings() {
-        UploadCMOEventData initialPageData = service.getInitialPageData(List.of(), List.of());
-
-        UploadCMOEventData expectedEventData = UploadCMOEventData.builder()
-            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.NONE)
             .build();
 
         assertThat(initialPageData).isEqualTo(expectedEventData);
@@ -587,7 +572,6 @@ class UploadCMOServiceTest {
 
         UploadCMOEventData expectedEventData = UploadCMOEventData.builder()
             .pastHearingsForCMO(dynamicList)
-            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.MULTI)
             .showHearingsMultiTextArea(YesNo.YES)
             .build();
 
