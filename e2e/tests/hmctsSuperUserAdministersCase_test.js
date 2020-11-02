@@ -30,7 +30,7 @@ Scenario('HMCTS super user removes an order from a case', async ({I, caseViewPag
   let order = orderCaseData.caseData.orderCollection[0];
   const labelToSelect = order.value.title + ' - ' + order.value.dateOfIssue;
   removeOrderEventPage.selectOrderToRemove(labelToSelect);
-  await I.retryUntilExists(() => I.click('Continue'), removeOrderEventPage.fields.reason);
+  await I.goToNextPage();
   removeOrderEventPage.addRemoveOrderReason('Entered incorrect order');
   await I.completeEvent('Submit');
   I.seeEventSubmissionConfirmation(config.superUserActions.removeOrder);
