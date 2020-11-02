@@ -10,14 +10,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "noHearingsForCMOs",
-    "Label": "You cannot upload an agreed CMO.\n\nThis is because the judge is considering, or has sealed, the CMOs from all past hearings.",
-    "FieldType": "Label",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "multiHearingsWithCMOs",
     "Label": "Hearings with CMOs already being reviewed",
     "FieldType": "TextArea",
