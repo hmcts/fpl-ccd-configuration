@@ -34,55 +34,6 @@ class UploadCMOAboutToStartControllerTest extends AbstractUploadCMOControllerTes
     }
 
     @Test
-    void shouldReturnMultiHearingData() {
-        givenLegacyFlow();
-
-        List<Element<HearingBooking>> hearings = List.of(
-            hearing(LocalDateTime.of(2020, 3, 15, 20, 20)),
-            hearing(LocalDateTime.of(2020, 3, 16, 10, 10))
-        );
-
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(hearings)
-            .build();
-
-        CaseData responseData = extractCaseData(postAboutToStartEvent(asCaseDetails(caseData)));
-
-        Map<String, Object> dynamicList = dynamicListMap(
-            "Case management hearing, 15 March 2020", hearings.get(0).getId(),
-            "Case management hearing, 16 March 2020", hearings.get(1).getId()
-        );
-
-        UploadCMOEventData eventData = UploadCMOEventData.builder()
-            .pastHearingsForCMO(dynamicList)
-            .build();
-
-        CaseData expectedCaseData = caseData.toBuilder().uploadCMOEventData(eventData).build();
-
-        assertThat(responseData).isEqualTo(expectedCaseData);
-    }
-
-    @Test
-    void shouldReturnSingleHearingData() {
-        givenLegacyFlow();
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(List.of(hearing(LocalDateTime.of(2020, 3, 15, 20, 20))))
-            .build();
-
-        CaseData responseData = extractCaseData(postAboutToStartEvent(asCaseDetails(caseData)));
-
-        UploadCMOEventData eventData = UploadCMOEventData.builder()
-            .cmoJudgeInfo("Her Honour Judge Judy")
-            .cmoHearingInfo("Send agreed CMO for Case management hearing, 15 March 2020.\n"
-                + "This must have been discussed by all parties at the hearing.")
-            .build();
-
-        CaseData expectedCaseData = caseData.toBuilder().uploadCMOEventData(eventData).build();
-
-        assertThat(responseData).isEqualTo(expectedCaseData);
-    }
-
-    @Test
     void shouldReturnDynamicListsAndHearingsWithSealedCMOs() {
         givenNewFlow();
 
@@ -119,10 +70,4 @@ class UploadCMOAboutToStartControllerTest extends AbstractUploadCMOControllerTes
     private Map<String, Object> dynamicListMap(String label, UUID code) {
         return mapper.convertValue(dynamicListWithoutSelected(Pair.of(label, code)), new TypeReference<>() {});
     }
-
-    private Map<String, Object> dynamicListMap(String label1, UUID code1, String label2, UUID code2) {
-        return mapper.convertValue(dynamicListWithoutSelected(Pair.of(label1, code1), Pair.of(label2, code2)),
-            new TypeReference<>() {});
-    }
-
 }

@@ -69,21 +69,6 @@ public class UploadCMOService {
             .build();
     }
 
-    @Deprecated
-    public UploadCMOEventData getInitialPageData(List<Element<HearingBooking>> pastHearings,
-                                                 List<Element<CaseManagementOrder>> unsealedOrders) {
-        List<Element<HearingBooking>> hearingsWithoutCMOs = getHearingsWithoutCMO(pastHearings, unsealedOrders);
-        UploadCMOEventData.UploadCMOEventDataBuilder eventBuilder = UploadCMOEventData.builder();
-
-        if (hearingsWithoutCMOs.size() == 1) {
-            addJudgeAndHearingDetails(hearingsWithoutCMOs.get(0).getValue(), eventBuilder, true);
-        } else {
-            eventBuilder.pastHearingsForCMO(buildDynamicList(hearingsWithoutCMOs));
-        }
-
-        return eventBuilder.build();
-    }
-
     public UploadCMOEventData getCMOInfo(CaseData caseData) {
         UploadCMOEventData eventData = caseData.getUploadCMOEventData();
 
