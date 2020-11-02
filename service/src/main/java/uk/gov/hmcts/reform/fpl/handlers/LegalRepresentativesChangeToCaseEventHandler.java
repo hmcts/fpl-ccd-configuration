@@ -18,7 +18,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class LegalRepresentativesChangeToCaseEventHandler {
     private final LegalRepresentativeAddedContentProvider legalRepresentativeAddedContentProvider;
-    private final LegalRepresentativesDifferenceCalculator legalRepresentativesDifferenceCalculator;
+    private final LegalRepresentativesDifferenceCalculator differenceCalculator;
     private final NotificationService notificationService;
 
 
@@ -27,7 +27,7 @@ public class LegalRepresentativesChangeToCaseEventHandler {
         CaseData caseData = event.getCaseData();
         CaseData caseDataBefore = event.getCaseDataBefore();
 
-        LegalRepresentativesChange legalRepresentativesChange = legalRepresentativesDifferenceCalculator.calculate(
+        LegalRepresentativesChange legalRepresentativesChange = differenceCalculator.calculate(
             unwrapElements(caseDataBefore.getLegalRepresentatives()),
             unwrapElements(caseData.getLegalRepresentatives())
         );

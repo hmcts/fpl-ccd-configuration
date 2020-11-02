@@ -37,16 +37,14 @@ public class LegalRepresentativesDifferenceCalculator {
             .collect(Collectors.toSet());
     }
 
-    private Set<LegalRepresentative> toLegalRepresentatives(Set<RelevantUniqueInformation> uniqueInformations) {
-        return uniqueInformations.stream()
+    private Set<LegalRepresentative> toLegalRepresentatives(Set<RelevantUniqueInformation> uniqueInformation) {
+        return uniqueInformation.stream()
             .map(RelevantUniqueInformation::getLegalRepresentative)
             .collect(Collectors.toSet());
     }
 
     private RelevantUniqueInformation toRelevantInformation(LegalRepresentative legalRepresentative) {
-        return new RelevantUniqueInformation(legalRepresentative.getEmail(),
-            legalRepresentative
-        );
+        return new RelevantUniqueInformation(legalRepresentative.getEmail(), legalRepresentative);
     }
 
     @Value
