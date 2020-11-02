@@ -499,7 +499,6 @@ class UploadCMOServiceTest {
                 hearings.get(1).getId(),
                 hearings.get(2).getId()))
             .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.MULTI)
-            .multiHearingsWithCMOs("Case management hearing, 15 January 2020")
             .showHearingsMultiTextArea(YesNo.YES)
             .build();
 
@@ -590,7 +589,6 @@ class UploadCMOServiceTest {
         UploadCMOEventData expectedEventData = UploadCMOEventData.builder()
             .pastHearingsForCMO(dynamicList)
             .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.MULTI)
-            .multiHearingsWithCMOs("Case management hearing, 15 January 2020")
             .showHearingsMultiTextArea(YesNo.YES)
             .build();
 

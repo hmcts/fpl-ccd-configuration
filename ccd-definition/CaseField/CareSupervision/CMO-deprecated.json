@@ -10,14 +10,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "multiHearingsWithCMOs",
-    "Label": "Hearings with CMOs already being reviewed",
-    "FieldType": "TextArea",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "showHearingsMultiTextArea",
     "Label": "Field to store conditional result for showing multiHearingsWithCMOs",
     "FieldType": "Text",

@@ -95,7 +95,6 @@ public class UploadCMOService {
                 eventBuilder.numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.MULTI);
 
                 if (textAreaContent.length() != 0) {
-                    eventBuilder.multiHearingsWithCMOs(textAreaContent);
                     eventBuilder.showHearingsMultiTextArea(YES);
                 }
 
