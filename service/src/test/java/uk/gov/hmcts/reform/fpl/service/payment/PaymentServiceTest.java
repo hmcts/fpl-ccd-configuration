@@ -11,7 +11,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.retry.annotation.EnableRetry;
@@ -20,7 +19,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fnp.client.PaymentApi;
-import uk.gov.hmcts.reform.fnp.exception.PaymentRetryException;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fnp.model.payment.CreditAccountPaymentRequest;
 import uk.gov.hmcts.reform.fnp.model.payment.FeeDto;
@@ -42,6 +40,7 @@ import static feign.Request.HttpMethod.GET;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -105,45 +104,43 @@ class PaymentServiceTest {
         }
 
         @Test
-        void shouldRetryPaymentsApiWhen500IsThrown() {
+        void shouldRetryPaymentsApiWhenInternalServerErrorThrown() {
             CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
                 .customerReference("1")
                 .amount(feeForC2WithNotice.getCalculatedAmount())
                 .fees(List.of(feeForC2WithNotice))
                 .build();
-
-            Mockito.doThrow(FeignException.InternalServerError.class).when(paymentApi).createCreditAccountPayment(
-                any(), any(), any());
-
-            try {
-                paymentService.callPaymentsApi(expectedPaymentRequest);
-            } catch (PaymentRetryException ex) {
-                ex.printStackTrace();
-            } finally {
-                verify(paymentApi, times(3)).createCreditAccountPayment(any(), any(), any());
-
-            }
+            when(paymentApi.createCreditAccountPayment(AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedPaymentRequest))
+                                                            .thenThrow(FeignException.InternalServerError.class);
+            assertThrows(Exception.class, () -> paymentService.callPaymentsApi(expectedPaymentRequest));
+            verify(paymentApi, times(3)).createCreditAccountPayment(any(), any(), any());
         }
 
         @Test
-        void shouldNotRetryPaymentsApiWhenExceptionOtherThan500IsThrown() {
+        void shouldNotRetryPaymentsApiWhenExceptionOtherThanInternalServerIsThrown() {
             CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
                 .customerReference("1")
                 .amount(feeForC2WithNotice.getCalculatedAmount())
                 .fees(List.of(feeForC2WithNotice))
                 .build();
+            when(paymentApi.createCreditAccountPayment(AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedPaymentRequest))
+                                                                                .thenThrow(FeignException.class);
+            assertThrows(Exception.class, () -> paymentService.callPaymentsApi(expectedPaymentRequest));
+            verify(paymentApi, times(1)).createCreditAccountPayment(any(), any(), any());
+        }
 
-            Mockito.doThrow(FeignException.class).when(paymentApi).createCreditAccountPayment(
-                any(), any(), any());
-
-            try {
-                paymentService.callPaymentsApi(expectedPaymentRequest);
-            } catch (PaymentsApiException ex) {
-                ex.printStackTrace();
-            } finally {
-                verify(paymentApi, times(1)).createCreditAccountPayment(any(), any(), any());
-
-            }
+        @Test
+        void shouldFailOnceThenSuccessfulRetry() {
+            CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+                .customerReference("1")
+                .amount(feeForC2WithNotice.getCalculatedAmount())
+                .fees(List.of(feeForC2WithNotice))
+                .build();
+            when(paymentApi.createCreditAccountPayment(AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedPaymentRequest))
+                                                                .thenThrow(FeignException.InternalServerError.class)
+                .thenReturn(expectedPaymentRequest);
+            paymentService.callPaymentsApi(expectedPaymentRequest);
+            verify(paymentApi, times(2)).createCreditAccountPayment(any(), any(), any());
         }
 
         @ParameterizedTest

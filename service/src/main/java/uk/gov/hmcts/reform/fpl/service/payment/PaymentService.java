@@ -8,8 +8,8 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fnp.client.PaymentApi;
-import uk.gov.hmcts.reform.fnp.exception.PaymentRetryException;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
+import uk.gov.hmcts.reform.fnp.exception.RetryablePaymentException;
 import uk.gov.hmcts.reform.fnp.model.payment.CreditAccountPaymentRequest;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import java.math.BigDecimal;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
+import static org.springframework.retry.support.RetrySynchronizationManager.getContext;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Currency.GBP;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Service.FPL;
 
@@ -110,16 +111,18 @@ public class PaymentService {
             .build();
     }
 
-    @Retryable(value = PaymentRetryException.class)
-    //had to make this public for retry to work
+    @Retryable(value = {RetryablePaymentException.class}, label = "payment api call")
     public void callPaymentsApi(CreditAccountPaymentRequest creditAccountPaymentRequest) {
         try {
             paymentApi.createCreditAccountPayment(requestData.authorisation(),
                 authTokenGenerator.generate(),
                 creditAccountPaymentRequest);
         } catch (FeignException.InternalServerError ex) {
-            log.error("Internal server error caught, payment will be retried");
-            throw new PaymentRetryException(ex.contentUTF8(), ex);
+            int retry = getContext().getRetryCount();
+            if (retry == 2) {
+                log.error("Retry of payments api failed three times");
+            }
+            throw new RetryablePaymentException(ex.contentUTF8(), ex);
         } catch (FeignException ex) {
             log.error("Payments response error for {}\n\tstatus: {} => message: \"{}\"",
                 creditAccountPaymentRequest, ex.status(), ex.contentUTF8(), ex);
