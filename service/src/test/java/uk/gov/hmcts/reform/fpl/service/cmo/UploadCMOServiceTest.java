@@ -497,7 +497,6 @@ class UploadCMOServiceTest {
             .pastHearingsForCMO(dynamicList(hearings.get(0).getId(),
                 hearings.get(1).getId(),
                 hearings.get(2).getId()))
-            .showHearingsMultiTextArea(YesNo.YES)
             .build();
 
         assertThat(initialPageData).isEqualTo(expectedEventData);
@@ -572,7 +571,6 @@ class UploadCMOServiceTest {
 
         UploadCMOEventData expectedEventData = UploadCMOEventData.builder()
             .pastHearingsForCMO(dynamicList)
-            .showHearingsMultiTextArea(YesNo.YES)
             .build();
 
         assertThat(initialPageData).isEqualTo(expectedEventData);

@@ -33,7 +33,6 @@ import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.from;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -81,10 +80,6 @@ public class UploadCMOService {
         if (hearingsWithoutCMOs.size() == 1) {
             addJudgeAndHearingDetails(hearingsWithoutCMOs.get(0).getValue(), eventBuilder, true);
         } else {
-            if (textAreaContent.length() != 0) {
-                eventBuilder.showHearingsMultiTextArea(YES);
-            }
-
             eventBuilder.pastHearingsForCMO(buildDynamicList(hearingsWithoutCMOs));
         }
 

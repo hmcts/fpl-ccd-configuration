@@ -47,8 +47,6 @@ public class UploadCMOEventData {
     // Conditional control fields
     YesNo showCMOsSentToJudge; // (Page 1)
     YesNo showReplacementCMO; // (Page 2)
-    @Deprecated
-    YesNo showHearingsMultiTextArea;
 
     public List<Element<SupportingEvidenceBundle>> getCmoSupportingDocs() {
         return defaultIfNull(cmoSupportingDocs, new ArrayList<>());
@@ -69,9 +67,7 @@ public class UploadCMOEventData {
         return new String[]{
             "showCMOsSentToJudge", "cmosSentToJudge", "cmoUploadType", "pastHearingsForCMO", "futureHearingsForCMO",
             "cmoHearingInfo", "showReplacementCMO", "previousCMO", "uploadedCaseManagementOrder", "replacementCMO",
-            "cmoSupportingDocs", "cmoJudgeInfo", "cmoToSend",
-            // TODO: 19/10/2020 Delete after this comment when FPLA-2019 is toggled on
-            "showHearingsMultiTextArea"
+            "cmoSupportingDocs", "cmoJudgeInfo", "cmoToSend"
         };
     }
 
