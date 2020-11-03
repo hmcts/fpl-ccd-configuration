@@ -605,6 +605,7 @@ public class CaseData {
     private final String noticeOfHearingNotes;
     private final Object hearingDateList;
     private final Object pastAndTodayHearingDateList;
+    private final Object futureAndTodayHearingDateList;
     private final String hasExistingHearings;
     private final UUID selectedHearingId;
 

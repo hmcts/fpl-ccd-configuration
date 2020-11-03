@@ -87,6 +87,10 @@ public class FeatureToggleService {
         return ldClient.boolVariation("upload-draft-cmo", createLDUser(), false);
     }
 
+    public boolean isVacateHearingEnabled() {
+        return ldClient.boolVariation("vacate-hearing", createLDUser(), false);
+    }
+
     private LDUser createLDUser() {
         return createLDUser(Map.of());
     }
