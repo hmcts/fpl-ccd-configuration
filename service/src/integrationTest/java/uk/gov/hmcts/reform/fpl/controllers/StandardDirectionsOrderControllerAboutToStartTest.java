@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute.SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute.UPLOAD;
@@ -89,9 +88,7 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractControll
     }
 
     @Test
-    void shouldPopulateJudgeAndLegalAdvisorInUploadRouteWhenSendNoticeOfProceedingsViaSDOIsToggledOn() {
-        given(featureToggleService.isSendNoticeOfProceedingsFromSdo()).willReturn(true);
-
+    void shouldPopulateJudgeAndLegalAdvisorInUploadRouteWhenSendNoticeOfProceedingsViaSDO() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor();
 
         CaseDetails caseDetails = CaseDetails.builder()
@@ -106,24 +103,6 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractControll
         CaseData responseCaseData = mapper.convertValue(response.getData(), CaseData.class);
 
         assertThat(responseCaseData.getJudgeAndLegalAdvisor()).isEqualTo(judgeAndLegalAdvisor);
-    }
-
-    @Test
-    void shouldNotPopulateJudgeAndLegalAdvisorInUploadRouteWhenSendNoticeOfProceedingsViaSDOIsToggledOff() {
-        given(featureToggleService.isSendNoticeOfProceedingsFromSdo()).willReturn(false);
-
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of(
-                "sdoRouter", UPLOAD,
-                "standardDirectionOrder", StandardDirectionOrder.builder()
-                    .judgeAndLegalAdvisor(buildJudgeAndLegalAdvisor())
-                    .build()
-            )).build();
-
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
-
-        assertThat(response.getData())
-            .doesNotContainKey("judgeAndLegalAdvisor");
     }
 
     private CaseDetails buildCaseDetailsWithDateOfIssueAndRoute(String date, SDORoute route) {

@@ -91,10 +91,8 @@ public class StandardDirectionsOrderController extends CallbackController {
                 case UPLOAD:
                     data.put("currentSDO", standardDirectionOrder.getOrderDoc());
                     data.put("useUploadRoute", YES);
+                    data.put(JUDGE_AND_LEGAL_ADVISOR_KEY, sdoService.getJudgeAndLegalAdvisorFromSDO(caseData));
 
-                    if (featureToggleService.isSendNoticeOfProceedingsFromSdo()) {
-                        data.put(JUDGE_AND_LEGAL_ADVISOR_KEY, sdoService.getJudgeAndLegalAdvisorFromSDO(caseData));
-                    }
                     break;
                 case SERVICE:
                     data.put(DATE_OF_ISSUE_KEY, sdoService.generateDateOfIssue(standardDirectionOrder));
@@ -124,9 +122,9 @@ public class StandardDirectionsOrderController extends CallbackController {
             data.remove("preparedSDO");
         }
 
-        if (featureToggleService.isSendNoticeOfProceedingsFromSdo()) {
-            caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, sdoService.getJudgeAndLegalAdvisorFromSDO(caseData));
-        }
+
+        caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, sdoService.getJudgeAndLegalAdvisorFromSDO(caseData));
+
 
         return respond(caseDetails);
     }
@@ -265,7 +263,8 @@ public class StandardDirectionsOrderController extends CallbackController {
             data.put("state", State.CASE_MANAGEMENT);
             removeTemporaryFields(caseDetails, "sdoRouter");
 
-            if (caseData.isSendingNoticeOfProceedings() && featureToggleService.isSendNoticeOfProceedingsFromSdo()) {
+            //TO DO REMOVE IF
+            if (caseData.isSendingNoticeOfProceedings()) {
                 List<DocmosisTemplates> docmosisTemplateTypes =
                     caseData.getNoticeOfProceedings().mapProceedingTypesToDocmosisTemplate();
 

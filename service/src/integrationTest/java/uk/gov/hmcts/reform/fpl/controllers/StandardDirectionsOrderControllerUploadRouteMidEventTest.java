@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
@@ -11,18 +10,14 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(StandardDirectionsOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
 class StandardDirectionsOrderControllerUploadRouteMidEventTest extends AbstractControllerTest {
-    @MockBean
-    private FeatureToggleService featureToggleService;
 
     private static final DocumentReference DOCUMENT = DocumentReference.builder().filename("prepared.pdf").build();
 
@@ -64,9 +59,7 @@ class StandardDirectionsOrderControllerUploadRouteMidEventTest extends AbstractC
     }
 
     @Test
-    void shouldAppendJudgeAndLegalAdvisorToSDOWhenSendNoticeOfProceedingsFromSDOIsToggledOn() {
-        given(featureToggleService.isSendNoticeOfProceedingsFromSdo()).willReturn(true);
-
+    void shouldAppendJudgeAndLegalAdvisorToSDOWhenSendingNoticeOfProceedingsFromSDO() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor("some label");
 
         CaseData caseDataBefore = CaseData.builder()
@@ -87,26 +80,6 @@ class StandardDirectionsOrderControllerUploadRouteMidEventTest extends AbstractC
 
         assertThat(actualJudgeAndLegalAdvisor.getAllocatedJudgeLabel()).isNull();
         assertThat(actualJudgeAndLegalAdvisor).isEqualTo(buildJudgeAndLegalAdvisor());
-    }
-
-    @Test
-    void shouldNotAppendJudgeAndLegalAdvisorToSDOWhenSendNoticeOfProceedingsFromSDOIsToggledOff() {
-        given(featureToggleService.isSendNoticeOfProceedingsFromSdo()).willReturn(false);
-
-        CaseData caseDataBefore = CaseData.builder()
-            .standardDirectionOrder(StandardDirectionOrder.builder().orderDoc(DOCUMENT).build())
-            .build();
-
-        CallbackRequest request = toCallBackRequest(
-            asCaseDetails(CaseData.builder()
-                .judgeAndLegalAdvisor(buildJudgeAndLegalAdvisor())
-                .build()),
-            asCaseDetails(caseDataBefore)
-        );
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(request, "upload-route");
-        StandardDirectionOrder builtOrder = extractCaseData(response).getStandardDirectionOrder();
-
-        assertThat(builtOrder.getJudgeAndLegalAdvisor()).isNull();
     }
 
     private JudgeAndLegalAdvisor buildJudgeAndLegalAdvisor() {

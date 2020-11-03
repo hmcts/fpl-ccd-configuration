@@ -59,7 +59,7 @@ public class StandardDirectionsOrderService {
         StandardDirectionOrder.StandardDirectionOrderBuilder builder = StandardDirectionOrder.builder()
             .orderDoc(document);
 
-        if (featureToggleService.isSendNoticeOfProceedingsFromSdo() && caseData.getJudgeAndLegalAdvisor() != null) {
+        if (caseData.getJudgeAndLegalAdvisor() != null) {
             JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
                 caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()
             );
@@ -81,9 +81,9 @@ public class StandardDirectionsOrderService {
             .uploader(userInfo.getName())
             .orderDoc(prepareOrderDocument(currentOrder.getOrderDoc(), currentOrder.getOrderStatus()));
 
-        if (featureToggleService.isSendNoticeOfProceedingsFromSdo()) {
-            builder.judgeAndLegalAdvisor(currentOrder.getJudgeAndLegalAdvisor());
-        }
+
+        builder.judgeAndLegalAdvisor(currentOrder.getJudgeAndLegalAdvisor());
+
 
         return builder.build();
     }
