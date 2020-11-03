@@ -8,14 +8,14 @@ let caseId;
 
 Feature('Case maintenance after submission');
 
-BeforeSuite(async I => {
+BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
   await I.signIn(config.swanseaLocalAuthorityUserOne);
 });
 
-Before(async I => await I.navigateToCaseDetails(caseId));
+Before(async ({I}) => await I.navigateToCaseDetails(caseId));
 
-Scenario('local authority uploads documents', async (I, caseViewPage, uploadDocumentsEventPage) => {
+Scenario('local authority uploads documents', async ({I, caseViewPage, uploadDocumentsEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
   uploadDocumentsHelper.uploadCaseDocuments(uploadDocumentsEventPage);
   await I.completeEvent('Save and continue');
@@ -24,7 +24,7 @@ Scenario('local authority uploads documents', async (I, caseViewPage, uploadDocu
   uploadDocumentsHelper.assertCaseDocuments(I);
 });
 
-Scenario('local authority uploads documents when SWET not required', async (I, caseViewPage, uploadDocumentsEventPage) => {
+Scenario('local authority uploads documents when SWET not required', async ({I, caseViewPage, uploadDocumentsEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
   uploadDocumentsHelper.uploadCaseDocuments(uploadDocumentsEventPage, false);
   await I.completeEvent('Save and continue');
@@ -33,16 +33,16 @@ Scenario('local authority uploads documents when SWET not required', async (I, c
   uploadDocumentsHelper.assertCaseDocuments(I, false);
 });
 
-Scenario('local authority uploads court bundle', async (I, caseViewPage, uploadDocumentsEventPage) => {
+Scenario('local authority uploads court bundle', async ({I, caseViewPage, uploadDocumentsEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
   uploadDocumentsEventPage.uploadCourtBundle(config.testFile);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
-  I.seeDocument('Court bundle', 'mockFile.txt');
+  I.seeDocument('Court bundle', 'mockFile.txt', '', '', 'Date and time uploaded', 'Uploaded by');
 });
 
-Scenario('local authority provides a statements of service', async (I, caseViewPage, addStatementOfServiceEventPage) => {
+Scenario('local authority provides a statements of service', async ({I, caseViewPage, addStatementOfServiceEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.addStatementOfService);
   await addStatementOfServiceEventPage.enterRecipientDetails(recipients[0]);
   await I.addAnotherElementToCollection();
@@ -80,7 +80,7 @@ Scenario('local authority provides a statements of service', async (I, caseViewP
   I.seeInTab(['Recipients 2', 'Recipient\'s email address'], recipients[1].email);
 });
 
-Scenario('local authority upload placement application', async (I, caseViewPage, placementEventPage) => {
+Scenario('local authority upload placement application', async ({I, caseViewPage, placementEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.placement);
   await placementEventPage.selectChild('Timothy Jones');
   await placementEventPage.addApplication(config.testFile);

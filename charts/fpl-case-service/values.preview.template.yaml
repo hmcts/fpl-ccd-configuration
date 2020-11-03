@@ -21,6 +21,7 @@ java:
     fpl:
       secrets:
         - notify-api-key
+        - send-grid-api-key
         - docmosis-api-key
         - fpl-case-service-s2s-secret
         - fpl-case-service-idam-client-secret
@@ -95,7 +96,7 @@ ccd:
         PROXY_DOCUMENT_MANAGEMENT: http://dm-store-aat.service.core-compute-aat.internal
       ingressHost: gateway-${SERVICE_FQDN}
       ingressIP: ${INGRESS_IP}
-      keyVaults:
+      keyVaults: []
   ccd-data-store-api:
     java:
       imagePullPolicy: Always
@@ -103,7 +104,8 @@ ccd:
         DATA_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
         DATA_STORE_IDAM_KEY: ${CCD_DATA_STORE_S2S_SECRET}
         IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
-      keyVaults:
+        CCD_S2S_AUTHORISED_SERVICES_CASE_USER_ROLES: fpl_case_service
+      keyVaults: []
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
   ccd-definition-store-api:
     java:
@@ -112,14 +114,14 @@ ccd:
         DEFINITION_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
         DEFINITION_STORE_IDAM_KEY: ${CCD_DEFINITION_STORE_S2S_SECRET}
         IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
-      keyVaults:
+      keyVaults: []
       ingressHost: ccd-definition-store-${SERVICE_FQDN}
   ccd-user-profile-api:
     java:
       imagePullPolicy: Always
       enviroment:
         USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
-      keyVaults:
+      keyVaults: []
       ingressHost: ccd-user-profile-api-${SERVICE_FQDN}
 
   postgresql:

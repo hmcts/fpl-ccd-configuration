@@ -28,8 +28,11 @@ public class RemoveOrderControllerAboutToStartTest extends AbstractControllerTes
     @Test
     void shouldAddRemovableOrderListToCaseData() {
         List<Element<GeneratedOrder>> orders = List.of(
-            element(buildOrder("order 1", "12 March 1234")),
-            element(buildOrder("order 2", "28 July 2020"))
+            element(buildOrder("order 1", "12 March 1234", "Blank order (C21)")),
+            element(buildOrder("order 2", "28 July 2020", "Blank order (C21)")),
+            element(buildOrder("order 3", "29 August 2021", "Interim supervision order")),
+            element(buildOrder("order 4", "12 August 2022", "Interim care order")),
+            element(buildOrder("order 5", "12 September 2018", "Another Order"))
         );
 
         CaseData caseData = CaseData.builder()
@@ -45,7 +48,9 @@ public class RemoveOrderControllerAboutToStartTest extends AbstractControllerTes
             .value(DynamicListElement.EMPTY)
             .listItems(List.of(
                 buildListElement(orders.get(0).getId(), "order 1 - 12 March 1234"),
-                buildListElement(orders.get(1).getId(), "order 2 - 28 July 2020")
+                buildListElement(orders.get(1).getId(), "order 2 - 28 July 2020"),
+                buildListElement(orders.get(2).getId(), "order 3 - 29 August 2021"),
+                buildListElement(orders.get(3).getId(), "order 4 - 12 August 2022")
             ))
             .build();
 
@@ -59,9 +64,9 @@ public class RemoveOrderControllerAboutToStartTest extends AbstractControllerTes
             .build();
     }
 
-    private GeneratedOrder buildOrder(String title, String date) {
+    private GeneratedOrder buildOrder(String title, String date, String type) {
         return GeneratedOrder.builder()
-            .type("Blank order (C21)")
+            .type(type)
             .title(title)
             .dateOfIssue(date)
             .build();

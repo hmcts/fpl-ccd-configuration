@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -12,10 +13,10 @@ import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisTemplateDataGeneration;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 import uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper;
 
 import java.time.format.FormatStyle;
@@ -37,9 +38,8 @@ public class NoticeOfProceedingsTemplateDataGenerationService
 
     @Override
     public DocmosisNoticeOfProceeding getTemplateData(CaseData caseData) {
-
-        HearingBooking prioritisedHearingBooking = caseData.getMostUrgentHearingBookingAfter(time.now());
-        HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(prioritisedHearingBooking);
+        HearingBooking hearing = caseData.getFirstHearing().orElseThrow(NoHearingBookingException::new);
+        HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(hearing);
 
         return DocmosisNoticeOfProceeding.builder()
             .courtName(getCourtName(caseData.getCaseLocalAuthority()))
@@ -48,17 +48,12 @@ public class NoticeOfProceedingsTemplateDataGenerationService
             .applicantName(PeopleInCaseHelper.getFirstApplicantName(caseData.getApplicants()))
             .orderTypes(getOrderTypes(caseData.getOrders()))
             .childrenNames(getAllChildrenNames(caseData.getAllChildren()))
-            .judgeTitleAndName(JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
-                caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()))
-            .legalAdvisorName(JudgeAndLegalAdvisorHelper.getLegalAdvisorName(
-                caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()))
-            .hearingDate(caseDataExtractionService.getHearingDateIfHearingsOnSameDay(
-                prioritisedHearingBooking)
-                .orElse(""))
-            .hearingVenue(hearingVenueLookUpService.buildHearingVenue(hearingVenue))
-            .preHearingAttendance(caseDataExtractionService.extractPrehearingAttendance(
-                prioritisedHearingBooking))
-            .hearingTime(caseDataExtractionService.getHearingTime(prioritisedHearingBooking))
+            .hearingBooking(DocmosisHearingBooking.builder()
+                .hearingDate(caseDataExtractionService.getHearingDateIfHearingsOnSameDay(hearing).orElse(""))
+                .hearingVenue(hearingVenueLookUpService.buildHearingVenue(hearingVenue))
+                .preHearingAttendance(caseDataExtractionService.extractPrehearingAttendance(hearing))
+                .hearingTime(caseDataExtractionService.getHearingTime(hearing))
+                .build())
             .crest(getCrestData())
             .courtseal(getCourtSealData())
             .build();

@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.google.common.collect.ImmutableMap;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.service.notify.NotificationClient;
@@ -31,22 +32,24 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_CTSC_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
-import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DETAILS_KEY;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(StandardDirectionsOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class StandardDirectionsOrderControllerSubmittedTest extends AbstractControllerTest {
+class StandardDirectionsOrderControllerSubmittedTest extends AbstractControllerTest {
     private static final Long CASE_ID = 1L;
     private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
     private static final DocumentReference DOCUMENT_REFERENCE = TestDataHelper.testDocumentReference();
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
+    private static final byte[] APPLICATION_BINARY = TestDataHelper.DOCUMENT_CONTENT;
 
     @Mock
     private ApplicationEventPublisher applicationEventPublisher;
@@ -57,8 +60,17 @@ public class StandardDirectionsOrderControllerSubmittedTest extends AbstractCont
     @MockBean
     private CoreCaseDataService coreCaseDataService;
 
+    @MockBean
+    private DocumentDownloadService documentDownloadService;
+
     StandardDirectionsOrderControllerSubmittedTest() {
         super("draft-standard-directions");
+    }
+
+    @BeforeEach
+    void init() {
+        when(documentDownloadService.downloadDocument(any()))
+            .thenReturn(APPLICATION_BINARY);
     }
 
     @Test
@@ -80,10 +92,10 @@ public class StandardDirectionsOrderControllerSubmittedTest extends AbstractCont
         postSubmittedEvent(buildCallbackRequest(SEALED));
 
         verify(notificationClient).sendEmail(
-            STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE,
-            "cafcass@cafcass.com",
-            cafcassParameters(),
-            NOTIFICATION_REFERENCE
+            eq(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE),
+            eq("cafcass@cafcass.com"),
+            anyMap(),
+            eq(NOTIFICATION_REFERENCE)
         );
 
         verify(notificationClient).sendEmail(
@@ -103,17 +115,6 @@ public class StandardDirectionsOrderControllerSubmittedTest extends AbstractCont
             CASE_ID,
             SEND_DOCUMENT_EVENT,
             Map.of("documentToBeSent", DOCUMENT_REFERENCE));
-    }
-
-    private Map<String, Object> cafcassParameters() {
-        return ImmutableMap.<String, Object>builder()
-            .put("title", "cafcass")
-            .put("familyManCaseNumber", "")
-            .put("leadRespondentsName", "Moley")
-            .put("hearingDate", "20 October 2020")
-            .put("reference", String.valueOf(CASE_ID))
-            .put("caseUrl", String.format("http://fake-url/cases/case-details/%s", CASE_ID))
-            .build();
     }
 
     private CallbackRequest buildCallbackRequest(OrderStatus status) {

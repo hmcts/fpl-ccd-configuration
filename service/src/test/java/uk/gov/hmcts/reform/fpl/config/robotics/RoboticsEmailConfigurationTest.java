@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class RoboticsEmailConfigurationTest {
+class RoboticsEmailConfigurationTest {
     private static final String EXPECTED_NOTIFICATIONS_SENDER = "sender@example.com";
     private static final String EXPECTED_NOTIFICATIONS_RECIPIENT = "recipient@example.com";
 

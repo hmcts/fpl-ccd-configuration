@@ -2,6 +2,20 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "BDB",
+    "ListElement": "Blackburn with Darwen Borough Council",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "BSC",
+    "ListElement": "Buckinghamshire Council",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "CDF",
     "ListElement": "Cardiff Council",
     "DisplayOrder": 5
@@ -9,9 +23,30 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "CEB",
+    "ListElement": "Cheshire East Borough Council",
+    "DisplayOrder": 6
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "DBC",
+    "ListElement": "Darlington Borough Council",
+    "DisplayOrder": 7
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "DER",
+    "ListElement": "Derby City Council",
+    "DisplayOrder": 8
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "DCC",
     "ListElement": "Durham County Council",
-    "DisplayOrder": 6
+    "DisplayOrder": 9
   },
   {
     "LiveFrom": "01/01/2017",
@@ -30,6 +65,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "HCC",
+    "ListElement": "Hertfordshire County Council",
+    "DisplayOrder": 16
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "KBC",
     "ListElement": "Knowsley Borough Council",
     "DisplayOrder": 20
@@ -37,16 +79,23 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "LAN",
+    "ListElement": "Lancashire County Council",
+    "DisplayOrder": 21
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "LEI",
     "ListElement": "Leicester City Council",
-    "DisplayOrder": 21
+    "DisplayOrder": 22
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "LCO",
     "ListElement": "Leicester County Council",
-    "DisplayOrder": 22
+    "DisplayOrder": 23
   },
   {
     "LiveFrom": "01/01/2017",
@@ -61,6 +110,13 @@
     "ListElementCode": "HN",
     "ListElement": "London Borough Hillingdon",
     "DisplayOrder": 30
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "MKC",
+    "ListElement": "Milton Keynes Council",
+    "DisplayOrder": 31
   },
   {
     "LiveFrom": "01/01/2017",
@@ -94,7 +150,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "OCC",
-    "ListElement": "Oxford County Council",
+    "ListElement": "Oxfordshire County Council",
     "DisplayOrder": 55
   },
   {
@@ -121,6 +177,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "SOC",
+    "ListElement": "Somerset County Council",
+    "DisplayOrder": 71
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "SCC",
     "ListElement": "Southampton City Council",
     "DisplayOrder": 75
@@ -131,6 +194,13 @@
     "ListElementCode": "STF",
     "ListElement": "Staffordshire County Council",
     "DisplayOrder": 80
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SOT",
+    "ListElement": "Stockton-on-Tees Borough Council",
+    "DisplayOrder": 82
   },
   {
     "LiveFrom": "01/01/2017",

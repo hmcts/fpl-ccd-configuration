@@ -80,8 +80,6 @@ withPipeline(type, product, component) {
   enableAksStagingDeployment()
   enableSlackNotifications('#fpla-tech')
 
-  env.PROXY_SERVER = "proxyout.reform.hmcts.net:8080"
-
   after('checkout') {
     onMaster {
       withCredentials([usernamePassword(credentialsId: 'jenkins-github-hmcts-api-token', usernameVariable: 'USERNAME', passwordVariable: 'BEARER_TOKEN')]) {
@@ -138,25 +136,29 @@ withPipeline(type, product, component) {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
 
-  before('functionalTest:saat') {
-    env.SKIP_FUNCTIONAL_TESTS = 'true'
+  before('functionalTest:preview') {
+    env.ENV = 'preview'
   }
 
   before('functionalTest:aat') {
-    env.TESTS_SELECTOR="@smoke-tests"
+    env.ENV = 'aat'
+    env.SKIP_BROWSER_TESTS = 'true'
   }
 
   before('functionalTest:demo') {
-    env.SKIP_FUNCTIONAL_TESTS = 'true'
+    env.SKIP_API_TESTS = 'true'
+    env.SKIP_BROWSER_TESTS = 'true'
   }
 
   after('functionalTest:aat') {
     archiveCoreCaseDataDefinitions('prod')
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
   }
 
   after('functionalTest:preview') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/**/*'
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
   }
 
   before('buildinfra:demo') {

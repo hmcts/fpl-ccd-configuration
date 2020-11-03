@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.fpl.utils.AgeDisplayFormatHelper.formatAgeDisplay;
 
 /**
@@ -16,14 +16,15 @@ class AgeDisplayFormatHelperTest {
 
     @Test
     void shouldThrowExceptionWhenInputIsNotProvided() {
-        Assertions.assertThatThrownBy(() -> formatAgeDisplay(null))
+        assertThatThrownBy(() -> formatAgeDisplay(null))
             .isInstanceOf(NullPointerException.class)
             .hasMessage("Date of birth value is required");
     }
 
     @Test
     void shouldThrowExceptionWhenInputIsInFuture() {
-        Assertions.assertThatThrownBy(() -> formatAgeDisplay(NOW.plusDays(1)))
+        LocalDate dateOfBirth = NOW.plusDays(1);
+        assertThatThrownBy(() -> formatAgeDisplay(dateOfBirth))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Date of birth cannot be in future");
     }

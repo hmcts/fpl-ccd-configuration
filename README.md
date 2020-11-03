@@ -99,8 +99,20 @@ Note: Case number will be printed to the console while tests run e.g. `Applicati
 
 ## Running E2E against remote environment
 ```$bash
-proxy="http://proxyout.reform.hmcts.net:8080" URL="https://manage-case.aat.platform.hmcts.net" IDAM_API_URL="https://idam-api.aat.platform.hmcts.net" CASE_SERVICE_URL="http://fpl-case-service-aat.service.core-compute-aat.internal" DM_STORE_URL="http://dm-store-aat.service.core-compute-aat.internal" yarn test
+URL="https://manage-case.aat.platform.hmcts.net" IDAM_API_URL="https://idam-api.aat.platform.hmcts.net" CASE_SERVICE_URL="http://fpl-case-service-aat.service.core-compute-aat.internal" DM_STORE_URL="http://dm-store-aat.service.core-compute-aat.internal" yarn test
 ```
+If environment requires user to login into hmcts account first then set HMCTS_USER_USERNAME and HMCTS_USER_PASSWORD 
+
+## Running api tests
+
+Application must be up and running
+
+```$bash
+./gradlew runApiTest
+```
+
+Report is generated in build/reports/serenity
+
 ## Service:
 See [fpl-service](service/README.md) for more information.
 
@@ -118,3 +130,4 @@ To connect preview env to azure app insight:
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
+

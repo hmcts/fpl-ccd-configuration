@@ -2,9 +2,9 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
@@ -50,13 +50,13 @@ public class ChildrenService {
         return children.stream().allMatch(child -> YES.getValue().equals(child.getValue().getFinalOrderIssued()));
     }
 
-    public List<Element<Child>> updateFinalOrderIssued(GeneratedOrderType orderType, List<Element<Child>> children,
+    public List<Element<Child>> updateFinalOrderIssued(OrderTypeAndDocument orderType, List<Element<Child>> children,
                                                        String orderAppliesToAllChildren, Selector childSelector,
                                                        String remainingChildIndex) {
         if (YES.getValue().equals(orderAppliesToAllChildren)) {
             children.forEach(child -> {
                 child.getValue().setFinalOrderIssued(YES.getValue());
-                child.getValue().setFinalOrderIssuedType(orderType.getLabel());
+                child.getValue().setFinalOrderIssuedType(orderType.getTypeLabel());
             });
         } else {
             List<Integer> selectedChildren;
@@ -71,7 +71,7 @@ public class ChildrenService {
                 Child child = children.get(i).getValue();
                 if (!selectedChildren.isEmpty() && selectedChildren.contains(i)) {
                     child.setFinalOrderIssued(YES.getValue());
-                    child.setFinalOrderIssuedType(orderType.getLabel());
+                    child.setFinalOrderIssuedType(orderType.getTypeLabel());
                 } else if (StringUtils.isEmpty(child.getFinalOrderIssued())) {
                     child.setFinalOrderIssued(NO.getValue());
                 }

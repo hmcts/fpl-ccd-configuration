@@ -117,13 +117,12 @@ public class PlacementController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
-        sendNotificationForNewPlacementOrder(callbackRequest, caseDetails, caseData, caseDataBefore);
+        sendNotificationForNewPlacementOrder(caseDetails, caseData, caseDataBefore);
         sendNotificationForNewNoticeOfPlacementOrder(caseData, caseDataBefore);
         triggerSendDocumentEventForUpdatedPlacementOrderDocuments(caseDetails, caseData, caseDataBefore);
     }
 
-    private void sendNotificationForNewPlacementOrder(CallbackRequest callbackRequest,
-                                                      CaseDetails caseDetails,
+    private void sendNotificationForNewPlacementOrder(CaseDetails caseDetails,
                                                       CaseData caseData,
                                                       CaseData caseDataBefore) {
         UUID childId = getSelectedChildId(caseDetails, caseData);

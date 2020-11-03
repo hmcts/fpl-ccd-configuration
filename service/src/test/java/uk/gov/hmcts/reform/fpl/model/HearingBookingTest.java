@@ -1,7 +1,10 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,5 +51,52 @@ class HearingBookingTest {
     void shouldReturnFalseIfHearingTypeIsNotOfTypeFinal() {
         HearingBooking hearingBooking = HearingBooking.builder().type(CASE_MANAGEMENT).build();
         assertThat(hearingBooking.isOfType(FINAL)).isFalse();
+    }
+
+    @Nested
+    class StartsTodayOrBefore {
+
+        @Test
+        void shouldReturnTrueForHearingStartedToday() {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .startDate(LocalDateTime.now())
+                .build();
+
+            assertThat(hearingBooking.startsTodayOrBefore()).isTrue();
+        }
+
+        @Test
+        void shouldReturnTrueForHearingStartedInPast() {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .startDate(LocalDateTime.now().minusDays(1))
+                .build();
+
+            assertThat(hearingBooking.startsTodayOrBefore()).isTrue();
+        }
+
+        @Test
+        void shouldReturnTrueForHearingStaringLaterToday() {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .startDate(LocalDate.now().plusDays(1).atStartOfDay().minusSeconds(1))
+                .build();
+
+            assertThat(hearingBooking.startsTodayOrBefore()).isTrue();
+        }
+
+        @Test
+        void shouldReturnFalseForHearingStartingAfterToday() {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .startDate(LocalDate.now().plusDays(1).atStartOfDay().minusSeconds(1))
+                .build();
+
+            assertThat(hearingBooking.startsTodayOrBefore()).isTrue();
+        }
+
+        @Test
+        void shouldReturnFalseForHearingWithoutStartDate() {
+            HearingBooking hearingBooking = HearingBooking.builder().build();
+
+            assertThat(hearingBooking.startsTodayOrBefore()).isFalse();
+        }
     }
 }

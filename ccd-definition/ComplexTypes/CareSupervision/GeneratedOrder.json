@@ -19,6 +19,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "GeneratedOrder",
+    "ListElementCode": "uploadedOrderDescription",
+    "FieldType": "TextArea",
+    "ElementLabel": "Order description",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
     "ListElementCode": "details",
     "FieldType": "TextArea",
     "ElementLabel": "Order details",
@@ -41,7 +49,15 @@
     "ID": "GeneratedOrder",
     "ListElementCode": "dateOfIssue",
     "FieldType": "Text",
-    "ElementLabel": "Date of issue",
+    "ElementLabel": "Starts on",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
+    "ListElementCode": "expiryDate",
+    "FieldType": "Text",
+    "ElementLabel": "Ends on",
     "SecurityClassification": "Public"
   },
   {
@@ -51,15 +67,6 @@
     "FieldType": "Text",
     "ElementLabel": "Date and time of upload",
     "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "GeneratedOrder",
-    "ListElementCode": "expiryDate",
-    "FieldType": "Text",
-    "ElementLabel": "Order expires on",
-    "SecurityClassification": "Public"
-
   },
   {
     "LiveFrom": "01/01/2017",
@@ -75,6 +82,14 @@
     "ListElementCode": "furtherDirections",
     "FieldType": "FurtherDirections",
     "ElementLabel": "Directions",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
+    "ListElementCode": "uploader",
+    "FieldType": "Text",
+    "ElementLabel": "Uploaded by",
     "SecurityClassification": "Public"
   },
   {

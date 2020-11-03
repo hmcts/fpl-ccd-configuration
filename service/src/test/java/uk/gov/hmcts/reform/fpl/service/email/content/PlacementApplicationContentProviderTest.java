@@ -20,7 +20,7 @@ class PlacementApplicationContentProviderTest extends AbstractEmailContentProvid
     void shouldBuildPlacementNotificationWithExpectedParameters() {
         final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("respondentLastName", "Smith")
-            .put("caseUrl", caseUrl(CASE_REFERENCE))
+            .put("caseUrl", caseUrl(CASE_REFERENCE, "PlacementTab"))
             .build();
 
         assertThat(placementApplicationContentProvider.buildPlacementApplicationNotificationParameters(caseData()))

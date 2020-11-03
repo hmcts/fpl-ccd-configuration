@@ -20,11 +20,15 @@ public class LocalAuthorityUserService {
     private static final Set<CaseRole> CASE_ROLES = Set.of(LASOLICITOR, CREATOR);
     private final CaseRoleService caseRoleService;
     private final RequestData requestData;
+    private final FeatureToggleService featureToggleService;
 
     public void grantUserAccessWithCaseRole(String caseId, String caseLocalAuthority) {
         String currentUser = requestData.userId();
-
-        caseRoleService.grantAccessToLocalAuthority(caseId, caseLocalAuthority, CASE_ROLES, Set.of(currentUser));
-        caseRoleService.grantAccessToUser(caseId, currentUser, CASE_ROLES);
+        if (featureToggleService.isCaseUserBulkAssignmentEnabled()) {
+            caseRoleService.grantCaseAssignmentToLocalAuthority(caseId, caseLocalAuthority, CASE_ROLES);
+        } else {
+            caseRoleService.grantAccessToLocalAuthority(caseId, caseLocalAuthority, CASE_ROLES, Set.of(currentUser));
+            caseRoleService.grantAccessToUser(caseId, currentUser, CASE_ROLES);
+        }
     }
 }

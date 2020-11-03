@@ -7,12 +7,15 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CloseCase;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.CloseCaseReason.WITHDRAWN;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ChangeStateController.class)
@@ -33,12 +36,21 @@ public class ChangeStateControllerAboutToSubmitTest extends AbstractControllerTe
     }
 
     @Test
-    void shouldChangeStateToFinalHearingWhenCurrentStateIsCaseManagementAndYesIsSelected() {
-        CaseData caseData = caseData(CASE_MANAGEMENT, YES.getValue());
+    void shouldMigrateStateFromClosedToFinalHearing() {
+        CaseData caseData = CaseData.builder()
+            .state(CLOSED)
+            .closedStateRadioList(FINAL_HEARING)
+            .deprivationOfLiberty("Test data")
+            .closeCaseTabField(CloseCase.builder()
+                .reason(WITHDRAWN)
+                .build())
+            .build();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(asCaseDetails(caseData));
 
-        assertThat(response.getData()).extracting("state").isEqualTo(FINAL_HEARING.getValue());
+        assertThat(response.getData())
+            .extracting("state", "deprivationOfLiberty", "closeCaseTabField")
+            .containsExactly(FINAL_HEARING.getValue(), null, null);
     }
 
     @Test
@@ -56,5 +68,4 @@ public class ChangeStateControllerAboutToSubmitTest extends AbstractControllerTe
             .confirmChangeState(changeState)
             .build();
     }
-
 }

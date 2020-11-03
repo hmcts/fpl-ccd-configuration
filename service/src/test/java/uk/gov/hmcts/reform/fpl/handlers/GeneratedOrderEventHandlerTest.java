@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotification
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -89,8 +90,8 @@ class GeneratedOrderEventHandlerTest {
     void before() {
         caseData = caseData();
 
-        given(inboxLookupService.getNotificationRecipientEmail(caseData))
-            .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
+        given(inboxLookupService.getRecipients(caseData))
+            .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         given(orderIssuedEmailContentProvider.buildParametersWithCaseUrl(caseData, DOCUMENT_CONTENTS, GENERATED_ORDER))
             .willReturn(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true));
@@ -126,7 +127,7 @@ class GeneratedOrderEventHandlerTest {
 
         verify(notificationService).sendEmail(
             eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
-            eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            eq(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS)),
             eqJson(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true)),
             eq("12345"));
 

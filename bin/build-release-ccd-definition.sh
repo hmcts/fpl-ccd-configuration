@@ -9,7 +9,9 @@ if [[ ${environment} != "prod" && ${environment} != "aat" && ${environment} != "
   exit 1
 fi
 
-if [ ${environment} == "prod" ] || [ ${environment} == "demo" ]; then
+if [[ ${environment} == "prod" ]]; then
+  excludedFilenamePatterns="-e UserProfile.json,*-nonprod.json,*-testing.json"
+elif  [[ ${environment} == "demo" ]]; then
   excludedFilenamePatterns="-e UserProfile.json,*-nonprod.json"
 else
   excludedFilenamePatterns="-e UserProfile.json,*-prod.json"

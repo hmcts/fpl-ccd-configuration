@@ -22,7 +22,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
-public class BankHolidaysServiceTest {
+class BankHolidaysServiceTest {
 
     private static final LocalDate BANK_HOLIDAY_1 = LocalDate.of(2020, JANUARY, 1);
     private static final LocalDate BANK_HOLIDAY_2 = LocalDate.of(2020, FEBRUARY, 1);
@@ -35,7 +35,7 @@ public class BankHolidaysServiceTest {
     private BankHolidaysService bankHolidaysService;
 
     @Test
-    public void shouldFetchBankHolidays() {
+    void shouldFetchBankHolidays() {
         when(bankHolidaysApi.retrieveAll()).thenReturn(BANK_HOLIDAYS);
 
         final Set<LocalDate> bankHolidays = bankHolidaysService.getBankHolidays();
@@ -44,7 +44,7 @@ public class BankHolidaysServiceTest {
     }
 
     @Test
-    public void shouldCacheBankHolidays() {
+    void shouldCacheBankHolidays() {
         when(bankHolidaysApi.retrieveAll()).thenReturn(BANK_HOLIDAYS);
 
         final Set<LocalDate> bankHolidays1 = bankHolidaysService.getBankHolidays();
@@ -56,7 +56,7 @@ public class BankHolidaysServiceTest {
     }
 
     @Test
-    public void shouldNotCacheInvalidResposeFormBankHolidayApi() {
+    void shouldNotCacheInvalidResposeFormBankHolidayApi() {
         when(bankHolidaysApi.retrieveAll())
             .thenThrow(new RuntimeException())
             .thenReturn(BANK_HOLIDAYS);

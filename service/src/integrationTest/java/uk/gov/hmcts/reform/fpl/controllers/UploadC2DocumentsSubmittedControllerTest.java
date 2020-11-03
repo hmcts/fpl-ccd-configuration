@@ -291,7 +291,8 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
         return Map.of(
             "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
             "familyManCaseNumber", String.valueOf(CASE_ID),
-            "submittedForm", Map.of("document_url", "http://dm-store:8080/documents/be17a76e-38ed-4448-8b83-45de1aa93f55",
+            "submittedForm",
+            Map.of("document_url", "http://dm-store:8080/documents/be17a76e-38ed-4448-8b83-45de1aa93f55",
                 "document_filename", "form.pdf",
                 "document_binary_url", applicationDocument.getBinaryUrl()),
             "respondents1", List.of(
@@ -322,12 +323,11 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
 
     private Map<String, Object> expectedCtscNotificationParameters() {
         return Map.of("applicationType", "C2",
-            "caseUrl", "http://fake-url/cases/case-details/12345");
+            "caseUrl", "http://fake-url/cases/case-details/12345#C2Tab");
     }
 
     private Map<String, Object> expectedPbaPaymentNotTakenNotificationParams() {
         return Map.of(
-            "caseUrl", "http://fake-url/cases/case-details/" + CASE_ID
-        );
+            "caseUrl", "http://fake-url/cases/case-details/12345#C2Tab");
     }
 }

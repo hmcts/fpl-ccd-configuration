@@ -196,7 +196,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             return Map.of(
                 "respondentLastName", "Watson",
                 "caseUrl",
-                String.format("%s/cases/case-details/%s", "http://fake-url", parseLong(CASE_ID)));
+                String.format("%s/cases/case-details/%s#%s", "http://fake-url", parseLong(CASE_ID), "PlacementTab"));
         }
     }
 
@@ -324,7 +324,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             return Map.of(
                 "respondentLastName", "Jones",
                 "caseUrl",
-                String.format("%s/cases/case-details/%s", "http://fake-url", parseLong(CASE_ID)));
+                String.format("%s/cases/case-details/%s#%s", "http://fake-url", parseLong(CASE_ID), "PlacementTab"));
         }
 
         private Respondent respondent() {
