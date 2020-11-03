@@ -20,12 +20,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class ManageLegalRepresentativesValidatorTest {
 
     private static final String REGISTERED_EMAIL = "email";
+    private static final String ANOTHER_REGISTERED_EMAIL = "email3";
     private static final LegalRepresentative VALID_LEGAL_REPRESENTATIVE = LegalRepresentative.builder()
-        .fullName("fullName")
-        .organisation("organisation")
-        .role(EXTERNAL_LA_BARRISTER)
         .email(REGISTERED_EMAIL)
-        .telephoneNumber("2343252345")
         .build();
     private static final String NON_REGISTERED_EMAIL = "email2";
 
@@ -45,12 +42,16 @@ class ManageLegalRepresentativesValidatorTest {
     }
 
     @Test
-    void validateValidElementMissingOptionals() {
+    void validateMultipleValidElement() {
         when(organisationService.findUserByEmail(REGISTERED_EMAIL)).thenReturn(Optional.of("UserId"));
+        when(organisationService.findUserByEmail(ANOTHER_REGISTERED_EMAIL)).thenReturn(Optional.of("AnotherUserId"));
 
         List<String> actualErrors = underTest.validate(wrapElements(List.of(
             VALID_LEGAL_REPRESENTATIVE.toBuilder()
-                .telephoneNumber(null)
+                .email(REGISTERED_EMAIL)
+                .build(),
+            VALID_LEGAL_REPRESENTATIVE.toBuilder()
+                .email(ANOTHER_REGISTERED_EMAIL)
                 .build()
         )));
 
@@ -69,39 +70,6 @@ class ManageLegalRepresentativesValidatorTest {
             "Email address for Legal representative is not registered on the system. "
                 + "They can register at "
                 + "https://manage-org.platform.hmcts.net/register-org/register"
-        );
-    }
-
-    @Test
-    void validateMissingElements() {
-
-        List<String> actualErrors = underTest.validate(wrapElements(List.of(LegalRepresentative.builder().build())));
-
-        assertThat(actualErrors).containsExactly(
-            "Enter a full name for Legal representative",
-            "Select a role for Legal representative",
-            "Enter an organisation for Legal representative",
-            "Enter an email address for Legal representative"
-        );
-    }
-
-    @Test
-    void validateMissingElementsForMultipleLegalRepresentatives() {
-
-        List<String> actualErrors = underTest.validate(wrapElements(List.of(
-            LegalRepresentative.builder().build(),
-            LegalRepresentative.builder().build()))
-        );
-
-        assertThat(actualErrors).containsExactly(
-            "Enter a full name for Legal representative 1",
-            "Select a role for Legal representative 1",
-            "Enter an organisation for Legal representative 1",
-            "Enter an email address for Legal representative 1",
-            "Enter a full name for Legal representative 2",
-            "Select a role for Legal representative 2",
-            "Enter an organisation for Legal representative 2",
-            "Enter an email address for Legal representative 2"
         );
     }
 

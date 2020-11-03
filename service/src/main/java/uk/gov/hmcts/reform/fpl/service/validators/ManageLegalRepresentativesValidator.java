@@ -38,56 +38,18 @@ public class ManageLegalRepresentativesValidator {
     private List<String> performBasicValidation(LegalRepresentative legalRepresentative, long currentRepresentativeIdx,
                                                 int sizeOfRepresentatives) {
         List<String> validationErrors = newArrayList();
-        if (isEmpty(legalRepresentative.getFullName())) {
-            validationErrors.add(validationMessage(
-                "Enter a full name",
-                currentRepresentativeIdx,
-                sizeOfRepresentatives
-            ));
-        }
 
-        if (isNull(legalRepresentative.getRole())) {
-            validationErrors.add(validationMessage(
-                "Select a role",
-                currentRepresentativeIdx,
-                sizeOfRepresentatives
-            ));
-        }
-
-        if (isEmpty(legalRepresentative.getOrganisation())) {
-            validationErrors.add(validationMessage(
-                "Enter an organisation",
-                currentRepresentativeIdx,
-                sizeOfRepresentatives
-            ));
-        }
-
-        if (isEmpty(legalRepresentative.getEmail())) {
-            validationErrors.add(validationMessage(
-                "Enter an email address",
-                currentRepresentativeIdx,
-                sizeOfRepresentatives
-            ));
-        } else {
-            Optional<String> userId = organisationService.findUserByEmail(legalRepresentative.getEmail());
-            if (userId.isEmpty()) {
-                validationErrors.add(
-                    validationMessageForInvalidEmail(
-                        currentRepresentativeIdx,
-                        sizeOfRepresentatives
-                    ));
-            }
+        Optional<String> userId = organisationService.findUserByEmail(legalRepresentative.getEmail());
+        if (userId.isEmpty()) {
+            validationErrors.add(
+                validationMessageForInvalidEmail(
+                    currentRepresentativeIdx,
+                    sizeOfRepresentatives
+                ));
         }
 
         return validationErrors;
 
-    }
-
-    private String validationMessage(String prefix, long currentRepresentativeIdx, int sizeOfRepresentatives) {
-        return String.format("%s %s%s",
-            prefix,
-            VALIDATION_SUFFIX,
-            addNumericIfMultipleElements(currentRepresentativeIdx, sizeOfRepresentatives));
     }
 
     private String validationMessageForInvalidEmail(long currentRepresentativeIdx, int sizeOfRepresentatives) {
