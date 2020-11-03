@@ -102,6 +102,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "populateCase-CLOSED",
+    "Name": "Populate - CLOSED",
+    "PreConditionState(s)": "*",
+    "PostConditionState": "CLOSED",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "populateCase-PREPARE_FOR_HEARING",
     "Name": "Populate - Case management",
     "PreConditionState(s)": "*",
