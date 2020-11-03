@@ -263,17 +263,15 @@ public class StandardDirectionsOrderController extends CallbackController {
             data.put("state", State.CASE_MANAGEMENT);
             removeTemporaryFields(caseDetails, "sdoRouter");
 
-            //TO DO REMOVE IF
-            if (caseData.isSendingNoticeOfProceedings()) {
-                List<DocmosisTemplates> docmosisTemplateTypes =
-                    caseData.getNoticeOfProceedings().mapProceedingTypesToDocmosisTemplate();
+            List<DocmosisTemplates> docmosisTemplateTypes =
+                caseData.getNoticeOfProceedings().mapProceedingTypesToDocmosisTemplate();
 
-                List<Element<DocumentBundle>> newNoticeOfProceedings
-                    = noticeOfProceedingsService.uploadAndPrepareNoticeOfProceedingBundle(caseData,
-                    docmosisTemplateTypes);
+            List<Element<DocumentBundle>> newNoticeOfProceedings
+                = noticeOfProceedingsService.uploadAndPrepareNoticeOfProceedingBundle(caseData,
+                docmosisTemplateTypes);
 
-                caseDetails.getData().put("noticeOfProceedingsBundle", newNoticeOfProceedings);
-            }
+            caseDetails.getData().put("noticeOfProceedingsBundle", newNoticeOfProceedings);
+
         }
 
         return respond(caseDetails);
