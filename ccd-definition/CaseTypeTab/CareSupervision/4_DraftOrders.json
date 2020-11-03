@@ -61,7 +61,7 @@
     "TabDisplayOrder": 4,
     "CaseFieldID": "draftUploadedCMOs",
     "TabFieldDisplayOrder": 3,
-    "TabShowCondition": "caseManagementOrder!=\"\" OR cmoToAction!=\"\" OR draftUploadedCMOs!=\"\""
+    "TabShowCondition": "standardDirectionOrder.orderStatus!=\"SEALED\" OR cmoToAction!=\"\" OR draftUploadedCMOs!=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
