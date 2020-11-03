@@ -12,7 +12,6 @@ import static uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi.SERVICE_AUTHORIZATI
 
 @FeignClient(name = "payment-api", url = "${payment.api.url}", configuration = FeignConfiguration.class)
 public interface PaymentApi {
-
     @PostMapping("/credit-account-payments")
     CreditAccountPaymentRequest createCreditAccountPayment(
         @RequestHeader(AUTHORIZATION) String authorisation,

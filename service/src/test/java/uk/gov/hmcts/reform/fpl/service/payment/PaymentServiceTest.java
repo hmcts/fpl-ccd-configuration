@@ -110,8 +110,10 @@ class PaymentServiceTest {
                 .amount(feeForC2WithNotice.getCalculatedAmount())
                 .fees(List.of(feeForC2WithNotice))
                 .build();
+
             when(paymentApi.createCreditAccountPayment(AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedPaymentRequest))
-                                                            .thenThrow(FeignException.InternalServerError.class);
+                .thenThrow(FeignException.InternalServerError.class);
+
             assertThrows(Exception.class, () -> paymentService.callPaymentsApi(expectedPaymentRequest));
             verify(paymentApi, times(3)).createCreditAccountPayment(any(), any(), any());
         }
@@ -123,22 +125,26 @@ class PaymentServiceTest {
                 .amount(feeForC2WithNotice.getCalculatedAmount())
                 .fees(List.of(feeForC2WithNotice))
                 .build();
+
             when(paymentApi.createCreditAccountPayment(AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedPaymentRequest))
-                                                                                .thenThrow(FeignException.class);
+                .thenThrow(FeignException.class);
+
             assertThrows(Exception.class, () -> paymentService.callPaymentsApi(expectedPaymentRequest));
             verify(paymentApi, times(1)).createCreditAccountPayment(any(), any(), any());
         }
 
         @Test
-        void shouldFailOnceThenSuccessfulRetry() {
+        void shouldFailOnPaymentsApiOnceThenHaveSuccessfulRetry() {
             CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
                 .customerReference("1")
                 .amount(feeForC2WithNotice.getCalculatedAmount())
                 .fees(List.of(feeForC2WithNotice))
                 .build();
+
             when(paymentApi.createCreditAccountPayment(AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedPaymentRequest))
-                                                                .thenThrow(FeignException.InternalServerError.class)
+                .thenThrow(FeignException.InternalServerError.class)
                 .thenReturn(expectedPaymentRequest);
+
             paymentService.callPaymentsApi(expectedPaymentRequest);
             verify(paymentApi, times(2)).createCreditAccountPayment(any(), any(), any());
         }

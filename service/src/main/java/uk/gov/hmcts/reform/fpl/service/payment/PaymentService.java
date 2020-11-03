@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import java.math.BigDecimal;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
-import static org.springframework.retry.support.RetrySynchronizationManager.getContext;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Currency.GBP;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Service.FPL;
 
@@ -118,10 +117,6 @@ public class PaymentService {
                 authTokenGenerator.generate(),
                 creditAccountPaymentRequest);
         } catch (FeignException.InternalServerError ex) {
-            int retry = getContext().getRetryCount();
-            if (retry == 2) {
-                log.error("Retry of payments api failed three times");
-            }
             throw new RetryablePaymentException(ex.contentUTF8(), ex);
         } catch (FeignException ex) {
             log.error("Payments response error for {}\n\tstatus: {} => message: \"{}\"",
