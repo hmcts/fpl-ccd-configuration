@@ -79,13 +79,6 @@ public class ManageLegalRepresentativesValidator {
             }
         }
 
-        if (isEmpty(legalRepresentative.getTelephoneNumber())) {
-            validationErrors.add(validationMessage("Enter a phone number",
-                currentRepresentativeIdx,
-                sizeOfRepresentatives)
-            );
-        }
-
         return validationErrors;
 
     }
@@ -99,9 +92,9 @@ public class ManageLegalRepresentativesValidator {
 
     private String validationMessageForInvalidEmail(long currentRepresentativeIdx, int sizeOfRepresentatives) {
         return String.format(
-            "Email address for Legal representative%s is not registered on the system.<br/>They can register at "
-                + "<a href='https://manage-org.platform.hmcts.net/register-org/register'>"
-                + "https://manage-org.platform.hmcts.net/register-org/register</a>",
+            "Email address for Legal representative%s is not registered on the system. "
+                + "They can register at "
+                + "https://manage-org.platform.hmcts.net/register-org/register",
             addNumericIfMultipleElements(currentRepresentativeIdx, sizeOfRepresentatives));
     }
 

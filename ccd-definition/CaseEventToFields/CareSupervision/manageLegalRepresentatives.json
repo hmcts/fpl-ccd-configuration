@@ -17,7 +17,7 @@
     "PageID": 2,
     "PageDisplayOrder": 2,
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "COMPLEX",
     "ShowSummaryChangeOption": "Y",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-legal-representatives/mid-event"
   }

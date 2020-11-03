@@ -45,6 +45,19 @@ class ManageLegalRepresentativesValidatorTest {
     }
 
     @Test
+    void validateValidElementMissingOptionals() {
+        when(organisationService.findUserByEmail(REGISTERED_EMAIL)).thenReturn(Optional.of("UserId"));
+
+        List<String> actualErrors = underTest.validate(wrapElements(List.of(
+            VALID_LEGAL_REPRESENTATIVE.toBuilder()
+                .telephoneNumber(null)
+                .build()
+        )));
+
+        assertThat(actualErrors).isEmpty();
+    }
+
+    @Test
     void validateValidElementButUnregisteredEmail() {
         when(organisationService.findUserByEmail(NON_REGISTERED_EMAIL)).thenReturn(Optional.empty());
 
@@ -53,9 +66,9 @@ class ManageLegalRepresentativesValidatorTest {
             .build())));
 
         assertThat(actualErrors).containsExactly(
-            "Email address for Legal representative is not registered on the system.<br/>They can register at <a "
-                + "href='https://manage-org.platform.hmcts.net/register-org/register'>https://manage-org.platform.hmcts"
-                + ".net/register-org/register</a>"
+            "Email address for Legal representative is not registered on the system. "
+                + "They can register at "
+                + "https://manage-org.platform.hmcts.net/register-org/register"
         );
     }
 
@@ -68,8 +81,7 @@ class ManageLegalRepresentativesValidatorTest {
             "Enter a full name for Legal representative",
             "Select a role for Legal representative",
             "Enter an organisation for Legal representative",
-            "Enter an email address for Legal representative",
-            "Enter a phone number for Legal representative"
+            "Enter an email address for Legal representative"
         );
     }
 
@@ -86,12 +98,10 @@ class ManageLegalRepresentativesValidatorTest {
             "Select a role for Legal representative 1",
             "Enter an organisation for Legal representative 1",
             "Enter an email address for Legal representative 1",
-            "Enter a phone number for Legal representative 1",
             "Enter a full name for Legal representative 2",
             "Select a role for Legal representative 2",
             "Enter an organisation for Legal representative 2",
-            "Enter an email address for Legal representative 2",
-            "Enter a phone number for Legal representative 2"
+            "Enter an email address for Legal representative 2"
         );
     }
 
@@ -109,12 +119,12 @@ class ManageLegalRepresentativesValidatorTest {
         )));
 
         assertThat(actualErrors).containsExactly(
-            "Email address for Legal representative 1 is not registered on the system.<br/>They can register at <a "
-                + "href='https://manage-org.platform.hmcts.net/register-org/register'>https://manage-org.platform.hmcts"
-                + ".net/register-org/register</a>",
-            "Email address for Legal representative 2 is not registered on the system.<br/>They can register at <a "
-                + "href='https://manage-org.platform.hmcts.net/register-org/register'>https://manage-org.platform.hmcts"
-                + ".net/register-org/register</a>"
+            "Email address for Legal representative 1 is not registered on the system. "
+                + "They can register at "
+                + "https://manage-org.platform.hmcts.net/register-org/register",
+            "Email address for Legal representative 2 is not registered on the system. "
+                + "They can register at "
+                + "https://manage-org.platform.hmcts.net/register-org/register"
         );
     }
 }
