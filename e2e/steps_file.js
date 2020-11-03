@@ -24,7 +24,7 @@ module.exports = function () {
   return actor({
     async signIn(user) {
       if (currentUser !== user) {
-        output.debug(`Logging in as ${user.email}`);
+        output.log(`Logging in as ${user.email}`);
         currentUser = {}; // reset in case the login fails
         await this.retryUntilExists(async () => {
           await this.goToPage(baseUrl);
@@ -39,10 +39,10 @@ module.exports = function () {
 
           await loginPage.signIn(user);
         }, signedInSelector);
-        output.debug(`Logged in as ${user.email}`);
+        output.log(`Logged in as ${user.email}`);
         currentUser = user;
       } else {
-        output.debug(`Already logged in as ${user.email}`);
+        output.log(`Already logged in as ${user.email}`);
       }
     },
 
