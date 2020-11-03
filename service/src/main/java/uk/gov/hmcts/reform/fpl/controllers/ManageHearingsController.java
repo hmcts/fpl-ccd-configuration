@@ -32,6 +32,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.VACATE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingReListOption.RE_LIST_NOW;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -121,6 +122,11 @@ public class ManageHearingsController extends CallbackController {
 
             caseDetails.getData().put(PAST_HEARING_LIST,
                 hearingsService.asDynamicList(caseData.getPastAndTodayHearings(), hearingBookingId));
+        } else if (VACATE_HEARING == caseData.getHearingOption()) {
+            UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData.getFutureAndTodayHearingDateList());
+
+            caseDetails.getData().put(FUTURE_HEARING_LIST,
+                hearingsService.asDynamicList(caseData.getFutureAndTodayHearings(), hearingBookingId));
         }
 
         return respond(caseDetails);
