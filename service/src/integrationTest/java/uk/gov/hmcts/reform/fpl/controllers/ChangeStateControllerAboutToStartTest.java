@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
 
 @ActiveProfiles("integration-test")
@@ -34,13 +34,11 @@ public class ChangeStateControllerAboutToStartTest extends AbstractControllerTes
     }
 
     @Test
-    void shouldReturnMessageRelatedToFinalHearingWhenStateIsCaseManagement() {
-        CaseDetails caseDetails = CaseDetails.builder().data(Map.of()).state(CASE_MANAGEMENT.getValue()).build();
+    void shouldNotInitialiseMessageWhenStateIsClosed() {
+        CaseDetails caseDetails = CaseDetails.builder().data(Map.of()).state(CLOSED.getValue()).build();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
 
-        String expectedMessage = "Do you want to change the case state to final hearing?";
-
-        assertThat(response.getData()).extracting("nextStateLabelContent").isEqualTo(expectedMessage);
+        assertThat(response.getData()).extracting("nextStateLabelContent").isNull();
     }
 }
