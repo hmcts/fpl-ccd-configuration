@@ -609,6 +609,57 @@ class CaseDataTest {
     }
 
     @Nested
+    class GetFutureAndTodayHearings {
+
+        @Test
+        void shouldReturnFutureAndTodayHearingBookings() {
+            Element<HearingBooking> todayHearingBooking = element(HearingBooking.builder()
+                .startDate(LocalDateTime.now())
+                .build());
+            Element<HearingBooking> todayLateHearingBooking = element(HearingBooking.builder()
+                .startDate(LocalDate.now().plusDays(1).atStartOfDay().minusMinutes(1))
+                .build());
+            Element<HearingBooking> pastHearingBooking = element(HearingBooking.builder()
+                .startDate(LocalDateTime.now().minusDays(1))
+                .build());
+            Element<HearingBooking> futureHearingBooking = element(HearingBooking.builder()
+                .startDate(LocalDateTime.now().plusDays(1))
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(List.of(
+                    pastHearingBooking,
+                    todayHearingBooking,
+                    todayLateHearingBooking,
+                    futureHearingBooking))
+                .build();
+
+            assertThat(caseData.getFutureAndTodayHearings())
+                .containsExactly(todayHearingBooking, todayLateHearingBooking, futureHearingBooking);
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenNoFutureOrTodayHearingBookings() {
+            Element<HearingBooking> futureHearingBooking = element(HearingBooking.builder()
+                .startDate(LocalDateTime.now().minusDays(1))
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(List.of(futureHearingBooking))
+                .build();
+
+            assertThat(caseData.getFutureAndTodayHearings()).isEmpty();
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenNoHearingBookings() {
+            CaseData caseData = CaseData.builder().build();
+
+            assertThat(caseData.getFutureAndTodayHearings()).isEmpty();
+        }
+    }
+
+    @Nested
     class AddHearingBooking {
 
         @Test

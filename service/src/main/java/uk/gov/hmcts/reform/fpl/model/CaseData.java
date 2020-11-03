@@ -548,6 +548,13 @@ public class CaseData {
     }
 
     @JsonIgnore
+    public List<Element<HearingBooking>> getFutureAndTodayHearings() {
+        return defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()).stream()
+            .filter(hearingBooking -> hearingBooking.getValue().startsTodayOrAfter())
+            .collect(toList());
+    }
+
+    @JsonIgnore
     public List<Element<HearingBooking>> getAllHearings() {
         List<Element<HearingBooking>> allHearings = new ArrayList<>();
         if (isNotEmpty(getHearingDetails())) {

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -11,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDateTime;
@@ -21,6 +23,7 @@ import java.util.Map;
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -34,6 +37,9 @@ class ManageHearingsControllerAboutToStartTest extends AbstractControllerTest {
     ManageHearingsControllerAboutToStartTest() {
         super("manage-hearings");
     }
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     @Test
     void shouldSetFirstHearingFlagWhenHearingsEmpty() {
@@ -81,6 +87,8 @@ class ManageHearingsControllerAboutToStartTest extends AbstractControllerTest {
             .hearingDetails(List.of(futureHearing1, futureHearing2, todayHearing, pastHearing1, pastHearing2))
             .build();
 
+        given(featureToggleService.isVacateHearingEnabled()).willReturn(false);
+
         CaseData updatedCaseData = extractCaseData(postAboutToStartEvent(initialCaseData));
 
         assertThat(updatedCaseData.getFirstHearingFlag()).isEqualTo("No");
@@ -89,6 +97,30 @@ class ManageHearingsControllerAboutToStartTest extends AbstractControllerTest {
             .isEqualTo(dynamicList(futureHearing1, futureHearing2));
         assertThat(updatedCaseData.getPastAndTodayHearingDateList())
             .isEqualTo(dynamicList(todayHearing, pastHearing1, pastHearing2));
+        assertThat(updatedCaseData)
+            .extracting("futureAndTodayHearingDateList")
+            .isNull();
+    }
+
+    @Test
+    void shouldSetFutureAndTodayHearingDynamicListsWhenVacateHearingIsToggledOn() {
+        Element<HearingBooking> futureHearing1 = hearingFromToday(3);
+        Element<HearingBooking> futureHearing2 = hearingFromToday(2);
+        Element<HearingBooking> todayHearing = hearingFromToday(0);
+        Element<HearingBooking> pastHearing1 = hearingFromToday(-2);
+        Element<HearingBooking> pastHearing2 = hearingFromToday(-3);
+
+        CaseData initialCaseData = CaseData.builder()
+            .id(nextLong())
+            .hearingDetails(List.of(futureHearing1, futureHearing2, todayHearing, pastHearing1, pastHearing2))
+            .build();
+
+        given(featureToggleService.isVacateHearingEnabled()).willReturn(true);
+
+        CaseData updatedCaseData = extractCaseData(postAboutToStartEvent(initialCaseData));
+
+        assertThat(updatedCaseData.getFutureAndTodayHearingDateList())
+            .isEqualTo(dynamicList(futureHearing1, futureHearing2, todayHearing));
     }
 
     @SafeVarargs

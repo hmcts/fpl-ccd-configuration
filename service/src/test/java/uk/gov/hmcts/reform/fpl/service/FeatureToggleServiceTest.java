@@ -253,7 +253,7 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsVacateHearing(Boolean toggleState) {
+    void shouldMakeCorrectCallForIsVacateHearingEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
         assertThat(service.isVacateHearingEnabled()).isEqualTo(toggleState);

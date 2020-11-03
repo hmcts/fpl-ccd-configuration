@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ManageHearingsService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
@@ -49,6 +50,7 @@ public class ManageHearingsController extends CallbackController {
     private static final String FIRST_HEARING_FLAG = "firstHearingFlag";
     private static final String HEARING_DATE_LIST = "hearingDateList";
     private static final String PAST_HEARING_LIST = "pastAndTodayHearingDateList";
+    private static final String FUTURE_HEARING_LIST = "futureAndTodayHearingDateList";
     private static final String SELECTED_HEARING_ID = "selectedHearingId";
     private static final String CANCELLED_HEARING_DETAILS_KEY = "cancelledHearingDetails";
     private static final String HEARING_DOCUMENT_BUNDLE_KEY = "hearingFurtherEvidenceDocuments";
@@ -56,6 +58,7 @@ public class ManageHearingsController extends CallbackController {
     private final ValidateGroupService validateGroupService;
     private final StandardDirectionsService standardDirectionsService;
     private final ManageHearingsService hearingsService;
+    private final FeatureToggleService featureToggleService;
 
     @PostMapping("/about-to-start")
     public CallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -72,8 +75,15 @@ public class ManageHearingsController extends CallbackController {
 
         if (isNotEmpty(caseData.getHearingDetails())) {
             caseDetails.getData().put(HEARING_DATE_LIST, hearingsService.asDynamicList(caseData.getFutureHearings()));
+
             caseDetails.getData()
                 .put(PAST_HEARING_LIST, hearingsService.asDynamicList(caseData.getPastAndTodayHearings()));
+
+            if (featureToggleService.isVacateHearingEnabled()) {
+                caseDetails.getData().put(FUTURE_HEARING_LIST,
+                    hearingsService.asDynamicList(caseData.getFutureAndTodayHearings()));
+            }
+
             caseDetails.getData().put("hasExistingHearings", YES.getValue());
         }
 
