@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -66,6 +67,18 @@ public class ElementUtils {
             .findFirst();
     }
 
+    public static <T> List<Element<T>> findElements(T elementToFind, List<Element<T>> elements) {
+        return nullSafeCollection(elements).stream()
+            .filter(element -> Objects.equals(element.getValue(), elementToFind))
+            .collect(Collectors.toList());
+    }
+
+    public static <T> List<UUID> findElementsId(T elementToFind, List<Element<T>> elements) {
+        return findElements(elementToFind, elements).stream()
+            .map(Element::getId)
+            .collect(toList());
+    }
+
     public static <T> DynamicList asDynamicList(List<Element<T>> elements,
                                                 UUID selectedId,
                                                 Function<T, String> labelProducer) {
@@ -96,7 +109,7 @@ public class ElementUtils {
         return defaultIfNull(collection, Collections.emptyList());
     }
 
-    public static UUID getDynamicListValueCode(Object dynamicList, ObjectMapper mapper) {
+    public static UUID getDynamicListSelectedValue(Object dynamicList, ObjectMapper mapper) {
         if (dynamicList instanceof String) {
             return UUID.fromString((String) dynamicList);
         }

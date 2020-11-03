@@ -7,7 +7,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.OrganisationPolicy;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityCodeException;
 import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
@@ -77,7 +77,7 @@ public class OrganisationService {
     public Optional<OrganisationPolicy> findOrganisationPolicy() {
         return findOrganisation()
             .map(org -> OrganisationPolicy.builder()
-                .organisation(uk.gov.hmcts.reform.ccd.Organisation.builder()
+                .organisation(uk.gov.hmcts.reform.ccd.model.Organisation.builder()
                     .organisationName(org.getName())
                     .organisationID(org.getOrganisationIdentifier())
                     .build())

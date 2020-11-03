@@ -8,23 +8,23 @@ import static uk.gov.hmcts.reform.fpl.enums.ChildGender.BOY;
 import static uk.gov.hmcts.reform.fpl.enums.ChildGender.GIRL;
 import static uk.gov.hmcts.reform.fpl.enums.ChildGender.OTHER;
 
-public class ChildGenderTest {
+class ChildGenderTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"boy", "BOY", "Boy"})
-    public void shouldReturnBoy(String value) {
+    void shouldReturnBoy(String value) {
         assertThat(ChildGender.fromLabel(value)).isEqualTo(BOY);
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"girl", "GIRL", "Girl"})
-    public void shouldReturnGirl(String value) {
+    void shouldReturnGirl(String value) {
         assertThat(ChildGender.fromLabel(value)).isEqualTo(GIRL);
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"other", "unknown", " "})
-    public void shouldReturnOther(String value) {
+    void shouldReturnOther(String value) {
         assertThat(ChildGender.fromLabel(value)).isEqualTo(OTHER);
     }
 }

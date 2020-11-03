@@ -25,7 +25,7 @@ class NoticeOfProceedingsEmailContentProviderTest extends AbstractEmailContentPr
     private AllocatedJudgeTemplateForNoticeOfProceedings getExpectedAllocatedJudgeParameters() {
         AllocatedJudgeTemplateForNoticeOfProceedings allocatedJudgeTemplate
             = new AllocatedJudgeTemplateForNoticeOfProceedings();
-        allocatedJudgeTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
+        allocatedJudgeTemplate.setCaseUrl(caseUrl(CASE_REFERENCE, "HearingTab"));
         allocatedJudgeTemplate.setFamilyManCaseNumber("12345");
         allocatedJudgeTemplate.setHearingDate("1 January 2020");
         allocatedJudgeTemplate.setJudgeName("Moley");

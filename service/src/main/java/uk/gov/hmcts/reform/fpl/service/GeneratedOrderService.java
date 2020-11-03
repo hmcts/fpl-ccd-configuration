@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
@@ -27,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.DischargeCareOrderGenerationServ
 import uk.gov.hmcts.reform.fpl.service.docmosis.EPOGenerationService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.SupervisionOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import uk.gov.hmcts.reform.fpl.utils.OrderHelper;
 
 import java.util.Arrays;
@@ -38,7 +38,6 @@ import java.util.Optional;
 import static com.google.common.collect.Iterables.getLast;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
@@ -50,7 +49,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@Slf4j
+// REFACTOR: 08/10/2020 Split into separate services (see: FPLA-2290)
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class GeneratedOrderService {
@@ -62,7 +61,7 @@ public class GeneratedOrderService {
     private final DischargeCareOrderService dischargeCareOrder;
     private final ChildrenService childrenService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
-
+    private final DocumentUploadHelper uploadHelper;
     private final Time time;
 
     public OrderTypeAndDocument buildOrderTypeAndDocument(OrderTypeAndDocument typeAndDocument, Document document) {
@@ -78,15 +77,14 @@ public class GeneratedOrderService {
     public GeneratedOrder buildCompleteOrder(OrderTypeAndDocument typeAndDocument,
                                              JudgeAndLegalAdvisor judgeAndLegalAdvisor,
                                              CaseData caseData) {
-        GeneratedOrder generatedOrder = defaultIfNull(caseData.getOrder(), GeneratedOrder.builder().build());
         GeneratedOrder.GeneratedOrderBuilder orderBuilder = GeneratedOrder.builder();
-
         GeneratedOrderType orderType = typeAndDocument.getType();
-
         String expiryDate = null;
+        String date = null;
 
         switch (orderType) {
             case BLANK_ORDER:
+                GeneratedOrder generatedOrder = caseData.getOrder();
                 orderBuilder.title(defaultIfBlank(generatedOrder.getTitle(), "Order"))
                     .details(generatedOrder.getDetails());
                 break;
@@ -102,11 +100,24 @@ public class GeneratedOrderService {
                 expiryDate = getSupervisionOrderExpiryDate(typeAndDocument, caseData.getOrderMonths(),
                     caseData.getInterimEndDate());
                 break;
+            case EMERGENCY_PROTECTION_ORDER:
+                date = formatLocalDateTimeBaseUsingFormat(caseData.getDateAndTimeOfIssue(), TIME_DATE);
+                expiryDate = formatLocalDateTimeBaseUsingFormat(caseData.getEpoEndDate(), TIME_DATE);
+                break;
+            case UPLOAD:
+                return GeneratedOrder.builder()
+                    .document(typeAndDocument.getDocument())
+                    .type(typeAndDocument.getTypeLabel())
+                    .date(formatLocalDateTimeBaseUsingFormat(time.now(), TIME_DATE))
+                    .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
+                    .uploader(uploadHelper.getUploadedDocumentUserDetails())
+                    .uploadedOrderDescription(typeAndDocument.getOrderDescription())
+                    .build();
             default:
         }
 
         orderBuilder.expiryDate(expiryDate)
-            .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
+            .dateOfIssue(date != null ? date : formatLocalDateToString(caseData.getDateOfIssue(), DATE))
             .type(OrderHelper.getFullOrderType(typeAndDocument))
             .document(typeAndDocument.getDocument())
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)

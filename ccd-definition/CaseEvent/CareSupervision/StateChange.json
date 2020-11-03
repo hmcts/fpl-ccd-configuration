@@ -72,7 +72,7 @@
     "Name": "Close the case",
     "Description": "Close the case",
     "DisplayOrder": 22,
-    "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING",
+    "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING",
     "PostConditionState": "CLOSED",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/close-case/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/close-case/about-to-submit",
@@ -97,6 +97,15 @@
     "Name": "Populate - Gatekeeping",
     "PreConditionState(s)": "*",
     "PostConditionState": "Gatekeeping",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "populateCase-CLOSED",
+    "Name": "Populate - CLOSED",
+    "PreConditionState(s)": "*",
+    "PostConditionState": "CLOSED",
     "SecurityClassification": "Public"
   },
   {

@@ -97,7 +97,7 @@ class NoticeOfHearingEmailContentProviderTest extends AbstractEmailContentProvid
             .hearingVenue("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW")
             .hearingTime(caseDataExtractionService.getHearingTime(hearingBooking))
             .preHearingTime(caseDataExtractionService.extractPrehearingAttendance(hearingBooking))
-            .caseUrl(hasDigitalPreference.equals(YES) ? "http://fake-url/cases/case-details/1111" : "")
+            .caseUrl(hasDigitalPreference.equals(YES) ? caseUrl(CASE_REFERENCE, "HearingTab") : "")
             .familyManCaseNumber(FAMILY_MAN_ID)
             .documentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
                 .map(JSONObject::toMap)
@@ -109,7 +109,7 @@ class NoticeOfHearingEmailContentProviderTest extends AbstractEmailContentProvid
 
     private CaseData buildCaseDetails() {
         return CaseData.builder()
-            .id(1111L)
+            .id(Long.valueOf(CASE_REFERENCE))
             .respondents1(wrapElements(Respondent.builder()
                 .party(RespondentParty.builder().lastName("Wilson").build())
                 .build()))

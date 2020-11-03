@@ -9,13 +9,17 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.time.LocalDateTime;
+import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookingsFromInitialDate;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCallout;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
@@ -168,5 +172,52 @@ class EmailNotificationHelperTest {
         String formattedUrl = formatCaseUrl("http://testurl", 123L, "");
         String expectedUrl = "http://testurl/cases/case-details/123";
         assertThat(formattedUrl).isEqualTo(expectedUrl);
+    }
+
+    @Test
+    void shouldFormatCallOutWhenAllRequiredFieldsArePresent() {
+        LocalDateTime hearingDate = LocalDateTime.now();
+        HearingBooking hearingBooking = HearingBooking.builder()
+            .startDate(hearingDate)
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .familyManCaseNumber("12345")
+            .hearingDetails(List.of(
+                element(hearingBooking)))
+            .respondents1(List.of(
+                element(Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .lastName("Davids")
+                        .build())
+                    .build())))
+            .build();
+
+        String expectedContent = String.format("^Davids, 12345,%s", buildHearingDateText(hearingBooking));
+
+        assertThat(buildCallout(caseData)).isEqualTo(expectedContent);
+    }
+
+    @Test
+    void shouldFormatCallOutWhenOnlySomeRequiredFieldsArePresent() {
+        LocalDateTime hearingDate = LocalDateTime.now();
+        HearingBooking hearingBooking = HearingBooking.builder()
+            .startDate(hearingDate)
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .familyManCaseNumber("12345")
+            .hearingDetails(List.of(
+                element(hearingBooking)))
+            .build();
+
+        String expectedContent = String.format("^12345,%s", buildHearingDateText(hearingBooking));
+
+        assertThat(buildCallout(caseData)).isEqualTo(expectedContent);
+    }
+
+    private static String buildHearingDateText(HearingBooking hearingBooking) {
+        return " hearing " + formatLocalDateToString(hearingBooking
+            .getStartDate().toLocalDate(), FormatStyle.MEDIUM);
     }
 }

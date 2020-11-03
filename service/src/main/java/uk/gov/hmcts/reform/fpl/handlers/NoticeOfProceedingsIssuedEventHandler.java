@@ -21,7 +21,7 @@ public class NoticeOfProceedingsIssuedEventHandler {
     private final NoticeOfProceedingsEmailContentProvider noticeOfProceedingsEmailContentProvider;
 
     @EventListener
-    public void notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(NoticeOfProceedingsIssuedEvent event) {
+    public void notifyAllocatedJudgeOfIssuedNoticeOfProceedings(NoticeOfProceedingsIssuedEvent event) {
         CaseData caseData = event.getCaseData();
 
         if (hasJudgeEmail(caseData.getNoticeOfProceedings())) {

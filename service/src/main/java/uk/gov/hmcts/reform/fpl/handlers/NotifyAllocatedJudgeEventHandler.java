@@ -26,6 +26,8 @@ public class NotifyAllocatedJudgeEventHandler {
 
         String email = caseData.getAllocatedJudge().getJudgeEmailAddress();
 
-        notificationService.sendEmail(ALLOCATED_JUDGE_TEMPLATE, email, parameters, caseData.getId().toString());
+        notificationService.sendEmail(
+            ALLOCATED_JUDGE_TEMPLATE, email, parameters, caseData.getId().toString()
+        );
     }
 }

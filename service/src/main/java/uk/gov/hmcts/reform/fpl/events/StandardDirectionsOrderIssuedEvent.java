@@ -8,5 +8,4 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 @RequiredArgsConstructor
 public class StandardDirectionsOrderIssuedEvent {
     private final CaseData caseData;
-
 }

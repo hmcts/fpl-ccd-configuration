@@ -299,13 +299,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "hearingBookingDetails",
-    "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "submitApplication",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "R"
@@ -364,15 +357,16 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "amendInternationalElement",
-    "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "amendInternationalElement",
-    "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "CRU"
+    "AccessControl": [
+      {
+        "UserRoles": ["caseworker-publiclaw-courtadmin", "caseworker-publiclaw-gatekeeper"],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": ["caseworker-publiclaw-solicitor", "caseworker-publiclaw-judiciary", "caseworker-publiclaw-magistrate"],
+        "CRUD": "R"
+      }
+    ]
   },
   {
     "LiveFrom": "01/01/2017",
@@ -405,13 +399,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "hearingBookingDetails",
-    "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "submitApplication",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "R"
@@ -420,20 +407,6 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "submitApplication",
-    "UserRole": "caseworker-publiclaw-magistrate",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "hearingBookingDetails",
-    "UserRole": "caseworker-publiclaw-judiciary",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "hearingBookingDetails",
     "UserRole": "caseworker-publiclaw-magistrate",
     "CRUD": "R"
   },
@@ -498,20 +471,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "draftSDO",
     "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "createNoticeOfProceedings",
-    "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "createNoticeOfProceedings",
-    "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
@@ -755,13 +714,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "hearingBookingDetails",
-    "UserRole": "caseworker-publiclaw-solicitor",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "sendToGatekeeper",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "R"
@@ -777,13 +729,6 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "amendRespondents",
-    "UserRole": "caseworker-publiclaw-solicitor",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "amendInternationalElement",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "R"
   },
@@ -1063,20 +1008,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "amendInternationalElement",
-    "UserRole": "caseworker-publiclaw-judiciary",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "amendInternationalElement",
-    "UserRole": "caseworker-publiclaw-magistrate",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "amendOtherProceedings",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "R"
@@ -1100,6 +1031,20 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "createNoticeOfProceedings",
     "UserRole": "caseworker-publiclaw-magistrate",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "createNoticeOfProceedings",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "createNoticeOfProceedings",
+    "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "R"
   },
   {
@@ -1300,13 +1245,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "populateCase-PREPARE_FOR_HEARING",
-    "UserRole": "caseworker-publiclaw-solicitor",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadOtherCourtAdminDocuments-PREPARE_FOR_HEARING",
     "UserRoles": ["caseworker-publiclaw-judiciary","caseworker-publiclaw-magistrate", "caseworker-publiclaw-courtadmin", "caseworker-publiclaw-solicitor", "caseworker-publiclaw-gatekeeper"],
     "CRUD": "R"
@@ -1361,5 +1299,20 @@
     "CaseEventID": "changeState",
     "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageHearings",
+    "AccessControl": [
+      {
+        "UserRoles": ["caseworker-publiclaw-courtadmin", "caseworker-publiclaw-gatekeeper"],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": ["caseworker-publiclaw-judiciary", "caseworker-publiclaw-magistrate", "caseworker-publiclaw-solicitor"],
+        "CRUD": "R"
+      }
+    ]
   }
 ]

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum GeneratedEPOKey {
+    DATE_AND_TIME_OF_ISSUE("dateAndTimeOfIssue"),
     EPO_REMOVAL_ADDRESS("epoRemovalAddress"),
     EPO_CHILDREN("epoChildren"),
     EPO_END_DATE("epoEndDate"),
