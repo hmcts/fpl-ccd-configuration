@@ -25,11 +25,11 @@ Scenario('local authority add an external barrister as a legal representative fo
   I.seeEventSubmissionConfirmation(config.applicationActions.manageLegalRepresentatives);
 
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
-  I.seeInTab(['LA legal representatives 1', 'Full name'], legalRepresentatives.barrister.fullName);
-  I.seeInTab(['LA legal representatives 1', 'Role'], legalRepresentatives.barrister.role);
-  I.seeInTab(['LA legal representatives 1', 'Organisation'], legalRepresentatives.barrister.organisation);
-  I.seeInTab(['LA legal representatives 1', 'Email address'], legalRepresentatives.barrister.email);
-  I.seeInTab(['LA legal representatives 1', 'Phone number'], legalRepresentatives.barrister.telephone);
+  I.seeInTab(['LA Legal representatives 1', 'Full name'], legalRepresentatives.barrister.fullName);
+  I.seeInTab(['LA Legal representatives 1', 'Role'], legalRepresentatives.barrister.role);
+  I.seeInTab(['LA Legal representatives 1', 'Organisation'], legalRepresentatives.barrister.organisation);
+  I.seeInTab(['LA Legal representatives 1', 'Email address'], legalRepresentatives.barrister.email);
+  I.seeInTab(['LA Legal representatives 1', 'Phone number'], legalRepresentatives.barrister.telephone);
 });
 
 Scenario('local authority uploads documents', async ({I, caseViewPage, uploadDocumentsEventPage}) => {
