@@ -44,10 +44,6 @@ public class FeatureToggleService {
         return ldClient.boolVariation("judge-notification", launchDarklyUser, false);
     }
 
-    public boolean isExpertUIEnabled() {
-        return ldClient.boolVariation("expert-ui", createLDUser(), false);
-    }
-
     public boolean isCaseUserBulkAssignmentEnabled() {
         return ldClient.boolVariation("case-user-assignment", createLDUser(), false);
     }
