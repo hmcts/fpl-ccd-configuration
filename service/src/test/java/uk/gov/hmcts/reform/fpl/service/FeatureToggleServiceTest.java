@@ -73,18 +73,6 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForExpertUI(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isExpertUIEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("expert-ui"),
-            ldUser(ENVIRONMENT).build(),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
     void shouldMakeCorrectCallForCaseUserAssignment(Boolean toggleState) {
         givenToggle(toggleState);
 
@@ -164,18 +152,6 @@ class FeatureToggleServiceTest {
         assertThat(service.isAllocatedJudgeNotificationEnabled(C2_APPLICATION)).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
             eq("judge-notification"),
-            ldUser(ENVIRONMENT).build(),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForTaskListInProgressTags(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isTaskListInProgressTagsEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("task-list-in-progress-tags"),
             ldUser(ENVIRONMENT).build(),
             eq(false));
     }
@@ -268,11 +244,7 @@ class FeatureToggleServiceTest {
             Arguments.of(
                 (Runnable) () -> service.isCtscEnabled("test name"),
                 (Runnable) () -> service.isCtscReportEnabled(),
-                buildAttributes("localAuthorityName")),
-            Arguments.of(
-                (Runnable) () -> service.isExpertUIEnabled(),
-                (Runnable) () -> service.isCtscReportEnabled(),
-                buildAttributes())
+                buildAttributes("localAuthorityName"))
         );
     }
 
