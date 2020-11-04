@@ -19,5 +19,12 @@
     "ListElementCode": "VACATED",
     "ListElement": "Vacated",
     "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingStatus",
+    "ListElementCode": "VACATED_AND_RE_LISTED",
+    "ListElement": "Vacated",
+    "DisplayOrder": 3
   }
 ]

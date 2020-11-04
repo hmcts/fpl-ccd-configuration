@@ -193,6 +193,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "vacatedReason",
+    "Label": " ",
+    "FieldType": "AdjournmentReason",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearingReListOption",
     "Label": "Will the hearing be re-listed?",
     "FieldType": "FixedRadioList",
