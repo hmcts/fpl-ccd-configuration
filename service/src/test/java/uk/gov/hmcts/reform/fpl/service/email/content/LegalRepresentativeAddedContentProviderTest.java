@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LegalRepresentative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -29,13 +30,13 @@ class LegalRepresentativeAddedContentProviderTest {
     public static final LegalRepresentative LEGAL_REPRESENTATIVE = LegalRepresentative.builder()
         .fullName(REPRESENTATIVE_FULL_NAME)
         .build();
-    public static final String LOCAL_AUTHORITY = "Local Authority";
-    public static final String RESPONDENT_LAST_NAME = "RepspondentLastName";
+    public static final String LOCAL_AUTHORITY_CODE = "LocalAuthorityCode";
+    public static final String RESPONDENT_LAST_NAME = "RespondentLastName";
     public static final Element<Respondent> ANOTHER_RESPONDENT = element(mock(Respondent.class));
     public static final String FAMILY_MAN_CASE_NUMBER = "1234556";
     public static final long ID = 213432435L;
     public static final CaseData CASE_DATA = CaseData.builder()
-        .caseLocalAuthority(LOCAL_AUTHORITY)
+        .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
         .respondents1(List.of(
             element(Respondent.builder()
                 .party(RespondentParty.builder()
@@ -45,22 +46,26 @@ class LegalRepresentativeAddedContentProviderTest {
         .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
         .id(ID)
         .build();
-    public static final String CASE_URL = "caseUrl";
+    private static final String CASE_URL = "caseUrl";
+    private static final String LOCAL_AUTHORITY_NAME = "localAuthorityName";
 
     @Mock
     private CaseUrlService caseUrlService;
 
+    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration = mock(LocalAuthorityNameLookupConfiguration.class);
+
     @InjectMocks
-    private final LegalRepresentativeAddedContentProvider underTest = new LegalRepresentativeAddedContentProvider();
+    private LegalRepresentativeAddedContentProvider underTest = new LegalRepresentativeAddedContentProvider(localAuthorityNameLookupConfiguration);
 
     @BeforeEach
     void setUp() {
         when(caseUrlService.getCaseUrl(ID)).thenReturn(CASE_URL);
+        when(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
+            .thenReturn(LOCAL_AUTHORITY_NAME);
     }
 
     @Test
     void testGetParameters() {
-        when(caseUrlService.getCaseUrl(ID)).thenReturn(CASE_URL);
 
         Map<String, Object> actual = underTest.getParameters(
             LEGAL_REPRESENTATIVE,
@@ -69,7 +74,7 @@ class LegalRepresentativeAddedContentProviderTest {
 
         assertThat(actual).isEqualTo(ImmutableMap.builder()
             .put("repName", REPRESENTATIVE_FULL_NAME)
-            .put("localAuthority", LOCAL_AUTHORITY)
+            .put("localAuthority", LOCAL_AUTHORITY_NAME)
             .put("firstRespondentLastName", RESPONDENT_LAST_NAME)
             .put("familyManCaseNumber", FAMILY_MAN_CASE_NUMBER)
             .put("caseUrl", CASE_URL)
@@ -87,7 +92,7 @@ class LegalRepresentativeAddedContentProviderTest {
 
         assertThat(actual).isEqualTo(ImmutableMap.builder()
             .put("repName", REPRESENTATIVE_FULL_NAME)
-            .put("localAuthority", LOCAL_AUTHORITY)
+            .put("localAuthority", LOCAL_AUTHORITY_NAME)
             .put("firstRespondentLastName", RESPONDENT_LAST_NAME)
             .put("familyManCaseNumber", "")
             .put("caseUrl", CASE_URL)

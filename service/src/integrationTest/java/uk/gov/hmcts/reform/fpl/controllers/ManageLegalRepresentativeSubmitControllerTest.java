@@ -33,7 +33,8 @@ class ManageLegalRepresentativeSubmitControllerTest extends AbstractControllerTe
 
     public static final String REPRESENTATIVE_EMAIL = "test@test.com";
     public static final String FAMILY_MAN_CASE_NO = "2313213132132";
-    public static final String LOCAL_AUTHORITY = "Local Authority";
+    public static final String LOCAL_AUTHORITY_CODE = "example";
+    public static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
     public static final String REP_NAME = "John Smith";
     public static final LegalRepresentative LEGAL_REPRESENTATIVE = LegalRepresentative.builder()
         .fullName(REP_NAME)
@@ -95,7 +96,7 @@ class ManageLegalRepresentativeSubmitControllerTest extends AbstractControllerTe
     private Map<String, Object> expectedTemplateParameters() {
         return ImmutableMap.of(
             "repName", REP_NAME,
-            "localAuthority", LOCAL_AUTHORITY,
+            "localAuthority", LOCAL_AUTHORITY_NAME,
             "firstRespondentLastName", RESPONDENT_SURNAME,
             "familyManCaseNumber", FAMILY_MAN_CASE_NO,
             "caseUrl", "http://fake-url/cases/case-details/12345"
@@ -109,7 +110,7 @@ class ManageLegalRepresentativeSubmitControllerTest extends AbstractControllerTe
             .data(Map.of(
                 "familyManCaseNumber", FAMILY_MAN_CASE_NO,
                 "legalRepresentatives", legalRepresentatives,
-                "caseLocalAuthority", LOCAL_AUTHORITY,
+                "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
                 "respondents1", wrapElements(RESPONDENT))
             )
             .build();
