@@ -211,7 +211,7 @@
     "DisplayContext": "MANDATORY",
     "PageID": "SendNoticeOfHearing",
     "ShowSummaryChangeOption": "Y",
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "PageShowCondition": "hearingOption=\"NEW_HEARING\" OR hearingOption=\"EDIT_HEARING\" OR hearingReListOption=\"RE_LIST_NOW\""
   },
   {
@@ -223,7 +223,7 @@
     "DisplayContext": "OPTIONAL",
     "PageID": "SendNoticeOfHearing",
     "ShowSummaryChangeOption": "Y",
-    "PageDisplayOrder": 7,
+    "PageDisplayOrder": 8,
     "FieldShowCondition": "sendNoticeOfHearing=\"Yes\""
   }
 ]

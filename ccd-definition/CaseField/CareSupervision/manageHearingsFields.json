@@ -186,7 +186,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "adjournmentReason",
     "Label": " ",
-    "FieldType": "AdjournmentReason",
+    "FieldType": "CancellationReason",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -195,7 +195,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "vacatedReason",
     "Label": " ",
-    "FieldType": "AdjournmentReason",
+    "FieldType": "CancellationReason",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
