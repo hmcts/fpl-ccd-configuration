@@ -18,7 +18,7 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class LegalRepresentativeAddedContentProvider extends AbstractEmailContentProvider {
 
-    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
+    private final LocalAuthorityNameLookupConfiguration nameLookupConfiguration;
 
     public Map<String, Object> getParameters(LegalRepresentative legalRepresentative,
                                              CaseData caseData) {
@@ -26,7 +26,7 @@ public class LegalRepresentativeAddedContentProvider extends AbstractEmailConten
         ImmutableMap.Builder<String, Object> notificationParams =
             ImmutableMap.<String, Object>builder()
                 .put("repName", legalRepresentative.getFullName())
-                .put("localAuthority", localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseData.getCaseLocalAuthority()))
+                .put("localAuthority", nameLookupConfiguration.getLocalAuthorityName(caseData.getCaseLocalAuthority()))
                 .put("firstRespondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
                 .put("familyManCaseNumber", defaultIfNull(caseData.getFamilyManCaseNumber(), ""))
                 .put("caseUrl", getCaseUrl(caseData.getId()));
