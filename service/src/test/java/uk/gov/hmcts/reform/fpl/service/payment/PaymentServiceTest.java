@@ -114,8 +114,9 @@ class PaymentServiceTest {
             when(paymentApi.createCreditAccountPayment(AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedPaymentRequest))
                 .thenThrow(FeignException.InternalServerError.class);
 
-            assertThrows(Exception.class, () -> paymentService.callPaymentsApi(expectedPaymentRequest));
-            verify(paymentApi, times(3)).createCreditAccountPayment(any(), any(), any());
+            assertThrows(PaymentsApiException.class, () -> paymentService.callPaymentsApi(expectedPaymentRequest));
+            verify(paymentApi, times(3)).createCreditAccountPayment(AUTH_TOKEN,
+                                                                    SERVICE_AUTH_TOKEN, expectedPaymentRequest);
         }
 
         @Test
@@ -129,8 +130,9 @@ class PaymentServiceTest {
             when(paymentApi.createCreditAccountPayment(AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedPaymentRequest))
                 .thenThrow(FeignException.class);
 
-            assertThrows(Exception.class, () -> paymentService.callPaymentsApi(expectedPaymentRequest));
-            verify(paymentApi, times(1)).createCreditAccountPayment(any(), any(), any());
+            assertThrows(PaymentsApiException.class, () -> paymentService.callPaymentsApi(expectedPaymentRequest));
+            verify(paymentApi, times(1)).createCreditAccountPayment(AUTH_TOKEN,
+                                                                    SERVICE_AUTH_TOKEN, expectedPaymentRequest);
         }
 
         @Test
@@ -146,7 +148,8 @@ class PaymentServiceTest {
                 .thenReturn(expectedPaymentRequest);
 
             paymentService.callPaymentsApi(expectedPaymentRequest);
-            verify(paymentApi, times(2)).createCreditAccountPayment(any(), any(), any());
+            verify(paymentApi, times(2)).createCreditAccountPayment(AUTH_TOKEN,
+                                                                    SERVICE_AUTH_TOKEN, expectedPaymentRequest);
         }
 
         @ParameterizedTest
