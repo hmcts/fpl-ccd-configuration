@@ -170,18 +170,6 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForTaskListInProgressTags(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isTaskListInProgressTagsEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("task-list-in-progress-tags"),
-            ldUser(ENVIRONMENT).build(),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
     void shouldMakeCorrectCallForNewCaseStateModel(Boolean toggleState) {
         givenToggle(toggleState);
 
