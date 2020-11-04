@@ -413,6 +413,44 @@ class UploadCMOServiceTest {
     }
 
     @Test
+    void shouldUpdateExistingHearingBundleWithDocsWhenPresent() {
+        List<Element<HearingBooking>> hearings = hearings();
+
+        Element<SupportingEvidenceBundle> newEvidenceBundle = element(SupportingEvidenceBundle.builder()
+            .name("new")
+            .build());
+
+        UploadCMOEventData eventData = UploadCMOEventData.builder()
+            .pastHearingsForCMO(dynamicList(
+                hearings.get(0).getId(), hearings.get(1).getId(), hearings.get(2).getId(), true
+            ))
+            .uploadedCaseManagementOrder(DOCUMENT)
+            .cmoSupportingDocs(List.of(newEvidenceBundle))
+            .cmoUploadType(CMOType.AGREED)
+            .build();
+
+        List<Element<SupportingEvidenceBundle>> currentEvidenceBundles = new ArrayList<>(List.of(
+            element(SupportingEvidenceBundle.builder().name("current").build())
+        ));
+
+        List<Element<HearingFurtherEvidenceBundle>> bundles = new ArrayList<>(List.of(
+            element(hearings.get(0).getId(), HearingFurtherEvidenceBundle.builder()
+                .hearingName("Case management hearing, 2 March 2020")
+                .supportingEvidenceBundle(currentEvidenceBundles)
+                .build())
+        ));
+
+        List<Element<CaseManagementOrder>> unsealedOrders = new ArrayList<>();
+
+        service.updateHearingsAndOrders(eventData, hearings, unsealedOrders, bundles);
+
+        assertThat(bundles).hasSize(1)
+            .first()
+            .extracting(bundle -> bundle.getValue().getSupportingEvidenceBundle())
+            .isEqualTo(List.of(currentEvidenceBundles.get(0), newEvidenceBundle));
+    }
+
+    @Test
     void shouldBuildAgreedEventWhenNewCMOIsAgreed() {
         List<Element<CaseManagementOrder>> unsealedOrders = List.of(
             element(CaseManagementOrder.builder().status(SEND_TO_JUDGE).build())
