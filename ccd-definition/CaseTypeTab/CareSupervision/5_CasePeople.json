@@ -55,7 +55,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
-    "TabLabel": "Legal representatives",
+    "TabLabel": "People in the case",
     "TabDisplayOrder": 5,
     "CaseFieldID": "legalRepresentatives",
     "TabFieldDisplayOrder": 5
