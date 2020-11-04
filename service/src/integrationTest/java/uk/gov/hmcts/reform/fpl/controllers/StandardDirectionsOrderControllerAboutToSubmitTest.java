@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -35,8 +34,6 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsTemplateDataGenerationService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
@@ -92,9 +89,6 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
     private static final String COURT_CODE = "11";
 
     @MockBean
-    private FeatureToggleService featureToggleService;
-
-    @MockBean
     private DocmosisDocumentGeneratorService docmosisService;
 
     @MockBean
@@ -108,9 +102,6 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
 
     @MockBean
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
-
-    @Autowired
-    private NoticeOfProceedingsTemplateDataGenerationService noticeOfProceedingsTemplateDataGenerationService;
 
     @Captor
     private ArgumentCaptor<String> filename;

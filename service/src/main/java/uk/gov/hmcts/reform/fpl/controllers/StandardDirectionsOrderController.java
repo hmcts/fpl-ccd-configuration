@@ -28,7 +28,6 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.DocumentService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
 import uk.gov.hmcts.reform.fpl.service.OrderValidationService;
 import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForDataStoreService;
@@ -72,7 +71,6 @@ public class StandardDirectionsOrderController extends CallbackController {
     private final StandardDirectionsService standardDirectionsService;
     private final StandardDirectionsOrderService sdoService;
     private final NoticeOfProceedingsService noticeOfProceedingsService;
-    private final FeatureToggleService featureToggleService;
 
     private static final String JUDGE_AND_LEGAL_ADVISOR_KEY = "judgeAndLegalAdvisor";
     private static final String STANDARD_DIRECTION_ORDER_KEY = "standardDirectionOrder";
@@ -123,8 +121,7 @@ public class StandardDirectionsOrderController extends CallbackController {
         }
 
 
-        caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, sdoService.getJudgeAndLegalAdvisorFromSDO(caseData));
-
+        data.put(JUDGE_AND_LEGAL_ADVISOR_KEY, sdoService.getJudgeAndLegalAdvisorFromSDO(caseData));
 
         return respond(caseDetails);
     }

@@ -59,7 +59,7 @@ class StandardDirectionsOrderControllerUploadRouteMidEventTest extends AbstractC
     }
 
     @Test
-    void shouldAppendJudgeAndLegalAdvisorToSDOWhenSendingNoticeOfProceedingsFromSDO() {
+    void shouldAppendJudgeAndLegalAdvisorToSDO() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor("some label");
 
         CaseData caseDataBefore = CaseData.builder()
