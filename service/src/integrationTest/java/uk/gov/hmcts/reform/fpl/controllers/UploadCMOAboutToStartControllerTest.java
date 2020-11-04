@@ -68,10 +68,4 @@ class UploadCMOAboutToStartControllerTest extends AbstractUploadCMOControllerTes
     private Map<String, Object> dynamicListMap(String label, UUID code) {
         return mapper.convertValue(dynamicListWithoutSelected(Pair.of(label, code)), new TypeReference<>() {});
     }
-
-    private Map<String, Object> dynamicListMap(String label1, UUID code1, String label2, UUID code2) {
-        return mapper.convertValue(dynamicListWithoutSelected(Pair.of(label1, code1), Pair.of(label2, code2)),
-            new TypeReference<>() {});
-    }
-
 }
