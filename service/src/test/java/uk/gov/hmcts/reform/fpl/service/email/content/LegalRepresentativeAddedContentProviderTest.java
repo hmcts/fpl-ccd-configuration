@@ -52,10 +52,14 @@ class LegalRepresentativeAddedContentProviderTest {
     @Mock
     private CaseUrlService caseUrlService;
 
-    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration = mock(LocalAuthorityNameLookupConfiguration.class);
+    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration = mock(
+        LocalAuthorityNameLookupConfiguration.class
+    );
 
     @InjectMocks
-    private LegalRepresentativeAddedContentProvider underTest = new LegalRepresentativeAddedContentProvider(localAuthorityNameLookupConfiguration);
+    private LegalRepresentativeAddedContentProvider underTest = new LegalRepresentativeAddedContentProvider(
+        localAuthorityNameLookupConfiguration
+    );
 
     @BeforeEach
     void setUp() {
