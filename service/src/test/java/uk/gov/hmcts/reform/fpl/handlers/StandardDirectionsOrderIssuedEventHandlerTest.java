@@ -72,7 +72,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
     private StandardDirectionsOrderIssuedEventHandler standardDirectionsOrderIssuedEventHandler;
 
     @Test
-    void shouldNotifyCafcassOfIssuedSDOAndNoticeOfProceedingsWhenSendNoticeOfProceedings() {
+    void shouldNotifyCafcassOfIssuedSDOAndNoticeOfProceedingsWhenSDOIssued() {
         final Map<String, Object> expectedParameters = getStandardDirectionTemplateParameters();
 
         CaseData caseData = caseData();
@@ -94,7 +94,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyLocalAuthorityOfSDOAndNoticeOfProceedingsWhenSendingNoticeOfProceedings() {
+    void shouldNotifyLocalAuthorityOfIssuedSDOAndNoticeOfProceedingsWhenSDOIssued() {
         final Map<String, Object> expectedParameters = getStandardDirectionTemplateParameters();
         CaseData caseData = caseData();
         given(localAuthorityEmailContentProvider.buildLocalAuthorityStandardDirectionOrderIssuedNotification(caseData))
@@ -155,7 +155,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyCTSCOfIssuedSDOWhenSendNoticeOfProceedings() {
+    void shouldNotifyCTSCOfIssuedSDOAndNoticeOfProceedingsWhenSDOIssued() {
         final CaseData caseData = caseData();
         CTSCTemplateForSDO templateForSDO = getCTSCTemplateForSDO();
 
