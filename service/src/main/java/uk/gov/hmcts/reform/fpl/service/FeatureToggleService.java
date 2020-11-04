@@ -27,10 +27,6 @@ public class FeatureToggleService {
         this.environment = environment;
     }
 
-    public boolean isTaskListInProgressTagsEnabled() {
-        return ldClient.boolVariation("task-list-in-progress-tags", createLDUser(), false);
-    }
-
     public boolean isCtscEnabled(String localAuthorityName) {
         return ldClient.boolVariation("CTSC",
             createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
@@ -46,10 +42,6 @@ public class FeatureToggleService {
             LDValue.of(allocatedJudgeNotificationType.getValue())));
 
         return ldClient.boolVariation("judge-notification", launchDarklyUser, false);
-    }
-
-    public boolean isExpertUIEnabled() {
-        return ldClient.boolVariation("expert-ui", createLDUser(), false);
     }
 
     public boolean isCaseUserBulkAssignmentEnabled() {
