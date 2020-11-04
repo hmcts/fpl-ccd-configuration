@@ -83,10 +83,6 @@ public class FeatureToggleService {
         return ldClient.boolVariation("send-notice-of-proceedings-from-sdo", createLDUser(), false);
     }
 
-    public boolean isUploadDraftCMOEnabled() {
-        return ldClient.boolVariation("upload-draft-cmo", createLDUser(), false);
-    }
-
     private LDUser createLDUser() {
         return createLDUser(Map.of());
     }

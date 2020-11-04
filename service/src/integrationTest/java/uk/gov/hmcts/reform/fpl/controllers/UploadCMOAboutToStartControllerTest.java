@@ -34,78 +34,7 @@ class UploadCMOAboutToStartControllerTest extends AbstractUploadCMOControllerTes
     }
 
     @Test
-    void shouldReturnMultiHearingData() {
-        givenLegacyFlow();
-
-        List<Element<HearingBooking>> hearings = List.of(
-            hearing(LocalDateTime.of(2020, 3, 15, 20, 20)),
-            hearing(LocalDateTime.of(2020, 3, 16, 10, 10))
-        );
-
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(hearings)
-            .build();
-
-        CaseData responseData = extractCaseData(postAboutToStartEvent(asCaseDetails(caseData)));
-
-        Map<String, Object> dynamicList = dynamicListMap(
-            "Case management hearing, 15 March 2020", hearings.get(0).getId(),
-            "Case management hearing, 16 March 2020", hearings.get(1).getId()
-        );
-
-        UploadCMOEventData eventData = UploadCMOEventData.builder()
-            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.MULTI)
-            .pastHearingsForCMO(dynamicList)
-            .build();
-
-        CaseData expectedCaseData = caseData.toBuilder().uploadCMOEventData(eventData).build();
-
-        assertThat(responseData).isEqualTo(expectedCaseData);
-    }
-
-    @Test
-    void shouldReturnSingleHearingData() {
-        givenLegacyFlow();
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(List.of(hearing(LocalDateTime.of(2020, 3, 15, 20, 20))))
-            .build();
-
-        CaseData responseData = extractCaseData(postAboutToStartEvent(asCaseDetails(caseData)));
-
-        UploadCMOEventData eventData = UploadCMOEventData.builder()
-            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.SINGLE)
-            .cmoJudgeInfo("Her Honour Judge Judy")
-            .cmoHearingInfo("Send agreed CMO for Case management hearing, 15 March 2020.\n"
-                + "This must have been discussed by all parties at the hearing.")
-            .build();
-
-        CaseData expectedCaseData = caseData.toBuilder().uploadCMOEventData(eventData).build();
-
-        assertThat(responseData).isEqualTo(expectedCaseData);
-    }
-
-    @Test
-    void shouldReturnNoHearingData() {
-        givenLegacyFlow();
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(List.of(hearing(now().plusDays(3))))
-            .build();
-
-        CaseData responseData = extractCaseData(postAboutToStartEvent(asCaseDetails(caseData)));
-
-        UploadCMOEventData eventData = UploadCMOEventData.builder()
-            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.NONE)
-            .build();
-
-        CaseData expectedCaseData = caseData.toBuilder().uploadCMOEventData(eventData).build();
-
-        assertThat(responseData).isEqualTo(expectedCaseData);
-    }
-
-    @Test
     void shouldReturnDynamicListsAndHearingsWithSealedCMOs() {
-        givenNewFlow();
-
         Element<CaseManagementOrder> cmo = element(CaseManagementOrder.builder()
             .order(DocumentReference.builder().build())
             .status(CMOStatus.SEND_TO_JUDGE)

@@ -415,27 +415,31 @@ class UploadCMOServiceTest {
     @Test
     void shouldBuildAgreedEventWhenNewCMOIsAgreed() {
         List<Element<CaseManagementOrder>> unsealedOrders = List.of(
-            element(CaseManagementOrder.builder().status(DRAFT).build())
+            element(CaseManagementOrder.builder().status(SEND_TO_JUDGE).build())
         );
 
-        List<Element<HearingBooking>> hearings = new ArrayList<>(hearings());
-        HearingBooking updatedHearing = hearings.get(0).getValue().toBuilder()
-            .caseManagementOrderId(unsealedOrders.get(0).getId())
-            .build();
-        hearings.set(0, element(hearings.get(0).getId(), updatedHearing));
+        List<Element<HearingBooking>> hearingsBefore = new ArrayList<>(hearings());
 
         CaseData caseDataBefore = CaseData.builder()
-            .hearingDetails(hearings)
+            .hearingDetails(hearingsBefore)
             .build();
 
+        List<Element<HearingBooking>> hearingsAfter = new ArrayList<>(hearingsBefore);
+
+        HearingBooking updatedHearing = hearingsAfter.get(0).getValue().toBuilder()
+            .caseManagementOrderId(unsealedOrders.get(0).getId())
+            .build();
+        hearingsAfter.set(0, element(hearingsAfter.get(0).getId(), updatedHearing));
+
+
         CaseData caseData = CaseData.builder()
-            .hearingDetails(hearings)
+            .hearingDetails(hearingsAfter)
             .draftUploadedCMOs(unsealedOrders)
             .build();
 
         UploadCMOEvent event = service.buildEventToPublish(caseData, caseDataBefore);
 
-        assertThat(event).isEqualToComparingFieldByField(new AgreedCMOUploaded(caseData, updatedHearing));
+        assertThat(event).isEqualTo(new AgreedCMOUploaded(caseData, updatedHearing));
     }
 
     @Test
@@ -444,255 +448,28 @@ class UploadCMOServiceTest {
             element(CaseManagementOrder.builder().status(DRAFT).build())
         );
 
-        List<Element<HearingBooking>> hearings = new ArrayList<>(hearings());
-        HearingBooking updatedHearing = hearings.get(0).getValue().toBuilder()
-            .caseManagementOrderId(unsealedOrders.get(0).getId())
-            .build();
-        hearings.set(0, element(hearings.get(0).getId(), updatedHearing));
+        List<Element<HearingBooking>> hearingsBefore = new ArrayList<>(hearings());
 
         CaseData caseDataBefore = CaseData.builder()
-            .hearingDetails(hearings)
+            .hearingDetails(hearingsBefore)
             .build();
 
+        List<Element<HearingBooking>> hearingsAfter = new ArrayList<>(hearingsBefore);
+
+        HearingBooking updatedHearing = hearingsAfter.get(0).getValue().toBuilder()
+            .caseManagementOrderId(unsealedOrders.get(0).getId())
+            .build();
+        hearingsAfter.set(0, element(hearingsAfter.get(0).getId(), updatedHearing));
+
+
         CaseData caseData = CaseData.builder()
-            .hearingDetails(hearings)
+            .hearingDetails(hearingsAfter)
             .draftUploadedCMOs(unsealedOrders)
             .build();
 
         UploadCMOEvent event = service.buildEventToPublish(caseData, caseDataBefore);
 
-        assertThat(event).isEqualToComparingFieldByField(new DraftCMOUploaded(caseData, updatedHearing));
-    }
-
-    // TODO: 20/10/2020 Delete tests below this when toggled on
-    @Test
-    void shouldReturnMultiPageDataWhenThereAreMultipleHearings() {
-        List<Element<HearingBooking>> hearings = hearings();
-
-        UploadCMOEventData initialPageData = service.getInitialPageData(hearings, List.of());
-
-        UploadCMOEventData expectedEventData = UploadCMOEventData.builder()
-            .pastHearingsForCMO(dynamicList(hearings.get(0).getId(),
-                hearings.get(1).getId(),
-                hearings.get(2).getId()))
-            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.MULTI)
-            .build();
-
-        assertThat(initialPageData).isEqualTo(expectedEventData);
-    }
-
-    @Test
-    void shouldReturnMultiPageDataWhenThereAreMultipleHearingsWithSomeHearingsAlreadyMappedToCMOs() {
-        List<Element<HearingBooking>> hearings = new ArrayList<>(hearings());
-
-        Element<CaseManagementOrder> cmo = element(CaseManagementOrder.builder().status(SEND_TO_JUDGE).build());
-        Element<HearingBooking> hearing = element(
-            hearing(CASE_MANAGEMENT, LocalDateTime.of(2020, 1, 15, 0, 0), cmo.getId())
-        );
-
-        hearings.add(hearing);
-
-        UploadCMOEventData initialPageData = service.getInitialPageData(hearings, List.of(cmo));
-
-        UploadCMOEventData expectedEventData = UploadCMOEventData.builder()
-            .pastHearingsForCMO(dynamicList(hearings.get(0).getId(),
-                hearings.get(1).getId(),
-                hearings.get(2).getId()))
-            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.MULTI)
-            .multiHearingsWithCMOs("Case management hearing, 15 January 2020")
-            .showHearingsMultiTextArea(YesNo.YES)
-            .build();
-
-        assertThat(initialPageData).isEqualTo(expectedEventData);
-    }
-
-    @Test
-    void shouldReturnSinglePageDataWhenThereIsOneRemainingHearing() {
-        List<Element<HearingBooking>> hearings = List.of(element(
-            hearing(CASE_MANAGEMENT, LocalDateTime.of(2020, 2, 1, 0, 0))
-        ));
-
-        UploadCMOEventData initialPageData = service.getInitialPageData(hearings, List.of());
-
-        UploadCMOEventData expectedEventData = UploadCMOEventData.builder()
-            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.SINGLE)
-            .cmoHearingInfo("Send agreed CMO for Case management hearing, 1 February 2020."
-                + "\nThis must have been discussed by all parties at the hearing.")
-            .cmoJudgeInfo("His Honour Judge Dredd")
-            .build();
-
-        assertThat(initialPageData).isEqualTo(expectedEventData);
-    }
-
-    @Test
-    void shouldReturnSinglePageDataWhenThereIsOneRemainingHearingWithSomeHearingsAlreadyMappedToCMOs() {
-        Element<CaseManagementOrder> cmo = element(CaseManagementOrder.builder().status(SEND_TO_JUDGE).build());
-        List<Element<HearingBooking>> hearings = List.of(
-            element(hearing(CASE_MANAGEMENT, LocalDateTime.of(2020, 2, 1, 0, 0))),
-            element(hearing(CASE_MANAGEMENT, LocalDateTime.of(2020, 2, 2, 0, 0), cmo.getId()))
-        );
-
-        UploadCMOEventData initialPageData = service.getInitialPageData(hearings, List.of(cmo));
-
-        UploadCMOEventData expectedEventData = UploadCMOEventData.builder()
-            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.SINGLE)
-            .cmoHearingInfo("Send agreed CMO for Case management hearing, 1 February 2020."
-                + "\nThis must have been discussed by all parties at the hearing.")
-            .cmoJudgeInfo("His Honour Judge Dredd")
-            .singleHearingWithCMO("Case management hearing, 2 February 2020")
-            .showHearingsSingleTextArea(YesNo.YES)
-            .build();
-
-        assertThat(initialPageData).isEqualTo(expectedEventData);
-    }
-
-    @Test
-    void shouldReturnPageShowHideFieldOnlyWhenThereAreNoRemainingHearingsWithoutCmoMappings() {
-        UploadCMOEventData initialPageData = service.getInitialPageData(List.of(), List.of());
-
-        UploadCMOEventData expectedEventData = UploadCMOEventData.builder()
-            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.NONE)
-            .build();
-
-        assertThat(initialPageData).isEqualTo(expectedEventData);
-    }
-
-    @Test
-    void shouldNotIncludeReturnedHearingsInCMOTextArea() {
-        List<Element<HearingBooking>> hearings = new ArrayList<>(hearings());
-
-        Element<CaseManagementOrder> cmo = element(CaseManagementOrder.builder().status(SEND_TO_JUDGE).build());
-        Element<CaseManagementOrder> returnedCMO = element(CaseManagementOrder.builder().status(RETURNED).build());
-        List<Element<HearingBooking>> additionalHearings = List.of(
-            element(hearing(
-                CASE_MANAGEMENT, LocalDateTime.of(2020, 1, 15, 0, 0), cmo.getId())
-            ),
-            element(hearing(
-                CASE_MANAGEMENT, LocalDateTime.of(2020, 1, 16, 0, 0), returnedCMO.getId())
-            )
-        );
-
-        hearings.addAll(additionalHearings);
-
-        UploadCMOEventData initialPageData = service.getInitialPageData(hearings, List.of(cmo, returnedCMO));
-
-        DynamicListElement listElement = DynamicListElement.builder()
-            .code(additionalHearings.get(1).getId())
-            .label("Case management hearing, 16 January 2020")
-            .build();
-
-        DynamicList dynamicList = dynamicList(
-            hearings.get(0).getId(),
-            hearings.get(1).getId(),
-            hearings.get(2).getId(),
-            listElement
-        );
-
-        UploadCMOEventData expectedEventData = UploadCMOEventData.builder()
-            .pastHearingsForCMO(dynamicList)
-            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.MULTI)
-            .multiHearingsWithCMOs("Case management hearing, 15 January 2020")
-            .showHearingsMultiTextArea(YesNo.YES)
-            .build();
-
-        assertThat(initialPageData).isEqualTo(expectedEventData);
-    }
-
-    @Test
-    void shouldGenerateHearingAndJudgeLabelForSelectedHearing() {
-        List<Element<HearingBooking>> hearings = hearings();
-
-        DynamicList dynamicList = dynamicList(
-            hearings.get(0).getId(),
-            hearings.get(1).getId(),
-            hearings.get(2).getId(),
-            true
-        );
-
-        UploadCMOEventData preparedData = service.prepareJudgeAndHearingDetails(dynamicList, hearings, List.of());
-
-        UploadCMOEventData expectedData = UploadCMOEventData.builder()
-            .cmoHearingInfo("Case management hearing, 2 March 2020")
-            .cmoJudgeInfo("His Honour Judge Dredd")
-            .build();
-
-        assertThat(preparedData).isEqualTo(expectedData);
-    }
-
-    @Test
-    void shouldReconstructDynamicListFromMalformedData() {
-        List<Element<HearingBooking>> hearings = hearings();
-        String malformedData = hearings.get(0).getId().toString();
-
-        UploadCMOEventData preparedData = service.prepareJudgeAndHearingDetails(malformedData, hearings, List.of());
-
-        DynamicList dynamicList = dynamicList(
-            hearings.get(0).getId(),
-            hearings.get(1).getId(),
-            hearings.get(2).getId(),
-            true
-        );
-
-        assertThat(preparedData).extracting(UploadCMOEventData::getPastHearingsForCMO).isEqualTo(dynamicList);
-    }
-
-    @Test
-    void shouldNotReconstructDynamicListIfNotMalformed() {
-        List<Element<HearingBooking>> hearings = hearings();
-
-        DynamicList dynamicList = dynamicList(
-            hearings.get(0).getId(),
-            hearings.get(1).getId(),
-            hearings.get(2).getId(),
-            true
-        );
-
-        UploadCMOEventData preparedData = service.prepareJudgeAndHearingDetails(dynamicList, hearings, List.of());
-
-        assertThat(preparedData).extracting(UploadCMOEventData::getPastHearingsForCMO).isNull();
-    }
-
-    @Test
-    void shouldSupportLegacyFlow() {
-        List<Element<HearingBooking>> hearings = hearings();
-
-        UploadCMOEventData eventData = UploadCMOEventData.builder()
-            .uploadedCaseManagementOrder(DOCUMENT)
-            .pastHearingsForCMO(dynamicList(
-                hearings.get(0).getId(), hearings.get(1).getId(), hearings.get(2).getId(), true)
-            )
-            .build();
-
-        List<Element<CaseManagementOrder>> unsealedOrders = new ArrayList<>();
-        List<Element<HearingFurtherEvidenceBundle>> bundles = new ArrayList<>();
-
-        service.updateHearingsAndOrders(eventData, hearings, unsealedOrders, bundles);
-
-        assertThat(bundles).isEmpty();
-
-        assertThat(unsealedOrders).hasSize(1)
-            .first()
-            .extracting(Element::getValue)
-            .isEqualTo(CaseManagementOrder.builder()
-                .judgeTitleAndName("His Honour Judge Dredd")
-                .hearing("Case management hearing, 2 March 2020")
-                .dateSent(time.now().toLocalDate())
-                .order(DOCUMENT)
-                .status(SEND_TO_JUDGE)
-                .supportingDocs(List.of())
-                .build());
-
-        assertThat(hearings).hasSize(3)
-            .first()
-            .extracting(hearing -> hearing.getValue().getCaseManagementOrderId())
-            .isEqualTo(unsealedOrders.get(0).getId());
-    }
-
-    @Test
-    void shouldReturnNullWhenNothingChanged() {
-        CaseData caseData = CaseData.builder().hearingDetails(hearings()).draftUploadedCMOs(List.of()).build();
-
-        assertThat(service.buildEventToPublish(caseData, caseData)).isNull();
+        assertThat(event).isEqualTo(new DraftCMOUploaded(caseData, updatedHearing));
     }
 
     private DynamicList dynamicList(UUID uuid1, UUID uuid2, UUID uuid3, DynamicListElement... additional) {

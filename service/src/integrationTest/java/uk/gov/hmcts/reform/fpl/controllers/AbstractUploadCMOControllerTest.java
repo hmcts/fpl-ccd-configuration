@@ -1,14 +1,12 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -16,24 +14,12 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 public abstract class AbstractUploadCMOControllerTest extends AbstractControllerTest {
     AbstractUploadCMOControllerTest(String eventName) {
         super(eventName);
-    }
-
-    @MockBean
-    private FeatureToggleService toggleService;
-
-    protected void givenLegacyFlow() {
-        when(toggleService.isUploadDraftCMOEnabled()).thenReturn(false);
-    }
-
-    protected void givenNewFlow() {
-        when(toggleService.isUploadDraftCMOEnabled()).thenReturn(true);
     }
 
     @SafeVarargs
