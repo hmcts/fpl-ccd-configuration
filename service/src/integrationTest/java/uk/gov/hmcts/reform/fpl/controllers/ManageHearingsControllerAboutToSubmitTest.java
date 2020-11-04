@@ -41,6 +41,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.VACATE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingReListOption.RE_LIST_NOW;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
@@ -199,6 +200,59 @@ class ManageHearingsControllerAboutToSubmitTest extends AbstractControllerTest {
             .isIn(findElementsId(expectedReListedHearing, updatedCaseData.getHearingDetails()));
     }
 
+    @Test
+    void shouldVacateAndReListHearing() {
+        Element<HearingBooking> pastHearing = element(hearing(LocalDateTime.now().minusDays(1)));
+        Element<HearingBooking> futureHearing = element(hearing(LocalDateTime.now().plusDays(1)));
+        Element<HearingBooking> futureHearingToBeVacated = element(hearing(LocalDateTime.now().plusDays(1)));
+
+        LocalDateTime reListedHearingStartTime = now().plusDays(nextLong(1, 50));
+        LocalDateTime reListedHearingEndTime = reListedHearingStartTime.plusDays(nextLong(1, 10));
+
+        HearingCancellationReason vacatedReason = HearingCancellationReason.builder()
+            .reason("Test reason")
+            .build();
+
+        CaseData initialCaseData = CaseData.builder()
+            .hearingOption(VACATE_HEARING)
+            .hearingReListOption(RE_LIST_NOW)
+            .hearingDateList(dynamicList(futureHearing))
+            .futureAndTodayHearingDateList(dynamicList(
+                futureHearingToBeVacated.getId(), futureHearing,
+                futureHearingToBeVacated))
+            .hearingDetails(List.of(pastHearing, futureHearingToBeVacated, futureHearing))
+            .hearingType(CASE_MANAGEMENT)
+            .hearingVenue(futureHearingToBeVacated.getValue().getVenue())
+            .hearingVenueCustom(futureHearingToBeVacated.getValue().getVenueCustomAddress())
+            .hearingStartDate(reListedHearingStartTime)
+            .hearingEndDate(reListedHearingEndTime)
+            .judgeAndLegalAdvisor(futureHearingToBeVacated.getValue().getJudgeAndLegalAdvisor())
+            .vacatedReason(vacatedReason)
+            .noticeOfHearingNotes(futureHearingToBeVacated.getValue().getAdditionalNotes())
+            .children1(ElementUtils.wrapElements(Child.builder().party(ChildParty.builder().build()).build()))
+            .build();
+
+        CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(asCaseDetails(initialCaseData)));
+
+        HearingBooking expectedReListedHearing = futureHearingToBeVacated.getValue().toBuilder()
+            .startDate(reListedHearingStartTime)
+            .endDate(reListedHearingEndTime)
+            .build();
+
+        Element<HearingBooking> expectedVacatedHearing = element(
+            futureHearingToBeVacated.getId(),
+            futureHearingToBeVacated.getValue().toBuilder()
+                .status(HearingStatus.VACATED_AND_RE_LISTED)
+                .cancellationReason(vacatedReason.getReason())
+                .build());
+
+        assertThat(updatedCaseData.getHearingDetails()).extracting(Element::getValue)
+            .containsExactly(pastHearing.getValue(), futureHearing.getValue(), expectedReListedHearing);
+        assertThat(updatedCaseData.getCancelledHearingDetails()).containsExactly(expectedVacatedHearing);
+        assertThat(updatedCaseData.getSelectedHearingId())
+            .isIn(findElementsId(expectedReListedHearing, updatedCaseData.getHearingDetails()));
+    }
+
     @ParameterizedTest
     @EnumSource(value = HearingReListOption.class, names = {"RE_LIST_NOW"}, mode = EnumSource.Mode.EXCLUDE)
     void shouldAdjournHearing(HearingReListOption adjournmentOption) {
@@ -228,6 +282,38 @@ class ManageHearingsControllerAboutToSubmitTest extends AbstractControllerTest {
 
         assertThat(updatedCaseData.getHearingDetails()).isNull();
         assertThat(updatedCaseData.getCancelledHearingDetails()).containsExactly(expectedAdjournedHearing);
+        assertThat(updatedCaseData.getSelectedHearingId()).isNull();
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = HearingReListOption.class, names = {"RE_LIST_NOW"}, mode = EnumSource.Mode.EXCLUDE)
+    void shouldVacateHearing(HearingReListOption adjournmentOption) {
+        Element<HearingBooking> futureHearingToBeAdjourned = element(hearing(LocalDateTime.now().plusDays(2)));
+
+        HearingCancellationReason vacatedReason = HearingCancellationReason.builder()
+            .reason("Test reason")
+            .build();
+
+        CaseData initialCaseData = CaseData.builder()
+            .selectedHearingId(randomUUID())
+            .hearingOption(VACATE_HEARING)
+            .hearingReListOption(adjournmentOption)
+            .futureAndTodayHearingDateList(dynamicList(futureHearingToBeAdjourned.getId(), futureHearingToBeAdjourned))
+            .hearingDetails(List.of(futureHearingToBeAdjourned))
+            .vacatedReason(vacatedReason)
+            .build();
+
+        CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(asCaseDetails(initialCaseData)));
+
+        Element<HearingBooking> expectedVacatedHearing = element(
+            futureHearingToBeAdjourned.getId(),
+            futureHearingToBeAdjourned.getValue().toBuilder()
+                .status(HearingStatus.VACATED)
+                .cancellationReason(vacatedReason.getReason())
+                .build());
+
+        assertThat(updatedCaseData.getHearingDetails()).isNull();
+        assertThat(updatedCaseData.getCancelledHearingDetails()).containsExactly(expectedVacatedHearing);
         assertThat(updatedCaseData.getSelectedHearingId()).isNull();
     }
 

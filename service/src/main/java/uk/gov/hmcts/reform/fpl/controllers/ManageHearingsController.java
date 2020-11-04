@@ -136,8 +136,8 @@ public class ManageHearingsController extends CallbackController {
     public CallbackResponse reListHearing(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
-
-        UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData.getPastAndTodayHearingDateList());
+        Object dynamicHearingListType = hearingsService.getSelectedDynamicListType(caseData);
+        UUID hearingBookingId = hearingsService.getSelectedHearingId(dynamicHearingListType);
 
         HearingBooking adjournedHearingBooking = hearingsService
             .getHearingBooking(hearingBookingId, caseData.getHearingDetails());
@@ -195,6 +195,21 @@ public class ManageHearingsController extends CallbackController {
                 data.put(SELECTED_HEARING_ID, reListedHearingId);
             } else {
                 hearingsService.adjournHearing(caseData, adjournedHearingId);
+                data.remove(SELECTED_HEARING_ID);
+            }
+        } else if (VACATE_HEARING == caseData.getHearingOption()) {
+            UUID vacatedHearingId = hearingsService.getSelectedHearingId(caseData.getFutureAndTodayHearingDateList());
+
+            if (caseData.getHearingReListOption() == RE_LIST_NOW) {
+                final HearingBooking reListedHearing = hearingsService.getCurrentHearingBooking(caseData);
+                final UUID reListedHearingId = hearingsService
+                    .vacateAndReListHearing(caseData, vacatedHearingId, reListedHearing);
+
+                hearingsService.sendNoticeOfHearing(caseData, reListedHearing);
+
+                data.put(SELECTED_HEARING_ID, reListedHearingId);
+            } else {
+                hearingsService.vacateHearing(caseData, vacatedHearingId);
                 data.remove(SELECTED_HEARING_ID);
             }
         } else {
