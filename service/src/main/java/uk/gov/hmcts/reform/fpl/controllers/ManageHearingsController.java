@@ -78,8 +78,8 @@ public class ManageHearingsController extends CallbackController {
             caseDetails.getData()
                 .put(PAST_HEARING_LIST, hearingsService.asDynamicList(caseData.getPastAndTodayHearings()));
 
-            caseDetails.getData().put(FUTURE_HEARING_LIST,
-                hearingsService.asDynamicList(caseData.getFutureAndTodayHearings()));
+            caseDetails.getData()
+                .put(FUTURE_HEARING_LIST, hearingsService.asDynamicList(caseData.getFutureAndTodayHearings()));
 
             caseDetails.getData().put("hasExistingHearings", YES.getValue());
         }
