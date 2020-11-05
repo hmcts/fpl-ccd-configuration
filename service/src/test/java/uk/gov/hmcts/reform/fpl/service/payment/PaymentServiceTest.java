@@ -45,7 +45,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {PaymentService.class})
-@EnableRetry
 @TestPropertySource(properties = {"payment.site_id=TEST_SITE_ID"})
 class PaymentServiceTest {
 
@@ -79,7 +78,6 @@ class PaymentServiceTest {
             when(feeService.getFeesDataForC2(WITH_NOTICE)).thenReturn(buildFeesData(feeForC2WithNotice));
             when(feeService.getFeesDataForC2(WITHOUT_NOTICE)).thenReturn(buildFeesData(feeForC2WithoutNotice));
         }
-
 
         @ParameterizedTest
         @ValueSource(strings = {"customerReference"})
