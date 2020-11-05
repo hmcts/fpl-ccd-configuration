@@ -66,7 +66,7 @@ public class UploadCMOEventData {
         return new String[]{
             "showCMOsSentToJudge", "cmosSentToJudge", "cmoUploadType", "pastHearingsForCMO", "futureHearingsForCMO",
             "cmoHearingInfo", "showReplacementCMO", "previousCMO", "uploadedCaseManagementOrder", "replacementCMO",
-            "cmoSupportingDocs", "cmoJudgeInfo", "cmoToSend",
+            "cmoSupportingDocs", "cmoJudgeInfo", "cmoToSend"
         };
     }
 }
