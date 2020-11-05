@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fnp.client;
+package uk.gov.hmcts.reform.fpl.service.payment;
 
 import feign.FeignException;
 import feign.Request;
@@ -11,6 +11,7 @@ import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.fnp.client.PaymentApi;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fnp.model.payment.CreditAccountPaymentRequest;
 import uk.gov.hmcts.reform.fnp.model.payment.FeeDto;

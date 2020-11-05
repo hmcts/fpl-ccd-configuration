@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fnp.client;
+package uk.gov.hmcts.reform.fpl.service.payment;
 
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.fnp.client.PaymentApi;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fnp.exception.RetryablePaymentException;
 import uk.gov.hmcts.reform.fnp.model.payment.CreditAccountPaymentRequest;
