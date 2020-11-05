@@ -8,7 +8,8 @@
     "DisplayContext": "READONLY",
     "PageID": "ConfirmHearingDetails",
     "ShowSummaryChangeOption": "Y",
-    "PageDisplayOrder": 5
+    "PageDisplayOrder": 5,
+    "PageShowCondition": "hearingOption!=\"ADJOURN_HEARING\" OR hearingOption!=\"EDIT_HEARING\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -31,8 +32,7 @@
     "PageID": "ConfirmHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 5,
-    "Comment": "can change back to same page show that EnterHearingDetails uses",
-    "PageShowCondition": "hearingOption=\"NEW_HEARING\""
+    "Comment": "can change back to same page show that EnterHearingDetails uses"
   },
   {
     "LiveFrom": "01/01/2017",
