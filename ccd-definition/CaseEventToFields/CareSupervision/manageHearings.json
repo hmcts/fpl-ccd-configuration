@@ -194,11 +194,22 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageHearings",
+    "CaseFieldID": "hearingEndDateConfirmation",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY",
+    "PageID": "ConfirmHearingDetails",
+    "ShowSummaryChangeOption": "Y",
+    "PageDisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageHearings",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "COMPLEX",
     "PageID": "JudgeInformation",
-    "PageDisplayOrder": 5,
+    "PageDisplayOrder": 6,
     "ShowSummaryChangeOption": "Y",
     "PageShowCondition": "hearingOption!=\"ADJOURN_HEARING\" OR hearingReListOption=\"RE_LIST_NOW\""
   },
@@ -211,7 +222,7 @@
     "DisplayContext": "MANDATORY",
     "PageID": "SendNoticeOfHearing",
     "ShowSummaryChangeOption": "Y",
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "PageShowCondition": "hearingOption!=\"ADJOURN_HEARING\" OR hearingReListOption=\"RE_LIST_NOW\""
   },
   {
@@ -223,7 +234,7 @@
     "DisplayContext": "OPTIONAL",
     "PageID": "SendNoticeOfHearing",
     "ShowSummaryChangeOption": "Y",
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "FieldShowCondition": "sendNoticeOfHearing=\"Yes\""
   }
 ]
