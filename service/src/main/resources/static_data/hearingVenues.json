@@ -2430,16 +2430,6 @@
     }
   },
   {
-    "hearingVenueId": 310,
-    "venue": "Newcastle upon Tyne CC Centre",
-    "address": {
-      "AddressLine1": "Newcastle upon Tyne Combined Court Centre, The Quayside",
-      "AddressLine2": "The Law Courts",
-      "PostTown": "Newcastle-upon-Tyne",
-      "PostCode": "NE1 3LA"
-    }
-  },
-  {
     "hearingVenueId": 311,
     "venue": "Newcastle upon Tyne MC",
     "address": {
