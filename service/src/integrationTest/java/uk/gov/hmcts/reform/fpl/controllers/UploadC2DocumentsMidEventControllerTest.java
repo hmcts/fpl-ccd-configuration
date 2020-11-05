@@ -63,7 +63,7 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
             .data(Map.of("temporaryC2Document",
-                Map.of("document", Map.of()), "c2ApplicationType", Map.of("type", "WITH_NOTICE")))
+                Map.of("document", Map.of()),"c2ApplicationType", Map.of("type", "WITH_NOTICE")))
             .build(), "get-fee");
 
         assertThat(response.getData()).extracting("temporaryC2Document").extracting("document").isNull();
