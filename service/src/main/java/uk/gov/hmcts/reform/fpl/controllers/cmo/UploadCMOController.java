@@ -45,13 +45,7 @@ public class UploadCMOController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
-
-        UploadCMOEventData pageData;
-        if (featureToggleService.isUploadDraftCMOEnabled()) {
-            pageData = service.getInitialPageData(caseData);
-        } else {
-            pageData = service.getInitialPageData(caseData.getPastHearings(), caseData.getDraftUploadedCMOs());
-        }
+        UploadCMOEventData pageData = service.getInitialPageData(caseData);
 
         caseDetails.getData().putAll(mapper.convertValue(pageData, new TypeReference<>() {}));
 
