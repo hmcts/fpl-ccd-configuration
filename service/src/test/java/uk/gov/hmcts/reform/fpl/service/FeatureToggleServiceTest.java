@@ -215,18 +215,6 @@ class FeatureToggleServiceTest {
             eq(false));
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsVacateHearingEnabled(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isVacateHearingEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("vacate-hearing"),
-            ldUser(ENVIRONMENT).build(),
-            eq(false));
-    }
-
     private static Stream<Arguments> userAttributesTestSource() {
         return Stream.of(
             Arguments.of(

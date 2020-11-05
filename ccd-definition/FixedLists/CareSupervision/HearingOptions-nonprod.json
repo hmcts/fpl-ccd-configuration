@@ -4,6 +4,6 @@
     "ID": "HearingOptions",
     "ListElementCode": "VACATE_HEARING",
     "ListElement": "Vacate a hearing - the hearing was stopped before its listed date",
-    "DisplayOrder": 4
+    "DisplayOrder": 3
   }
 ]
