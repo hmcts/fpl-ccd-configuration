@@ -80,7 +80,7 @@ public class ManageHearingsService {
     }
 
     public UUID adjournAndReListHearing(CaseData caseData, UUID hearingId, HearingBooking hearingToBeReListed) {
-        Element<HearingBooking> adjournedBooking = adjourn(caseData, hearingId, ADJOURNED_AND_RE_LISTED);
+        Element<HearingBooking> adjournedBooking = cancelHearing(caseData, hearingId, ADJOURNED_AND_RE_LISTED);
         Element<HearingBooking> reListedBooking = reList(caseData, hearingToBeReListed);
 
         reassignDocumentsBundle(caseData, adjournedBooking, reListedBooking);
@@ -88,7 +88,7 @@ public class ManageHearingsService {
     }
 
     public UUID vacateAndReListHearing(CaseData caseData, UUID hearingId, HearingBooking hearingToBeReListed) {
-        Element<HearingBooking> vacatedBooking = vacate(caseData, hearingId, VACATED_AND_RE_LISTED);
+        Element<HearingBooking> vacatedBooking = cancelHearing(caseData, hearingId, VACATED_AND_RE_LISTED);
         Element<HearingBooking> reListedBooking = reList(caseData, hearingToBeReListed);
 
         reassignDocumentsBundle(caseData, vacatedBooking, reListedBooking);
@@ -96,11 +96,11 @@ public class ManageHearingsService {
     }
 
     public void adjournHearing(CaseData caseData, UUID hearingToBeAdjourned) {
-        adjourn(caseData, hearingToBeAdjourned, ADJOURNED);
+        cancelHearing(caseData, hearingToBeAdjourned, ADJOURNED);
     }
 
     public void vacateHearing(CaseData caseData, UUID hearingToBeVacated) {
-        vacate(caseData, hearingToBeVacated, VACATED);
+        cancelHearing(caseData, hearingToBeVacated, VACATED);
     }
 
     public HearingVenue getPreviousHearingVenue(CaseData caseData) {
@@ -300,41 +300,28 @@ public class ManageHearingsService {
         return reListedBooking;
     }
 
-    private Element<HearingBooking> adjourn(CaseData caseData, UUID adjournedHearingId, HearingStatus hearingStatus) {
-        Element<HearingBooking> originalHearingBooking = findElement(adjournedHearingId, caseData.getHearingDetails())
-            .orElseThrow(() -> new NoHearingBookingException(adjournedHearingId));
+    private Element<HearingBooking> cancelHearing(CaseData caseData, UUID hearingId, HearingStatus hearingStatus) {
+        Element<HearingBooking> originalHearingBooking = findElement(hearingId, caseData.getHearingDetails())
+            .orElseThrow(() -> new NoHearingBookingException(hearingId));
 
-        Element<HearingBooking> adjournedBooking = element(adjournedHearingId, originalHearingBooking.getValue()
+        Element<HearingBooking> cancelledHearing = element(hearingId, originalHearingBooking.getValue()
             .toBuilder()
             .status(hearingStatus)
-            .cancellationReason(caseData.getAdjournmentReason().getReason())
+            .cancellationReason(getCancellationReason(caseData, hearingStatus))
             .build());
 
-        caseData.addCancelledHearingBooking(adjournedBooking);
+        caseData.addCancelledHearingBooking(cancelledHearing);
         caseData.removeHearingDetails(originalHearingBooking);
 
-        return adjournedBooking;
+        return cancelledHearing;
     }
 
-    private Element<HearingBooking> vacate(CaseData caseData, UUID vacatedHearingId, HearingStatus hearingStatus) {
-        Element<HearingBooking> originalHearingBooking = findElement(vacatedHearingId, caseData.getHearingDetails())
-            .orElseThrow(() -> new NoHearingBookingException(vacatedHearingId));
-
-        Element<HearingBooking> vacatedBooking = element(vacatedHearingId, originalHearingBooking.getValue()
-            .toBuilder()
-            .status(hearingStatus)
-            .cancellationReason(getVacatedReason(caseData))
-            .build());
-
-        caseData.addCancelledHearingBooking(vacatedBooking);
-        caseData.removeHearingDetails(originalHearingBooking);
-
-        return vacatedBooking;
-    }
-
-    private String getVacatedReason(CaseData caseData) {
-        if (caseData.getVacatedReason() != null) {
+    private String getCancellationReason(CaseData caseData, HearingStatus hearingStatus) {
+        if (caseData.getVacatedReason() != null
+            && VACATED.equals(hearingStatus) || VACATED_AND_RE_LISTED.equals(hearingStatus)) {
             return caseData.getVacatedReason().getReason();
+        } else if (ADJOURNED.equals(hearingStatus) || ADJOURNED_AND_RE_LISTED.equals(hearingStatus)) {
+            return caseData.getAdjournmentReason().getReason();
         }
 
         return null;
