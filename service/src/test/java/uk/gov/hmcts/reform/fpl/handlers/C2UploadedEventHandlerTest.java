@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForC2;
 import uk.gov.hmcts.reform.fpl.model.notify.c2uploaded.C2UploadedTemplate;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
@@ -135,7 +136,8 @@ class C2UploadedEventHandlerTest {
             given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(
                 UserInfo.builder().sub(CTSC_INBOX).roles(LOCAL_AUTHORITY.getRoles()).build());
 
-            given(inboxLookupService.getRecipients(caseData))
+            given(inboxLookupService.getRecipients(
+                LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))
                 .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
             given(c2UploadedEmailContentProvider

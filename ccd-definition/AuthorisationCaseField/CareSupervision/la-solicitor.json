@@ -1151,5 +1151,27 @@
     "CaseFieldID": "orderTabHeading",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "legalRepresentatives",
+    "UserRole": "caseworker-publiclaw-solicitor",
+    "CRUD": "CRUD",
+    "Comment": "Requires idam role otherwise cannot add to"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageLegalRepresentativesLabel",
+    "UserRole": "[LASOLICITOR]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageLegalRepresentativesLink",
+    "UserRole": "[LASOLICITOR]",
+    "CRUD": "R"
   }
 ]

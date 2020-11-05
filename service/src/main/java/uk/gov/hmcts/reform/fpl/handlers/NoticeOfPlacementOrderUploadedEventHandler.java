@@ -6,6 +6,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
@@ -34,7 +35,9 @@ public class NoticeOfPlacementOrderUploadedEventHandler {
     @EventListener
     public void sendEmailForNoticeOfPlacementOrderUploaded(NoticeOfPlacementOrderUploadedEvent noticeOfPlacementEvent) {
         CaseData caseData = noticeOfPlacementEvent.getCaseData();
-        Collection<String> emails = inboxLookupService.getRecipients(caseData);
+        Collection<String> emails = inboxLookupService.getRecipients(
+            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()
+        );
 
         Map<String, Object> parameters =
             localAuthorityEmailContentProvider.buildNoticeOfPlacementOrderUploadedNotification(caseData);
