@@ -42,6 +42,16 @@ Scenario('local authority uploads court bundle', async ({I, caseViewPage, upload
   I.seeDocument('Court bundle', 'mockFile.txt', '', '', 'Date and time uploaded', 'Uploaded by');
 });
 
+Scenario('local authority update solicitor', async ({I, caseViewPage, enterApplicantEventPage}) => {
+  const solicitorEmail = 'solicitor@test.com';
+  await caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
+  enterApplicantEventPage.enterSolicitorDetails({email: solicitorEmail});
+  await I.seeCheckAnswersAndCompleteEvent('Save and continue');
+
+  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+  I.seeInTab(['Solicitor', 'Solicitor\'s email'], solicitorEmail);
+});
+
 Scenario('local authority provides a statements of service', async ({I, caseViewPage, addStatementOfServiceEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.addStatementOfService);
   await addStatementOfServiceEventPage.enterRecipientDetails(recipients[0]);
