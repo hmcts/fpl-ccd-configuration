@@ -89,7 +89,7 @@
     "ID": "hearingEndDateConfirmation",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "DateTime",
-    "Label": "End date and time",
+    "Label": "This is hint text",
     "HintText": "Use 24 hour format",
     "SecurityClassification": "Public"
   },
