@@ -94,7 +94,7 @@ Scenario('Gatekeeper drafts standard directions', async ({I, caseViewPage, draft
   await draftStandardDirectionsEventPage.useAllocatedJudge('Bob Ross');
   await I.goToNextPage();
   await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
-  await draftStandardDirectionsEventPage.markAsDraft();
+  draftStandardDirectionsEventPage.markAsDraft();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.draftStandardDirections);
 

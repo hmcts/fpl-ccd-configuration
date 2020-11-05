@@ -13,7 +13,6 @@ yarn-error.log
 # test output
 output/
 test-results/
-src/gatling/results
 
 .DS_Store
 ~*

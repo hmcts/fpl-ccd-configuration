@@ -196,12 +196,6 @@ public class CaseData {
     private final NoticeOfProceedings noticeOfProceedings;
 
     @JsonIgnore
-    public boolean isSendingNoticeOfProceedings() {
-        return noticeOfProceedings != null && noticeOfProceedings.getProceedingTypes() != null
-            && !noticeOfProceedings.getProceedingTypes().isEmpty();
-    }
-
-    @JsonIgnore
     public List<Element<Applicant>> getAllApplicants() {
         return applicants != null ? applicants : new ArrayList<>();
     }
@@ -310,6 +304,8 @@ public class CaseData {
     private final Others others;
 
     private final List<Element<Representative>> representatives;
+
+    private final List<Element<LegalRepresentative>> legalRepresentatives;
 
     // EPO Order
     @PastOrPresent(message = "Date of issue cannot be in the future", groups = DateOfIssueGroup.class)
