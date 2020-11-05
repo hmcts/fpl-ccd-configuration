@@ -32,7 +32,8 @@ public class ManageLegalRepresentativesController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().put("legalRepresentatives", legalRepresentativeService.getDefaultLegalRepresentatives(caseData));
+        caseDetails.getData()
+            .put("legalRepresentatives", legalRepresentativeService.getDefaultLegalRepresentatives(caseData));
 
         return respond(callbackRequest.getCaseDetails());
     }
