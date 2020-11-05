@@ -54,7 +54,7 @@ public class PaymentService {
                 localAuthorityName,
                 feesData);
 
-            callPaymentsApi(paymentRequest);
+            paymentClient.callPaymentsApi(paymentRequest);
         }
     }
 
@@ -75,7 +75,7 @@ public class PaymentService {
             localAuthorityName,
             feesData);
 
-        callPaymentsApi(paymentRequest);
+        paymentClient.callPaymentsApi(paymentRequest);
     }
 
     private CreditAccountPaymentRequest getCreditAccountPaymentRequest(Long caseId, String pbaNumber,
@@ -96,10 +96,5 @@ public class PaymentService {
             .siteId(siteId)
             .fees(feesData.getFees())
             .build();
-    }
-
-    // callPaymentsApi has been called from PaymentClient because of springboot limitations on retry mechanism
-    public void callPaymentsApi(CreditAccountPaymentRequest creditAccountPaymentRequest) {
-        paymentClient.callPaymentsApi(creditAccountPaymentRequest);
     }
 }

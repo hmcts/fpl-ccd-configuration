@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
@@ -49,9 +48,6 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
 
     @MockBean
     private RequestData requestData;
-
-    @MockBean
-    private PaymentService paymentService;
 
     @Autowired
     private Time time;

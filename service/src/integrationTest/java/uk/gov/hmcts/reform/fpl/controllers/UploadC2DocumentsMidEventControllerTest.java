@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
-import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.math.BigDecimal;
@@ -35,9 +34,6 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
 
     @MockBean
     private FeeService feeService;
-
-    @MockBean
-    private PaymentService paymentService;
 
     UploadC2DocumentsMidEventControllerTest() {
         super("upload-c2");
@@ -67,7 +63,7 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
             .data(Map.of("temporaryC2Document",
-                Map.of("document", Map.of()),"c2ApplicationType", Map.of("type", "WITH_NOTICE")))
+                Map.of("document", Map.of()), "c2ApplicationType", Map.of("type", "WITH_NOTICE")))
             .build(), "get-fee");
 
         assertThat(response.getData()).extracting("temporaryC2Document").extracting("document").isNull();
@@ -132,7 +128,7 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
             .data(Map.of("temporaryC2Document",
                 Map.of(
                     "supportingEvidenceBundle", wrapElements(createSupportingEvidenceBundle()),
-                "pbaNumber", "12345")))
+                    "pbaNumber", "12345")))
             .build(), "validate");
 
         assertThat(response.getErrors()).contains("Payment by account (PBA) number must include 7 numbers");
