@@ -71,10 +71,6 @@ public class FeatureToggleService {
             createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
     }
 
-    public boolean isSendNoticeOfProceedingsFromSdo() {
-        return ldClient.boolVariation("send-notice-of-proceedings-from-sdo", createLDUser(), false);
-    }
-
     private LDUser createLDUser() {
         return createLDUser(Map.of());
     }
