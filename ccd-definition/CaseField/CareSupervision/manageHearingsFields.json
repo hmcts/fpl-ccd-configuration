@@ -165,6 +165,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "futureAndTodayHearingDateListInfo",
+    "Label": "If you dont know yet if or when this hearing will be re-listed, it's better to wait so you can add all the information in one go.<br><br>If you do have the new hearing details, go ahead to vacate and re-list now.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "futureAndTodayHearingDateList",
     "Label": "Which hearing?",
     "FieldType": "DynamicList",
