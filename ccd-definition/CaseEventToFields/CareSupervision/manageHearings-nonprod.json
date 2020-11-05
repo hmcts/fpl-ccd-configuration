@@ -9,7 +9,7 @@
     "PageID": "ConfirmHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 5,
-    "PageShowCondition": "hearingOption!=\"ADJOURN_HEARING\" OR hearingOption!=\"EDIT_HEARING\""
+    "PageShowCondition": "hearingOption!=\"ADJOURN_HEARING\" AND hearingOption!=\"EDIT_HEARING\""
   },
   {
     "LiveFrom": "01/01/2017",
