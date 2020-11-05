@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingDateConfirmation",
+    "ListElementCode": "YES",
+    "ListElement": "Yes",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingDateConfirmation",
+    "ListElementCode": "NO",
+    "ListElement": "No, change the date",
+    "DisplayOrder": 2
+  }
+]
