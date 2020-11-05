@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.NoticeOfHearingTemplate;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -45,7 +46,8 @@ public class SendNoticeOfHearingHandler {
     @EventListener
     public void sendEmailToLA(final SendNoticeOfHearing event) {
         final CaseData caseData = event.getCaseData();
-        Collection<String> emails = inboxLookupService.getRecipients(caseData);
+        Collection<String> emails = inboxLookupService.getRecipients(
+            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
 
         NoticeOfHearingTemplate templateData = newHearingContent.buildNewNoticeOfHearingNotification(caseData,
             event.getSelectedHearing(), DIGITAL_SERVICE);
