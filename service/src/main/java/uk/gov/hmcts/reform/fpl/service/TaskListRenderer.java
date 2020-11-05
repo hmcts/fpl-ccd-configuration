@@ -41,22 +41,18 @@ public class TaskListRenderer {
     private static final String NEW_LINE = "<br/>";
 
     private final String imagesBaseUrl;
-    private final FeatureToggleService featureToggleService;
 
-    public TaskListRenderer(@Value("${resources.images.baseUrl}") String imagesBaseUrl,
-                            FeatureToggleService featureToggleService) {
+    public TaskListRenderer(@Value("${resources.images.baseUrl}") String imagesBaseUrl) {
         this.imagesBaseUrl = imagesBaseUrl;
-        this.featureToggleService = featureToggleService;
     }
 
     //TODO consider templating solution like mustache
     public String render(List<Task> allTasks) {
-        final boolean showInProgressTag = featureToggleService.isTaskListInProgressTagsEnabled();
         final List<String> lines = new LinkedList<>();
 
         lines.add("<div class='width-50'>");
 
-        groupInSections(allTasks).forEach(section -> lines.addAll(renderSection(section, showInProgressTag)));
+        groupInSections(allTasks).forEach(section -> lines.addAll(renderSection(section)));
 
         lines.add("</div>");
 
@@ -67,52 +63,52 @@ public class TaskListRenderer {
         final Map<Event, Task> tasks = allTasks.stream().collect(toMap(Task::getEvent, identity()));
 
         final TaskSection applicationDetails = newSection("Add application details", of(
-                tasks.get(CASE_NAME),
-                tasks.get(ORDERS_SOUGHT),
-                tasks.get(HEARING_URGENCY)
+            tasks.get(CASE_NAME),
+            tasks.get(ORDERS_SOUGHT),
+            tasks.get(HEARING_URGENCY)
         ));
 
         final TaskSection applicationGrounds = newSection("Add grounds for the application", of(
-                tasks.get(GROUNDS),
-                tasks.get(RISK_AND_HARM)
-                        .withHint("In emergency cases, you can send your application without this information"),
-                tasks.get(FACTORS_AFFECTING_PARENTING)
-                        .withHint("In emergency cases, you can send your application without this information")
+            tasks.get(GROUNDS),
+            tasks.get(RISK_AND_HARM)
+                .withHint("In emergency cases, you can send your application without this information"),
+            tasks.get(FACTORS_AFFECTING_PARENTING)
+                .withHint("In emergency cases, you can send your application without this information")
         ));
 
         final TaskSection documents = newSection("Add supporting documents", of(tasks.get(DOCUMENTS)))
-                .withHint("For example, SWET, social work chronology and care plan");
+            .withHint("For example, SWET, social work chronology and care plan");
 
         final TaskSection parties = newSection("Add information about the parties",
-                List.of(
-                        tasks.get(ORGANISATION_DETAILS),
-                        tasks.get(CHILDREN),
-                        tasks.get(RESPONDENTS)
-                ));
+            List.of(
+                tasks.get(ORGANISATION_DETAILS),
+                tasks.get(CHILDREN),
+                tasks.get(RESPONDENTS)
+            ));
 
         final TaskSection courtRequirements = newSection("Add court requirements", of(
-                tasks.get(ALLOCATION_PROPOSAL)
+            tasks.get(ALLOCATION_PROPOSAL)
         ));
 
         final TaskSection additionalInformation = newSection("Add additional information", of(
-                tasks.get(OTHER_PROCEEDINGS),
-                tasks.get(INTERNATIONAL_ELEMENT),
-                tasks.get(OTHERS),
-                tasks.get(COURT_SERVICES)
+            tasks.get(OTHER_PROCEEDINGS),
+            tasks.get(INTERNATIONAL_ELEMENT),
+            tasks.get(OTHERS),
+            tasks.get(COURT_SERVICES)
         )).withInfo("Only complete if relevant");
 
         final TaskSection sentApplication = newSection("Send application", of(tasks.get(SUBMIT_APPLICATION)));
 
         return List.of(applicationDetails,
-                applicationGrounds,
-                documents,
-                parties,
-                courtRequirements,
-                additionalInformation,
-                sentApplication);
+            applicationGrounds,
+            documents,
+            parties,
+            courtRequirements,
+            additionalInformation,
+            sentApplication);
     }
 
-    private List<String> renderSection(TaskSection sec, boolean showInProgressTag) {
+    private List<String> renderSection(TaskSection sec) {
         final List<String> section = new LinkedList<>();
 
         section.add(NEW_LINE);
@@ -123,14 +119,14 @@ public class TaskListRenderer {
 
         section.add(HORIZONTAL_LINE);
         sec.getTasks().forEach(task -> {
-            section.addAll(renderTask(task, showInProgressTag));
+            section.addAll(renderTask(task));
             section.add(HORIZONTAL_LINE);
         });
 
         return section;
     }
 
-    private List<String> renderTask(Task task, boolean showInProgress) {
+    private List<String> renderTask(Task task) {
         final List<String> lines = new LinkedList<>();
 
         switch (task.getState()) {
@@ -138,11 +134,7 @@ public class TaskListRenderer {
                 lines.add(renderDisabledLink(task) + renderImage("cannot-send-yet.png", "Cannot send yet"));
                 break;
             case IN_PROGRESS:
-                if (showInProgress) {
-                    lines.add(renderLink(task) + renderImage("in-progress.png", "In progress"));
-                } else {
-                    lines.add(renderLink(task));
-                }
+                lines.add(renderLink(task) + renderImage("in-progress.png", "In progress"));
                 break;
             case COMPLETED:
                 lines.add(renderLink(task) + renderImage("information-added.png", "Information added"));
@@ -157,7 +149,7 @@ public class TaskListRenderer {
 
     private String renderLink(Task event) {
         return format("<a href='/case/%s/%s/${[CASE_REFERENCE]}/trigger/%s'>%s</a>",
-                JURISDICTION, CASE_TYPE, event.getEvent().getId(), event.getEvent().getName());
+            JURISDICTION, CASE_TYPE, event.getEvent().getId(), event.getEvent().getName());
     }
 
     private String renderDisabledLink(Task event) {

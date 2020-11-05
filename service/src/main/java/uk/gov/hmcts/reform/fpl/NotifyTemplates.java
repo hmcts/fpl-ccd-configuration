@@ -9,10 +9,6 @@ public final class NotifyTemplates {
     public static final String HMCTS_COURT_SUBMISSION_TEMPLATE = "a1562b56-4ff7-4e3e-b62d-5fb9f086ee8f";
     public static final String CAFCASS_SUBMISSION_TEMPLATE = "e5630e8b-3b25-4773-a41a-a42af123bebc";
     public static final String GATEKEEPER_SUBMISSION_TEMPLATE = "1e8f7e14-64aa-44ce-a5c1-83affff5f1a0";
-    // TODO - TO be removed once FPLA-1754 is live
-    public static final String STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE = "c06968ea-048b-49d6-a4b5-1f13ee995ba1";
-    public static final String STANDARD_DIRECTION_ORDER_ISSUED_CTSC_TEMPLATE = "1ea10d41-30b8-4f5d-8c8f-a9c53e57517a";
-    public static final String STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE = "f9551e87-f646-4e5e-b7be-7a00e498934b";
 
     public static final String C2_UPLOAD_NOTIFICATION_TEMPLATE = "23d406cb-73fb-42c2-93b8-87b74a91c6e8";
     public static final String C2_UPLOAD_NOTIFICATION_TEMPLATE_JUDGE = "9e4d4365-bc82-4a94-a752-a75a9abe78ad";
@@ -40,6 +36,7 @@ public final class NotifyTemplates {
         = "b40328fe-c01e-4b7f-9542-4ef776140df9";
     public static final String APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC
         = "7d362e1e-bc87-4d63-8218-3835abecb600";
+    public static final String LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE = "7f3bf6f3-64cd-4b36-ba56-6c7a676a4816";
     public static final String UPCOMING_HEARINGS_TEMPLATE = "c24308e9-cc0b-4548-8927-33c0a8a3cdb8";
     public static final String NOTICE_OF_PROCEEDINGS_ISSUED_JUDGE_TEMPLATE = "406ddb81-0b23-438c-ab5c-cfd45726419f";
     public static final String ALLOCATED_JUDGE_TEMPLATE = "f2dd8407-09df-4f62-81d6-ac15f1f2e63b";

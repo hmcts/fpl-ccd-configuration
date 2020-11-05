@@ -28,7 +28,6 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.DocumentService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
 import uk.gov.hmcts.reform.fpl.service.OrderValidationService;
 import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForDataStoreService;
@@ -72,7 +71,6 @@ public class StandardDirectionsOrderController extends CallbackController {
     private final StandardDirectionsService standardDirectionsService;
     private final StandardDirectionsOrderService sdoService;
     private final NoticeOfProceedingsService noticeOfProceedingsService;
-    private final FeatureToggleService featureToggleService;
 
     private static final String JUDGE_AND_LEGAL_ADVISOR_KEY = "judgeAndLegalAdvisor";
     private static final String STANDARD_DIRECTION_ORDER_KEY = "standardDirectionOrder";
@@ -91,10 +89,8 @@ public class StandardDirectionsOrderController extends CallbackController {
                 case UPLOAD:
                     data.put("currentSDO", standardDirectionOrder.getOrderDoc());
                     data.put("useUploadRoute", YES);
+                    data.put(JUDGE_AND_LEGAL_ADVISOR_KEY, sdoService.getJudgeAndLegalAdvisorFromSDO(caseData));
 
-                    if (featureToggleService.isSendNoticeOfProceedingsFromSdo()) {
-                        data.put(JUDGE_AND_LEGAL_ADVISOR_KEY, sdoService.getJudgeAndLegalAdvisorFromSDO(caseData));
-                    }
                     break;
                 case SERVICE:
                     data.put(DATE_OF_ISSUE_KEY, sdoService.generateDateOfIssue(standardDirectionOrder));
@@ -124,9 +120,8 @@ public class StandardDirectionsOrderController extends CallbackController {
             data.remove("preparedSDO");
         }
 
-        if (featureToggleService.isSendNoticeOfProceedingsFromSdo()) {
-            caseDetails.getData().put(JUDGE_AND_LEGAL_ADVISOR_KEY, sdoService.getJudgeAndLegalAdvisorFromSDO(caseData));
-        }
+
+        data.put(JUDGE_AND_LEGAL_ADVISOR_KEY, sdoService.getJudgeAndLegalAdvisorFromSDO(caseData));
 
         return respond(caseDetails);
     }
@@ -265,16 +260,15 @@ public class StandardDirectionsOrderController extends CallbackController {
             data.put("state", State.CASE_MANAGEMENT);
             removeTemporaryFields(caseDetails, "sdoRouter");
 
-            if (caseData.isSendingNoticeOfProceedings() && featureToggleService.isSendNoticeOfProceedingsFromSdo()) {
-                List<DocmosisTemplates> docmosisTemplateTypes =
-                    caseData.getNoticeOfProceedings().mapProceedingTypesToDocmosisTemplate();
+            List<DocmosisTemplates> docmosisTemplateTypes =
+                caseData.getNoticeOfProceedings().mapProceedingTypesToDocmosisTemplate();
 
-                List<Element<DocumentBundle>> newNoticeOfProceedings
-                    = noticeOfProceedingsService.uploadAndPrepareNoticeOfProceedingBundle(caseData,
-                    docmosisTemplateTypes);
+            List<Element<DocumentBundle>> newNoticeOfProceedings
+                = noticeOfProceedingsService.uploadAndPrepareNoticeOfProceedingBundle(caseData,
+                docmosisTemplateTypes);
 
-                caseDetails.getData().put("noticeOfProceedingsBundle", newNoticeOfProceedings);
-            }
+            caseDetails.getData().put("noticeOfProceedingsBundle", newNoticeOfProceedings);
+
         }
 
         return respond(caseDetails);
