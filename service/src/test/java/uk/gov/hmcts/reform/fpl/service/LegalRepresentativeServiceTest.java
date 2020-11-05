@@ -22,6 +22,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,7 +53,7 @@ class LegalRepresentativeServiceTest {
             CaseData.builder().build()
         );
 
-        assertThat(actual).isEqualTo(wrapElements(LegalRepresentative.builder().build()));
+        assertThat(unwrapElements(actual)).isEqualTo(List.of(LegalRepresentative.builder().build()));
     }
 
     @Test

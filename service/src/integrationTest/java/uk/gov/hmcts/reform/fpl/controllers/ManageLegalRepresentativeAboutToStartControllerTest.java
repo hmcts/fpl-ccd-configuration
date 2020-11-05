@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
@@ -51,8 +52,8 @@ class ManageLegalRepresentativeAboutToStartControllerTest extends AbstractContro
 
         CaseData actualCaseData = mapper.convertValue(actualResponse.getData(), CaseData.class);
 
-        assertThat(actualCaseData.getLegalRepresentatives()).isEqualTo(
-            wrapElements(LegalRepresentative.builder().build())
+        assertThat(unwrapElements(actualCaseData.getLegalRepresentatives())).isEqualTo(
+            List.of(LegalRepresentative.builder().build())
         );
     }
 

@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.util.List;
 
 import static java.util.Collections.emptySet;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
 @Slf4j
@@ -26,7 +26,7 @@ public class LegalRepresentativeService {
 
     public List<Element<LegalRepresentative>> getDefaultLegalRepresentatives(CaseData caseData) {
         if (ObjectUtils.isEmpty(caseData.getLegalRepresentatives())) {
-            return wrapElements(LegalRepresentative.builder().build());
+            return List.of(element(LegalRepresentative.builder().build()));
         } else {
             return caseData.getLegalRepresentatives();
         }
