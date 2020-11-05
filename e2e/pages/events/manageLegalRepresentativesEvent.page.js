@@ -18,7 +18,6 @@ module.exports = {
   },
 
   async addLegalRepresentative(legalRepresentative) {
-    await I.addAnotherElementToCollection();
 
     const elementIndex = await this.getActiveElementIndex();
 

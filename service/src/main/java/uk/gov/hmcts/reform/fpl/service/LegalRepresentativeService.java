@@ -2,14 +2,18 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LegalRepresentative;
 import uk.gov.hmcts.reform.fpl.model.LegalRepresentativesChange;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
 
 import static java.util.Collections.emptySet;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @Service
 @Slf4j
@@ -19,6 +23,14 @@ public class LegalRepresentativeService {
     private final CaseService caseService;
     private final OrganisationService organisationService;
     private final LegalRepresentativesDifferenceCalculator differenceCalculator;
+
+    public List<Element<LegalRepresentative>> getDefaultLegalRepresentatives(CaseData caseData) {
+        if (ObjectUtils.isEmpty(caseData.getLegalRepresentatives())) {
+            return wrapElements(LegalRepresentative.builder().build());
+        } else {
+            return caseData.getLegalRepresentatives();
+        }
+    }
 
     public void updateRepresentatives(Long caseId,
                                       List<LegalRepresentative> originalRepresentatives,

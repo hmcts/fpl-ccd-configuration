@@ -6,8 +6,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.LegalRepresentativeRole;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LegalRepresentative;
 import uk.gov.hmcts.reform.fpl.model.LegalRepresentativesChange;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,9 +18,11 @@ import java.util.Set;
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(MockitoExtension.class)
 class LegalRepresentativeServiceTest {
@@ -41,6 +45,26 @@ class LegalRepresentativeServiceTest {
 
     @InjectMocks
     private LegalRepresentativeService underTest;
+
+    @Test
+    void testDefaultLegalRepresentativesIfEmpty() {
+        List<Element<LegalRepresentative>> actual = underTest.getDefaultLegalRepresentatives(
+            CaseData.builder().build()
+        );
+
+        assertThat(actual).isEqualTo(wrapElements(LegalRepresentative.builder().build()));
+    }
+
+    @Test
+    void testDefaultLegalRepresentativesIfExisting() {
+        List<Element<LegalRepresentative>> existingLegalRepresentatives = wrapElements(mock(LegalRepresentative.class));
+
+        List<Element<LegalRepresentative>> actual = underTest.getDefaultLegalRepresentatives(
+            CaseData.builder().legalRepresentatives(existingLegalRepresentatives).build()
+        );
+
+        assertThat(actual).isEqualTo(existingLegalRepresentatives);
+    }
 
     @Test
     void doNotUpdateIfNoChange() {
