@@ -3,14 +3,25 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageHearings",
-    "CaseFieldID": "hearingDateConfirmation",
+    "CaseFieldID": "hearingDateConfirmationLabel",
     "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": "ConfirmHearingDetails",
+    "ShowSummaryChangeOption": "Y",
+    "PageDisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageHearings",
+    "CaseFieldID": "hearingDateConfirmation",
+    "PageFieldDisplayOrder": 3,
     "DisplayContext": "OPTIONAL",
     "PageID": "ConfirmHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 5,
     "Comment": "can change back to same page show that EnterHearingDetails uses",
-    "PageShowCondition": "hearingOption=\"EDIT_HEARING\""
+    "PageShowCondition": "hearingOption=\"NEW_HEARING\""
   },
   {
     "LiveFrom": "01/01/2017",
