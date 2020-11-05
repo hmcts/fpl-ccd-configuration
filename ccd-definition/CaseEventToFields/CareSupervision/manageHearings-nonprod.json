@@ -9,7 +9,8 @@
     "PageID": "ConfirmHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 5,
-    "PageShowCondition": "hearingOption!=\"ADJOURN_HEARING\" OR hearingReListOption=\"RE_LIST_NOW\""
+    "Comment": "can change back to same page show that EnterHearingDetails uses",
+    "PageShowCondition": "hearingOption=\"EDIT_HEARING\""
   },
   {
     "LiveFrom": "01/01/2017",
