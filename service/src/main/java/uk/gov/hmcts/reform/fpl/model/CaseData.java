@@ -196,12 +196,6 @@ public class CaseData {
     private final NoticeOfProceedings noticeOfProceedings;
 
     @JsonIgnore
-    public boolean isSendingNoticeOfProceedings() {
-        return noticeOfProceedings != null && noticeOfProceedings.getProceedingTypes() != null
-            && !noticeOfProceedings.getProceedingTypes().isEmpty();
-    }
-
-    @JsonIgnore
     public List<Element<Applicant>> getAllApplicants() {
         return applicants != null ? applicants : new ArrayList<>();
     }
