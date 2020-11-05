@@ -1,22 +1,16 @@
 package uk.gov.hmcts.reform.fpl.service.payment;
 
-import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.fnp.client.PaymentApi;
-import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
-import uk.gov.hmcts.reform.fnp.exception.RetryablePaymentException;
+import uk.gov.hmcts.reform.fnp.client.PaymentClient;
 import uk.gov.hmcts.reform.fnp.model.payment.CreditAccountPaymentRequest;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 import java.math.BigDecimal;
 
@@ -32,21 +26,16 @@ public class PaymentService {
     public static final String BLANK_PARAMETER_VALUE = "Not provided";
 
     private final FeeService feeService;
-    private final PaymentApi paymentApi;
-    private final AuthTokenGenerator authTokenGenerator;
-    private final RequestData requestData;
+    private final PaymentClient paymentClient;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final String siteId;
 
     @Autowired
-    public PaymentService(FeeService feeService, PaymentApi paymentApi, AuthTokenGenerator authTokenGenerator,
-                          RequestData requestData,
+    public PaymentService(FeeService feeService, PaymentClient paymentClient,
                           LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
                           @Value("${payment.site_id}") String siteId) {
         this.feeService = feeService;
-        this.paymentApi = paymentApi;
-        this.authTokenGenerator = authTokenGenerator;
-        this.requestData = requestData;
+        this.paymentClient = paymentClient;
         this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
         this.siteId = siteId;
     }
@@ -110,19 +99,8 @@ public class PaymentService {
             .build();
     }
 
-    @Retryable(value = {RetryablePaymentException.class}, label = "payment api call")
+    // callPaymentsApi has been called from PaymentClient because of springboot limitations on retry mechanism
     public void callPaymentsApi(CreditAccountPaymentRequest creditAccountPaymentRequest) {
-        try {
-            paymentApi.createCreditAccountPayment(requestData.authorisation(),
-                authTokenGenerator.generate(),
-                creditAccountPaymentRequest);
-        } catch (FeignException.InternalServerError ex) {
-            throw new RetryablePaymentException(ex.contentUTF8(), ex);
-        } catch (FeignException ex) {
-            log.error("Payments response error for {}\n\tstatus: {} => message: \"{}\"",
-                creditAccountPaymentRequest, ex.status(), ex.contentUTF8(), ex);
-            log.info("Feign exception caught, payment will not be retried");
-            throw new PaymentsApiException(ex.contentUTF8(), ex);
-        }
+        paymentClient.callPaymentsApi(creditAccountPaymentRequest);
     }
 }

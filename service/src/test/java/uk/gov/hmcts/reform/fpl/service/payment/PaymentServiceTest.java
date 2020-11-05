@@ -1,8 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.payment;
 
-import feign.FeignException;
-import feign.Request;
-import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -17,9 +14,7 @@ import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.fnp.client.PaymentApi;
-import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
+import uk.gov.hmcts.reform.fnp.client.PaymentClient;
 import uk.gov.hmcts.reform.fnp.model.payment.CreditAccountPaymentRequest;
 import uk.gov.hmcts.reform.fnp.model.payment.FeeDto;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
@@ -30,21 +25,14 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
-import static feign.Request.HttpMethod.GET;
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Currency.GBP;
@@ -62,21 +50,13 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @TestPropertySource(properties = {"payment.site_id=TEST_SITE_ID"})
 class PaymentServiceTest {
 
-    private static final String SERVICE_AUTH_TOKEN = "servicetoken";
-    private static final String AUTH_TOKEN = "token";
     private static final Long CASE_ID = 1L;
 
     @MockBean
     private FeeService feeService;
 
     @MockBean
-    private PaymentApi paymentApi;
-
-    @MockBean
-    private AuthTokenGenerator authTokenGenerator;
-
-    @MockBean
-    private RequestData requestData;
+    private PaymentClient paymentClient;
 
     @MockBean
     private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
@@ -86,8 +66,6 @@ class PaymentServiceTest {
 
     @BeforeEach
     void setup() {
-        when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTH_TOKEN);
-        when(requestData.authorisation()).thenReturn(AUTH_TOKEN);
         when(localAuthorityNameLookupConfiguration.getLocalAuthorityName(any())).thenReturn("Example Local Authority");
     }
 
@@ -103,54 +81,6 @@ class PaymentServiceTest {
             when(feeService.getFeesDataForC2(WITHOUT_NOTICE)).thenReturn(buildFeesData(feeForC2WithoutNotice));
         }
 
-        @Test
-        void shouldRetryPaymentsApiWhenInternalServerErrorThrown() {
-            CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
-                .customerReference("1")
-                .amount(feeForC2WithNotice.getCalculatedAmount())
-                .fees(List.of(feeForC2WithNotice))
-                .build();
-
-            when(paymentApi.createCreditAccountPayment(AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedPaymentRequest))
-                .thenThrow(FeignException.InternalServerError.class);
-
-            assertThrows(PaymentsApiException.class, () -> paymentService.callPaymentsApi(expectedPaymentRequest));
-            verify(paymentApi, times(3)).createCreditAccountPayment(AUTH_TOKEN,
-                                                                    SERVICE_AUTH_TOKEN, expectedPaymentRequest);
-        }
-
-        @Test
-        void shouldNotRetryPaymentsApiWhenExceptionOtherThanInternalServerIsThrown() {
-            CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
-                .customerReference("1")
-                .amount(feeForC2WithNotice.getCalculatedAmount())
-                .fees(List.of(feeForC2WithNotice))
-                .build();
-
-            when(paymentApi.createCreditAccountPayment(AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedPaymentRequest))
-                .thenThrow(FeignException.class);
-
-            assertThrows(PaymentsApiException.class, () -> paymentService.callPaymentsApi(expectedPaymentRequest));
-            verify(paymentApi, times(1)).createCreditAccountPayment(AUTH_TOKEN,
-                                                                    SERVICE_AUTH_TOKEN, expectedPaymentRequest);
-        }
-
-        @Test
-        void shouldFailOnPaymentsApiOnceThenHaveSuccessfulRetry() {
-            CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
-                .customerReference("1")
-                .amount(feeForC2WithNotice.getCalculatedAmount())
-                .fees(List.of(feeForC2WithNotice))
-                .build();
-
-            when(paymentApi.createCreditAccountPayment(AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedPaymentRequest))
-                .thenThrow(FeignException.InternalServerError.class)
-                .thenReturn(expectedPaymentRequest);
-
-            paymentService.callPaymentsApi(expectedPaymentRequest);
-            verify(paymentApi, times(2)).createCreditAccountPayment(AUTH_TOKEN,
-                                                                    SERVICE_AUTH_TOKEN, expectedPaymentRequest);
-        }
 
         @ParameterizedTest
         @ValueSource(strings = {"customerReference"})
@@ -173,7 +103,7 @@ class PaymentServiceTest {
 
             paymentService.makePaymentForC2(CASE_ID, caseData);
 
-            verify(paymentApi).createCreditAccountPayment(AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedPaymentRequest);
+            verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
             verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
             verify(feeService).getFeesDataForC2(WITH_NOTICE);
         }
@@ -190,7 +120,7 @@ class PaymentServiceTest {
 
             paymentService.makePaymentForC2(CASE_ID, caseData);
 
-            verify(paymentApi).createCreditAccountPayment(AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedPaymentRequest);
+            verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
             verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
             verify(feeService).getFeesDataForC2(WITH_NOTICE);
         }
@@ -207,7 +137,7 @@ class PaymentServiceTest {
 
             paymentService.makePaymentForC2(CASE_ID, caseData);
 
-            verify(paymentApi).createCreditAccountPayment(AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedPaymentRequest);
+            verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
             verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
             verify(feeService).getFeesDataForC2(WITH_NOTICE);
         }
@@ -233,7 +163,7 @@ class PaymentServiceTest {
 
             paymentService.makePaymentForC2(CASE_ID, caseData);
 
-            verify(paymentApi).createCreditAccountPayment(AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedPaymentRequest);
+            verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
             verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
             verify(feeService).getFeesDataForC2(WITHOUT_NOTICE);
         }
@@ -250,7 +180,7 @@ class PaymentServiceTest {
 
             paymentService.makePaymentForC2(CASE_ID, caseData);
 
-            verify(paymentApi).createCreditAccountPayment(AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedPaymentRequest);
+            verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
             verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
             verify(feeService).getFeesDataForC2(WITHOUT_NOTICE);
         }
@@ -267,32 +197,11 @@ class PaymentServiceTest {
 
             paymentService.makePaymentForC2(CASE_ID, caseData);
 
-            verify(paymentApi).createCreditAccountPayment(AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedPaymentRequest);
+            verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
             verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
             verify(feeService).getFeesDataForC2(WITHOUT_NOTICE);
         }
 
-        @Test
-        void shouldReturnPaymentsApiExceptionOnFeignException() {
-            String responseBodyContent = "Response message";
-            when(paymentApi.createCreditAccountPayment(any(), any(), any())).thenThrow(
-                new FeignException.UnprocessableEntity("",
-                    Request.create(GET, EMPTY, Map.of(), new byte[]{}, UTF_8),
-                    responseBodyContent.getBytes()));
-            CaseData caseData = CaseData.builder()
-                .caseLocalAuthority("LA")
-                .c2DocumentBundle(List.of(element(C2DocumentBundle.builder()
-                    .type(WITHOUT_NOTICE)
-                    .pbaNumber("PBA123")
-                    .clientCode("clientCode")
-                    .fileReference("customerReference")
-                    .build())))
-                .build();
-
-            AssertionsForClassTypes.assertThatThrownBy(() -> paymentService.makePaymentForC2(CASE_ID, caseData))
-                .isInstanceOf(PaymentsApiException.class)
-                .hasMessage(responseBodyContent);
-        }
 
         private FeesData buildFeesData(FeeDto feeDto) {
             return FeesData.builder()
@@ -336,7 +245,7 @@ class PaymentServiceTest {
 
             paymentService.makePaymentForCaseOrders(caseData);
 
-            verify(paymentApi).createCreditAccountPayment(AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedPaymentRequest);
+            verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
             verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
             verify(feeService).getFeesDataForOrders(orders);
         }
@@ -353,7 +262,7 @@ class PaymentServiceTest {
 
             paymentService.makePaymentForCaseOrders(caseData);
 
-            verify(paymentApi, never()).createCreditAccountPayment(any(), any(), any());
+            verify(paymentClient, never()).callPaymentsApi(any());
             verify(localAuthorityNameLookupConfiguration, never()).getLocalAuthorityName(any());
             verify(feeService).getFeesDataForOrders(orders);
         }
@@ -376,7 +285,7 @@ class PaymentServiceTest {
 
             paymentService.makePaymentForCaseOrders(caseData);
 
-            verify(paymentApi).createCreditAccountPayment(AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedPaymentRequest);
+            verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
             verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
             verify(feeService).getFeesDataForOrders(orders);
         }
@@ -399,7 +308,7 @@ class PaymentServiceTest {
 
             paymentService.makePaymentForCaseOrders(caseData);
 
-            verify(paymentApi).createCreditAccountPayment(AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedPaymentRequest);
+            verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
             verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
             verify(feeService).getFeesDataForOrders(orders);
         }
@@ -409,7 +318,7 @@ class PaymentServiceTest {
     void resetInvocations() {
         reset(localAuthorityNameLookupConfiguration);
         reset(feeService);
-        reset(paymentApi);
+        reset(paymentClient);
     }
 
     private CreditAccountPaymentRequest.CreditAccountPaymentRequestBuilder testCreditAccountPaymentRequestBuilder() {

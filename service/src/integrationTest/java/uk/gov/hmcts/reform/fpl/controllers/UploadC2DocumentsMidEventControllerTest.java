@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
+import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.math.BigDecimal;
@@ -34,6 +35,9 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
 
     @MockBean
     private FeeService feeService;
+
+    @MockBean
+    private PaymentService paymentService;
 
     UploadC2DocumentsMidEventControllerTest() {
         super("upload-c2");
