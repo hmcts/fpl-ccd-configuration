@@ -59,7 +59,7 @@ public class StandardDirectionsOrderService {
         StandardDirectionOrder.StandardDirectionOrderBuilder builder = StandardDirectionOrder.builder()
             .orderDoc(document);
 
-        if (featureToggleService.isSendNoticeOfProceedingsFromSdo() && caseData.getJudgeAndLegalAdvisor() != null) {
+        if (caseData.getJudgeAndLegalAdvisor() != null) {
             JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
                 caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()
             );
@@ -75,17 +75,12 @@ public class StandardDirectionsOrderService {
     public StandardDirectionOrder buildOrderFromUpload(StandardDirectionOrder currentOrder) {
         UserInfo userInfo = idamClient.getUserInfo(requestData.authorisation());
 
-        StandardDirectionOrder.StandardDirectionOrderBuilder builder = StandardDirectionOrder.builder()
+        return StandardDirectionOrder.builder()
             .orderStatus(currentOrder.getOrderStatus())
             .dateOfUpload(time.now().toLocalDate())
             .uploader(userInfo.getName())
-            .orderDoc(prepareOrderDocument(currentOrder.getOrderDoc(), currentOrder.getOrderStatus()));
-
-        if (featureToggleService.isSendNoticeOfProceedingsFromSdo()) {
-            builder.judgeAndLegalAdvisor(currentOrder.getJudgeAndLegalAdvisor());
-        }
-
-        return builder.build();
+            .orderDoc(prepareOrderDocument(currentOrder.getOrderDoc(), currentOrder.getOrderStatus()))
+            .judgeAndLegalAdvisor(currentOrder.getJudgeAndLegalAdvisor()).build();
     }
 
     public JudgeAndLegalAdvisor getJudgeAndLegalAdvisorFromSDO(CaseData caseData) {

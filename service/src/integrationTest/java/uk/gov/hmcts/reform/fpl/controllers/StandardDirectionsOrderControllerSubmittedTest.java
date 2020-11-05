@@ -35,8 +35,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_CTSC_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CAFCASS;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CTSC;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DETAILS_KEY;
@@ -92,14 +92,14 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractControllerT
         postSubmittedEvent(buildCallbackRequest(SEALED));
 
         verify(notificationClient).sendEmail(
-            eq(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE),
+            eq(SDO_AND_NOP_ISSUED_CAFCASS),
             eq("cafcass@cafcass.com"),
             anyMap(),
             eq(NOTIFICATION_REFERENCE)
         );
 
         verify(notificationClient).sendEmail(
-            eq(STANDARD_DIRECTION_ORDER_ISSUED_CTSC_TEMPLATE),
+            eq(SDO_AND_NOP_ISSUED_CTSC),
             eq("FamilyPublicLaw+ctsc@gmail.com"),
             anyMap(),
             eq(NOTIFICATION_REFERENCE)
