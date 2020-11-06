@@ -100,6 +100,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "LIC",
+    "ListElement": "Lincolnshire County Council",
+    "DisplayOrder": 24
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "LCC",
     "ListElement": "Liverpool County Council",
     "DisplayOrder": 25
@@ -215,6 +222,13 @@
     "ListElementCode": "SN",
     "ListElement": "Swindon Borough Council",
     "DisplayOrder": 90
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "TAM",
+    "ListElement": "Tameside",
+    "DisplayOrder": 91
   },
   {
     "LiveFrom": "01/01/2017",
