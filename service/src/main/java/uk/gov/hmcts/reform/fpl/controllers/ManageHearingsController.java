@@ -167,10 +167,14 @@ public class ManageHearingsController extends CallbackController {
                     if(errors.containsAll(expectedErrors)) {
                         caseDetails.getData().put("hearingStartDateLabel", formatLocalDateTimeBaseUsingFormat(caseData.getHearingStartDate(), DATE_TIME));
                         caseDetails.getData().put("hearingEndDateLabel", formatLocalDateTimeBaseUsingFormat(caseData.getHearingEndDate(), DATE_TIME));
+                        caseDetails.getData().put("showStartDateLabel", "YES");
+                        caseDetails.getData().put("showEndDateLabel", "YES");
                     } else if(errors.contains(startDateError) && !errors.contains(endDateError)) {
                         caseDetails.getData().put("hearingStartDateLabel", formatLocalDateTimeBaseUsingFormat(caseData.getHearingStartDate(), DATE_TIME));
+                        caseDetails.getData().put("showStartDateLabel", "YES");
                     } else {
                         caseDetails.getData().put("hearingEndDateLabel", formatLocalDateTimeBaseUsingFormat(caseData.getHearingEndDate(), DATE_TIME));
+                        caseDetails.getData().put("showEndDateLabel", "YES");
                     }
                 }
             }
@@ -227,8 +231,8 @@ public class ManageHearingsController extends CallbackController {
         data.keySet().removeAll(hearingsService.caseFieldsToBeRemoved());
 
         //may throw no field found as doesn't exist in edit and adjourn
-        data.remove("hearingStartDateLabel");
-        data.remove("hearingEndDateLabel");
+        //data.remove("hearingStartDateLabel");
+        //data.remove("hearingEndDateLabel");
 
         return respond(data);
     }
