@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.service.ManageHearingsService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
+import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
 
 import java.util.List;
 import java.util.UUID;
@@ -144,7 +145,10 @@ public class ManageHearingsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        //List<String> errors = validateGroupService.validateGroup(caseData, HearingDatesGroup.class);
+        if(caseData.getHearingOption() == EDIT_HEARING || caseData.getHearingOption() == ADJOURN_HEARING) {
+            List<String> errors = validateGroupService.validateGroup(caseData, HearingDatesGroup.class);
+            return respond(caseDetails, errors);
+        }
 
         return respond(caseDetails);
     }
