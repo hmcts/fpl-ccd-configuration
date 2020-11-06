@@ -37,6 +37,8 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInGatekeepingState;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 
@@ -156,6 +158,8 @@ public class ManageHearingsController extends CallbackController {
                     //show page show
                     //will need to go further to hide start or end date if it's in future
                     caseDetails.getData().put("pageShow", "YES");
+                    caseDetails.getData().put("hearingStartDateLabel", formatLocalDateTimeBaseUsingFormat(caseData.getHearingStartDate(), DATE_TIME));
+
                 } else {
                     System.out.println("add hearing date is in the future" + caseDetails.getData().get("pageShow"));
 
