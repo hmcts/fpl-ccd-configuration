@@ -145,10 +145,23 @@ public class ManageHearingsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        if(caseData.getHearingOption() == EDIT_HEARING || caseData.getHearingOption() == ADJOURN_HEARING) {
             List<String> errors = validateGroupService.validateGroup(caseData, HearingDatesGroup.class);
-            return respond(caseDetails, errors);
-        }
+
+            if(caseData.getHearingOption() == EDIT_HEARING || caseData.getHearingOption() == ADJOURN_HEARING) {
+                //return validation
+                return respond(caseDetails, errors);
+            } else {
+                if(!errors.isEmpty()) {
+                    System.out.println("add hearing date is in the past");
+                    //show page show
+                    //will need to go further to hide start or end date if it's in future
+                    caseDetails.getData().put("pageShow", "YES");
+                } else {
+                    System.out.println("add hearing date is in the future" + caseDetails.getData().get("pageShow"));
+
+                }
+            }
+
 
         return respond(caseDetails);
     }
