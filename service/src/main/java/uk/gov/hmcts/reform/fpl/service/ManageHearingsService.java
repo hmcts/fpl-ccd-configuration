@@ -80,19 +80,11 @@ public class ManageHearingsService {
     }
 
     public UUID adjournAndReListHearing(CaseData caseData, UUID hearingId, HearingBooking hearingToBeReListed) {
-        Element<HearingBooking> adjournedBooking = cancelHearing(caseData, hearingId, ADJOURNED_AND_RE_LISTED);
-        Element<HearingBooking> reListedBooking = reList(caseData, hearingToBeReListed);
-
-        reassignDocumentsBundle(caseData, adjournedBooking, reListedBooking);
-        return reListedBooking.getId();
+        return cancelAndReListHearing(caseData, hearingId, hearingToBeReListed, ADJOURNED_AND_RE_LISTED);
     }
 
     public UUID vacateAndReListHearing(CaseData caseData, UUID hearingId, HearingBooking hearingToBeReListed) {
-        Element<HearingBooking> vacatedBooking = cancelHearing(caseData, hearingId, VACATED_AND_RE_LISTED);
-        Element<HearingBooking> reListedBooking = reList(caseData, hearingToBeReListed);
-
-        reassignDocumentsBundle(caseData, vacatedBooking, reListedBooking);
-        return reListedBooking.getId();
+        return cancelAndReListHearing(caseData, hearingId, hearingToBeReListed, VACATED_AND_RE_LISTED);
     }
 
     public void adjournHearing(CaseData caseData, UUID hearingToBeAdjourned) {
@@ -240,6 +232,10 @@ public class ManageHearingsService {
             "firstHearingFlag",
             "adjournmentReason",
             "vacatedReason",
+            "pastAndTodayHearingDateList",
+            "futureAndTodayHearingDateList",
+            "pastAndTodayHearingDateListInfo",
+            "futureAndTodayHearingDateListInfo",
             "hearingReListOption");
     }
 
@@ -249,6 +245,17 @@ public class ManageHearingsService {
         }
 
         return caseData.getPastAndTodayHearingDateList();
+    }
+
+    private UUID cancelAndReListHearing(CaseData caseData,
+                                        UUID hearingId,
+                                        HearingBooking hearingToBeReListed,
+                                        HearingStatus hearingStatus) {
+        Element<HearingBooking> vacatedBooking = cancelHearing(caseData, hearingId, hearingStatus);
+        Element<HearingBooking> reListedBooking = reList(caseData, hearingToBeReListed);
+
+        reassignDocumentsBundle(caseData, vacatedBooking, reListedBooking);
+        return reListedBooking.getId();
     }
 
     private HearingBooking buildFirstHearing(CaseData caseData) {

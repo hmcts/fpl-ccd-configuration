@@ -614,12 +614,12 @@ class CaseDataTest {
 
         @Test
         void shouldReturnEmptyListWhenNoFutureOrTodayHearingBookings() {
-            Element<HearingBooking> futureHearingBooking = element(HearingBooking.builder()
+            Element<HearingBooking> pastHearingBooking = element(HearingBooking.builder()
                 .startDate(LocalDateTime.now().minusDays(1))
                 .build());
 
             CaseData caseData = CaseData.builder()
-                .hearingDetails(List.of(futureHearingBooking))
+                .hearingDetails(List.of(pastHearingBooking))
                 .build();
 
             assertThat(caseData.getFutureAndTodayHearings()).isEmpty();

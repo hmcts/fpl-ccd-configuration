@@ -223,7 +223,7 @@
     "DisplayContext": "OPTIONAL",
     "PageID": "SendNoticeOfHearing",
     "ShowSummaryChangeOption": "Y",
-    "PageDisplayOrder": 8,
+    "PageDisplayOrder": 7,
     "FieldShowCondition": "sendNoticeOfHearing=\"Yes\""
   }
 ]
