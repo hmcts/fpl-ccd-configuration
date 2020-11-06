@@ -159,6 +159,7 @@ public class ManageHearingsController extends CallbackController {
                     //will need to go further to hide start or end date if it's in future
                     caseDetails.getData().put("pageShow", "YES");
                     caseDetails.getData().put("hearingStartDateLabel", formatLocalDateTimeBaseUsingFormat(caseData.getHearingStartDate(), DATE_TIME));
+                    caseDetails.getData().put("hearingEndDateLabel", formatLocalDateTimeBaseUsingFormat(caseData.getHearingEndDate(), DATE_TIME));
 
                 } else {
                     System.out.println("add hearing date is in the future" + caseDetails.getData().get("pageShow"));

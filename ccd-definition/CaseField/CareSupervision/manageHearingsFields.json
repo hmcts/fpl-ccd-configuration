@@ -86,10 +86,19 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "hearingStartDateConfirmation",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "DateTime",
+    "Label": "Start date and time - new",
+    "HintText": "Use 24 hour format",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "hearingEndDateConfirmation",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "DateTime",
-    "Label": "This is hint text",
+    "Label": "End date and time - new",
     "HintText": "Use 24 hour format",
     "SecurityClassification": "Public"
   },
@@ -232,6 +241,14 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearingStartDateLabel",
     "Label": "Start date and time",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hearingEndDateLabel",
+    "Label": "End date and time",
     "FieldType": "Text",
     "SecurityClassification": "Public"
   }
