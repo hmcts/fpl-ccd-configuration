@@ -158,12 +158,20 @@ public class ManageHearingsController extends CallbackController {
                     //show page show
                     //will need to go further to hide start or end date if it's in future
                     caseDetails.getData().put("pageShow", "YES");
-                    caseDetails.getData().put("hearingStartDateLabel", formatLocalDateTimeBaseUsingFormat(caseData.getHearingStartDate(), DATE_TIME));
-                    caseDetails.getData().put("hearingEndDateLabel", formatLocalDateTimeBaseUsingFormat(caseData.getHearingEndDate(), DATE_TIME));
 
-                } else {
-                    System.out.println("add hearing date is in the future" + caseDetails.getData().get("pageShow"));
 
+                    String startDateError = "Enter a start date in the future";
+                    String endDateError = "Enter an end date in the future";
+                    List<String> expectedErrors = List.of(startDateError, endDateError);
+
+                    if(errors.containsAll(expectedErrors)) {
+                        caseDetails.getData().put("hearingStartDateLabel", formatLocalDateTimeBaseUsingFormat(caseData.getHearingStartDate(), DATE_TIME));
+                        caseDetails.getData().put("hearingEndDateLabel", formatLocalDateTimeBaseUsingFormat(caseData.getHearingEndDate(), DATE_TIME));
+                    } else if(errors.contains(startDateError) && !errors.contains(endDateError)) {
+                        caseDetails.getData().put("hearingStartDateLabel", formatLocalDateTimeBaseUsingFormat(caseData.getHearingStartDate(), DATE_TIME));
+                    } else {
+                        caseDetails.getData().put("hearingEndDateLabel", formatLocalDateTimeBaseUsingFormat(caseData.getHearingEndDate(), DATE_TIME));
+                    }
                 }
             }
 
@@ -217,6 +225,10 @@ public class ManageHearingsController extends CallbackController {
         data.putIfNotEmpty(HEARING_DETAILS_KEY, caseData.getHearingDetails());
 
         data.keySet().removeAll(hearingsService.caseFieldsToBeRemoved());
+
+        //may throw no field found as doesn't exist in edit and adjourn
+        data.remove("hearingStartDateLabel");
+        data.remove("hearingEndDateLabel");
 
         return respond(data);
     }
