@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +20,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/callback/migrate-case")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@Slf4j
 public class MigrateCaseController {
 
     private final ObjectMapper mapper;
@@ -29,6 +31,8 @@ public class MigrateCaseController {
         Map<String, Object> data = caseDetails.getData();
 
         if (1603370139459131L == caseDetails.getId()) {
+            log.info("Updating case reference {} state from '{}' to '{}'",
+                caseDetails.getId(), caseDetails.getState(), State.CASE_MANAGEMENT);
             data.put("state", State.CASE_MANAGEMENT);
         }
 
