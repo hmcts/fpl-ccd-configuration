@@ -27,6 +27,12 @@ module.exports = {
     forename: 'siva@hillingdon.gov.uk',
     surname: '(local-authority)',
   },
+  localAuthorityBarristerUserOne: {
+    email: 'la-barrister@mailnesia.com',
+    password: process.env.LA_BARRISTER_USER_PASSWORD || defaultPassword,
+    forename: 'la-barrister@mailnesia.com',
+    surname: '(local-authority-barrister)',
+  },
   hmctsAdminUser: {
     email: 'hmcts-admin@example.com',
     password: process.env.CA_USER_PASSWORD || defaultPassword,
@@ -98,6 +104,7 @@ module.exports = {
     reviewAgreedCmo: 'Review agreed CMO',
     allocatedJudge: 'Allocated Judge',
     extend26WeekTimeline: 'Extend 26-week timeline',
+    manageLegalRepresentatives: 'Manage legal representatives',
   },
   administrationActions: {
     addFamilyManCaseNumber: 'Add case number',
