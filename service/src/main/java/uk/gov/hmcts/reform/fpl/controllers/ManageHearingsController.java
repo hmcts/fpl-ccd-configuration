@@ -150,37 +150,39 @@ public class ManageHearingsController extends CallbackController {
             List<String> errors = validateGroupService.validateGroup(caseData, HearingDatesGroup.class);
 
             if(caseData.getHearingOption() == EDIT_HEARING || caseData.getHearingOption() == ADJOURN_HEARING) {
-                //return validation
                 return respond(caseDetails, errors);
             } else {
                 if(!errors.isEmpty()) {
-                    System.out.println("add hearing date is in the past");
-                    //show page show
-                    //will need to go further to hide start or end date if it's in future
-                    caseDetails.getData().put("pageShow", "YES");
-
-
-                    String startDateError = "Enter a start date in the future";
-                    String endDateError = "Enter an end date in the future";
-                    List<String> expectedErrors = List.of(startDateError, endDateError);
-
-                    if(errors.containsAll(expectedErrors)) {
-                        caseDetails.getData().put("hearingStartDateLabel", formatLocalDateTimeBaseUsingFormat(caseData.getHearingStartDate(), DATE_TIME));
-                        caseDetails.getData().put("hearingEndDateLabel", formatLocalDateTimeBaseUsingFormat(caseData.getHearingEndDate(), DATE_TIME));
-                        caseDetails.getData().put("showStartDateLabel", "YES");
-                        caseDetails.getData().put("showEndDateLabel", "YES");
-                    } else if(errors.contains(startDateError) && !errors.contains(endDateError)) {
-                        caseDetails.getData().put("hearingStartDateLabel", formatLocalDateTimeBaseUsingFormat(caseData.getHearingStartDate(), DATE_TIME));
-                        caseDetails.getData().put("showStartDateLabel", "YES");
-                    } else {
-                        caseDetails.getData().put("hearingEndDateLabel", formatLocalDateTimeBaseUsingFormat(caseData.getHearingEndDate(), DATE_TIME));
-                        caseDetails.getData().put("showEndDateLabel", "YES");
-                    }
+                    populateFieldsForPastDateAdded(caseDetails, errors);
                 }
             }
 
-
         return respond(caseDetails);
+    }
+
+
+    //MOVE THIS TO HEARING SERVICE
+    private void populateFieldsForPastDateAdded(CaseDetails caseDetails, List<String> errors){
+        CaseData caseData = getCaseData(caseDetails);
+
+        caseDetails.getData().put("pageShow", "YES");
+
+        String startDateError = "Enter a start date in the future";
+        String endDateError = "Enter an end date in the future";
+        List<String> expectedErrors = List.of(startDateError, endDateError);
+
+        if(errors.containsAll(expectedErrors)) {
+            caseDetails.getData().put("hearingStartDateLabel", formatLocalDateTimeBaseUsingFormat(caseData.getHearingStartDate(), DATE_TIME));
+            caseDetails.getData().put("hearingEndDateLabel", formatLocalDateTimeBaseUsingFormat(caseData.getHearingEndDate(), DATE_TIME));
+            caseDetails.getData().put("showStartDateLabel", "YES");
+            caseDetails.getData().put("showEndDateLabel", "YES");
+        } else if(errors.contains(startDateError) && !errors.contains(endDateError)) {
+            caseDetails.getData().put("hearingStartDateLabel", formatLocalDateTimeBaseUsingFormat(caseData.getHearingStartDate(), DATE_TIME));
+            caseDetails.getData().put("showStartDateLabel", "YES");
+        } else {
+            caseDetails.getData().put("hearingEndDateLabel", formatLocalDateTimeBaseUsingFormat(caseData.getHearingEndDate(), DATE_TIME));
+            caseDetails.getData().put("showEndDateLabel", "YES");
+        }
     }
 
     @PostMapping("/about-to-submit")

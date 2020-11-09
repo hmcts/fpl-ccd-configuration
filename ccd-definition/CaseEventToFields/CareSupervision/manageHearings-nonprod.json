@@ -93,7 +93,7 @@
     "PageID": "ConfirmHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 5,
-    "FieldShowCondition": "hearingDateConfirmation = \"NO\""
+    "FieldShowCondition": "hearingDateConfirmation = \"NO\" AND showEndDateLabel=\"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -105,6 +105,6 @@
     "PageID": "ConfirmHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 5,
-    "FieldShowCondition": "hearingDateConfirmation = \"NO\""
+    "FieldShowCondition": "hearingDateConfirmation = \"NO\" AND showStartDateLabel=\"YES\""
   }
 ]
