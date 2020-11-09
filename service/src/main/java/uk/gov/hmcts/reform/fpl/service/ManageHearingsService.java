@@ -67,7 +67,8 @@ public class ManageHearingsService {
 
     public static final String HEARING_DETAILS_KEY = "hearingDetails";
     public static final String HAS_PAST_HEARING_FLAG = "hasPastAndTodayHearingDateFlag";
-    public static final String HAS_FUTURE_HEARING_FLAG = "hasFutureAndTodayHearingDateFlag";
+    public static final String HAS_FUTURE_AND_TODAY_HEARING_FLAG = "hasFutureAndTodayHearingDateFlag";
+    public static final String HAS_FUTURE_HEARING_FLAG = "hasFutureHearingDateFlag";
     public static final String HEARING_DATE_LIST = "hearingDateList";
     public static final String PAST_HEARING_LIST = "pastAndTodayHearingDateList";
     public static final String FUTURE_HEARING_LIST = "futureAndTodayHearingDateList";
@@ -85,12 +86,16 @@ public class ManageHearingsService {
             HAS_EXISTING_HEARINGS_FLAG, YES.getValue()
         ));
 
+        if (isNotEmpty(futureHearings)) {
+            listAndLabel.put(HAS_FUTURE_HEARING_FLAG, YES.getValue());
+        }
+
         if (isNotEmpty(pastAndTodayHearings)) {
             listAndLabel.put(HAS_PAST_HEARING_FLAG, YES.getValue());
         }
 
         if (isNotEmpty(futureAndTodayHearing)) {
-            listAndLabel.put(HAS_FUTURE_HEARING_FLAG, YES.getValue());
+            listAndLabel.put(HAS_FUTURE_AND_TODAY_HEARING_FLAG, YES.getValue());
         }
 
         return listAndLabel;
@@ -253,7 +258,6 @@ public class ManageHearingsService {
             "hearingEndDate",
             "sendNoticeOfHearing",
             "judgeAndLegalAdvisor",
-            HAS_EXISTING_HEARINGS_FLAG,
             "hearingDateList",
             "hearingOption",
             "noticeOfHearingNotes",
@@ -264,6 +268,8 @@ public class ManageHearingsService {
             PAST_HEARING_LIST,
             FUTURE_HEARING_LIST,
             HAS_PAST_HEARING_FLAG,
+            HAS_FUTURE_AND_TODAY_HEARING_FLAG,
+            HAS_EXISTING_HEARINGS_FLAG,
             HAS_FUTURE_HEARING_FLAG,
             "hearingReListOption");
     }
