@@ -30,7 +30,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
     @Nested
     class EditingHearings {
         @Test
-        void shouldReturnErrorsWhenEditingAHearingButNoHearingsAreAvailable() {
+        void shouldReturnAnErrorWhenEditingAHearingButNoHearingsAreAvailable() {
             CaseData caseData = CaseData.builder().hearingOption(EDIT_HEARING).build();
             List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
 
@@ -81,7 +81,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
     @Nested
     class AdjournHearings {
         @Test
-        void shouldReturnErrorsWhenAdjourningAHearingButNoHearingsAreAvailable() {
+        void shouldReturnAnErrorWhenAdjourningAHearingButNoHearingsAreAvailable() {
             CaseData caseData = CaseData.builder().hearingOption(ADJOURN_HEARING).build();
             List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
 
@@ -89,7 +89,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
         }
 
         @Test
-        void shouldReturnErrorsWhenAdjourningAHearingButNoPastHearingsAreAvailable() {
+        void shouldReturnAnErrorWhenAdjourningAHearingButNoPastHearingsAreAvailable() {
             List<Element<HearingBooking>> hearings = List.of(
                 element(HearingBooking.builder()
                     .startDate(time.now().plusDays(3))
@@ -149,7 +149,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
     @Nested
     class VacateHearings {
         @Test
-        void shouldReturnErrorsWhenVacatingAHearingButNoHearingsAreAvailable() {
+        void shouldReturnAErrorWhenVacatingAHearingButNoHearingsAreAvailable() {
             CaseData caseData = CaseData.builder().hearingOption(VACATE_HEARING).build();
             List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
 
@@ -157,7 +157,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
         }
 
         @Test
-        void shouldReturnErrorsWhenVacatingAHearingButNoFutureHearingsAreAvailable() {
+        void shouldReturnAnErrorWhenVacatingAHearingButNoFutureHearingsAreAvailable() {
             List<Element<HearingBooking>> futureHearings = List.of(
                 element(HearingBooking.builder()
                     .startDate(time.now().minusDays(1))

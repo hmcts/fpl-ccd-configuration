@@ -21,7 +21,7 @@
     "PageID": "SelectHearingOption",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 1,
-    "FieldShowCondition": "hearingOption=\"VACATE_HEARING\" AND hasFutureAndTodayHearingDateFlag=\"\""
+    "FieldShowCondition": "hearingOption=\"VACATE_HEARING\" AND hasHearingsToVacate=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -31,7 +31,7 @@
     "PageFieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY",
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "hearingOption=\"VACATE_HEARING\" AND hasFutureAndTodayHearingDateFlag=\"Yes\"",
+    "FieldShowCondition": "hearingOption=\"VACATE_HEARING\" AND hasHearingsToVacate=\"Yes\"",
     "PageID": "SelectHearingOption",
     "PageDisplayOrder": 1
   },
@@ -42,7 +42,7 @@
     "CaseFieldID": "futureAndTodayHearingDateListInfo",
     "PageFieldDisplayOrder": 6,
     "DisplayContext": "READONLY",
-    "FieldShowCondition": "hearingOption=\"VACATE_HEARING\" AND hasFutureAndTodayHearingDateFlag=\"Yes\"",
+    "FieldShowCondition": "hearingOption=\"VACATE_HEARING\" AND hasHearingsToVacate=\"Yes\"",
     "PageID": "SelectHearingOption",
     "PageDisplayOrder": 1
   }

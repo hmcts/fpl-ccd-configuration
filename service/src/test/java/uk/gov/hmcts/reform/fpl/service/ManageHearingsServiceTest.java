@@ -57,9 +57,9 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.FUTURE_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_EXISTING_HEARINGS_FLAG;
-import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_FUTURE_AND_TODAY_HEARING_FLAG;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_FUTURE_HEARING_FLAG;
-import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_PAST_HEARING_FLAG;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_HEARINGS_TO_ADJOURN;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_HEARINGS_TO_VACATE;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.PAST_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
@@ -136,10 +136,13 @@ class ManageHearingsServiceTest {
             Map<String, Object> data = service.populatePastAndFutureHearingLists(initialCaseData);
 
             assertThat(data)
-                .extracting(HAS_PAST_HEARING_FLAG, HAS_FUTURE_HEARING_FLAG, HAS_FUTURE_AND_TODAY_HEARING_FLAG,
-                    HAS_EXISTING_HEARINGS_FLAG, HEARING_DATE_LIST, PAST_HEARING_LIST, FUTURE_HEARING_LIST)
-                .containsExactly("Yes", "Yes", "Yes", "Yes", expectedHearingList, expectedPastHearingList,
-                    expectedFutureHearingList);
+                .containsEntry(HAS_HEARINGS_TO_ADJOURN, "Yes")
+                .containsEntry(HAS_FUTURE_HEARING_FLAG, "Yes")
+                .containsEntry(HAS_HEARINGS_TO_VACATE, "Yes")
+                .containsEntry(HAS_EXISTING_HEARINGS_FLAG, "Yes")
+                .containsEntry(HEARING_DATE_LIST, expectedHearingList)
+                .containsEntry(PAST_HEARING_LIST, expectedPastHearingList)
+                .containsEntry(FUTURE_HEARING_LIST, expectedFutureHearingList);
         }
 
         @Test
@@ -159,9 +162,10 @@ class ManageHearingsServiceTest {
             Map<String, Object> data = service.populatePastAndFutureHearingLists(initialCaseData);
 
             assertThat(data)
-                .extracting(HAS_PAST_HEARING_FLAG, HAS_FUTURE_HEARING_FLAG, HAS_FUTURE_AND_TODAY_HEARING_FLAG,
-                    HAS_EXISTING_HEARINGS_FLAG, HEARING_DATE_LIST, PAST_HEARING_LIST, FUTURE_HEARING_LIST)
-                .containsExactly("Yes", null, null, "Yes", emptyDynamicList, expectedPastHearingList, emptyDynamicList);
+                .containsEntry(HAS_HEARINGS_TO_ADJOURN, "Yes")
+                .containsEntry(HAS_EXISTING_HEARINGS_FLAG, "Yes")
+                .containsEntry(HEARING_DATE_LIST, emptyDynamicList)
+                .containsEntry(PAST_HEARING_LIST, expectedPastHearingList);
         }
 
         @Test
@@ -182,9 +186,12 @@ class ManageHearingsServiceTest {
             Map<String, Object> data = service.populatePastAndFutureHearingLists(initialCaseData);
 
             assertThat(data)
-                .extracting(HAS_PAST_HEARING_FLAG, HAS_FUTURE_AND_TODAY_HEARING_FLAG, HAS_EXISTING_HEARINGS_FLAG,
-                    HEARING_DATE_LIST, PAST_HEARING_LIST, FUTURE_HEARING_LIST)
-                .containsExactly(null, "Yes", "Yes", expectedHearingList, emptyDynamicList, expectedFutureHearingList);
+                .containsEntry(HAS_FUTURE_HEARING_FLAG, "Yes")
+                .containsEntry(HAS_HEARINGS_TO_VACATE, "Yes")
+                .containsEntry(HAS_EXISTING_HEARINGS_FLAG, "Yes")
+                .containsEntry(HEARING_DATE_LIST, expectedHearingList)
+                .containsEntry(PAST_HEARING_LIST, emptyDynamicList)
+                .containsEntry(FUTURE_HEARING_LIST, expectedFutureHearingList);
         }
 
         private Element<HearingBooking> hearingFromToday(int daysFromToday) {

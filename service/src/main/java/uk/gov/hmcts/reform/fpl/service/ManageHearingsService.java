@@ -66,8 +66,8 @@ public class ManageHearingsService {
     private final Time time;
 
     public static final String HEARING_DETAILS_KEY = "hearingDetails";
-    public static final String HAS_PAST_HEARING_FLAG = "hasPastAndTodayHearingDateFlag";
-    public static final String HAS_FUTURE_AND_TODAY_HEARING_FLAG = "hasFutureAndTodayHearingDateFlag";
+    public static final String HAS_HEARINGS_TO_ADJOURN = "hasHearingsToAdjourn";
+    public static final String HAS_HEARINGS_TO_VACATE = "hasHearingsToVacate";
     public static final String HAS_FUTURE_HEARING_FLAG = "hasFutureHearingDateFlag";
     public static final String HEARING_DATE_LIST = "hearingDateList";
     public static final String PAST_HEARING_LIST = "pastAndTodayHearingDateList";
@@ -91,11 +91,11 @@ public class ManageHearingsService {
         }
 
         if (isNotEmpty(pastAndTodayHearings)) {
-            listAndLabel.put(HAS_PAST_HEARING_FLAG, YES.getValue());
+            listAndLabel.put(HAS_HEARINGS_TO_ADJOURN, YES.getValue());
         }
 
         if (isNotEmpty(futureAndTodayHearing)) {
-            listAndLabel.put(HAS_FUTURE_AND_TODAY_HEARING_FLAG, YES.getValue());
+            listAndLabel.put(HAS_HEARINGS_TO_VACATE, YES.getValue());
         }
 
         return listAndLabel;
@@ -267,8 +267,8 @@ public class ManageHearingsService {
             HEARING_DATE_LIST,
             PAST_HEARING_LIST,
             FUTURE_HEARING_LIST,
-            HAS_PAST_HEARING_FLAG,
-            HAS_FUTURE_AND_TODAY_HEARING_FLAG,
+            HAS_HEARINGS_TO_ADJOURN,
+            HAS_HEARINGS_TO_VACATE,
             HAS_EXISTING_HEARINGS_FLAG,
             HAS_FUTURE_HEARING_FLAG,
             "hearingReListOption");
