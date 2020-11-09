@@ -74,6 +74,17 @@
     "ID": "ManageHearings",
     "CaseEventID": "manageHearings",
     "CaseFieldID": "judgeAndLegalAdvisor",
+    "ListElementCode": "judgeEmailAddress",
+    "EventElementLabel": "Email address",
+    "FieldDisplayOrder": 7,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "judgeAndLegalAdvisor.useAllocatedJudge=\"No\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageHearings",
+    "CaseEventID": "manageHearings",
+    "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "legalAdvisorName",
     "EventElementLabel": "Justices' Legal Adviser's full name",
     "FieldDisplayOrder": 7,

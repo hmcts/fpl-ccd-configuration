@@ -84,6 +84,7 @@ module.exports = {
     judgeAndLegalAdvisor.selectJudgeTitle();
     judgeAndLegalAdvisor.enterJudgeLastName(hearingDetails.judgeAndLegalAdvisor.judgeLastName);
     judgeAndLegalAdvisor.enterLegalAdvisorName(hearingDetails.judgeAndLegalAdvisor.legalAdvisorName);
+    judgeAndLegalAdvisor.enterJudgeEmailAddress(hearingDetails.judgeAndLegalAdvisor.judgeEmail);
   },
 
   async enterJudgeName(name) {
