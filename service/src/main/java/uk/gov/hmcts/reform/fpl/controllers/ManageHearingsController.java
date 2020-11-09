@@ -196,6 +196,15 @@ public class ManageHearingsController extends CallbackController {
 
         if(caseDetails.getData().get("hearingDateConfirmation").equals("NO")) {
             System.out.println("no wrong dates");
+
+
+            if(isNotEmpty(caseData.getHearingEndDateConfirmation()) && isNotEmpty(caseData.getHearingStartDateConfirmation())) {
+                System.out.println("both dates are incorrect");
+            } else if(isNotEmpty(caseData.getHearingStartDateConfirmation())) {
+                System.out.println("start dates is incorrect");
+            } else if (isNotEmpty(caseData.getHearingEndDateConfirmation())) {
+                System.out.println("end date is incorrect");
+            }
         }
 
         return respond(caseDetails);
@@ -251,6 +260,10 @@ public class ManageHearingsController extends CallbackController {
         //may throw no field found as doesn't exist in edit and adjourn
         //data.remove("hearingStartDateLabel");
         //data.remove("hearingEndDateLabel");
+
+        data.remove("hearingDateConfirmation");
+        data.remove("hearingStartDateConfirmation");
+        data.remove("hearingEndDateConfirmation");
 
         return respond(data);
     }

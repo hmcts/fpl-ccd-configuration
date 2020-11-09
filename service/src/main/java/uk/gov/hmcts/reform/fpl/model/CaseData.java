@@ -621,4 +621,8 @@ public class CaseData {
     private final HearingCancellationReason adjournmentReason;
     private final List<ProceedingType> proceedingType;
     private final State closedStateRadioList;
+
+    private final LocalDateTime hearingEndDateConfirmation;
+    private final LocalDateTime hearingStartDateConfirmation;
+
 }
