@@ -196,6 +196,7 @@ Scenario('HMCTS admin manages hearings', async ({I, caseViewPage, manageHearings
   I.seeInTab(['Hearing 1', 'End date and time'], formatHearingTime(hearingEndDate));
   I.seeInTab(['Hearing 1', 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], hearingDetails[0].judgeAndLegalAdvisor.judgeTitle);
   I.seeInTab(['Hearing 1', 'Judge and Justices\' Legal Adviser', 'Last name'], hearingDetails[0].judgeAndLegalAdvisor.judgeLastName);
+  I.seeInTab(['Hearing 1', 'Judge and Justices\' Legal Adviser', 'Email address'], hearingDetails[0].judgeAndLegalAdvisor.judgeEmail);
   I.seeInTab(['Hearing 1', 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name'], hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
   I.seeInTab(['Hearing 1', 'Additional notes'], hearingDetails[0].additionalNotes);
   I.seeInTab(['Hearing 1', 'Notice of hearing'], `Notice_of_hearing_${dateFormat(submittedAt, 'ddmmmm')}.pdf`);
@@ -206,6 +207,7 @@ Scenario('HMCTS admin manages hearings', async ({I, caseViewPage, manageHearings
   I.seeInTab(['Hearing 2', 'End date and time'], formatHearingTime(hearingDetails[1].endDate));
   I.seeInTab(['Hearing 2', 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], 'Her Honour Judge');
   I.seeInTab(['Hearing 2', 'Judge and Justices\' Legal Adviser', 'Last name'], 'Moley');
+  I.seeInTab(['Hearing 2', 'Judge and Justices\' Legal Adviser', 'Email address'], 'moley@example.com');
 
   I.wait(5);
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
