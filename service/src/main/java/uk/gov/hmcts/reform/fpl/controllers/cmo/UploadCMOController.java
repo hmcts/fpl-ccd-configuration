@@ -42,7 +42,6 @@ public class UploadCMOController extends CallbackController {
     private final FeatureToggleService featureToggleService;
 
     @PostMapping("/about-to-start")
-    @SuppressWarnings("deprecation")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);

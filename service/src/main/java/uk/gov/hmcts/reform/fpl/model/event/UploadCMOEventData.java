@@ -43,19 +43,14 @@ public class UploadCMOEventData {
     DocumentReference previousCMO; // (Page 2)
     String cmoJudgeInfo; // (Page 3)
     DocumentReference cmoToSend; // (Page 3)
-    @Deprecated // NOSONAR
     String multiHearingsWithCMOs;
-    @Deprecated // NOSONAR
     String singleHearingWithCMO;
 
     // Conditional control fields
     YesNo showCMOsSentToJudge; // (Page 1)
     YesNo showReplacementCMO; // (Page 2)
-    @Deprecated // NOSONAR
     NumberOfHearingsOptions numHearingsWithoutCMO;
-    @Deprecated // NOSONAR
     YesNo showHearingsSingleTextArea;
-    @Deprecated // NOSONAR
     YesNo showHearingsMultiTextArea;
 
     public List<Element<SupportingEvidenceBundle>> getCmoSupportingDocs() {
@@ -84,7 +79,6 @@ public class UploadCMOEventData {
         };
     }
 
-    @Deprecated // NOSONAR
     public enum NumberOfHearingsOptions {
         SINGLE,
         MULTI,
