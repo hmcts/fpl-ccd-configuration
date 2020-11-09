@@ -70,7 +70,7 @@ public class UploadCMOService {
             .build();
     }
 
-    @Deprecated
+    @Deprecated // NOSONAR
     public UploadCMOEventData getInitialPageData(List<Element<HearingBooking>> pastHearings,
                                                  List<Element<CaseManagementOrder>> unsealedOrders) {
 
@@ -217,7 +217,7 @@ public class UploadCMOService {
         return null;
     }
 
-    @Deprecated
+    @Deprecated // NOSONAR
     public UploadCMOEventData prepareJudgeAndHearingDetails(Object dynamicList,
                                                             List<Element<HearingBooking>> hearings,
                                                             List<Element<CaseManagementOrder>> unsealedOrders) {
@@ -291,7 +291,7 @@ public class UploadCMOService {
         return Optional.ofNullable(previousCMOId);
     }
 
-    @Deprecated
+    @Deprecated // NOSONAR
     private UUID getSelectedHearingId(Object dynamicList, List<Element<HearingBooking>> hearings) {
         if (hearings.size() == 1) {
             return hearings.get(0).getId();
@@ -344,7 +344,7 @@ public class UploadCMOService {
         return asDynamicList(hearings, selected, HearingBooking::toLabel);
     }
 
-    @Deprecated
+    @Deprecated // NOSONAR
     private void addJudgeAndHearingDetails(HearingBooking hearing,
                                            UploadCMOEventData.UploadCMOEventDataBuilder builder,
                                            boolean initialPage) {
