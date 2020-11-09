@@ -43,20 +43,10 @@ public class UploadCMOEventData {
     DocumentReference previousCMO; // (Page 2)
     String cmoJudgeInfo; // (Page 3)
     DocumentReference cmoToSend; // (Page 3)
-    @Deprecated
-    String multiHearingsWithCMOs;
-    @Deprecated
-    String singleHearingWithCMO;
 
     // Conditional control fields
     YesNo showCMOsSentToJudge; // (Page 1)
     YesNo showReplacementCMO; // (Page 2)
-    @Deprecated
-    NumberOfHearingsOptions numHearingsWithoutCMO;
-    @Deprecated
-    YesNo showHearingsSingleTextArea;
-    @Deprecated
-    YesNo showHearingsMultiTextArea;
 
     public List<Element<SupportingEvidenceBundle>> getCmoSupportingDocs() {
         return defaultIfNull(cmoSupportingDocs, new ArrayList<>());
@@ -77,10 +67,7 @@ public class UploadCMOEventData {
         return new String[]{
             "showCMOsSentToJudge", "cmosSentToJudge", "cmoUploadType", "pastHearingsForCMO", "futureHearingsForCMO",
             "cmoHearingInfo", "showReplacementCMO", "previousCMO", "uploadedCaseManagementOrder", "replacementCMO",
-            "cmoSupportingDocs", "cmoJudgeInfo", "cmoToSend",
-            // TODO: 19/10/2020 Delete after this comment when FPLA-2019 is toggled on
-            "numHearingsWithoutCMO", "singleHearingWithCMO", "multiHearingsWithCMOs", "showHearingsSingleTextArea",
-            "showHearingsMultiTextArea"
+            "cmoSupportingDocs", "cmoJudgeInfo", "cmoToSend"
         };
     }
 

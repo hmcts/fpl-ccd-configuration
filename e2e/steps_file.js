@@ -304,7 +304,9 @@ module.exports = function () {
         }
       }
     },
-
+    async getActiveElementIndex() {
+      return await this.grabNumberOfVisibleElements('//button[text()="Remove"]') - 1;
+    },
     /**
      * Retries defined action util element described by the locator is present. If element is not present
      * after 4 tries (run + 3 retries) this step throws an error.

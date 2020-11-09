@@ -1,5 +1,6 @@
 const config = require('../config.js');
 const recipients = require('../fixtures/recipients.js');
+const legalRepresentatives = require('../fixtures/legalRepresentatives.js');
 const placementHelper = require('../helpers/placement_helper.js');
 const uploadDocumentsHelper = require('../helpers/upload_case_documents_helper.js');
 const mandatoryWithMultipleChildren = require('../fixtures/caseData/mandatoryWithMultipleChildren.json');
@@ -14,6 +15,22 @@ BeforeSuite(async ({I}) => {
 });
 
 Before(async ({I}) => await I.navigateToCaseDetails(caseId));
+
+Scenario('local authority add an external barrister as a legal representative for the case', async ({I, caseViewPage, manageLegalRepresentativesEventPage}) => {
+  await caseViewPage.goToNewActions(config.applicationActions.manageLegalRepresentatives);
+  await I.goToNextPage();
+  await manageLegalRepresentativesEventPage.addLegalRepresentative(legalRepresentatives.barrister);
+  await I.completeEvent('Save and continue');
+
+  I.seeEventSubmissionConfirmation(config.applicationActions.manageLegalRepresentatives);
+
+  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+  I.seeInTab(['LA Legal representatives 1', 'Full name'], legalRepresentatives.barrister.fullName);
+  I.seeInTab(['LA Legal representatives 1', 'Role'], legalRepresentatives.barrister.role);
+  I.seeInTab(['LA Legal representatives 1', 'Organisation'], legalRepresentatives.barrister.organisation);
+  I.seeInTab(['LA Legal representatives 1', 'Email address'], legalRepresentatives.barrister.email);
+  I.seeInTab(['LA Legal representatives 1', 'Phone number'], legalRepresentatives.barrister.telephone);
+});
 
 Scenario('local authority uploads documents', async ({I, caseViewPage, uploadDocumentsEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
@@ -40,6 +57,16 @@ Scenario('local authority uploads court bundle', async ({I, caseViewPage, upload
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.seeDocument('Court bundle', 'mockFile.txt', '', '', 'Date and time uploaded', 'Uploaded by');
+});
+
+Scenario('local authority update solicitor', async ({I, caseViewPage, enterApplicantEventPage}) => {
+  const solicitorEmail = 'solicitor@test.com';
+  await caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
+  enterApplicantEventPage.enterSolicitorDetails({email: solicitorEmail});
+  await I.seeCheckAnswersAndCompleteEvent('Save and continue');
+
+  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+  I.seeInTab(['Solicitor', 'Solicitor\'s email'], solicitorEmail);
 });
 
 Scenario('local authority provides a statements of service', async ({I, caseViewPage, addStatementOfServiceEventPage}) => {
@@ -117,3 +144,5 @@ Scenario('local authority upload placement application', async ({I, caseViewPage
 
   await placementHelper.assertCafcassCannotSeePlacementOrder(I, caseViewPage, caseId);
 });
+
+

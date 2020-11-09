@@ -128,7 +128,7 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
             .data(Map.of("temporaryC2Document",
                 Map.of(
                     "supportingEvidenceBundle", wrapElements(createSupportingEvidenceBundle()),
-                "pbaNumber", "12345")))
+                    "pbaNumber", "12345")))
             .build(), "validate");
 
         assertThat(response.getErrors()).contains("Payment by account (PBA) number must include 7 numbers");
