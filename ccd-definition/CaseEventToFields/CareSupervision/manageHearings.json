@@ -40,13 +40,61 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageHearings",
+    "CaseFieldID": "hasPastAndTodayHearingDateFlag",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": "SelectHearingOption",
+    "ShowSummaryChangeOption": "Y",
+    "PageDisplayOrder": 1,
+    "FieldShowCondition": "hearingOption=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageHearings",
+    "CaseFieldID": "hasFutureAndTodayHearingDateFlag",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": "SelectHearingOption",
+    "ShowSummaryChangeOption": "Y",
+    "PageDisplayOrder": 1,
+    "FieldShowCondition": "hearingOption=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageHearings",
     "CaseFieldID": "hearingDateList",
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
     "PageID": "SelectHearingOption",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 1,
-    "FieldShowCondition": "hearingOption=\"EDIT_HEARING\""
+    "FieldShowCondition": "hearingOption=\"EDIT_HEARING\" AND hasExistingHearings=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageHearings",
+    "CaseFieldID": "noHearingsToEditLabel",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "READONLY",
+    "PageID": "SelectHearingOption",
+    "ShowSummaryChangeOption": "Y",
+    "PageDisplayOrder": 1,
+    "FieldShowCondition": "hearingOption=\"EDIT_HEARING\" AND hasExistingHearings=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageHearings",
+    "CaseFieldID": "noHearingsToAdjournLabel",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "READONLY",
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "hearingOption=\"ADJOURN_HEARING\" AND hasPastAndTodayHearingDateFlag=\"\"",
+    "PageID": "SelectHearingOption",
+    "PageDisplayOrder": 1
   },
   {
     "LiveFrom": "01/01/2017",
@@ -56,7 +104,7 @@
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "hearingOption=\"ADJOURN_HEARING\"",
+    "FieldShowCondition": "hearingOption=\"ADJOURN_HEARING\" AND hasPastAndTodayHearingDateFlag=\"Yes\"",
     "PageID": "SelectHearingOption",
     "PageDisplayOrder": 1
   },
@@ -67,7 +115,7 @@
     "CaseFieldID": "pastAndTodayHearingDateListInfo",
     "PageFieldDisplayOrder": 4,
     "DisplayContext": "READONLY",
-    "FieldShowCondition": "hearingOption=\"ADJOURN_HEARING\"",
+    "FieldShowCondition": "hearingOption=\"ADJOURN_HEARING\" AND hasPastAndTodayHearingDateFlag=\"Yes\"",
     "PageID": "SelectHearingOption",
     "PageDisplayOrder": 1
   },

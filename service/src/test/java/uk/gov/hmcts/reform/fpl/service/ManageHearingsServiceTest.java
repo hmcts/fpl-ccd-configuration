@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -56,6 +55,13 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.VACATE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.FUTURE_HEARING_LIST;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_EXISTING_HEARINGS_FLAG;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_FUTURE_HEARING_FLAG;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_PAST_HEARING_FLAG;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DATE_LIST;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.PAST_HEARING_LIST;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
@@ -95,9 +101,6 @@ class ManageHearingsServiceTest {
     private UploadDocumentService uploadDocumentService;
 
     @Mock
-    private ObjectMapper objectMapper;
-
-    @Mock
     private IdentityService identityService;
 
     @InjectMocks
@@ -106,6 +109,91 @@ class ManageHearingsServiceTest {
     @BeforeEach
     void setUp() {
         when(time.now()).thenReturn(NOW);
+    }
+
+    @Nested
+    class PopulatePastAndFutureHearingListsTest {
+        @Test
+        void shouldPopulateAllHearingDateListsWhenPastAndFutureHearingsExist() {
+            Element<HearingBooking> futureHearing1 = hearingFromToday(3);
+            Element<HearingBooking> futureHearing2 = hearingFromToday(2);
+            Element<HearingBooking> todayHearing = hearingFromToday(0);
+            Element<HearingBooking> pastHearing1 = hearingFromToday(-2);
+            Element<HearingBooking> pastHearing2 = hearingFromToday(-3);
+
+            Object expectedHearingList = asDynamicList(List.of(
+                futureHearing1, futureHearing2), HearingBooking::toLabel);
+            Object expectedPastHearingList = asDynamicList(List.of(
+                todayHearing, pastHearing1, pastHearing2), HearingBooking::toLabel);
+            Object expectedFutureHearingList = asDynamicList(List.of(
+                futureHearing1, futureHearing2, todayHearing), HearingBooking::toLabel);
+
+            CaseData initialCaseData = CaseData.builder()
+                .hearingDetails(List.of(futureHearing1, futureHearing2, todayHearing, pastHearing1, pastHearing2))
+                .build();
+
+            Map<String, Object> data = service.populatePastAndFutureHearingLists(initialCaseData);
+
+            assertThat(data)
+                .extracting(HAS_PAST_HEARING_FLAG, HAS_FUTURE_HEARING_FLAG, HAS_EXISTING_HEARINGS_FLAG,
+                    HEARING_DATE_LIST, PAST_HEARING_LIST, FUTURE_HEARING_LIST)
+                .containsExactly("Yes", "Yes", "Yes", expectedHearingList, expectedPastHearingList,
+                    expectedFutureHearingList);
+        }
+
+        @Test
+        void shouldOnlyPopulatePastHearingDateListWhenOnlyHearingsInThePastExist() {
+            Element<HearingBooking> pastHearing1 = hearingFromToday(-2);
+            Element<HearingBooking> pastHearing2 = hearingFromToday(-3);
+
+            Object expectedPastHearingList = asDynamicList(List.of(
+                pastHearing1, pastHearing2), HearingBooking::toLabel);
+
+            Object emptyDynamicList = asDynamicList(List.of(), HearingBooking::toLabel);
+
+            CaseData initialCaseData = CaseData.builder()
+                .hearingDetails(List.of(pastHearing1, pastHearing2))
+                .build();
+
+            Map<String, Object> data = service.populatePastAndFutureHearingLists(initialCaseData);
+
+            assertThat(data)
+                .extracting(HAS_PAST_HEARING_FLAG, HAS_FUTURE_HEARING_FLAG, HAS_EXISTING_HEARINGS_FLAG,
+                    HEARING_DATE_LIST, PAST_HEARING_LIST, FUTURE_HEARING_LIST)
+                .containsExactly("Yes", null, "Yes", emptyDynamicList, expectedPastHearingList, emptyDynamicList);
+        }
+
+        @Test
+        void shouldOnlyPopulateFutureHearingDateListWhenOnlyHearingsInTheFutureExist() {
+            Element<HearingBooking> futureHearing1 = hearingFromToday(3);
+            Element<HearingBooking> futureHearing2 = hearingFromToday(2);
+
+            Object expectedHearingList = asDynamicList(List.of(
+                futureHearing1, futureHearing2), HearingBooking::toLabel);
+            Object expectedFutureHearingList = asDynamicList(List.of(
+                futureHearing1, futureHearing2), HearingBooking::toLabel);
+            Object emptyDynamicList = asDynamicList(List.of(), HearingBooking::toLabel);
+
+            CaseData initialCaseData = CaseData.builder()
+                .hearingDetails(List.of(futureHearing1, futureHearing2))
+                .build();
+
+            Map<String, Object> data = service.populatePastAndFutureHearingLists(initialCaseData);
+
+            assertThat(data)
+                .extracting(HAS_PAST_HEARING_FLAG, HAS_FUTURE_HEARING_FLAG, HAS_EXISTING_HEARINGS_FLAG,
+                    HEARING_DATE_LIST, PAST_HEARING_LIST, FUTURE_HEARING_LIST)
+                .containsExactly(null, "Yes", "Yes", expectedHearingList, emptyDynamicList, expectedFutureHearingList);
+        }
+
+        private Element<HearingBooking> hearingFromToday(int daysFromToday) {
+            final LocalDateTime startTime = LocalDateTime.now().plusDays(daysFromToday);
+            return element(HearingBooking.builder()
+                .type(CASE_MANAGEMENT)
+                .startDate(startTime)
+                .endDate(startTime.plusDays(1))
+                .build());
+        }
     }
 
     @Nested

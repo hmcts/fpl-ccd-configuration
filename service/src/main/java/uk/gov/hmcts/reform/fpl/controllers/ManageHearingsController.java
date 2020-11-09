@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.service.ManageHearingsService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
+import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
 
 import java.util.List;
@@ -35,7 +36,11 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.VACATE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingReListOption.RE_LIST_NOW;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.FUTURE_HEARING_LIST;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_EXISTING_HEARINGS_FLAG;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DETAILS_KEY;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.PAST_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInGatekeepingState;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -48,9 +53,6 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllo
 public class ManageHearingsController extends CallbackController {
 
     private static final String FIRST_HEARING_FLAG = "firstHearingFlag";
-    private static final String HEARING_DATE_LIST = "hearingDateList";
-    private static final String PAST_HEARING_LIST = "pastAndTodayHearingDateList";
-    private static final String FUTURE_HEARING_LIST = "futureAndTodayHearingDateList";
     private static final String SELECTED_HEARING_ID = "selectedHearingId";
     private static final String CANCELLED_HEARING_DETAILS_KEY = "cancelledHearingDetails";
     private static final String HEARING_DOCUMENT_BUNDLE_KEY = "hearingFurtherEvidenceDocuments";
@@ -73,15 +75,9 @@ public class ManageHearingsController extends CallbackController {
         caseDetails.getData().put(FIRST_HEARING_FLAG, (isEmpty(caseData.getHearingDetails()) ? YES : NO).getValue());
 
         if (isNotEmpty(caseData.getHearingDetails())) {
-            caseDetails.getData().put(HEARING_DATE_LIST, hearingsService.asDynamicList(caseData.getFutureHearings()));
-
-            caseDetails.getData()
-                .put(PAST_HEARING_LIST, hearingsService.asDynamicList(caseData.getPastAndTodayHearings()));
-
-            caseDetails.getData()
-                .put(FUTURE_HEARING_LIST, hearingsService.asDynamicList(caseData.getFutureAndTodayHearings()));
-
-            caseDetails.getData().put("hasExistingHearings", YES.getValue());
+            caseDetails.getData().putAll(hearingsService.populatePastAndFutureHearingLists(caseData));
+        } else {
+            caseDetails.getData().put(HAS_EXISTING_HEARINGS_FLAG, NO.getValue());
         }
 
         return respond(caseDetails);
@@ -91,6 +87,12 @@ public class ManageHearingsController extends CallbackController {
     public CallbackResponse populateExistingDraftHearing(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+
+        List<String> errors = validateGroupService.validateGroup(caseData, HearingBookingGroup.class);
+
+        if (errors.size() >= 1) {
+            return respond(caseDetails, errors);
+        }
 
         if (NEW_HEARING == caseData.getHearingOption()) {
             caseDetails.getData().putAll(hearingsService.populatePreviousVenueFields(caseData));

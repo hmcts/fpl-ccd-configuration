@@ -66,6 +66,37 @@ public class ManageHearingsService {
     private final Time time;
 
     public static final String HEARING_DETAILS_KEY = "hearingDetails";
+    public static final String HAS_PAST_HEARING_FLAG = "hasPastAndTodayHearingDateFlag";
+    public static final String HAS_FUTURE_HEARING_FLAG = "hasFutureAndTodayHearingDateFlag";
+    public static final String HEARING_DATE_LIST = "hearingDateList";
+    public static final String PAST_HEARING_LIST = "pastAndTodayHearingDateList";
+    public static final String FUTURE_HEARING_LIST = "futureAndTodayHearingDateList";
+    public static final String HAS_EXISTING_HEARINGS_FLAG = "hasExistingHearings";
+
+    public Map<String, Object> populatePastAndFutureHearingLists(CaseData caseData) {
+        List<Element<HearingBooking>> futureHearings = caseData.getFutureHearings();
+        List<Element<HearingBooking>> pastAndTodayHearings = caseData.getPastAndTodayHearings();
+        List<Element<HearingBooking>> futureAndTodayHearing = caseData.getFutureAndTodayHearings();
+
+        Map<String, Object> listAndLabel = new HashMap<>(Map.of(
+            HEARING_DATE_LIST, asDynamicList(futureHearings),
+            PAST_HEARING_LIST, asDynamicList(pastAndTodayHearings),
+            FUTURE_HEARING_LIST, asDynamicList(futureAndTodayHearing),
+            HAS_EXISTING_HEARINGS_FLAG, YES.getValue()
+        ));
+
+        if (isNotEmpty(pastAndTodayHearings)) {
+            listAndLabel.put(HAS_PAST_HEARING_FLAG, YES.getValue());
+        }
+
+        if (isNotEmpty(futureAndTodayHearing)) {
+            listAndLabel.put(HAS_FUTURE_HEARING_FLAG, YES.getValue());
+        }
+
+        System.out.println(listAndLabel);
+
+        return listAndLabel;
+    }
 
     public UUID getSelectedHearingId(Object dynamicList) {
         return getDynamicListSelectedValue(dynamicList, mapper);
@@ -234,8 +265,8 @@ public class ManageHearingsService {
             "vacatedReason",
             "pastAndTodayHearingDateList",
             "futureAndTodayHearingDateList",
-            "pastAndTodayHearingDateListInfo",
-            "futureAndTodayHearingDateListInfo",
+            "hasPastAndTodayHearingDateFlag",
+            "hasFutureAndTodayHearingDateFlag",
             "hearingReListOption");
     }
 
