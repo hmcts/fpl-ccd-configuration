@@ -185,6 +185,22 @@ public class ManageHearingsController extends CallbackController {
         }
     }
 
+    @PostMapping("/hearing-in-past/mid-event")
+    public CallbackResponse populateHearingDateIfIncorrect(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        if(caseDetails.getData().get("hearingDateConfirmation").equals("YES")) {
+            System.out.println("Yes correct dates");
+        }
+
+        if(caseDetails.getData().get("hearingDateConfirmation").equals("NO")) {
+            System.out.println("no wrong dates");
+        }
+
+        return respond(caseDetails);
+    }
+
     @PostMapping("/about-to-submit")
     public CallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         final CaseDetails caseDetails = callbackRequest.getCaseDetails();
