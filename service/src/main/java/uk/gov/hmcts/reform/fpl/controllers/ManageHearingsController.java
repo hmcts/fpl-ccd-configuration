@@ -37,7 +37,6 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingReListOption.RE_LIST_NOW;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.FUTURE_HEARING_LIST;
-import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_EXISTING_HEARINGS_FLAG;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.PAST_HEARING_LIST;
@@ -76,8 +75,6 @@ public class ManageHearingsController extends CallbackController {
 
         if (isNotEmpty(caseData.getHearingDetails())) {
             caseDetails.getData().putAll(hearingsService.populatePastAndFutureHearingLists(caseData));
-        } else {
-            caseDetails.getData().put(HAS_EXISTING_HEARINGS_FLAG, NO.getValue());
         }
 
         return respond(caseDetails);
