@@ -160,7 +160,6 @@ public class ManageHearingsController extends CallbackController {
         return respond(caseDetails);
     }
 
-
     //MOVE THIS TO HEARING SERVICE
     private void populateFieldsForPastDateAdded(CaseDetails caseDetails, List<String> errors){
         CaseData caseData = getCaseData(caseDetails);
@@ -200,10 +199,14 @@ public class ManageHearingsController extends CallbackController {
 
             if(isNotEmpty(caseData.getHearingEndDateConfirmation()) && isNotEmpty(caseData.getHearingStartDateConfirmation())) {
                 System.out.println("both dates are incorrect");
+                caseDetails.getData().put("hearingStartDate", caseData.getHearingStartDateConfirmation());
+                caseDetails.getData().put("hearingEndDate", caseData.getHearingEndDateConfirmation());
             } else if(isNotEmpty(caseData.getHearingStartDateConfirmation())) {
                 System.out.println("start dates is incorrect");
+                caseDetails.getData().put("hearingStartDate", caseData.getHearingStartDateConfirmation());
             } else if (isNotEmpty(caseData.getHearingEndDateConfirmation())) {
                 System.out.println("end date is incorrect");
+                caseDetails.getData().put("hearingEndDate", caseData.getHearingEndDateConfirmation());
             }
         }
 
@@ -257,10 +260,8 @@ public class ManageHearingsController extends CallbackController {
 
         data.keySet().removeAll(hearingsService.caseFieldsToBeRemoved());
 
-        //may throw no field found as doesn't exist in edit and adjourn
-        //data.remove("hearingStartDateLabel");
-        //data.remove("hearingEndDateLabel");
-
+        data.remove("hearingStartDateLabel");
+        data.remove("hearingEndDateLabel");
         data.remove("hearingDateConfirmation");
         data.remove("hearingStartDateConfirmation");
         data.remove("hearingEndDateConfirmation");
