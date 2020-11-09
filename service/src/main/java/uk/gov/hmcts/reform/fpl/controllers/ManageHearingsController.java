@@ -159,21 +159,23 @@ public class ManageHearingsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-            List<String> errors = validateGroupService.validateGroup(caseData, HearingDatesGroup.class);
+        List<String> errors = validateGroupService.validateGroup(caseData, HearingDatesGroup.class);
 
-            if(caseData.getHearingOption() == EDIT_HEARING || caseData.getHearingOption() == ADJOURN_HEARING) {
-                return respond(caseDetails, errors);
-            } else {
-                if(!errors.isEmpty()) {
-                    populateFieldsForPastDateAdded(caseDetails, errors);
-                }
+        //have done like this as not null / empty wasn't working
+        if (caseData.getHearingOption() == EDIT_HEARING || caseData.getHearingOption() == ADJOURN_HEARING
+            || caseData.getHearingOption() == VACATE_HEARING) {
+            return respond(caseDetails, errors);
+        } else {
+            if (!errors.isEmpty()) {
+                populateFieldsForPastDateAdded(caseDetails, errors);
             }
+        }
 
         return respond(caseDetails);
     }
 
     //MOVE THIS TO HEARING SERVICE
-    private void populateFieldsForPastDateAdded(CaseDetails caseDetails, List<String> errors){
+    private void populateFieldsForPastDateAdded(CaseDetails caseDetails, List<String> errors) {
         CaseData caseData = getCaseData(caseDetails);
 
         caseDetails.getData().put("pageShow", "YES");
@@ -182,16 +184,20 @@ public class ManageHearingsController extends CallbackController {
         String endDateError = "Enter an end date in the future";
         List<String> expectedErrors = List.of(startDateError, endDateError);
 
-        if(errors.containsAll(expectedErrors)) {
-            caseDetails.getData().put("hearingStartDateLabel", formatLocalDateTimeBaseUsingFormat(caseData.getHearingStartDate(), DATE_TIME));
-            caseDetails.getData().put("hearingEndDateLabel", formatLocalDateTimeBaseUsingFormat(caseData.getHearingEndDate(), DATE_TIME));
+        if (errors.containsAll(expectedErrors)) {
+            caseDetails.getData().put("hearingStartDateLabel", formatLocalDateTimeBaseUsingFormat(caseData
+                .getHearingStartDate(), DATE_TIME));
+            caseDetails.getData().put("hearingEndDateLabel", formatLocalDateTimeBaseUsingFormat(caseData
+                .getHearingEndDate(), DATE_TIME));
             caseDetails.getData().put("showStartDateLabel", "YES");
             caseDetails.getData().put("showEndDateLabel", "YES");
-        } else if(errors.contains(startDateError) && !errors.contains(endDateError)) {
-            caseDetails.getData().put("hearingStartDateLabel", formatLocalDateTimeBaseUsingFormat(caseData.getHearingStartDate(), DATE_TIME));
+        } else if (errors.contains(startDateError) && !errors.contains(endDateError)) {
+            caseDetails.getData().put("hearingStartDateLabel", formatLocalDateTimeBaseUsingFormat(caseData
+                .getHearingStartDate(), DATE_TIME));
             caseDetails.getData().put("showStartDateLabel", "YES");
         } else {
-            caseDetails.getData().put("hearingEndDateLabel", formatLocalDateTimeBaseUsingFormat(caseData.getHearingEndDate(), DATE_TIME));
+            caseDetails.getData().put("hearingEndDateLabel", formatLocalDateTimeBaseUsingFormat(caseData
+                .getHearingEndDate(), DATE_TIME));
             caseDetails.getData().put("showEndDateLabel", "YES");
         }
     }
@@ -201,19 +207,20 @@ public class ManageHearingsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        if(caseDetails.getData().get("hearingDateConfirmation").equals("YES")) {
+        if (caseDetails.getData().get("hearingDateConfirmation").equals("YES")) {
             System.out.println("Yes correct dates");
         }
 
-        if(caseDetails.getData().get("hearingDateConfirmation").equals("NO")) {
+        if (caseDetails.getData().get("hearingDateConfirmation").equals("NO")) {
             System.out.println("no wrong dates");
 
 
-            if(isNotEmpty(caseData.getHearingEndDateConfirmation()) && isNotEmpty(caseData.getHearingStartDateConfirmation())) {
+            if (isNotEmpty(caseData.getHearingEndDateConfirmation()) && isNotEmpty(caseData
+                .getHearingStartDateConfirmation())) {
                 System.out.println("both dates are incorrect");
                 caseDetails.getData().put("hearingStartDate", caseData.getHearingStartDateConfirmation());
                 caseDetails.getData().put("hearingEndDate", caseData.getHearingEndDateConfirmation());
-            } else if(isNotEmpty(caseData.getHearingStartDateConfirmation())) {
+            } else if (isNotEmpty(caseData.getHearingStartDateConfirmation())) {
                 System.out.println("start dates is incorrect");
                 caseDetails.getData().put("hearingStartDate", caseData.getHearingStartDateConfirmation());
             } else if (isNotEmpty(caseData.getHearingEndDateConfirmation())) {
@@ -288,10 +295,13 @@ public class ManageHearingsController extends CallbackController {
         data.keySet().removeAll(hearingsService.caseFieldsToBeRemoved());
 
         data.remove("hearingStartDateLabel");
+        data.remove("pageShow");
         data.remove("hearingEndDateLabel");
         data.remove("hearingDateConfirmation");
         data.remove("hearingStartDateConfirmation");
         data.remove("hearingEndDateConfirmation");
+        data.remove("showStartDateLabel");
+        data.remove("showEndDateLabel");
 
         return respond(data);
     }
