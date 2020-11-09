@@ -51,8 +51,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.VACATE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
@@ -602,6 +605,175 @@ class ManageHearingsServiceTest {
             assertThat(caseData.getHearingDetails()).containsExactly(otherHearing, reListedHearing);
             assertThat(caseData.getCancelledHearingDetails()).containsExactly(adjournedHearing);
             assertThat(caseData.getHearingFurtherEvidenceDocuments()).containsExactly(reListedHearingBundle);
+        }
+    }
+
+    @Nested
+    class Vacating {
+
+        @Test
+        void shouldVacateHearingWithVacatedReason() {
+            HearingCancellationReason vacatedReason = HearingCancellationReason.builder()
+                .reason("Reason 1")
+                .build();
+
+            Element<HearingBooking> hearingElement1 = element(hearing(time.now().plusDays(1), time.now().plusDays(2)));
+            Element<HearingBooking> hearingElement2 = element(hearing(time.now().plusDays(2), time.now().plusDays(3)));
+
+            Element<HearingBooking> vacatedHearing = element(hearingElement1.getId(),
+                hearingElement1.getValue().toBuilder()
+                    .status(HearingStatus.VACATED)
+                    .cancellationReason(vacatedReason.getReason())
+                    .build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(newArrayList(hearingElement1, hearingElement2))
+                .vacatedReason(vacatedReason)
+                .build();
+
+            service.vacateHearing(caseData, hearingElement1.getId());
+
+            assertThat(caseData.getHearingDetails()).containsExactly(hearingElement2);
+            assertThat(caseData.getCancelledHearingDetails()).containsExactly(vacatedHearing);
+        }
+
+        @Test
+        void shouldVacateHearingWithoutVacatedReason() {
+            Element<HearingBooking> hearingElement1 = element(hearing(time.now().plusDays(1), time.now().plusDays(2)));
+            Element<HearingBooking> hearingElement2 = element(hearing(time.now().plusDays(2), time.now().plusDays(3)));
+
+            Element<HearingBooking> vacatedHearing = element(hearingElement1.getId(),
+                hearingElement1.getValue().toBuilder()
+                    .status(HearingStatus.VACATED)
+                    .build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(newArrayList(hearingElement1, hearingElement2))
+                .build();
+
+            service.vacateHearing(caseData, hearingElement1.getId());
+
+            assertThat(caseData.getHearingDetails()).containsExactly(hearingElement2);
+            assertThat(caseData.getCancelledHearingDetails()).containsExactly(vacatedHearing);
+        }
+
+        @Test
+        void shouldVacateAndReListHearingWithoutDocumentReassignment() {
+            final UUID reListedHearingId = randomUUID();
+
+            when(identityService.generateId()).thenReturn(reListedHearingId);
+
+            HearingCancellationReason vacatedReason = HearingCancellationReason.builder()
+                .reason("Reason 1")
+                .build();
+
+            Element<HearingBooking> hearingToBeVacated = element(randomHearing());
+            Element<HearingBooking> otherHearing = element(randomHearing());
+            Element<HearingBooking> reListedHearing = element(reListedHearingId, randomHearing());
+            Element<HearingBooking> expectedVacatedHearing = element(hearingToBeVacated.getId(),
+                hearingToBeVacated.getValue().toBuilder()
+                    .status(HearingStatus.VACATED_AND_RE_LISTED)
+                    .cancellationReason(vacatedReason.getReason())
+                    .build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(newArrayList(hearingToBeVacated, otherHearing))
+                .vacatedReason(vacatedReason)
+                .build();
+
+            service.vacateAndReListHearing(caseData, hearingToBeVacated.getId(), reListedHearing.getValue());
+
+            assertThat(caseData.getHearingDetails()).containsExactly(otherHearing, reListedHearing);
+            assertThat(caseData.getCancelledHearingDetails()).containsExactly(expectedVacatedHearing);
+            assertThat(caseData.getHearingFurtherEvidenceDocuments()).isEmpty();
+        }
+
+        @Test
+        void shouldVacateAndReListHearingWithDocumentReassignment() {
+            final UUID reListedHearingId = randomUUID();
+
+            when(identityService.generateId()).thenReturn(reListedHearingId);
+
+            HearingCancellationReason vacatedReason = HearingCancellationReason.builder()
+                .reason("Reason 1")
+                .build();
+
+            final Element<HearingBooking> hearingToBeVacated = element(randomHearing());
+            final Element<HearingBooking> otherHearing = element(randomHearing());
+            final Element<HearingBooking> reListedHearing = element(reListedHearingId, randomHearing());
+            final Element<HearingBooking> vacatedHearing = element(hearingToBeVacated.getId(),
+                hearingToBeVacated.getValue().toBuilder()
+                    .status(HearingStatus.VACATED_AND_RE_LISTED)
+                    .cancellationReason(vacatedReason.getReason())
+                    .build());
+
+            final Element<HearingFurtherEvidenceBundle> documentBundle = randomDocumentBundle(hearingToBeVacated);
+
+            final Element<HearingFurtherEvidenceBundle> reListedHearingBundle = element(reListedHearingId,
+                documentBundle.getValue().toBuilder()
+                    .hearingName(reListedHearing.getValue().toLabel())
+                    .build());
+
+            final CaseData caseData = CaseData.builder()
+                .hearingDetails(newArrayList(hearingToBeVacated, otherHearing))
+                .hearingFurtherEvidenceDocuments(newArrayList(documentBundle))
+                .vacatedReason(vacatedReason)
+                .build();
+
+            service.vacateAndReListHearing(caseData, hearingToBeVacated.getId(), reListedHearing.getValue());
+
+            assertThat(caseData.getHearingDetails()).containsExactly(otherHearing, reListedHearing);
+            assertThat(caseData.getCancelledHearingDetails()).containsExactly(vacatedHearing);
+            assertThat(caseData.getHearingFurtherEvidenceDocuments()).containsExactly(reListedHearingBundle);
+        }
+    }
+
+    @Nested
+    class GetSelectedDynamicListType {
+
+        @Test
+        void shouldReturnFutureAndTodayHearingDateListWhenHearingOptionIsVacateHearing() {
+            Element<HearingBooking> hearingToBeAdjourned = element(randomHearing());
+            Element<HearingBooking> hearingToBeVacated = element(randomHearing());
+
+            CaseData caseData = CaseData.builder()
+                .hearingOption(VACATE_HEARING)
+                .pastAndTodayHearingDateList(hearingToBeAdjourned)
+                .futureAndTodayHearingDateList(hearingToBeVacated)
+                .build();
+
+            Object dynamicList = service.getSelectedDynamicListType(caseData);
+            assertThat(dynamicList).isEqualTo(hearingToBeVacated);
+        }
+
+        @Test
+        void shouldReturnPastAndTodayHearingDateListWhenHearingOptionIsAdjournedHearing() {
+            Element<HearingBooking> hearingToBeAdjourned = element(randomHearing());
+            Element<HearingBooking> hearingToBeVacated = element(randomHearing());
+
+            CaseData caseData = CaseData.builder()
+                .hearingOption(ADJOURN_HEARING)
+                .pastAndTodayHearingDateList(hearingToBeAdjourned)
+                .futureAndTodayHearingDateList(hearingToBeVacated)
+                .build();
+
+            Object dynamicList = service.getSelectedDynamicListType(caseData);
+            assertThat(dynamicList).isEqualTo(hearingToBeAdjourned);
+        }
+
+
+        private HearingBooking randomHearing() {
+            LocalDateTime startDate = LocalDateTime.now().minusDays(2);
+            return HearingBooking.builder()
+                .type(CASE_MANAGEMENT)
+                .startDate(startDate)
+                .endDate(startDate.plusDays(1))
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                    .judgeTitle(HER_HONOUR_JUDGE)
+                    .judgeLastName("Judy")
+                    .build())
+                .venue("96")
+                .build();
         }
     }
 

@@ -114,6 +114,25 @@ class ManageHearingsControllerEditHearingMidEventTest extends AbstractController
             .isEqualTo(dynamicList(pastHearing1.getId(), pastHearing1, pastHearing2));
     }
 
+    @Test
+    void shouldBuildFutureHearingDateListWhenHearingIsVacated() {
+        Element<HearingBooking> futureHearing1 = element(hearing(now().plusDays(2), "162"));
+        Element<HearingBooking> pastHearing1 = element(hearing(now().minusDays(2), "96"));
+        Element<HearingBooking> pastHearing2 = element(hearing(now().minusDays(3), "298"));
+        Element<HearingBooking> futureHearing2 = element(hearing(now().plusDays(3), "166"));
+
+        CaseData initialCaseData = CaseData.builder()
+            .hearingOption(HearingOptions.VACATE_HEARING)
+            .hearingDetails(List.of(futureHearing1, pastHearing1, pastHearing2, futureHearing2))
+            .futureAndTodayHearingDateList(futureHearing1.getId())
+            .build();
+
+        CaseData updatedCaseData = extractCaseData(postMidEvent(initialCaseData, "edit-hearing"));
+
+        assertThat(updatedCaseData.getFutureAndTodayHearingDateList())
+            .isEqualTo(dynamicList(futureHearing1.getId(), futureHearing1, futureHearing2));
+    }
+
     private static void assertHearingCaseFields(CaseData caseData, HearingBooking hearingBooking) {
         assertThat(caseData.getHearingType()).isEqualTo(hearingBooking.getType());
         assertThat(caseData.getHearingStartDate()).isEqualTo(hearingBooking.getStartDate());

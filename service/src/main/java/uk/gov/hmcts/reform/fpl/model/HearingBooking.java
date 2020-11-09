@@ -71,6 +71,12 @@ public class HearingBooking {
             .orElse(false);
     }
 
+    public boolean startsTodayOrAfter() {
+        return ofNullable(startDate)
+            .map(date -> date.toLocalDate().isAfter(LocalDate.now().minusDays(1)))
+            .orElse(false);
+    }
+
     public boolean hasCMOAssociation() {
         return caseManagementOrderId != null;
     }
