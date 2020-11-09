@@ -93,8 +93,6 @@ public class ManageHearingsService {
             listAndLabel.put(HAS_FUTURE_HEARING_FLAG, YES.getValue());
         }
 
-        System.out.println(listAndLabel);
-
         return listAndLabel;
     }
 
@@ -255,7 +253,7 @@ public class ManageHearingsService {
             "hearingEndDate",
             "sendNoticeOfHearing",
             "judgeAndLegalAdvisor",
-            "hasExistingHearings",
+            HAS_EXISTING_HEARINGS_FLAG,
             "hearingDateList",
             "hearingOption",
             "noticeOfHearingNotes",
@@ -263,10 +261,10 @@ public class ManageHearingsService {
             "firstHearingFlag",
             "adjournmentReason",
             "vacatedReason",
-            "pastAndTodayHearingDateList",
-            "futureAndTodayHearingDateList",
-            "hasPastAndTodayHearingDateFlag",
-            "hasFutureAndTodayHearingDateFlag",
+            PAST_HEARING_LIST,
+            FUTURE_HEARING_LIST,
+            HAS_PAST_HEARING_FLAG,
+            HAS_FUTURE_HEARING_FLAG,
             "hearingReListOption");
     }
 

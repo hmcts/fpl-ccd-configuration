@@ -87,7 +87,7 @@ public class ManageHearingsController extends CallbackController {
 
         List<String> errors = validateGroupService.validateGroup(caseData, HearingBookingGroup.class);
 
-        if (errors.size() >= 1) {
+        if (!errors.isEmpty()) {
             return respond(caseDetails, errors);
         }
 
