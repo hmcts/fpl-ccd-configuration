@@ -246,7 +246,7 @@
     "Name": "Your organisation's details",
     "Description": "Entering the applicant for the case",
     "DisplayOrder": 6,
-    "PreConditionState(s)": "Open;RETURNED",
+    "PreConditionState(s)": "*",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-applicant/about-to-start",

@@ -100,6 +100,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "LIC",
+    "ListElement": "Lincolnshire County Council",
+    "DisplayOrder": 24
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "LCC",
     "ListElement": "Liverpool County Council",
     "DisplayOrder": 25
@@ -114,8 +121,8 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
-    "ListElementCode": "MKC",
-    "ListElement": "Milton Keynes Council",
+    "ListElementCode": "MWC",
+    "ListElement": "Medway Council",
     "DisplayOrder": 31
   },
   {
@@ -123,7 +130,14 @@
     "ID": "AuthorityFixedList",
     "ListElementCode": "MTC",
     "ListElement": "Merthyr Tydfil CBC",
-    "DisplayOrder": 35
+    "DisplayOrder": 32
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "MKC",
+    "ListElement": "Milton Keynes Council",
+    "DisplayOrder": 33
   },
   {
     "LiveFrom": "01/01/2017",
@@ -215,6 +229,20 @@
     "ListElementCode": "SN",
     "ListElement": "Swindon Borough Council",
     "DisplayOrder": 90
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "TAM",
+    "ListElement": "Tameside Metropolitan Borough Council",
+    "DisplayOrder": 91
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "WMD",
+    "ListElement": "Wakefield Metropolitan District Council",
+    "DisplayOrder": 92
   },
   {
     "LiveFrom": "01/01/2017",
