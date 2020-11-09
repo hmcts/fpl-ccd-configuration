@@ -76,7 +76,7 @@
     "ID": "JudgeAndLegalAdvisor",
     "ListElementCode": "judgeEmailAddress",
     "FieldType": "Email",
-    "ElementLabel": "Email address",
+    "ElementLabel": "Email Address",
     "FieldShowCondition": "judgeTitle!=\"\" AND useAllocatedJudge!=\"Yes\"",
     "SecurityClassification": "Public"
   }

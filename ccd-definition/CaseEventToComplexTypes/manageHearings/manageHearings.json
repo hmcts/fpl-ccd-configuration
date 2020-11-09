@@ -75,7 +75,7 @@
     "CaseEventID": "manageHearings",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeEmailAddress",
-    "EventElementLabel": "Email address",
+    "EventElementLabel": "Email Address",
     "FieldDisplayOrder": 7,
     "DisplayContext": "MANDATORY",
     "FieldShowCondition": "judgeAndLegalAdvisor.useAllocatedJudge=\"No\""

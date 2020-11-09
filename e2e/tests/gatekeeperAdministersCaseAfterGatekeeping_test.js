@@ -81,7 +81,7 @@ Scenario('Gatekeeper manages hearings', async ({I, caseViewPage, manageHearingsE
   I.seeInTab(['Hearing 1', 'End date and time'], dateFormat(endDate, 'd mmm yyyy, h:MM:ss TT'));
   I.seeInTab(['Hearing 1', 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], hearingDetails[0].judgeAndLegalAdvisor.judgeTitle);
   I.seeInTab(['Hearing 1', 'Judge and Justices\' Legal Adviser', 'Last name'], hearingDetails[0].judgeAndLegalAdvisor.judgeLastName);
-  I.seeInTab(['Hearing 1', 'Judge and Justices\' Legal Adviser', 'Email address'], hearingDetails[0].judgeAndLegalAdvisor.judgeEmail);
+  I.seeInTab(['Hearing 1', 'Judge and Justices\' Legal Adviser', 'Email Address'], hearingDetails[0].judgeAndLegalAdvisor.judgeEmail);
   I.seeInTab(['Hearing 1', 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name'], hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
   I.seeInTab(['Hearing 1', 'Additional notes'], hearingDetails[0].additionalNotes);
   I.seeInTab(['Hearing 1', 'Notice of hearing'], `Notice_of_hearing_${dateFormat(submittedAt, 'ddmmmm')}.pdf`);
