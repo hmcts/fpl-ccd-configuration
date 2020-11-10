@@ -219,12 +219,10 @@ public class ManageHearingsService {
             "judgeAndLegalAdvisor",
             "hasExistingHearings",
             "hearingDateList",
-            "hearingOption",
             "noticeOfHearingNotes",
             "previousHearingVenue",
             "firstHearingFlag",
-            "adjournmentReason",
-            "hearingReListOption");
+            "adjournmentReason");
     }
 
     private HearingBooking buildFirstHearing(CaseData caseData) {
