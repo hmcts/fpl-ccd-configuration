@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ManageHearingsService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
@@ -59,6 +60,7 @@ public class ManageHearingsController extends CallbackController {
     private final ValidateGroupService validateGroupService;
     private final StandardDirectionsService standardDirectionsService;
     private final ManageHearingsService hearingsService;
+    private final FeatureToggleService featureToggleService;
 
     @PostMapping("/about-to-start")
     public CallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -160,13 +162,13 @@ public class ManageHearingsController extends CallbackController {
 
         List<String> errors;
 
-        if (caseData.getHearingOption() == NEW_HEARING || isEmpty(caseData.getHearingOption())) {
+        if (featureToggleService.isAddHearingsInPastEnabled() && (caseData.getHearingOption() == NEW_HEARING || isEmpty(caseData.getHearingOption()))) {
             errors = validateGroupService.validateGroup(caseData, PastHearingDatesGroup.class);
         } else {
             errors = validateGroupService.validateGroup(caseData, HearingDatesGroup.class);
         }
 
-        if (caseData.isHearingDateInPast())
+        if (caseData.isHearingDateInPast() && featureToggleService.isAddHearingsInPastEnabled())
         {
             caseDetails.getData().put("pageShow", YES.getValue());
             caseDetails.getData().putAll(hearingsService.populateFieldsWhenPastDateAdded(caseData));

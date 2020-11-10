@@ -75,6 +75,10 @@ public class FeatureToggleService {
         return ldClient.boolVariation("upload-draft-cmo", createLDUser(), false);
     }
 
+    public boolean isAddHearingsInPastEnabled() {
+        return ldClient.boolVariation("add-hearings-in-past", createLDUser(), false);
+    }
+
     private LDUser createLDUser() {
         return createLDUser(Map.of());
     }
