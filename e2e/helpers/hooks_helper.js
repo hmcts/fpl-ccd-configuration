@@ -13,7 +13,8 @@ module.exports = class HooksHelpers extends Helper {
     recorder.retry({
       retries: 10,
       minTimeout: 1000,
-      when: err => err.message.indexOf('Execution context was destroyed') > -1,
+      when: err => err.message.indexOf('Execution context was destroyed') > -1 || err.message.indexOf('Node is') > -1
+      ,
     });
   }
 
