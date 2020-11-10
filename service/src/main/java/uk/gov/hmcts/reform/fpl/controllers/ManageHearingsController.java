@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.AllocateHearingJudgeEvent;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -211,8 +212,16 @@ public class ManageHearingsController extends CallbackController {
             }
 
             hearingsService.findHearingBooking(caseData.getSelectedHearingId(), caseData.getHearingDetails())
-                .filter(hearing -> isNotEmpty(hearing.getNoticeOfHearing()))
-                .ifPresent(hearing -> publishEvent(new SendNoticeOfHearing(caseData, hearing)));
+                .ifPresent(hearingBooking -> {
+                    if (isNotEmpty(hearingBooking.getNoticeOfHearing())) {
+                        publishEvent(new SendNoticeOfHearing(caseData, hearingBooking));
+                    }
+
+                    if (hearingBooking.getJudgeAndLegalAdvisor() != null
+                        && hearingBooking.getJudgeAndLegalAdvisor().getJudgeEmailAddress() != null) {
+                        publishEvent(new AllocateHearingJudgeEvent(caseData, hearingBooking));
+                    }
+                });
         }
     }
 

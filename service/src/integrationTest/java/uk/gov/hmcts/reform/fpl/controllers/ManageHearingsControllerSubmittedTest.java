@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -34,6 +35,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_ALLOCATED_TO_HEARING_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
@@ -43,6 +45,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -58,6 +61,7 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
     private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
+    private static final String JUDGE_EMAIL = "judge@judge.com";
     private static final String CAFCASS_EMAIL = "cafcass@cafcass.com";
     private static final String NOTIFICATION_REFERENCE = "localhost/" + parseLong(CASE_ID);
 
@@ -193,6 +197,44 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
         verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(NOTICE_OF_NEW_HEARING),
             eq("abc@example.com"),
+            anyMap(),
+            eq(NOTIFICATION_REFERENCE));
+    }
+
+    @Test
+    void shouldTriggerAllocateHearingJudgeEventWhenJudgeEmailExists() throws NotificationClientException {
+        Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .startDate(LocalDateTime.of(2050, 5, 20, 13, 00))
+            .endDate(LocalDateTime.of(2050, 5, 20, 14, 00))
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeEmailAddress(JUDGE_EMAIL)
+                .judgeLastName("Davidson")
+                .judgeTitle(HER_HONOUR_JUDGE)
+                .build())
+            .venue("96")
+            .build());
+
+        CallbackRequest callbackRequest = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .jurisdiction(JURISDICTION)
+                .caseTypeId(CASE_TYPE)
+                .id(parseLong(CASE_ID))
+                .data(Map.of(
+                    "selectedHearingId", hearingWithNotice.getId(),
+                    "hearingDetails", List.of(hearingWithNotice)
+                ))
+                .state("Submitted")
+                .build())
+            .build();
+
+        given(documentDownloadService.downloadDocument(anyString())).willReturn(DOCUMENT_CONTENT);
+
+        postSubmittedEvent(callbackRequest);
+
+        verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
+            eq(JUDGE_ALLOCATED_TO_HEARING_TEMPLATE),
+            eq(JUDGE_EMAIL),
             anyMap(),
             eq(NOTIFICATION_REFERENCE));
     }
