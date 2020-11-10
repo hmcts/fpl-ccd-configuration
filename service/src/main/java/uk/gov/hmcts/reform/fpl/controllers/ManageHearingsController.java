@@ -40,8 +40,6 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInGatekeepingState;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 
@@ -172,35 +170,11 @@ public class ManageHearingsController extends CallbackController {
             errors = validateGroupService.validateGroup(caseData, PastHearingDatesGroup.class);
             if (caseData.getHearingEndDate().isBefore(LocalDateTime.now()) || caseData.getHearingStartDate().isBefore(LocalDateTime.now()))
             {
-                populateFieldsIfPastDateAdded(caseDetails);
+                caseDetails.getData().put("pageShow", "YES");
+                caseDetails.getData().putAll(hearingsService.populateFieldsWhenPastDateAdded(caseData));
             }
 
             return respond(caseDetails, errors);
-        }
-    }
-
-    //MOVE THIS TO HEARING SERVICE
-    private void populateFieldsIfPastDateAdded(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-
-        caseDetails.getData().put("pageShow", "YES");
-
-        if (caseData.getHearingEndDate().isBefore(LocalDateTime.now()) && caseData.getHearingStartDate().isBefore(LocalDateTime.now())){
-
-            caseDetails.getData().put("hearingStartDateLabel", formatLocalDateTimeBaseUsingFormat(caseData
-                .getHearingStartDate(), DATE_TIME));
-            caseDetails.getData().put("hearingEndDateLabel", formatLocalDateTimeBaseUsingFormat(caseData
-                .getHearingEndDate(), DATE_TIME));
-            caseDetails.getData().put("showStartDateLabel", "YES");
-            caseDetails.getData().put("showEndDateLabel", "YES");
-        } else if (caseData.getHearingStartDate().isBefore(LocalDateTime.now())) {
-            caseDetails.getData().put("hearingStartDateLabel", formatLocalDateTimeBaseUsingFormat(caseData
-                .getHearingStartDate(), DATE_TIME));
-            caseDetails.getData().put("showStartDateLabel", "YES");
-        } else if (caseData.getHearingEndDate().isBefore(LocalDateTime.now())) {
-            caseDetails.getData().put("hearingEndDateLabel", formatLocalDateTimeBaseUsingFormat(caseData
-                .getHearingEndDate(), DATE_TIME));
-            caseDetails.getData().put("showEndDateLabel", "YES");
         }
     }
 
@@ -209,26 +183,9 @@ public class ManageHearingsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        if (caseDetails.getData().get("hearingDateConfirmation").equals("YES")) {
-            System.out.println("Yes correct dates");
-        }
-
+        //does not need toggled as will not be triggered
         if (caseDetails.getData().get("hearingDateConfirmation").equals("NO")) {
-            System.out.println("no wrong dates");
-
-
-            if (isNotEmpty(caseData.getHearingEndDateConfirmation()) && isNotEmpty(caseData
-                .getHearingStartDateConfirmation())) {
-                System.out.println("both dates are incorrect");
-                caseDetails.getData().put("hearingStartDate", caseData.getHearingStartDateConfirmation());
-                caseDetails.getData().put("hearingEndDate", caseData.getHearingEndDateConfirmation());
-            } else if (isNotEmpty(caseData.getHearingStartDateConfirmation())) {
-                System.out.println("start dates is incorrect");
-                caseDetails.getData().put("hearingStartDate", caseData.getHearingStartDateConfirmation());
-            } else if (isNotEmpty(caseData.getHearingEndDateConfirmation())) {
-                System.out.println("end date is incorrect");
-                caseDetails.getData().put("hearingEndDate", caseData.getHearingEndDateConfirmation());
-            }
+            caseDetails.getData().putAll(hearingsService.changeHearingDateToDateAddedOnConfirmationPage(caseData));
         }
 
         return respond(caseDetails);
