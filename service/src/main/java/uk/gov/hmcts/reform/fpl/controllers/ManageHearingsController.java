@@ -160,7 +160,6 @@ public class ManageHearingsController extends CallbackController {
 
         List<String> errors;
 
-        //have done like this as not null / empty wasn't working
         if (caseData.getHearingOption() == NEW_HEARING || isEmpty(caseData.getHearingOption())) {
             errors = validateGroupService.validateGroup(caseData, PastHearingDatesGroup.class);
         } else {
