@@ -2,14 +2,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingDateConfirmation",
-    "ListElementCode": "YES",
+    "ListElementCode": "Yes",
     "ListElement": "Yes",
     "DisplayOrder": 1
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingDateConfirmation",
-    "ListElementCode": "NO",
+    "ListElementCode": "No",
     "ListElement": "No, change the date",
     "DisplayOrder": 2
   }

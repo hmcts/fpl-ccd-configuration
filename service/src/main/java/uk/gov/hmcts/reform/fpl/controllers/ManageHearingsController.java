@@ -24,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.PastHearingDatesGroup;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -162,20 +161,20 @@ public class ManageHearingsController extends CallbackController {
         List<String> errors;
 
         //have done like this as not null / empty wasn't working
-        if (caseData.getHearingOption() == EDIT_HEARING || caseData.getHearingOption() == ADJOURN_HEARING
-            || caseData.getHearingOption() == VACATE_HEARING) {
-            errors = validateGroupService.validateGroup(caseData, HearingDatesGroup.class);
-            return respond(caseDetails, errors);
-        } else {
+        if (caseData.getHearingOption() == NEW_HEARING || isEmpty(caseData.getHearingOption())) {
             errors = validateGroupService.validateGroup(caseData, PastHearingDatesGroup.class);
-            if (caseData.getHearingEndDate().isBefore(LocalDateTime.now()) || caseData.getHearingStartDate().isBefore(LocalDateTime.now()))
-            {
-                caseDetails.getData().put("pageShow", "YES");
-                caseDetails.getData().putAll(hearingsService.populateFieldsWhenPastDateAdded(caseData));
-            }
-
-            return respond(caseDetails, errors);
+        } else {
+            errors = validateGroupService.validateGroup(caseData, HearingDatesGroup.class);
         }
+
+        if (caseData.isHearingDateInPast())
+        {
+            caseDetails.getData().put("pageShow", YES.getValue());
+            caseDetails.getData().putAll(hearingsService.populateFieldsWhenPastDateAdded(caseData));
+        }
+
+        return respond(caseDetails, errors);
+
     }
 
     @PostMapping("/hearing-in-past/mid-event")
@@ -184,7 +183,7 @@ public class ManageHearingsController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         //does not need toggled as will not be triggered
-        if (caseDetails.getData().get("hearingDateConfirmation").equals("NO")) {
+        if (caseDetails.getData().get("hearingDateConfirmation").equals(NO.getValue())) {
             caseDetails.getData().putAll(hearingsService.changeHearingDateToDateAddedOnConfirmationPage(caseData));
         }
 

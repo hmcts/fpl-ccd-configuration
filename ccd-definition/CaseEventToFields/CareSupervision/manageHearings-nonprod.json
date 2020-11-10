@@ -80,7 +80,7 @@
     "PageID": "ConfirmHearingDetails",
     "ShowSummaryChangeOption": "N",
     "PageDisplayOrder": 6,
-    "PageShowCondition": "pageShow=\"YES\" AND hearingOption!=\"ADJOURN_HEARING\" AND hearingOption!=\"EDIT_HEARING\"",
+    "PageShowCondition": "pageShow=\"Yes\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-hearings/hearing-in-past/mid-event"
   },
   {
@@ -93,7 +93,7 @@
     "PageID": "ConfirmHearingDetails",
     "ShowSummaryChangeOption": "N",
     "PageDisplayOrder": 6,
-    "FieldShowCondition": "showStartDateLabel=\"YES\""
+    "FieldShowCondition": "showStartDateLabel=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -105,7 +105,7 @@
     "PageID": "ConfirmHearingDetails",
     "ShowSummaryChangeOption": "N",
     "PageDisplayOrder": 6,
-    "FieldShowCondition": "showEndDateLabel=\"YES\""
+    "FieldShowCondition": "showEndDateLabel=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -129,7 +129,7 @@
     "PageID": "ConfirmHearingDetails",
     "ShowSummaryChangeOption": "N",
     "PageDisplayOrder": 6,
-    "FieldShowCondition": "hearingDateConfirmation = \"NO\" AND showEndDateLabel=\"YES\""
+    "FieldShowCondition": "hearingDateConfirmation = \"No\" AND showEndDateLabel=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -141,6 +141,6 @@
     "PageID": "ConfirmHearingDetails",
     "ShowSummaryChangeOption": "N",
     "PageDisplayOrder": 6,
-    "FieldShowCondition": "hearingDateConfirmation = \"NO\" AND showStartDateLabel=\"YES\""
+    "FieldShowCondition": "hearingDateConfirmation = \"No\" AND showStartDateLabel=\"Yes\""
   }
 ]

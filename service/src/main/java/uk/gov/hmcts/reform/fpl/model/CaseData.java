@@ -631,4 +631,9 @@ public class CaseData {
     private final LocalDateTime hearingEndDateConfirmation;
     private final LocalDateTime hearingStartDateConfirmation;
 
+    @JsonIgnore
+    public boolean isHearingDateInPast() {
+        return hearingEndDate.isBefore(LocalDateTime.now()) || hearingStartDate.isBefore(LocalDateTime.now());
+    }
+
 }

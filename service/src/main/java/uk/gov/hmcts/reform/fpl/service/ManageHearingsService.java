@@ -258,16 +258,16 @@ public class ManageHearingsService {
                 .getHearingStartDate(), DATE_TIME));
             data.put("hearingEndDateLabel", formatLocalDateTimeBaseUsingFormat(caseData
                 .getHearingEndDate(), DATE_TIME));
-            data.put("showStartDateLabel", "YES");
-            data.put("showEndDateLabel", "YES");
+            data.put("showStartDateLabel", YES.getValue());
+            data.put("showEndDateLabel", YES.getValue());
         } else if (caseData.getHearingStartDate().isBefore(LocalDateTime.now())) {
             data.put("hearingStartDateLabel", formatLocalDateTimeBaseUsingFormat(caseData
                 .getHearingStartDate(), DATE_TIME));
-            data.put("showStartDateLabel", "YES");
+            data.put("showStartDateLabel", YES.getValue());
         } else if (caseData.getHearingEndDate().isBefore(LocalDateTime.now())) {
             data.put("hearingEndDateLabel", formatLocalDateTimeBaseUsingFormat(caseData
                 .getHearingEndDate(), DATE_TIME));
-            data.put("showEndDateLabel", "YES");
+            data.put("showEndDateLabel", YES.getValue());
         }
 
         return data;

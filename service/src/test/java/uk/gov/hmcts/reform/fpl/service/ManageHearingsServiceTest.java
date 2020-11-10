@@ -56,6 +56,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.VACATE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
@@ -439,7 +440,7 @@ class ManageHearingsServiceTest {
 
         final HearingBooking hearingToUpdate = randomHearing();
         final CaseData caseData = CaseData.builder()
-            .sendNoticeOfHearing(YesNo.YES.getValue())
+            .sendNoticeOfHearing(YES.getValue())
             .build();
 
         given(noticeOfHearingGenerationService.getTemplateData(caseData, hearingToUpdate))
@@ -517,7 +518,7 @@ class ManageHearingsServiceTest {
             Map<String, Object> startDateFields = service.populateFieldsWhenPastDateAdded(caseData);
 
             assertThat(startDateFields).hasSize(2);
-            assertThat(startDateFields.get("showStartDateLabel")).isEqualTo("YES");
+            assertThat(startDateFields.get("showStartDateLabel")).isEqualTo("Yes");
             assertThat(startDateFields.get("hearingStartDateLabel")).isEqualTo("15 March 2010, 8:20pm");
         }
 
@@ -531,7 +532,7 @@ class ManageHearingsServiceTest {
             Map<String, Object> startDateFields = service.populateFieldsWhenPastDateAdded(caseData);
 
             assertThat(startDateFields).hasSize(2);
-            assertThat(startDateFields.get("showEndDateLabel")).isEqualTo("YES");
+            assertThat(startDateFields.get("showEndDateLabel")).isEqualTo("Yes");
             assertThat(startDateFields.get("hearingEndDateLabel")).isEqualTo("15 March 2010, 8:20pm");
         }
 
@@ -545,9 +546,9 @@ class ManageHearingsServiceTest {
             Map<String, Object> hearingDateFields = service.populateFieldsWhenPastDateAdded(caseData);
 
             assertThat(hearingDateFields).hasSize(4);
-            assertThat(hearingDateFields.get("showStartDateLabel")).isEqualTo("YES");
+            assertThat(hearingDateFields.get("showStartDateLabel")).isEqualTo("Yes");
             assertThat(hearingDateFields.get("hearingStartDateLabel")).isEqualTo("16 April 2011, 8:20pm");
-            assertThat(hearingDateFields.get("showEndDateLabel")).isEqualTo("YES");
+            assertThat(hearingDateFields.get("showEndDateLabel")).isEqualTo("Yes");
             assertThat(hearingDateFields.get("hearingEndDateLabel")).isEqualTo("15 March 2010, 8:20pm");
         }
 
