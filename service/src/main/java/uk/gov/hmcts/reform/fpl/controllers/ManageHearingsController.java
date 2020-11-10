@@ -22,7 +22,9 @@ import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.PastHearingDatesGroup;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -159,43 +161,43 @@ public class ManageHearingsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        List<String> errors = validateGroupService.validateGroup(caseData, HearingDatesGroup.class);
+        List<String> errors;
 
         //have done like this as not null / empty wasn't working
         if (caseData.getHearingOption() == EDIT_HEARING || caseData.getHearingOption() == ADJOURN_HEARING
             || caseData.getHearingOption() == VACATE_HEARING) {
+            errors = validateGroupService.validateGroup(caseData, HearingDatesGroup.class);
             return respond(caseDetails, errors);
         } else {
-            if (!errors.isEmpty()) {
-                populateFieldsForPastDateAdded(caseDetails, errors);
+            errors = validateGroupService.validateGroup(caseData, PastHearingDatesGroup.class);
+            if (caseData.getHearingEndDate().isBefore(LocalDateTime.now()) || caseData.getHearingStartDate().isBefore(LocalDateTime.now()))
+            {
+                populateFieldsIfPastDateAdded(caseDetails);
             }
-        }
 
-        return respond(caseDetails);
+            return respond(caseDetails, errors);
+        }
     }
 
     //MOVE THIS TO HEARING SERVICE
-    private void populateFieldsForPastDateAdded(CaseDetails caseDetails, List<String> errors) {
+    private void populateFieldsIfPastDateAdded(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
 
         caseDetails.getData().put("pageShow", "YES");
 
-        String startDateError = "Enter a start date in the future";
-        String endDateError = "Enter an end date in the future";
-        List<String> expectedErrors = List.of(startDateError, endDateError);
+        if (caseData.getHearingEndDate().isBefore(LocalDateTime.now()) && caseData.getHearingStartDate().isBefore(LocalDateTime.now())){
 
-        if (errors.containsAll(expectedErrors)) {
             caseDetails.getData().put("hearingStartDateLabel", formatLocalDateTimeBaseUsingFormat(caseData
                 .getHearingStartDate(), DATE_TIME));
             caseDetails.getData().put("hearingEndDateLabel", formatLocalDateTimeBaseUsingFormat(caseData
                 .getHearingEndDate(), DATE_TIME));
             caseDetails.getData().put("showStartDateLabel", "YES");
             caseDetails.getData().put("showEndDateLabel", "YES");
-        } else if (errors.contains(startDateError) && !errors.contains(endDateError)) {
+        } else if (caseData.getHearingStartDate().isBefore(LocalDateTime.now())) {
             caseDetails.getData().put("hearingStartDateLabel", formatLocalDateTimeBaseUsingFormat(caseData
                 .getHearingStartDate(), DATE_TIME));
             caseDetails.getData().put("showStartDateLabel", "YES");
-        } else {
+        } else if (caseData.getHearingEndDate().isBefore(LocalDateTime.now())) {
             caseDetails.getData().put("hearingEndDateLabel", formatLocalDateTimeBaseUsingFormat(caseData
                 .getHearingEndDate(), DATE_TIME));
             caseDetails.getData().put("showEndDateLabel", "YES");
