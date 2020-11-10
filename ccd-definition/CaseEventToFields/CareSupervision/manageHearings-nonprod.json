@@ -9,7 +9,7 @@
     "ShowSummaryChangeOption": "Y",
     "PageID": "SelectVacatedReason",
     "PageDisplayOrder": 4,
-    "PageShowCondition": "hearingOption=\"VACATE_HEARING\" AND hearingReListOption=\"RE_LIST_NOW\""
+    "PageShowCondition": "hearingOption=\"VACATE_HEARING\" AND hearingReListOption!=\"NONE\""
   },
   {
     "LiveFrom": "01/01/2017",
