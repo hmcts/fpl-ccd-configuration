@@ -32,7 +32,7 @@ Scenario('local authority deletes application', async ({I, caseViewPage, deleteA
   await caseViewPage.goToNewActions(config.applicationActions.deleteApplication);
   deleteApplicationEventPage.tickDeletionConsent();
   await I.goToNextPage();
-  await I.retryUntilExists(() => I.click('Delete application'), '.search-block');
+  await I.goToNextPage2(() => I.click('Delete application'));
   await caseListPage.searchForCasesWithName(caseName);
   I.see('No cases found.');
 });

@@ -15,12 +15,12 @@ module.exports = {
   continueButton: 'Continue',
 
   async populateForm(caseName) {
-    await I.retryUntilExists(() => {
+    await I.goToNextPage2(() => {
       I.selectOption(this.fields.jurisdiction, config.definition.jurisdictionFullDesc);
       I.selectOption(this.fields.caseType, config.definition.caseTypeFullDesc);
       I.selectOption(this.fields.event, 'Start application');
       I.click(this.startButton);
-    }, this.enterCaseNamePage.caseName);
+    });
     this.enterCaseName(caseName);
   },
 

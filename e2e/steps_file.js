@@ -73,7 +73,7 @@ module.exports = function () {
 
     async logInAndCreateCase(user, caseName) {
       await this.signIn(user);
-      await this.retryUntilExists(() => this.click('Create case'), `#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
+      await this.goToNextPage2(() => this.click('Create case'));
       await openApplicationEventPage.populateForm(caseName);
       await this.completeEvent('Save and continue');
       this.waitForElement('.markdown h2', 5);
@@ -304,6 +304,30 @@ module.exports = function () {
         }
       }
     },
+
+
+    async goToNextPage2(action, maxNumberOfTries = maxRetries){
+      const currentUrl = await this.grabCurrentUrl();
+      output.print('XXXX BASE URL ' + currentUrl);
+      await action();
+
+      for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
+        let x= await this.grabCurrentUrl();
+        if(x !== currentUrl){
+          output.print('XXX BREAK '+ x +(currentUrl));
+          break;
+        } else {
+          this.wait(1);
+          let y= await this.grabCurrentUrl();
+          if(y === currentUrl){
+            output.print('XXX ZZZZ '+ y +(currentUrl));
+            await action();
+          }
+        }
+      }
+    },
+
+
     async getActiveElementIndex() {
       return await this.grabNumberOfVisibleElements('//button[text()="Remove"]') - 1;
     },

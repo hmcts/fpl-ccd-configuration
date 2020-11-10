@@ -30,10 +30,10 @@ module.exports = {
 
   async goToNewActions(actionSelected) {
     I.waitForElement(this.actionsDropdown);
-    await I.retryUntilExists(() => {
+    await I.goToNextPage2(() => {
       I.selectOption(this.actionsDropdown, actionSelected);
       I.click(this.goButton);
-    }, 'ccd-case-event-trigger');
+    });
   },
 
   checkActionsAreAvailable(actions) {
@@ -88,9 +88,7 @@ module.exports = {
   },
 
   async startTask(task) {
-    await I.retryUntilExists(() => {
-      I.click(task);
-    }, 'ccd-case-event-trigger');
+    await I.goToNextPage2(() => I.click(task));
   },
 
   checkTabIsNotPresent(tab) {
