@@ -42,6 +42,14 @@ public class JudgeAndLegalAdvisorHelper {
         return judgeForTabView;
     }
 
+    public static String getHearingJudge(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+        if (!judgeAndLegalAdvisor.isUsingAllocatedJudge()) {
+            return formatJudgeTitleAndName(judgeAndLegalAdvisor);
+        } else {
+            return "";
+        }
+    }
+
     private static JudgeAndLegalAdvisor migrateJudgeAndLegalAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor,
                                                                     Judge allocatedJudge) {
         return JudgeAndLegalAdvisor.builder()

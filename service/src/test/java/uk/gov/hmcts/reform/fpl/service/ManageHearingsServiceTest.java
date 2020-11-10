@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -90,9 +89,6 @@ class ManageHearingsServiceTest {
 
     @Mock
     private UploadDocumentService uploadDocumentService;
-
-    @Mock
-    private ObjectMapper objectMapper;
 
     @Mock
     private IdentityService identityService;
@@ -311,6 +307,9 @@ class ManageHearingsServiceTest {
             .venue(VENUE)
             .startDate(startDate)
             .endDate(endDate)
+            .allocatedJudge("")
+            .hearingJudge("Her Honour Judge Judy")
+            .legalAdvisor(testJudgeAndLegalAdviser().getLegalAdvisorName())
             .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
             .additionalNotes("notes")
             .build();
@@ -343,6 +342,9 @@ class ManageHearingsServiceTest {
             .venue(VENUE)
             .startDate(startDate)
             .endDate(endDate)
+            .allocatedJudge("")
+            .hearingJudge("Her Honour Judge Judy")
+            .legalAdvisor(testJudgeAndLegalAdviser().getLegalAdvisorName())
             .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
             .additionalNotes("notes")
             .previousHearingVenue(previousHearingVenue)
@@ -378,6 +380,9 @@ class ManageHearingsServiceTest {
             .customPreviousVenue("Custom House, Custom Street")
             .startDate(startDate)
             .endDate(endDate)
+            .allocatedJudge("")
+            .hearingJudge("Her Honour Judge Judy")
+            .legalAdvisor(testJudgeAndLegalAdviser().getLegalAdvisorName())
             .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
             .additionalNotes("notes")
             .previousHearingVenue(previousHearingVenue)
