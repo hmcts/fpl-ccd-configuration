@@ -29,10 +29,15 @@ module.exports = {
   caseTitle: '.case-title .markdown',
 
   async goToNewActions(actionSelected) {
+    const currentUrl = await I.grabCurrentUrl();
     I.waitForElement(this.actionsDropdown);
-    await I.retryUntilExists(() => {
-      I.selectOption(this.actionsDropdown, actionSelected);
-      I.click(this.goButton);
+    await I.retryUntilExists(async () => {
+      if(await I.grabCurrentUrl() == currentUrl){
+        I.selectOption(this.actionsDropdown, actionSelected);
+        I.click(this.goButton);
+      }else{
+        I.wait(3);
+      }
     }, 'ccd-case-event-trigger');
   },
 

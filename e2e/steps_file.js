@@ -15,7 +15,7 @@ const normalizeCaseId = caseId => caseId.toString().replace(/\D/g, '');
 const baseUrl = process.env.URL || 'http://localhost:3333';
 const signedInSelector = 'exui-header';
 const signedOutSelector = '#global-header';
-const maxRetries = 5;
+const maxRetries = 10;
 let currentUser = {};
 
 'use strict';
@@ -320,20 +320,23 @@ module.exports = function () {
      */
     async retryUntilExists(action, locator, maxNumberOfTries = maxRetries) {
       for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
-        output.log(`retryUntilExists(${locator}): starting try #${tryNumber}`);
+        output.print(`retryUntilExists(${locator}): starting try #${tryNumber}`);
         if (tryNumber > 1 && await this.hasSelector(locator)) {
-          output.log(`retryUntilExists(${locator}): element found before try #${tryNumber} was executed`);
+          output.print(`retryUntilExists(${locator}): element found before try #${tryNumber} was executed`);
           break;
         }
         try {
-          await action();
+          if (await this.waitForSelector(locator) != null) {
+            await action();
+          }
         } catch (error) {
-          output.error(error);
+          output.print('XXXXXXXXXXXXX '+error);
         }
         if (await this.waitForSelector(locator) != null) {
-          output.log(`retryUntilExists(${locator}): element found after try #${tryNumber} was executed`);
+          output.print(`retryUntilExists(${locator}): element found after try #${tryNumber} was executed`);
           break;
         } else {
+          this.wait(3);
           output.print(`retryUntilExists(${locator}): element not found after try #${tryNumber} was executed`);
         }
         if (tryNumber === maxNumberOfTries) {
