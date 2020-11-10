@@ -1,5 +1,6 @@
 const { I } = inject();
 const assert = require('assert');
+const output = require('codeceptjs').output;
 
 module.exports = {
 
@@ -29,10 +30,17 @@ module.exports = {
   caseTitle: '.case-title .markdown',
 
   async goToNewActions(actionSelected) {
-    I.waitForElement(this.actionsDropdown);
-    await I.retryUntilExists(() => {
-      I.selectOption(this.actionsDropdown, actionSelected);
-      I.click(this.goButton);
+    await I.waitForElement(this.actionsDropdown);
+    const currentUrl = await I.grabCurrentUrl();
+    await I.retryUntilExists(async () => {
+      let newUrl = await I.grabCurrentUrl();
+      if(newUrl === currentUrl) {
+        output.print('URL NOT changed ' + newUrl +' -> ' + currentUrl);
+        I.selectOption(this.actionsDropdown, actionSelected);
+        I.click(this.goButton);
+      } else {
+        output.print('URL changed ' + newUrl +' -> ' + currentUrl);
+      }
     }, 'ccd-case-event-trigger');
   },
 

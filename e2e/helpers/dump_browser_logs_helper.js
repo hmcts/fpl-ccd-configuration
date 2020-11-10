@@ -39,5 +39,8 @@ module.exports = class HooksHelpers extends Helper {
     if (logs.length > 0) {
       fs.writeFileSync(`${buildOutputFileName(test)}.browser.log`, stringify(logs));
     }
+
+    const source = await this.helpers['Puppeteer'].grabSource();
+    fs.writeFileSync(`${buildOutputFileName(test)}.browser.html`, source);
   }
 };
