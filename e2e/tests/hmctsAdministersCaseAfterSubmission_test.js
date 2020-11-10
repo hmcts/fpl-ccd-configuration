@@ -280,7 +280,7 @@ Scenario('HMCTS admin uploads further hearing evidence documents', async ({I, ca
 }).retry(1); // async send letters call in submitted of previous event
 
 
-Scenario('HMCTS admin adjourn and re-list hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
+Scenario('HMCTS admin adjourns and re-lists a hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
   const reListedHearingJudgeName = 'Brown';
 
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
@@ -347,6 +347,50 @@ Scenario('HMCTS admin vacates and re-lists a hearing', async ({I, caseViewPage, 
   caseViewPage.selectTab(caseViewPage.tabs.documents);
 
   I.seeInTab(['Further evidence documents 2', 'Hearing'], 'Case management hearing, 1 January 2060');
+});
+
+Scenario('HMCTS admin cancels and re-lists hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
+  await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
+  await manageHearingsEventPage.selectVacateHearing('Case management hearing, 1 January 2060');
+  await I.goToNextPage();
+  manageHearingsEventPage.selectCancellationAction('Yes - but I do not have the new date yet');
+  await I.goToNextPage();
+  manageHearingsEventPage.selectCancellationReasonType('Other lawyers');
+  manageHearingsEventPage.selectCancellationReason('No key issue analysis');
+  await I.completeEvent('Save and continue');
+
+  caseViewPage.selectTab(caseViewPage.tabs.hearings);
+  I.seeInTab(['Adjourned or vacated hearing 3', 'Status'], 'Vacated - to be re-listed');
+
+  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  I.seeInTab(['Further evidence documents 2', 'Hearing'], 'Case management hearing, 1 January 2060 - vacated');
+
+  await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
+  await manageHearingsEventPage.selectReListHearing('Case management hearing, 1 January 2060 - vacated');
+  await I.goToNextPage();
+  await manageHearingsEventPage.enterHearingDetails(hearingDetails[2]);
+  await I.goToNextPage();
+  await I.goToNextPage();
+  await manageHearingsEventPage.dontSendNoticeOfHearing();
+  await I.completeEvent('Save and continue');
+
+  caseViewPage.selectTab(caseViewPage.tabs.hearings);
+  I.seeInTab(['Hearing 2', 'Type of hearing'], hearingDetails[1].caseManagement);
+  I.seeInTab(['Hearing 2', 'Venue'], hearingDetails[1].venue);
+  I.seeInTab(['Hearing 2', 'Venue address', 'Building and Street'], hearingDetails[1].venueCustomAddress.buildingAndStreet.lineOne);
+  I.seeInTab(['Hearing 2', 'Venue address', 'Address Line 2'], hearingDetails[1].venueCustomAddress.buildingAndStreet.lineTwo);
+  I.seeInTab(['Hearing 2', 'Venue address', 'Address Line 3'], hearingDetails[1].venueCustomAddress.buildingAndStreet.lineThree);
+  I.seeInTab(['Hearing 2', 'Venue address', 'Town or City'], hearingDetails[1].venueCustomAddress.town);
+  I.seeInTab(['Hearing 2', 'Venue address', 'Postcode/Zipcode'], hearingDetails[1].venueCustomAddress.postcode);
+  I.seeInTab(['Hearing 2', 'Venue address', 'Country'], hearingDetails[1].venueCustomAddress.country);
+  I.seeInTab(['Hearing 2', 'Start date and time'], formatHearingTime(hearingDetails[2].startDate));
+  I.seeInTab(['Hearing 2', 'End date and time'], formatHearingTime(hearingDetails[2].endDate));
+  I.seeInTab(['Hearing 2', 'Allocated judge or magistrate'], 'Her Honour Judge Moley');
+
+  I.seeInTab(['Adjourned or vacated hearing 2', 'Status'], 'Vacated');
+
+  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  I.seeInTab(['Further evidence documents 2', 'Hearing'], 'Case management hearing, 11 January 2060');
 });
 
 Scenario('HMCTS admin adds past hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
