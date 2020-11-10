@@ -239,7 +239,15 @@ public class ManageHearingsService {
             "futureAndTodayHearingDateList",
             "pastAndTodayHearingDateListInfo",
             "futureAndTodayHearingDateListInfo",
-            "hearingReListOption");
+            "hearingReListOption",
+            "hearingStartDateLabel",
+            "pageShow",
+            "hearingEndDateLabel",
+            "hearingDateConfirmation",
+            "hearingStartDateConfirmation",
+            "hearingEndDateConfirmation",
+            "showStartDateLabel",
+            "showEndDateLabel");
     }
 
     public Object getSelectedDynamicListType(CaseData caseData) {

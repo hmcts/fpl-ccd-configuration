@@ -181,11 +181,9 @@ public class ManageHearingsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        //does not need toggled as will not be triggered
         if (caseDetails.getData().get("hearingDateConfirmation").equals(NO.getValue())) {
             caseDetails.getData().putAll(hearingsService.changeHearingDateToDateAddedOnConfirmationPage(caseData));
         }
-
         return respond(caseDetails);
     }
 
@@ -250,15 +248,6 @@ public class ManageHearingsController extends CallbackController {
         data.putIfNotEmpty(HEARING_DETAILS_KEY, caseData.getHearingDetails());
 
         data.keySet().removeAll(hearingsService.caseFieldsToBeRemoved());
-
-        data.remove("hearingStartDateLabel");
-        data.remove("pageShow");
-        data.remove("hearingEndDateLabel");
-        data.remove("hearingDateConfirmation");
-        data.remove("hearingStartDateConfirmation");
-        data.remove("hearingEndDateConfirmation");
-        data.remove("showStartDateLabel");
-        data.remove("showEndDateLabel");
 
         return respond(data);
     }
