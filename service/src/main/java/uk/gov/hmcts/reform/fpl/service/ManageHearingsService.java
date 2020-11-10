@@ -238,7 +238,7 @@ public class ManageHearingsService {
             .startDate(caseData.getHearingStartDate())
             .endDate(caseData.getHearingEndDate())
             .allocatedJudge(caseData.getAllocatedJudge() != null
-                ? formatJudgeTitleAndName(caseData.getAllocatedJudge().toJudgeAndLegalAdvisor()) : "")
+                ? formatJudgeTitleAndName(caseData.getAllocatedJudge().toJudgeAndLegalAdvisor()) : null)
             .hearingJudge(getHearingJudge(caseData.getJudgeAndLegalAdvisor()))
             .legalAdvisor(getLegalAdvisorName(caseData.getJudgeAndLegalAdvisor()))
             .judgeAndLegalAdvisor(getJudgeForTabView(caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()))
@@ -271,7 +271,7 @@ public class ManageHearingsService {
             .startDate(caseData.getHearingStartDate())
             .endDate(caseData.getHearingEndDate())
             .allocatedJudge(caseData.getAllocatedJudge() != null
-                ? formatJudgeTitleAndName(caseData.getAllocatedJudge().toJudgeAndLegalAdvisor()) : "")
+                ? formatJudgeTitleAndName(caseData.getAllocatedJudge().toJudgeAndLegalAdvisor()) : null)
             .hearingJudge(getHearingJudge(caseData.getJudgeAndLegalAdvisor()))
             .legalAdvisor(getLegalAdvisorName(caseData.getJudgeAndLegalAdvisor()))
             .judgeAndLegalAdvisor(getJudgeForTabView(caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()))
