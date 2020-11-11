@@ -51,7 +51,21 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sharedDraftCMODocument",
+    "UserRole": "caseworker-publiclaw-magistrate",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderAction",
+    "UserRole": "caseworker-publiclaw-magistrate",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "allPartiesLabelCMO",
     "UserRole": "caseworker-publiclaw-magistrate",
     "CRUD": "R"
   },
@@ -66,6 +80,20 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allPartiesCustomCMO",
+    "UserRole": "caseworker-publiclaw-magistrate",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "localAuthorityDirectionsLabelCMO",
+    "UserRole": "caseworker-publiclaw-magistrate",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "allPartiesPrecedentLabelCMO",
     "UserRole": "caseworker-publiclaw-magistrate",
     "CRUD": "R"
   },
@@ -114,6 +142,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "cafcassDirectionsLabelCMO",
+    "UserRole": "caseworker-publiclaw-magistrate",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "cafcassDirectionsCustom",
     "UserRole": "caseworker-publiclaw-magistrate",
     "CRUD": "R"
@@ -128,6 +163,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "otherPartiesDirectionLabelCMO",
+    "UserRole": "caseworker-publiclaw-magistrate",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "otherPartiesDirectionsCustom",
     "UserRole": "caseworker-publiclaw-magistrate",
     "CRUD": "R"
@@ -136,6 +178,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "otherPartiesDirectionsCustomCMO",
+    "UserRole": "caseworker-publiclaw-magistrate",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "courtDirectionsLabelCMO",
     "UserRole": "caseworker-publiclaw-magistrate",
     "CRUD": "R"
   },
@@ -163,6 +212,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "addRecitalLabel",
+    "UserRole": "caseworker-publiclaw-magistrate",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "recitals",
     "UserRole": "caseworker-publiclaw-magistrate",
     "CRUD": "R"
@@ -177,6 +233,20 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "nextHearingDateHeading",
+    "UserRole": "caseworker-publiclaw-magistrate",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "nextHearingDateHintText",
+    "UserRole": "caseworker-publiclaw-magistrate",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "nextHearingDateList",
     "UserRole": "caseworker-publiclaw-magistrate",
     "CRUD": "R"
@@ -184,7 +254,35 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "nextHearing",
+    "UserRole": "caseworker-publiclaw-magistrate",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "servedCaseManagementOrders",
+    "UserRole": "caseworker-publiclaw-magistrate",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "actionCMOPlaceholderHeading",
+    "UserRole": "caseworker-publiclaw-magistrate",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "actionCMOPlaceholderHint",
+    "UserRole": "caseworker-publiclaw-magistrate",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "cmoEventId",
     "UserRole": "caseworker-publiclaw-magistrate",
     "CRUD": "R"
   },
