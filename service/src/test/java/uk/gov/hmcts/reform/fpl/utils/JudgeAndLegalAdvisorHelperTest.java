@@ -13,6 +13,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getHearingJudge;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.prepareJudgeFields;
@@ -204,6 +205,28 @@ class JudgeAndLegalAdvisorHelperTest {
 
         judgeAndLegalAdvisor = prepareJudgeFields(judgeAndLegalAdvisor, allocatedJudge);
         assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isEqualTo("No");
+    }
+
+    @Test
+    void shouldReturnHearingJudgeWhenAllocatedJudgeNotBeingUsed() {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+            .judgeTitle(HIS_HONOUR_JUDGE)
+            .judgeLastName("Hastings")
+            .useAllocatedJudge("No")
+            .build();
+
+        assertThat(getHearingJudge(judgeAndLegalAdvisor)).isEqualTo("His Honour Judge Hastings");
+    }
+
+    @Test
+    void shouldReturnNullWhenAllocatedJudgeIsBeingUsed() {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+            .judgeTitle(HIS_HONOUR_JUDGE)
+            .judgeLastName("Hastings")
+            .useAllocatedJudge("Yes")
+            .build();
+
+        assertThat(getHearingJudge(judgeAndLegalAdvisor)).isNull();
     }
 
     private JudgeAndLegalAdvisor buildJudgeAndLegalAdvisor(YesNo useAllocatedJudge) {

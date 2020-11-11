@@ -46,7 +46,7 @@ public class JudgeAndLegalAdvisorHelper {
         if (!judgeAndLegalAdvisor.isUsingAllocatedJudge()) {
             return formatJudgeTitleAndName(judgeAndLegalAdvisor);
         } else {
-            return "";
+            return null;
         }
     }
 
