@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.service.ManageHearingsService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
+import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
 
 import java.util.List;
@@ -31,10 +32,14 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.VACATE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingReListOption.RE_LIST_NOW;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.FUTURE_HEARING_LIST;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DETAILS_KEY;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.PAST_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInGatekeepingState;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -47,8 +52,6 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllo
 public class ManageHearingsController extends CallbackController {
 
     private static final String FIRST_HEARING_FLAG = "firstHearingFlag";
-    private static final String HEARING_DATE_LIST = "hearingDateList";
-    private static final String PAST_HEARING_LIST = "pastAndTodayHearingDateList";
     private static final String SELECTED_HEARING_ID = "selectedHearingId";
     private static final String CANCELLED_HEARING_DETAILS_KEY = "cancelledHearingDetails";
     private static final String HEARING_DOCUMENT_BUNDLE_KEY = "hearingFurtherEvidenceDocuments";
@@ -71,10 +74,7 @@ public class ManageHearingsController extends CallbackController {
         caseDetails.getData().put(FIRST_HEARING_FLAG, (isEmpty(caseData.getHearingDetails()) ? YES : NO).getValue());
 
         if (isNotEmpty(caseData.getHearingDetails())) {
-            caseDetails.getData().put(HEARING_DATE_LIST, hearingsService.asDynamicList(caseData.getFutureHearings()));
-            caseDetails.getData()
-                .put(PAST_HEARING_LIST, hearingsService.asDynamicList(caseData.getPastAndTodayHearings()));
-            caseDetails.getData().put("hasExistingHearings", YES.getValue());
+            caseDetails.getData().putAll(hearingsService.populatePastAndFutureHearingLists(caseData));
         }
 
         return respond(caseDetails);
@@ -84,6 +84,12 @@ public class ManageHearingsController extends CallbackController {
     public CallbackResponse populateExistingDraftHearing(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+
+        List<String> errors = validateGroupService.validateGroup(caseData, HearingBookingGroup.class);
+
+        if (!errors.isEmpty()) {
+            return respond(caseDetails, errors);
+        }
 
         if (NEW_HEARING == caseData.getHearingOption()) {
             caseDetails.getData().putAll(hearingsService.populatePreviousVenueFields(caseData));
@@ -111,6 +117,11 @@ public class ManageHearingsController extends CallbackController {
 
             caseDetails.getData().put(PAST_HEARING_LIST,
                 hearingsService.asDynamicList(caseData.getPastAndTodayHearings(), hearingBookingId));
+        } else if (VACATE_HEARING == caseData.getHearingOption()) {
+            UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData.getFutureAndTodayHearingDateList());
+
+            caseDetails.getData().put(FUTURE_HEARING_LIST,
+                hearingsService.asDynamicList(caseData.getFutureAndTodayHearings(), hearingBookingId));
         }
 
         return respond(caseDetails);
@@ -120,8 +131,8 @@ public class ManageHearingsController extends CallbackController {
     public CallbackResponse reListHearing(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
-
-        UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData.getPastAndTodayHearingDateList());
+        Object dynamicHearingListType = hearingsService.getSelectedDynamicListType(caseData);
+        UUID hearingBookingId = hearingsService.getSelectedHearingId(dynamicHearingListType);
 
         HearingBooking adjournedHearingBooking = hearingsService
             .getHearingBooking(hearingBookingId, caseData.getHearingDetails());
@@ -179,6 +190,21 @@ public class ManageHearingsController extends CallbackController {
                 data.put(SELECTED_HEARING_ID, reListedHearingId);
             } else {
                 hearingsService.adjournHearing(caseData, adjournedHearingId);
+                data.remove(SELECTED_HEARING_ID);
+            }
+        } else if (VACATE_HEARING == caseData.getHearingOption()) {
+            UUID vacatedHearingId = hearingsService.getSelectedHearingId(caseData.getFutureAndTodayHearingDateList());
+
+            if (caseData.getHearingReListOption() == RE_LIST_NOW) {
+                final HearingBooking reListedHearing = hearingsService.getCurrentHearingBooking(caseData);
+                final UUID reListedHearingId = hearingsService
+                    .vacateAndReListHearing(caseData, vacatedHearingId, reListedHearing);
+
+                hearingsService.sendNoticeOfHearing(caseData, reListedHearing);
+
+                data.put(SELECTED_HEARING_ID, reListedHearingId);
+            } else {
+                hearingsService.vacateHearing(caseData, vacatedHearingId);
                 data.remove(SELECTED_HEARING_ID);
             }
         } else {

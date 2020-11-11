@@ -82,7 +82,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
-    "ListElementCode": "allocatedJudge",
+    "ListElementCode": "allocatedJudgeLabel",
     "FieldType": "Text",
     "ElementLabel": "Allocated judge or magistrate",
     "SecurityClassification": "Public"
@@ -90,7 +90,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
-    "ListElementCode": "hearingJudge",
+    "ListElementCode": "hearingJudgeLabel",
     "FieldType": "Text",
     "ElementLabel": "Hearing judge or magistrate",
     "SecurityClassification": "Public"
