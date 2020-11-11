@@ -305,7 +305,7 @@ Scenario('HMCTS admin adjourn and re-list hearing', async ({I, caseViewPage, man
   I.seeInTab(['Hearing 2', 'Start date and time'], formatHearingTime(hearingDetails[0].startDate));
   I.seeInTab(['Hearing 2', 'End date and time'], formatHearingTime(hearingDetails[0].endDate));
   I.seeInTab(['Hearing 2', 'Hearing judge or magistrate'], 'Her Honour Judge Brown');
-  I.seeInTab(['Hearing 1', 'Justices\' Legal Adviser\'s full name'], hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
+  I.seeInTab(['Hearing 2', 'Justices\' Legal Adviser\'s full name'], hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
 
   I.seeInTab(['Adjourned or vacated hearing 1', 'Type of hearing'], hearingDetails[0].caseManagement);
   I.seeInTab(['Adjourned or vacated hearing 1', 'Start date and time'], formatHearingTime(hearingStartDate));
