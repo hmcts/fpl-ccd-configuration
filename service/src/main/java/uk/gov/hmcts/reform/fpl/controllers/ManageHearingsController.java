@@ -182,7 +182,8 @@ public class ManageHearingsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        if (featureToggleService.isAddHearingsInPastEnabled() && caseDetails.getData().get("hearingDateConfirmation").equals(NO.getValue())) {
+        if (featureToggleService.isAddHearingsInPastEnabled() && caseDetails.getData().get("hearingDateConfirmation")
+            .equals(NO.getValue())) {
             caseDetails.getData().putAll(hearingsService.changeHearingDateToDateAddedOnConfirmationPage(caseData));
         }
         return respond(caseDetails);
