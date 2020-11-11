@@ -301,9 +301,9 @@ public class ManageHearingsService {
             .venueCustomAddress(caseData.getHearingVenueCustom())
             .startDate(caseData.getHearingStartDate())
             .endDate(caseData.getHearingEndDate())
-            .allocatedJudge(caseData.getAllocatedJudge() != null
+            .allocatedJudgeLabel(caseData.getAllocatedJudge() != null
                 ? formatJudgeTitleAndName(caseData.getAllocatedJudge().toJudgeAndLegalAdvisor()) : null)
-            .hearingJudge(getHearingJudge(caseData.getJudgeAndLegalAdvisor()))
+            .hearingJudgeLabel(getHearingJudge(caseData.getJudgeAndLegalAdvisor()))
             .legalAdvisor(getLegalAdvisorName(caseData.getJudgeAndLegalAdvisor()))
             .judgeAndLegalAdvisor(getJudgeForTabView(caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()))
             .additionalNotes(caseData.getNoticeOfHearingNotes())
@@ -334,9 +334,9 @@ public class ManageHearingsService {
             .customPreviousVenue(customPreviousVenue)
             .startDate(caseData.getHearingStartDate())
             .endDate(caseData.getHearingEndDate())
-            .allocatedJudge(caseData.getAllocatedJudge() != null
+            .allocatedJudgeLabel(caseData.getAllocatedJudge() != null
                 ? formatJudgeTitleAndName(caseData.getAllocatedJudge().toJudgeAndLegalAdvisor()) : null)
-            .hearingJudge(getHearingJudge(caseData.getJudgeAndLegalAdvisor()))
+            .hearingJudgeLabel(getHearingJudge(caseData.getJudgeAndLegalAdvisor()))
             .legalAdvisor(getLegalAdvisorName(caseData.getJudgeAndLegalAdvisor()))
             .judgeAndLegalAdvisor(getJudgeForTabView(caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()))
             .previousHearingVenue(caseData.getPreviousHearingVenue())
