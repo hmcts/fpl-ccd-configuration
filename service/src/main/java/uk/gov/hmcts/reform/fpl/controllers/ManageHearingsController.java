@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.events.AllocateHearingJudgeEvent;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
+import uk.gov.hmcts.reform.fpl.events.TemporaryHearingJudgeAllocationEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
@@ -245,10 +245,10 @@ public class ManageHearingsController extends CallbackController {
                         publishEvent(new SendNoticeOfHearing(caseData, hearingBooking));
                     }
 
-                    if (isAllocatingNewJudgeToHearing(caseData)
-                        && hearingBooking.getJudgeAndLegalAdvisor() != null
-                        && hearingBooking.getJudgeAndLegalAdvisor().getJudgeEmailAddress() != null) {
-                        publishEvent(new AllocateHearingJudgeEvent(caseData, hearingBooking));
+                    if (isNewOrReListedHearing(caseData)
+                        && hasTemporaryJudgeEmail(hearingBooking)
+                        && isTemporaryJudge(caseData.getAllocatedJudge(), hearingBooking)) {
+                        publishEvent(new TemporaryHearingJudgeAllocationEvent(caseData, hearingBooking));
                     }
                 });
         }
@@ -262,7 +262,17 @@ public class ManageHearingsController extends CallbackController {
             .build();
     }
 
-    private boolean isAllocatingNewJudgeToHearing(CaseData caseData) {
+    private boolean isNewOrReListedHearing(CaseData caseData) {
         return NEW_HEARING.equals(caseData.getHearingOption()) || RE_LIST_NOW.equals(caseData.getHearingReListOption());
+    }
+
+    private boolean isTemporaryJudge(Judge allocatedJudge, HearingBooking hearingBooking) {
+        return (allocatedJudge == null
+            || !allocatedJudge.hasEqualJudgeFields(hearingBooking.getJudgeAndLegalAdvisor()));
+    }
+
+    private boolean hasTemporaryJudgeEmail(HearingBooking hearingBooking) {
+        return hearingBooking.getJudgeAndLegalAdvisor() != null
+            && hearingBooking.getJudgeAndLegalAdvisor().getJudgeEmailAddress() != null;
     }
 }

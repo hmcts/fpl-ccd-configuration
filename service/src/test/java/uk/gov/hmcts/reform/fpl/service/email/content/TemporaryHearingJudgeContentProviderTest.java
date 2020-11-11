@@ -5,10 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.notify.hearing.AllocateHearingJudgeTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.hearing.TemporaryHearingJudgeTemplate;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDateTime;
@@ -18,17 +19,20 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
-@ContextConfiguration(classes = {AllocateHearingJudgeContentProvider.class})
-class AllocateHearingJudgeContentProviderTest extends AbstractEmailContentProviderTest {
+@ContextConfiguration(classes = {TemporaryHearingJudgeContentProvider.class})
+class TemporaryHearingJudgeContentProviderTest extends AbstractEmailContentProviderTest {
     private static final LocalDateTime NOW = LocalDateTime.now();
 
     @Autowired
-    private AllocateHearingJudgeContentProvider allocateHearingJudgeContentProvider;
+    private TemporaryHearingJudgeContentProvider temporaryHearingJudgeContentProvider;
 
     @Test
-    void shouldBuildAllocateHearingJudgeTemplateWithExpectedParameters() {
+    void shouldBuildTemporaryHearingJudgeTemplateWithExpectedParameters() {
         CaseData caseData = CaseData.builder()
             .id(12345L)
             .respondents1(List.of(ElementUtils.element(Respondent.builder()
@@ -38,6 +42,10 @@ class AllocateHearingJudgeContentProviderTest extends AbstractEmailContentProvid
                     .build())
                 .build())))
             .familyManCaseNumber("123")
+            .allocatedJudge(Judge.builder()
+                .judgeLastName("Watson")
+                .judgeTitle(HIS_HONOUR_JUDGE)
+                .build())
             .build();
 
         HearingBooking hearingBooking = HearingBooking.builder()
@@ -49,12 +57,12 @@ class AllocateHearingJudgeContentProviderTest extends AbstractEmailContentProvid
                 .build())
             .build();
 
-        assertThat(allocateHearingJudgeContentProvider.buildNotificationParameters(caseData, hearingBooking))
+        assertThat(temporaryHearingJudgeContentProvider.buildNotificationParameters(caseData, hearingBooking))
             .isEqualToComparingFieldByField(getExpectedNotificationParameters());
     }
 
     @Test
-    void shouldBuildAllocateHearingJudgeTemplateCalloutWithPartialParameters() {
+    void shouldBuildPartialTemporaryHearingJudgeTemplateWhenMissingOptionalCaseData() {
         CaseData caseData = CaseData.builder()
             .id(12345L)
             .familyManCaseNumber("123")
@@ -69,25 +77,32 @@ class AllocateHearingJudgeContentProviderTest extends AbstractEmailContentProvid
                 .build())
             .build();
 
-        AllocateHearingJudgeTemplate partiallyCompleteTemplate =
-            allocateHearingJudgeContentProvider.buildNotificationParameters(caseData, hearingBooking);
+        TemporaryHearingJudgeTemplate partiallyCompleteTemplate =
+            temporaryHearingJudgeContentProvider.buildNotificationParameters(caseData, hearingBooking);
 
         String hearingStartDate = formatLocalDateToString(NOW.toLocalDate(), FormatStyle.MEDIUM);
 
         assertThat(partiallyCompleteTemplate.getCallout()).isEqualTo(
             String.format("123, hearing %s", hearingStartDate)
         );
+
+        assertThat(partiallyCompleteTemplate.getHasAllocatedJudge()).isEqualTo(NO.getValue());
+        assertThat(partiallyCompleteTemplate.getAllocatedJudgeName()).isNull();
+        assertThat(partiallyCompleteTemplate.getAllocatedJudgeTitle()).isNull();
     }
 
-    private AllocateHearingJudgeTemplate getExpectedNotificationParameters() {
-        AllocateHearingJudgeTemplate allocatedJudgeTemplate = new AllocateHearingJudgeTemplate();
+    private TemporaryHearingJudgeTemplate getExpectedNotificationParameters() {
+        TemporaryHearingJudgeTemplate allocatedJudgeTemplate = new TemporaryHearingJudgeTemplate();
         String hearingStartDate = formatLocalDateToString(NOW.toLocalDate(), FormatStyle.MEDIUM);
 
-        allocatedJudgeTemplate.setJudgeTitle("Her Honour Judge");
+        allocatedJudgeTemplate.setJudgeTitle(HER_HONOUR_JUDGE.getLabel());
         allocatedJudgeTemplate.setJudgeName("Davidson");
         allocatedJudgeTemplate.setCaseUrl("http://fake-url/cases/case-details/12345");
         allocatedJudgeTemplate.setCallout(String.format("Watson, 123, hearing %s", hearingStartDate));
         allocatedJudgeTemplate.setHearingType(CASE_MANAGEMENT.getLabel());
+        allocatedJudgeTemplate.setAllocatedJudgeTitle(HIS_HONOUR_JUDGE.getLabel());
+        allocatedJudgeTemplate.setAllocatedJudgeName("Watson");
+        allocatedJudgeTemplate.setHasAllocatedJudge(YES.getValue());
 
         return allocatedJudgeTemplate;
     }

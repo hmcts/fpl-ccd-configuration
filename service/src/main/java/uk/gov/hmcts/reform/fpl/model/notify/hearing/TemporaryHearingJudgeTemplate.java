@@ -6,7 +6,10 @@ import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.SharedAllocatedJudgeT
 
 @Getter
 @Setter
-public final class AllocateHearingJudgeTemplate extends SharedAllocatedJudgeTemplate {
+public final class TemporaryHearingJudgeTemplate extends SharedAllocatedJudgeTemplate {
     private String hearingType;
     private String callout;
+    private String hasAllocatedJudge;
+    private String allocatedJudgeTitle;
+    private String allocatedJudgeName;
 }

@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
@@ -46,10 +47,12 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingReListOption.RE_LIST_NOW;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -205,8 +208,9 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
             eq(NOTIFICATION_REFERENCE));
     }
 
+
     @Test
-    void shouldTriggerAllocateHearingJudgeEventWhenCreatingANewHearingAndJudgeEmailExists()
+    void shouldTriggerTemporaryHearingJudgeEventWhenCreatingANewHearingWithTemporaryJudgeAllocated()
         throws NotificationClientException {
         Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
             .type(CASE_MANAGEMENT)
@@ -225,7 +229,7 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
                 .id(parseLong(CASE_ID))
                 .data(Map.of(
                     "selectedHearingId", hearingWithNotice.getId(),
-                    "hearingOption", HearingOptions.NEW_HEARING,
+                    "hearingOption", NEW_HEARING,
                     "hearingDetails", List.of(hearingWithNotice)
                 ))
                 .state("Submitted")
@@ -242,8 +246,8 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = HearingOptions.class, names = {"ADJOURN_HEARING", "VACATE_HEARING"})
-    void shouldTriggerAllocateHearingJudgeEventWhenReListingAHearing(HearingOptions hearingOptions)
+    @EnumSource(value = HearingOptions.class, names = {"VACATE_HEARING", "ADJOURN_HEARING"})
+    void shouldTriggerTemporaryHearingJudgeEventWhenReListingAHearing(HearingOptions hearingOption)
         throws NotificationClientException {
         Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
             .type(CASE_MANAGEMENT)
@@ -262,7 +266,7 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
                 .id(parseLong(CASE_ID))
                 .data(Map.of(
                     "selectedHearingId", hearingWithNotice.getId(),
-                    "hearingOption", hearingOptions,
+                    "hearingOption", hearingOption,
                     "hearingReListOption", RE_LIST_NOW,
                     "hearingDetails", List.of(hearingWithNotice)
                 ))
@@ -280,8 +284,71 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldNotTriggerAllocateHearingJudgeEventWhenJudgeEmailDoesNotExist()
-        throws NotificationClientException {
+    void shouldNotTriggerTemporaryHearingJudgeEventWhenUsingAllocatedJudge() throws NotificationClientException {
+        Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .startDate(LocalDateTime.of(2050, 5, 20, 13, 00))
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeTitle(HIS_HONOUR_JUDGE)
+                .judgeLastName("Watson")
+                .build())
+            .build());
+
+        CallbackRequest callbackRequest = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .jurisdiction(JURISDICTION)
+                .caseTypeId(CASE_TYPE)
+                .id(parseLong(CASE_ID))
+                .data(Map.of(
+                    "selectedHearingId", hearingWithNotice.getId(),
+                    "hearingOption", NEW_HEARING,
+                    "hearingDetails", List.of(hearingWithNotice),
+                    "allocatedJudge", Judge.builder()
+                        .judgeTitle(HIS_HONOUR_JUDGE)
+                        .judgeLastName("Watson")
+                        .build()
+                ))
+                .state("Submitted")
+                .build())
+            .build();
+
+        postSubmittedEvent(callbackRequest);
+
+        verifyNoInteractions(notificationClient);
+    }
+
+    @Test
+    void shouldNotTriggerTemporaryHearingJudgeEventWhenJudgeEmailDoesNotExist() throws NotificationClientException {
+        Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .startDate(LocalDateTime.of(2050, 5, 20, 13, 00))
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeLastName("Watson")
+                .judgeTitle(HER_HONOUR_JUDGE)
+                .build())
+            .build());
+
+        CallbackRequest callbackRequest = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .jurisdiction(JURISDICTION)
+                .caseTypeId(CASE_TYPE)
+                .id(parseLong(CASE_ID))
+                .data(Map.of(
+                    "selectedHearingId", hearingWithNotice.getId(),
+                    "hearingOption", NEW_HEARING,
+                    "hearingDetails", List.of(hearingWithNotice)
+                ))
+                .state("Submitted")
+                .build())
+            .build();
+
+        postSubmittedEvent(callbackRequest);
+
+        verifyNoInteractions(notificationClient);
+    }
+
+    @Test
+    void shouldNotTriggerTemporaryHearingJudgeEventWhenJudgeDoesNotExist() throws NotificationClientException {
         Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
             .type(CASE_MANAGEMENT)
             .startDate(LocalDateTime.of(2050, 5, 20, 13, 00))
@@ -294,7 +361,7 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
                 .id(parseLong(CASE_ID))
                 .data(Map.of(
                     "selectedHearingId", hearingWithNotice.getId(),
-                    "hearingOption", HearingOptions.NEW_HEARING,
+                    "hearingOption", NEW_HEARING,
                     "hearingDetails", List.of(hearingWithNotice)
                 ))
                 .state("Submitted")
@@ -308,11 +375,11 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
 
     @ParameterizedTest
     @EnumSource(value = HearingOptions.class, names = {"EDIT_HEARING", "ADJOURN_HEARING", "VACATE_HEARING"})
-    void shouldNotTriggerAllocateHearingJudgeEventWhenAdjourningOrVacatingAHearingWithoutReListing(
-        HearingOptions hearingOptions)
-        throws NotificationClientException {
+    void shouldNotTriggerTemporaryHearingJudgeEventWhenAdjourningOrVacatingAHearingWithoutReListing(
+        HearingOptions hearingOption) throws NotificationClientException {
         Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
             .type(CASE_MANAGEMENT)
+            .hearingJudge("Her Honour Judge Davidson")
             .startDate(LocalDateTime.of(2050, 5, 20, 13, 00))
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeEmailAddress(JUDGE_EMAIL)
@@ -328,7 +395,7 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
                 .id(parseLong(CASE_ID))
                 .data(Map.of(
                     "selectedHearingId", hearingWithNotice.getId(),
-                    "hearingOption", hearingOptions,
+                    "hearingOption", hearingOption,
                     "hearingDetails", List.of(hearingWithNotice)
                 ))
                 .state("Submitted")
