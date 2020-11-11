@@ -161,7 +161,7 @@ Scenario('HMCTS admin edits supporting evidence document on C2 application', asy
   I.seeTextInTab(['C2 Application 1', 'Uploaded by']);
 });
 
-Scenario('HMCTS admin manages hearings', async ({I, caseViewPage, manageHearingsEventPage}) => {
+Scenario('HMCTS admin manages hearings @hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
   hearingStartDate = moment().add(5,'m').toDate();
   hearingEndDate = moment(hearingStartDate).add(5,'m').toDate();
 
@@ -280,7 +280,7 @@ Scenario('HMCTS admin uploads further hearing evidence documents', async ({I, ca
 }).retry(1); // async send letters call in submitted of previous event
 
 
-Scenario('HMCTS admin adjourn and re-list hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
+Scenario('HMCTS admin adjourn and re-list hearing @hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
   const reListedHearingJudgeName = 'Brown';
 
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
