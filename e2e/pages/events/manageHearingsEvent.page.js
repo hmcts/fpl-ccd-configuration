@@ -9,9 +9,11 @@ module.exports = {
       addNewHearing: '#hearingOption-NEW_HEARING',
       editHearing: '#hearingOption-EDIT_HEARING',
       adjournHearing: '#hearingOption-ADJOURN_HEARING',
+      vacatedHearing: '#hearingOption-VACATE_HEARING',
     },
     hearingDateList: '#hearingDateList',
     pastAndTodayHearingDateList: '#pastAndTodayHearingDateList',
+    futureAndTodayHearingDateList: '#futureAndTodayHearingDateList',
     hearingType: {
       final: '#hearingType-CASE_MANAGEMENT',
     },
@@ -41,15 +43,20 @@ module.exports = {
     I.selectOption(this.fields.pastAndTodayHearingDateList, hearing);
   },
 
-  selectAdjournmentReasonType(type){
+  selectVacateHearing(hearing) {
+    I.click(this.fields.hearingOptions.vacatedHearing);
+    I.selectOption(this.fields.futureAndTodayHearingDateList, hearing);
+  },
+
+  selectCancellationReasonType(type){
     I.click(type);
   },
 
-  selectAdjournmentReason(reason){
+  selectCancellationReason(reason){
     I.selectOption('//select[not(@disabled)]', reason);
   },
 
-  selectAdjournmentAction(action){
+  selectCancellationAction(action){
     I.click(action);
   },
 

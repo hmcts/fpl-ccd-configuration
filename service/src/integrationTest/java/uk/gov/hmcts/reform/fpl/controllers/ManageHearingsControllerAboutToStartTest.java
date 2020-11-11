@@ -95,6 +95,8 @@ class ManageHearingsControllerAboutToStartTest extends AbstractControllerTest {
             .isEqualTo(dynamicList(futureHearing1, futureHearing2));
         assertThat(updatedCaseData.getPastAndTodayHearingDateList())
             .isEqualTo(dynamicList(todayHearing, pastHearing1, pastHearing2));
+        assertThat(updatedCaseData.getFutureAndTodayHearingDateList())
+            .isEqualTo(dynamicList(futureHearing1, futureHearing2, todayHearing));
     }
 
     @SafeVarargs
