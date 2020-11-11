@@ -53,8 +53,8 @@ public class HearingBooking {
     private final String additionalNotes;
     private final String allocatedJudgeLabel;
     private final String hearingJudgeLabel;
-    private final String legalAdvisor;
-    //judgeAndLegalAdvisor field not shown in tab for new hearings but needs to be kept for hearing before FPLA-2030
+    private final String legalAdvisorLabel;
+    //judgeAndLegalAdvisor field not shown in tab for new hearings but shown for hearings before FPLA-2030
     private JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private UUID caseManagementOrderId;
     private DocumentReference noticeOfHearing;

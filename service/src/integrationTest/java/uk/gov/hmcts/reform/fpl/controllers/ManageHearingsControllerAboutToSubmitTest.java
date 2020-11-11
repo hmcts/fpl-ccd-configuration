@@ -323,7 +323,7 @@ class ManageHearingsControllerAboutToSubmitTest extends AbstractControllerTest {
             .startDate(startDate)
             .endDate(startDate.plusDays(1))
             .hearingJudgeLabel("Her Honour Judge Judy")
-            .legalAdvisor("")
+            .legalAdvisorLabel("")
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
                 .judgeLastName("Judy")

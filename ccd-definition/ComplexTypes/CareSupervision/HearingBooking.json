@@ -98,7 +98,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
-    "ListElementCode": "legalAdvisor",
+    "ListElementCode": "legalAdvisorLabel",
     "FieldType": "Text",
     "ElementLabel": "Justices' Legal Adviser's full name",
     "SecurityClassification": "Public"
