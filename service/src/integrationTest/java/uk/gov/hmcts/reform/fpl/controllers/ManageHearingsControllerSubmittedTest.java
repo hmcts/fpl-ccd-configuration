@@ -379,7 +379,6 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
         HearingOptions hearingOption) throws NotificationClientException {
         Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
             .type(CASE_MANAGEMENT)
-            .hearingJudge("Her Honour Judge Davidson")
             .startDate(LocalDateTime.of(2050, 5, 20, 13, 00))
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeEmailAddress(JUDGE_EMAIL)

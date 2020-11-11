@@ -39,6 +39,8 @@ public class TemporaryHearingJudgeContentProvider extends AbstractEmailContentPr
             template.setHasAllocatedJudge(YES.getValue());
         } else {
             template.setHasAllocatedJudge(NO.getValue());
+            template.setAllocatedJudgeName("");
+            template.setAllocatedJudgeTitle("");
         }
     }
 

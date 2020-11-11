@@ -87,8 +87,8 @@ class TemporaryHearingJudgeContentProviderTest extends AbstractEmailContentProvi
         );
 
         assertThat(partiallyCompleteTemplate.getHasAllocatedJudge()).isEqualTo(NO.getValue());
-        assertThat(partiallyCompleteTemplate.getAllocatedJudgeName()).isNull();
-        assertThat(partiallyCompleteTemplate.getAllocatedJudgeTitle()).isNull();
+        assertThat(partiallyCompleteTemplate.getAllocatedJudgeName()).isEmpty();
+        assertThat(partiallyCompleteTemplate.getAllocatedJudgeTitle()).isEmpty();
     }
 
     private TemporaryHearingJudgeTemplate getExpectedNotificationParameters() {
