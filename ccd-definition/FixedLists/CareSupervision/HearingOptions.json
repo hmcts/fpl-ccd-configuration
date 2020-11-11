@@ -18,6 +18,6 @@
     "ID": "HearingOptions",
     "ListElementCode": "ADJOURN_HEARING",
     "ListElement": "Adjourn a hearing - the hearing was stopped at the hearing",
-    "DisplayOrder": 3
+    "DisplayOrder": 4
   }
 ]

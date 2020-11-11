@@ -14,6 +14,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.VACATE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -52,6 +53,31 @@ class ManageHearingsControllerReListHearingMidEventTest extends AbstractControll
             .isEqualTo(hearingToBeAdjourned.getValue().getVenue());
     }
 
+    @Test
+    void shouldPrePopulateNewReListedHearingWithVacatedHearingDetails() {
+        Element<HearingBooking> hearingToBeVacated = element(randomHearing());
+        Element<HearingBooking> otherHearing = element(randomHearing());
+
+        CaseData initialCaseData = CaseData.builder()
+            .hearingOption(VACATE_HEARING)
+            .futureAndTodayHearingDateList(hearingToBeVacated.getId())
+            .hearingDetails(List.of(otherHearing, hearingToBeVacated))
+            .build();
+
+        CaseData updatedCaseData = extractCaseData(postMidEvent(initialCaseData, "re-list"));
+
+        assertThat(updatedCaseData.getHearingStartDate()).isNull();
+        assertThat(updatedCaseData.getHearingEndDate()).isNull();
+        assertThat(updatedCaseData.getPreviousHearingVenue()).isNull();
+
+        assertThat(updatedCaseData.getHearingType())
+            .isEqualTo(hearingToBeVacated.getValue().getType());
+        assertThat(updatedCaseData.getJudgeAndLegalAdvisor())
+            .isEqualTo(hearingToBeVacated.getValue().getJudgeAndLegalAdvisor());
+        assertThat(updatedCaseData.getHearingVenue())
+            .isEqualTo(hearingToBeVacated.getValue().getVenue());
+    }
+
     private static HearingBooking randomHearing() {
         LocalDateTime startDate = LocalDateTime.now().minusDays(2);
         return HearingBooking.builder()
@@ -65,5 +91,4 @@ class ManageHearingsControllerReListHearingMidEventTest extends AbstractControll
             .venue("96")
             .build();
     }
-
 }

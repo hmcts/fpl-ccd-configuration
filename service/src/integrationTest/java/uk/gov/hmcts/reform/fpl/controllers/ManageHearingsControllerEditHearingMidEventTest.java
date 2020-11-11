@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -22,8 +23,10 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.VACATE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -32,6 +35,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @WebMvcTest(ManageHearingsController.class)
 @OverrideAutoConfiguration(enabled = true)
 class ManageHearingsControllerEditHearingMidEventTest extends AbstractControllerTest {
+    private static String ERROR_MESSAGE = "There are no relevant hearings to change.";
 
     ManageHearingsControllerEditHearingMidEventTest() {
         super("manage-hearings");
@@ -112,6 +116,70 @@ class ManageHearingsControllerEditHearingMidEventTest extends AbstractController
 
         assertThat(updatedCaseData.getPastAndTodayHearingDateList())
             .isEqualTo(dynamicList(pastHearing1.getId(), pastHearing1, pastHearing2));
+    }
+
+    @Test
+    void shouldBuildFutureHearingDateListWhenHearingIsVacated() {
+        Element<HearingBooking> futureHearing1 = element(hearing(now().plusDays(2), "162"));
+        Element<HearingBooking> pastHearing1 = element(hearing(now().minusDays(2), "96"));
+        Element<HearingBooking> pastHearing2 = element(hearing(now().minusDays(3), "298"));
+        Element<HearingBooking> futureHearing2 = element(hearing(now().plusDays(3), "166"));
+
+        CaseData initialCaseData = CaseData.builder()
+            .hearingOption(HearingOptions.VACATE_HEARING)
+            .hearingDetails(List.of(futureHearing1, pastHearing1, pastHearing2, futureHearing2))
+            .futureAndTodayHearingDateList(futureHearing1.getId())
+            .build();
+
+        CaseData updatedCaseData = extractCaseData(postMidEvent(initialCaseData, "edit-hearing"));
+
+        assertThat(updatedCaseData.getFutureAndTodayHearingDateList())
+            .isEqualTo(dynamicList(futureHearing1.getId(), futureHearing1, futureHearing2));
+    }
+
+    @Test
+    void shouldReturnErrorsWhenEditingAHearingButNoFutureHearingsExist() {
+        Element<HearingBooking> pastHearing1 = element(hearing(now().minusDays(2), "96"));
+        Element<HearingBooking> pastHearing2 = element(hearing(now().minusDays(3), "298"));
+
+        CaseData initialCaseData = CaseData.builder()
+            .hearingOption(EDIT_HEARING)
+            .hearingDetails(List.of(pastHearing1, pastHearing2))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(initialCaseData, "edit-hearing");
+
+        assertThat(response.getErrors()).contains(ERROR_MESSAGE);
+    }
+
+    @Test
+    void shouldReturnErrorsWhenAdjourningAHearingButNoPastOrCurrentHearingsExist() {
+        Element<HearingBooking> futureHearing1 = element(hearing(now().plusDays(2), "162"));
+        Element<HearingBooking> futureHearing2 = element(hearing(now().plusDays(3), "166"));
+
+        CaseData initialCaseData = CaseData.builder()
+            .hearingOption(ADJOURN_HEARING)
+            .hearingDetails(List.of(futureHearing1, futureHearing2))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(initialCaseData, "edit-hearing");
+
+        assertThat(response.getErrors()).contains(ERROR_MESSAGE);
+    }
+
+    @Test
+    void shouldReturnErrorsWhenVacatingAHearingButNoFutureOrCurrentHearingsExist() {
+        Element<HearingBooking> pastHearing1 = element(hearing(now().minusDays(2), "96"));
+        Element<HearingBooking> pastHearing2 = element(hearing(now().minusDays(3), "298"));
+
+        CaseData initialCaseData = CaseData.builder()
+            .hearingOption(VACATE_HEARING)
+            .hearingDetails(List.of(pastHearing1, pastHearing2))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(initialCaseData, "edit-hearing");
+
+        assertThat(response.getErrors()).contains(ERROR_MESSAGE);
     }
 
     private static void assertHearingCaseFields(CaseData caseData, HearingBooking hearingBooking) {
