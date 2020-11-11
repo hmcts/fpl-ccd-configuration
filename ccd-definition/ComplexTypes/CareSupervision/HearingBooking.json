@@ -110,7 +110,8 @@
     "FieldType": "JudgeAndLegalAdvisor",
     "ElementLabel": "Judge and Justices' Legal Adviser",
     "FieldShowCondition": "hearingJudgeLabel!=\"*\" AND allocatedJudgeLabel!=\"*\"",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Comment" : "Not shown for new/edited hearings after FPLA-2030, text labels shown instead of complex type (preferred UX)"
   },
   {
     "LiveFrom": "01/01/2017",
