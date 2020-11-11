@@ -183,6 +183,7 @@ class AgreedCMOUploadedEventHandlerTest {
                 JudgeAndLegalAdvisor.builder()
                     .judgeTitle(HIS_HONOUR_JUDGE)
                     .judgeLastName("Dave")
+                    .judgeEmailAddress(HMCTS_JUDGE_EMAIL)
                     .build())
             .build();
     }

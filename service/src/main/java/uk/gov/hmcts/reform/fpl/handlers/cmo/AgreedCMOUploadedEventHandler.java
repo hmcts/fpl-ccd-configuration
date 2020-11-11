@@ -48,7 +48,7 @@ public class AgreedCMOUploadedEventHandler {
     public void sendNotificationForJudge(final AgreedCMOUploaded event) {
         CaseData caseData = event.getCaseData();
 
-        if (caseData.hasAllocatedJudgeEmail()) {
+        if (event.getHearing().getHearingJudge() != null || caseData.hasAllocatedJudgeEmail()) {
             CMOReadyToSealTemplate template = contentProvider.buildTemplate(
                 event.getHearing(),
                 caseData.getId(),
@@ -57,7 +57,7 @@ public class AgreedCMOUploadedEventHandler {
                 caseData.getFamilyManCaseNumber()
             );
 
-            String email = caseData.getAllocatedJudge().getJudgeEmailAddress();
+            String email = event.getHearing().getJudgeAndLegalAdvisor().getJudgeEmailAddress();
 
             notificationService.sendEmail(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE,
                 email,
