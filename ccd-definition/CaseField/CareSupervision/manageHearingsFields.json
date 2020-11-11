@@ -165,6 +165,24 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "futureAndTodayHearingDateListInfo",
+    "Label": "If you dont know yet if or when this hearing will be re-listed, it's better to wait so you can add all the information in one go.<br><br>If you do have the new hearing details, go ahead to vacate and re-list now.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "futureAndTodayHearingDateList",
+    "Label": "Which hearing?",
+    "FieldType": "DynamicList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "cancelledHearingDetails",
     "Label": "Adjourned or vacated hearing",
     "FieldType": "Collection",
@@ -177,7 +195,16 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "adjournmentReason",
     "Label": " ",
-    "FieldType": "AdjournmentReason",
+    "FieldType": "CancellationReason",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "vacatedReason",
+    "Label": " ",
+    "FieldType": "CancellationReason",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -196,6 +223,63 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearingReListHint",
     "Label": "If no new hearing dates are added now:\n * the hearing will need to be created again when the re-list date is known\n * all associated documents will be stored in the Documents tab - they will need to be re-uploaded after new hearing is added",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hasFutureHearingDateFlag",
+    "FieldType": "YesOrNo",
+    "Label": " ",
+    "SecurityClassification": "Public",
+    "Comment": "Used for show/hide message as to when there is no hearings to edit.",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hasHearingsToAdjourn",
+    "FieldType": "YesOrNo",
+    "Label": " ",
+    "SecurityClassification": "Public",
+    "Comment": "Used for show/hide message as to when there is no hearings to adjourn.",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hasHearingsToVacate",
+    "FieldType": "YesOrNo",
+    "Label": " ",
+    "SecurityClassification": "Public",
+    "Comment": "Used for show/hide message as to when there is no hearings to vacate.",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "noHearingsToEditLabel",
+    "Label": "There are no future hearings to edit",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "noHearingsToAdjournLabel",
+    "Label": "There are no past hearings to adjourn",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "noHearingsToVacateLabel",
+    "Label": "There are no future hearings to vacate",
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
