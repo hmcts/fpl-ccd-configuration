@@ -118,6 +118,7 @@ withPipeline(type, product, component) {
     env.URL="https://xui-fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
     env.MOCKED_PAYMENTS=false
     env.PARALLEL_CHUNKS=5
+    env.TEST_RETRIES=2
   }
 
   after('smoketest:saat') {
