@@ -48,7 +48,7 @@ public class AgreedCMOUploadedEventHandler {
     public void sendNotificationForJudge(final AgreedCMOUploaded event) {
         CaseData caseData = event.getCaseData();
 
-        if (event.getHearing().getHearingJudge() != null || caseData.hasAllocatedJudgeEmail()) {
+        if (event.getHearing().getHearingJudgeLabel() != null || caseData.hasAllocatedJudgeEmail()) {
             CMOReadyToSealTemplate template = contentProvider.buildTemplate(
                 event.getHearing(),
                 caseData.getId(),
