@@ -48,5 +48,5 @@ public final class NotifyTemplates {
     public static final String SDO_AND_NOP_ISSUED_JUDGE = "3ef9348f-66eb-4431-8bfb-2548e65aa0e9";
     public static final String SDO_AND_NOP_ISSUED_LA = "3a1d72c7-61cf-4cf9-8fbd-071ffe90dbf0";
     public static final String SDO_AND_NOP_ISSUED_CAFCASS = "a84e75e9-a468-442d-a8c5-c7981d9fdc7c";
-    public static final String JUDGE_ALLOCATED_TO_HEARING_TEMPLATE = "eeb3a6f5-af49-48aa-a52a-a29a7be2bc38";
+    public static final String TEMP_JUDGE_ALLOCATED_TO_HEARING_TEMPLATE = "eeb3a6f5-af49-48aa-a52a-a29a7be2bc38";
 }

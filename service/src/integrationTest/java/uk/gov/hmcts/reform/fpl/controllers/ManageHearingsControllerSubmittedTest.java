@@ -39,8 +39,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_ALLOCATED_TO_HEARING_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.TEMP_JUDGE_ALLOCATED_TO_HEARING_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -239,7 +239,7 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
         postSubmittedEvent(callbackRequest);
 
         verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
-            eq(JUDGE_ALLOCATED_TO_HEARING_TEMPLATE),
+            eq(TEMP_JUDGE_ALLOCATED_TO_HEARING_TEMPLATE),
             eq(JUDGE_EMAIL),
             anyMap(),
             eq(NOTIFICATION_REFERENCE));
@@ -277,7 +277,7 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
         postSubmittedEvent(callbackRequest);
 
         verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
-            eq(JUDGE_ALLOCATED_TO_HEARING_TEMPLATE),
+            eq(TEMP_JUDGE_ALLOCATED_TO_HEARING_TEMPLATE),
             eq(JUDGE_EMAIL),
             anyMap(),
             eq(NOTIFICATION_REFERENCE));

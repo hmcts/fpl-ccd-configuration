@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.hearing.TemporaryHearingJudgeTemplat
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.TemporaryHearingJudgeContentProvider;
 
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_ALLOCATED_TO_HEARING_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.TEMP_JUDGE_ALLOCATED_TO_HEARING_TEMPLATE;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -29,7 +29,7 @@ public class TemporaryHearingJudgeEventHandler {
             caseData, selectedHearing
         );
 
-        notificationService.sendEmail(JUDGE_ALLOCATED_TO_HEARING_TEMPLATE, email, parameters,
+        notificationService.sendEmail(TEMP_JUDGE_ALLOCATED_TO_HEARING_TEMPLATE, email, parameters,
             caseData.getId().toString());
     }
 }

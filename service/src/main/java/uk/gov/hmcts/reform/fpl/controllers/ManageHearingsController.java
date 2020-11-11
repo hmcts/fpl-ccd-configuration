@@ -226,8 +226,6 @@ public class ManageHearingsController extends CallbackController {
 
         data.keySet().removeAll(hearingsService.caseFieldsToBeRemoved());
 
-        data.remove("allocatedJudge");
-
         return respond(data);
     }
 

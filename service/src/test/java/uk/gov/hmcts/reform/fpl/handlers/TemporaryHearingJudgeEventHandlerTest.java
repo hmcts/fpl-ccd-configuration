@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.TemporaryHearingJudgeConten
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_ALLOCATED_TO_HEARING_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.TEMP_JUDGE_ALLOCATED_TO_HEARING_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 
@@ -67,7 +67,7 @@ class TemporaryHearingJudgeEventHandlerTest {
         temporaryHearingJudgeEventHandler.notifyTemporaryHearingJudge(allocateHearingJudgeEvent);
 
         verify(notificationService).sendEmail(
-            JUDGE_ALLOCATED_TO_HEARING_TEMPLATE,
+            TEMP_JUDGE_ALLOCATED_TO_HEARING_TEMPLATE,
             JUDGE_EMAIL,
             expectedParameters,
             caseData.getId().toString());
