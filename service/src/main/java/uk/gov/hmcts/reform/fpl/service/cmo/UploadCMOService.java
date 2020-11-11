@@ -33,6 +33,7 @@ import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder.from;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -67,6 +68,41 @@ public class UploadCMOService {
             .cmosSentToJudge(hearingsInfo)
             .showCMOsSentToJudge(YesNo.from(!hearingsInfo.isBlank()))
             .build();
+    }
+
+    public UploadCMOEventData getInitialPageData(List<Element<HearingBooking>> pastHearings,
+                                                 List<Element<CaseManagementOrder>> unsealedOrders) {
+
+        List<Element<HearingBooking>> hearingsWithoutCMOs = getHearingsWithoutCMO(pastHearings, unsealedOrders);
+        UploadCMOEventData.UploadCMOEventDataBuilder eventBuilder = UploadCMOEventData.builder();
+        String textAreaContent = buildHearingsWithCMOsText(unsealedOrders, pastHearings);
+
+        switch (hearingsWithoutCMOs.size()) {
+            case 0:
+                eventBuilder.numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.NONE);
+                break;
+            case 1:
+                eventBuilder.numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.SINGLE);
+
+                if (textAreaContent.length() != 0) {
+                    eventBuilder.singleHearingWithCMO(textAreaContent);
+                    eventBuilder.showHearingsSingleTextArea(YES);
+                }
+
+                addJudgeAndHearingDetails(hearingsWithoutCMOs.get(0).getValue(), eventBuilder, true);
+                break;
+            default:
+                eventBuilder.numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.MULTI);
+
+                if (textAreaContent.length() != 0) {
+                    eventBuilder.multiHearingsWithCMOs(textAreaContent);
+                    eventBuilder.showHearingsMultiTextArea(YES);
+                }
+
+                eventBuilder.pastHearingsForCMO(buildDynamicList(hearingsWithoutCMOs));
+        }
+
+        return eventBuilder.build();
     }
 
     public UploadCMOEventData getCMOInfo(CaseData caseData) {
@@ -180,7 +216,6 @@ public class UploadCMOService {
         return null;
     }
 
-    @Deprecated
     public UploadCMOEventData prepareJudgeAndHearingDetails(Object dynamicList,
                                                             List<Element<HearingBooking>> hearings,
                                                             List<Element<CaseManagementOrder>> unsealedOrders) {
@@ -254,7 +289,6 @@ public class UploadCMOService {
         return Optional.ofNullable(previousCMOId);
     }
 
-    @Deprecated
     private UUID getSelectedHearingId(Object dynamicList, List<Element<HearingBooking>> hearings) {
         if (hearings.size() == 1) {
             return hearings.get(0).getId();
@@ -307,7 +341,6 @@ public class UploadCMOService {
         return asDynamicList(hearings, selected, HearingBooking::toLabel);
     }
 
-    @Deprecated
     private void addJudgeAndHearingDetails(HearingBooking hearing,
                                            UploadCMOEventData.UploadCMOEventDataBuilder builder,
                                            boolean initialPage) {
