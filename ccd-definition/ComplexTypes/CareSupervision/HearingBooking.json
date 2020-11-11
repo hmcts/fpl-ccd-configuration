@@ -109,7 +109,7 @@
     "ListElementCode": "judgeAndLegalAdvisor",
     "FieldType": "JudgeAndLegalAdvisor",
     "ElementLabel": "Judge and Justices' Legal Adviser",
-    "FieldShowCondition": "hearingJudge!=\"*\" AND allocatedJudge!=\"*\"",
+    "FieldShowCondition": "hearingJudgeLabel!=\"*\" AND allocatedJudgeLabel!=\"*\"",
     "SecurityClassification": "Public"
   },
   {
