@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.util.List;
 import java.util.Map;
 
 @Api
@@ -29,15 +32,20 @@ public class MigrateCaseController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (1603370139459131L == caseDetails.getId()) {
-            log.info("Updating case reference {} state from '{}' to '{}'",
-                caseDetails.getId(), caseDetails.getState(), State.CASE_MANAGEMENT);
-            data.put("state", State.CASE_MANAGEMENT);
+        if ("PO20C50014".equals(caseData.getFamilyManCaseNumber())) {
+            log.info("Removing c2 document bundle from case reference {}", caseDetails.getId());
+            data.put("c2DocumentBundle", removeC2Document(caseData.getC2DocumentBundle()));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
             .build();
+    }
+
+    private List<Element<C2DocumentBundle>> removeC2Document(List<Element<C2DocumentBundle>> documentBundle) {
+        documentBundle.remove(0);
+        return documentBundle;
     }
 }
