@@ -19,17 +19,17 @@ import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubject
 public class TemporaryHearingJudgeContentProvider extends AbstractEmailContentProvider {
 
     public TemporaryHearingJudgeTemplate buildNotificationParameters(CaseData caseData, HearingBooking hearingBooking) {
-        TemporaryHearingJudgeTemplate allocatedJudgeTemplate = new TemporaryHearingJudgeTemplate();
+        TemporaryHearingJudgeTemplate temporaryHearingJudgeTemplate = new TemporaryHearingJudgeTemplate();
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = hearingBooking.getJudgeAndLegalAdvisor();
 
-        allocatedJudgeTemplate.setJudgeTitle(judgeAndLegalAdvisor.getJudgeOrMagistrateTitle());
-        allocatedJudgeTemplate.setJudgeName(judgeAndLegalAdvisor.getJudgeName());
-        allocatedJudgeTemplate.setHearingType(hearingBooking.getType().getLabel());
-        allocatedJudgeTemplate.setCaseUrl(getCaseUrl(caseData.getId()));
-        allocatedJudgeTemplate.setCallout(buildCallout(caseData, hearingBooking));
-        setAllocatedJudgeFields(caseData.getAllocatedJudge(), allocatedJudgeTemplate);
+        temporaryHearingJudgeTemplate.setJudgeTitle(judgeAndLegalAdvisor.getJudgeOrMagistrateTitle());
+        temporaryHearingJudgeTemplate.setJudgeName(judgeAndLegalAdvisor.getJudgeName());
+        temporaryHearingJudgeTemplate.setHearingType(hearingBooking.getType().getLabel());
+        temporaryHearingJudgeTemplate.setCaseUrl(getCaseUrl(caseData.getId()));
+        temporaryHearingJudgeTemplate.setCallout(buildCallout(caseData, hearingBooking));
+        setAllocatedJudgeFields(caseData.getAllocatedJudge(), temporaryHearingJudgeTemplate);
 
-        return allocatedJudgeTemplate;
+        return temporaryHearingJudgeTemplate;
     }
 
     private void setAllocatedJudgeFields(Judge allocatedJudge, TemporaryHearingJudgeTemplate template) {
