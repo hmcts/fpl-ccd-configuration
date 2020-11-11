@@ -128,8 +128,7 @@
     "DisplayContext": "MANDATORY",
     "PageID": "ConfirmHearingDetails",
     "ShowSummaryChangeOption": "N",
-    "PageDisplayOrder": 6,
-    "Comment": "can change back to same page show that EnterHearingDetails uses"
+    "PageDisplayOrder": 6
   },
   {
     "LiveFrom": "01/01/2017",
