@@ -42,6 +42,7 @@ import uk.gov.hmcts.reform.fpl.validation.groups.CaseExtensionGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.MigrateStateGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
@@ -52,6 +53,7 @@ import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGrou
 import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOEndDateGroup;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.HasDocumentsIncludedInSwet;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.IsStateMigratable;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.IsValidHearingEdit;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.EPOTimeRange;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeDifference;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeNotMidnight;
@@ -93,6 +95,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @AllArgsConstructor
 @HasDocumentsIncludedInSwet(groups = UploadDocumentsGroup.class)
 @IsStateMigratable(groups = MigrateStateGroup.class)
+@IsValidHearingEdit(groups = HearingBookingGroup.class)
 @EPOTimeRange(message = "Date must be within 8 days of the order date", groups = EPOEndDateGroup.class,
     maxDate = @TimeDifference(amount = 8, unit = DAYS))
 public class CaseData {
@@ -613,11 +616,13 @@ public class CaseData {
     private final String hasExistingHearings;
     private final UUID selectedHearingId;
 
-    @TimeNotMidnight(message = "Enter a valid start time", groups = {HearingDatesGroup.class, PastHearingDatesGroup.class})
+    @TimeNotMidnight(message = "Enter a valid start time", groups = {HearingDatesGroup.class,
+        PastHearingDatesGroup.class})
     @Future(message = "Enter a start date in the future", groups = HearingDatesGroup.class)
     private final LocalDateTime hearingStartDate;
 
-    @TimeNotMidnight(message = "Enter a valid end time", groups = {HearingDatesGroup.class, PastHearingDatesGroup.class})
+    @TimeNotMidnight(message = "Enter a valid end time", groups = {HearingDatesGroup.class,
+        PastHearingDatesGroup.class})
     @Future(message = "Enter an end date in the future", groups = HearingDatesGroup.class)
     private final LocalDateTime hearingEndDate;
     private final String sendNoticeOfHearing;
