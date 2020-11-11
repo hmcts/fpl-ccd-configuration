@@ -246,7 +246,6 @@ public class ManageHearingsController extends CallbackController {
                     }
 
                     if (isNewOrReListedHearing(caseData)
-                        && hasTemporaryJudgeEmail(hearingBooking)
                         && isTemporaryJudge(caseData.getAllocatedJudge(), hearingBooking)) {
                         publishEvent(new TemporaryHearingJudgeAllocationEvent(caseData, hearingBooking));
                     }
@@ -269,10 +268,5 @@ public class ManageHearingsController extends CallbackController {
     private boolean isTemporaryJudge(Judge allocatedJudge, HearingBooking hearingBooking) {
         return (allocatedJudge == null
             || !allocatedJudge.hasEqualJudgeFields(hearingBooking.getJudgeAndLegalAdvisor()));
-    }
-
-    private boolean hasTemporaryJudgeEmail(HearingBooking hearingBooking) {
-        return hearingBooking.getJudgeAndLegalAdvisor() != null
-            && hearingBooking.getJudgeAndLegalAdvisor().getJudgeEmailAddress() != null;
     }
 }

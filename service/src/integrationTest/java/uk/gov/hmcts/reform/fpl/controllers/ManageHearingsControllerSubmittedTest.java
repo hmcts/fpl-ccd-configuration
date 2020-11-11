@@ -317,62 +317,6 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
         verifyNoInteractions(notificationClient);
     }
 
-    @Test
-    void shouldNotTriggerTemporaryHearingJudgeEventWhenJudgeEmailDoesNotExist() throws NotificationClientException {
-        Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
-            .type(CASE_MANAGEMENT)
-            .startDate(LocalDateTime.of(2050, 5, 20, 13, 00))
-            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                .judgeLastName("Watson")
-                .judgeTitle(HER_HONOUR_JUDGE)
-                .build())
-            .build());
-
-        CallbackRequest callbackRequest = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .jurisdiction(JURISDICTION)
-                .caseTypeId(CASE_TYPE)
-                .id(parseLong(CASE_ID))
-                .data(Map.of(
-                    "selectedHearingId", hearingWithNotice.getId(),
-                    "hearingOption", NEW_HEARING,
-                    "hearingDetails", List.of(hearingWithNotice)
-                ))
-                .state("Submitted")
-                .build())
-            .build();
-
-        postSubmittedEvent(callbackRequest);
-
-        verifyNoInteractions(notificationClient);
-    }
-
-    @Test
-    void shouldNotTriggerTemporaryHearingJudgeEventWhenJudgeDoesNotExist() throws NotificationClientException {
-        Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
-            .type(CASE_MANAGEMENT)
-            .startDate(LocalDateTime.of(2050, 5, 20, 13, 00))
-            .build());
-
-        CallbackRequest callbackRequest = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .jurisdiction(JURISDICTION)
-                .caseTypeId(CASE_TYPE)
-                .id(parseLong(CASE_ID))
-                .data(Map.of(
-                    "selectedHearingId", hearingWithNotice.getId(),
-                    "hearingOption", NEW_HEARING,
-                    "hearingDetails", List.of(hearingWithNotice)
-                ))
-                .state("Submitted")
-                .build())
-            .build();
-
-        postSubmittedEvent(callbackRequest);
-
-        verifyNoInteractions(notificationClient);
-    }
-
     @ParameterizedTest
     @EnumSource(value = HearingOptions.class, names = {"EDIT_HEARING", "ADJOURN_HEARING", "VACATE_HEARING"})
     void shouldNotTriggerTemporaryHearingJudgeEventWhenAdjourningOrVacatingAHearingWithoutReListing(
