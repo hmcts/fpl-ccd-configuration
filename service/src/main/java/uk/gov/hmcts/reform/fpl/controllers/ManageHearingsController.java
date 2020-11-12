@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.service.ManageHearingsService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
+import uk.gov.hmcts.reform.fpl.validation.groups.FutureHearingsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.PastHearingDatesGroup;
@@ -163,9 +164,9 @@ public class ManageHearingsController extends CallbackController {
 
         if (featureToggleService.isAddHearingsInPastEnabled() && (caseData.getHearingOption() == NEW_HEARING
             || isEmpty(caseData.getHearingOption()))) {
-            errors = validateGroupService.validateGroup(caseData, PastHearingDatesGroup.class);
-        } else {
             errors = validateGroupService.validateGroup(caseData, HearingDatesGroup.class);
+        } else {
+            errors = validateGroupService.validateGroup(caseData, HearingDatesGroup.class, FutureHearingsGroup.class);
         }
 
         if (caseData.isHearingDateInPast() && featureToggleService.isAddHearingsInPastEnabled()) {
