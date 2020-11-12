@@ -7,10 +7,6 @@ import lombok.Data;
 @Data
 @Builder
 public class Organisation {
-
     @JsonProperty("OrganisationID")
     private String organisationID;
-
-    @JsonProperty("OrganisationName")
-    private String organisationName;
 }
