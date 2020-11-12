@@ -95,6 +95,33 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CancelledHearingBooking",
+    "ListElementCode": "allocatedJudgeLabel",
+    "FieldType": "Text",
+    "ElementLabel": "Allocated judge or magistrate",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type=\"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CancelledHearingBooking",
+    "ListElementCode": "hearingJudgeLabel",
+    "FieldType": "Text",
+    "ElementLabel": "Hearing judge or magistrate",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type=\"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CancelledHearingBooking",
+    "ListElementCode": "legalAdvisorLabel",
+    "FieldType": "Text",
+    "ElementLabel": "Justices' Legal Adviser's full name",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type=\"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CancelledHearingBooking",
     "ListElementCode": "judgeAndLegalAdvisor",
     "FieldType": "JudgeAndLegalAdvisor",
     "ElementLabel": "Judge and Justices' Legal Adviser",
