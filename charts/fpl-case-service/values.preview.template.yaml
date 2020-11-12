@@ -99,6 +99,7 @@ ccd:
       keyVaults: []
   ccd-data-store-api:
     java:
+      image: hmctspublic.azurecr.io/ccd/data-store-api:prod-d1320179
       imagePullPolicy: Always
       environment:
         DATA_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
@@ -109,6 +110,7 @@ ccd:
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
   ccd-definition-store-api:
     java:
+      image: hmctspublic.azurecr.io/ccd/definition-store-api:prod-704943e3
       imagePullPolicy: Always
       environment:
         DEFINITION_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
