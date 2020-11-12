@@ -88,7 +88,6 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
     private static final String CASE_ID = "12345";
     private static final Set<String> CASE_ROLES = Set.of("[LASOLICITOR]", "[CREATOR]");
-    private static final String PAGE_SHOW = "pageShow";
 
     @MockBean
     private LocalAuthorityUserLookupConfiguration localAuthorityUserLookupConfiguration;
@@ -161,8 +160,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
             .containsEntry("caseLocalAuthority", "example")
             .containsEntry("localAuthorityPolicy", Map.of(
                 "Organisation", Map.of(
-                    "OrganisationID", organisation.getOrganisationIdentifier(),
-                    "OrganisationName", organisation.getName()),
+                    "OrganisationID", organisation.getOrganisationIdentifier()),
                 "OrgPolicyCaseAssignedRole", "[LASOLICITOR]"));
     }
 
