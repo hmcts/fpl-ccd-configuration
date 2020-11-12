@@ -19,13 +19,12 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ManageHearingsService;
+import uk.gov.hmcts.reform.fpl.service.PastHearingDatesValidatorService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
-import uk.gov.hmcts.reform.fpl.validation.groups.FutureHearingsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
-import uk.gov.hmcts.reform.fpl.validation.groups.PastHearingDatesGroup;
 
 import java.util.List;
 import java.util.UUID;
@@ -63,6 +62,7 @@ public class ManageHearingsController extends CallbackController {
     private final StandardDirectionsService standardDirectionsService;
     private final ManageHearingsService hearingsService;
     private final FeatureToggleService featureToggleService;
+    private final PastHearingDatesValidatorService pastHearingDatesValidatorService;
 
     @PostMapping("/about-to-start")
     public CallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -164,9 +164,10 @@ public class ManageHearingsController extends CallbackController {
 
         if (featureToggleService.isAddHearingsInPastEnabled() && (caseData.getHearingOption() == NEW_HEARING
             || isEmpty(caseData.getHearingOption()))) {
-            errors = validateGroupService.validateGroup(caseData, HearingDatesGroup.class);
+            errors = pastHearingDatesValidatorService.validateHearingDates(caseData.getHearingStartDate(),
+                caseData.getHearingEndDate());
         } else {
-            errors = validateGroupService.validateGroup(caseData, HearingDatesGroup.class, FutureHearingsGroup.class);
+            errors = validateGroupService.validateGroup(caseData, HearingDatesGroup.class);
         }
 
         if (caseData.isHearingDateInPast() && featureToggleService.isAddHearingsInPastEnabled()) {
@@ -185,8 +186,10 @@ public class ManageHearingsController extends CallbackController {
 
         if (featureToggleService.isAddHearingsInPastEnabled() && caseDetails.getData().get("hearingDateConfirmation")
             .equals(NO.getValue())) {
-            List<String> errors = validateGroupService.validateGroup(caseData, PastHearingDatesGroup.class);
-            System.out.println("Errors is" + errors);
+
+            List<String> errors = pastHearingDatesValidatorService.validateHearingDates(caseData
+                    .getHearingStartDateConfirmation(),
+                caseData.getHearingEndDateConfirmation());
             caseDetails.getData().putAll(hearingsService.changeHearingDateToDateAddedOnConfirmationPage(caseData));
 
             return respond(caseDetails, errors);

@@ -41,13 +41,11 @@ import uk.gov.hmcts.reform.fpl.utils.IncrementalInteger;
 import uk.gov.hmcts.reform.fpl.validation.groups.CaseExtensionGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
-import uk.gov.hmcts.reform.fpl.validation.groups.FutureHearingsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.MigrateStateGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
-import uk.gov.hmcts.reform.fpl.validation.groups.PastHearingDatesGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.SealedSDOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.UploadDocumentsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
@@ -617,14 +615,12 @@ public class CaseData {
     private final String hasExistingHearings;
     private final UUID selectedHearingId;
 
-    @TimeNotMidnight(message = "Enter a valid start time", groups = {HearingDatesGroup.class,
-        PastHearingDatesGroup.class})
-    @Future(message = "Enter a start date in the future", groups = FutureHearingsGroup.class)
+    @TimeNotMidnight(message = "Enter a valid start time", groups = HearingDatesGroup.class)
+    @Future(message = "Enter a start date in the future", groups = HearingDatesGroup.class)
     private final LocalDateTime hearingStartDate;
 
-    @TimeNotMidnight(message = "Enter a valid end time", groups = {HearingDatesGroup.class,
-        PastHearingDatesGroup.class})
-    @Future(message = "Enter an end date in the future", groups = FutureHearingsGroup.class)
+    @TimeNotMidnight(message = "Enter a valid end time", groups = HearingDatesGroup.class)
+    @Future(message = "Enter an end date in the future", groups = HearingDatesGroup.class)
     private final LocalDateTime hearingEndDate;
     private final String sendNoticeOfHearing;
     private final HearingOptions hearingOption;
@@ -634,9 +630,7 @@ public class CaseData {
     private final List<ProceedingType> proceedingType;
     private final State closedStateRadioList;
 
-    @TimeNotMidnight(message = "Enter a valid end time", groups = PastHearingDatesGroup.class)
     private final LocalDateTime hearingEndDateConfirmation;
-    @TimeNotMidnight(message = "Enter a valid start time", groups = PastHearingDatesGroup.class)
     private final LocalDateTime hearingStartDateConfirmation;
 
     @JsonIgnore

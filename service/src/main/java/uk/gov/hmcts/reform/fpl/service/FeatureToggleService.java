@@ -76,7 +76,7 @@ public class FeatureToggleService {
     }
 
     public boolean isAddHearingsInPastEnabled() {
-        return ldClient.boolVariation("add-hearings-in-past", createLDUser(), true);
+        return ldClient.boolVariation("add-hearings-in-past", createLDUser(), false);
     }
 
     private LDUser createLDUser() {
