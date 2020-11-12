@@ -1,9 +1,8 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
@@ -22,15 +21,16 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Data
 @Builder(toBuilder = true)
-@AllArgsConstructor
-@EqualsAndHashCode
+@Jacksonized
 public class Respondent implements Representable, ConfidentialParty<Respondent> {
     @Valid
     @NotNull(message = "You need to add details to respondents")
     private final RespondentParty party;
     private final String leadRespondentIndicator;
+    @Deprecated(since = "FPLA-2396")
     private String persistRepresentedBy;
-    private final List<Element<UUID>> representedBy = new ArrayList<>();
+    @Builder.Default
+    private List<Element<UUID>> representedBy = new ArrayList<>();
 
     public void addRepresentative(UUID representativeId) {
         if (!unwrapElements(representedBy).contains(representativeId)) {

@@ -11,11 +11,12 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -45,11 +46,7 @@ class RespondentControllerTest extends AbstractControllerTest {
     @Test
     void shouldReturnDateOfBirthErrorsForRespondentWhenFutureDateOfBirth() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("respondents1", wrapElements(Respondent.builder()
-                .party(RespondentParty.builder()
-                    .dateOfBirth(dateNow().plusDays(1))
-                    .build())
-                .build())))
+            .data(Map.of("respondents1", wrapElements(respondent(dateNow().plusDays(1)))))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
@@ -71,11 +68,7 @@ class RespondentControllerTest extends AbstractControllerTest {
     @Test
     void shouldReturnNoDateOfBirthErrorsForRespondentWhenValidDateOfBirth() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("respondents1", wrapElements(Respondent.builder()
-                .party(RespondentParty.builder()
-                    .dateOfBirth(dateNow().minusDays(1))
-                    .build())
-                .build())))
+            .data(Map.of("respondents1", wrapElements(respondent(dateNow().minusDays(1)))))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
@@ -84,20 +77,32 @@ class RespondentControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldSetPersistRepresentativesFlagToYesOnRespondents() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("respondents1", buildRespondents()))
+    void shouldPersistRepresentativeAssociation() {
+        List<Element<UUID>> association = List.of(element(UUID.randomUUID()));
+        Element<Respondent> oldRespondent = element(respondent(dateNow()));
+        oldRespondent.getValue().setRepresentedBy(association);
+
+        CaseData caseData = CaseData.builder()
+            .respondents1(List.of(
+                element(oldRespondent.getId(), respondent(dateNow())),
+                element(respondent(dateNow()))
+            ))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse 
-            = postMidEvent(caseDetails, "persist-representatives");
+        CaseData caseDataBefore = CaseData.builder()
+            .respondents1(List.of(oldRespondent))
+            .build();
 
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-        Respondent firstRespondent = caseData.getRespondents1().get(0).getValue();
-        Respondent secondRespondent = caseData.getRespondents1().get(0).getValue();
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(
+            toCallBackRequest(asCaseDetails(caseData), asCaseDetails(caseDataBefore)), "persist-representatives"
+        );
+        CaseData responseData = extractCaseData(response);
 
-        assertThat(firstRespondent.getPersistRepresentedBy()).isEqualTo(YES.getValue());
-        assertThat(secondRespondent.getPersistRepresentedBy()).isEqualTo(YES.getValue());
+        Respondent firstRespondent = responseData.getRespondents1().get(0).getValue();
+        Respondent secondRespondent = responseData.getRespondents1().get(1).getValue();
+
+        assertThat(firstRespondent.getRepresentedBy()).isEqualTo(association);
+        assertThat(secondRespondent.getRepresentedBy()).isNullOrEmpty();
     }
 
     @Test
@@ -114,16 +119,15 @@ class RespondentControllerTest extends AbstractControllerTest {
     }
 
     private List<Element<Respondent>> buildRespondents() {
-        return wrapElements(Respondent.builder()
-                .party(RespondentParty.builder()
-                    .dateOfBirth(dateNow().plusDays(1))
-                    .build())
-                .build(),
-            Respondent.builder()
-                .party(RespondentParty.builder()
-                    .dateOfBirth(dateNow().plusDays(1))
-                    .build())
-                .build());
+        return wrapElements(respondent(dateNow().plusDays(1)), respondent(dateNow().plusDays(1)));
+    }
+
+    private Respondent respondent(LocalDate dateOfBirth) {
+        return Respondent.builder()
+            .party(RespondentParty.builder()
+                .dateOfBirth(dateOfBirth)
+                .build())
+            .build();
     }
 
     private Element<Respondent> retainConfidentialDetails(Element<Respondent> respondent) {

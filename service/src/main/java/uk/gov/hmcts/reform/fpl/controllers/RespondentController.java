@@ -56,9 +56,13 @@ public class RespondentController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse persistRepresentatives(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        CaseData caseDataBefore = getCaseDataBefore(callbackrequest);
 
-        caseDetails.getData().put("respondents1",
-            respondentService.setPersistRepresentativeFlag(caseData.getRespondents1()));
+        caseDetails.getData().put(
+            "respondents1", respondentService.persistRepresentativesRelationship(
+                caseData.getAllRespondents(), caseDataBefore.getAllRespondents()
+            )
+        );
 
         return respond(caseDetails);
     }
