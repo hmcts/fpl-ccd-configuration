@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.events.cmo.AgreedCMOUploaded;
 import uk.gov.hmcts.reform.fpl.handlers.HmctsAdminNotificationHandler;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.AbstractJudge;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.CMOReadyToSealTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.AgreedCMOUploadedContentProvider;
@@ -47,17 +49,21 @@ public class AgreedCMOUploadedEventHandler {
     @EventListener
     public void sendNotificationForJudge(final AgreedCMOUploaded event) {
         CaseData caseData = event.getCaseData();
+        JudgeAndLegalAdvisor judgeAttendingHearing = event.getHearing().getJudgeAndLegalAdvisor();
 
-        if (event.getHearing().getHearingJudgeLabel() != null || caseData.hasAllocatedJudgeEmail()) {
+        if (judgeAttendingHearing.getJudgeEmailAddress() != null || caseData.hasAllocatedJudgeEmail()) {
+            AbstractJudge judge = judgeAttendingHearing.getJudgeEmailAddress() != null
+                ? judgeAttendingHearing : caseData.getAllocatedJudge();
+
             CMOReadyToSealTemplate template = contentProvider.buildTemplate(
                 event.getHearing(),
                 caseData.getId(),
-                caseData.getAllocatedJudge(),
+                judge,
                 caseData.getAllRespondents(),
                 caseData.getFamilyManCaseNumber()
             );
 
-            String email = event.getHearing().getJudgeAndLegalAdvisor().getJudgeEmailAddress();
+            String email = judge.getJudgeEmailAddress();
 
             notificationService.sendEmail(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE,
                 email,
