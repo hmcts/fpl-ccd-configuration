@@ -117,7 +117,8 @@ public class ManageHearingsController extends CallbackController {
                 caseDetails.getData().put(FIRST_HEARING_FLAG, "Yes");
             }
         } else if (ADJOURN_HEARING == caseData.getHearingOption()) {
-            UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData.getPastAndTodayHearingDateList());
+            UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData
+                .getPastAndTodayHearingDateList());
 
             caseDetails.getData().put(PAST_HEARING_LIST,
                 hearingsService.asDynamicList(caseData.getPastAndTodayHearings(), hearingBookingId));
@@ -171,7 +172,6 @@ public class ManageHearingsController extends CallbackController {
         }
 
         if (caseData.isHearingDateInPast() && featureToggleService.isAddHearingsInPastEnabled()) {
-            caseDetails.getData().put("pageShow", YES.getValue());
             caseDetails.getData().putAll(hearingsService.populateFieldsWhenPastDateAdded(caseData));
         }
 
@@ -184,8 +184,8 @@ public class ManageHearingsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        if (featureToggleService.isAddHearingsInPastEnabled() && caseDetails.getData().get("hearingDateConfirmation")
-            .equals(NO.getValue())) {
+        if (featureToggleService.isAddHearingsInPastEnabled() && NO.getValue()
+            .equals(caseDetails.getData().get("confirmHearingDate"))) {
 
             List<String> errors = pastHearingDatesValidatorService.validateHearingDates(caseData
                     .getHearingStartDateConfirmation(),

@@ -278,11 +278,11 @@ public class ManageHearingsService {
             "hearingStartDateLabel",
             "pageShow",
             "hearingEndDateLabel",
-            "hearingDateConfirmation",
+            "confirmHearingDate",
             "hearingStartDateConfirmation",
             "hearingEndDateConfirmation",
-            "showStartDateLabel",
-            "showEndDateLabel");
+            "startDateFlag",
+            "endDateFlag");
     }
 
     public Object getSelectedDynamicListType(CaseData caseData) {
@@ -295,6 +295,7 @@ public class ManageHearingsService {
 
     public Map<String, Object> populateFieldsWhenPastDateAdded(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
+        data.put("showConfirmPastHearingDatesPage", YES.getValue());
 
         if (caseData.getHearingEndDate().isBefore(LocalDateTime.now()) && caseData.getHearingStartDate()
             .isBefore(LocalDateTime.now())) {
@@ -302,16 +303,16 @@ public class ManageHearingsService {
                 .getHearingStartDate(), DATE_TIME));
             data.put("hearingEndDateLabel", formatLocalDateTimeBaseUsingFormat(caseData
                 .getHearingEndDate(), DATE_TIME));
-            data.put("showStartDateLabel", YES.getValue());
-            data.put("showEndDateLabel", YES.getValue());
+            data.put("startDateFlag", YES.getValue());
+            data.put("endDateFlag", YES.getValue());
         } else if (caseData.getHearingStartDate().isBefore(LocalDateTime.now())) {
             data.put("hearingStartDateLabel", formatLocalDateTimeBaseUsingFormat(caseData
                 .getHearingStartDate(), DATE_TIME));
-            data.put("showStartDateLabel", YES.getValue());
+            data.put("startDateFlag", YES.getValue());
         } else if (caseData.getHearingEndDate().isBefore(LocalDateTime.now())) {
             data.put("hearingEndDateLabel", formatLocalDateTimeBaseUsingFormat(caseData
                 .getHearingEndDate(), DATE_TIME));
-            data.put("showEndDateLabel", YES.getValue());
+            data.put("endDateFlag", YES.getValue());
         }
 
         return data;

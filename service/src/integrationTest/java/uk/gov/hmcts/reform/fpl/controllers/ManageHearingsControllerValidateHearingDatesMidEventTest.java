@@ -132,9 +132,9 @@ public class ManageHearingsControllerValidateHearingDatesMidEventTest extends Ab
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "validate-hearing-dates");
 
         Map<String, Object> responseData = callbackResponse.getData();
-        assertThat(responseData.get("pageShow").equals("Yes"));
-        assertThat(responseData.get("showStartDateLabel").equals("Yes"));
-        assertThat(responseData.get("showEndDateLabel").equals("Yes"));
+        assertThat(responseData.get("showConfirmPastHearingDatesPage").equals("Yes"));
+        assertThat(responseData.get("startDateFlag").equals("Yes"));
+        assertThat(responseData.get("endDateFlag").equals("Yes"));
     }
 
     @Test
@@ -152,7 +152,7 @@ public class ManageHearingsControllerValidateHearingDatesMidEventTest extends Ab
 
         Map<String, Object> responseData = callbackResponse.getData();
 
-        assertThat(responseData).doesNotContainKeys("pageShow", "showStartDateLabel", "showEndDateLabel");
+        assertThat(responseData).doesNotContainKeys("showConfirmPastHearingDatesPage", "startDateFlag", "endDateFlag");
     }
 
     @Test
@@ -170,7 +170,7 @@ public class ManageHearingsControllerValidateHearingDatesMidEventTest extends Ab
 
         Map<String, Object> responseData = callbackResponse.getData();
 
-        assertThat(responseData).doesNotContainKeys("pageShow", "showStartDateLabel", "showEndDateLabel");
+        assertThat(responseData).doesNotContainKeys("showConfirmPastHearingDatesPage", "startDateFlag", "endDateFlag");
     }
 
     @Test

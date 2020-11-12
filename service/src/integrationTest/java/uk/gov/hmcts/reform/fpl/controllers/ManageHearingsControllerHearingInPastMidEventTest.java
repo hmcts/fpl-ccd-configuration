@@ -38,6 +38,7 @@ public class ManageHearingsControllerHearingInPastMidEventTest extends AbstractC
     @Autowired
     private Time time;
 
+    private LocalDateTime pastDate = LocalDateTime.now().minusDays(1);
 
     ManageHearingsControllerHearingInPastMidEventTest() {
         super("manage-hearings");
@@ -47,16 +48,16 @@ public class ManageHearingsControllerHearingInPastMidEventTest extends AbstractC
     void shouldPopulateHearingDatesToCorrectOneWhenIncorrectAndToggledOn() {
         given(featureToggleService.isAddHearingsInPastEnabled()).willReturn(true);
 
-        LocalDateTime correctStartDate = LocalDateTime.of(2050, 6, 5, 11, 0);
-        LocalDateTime correctEndDate = LocalDateTime.of(2050, 6, 5, 11, 0);
+        LocalDateTime correctStartDate = LocalDateTime.now().minusDays(2);
+        LocalDateTime correctEndDate = LocalDateTime.now().minusDays(2);
 
         CaseDetails caseDetails = CaseDetails.builder()
             .id(parseLong(CASE_ID))
-            .data(Map.of("hearingStartDate", LocalDateTime.of(2001, 6, 5, 11, 0),
-                "hearingEndDate", LocalDateTime.of(2001, 6, 5, 11, 0),
+            .data(Map.of("hearingStartDate", pastDate,
+                "hearingEndDate", pastDate,
                 "hearingStartDateConfirmation", correctStartDate,
                 "hearingEndDateConfirmation", correctEndDate,
-                "hearingDateConfirmation","No"))
+                "confirmHearingDate","No"))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "hearing-in-past");
@@ -68,24 +69,24 @@ public class ManageHearingsControllerHearingInPastMidEventTest extends AbstractC
     }
 
     @Test
-    void shouldPopulateHearingEndDateToCorrectOneWhenIncorrectAndToggledOn() {
+    void shouldCorrectHearingDatesWhenIncorrectAndPastHearingDatesIsEnabled() {
         given(featureToggleService.isAddHearingsInPastEnabled()).willReturn(true);
 
-        LocalDateTime correctEndDate = LocalDateTime.of(2050, 6, 5, 11, 0);
+        LocalDateTime correctEndDate = LocalDateTime.now().minusDays(2);
 
         CaseDetails caseDetails = CaseDetails.builder()
             .id(parseLong(CASE_ID))
-            .data(Map.of("hearingStartDate", LocalDateTime.of(2001, 6, 5, 11, 0),
-                "hearingEndDate", LocalDateTime.of(2001, 6, 5, 11, 0),
+            .data(Map.of("hearingStartDate", pastDate,
+                "hearingEndDate", pastDate,
                 "hearingEndDateConfirmation", correctEndDate,
-                "hearingDateConfirmation","No"))
+                "confirmHearingDate","No"))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "hearing-in-past");
 
         Map<String, Object> responseData = callbackResponse.getData();
 
-        assertThat(responseData.get("hearingStartDate").equals(LocalDateTime.of(2001, 6, 5, 11, 0)));
+        assertThat(responseData.get("hearingStartDate").equals(pastDate));
         assertThat(responseData.get("hearingEndDate").equals(correctEndDate));
     }
 
@@ -93,14 +94,14 @@ public class ManageHearingsControllerHearingInPastMidEventTest extends AbstractC
     void shouldPopulateHearingStartDateToCorrectOneWhenIncorrectAndToggledOn() {
         given(featureToggleService.isAddHearingsInPastEnabled()).willReturn(true);
 
-        LocalDateTime correctStartDate = LocalDateTime.of(2050, 6, 5, 11, 0);
+        LocalDateTime correctStartDate = LocalDateTime.now().plusDays(2);
 
         CaseDetails caseDetails = CaseDetails.builder()
             .id(parseLong(CASE_ID))
-            .data(Map.of("hearingStartDate", LocalDateTime.of(2001, 6, 5, 11, 0),
-                "hearingEndDate", LocalDateTime.of(2001, 6, 5, 11, 0),
+            .data(Map.of("hearingStartDate", pastDate,
+                "hearingEndDate", pastDate,
                 "hearingStartDateConfirmation", correctStartDate,
-                "hearingDateConfirmation","No"))
+                "confirmHearingDate","No"))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "hearing-in-past");
@@ -108,7 +109,7 @@ public class ManageHearingsControllerHearingInPastMidEventTest extends AbstractC
         Map<String, Object> responseData = callbackResponse.getData();
 
         assertThat(responseData.get("hearingStartDate").equals(correctStartDate));
-        assertThat(responseData.get("hearingEndDate").equals(LocalDateTime.of(2001, 6, 5, 11, 0)));
+        assertThat(responseData.get("hearingEndDate").equals(pastDate));
     }
 
     @Test
@@ -117,20 +118,19 @@ public class ManageHearingsControllerHearingInPastMidEventTest extends AbstractC
 
         CaseDetails caseDetails = CaseDetails.builder()
             .id(parseLong(CASE_ID))
-            .data(Map.of("hearingStartDate", LocalDateTime.of(2001, 6, 5, 11, 0),
-                "hearingStartDateConfirmation", LocalDateTime.of(2050, 6, 5, 11, 0),
-                "hearingDateConfirmation","Yes"))
+            .data(Map.of("hearingStartDate", pastDate,
+                "confirmHearingDate","Yes"))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "hearing-in-past");
 
         Map<String, Object> responseData = callbackResponse.getData();
 
-        assertThat(responseData.get("hearingStartDate").equals(LocalDateTime.of(2001, 6, 5, 11, 0)));
+        assertThat(responseData.get("hearingStartDate").equals(pastDate));
     }
 
     @Test
-    void shouldNotChangeHearingDateIfToggledOff() {
+    void shouldNotCorrectHearingDatesWhenPastHearingDatesIsDisabled() {
         given(featureToggleService.isAddHearingsInPastEnabled()).willReturn(false);
 
         CaseDetails caseDetails = CaseDetails.builder().data(Map.of()).build();

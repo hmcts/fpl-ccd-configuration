@@ -241,8 +241,8 @@ Scenario('HMCTS admin adds past hearing', async ({I, caseViewPage, manageHearing
   hearingStartDate = moment().subtract(5,'m').toDate();
   hearingEndDate = moment(hearingStartDate).subtract(5,'m').toDate();
 
-  let correctedHearingStartDate = moment().subtract(5,'M').toDate();
-  let correctedHearingEndDate = moment(correctedHearingStartDate).subtract(5,'M').toDate();
+  const correctedHearingStartDate = moment().subtract(5,'M').toDate();
+  const correctedHearingEndDate = moment(correctedHearingStartDate).subtract(5,'M').toDate();
 
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   await manageHearingsEventPage.enterHearingDetails({startDate: hearingStartDate, endDate: hearingEndDate});
@@ -250,7 +250,7 @@ Scenario('HMCTS admin adds past hearing', async ({I, caseViewPage, manageHearing
   await I.goToNextPage();
 
   await manageHearingsEventPage.selectHearingDateIncorrect();
-  await manageHearingsEventPage.enterCorrectHearingDate({startDate: correctedHearingStartDate, endDate: correctedHearingEndDate});
+  await manageHearingsEventPage.enterCorrectedHearingDate({startDate: correctedHearingStartDate, endDate: correctedHearingEndDate});
 
   await I.goToNextPage();
   await manageHearingsEventPage.enterJudgeAndLegalAdvisorDetails(hearingDetails[0]);

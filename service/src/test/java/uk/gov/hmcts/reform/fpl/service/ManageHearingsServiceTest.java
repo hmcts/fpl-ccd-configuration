@@ -612,8 +612,9 @@ class ManageHearingsServiceTest {
 
             Map<String, Object> startDateFields = service.populateFieldsWhenPastDateAdded(caseData);
 
-            assertThat(startDateFields).hasSize(2);
-            assertThat(startDateFields.get("showStartDateLabel")).isEqualTo("Yes");
+            assertThat(startDateFields).hasSize(3);
+            assertThat(startDateFields.get("showConfirmPastHearingDatesPage")).isEqualTo("Yes");
+            assertThat(startDateFields.get("startDateFlag")).isEqualTo("Yes");
             assertThat(startDateFields.get("hearingStartDateLabel")).isEqualTo("15 March 2010, 8:20pm");
         }
 
@@ -626,8 +627,9 @@ class ManageHearingsServiceTest {
 
             Map<String, Object> startDateFields = service.populateFieldsWhenPastDateAdded(caseData);
 
-            assertThat(startDateFields).hasSize(2);
-            assertThat(startDateFields.get("showEndDateLabel")).isEqualTo("Yes");
+            assertThat(startDateFields).hasSize(3);
+            assertThat(startDateFields.get("showConfirmPastHearingDatesPage")).isEqualTo("Yes");
+            assertThat(startDateFields.get("endDateFlag")).isEqualTo("Yes");
             assertThat(startDateFields.get("hearingEndDateLabel")).isEqualTo("15 March 2010, 8:20pm");
         }
 
@@ -640,10 +642,11 @@ class ManageHearingsServiceTest {
 
             Map<String, Object> hearingDateFields = service.populateFieldsWhenPastDateAdded(caseData);
 
-            assertThat(hearingDateFields).hasSize(4);
-            assertThat(hearingDateFields.get("showStartDateLabel")).isEqualTo("Yes");
+            assertThat(hearingDateFields).hasSize(5);
+            assertThat(hearingDateFields.get("showConfirmPastHearingDatesPage")).isEqualTo("Yes");
+            assertThat(hearingDateFields.get("startDateFlag")).isEqualTo("Yes");
             assertThat(hearingDateFields.get("hearingStartDateLabel")).isEqualTo("16 April 2011, 8:20pm");
-            assertThat(hearingDateFields.get("showEndDateLabel")).isEqualTo("Yes");
+            assertThat(hearingDateFields.get("endDateFlag")).isEqualTo("Yes");
             assertThat(hearingDateFields.get("hearingEndDateLabel")).isEqualTo("15 March 2010, 8:20pm");
         }
 
