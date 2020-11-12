@@ -22,8 +22,7 @@
         "caseLocalAuthority": "SA",
         "localAuthorityPolicy": {
           "Organisation": {
-            "OrganisationID": "${OrganisationID:-62LYJRF}",
-            "OrganisationName": "${OrganisationName:-Local authority name}"
+            "OrganisationID": "${OrganisationID:-62LYJRF}"
           },
           "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
         }

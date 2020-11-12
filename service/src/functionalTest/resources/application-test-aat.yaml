@@ -3,7 +3,6 @@ test-conf:
   fpl-url: http://fpl-case-service-aat.service.core-compute-aat.internal
   placeholders:
     OrganisationID: W9V61CP
-    OrganisationName: Swansea
   users:
     solicitor:
       name: james@swansea.gov.uk
