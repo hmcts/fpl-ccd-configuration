@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.events.cmo.AgreedCMOUploaded;
 import uk.gov.hmcts.reform.fpl.handlers.HmctsAdminNotificationHandler;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.AbstractJudge;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.CMOReadyToSealTemplate;
@@ -52,8 +53,7 @@ public class AgreedCMOUploadedEventHandler {
         JudgeAndLegalAdvisor judgeAttendingHearing = event.getHearing().getJudgeAndLegalAdvisor();
 
         if (judgeAttendingHearing.getJudgeEmailAddress() != null || caseData.hasAllocatedJudgeEmail()) {
-            AbstractJudge judge = judgeAttendingHearing.getJudgeEmailAddress() != null
-                ? judgeAttendingHearing : caseData.getAllocatedJudge();
+            AbstractJudge judge = getJudgeToNotify(judgeAttendingHearing, caseData.getAllocatedJudge());
 
             CMOReadyToSealTemplate template = contentProvider.buildTemplate(
                 event.getHearing(),
@@ -70,5 +70,9 @@ public class AgreedCMOUploadedEventHandler {
                 template,
                 caseData.getId().toString());
         }
+    }
+
+    private AbstractJudge getJudgeToNotify(JudgeAndLegalAdvisor judgeAttendingHearing, Judge allocatedJudge) {
+        return judgeAttendingHearing.getJudgeEmailAddress() != null ? judgeAttendingHearing : allocatedJudge;
     }
 }

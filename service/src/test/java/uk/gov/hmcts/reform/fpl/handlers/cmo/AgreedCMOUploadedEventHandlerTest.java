@@ -77,7 +77,7 @@ class AgreedCMOUploadedEventHandlerTest {
     void shouldSendNotificationForAdmin() {
         CaseData caseData = caseData();
         HearingBooking hearing = buildHearing(allocatedJudge);
-        CMOReadyToSealTemplate template = expectedAllocatedJudgeTemplate();
+        CMOReadyToSealTemplate template = expectedJudgeTemplate(allocatedJudge.getJudgeName());
 
         mockContentProvider(
             caseData.getAllRespondents(),
@@ -99,10 +99,10 @@ class AgreedCMOUploadedEventHandlerTest {
     }
 
     @Test
-    void shouldSendNotificationToTemporaryHearingJudge() {
+    void shouldSendNotificationToTemporaryHearingJudgeWhenTemporaryJudgeHasEmai() {
         CaseData caseData = caseData();
         HearingBooking hearing = buildHearing(tempJudge);
-        CMOReadyToSealTemplate template = expectedTemporaryHearingJudgeTemplate();
+        CMOReadyToSealTemplate template = expectedJudgeTemplate(tempJudge.getJudgeName());
 
         mockContentProvider(
             caseData.getAllRespondents(),
@@ -127,7 +127,7 @@ class AgreedCMOUploadedEventHandlerTest {
     void shouldSendNotificationToAllocatedJudgeWhenTemporaryJudgeHasNoEmail() {
         CaseData caseData = caseData();
         HearingBooking hearing = buildHearing(tempJudge.toBuilder().judgeEmailAddress(null).build());
-        CMOReadyToSealTemplate template = expectedAllocatedJudgeTemplate();
+        CMOReadyToSealTemplate template = expectedJudgeTemplate(allocatedJudge.getJudgeName());
 
         mockContentProvider(
             caseData.getAllRespondents(),
@@ -149,7 +149,7 @@ class AgreedCMOUploadedEventHandlerTest {
     }
 
     @Test
-    void shouldNotSendNotificationToAnyJudgeWhenNoEmailsAvailable() {
+    void shouldNotSendNotificationWhenNeitherJudgeEmailAddressSet() {
         CaseData caseData = caseData().toBuilder().allocatedJudge(
             allocatedJudge.toBuilder().judgeEmailAddress(null).build()).build();
         HearingBooking hearing = buildHearing(JudgeAndLegalAdvisor.builder().judgeEmailAddress(null).build());
@@ -190,20 +190,11 @@ class AgreedCMOUploadedEventHandlerTest {
         return builder.build();
     }
 
-    private static CMOReadyToSealTemplate expectedAllocatedJudgeTemplate() {
+    private static CMOReadyToSealTemplate expectedJudgeTemplate(String judgeName) {
         return new CMOReadyToSealTemplate()
             .setRespondentLastName("Smith")
             .setJudgeTitle("His Honour Judge")
-            .setJudgeName("Hastings")
-            .setCaseUrl(FAKE_URL)
-            .setSubjectLineWithHearingDate("Smith, 12345, Case management hearing, 1 February 2020");
-    }
-
-    private static CMOReadyToSealTemplate expectedTemporaryHearingJudgeTemplate() {
-        return new CMOReadyToSealTemplate()
-            .setRespondentLastName("Smith")
-            .setJudgeTitle("His Honour Judge")
-            .setJudgeName("Dave")
+            .setJudgeName(judgeName)
             .setCaseUrl(FAKE_URL)
             .setSubjectLineWithHearingDate("Smith, 12345, Case management hearing, 1 February 2020");
     }
