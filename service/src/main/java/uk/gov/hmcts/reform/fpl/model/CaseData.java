@@ -633,7 +633,9 @@ public class CaseData {
     private final List<ProceedingType> proceedingType;
     private final State closedStateRadioList;
 
+    @TimeNotMidnight(message = "Enter a valid end time", groups = PastHearingDatesGroup.class)
     private final LocalDateTime hearingEndDateConfirmation;
+    //@TimeNotMidnight(message = "Enter a valid start time", groups = PastHearingDatesGroup.class)
     private final LocalDateTime hearingStartDateConfirmation;
 
     @JsonIgnore

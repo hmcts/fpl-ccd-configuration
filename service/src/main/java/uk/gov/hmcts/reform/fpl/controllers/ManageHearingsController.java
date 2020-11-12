@@ -184,8 +184,14 @@ public class ManageHearingsController extends CallbackController {
 
         if (featureToggleService.isAddHearingsInPastEnabled() && caseDetails.getData().get("hearingDateConfirmation")
             .equals(NO.getValue())) {
+            List<String> errors = validateGroupService.validateGroup(caseData, PastHearingDatesGroup.class);
+            System.out.println("Errors is" + errors);
             caseDetails.getData().putAll(hearingsService.changeHearingDateToDateAddedOnConfirmationPage(caseData));
+
+            return respond(caseDetails, errors);
         }
+
+
         return respond(caseDetails);
     }
 
