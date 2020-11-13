@@ -614,7 +614,7 @@ class ManageHearingsServiceTest {
             LocalDateTime hearingStartDate = LocalDateTime.of(2010, 3, 15, 20, 20);
             LocalDateTime hearingEndDate = LocalDateTime.now().plusDays(3);
 
-            Map<String, Object> startDateFields = service.populateFieldsWhenPastDateAdded(hearingStartDate,
+            Map<String, Object> startDateFields = service.populateFieldsWhenPastHearingDateAdded(hearingStartDate,
                 hearingEndDate);
 
             Map<String, Object> extractedFields = Map.of(
@@ -630,7 +630,7 @@ class ManageHearingsServiceTest {
             LocalDateTime hearingStartDate = LocalDateTime.now().plusDays(3);
             LocalDateTime hearingEndDate = LocalDateTime.of(2010, 3, 15, 20, 20);
 
-            Map<String, Object> startDateFields = service.populateFieldsWhenPastDateAdded(hearingStartDate,
+            Map<String, Object> startDateFields = service.populateFieldsWhenPastHearingDateAdded(hearingStartDate,
                 hearingEndDate);
 
             Map<String, Object> extractedFields = Map.of(
@@ -647,7 +647,7 @@ class ManageHearingsServiceTest {
             LocalDateTime hearingStartDate = LocalDateTime.of(2011, 4, 16, 20, 20);
             LocalDateTime hearingEndDate = LocalDateTime.of(2010, 3, 15, 20, 20);
 
-            Map<String, Object> hearingDateFields = service.populateFieldsWhenPastDateAdded(hearingStartDate,
+            Map<String, Object> hearingDateFields = service.populateFieldsWhenPastHearingDateAdded(hearingStartDate,
                 hearingEndDate);
 
             Map<String, Object> extractedFields = Map.of(
@@ -658,7 +658,7 @@ class ManageHearingsServiceTest {
                 "hearingEndDateLabel","15 March 2010, 8:20pm");
 
             assertThat(hearingDateFields).hasSize(5);
-            assertThat(extractedFields).containsAllEntriesOf(extractedFields);
+            assertThat(hearingDateFields).containsAllEntriesOf(extractedFields);
         }
 
         @Test
@@ -669,7 +669,7 @@ class ManageHearingsServiceTest {
                 .hearingStartDateConfirmation(expectedHearingStartDate)
                 .build();
 
-            Map<String, Object> hearingDateFields = service.changeHearingDateToDateAddedOnConfirmationPage(caseData);
+            Map<String, Object> hearingDateFields = service.updateHearingDates(caseData);
 
             assertThat(hearingDateFields).containsEntry("hearingStartDate", expectedHearingStartDate);
         }
@@ -682,7 +682,7 @@ class ManageHearingsServiceTest {
                 .hearingEndDateConfirmation(expectedHearingEndDate)
                 .build();
 
-            Map<String, Object> hearingDateFields = service.changeHearingDateToDateAddedOnConfirmationPage(caseData);
+            Map<String, Object> hearingDateFields = service.updateHearingDates(caseData);
 
             assertThat(hearingDateFields).containsEntry("hearingEndDate", expectedHearingEndDate);
         }
@@ -699,7 +699,7 @@ class ManageHearingsServiceTest {
                 .hearingEndDateConfirmation(expectedHearingEndDate)
                 .build();
 
-            Map<String, Object> hearingDateFields = service.changeHearingDateToDateAddedOnConfirmationPage(caseData);
+            Map<String, Object> hearingDateFields = service.updateHearingDates(caseData);
 
             Map<String, Object> extractedFields = Map.of("hearingEndDate", expectedHearingEndDate,
                 "hearingStartDate", expectedHearingStartDate);

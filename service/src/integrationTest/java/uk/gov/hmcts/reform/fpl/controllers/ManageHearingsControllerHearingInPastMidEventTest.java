@@ -33,7 +33,7 @@ public class ManageHearingsControllerHearingInPastMidEventTest extends AbstractC
     @Test
     void shouldCorrectBothHearingDatesToCorrectOneWhenIncorrectAndPastHearingDatesIsEnabled() {
         LocalDateTime correctStartDate = LocalDateTime.now().minusDays(2);
-        LocalDateTime correctEndDate = LocalDateTime.now().minusDays(2);
+        LocalDateTime correctEndDate = LocalDateTime.now().minusDays(1);
 
         CaseDetails caseDetails = CaseDetails.builder()
             .id(parseLong(CASE_ID))

@@ -301,8 +301,8 @@ public class ManageHearingsService {
         return caseData.getPastAndTodayHearingDateList();
     }
 
-    public Map<String, Object> populateFieldsWhenPastDateAdded(LocalDateTime hearingStartDate,
-                                                               LocalDateTime hearingEndDate) {
+    public Map<String, Object> populateFieldsWhenPastHearingDateAdded(LocalDateTime hearingStartDate,
+                                                                      LocalDateTime hearingEndDate) {
         Map<String, Object> data = new HashMap<>();
         data.put("showConfirmPastHearingDatesPage", YES.getValue());
         LocalDateTime currentDateTime = LocalDateTime.now();
@@ -323,7 +323,7 @@ public class ManageHearingsService {
         return data;
     }
 
-    public Map<String, Object> changeHearingDateToDateAddedOnConfirmationPage(CaseData caseData) {
+    public Map<String, Object> updateHearingDates(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
 
         if (isNotEmpty(caseData.getHearingEndDateConfirmation()) && isNotEmpty(caseData
