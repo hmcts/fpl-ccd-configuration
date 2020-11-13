@@ -480,6 +480,140 @@ class UploadCMOServiceTest {
         assertThat(event).isEqualTo(new AgreedCMOUploaded(caseData, updatedHearing));
     }
 
+    // TODO: 20/10/2020 Delete tests below this when toggled on
+    @Test
+    void shouldReturnMultiPageDataWhenThereAreMultipleHearings() {
+        List<Element<HearingBooking>> hearings = hearings();
+
+        UploadCMOEventData initialPageData = service.getInitialPageData(hearings, List.of());
+
+        UploadCMOEventData expectedEventData = UploadCMOEventData.builder()
+            .pastHearingsForCMO(dynamicList(hearings.get(0).getId(),
+                hearings.get(1).getId(),
+                hearings.get(2).getId()))
+            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.MULTI)
+            .build();
+
+        assertThat(initialPageData).isEqualTo(expectedEventData);
+    }
+
+    @Test
+    void shouldReturnMultiPageDataWhenThereAreMultipleHearingsWithSomeHearingsAlreadyMappedToCMOs() {
+        List<Element<HearingBooking>> hearings = new ArrayList<>(hearings());
+
+        Element<CaseManagementOrder> cmo = element(CaseManagementOrder.builder().status(SEND_TO_JUDGE).build());
+        Element<HearingBooking> hearing = element(
+            hearing(CASE_MANAGEMENT, LocalDateTime.of(2020, 1, 15, 0, 0), cmo.getId())
+        );
+
+        hearings.add(hearing);
+
+        UploadCMOEventData initialPageData = service.getInitialPageData(hearings, List.of(cmo));
+
+        UploadCMOEventData expectedEventData = UploadCMOEventData.builder()
+            .pastHearingsForCMO(dynamicList(hearings.get(0).getId(),
+                hearings.get(1).getId(),
+                hearings.get(2).getId()))
+            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.MULTI)
+            .multiHearingsWithCMOs("Case management hearing, 15 January 2020")
+            .showHearingsMultiTextArea(YesNo.YES)
+            .build();
+
+        assertThat(initialPageData).isEqualTo(expectedEventData);
+    }
+
+    @Test
+    void shouldReturnSinglePageDataWhenThereIsOneRemainingHearing() {
+        List<Element<HearingBooking>> hearings = List.of(element(
+            hearing(CASE_MANAGEMENT, LocalDateTime.of(2020, 2, 1, 0, 0))
+        ));
+
+        UploadCMOEventData initialPageData = service.getInitialPageData(hearings, List.of());
+
+        UploadCMOEventData expectedEventData = UploadCMOEventData.builder()
+            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.SINGLE)
+            .cmoHearingInfo("Send agreed CMO for Case management hearing, 1 February 2020."
+                + "\nThis must have been discussed by all parties at the hearing.")
+            .cmoJudgeInfo("His Honour Judge Dredd")
+            .build();
+
+        assertThat(initialPageData).isEqualTo(expectedEventData);
+    }
+
+    @Test
+    void shouldReturnSinglePageDataWhenThereIsOneRemainingHearingWithSomeHearingsAlreadyMappedToCMOs() {
+        Element<CaseManagementOrder> cmo = element(CaseManagementOrder.builder().status(SEND_TO_JUDGE).build());
+        List<Element<HearingBooking>> hearings = List.of(
+            element(hearing(CASE_MANAGEMENT, LocalDateTime.of(2020, 2, 1, 0, 0))),
+            element(hearing(CASE_MANAGEMENT, LocalDateTime.of(2020, 2, 2, 0, 0), cmo.getId()))
+        );
+
+        UploadCMOEventData initialPageData = service.getInitialPageData(hearings, List.of(cmo));
+
+        UploadCMOEventData expectedEventData = UploadCMOEventData.builder()
+            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.SINGLE)
+            .cmoHearingInfo("Send agreed CMO for Case management hearing, 1 February 2020."
+                + "\nThis must have been discussed by all parties at the hearing.")
+            .cmoJudgeInfo("His Honour Judge Dredd")
+            .singleHearingWithCMO("Case management hearing, 2 February 2020")
+            .showHearingsSingleTextArea(YesNo.YES)
+            .build();
+
+        assertThat(initialPageData).isEqualTo(expectedEventData);
+    }
+
+    @Test
+    void shouldReturnPageShowHideFieldOnlyWhenThereAreNoRemainingHearingsWithoutCmoMappings() {
+        UploadCMOEventData initialPageData = service.getInitialPageData(List.of(), List.of());
+
+        UploadCMOEventData expectedEventData = UploadCMOEventData.builder()
+            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.NONE)
+            .build();
+
+        assertThat(initialPageData).isEqualTo(expectedEventData);
+    }
+
+    @Test
+    void shouldNotIncludeReturnedHearingsInCMOTextArea() {
+        List<Element<HearingBooking>> hearings = new ArrayList<>(hearings());
+
+        Element<CaseManagementOrder> cmo = element(CaseManagementOrder.builder().status(SEND_TO_JUDGE).build());
+        Element<CaseManagementOrder> returnedCMO = element(CaseManagementOrder.builder().status(RETURNED).build());
+        List<Element<HearingBooking>> additionalHearings = List.of(
+            element(hearing(
+                CASE_MANAGEMENT, LocalDateTime.of(2020, 1, 15, 0, 0), cmo.getId())
+            ),
+            element(hearing(
+                CASE_MANAGEMENT, LocalDateTime.of(2020, 1, 16, 0, 0), returnedCMO.getId())
+            )
+        );
+
+        hearings.addAll(additionalHearings);
+
+        UploadCMOEventData initialPageData = service.getInitialPageData(hearings, List.of(cmo, returnedCMO));
+
+        DynamicListElement listElement = DynamicListElement.builder()
+            .code(additionalHearings.get(1).getId())
+            .label("Case management hearing, 16 January 2020")
+            .build();
+
+        DynamicList dynamicList = dynamicList(
+            hearings.get(0).getId(),
+            hearings.get(1).getId(),
+            hearings.get(2).getId(),
+            listElement
+        );
+
+        UploadCMOEventData expectedEventData = UploadCMOEventData.builder()
+            .pastHearingsForCMO(dynamicList)
+            .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.MULTI)
+            .multiHearingsWithCMOs("Case management hearing, 15 January 2020")
+            .showHearingsMultiTextArea(YesNo.YES)
+            .build();
+
+        assertThat(initialPageData).isEqualTo(expectedEventData);
+    }
+
     @Test
     void shouldBuildDraftEventWhenNewCMOIsDraft() {
         List<Element<CaseManagementOrder>> unsealedOrders = List.of(

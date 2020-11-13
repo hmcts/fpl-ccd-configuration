@@ -200,7 +200,6 @@ class OrganisationServiceTest {
         void shouldReturnOrganisationPolicyWhenUserRegisteredInOrganisation() {
             OrganisationPolicy expectedOrganisationPolicy = OrganisationPolicy.builder()
                 .organisation(uk.gov.hmcts.reform.ccd.model.Organisation.builder()
-                    .organisationName(POPULATED_ORGANISATION.getName())
                     .organisationID(POPULATED_ORGANISATION.getOrganisationIdentifier())
                     .build())
                 .orgPolicyCaseAssignedRole("[LASOLICITOR]")
