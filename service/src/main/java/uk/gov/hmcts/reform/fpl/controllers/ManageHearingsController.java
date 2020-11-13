@@ -163,8 +163,7 @@ public class ManageHearingsController extends CallbackController {
 
         List<String> errors;
 
-        if (featureToggleService.isAddHearingsInPastEnabled() && (caseData.getHearingOption() == NEW_HEARING
-            || isEmpty(caseData.getHearingOption()))) {
+        if (featureToggleService.isAddHearingsInPastEnabled() && isAddingNewHearing(caseData)) {
             errors = pastHearingDatesValidatorService.validateHearingDates(caseData.getHearingStartDate(),
                 caseData.getHearingEndDate());
         } else {
@@ -285,5 +284,9 @@ public class ManageHearingsController extends CallbackController {
         return JudgeAndLegalAdvisor.builder()
             .allocatedJudgeLabel(assignedJudgeLabel)
             .build();
+    }
+
+    private boolean isAddingNewHearing(CaseData caseData) {
+        return isEmpty(caseData.getHearingOption()) || NEW_HEARING.equals(caseData.getHearingOption());
     }
 }
