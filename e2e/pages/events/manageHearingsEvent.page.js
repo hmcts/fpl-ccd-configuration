@@ -117,11 +117,11 @@ module.exports = {
     I.click(this.fields.dontSendNotice);
   },
 
-  async selectHearingDateIncorrect() {
+  selectHearingDateIncorrect() {
     I.click(this.fields.confirmHearingDate.hearingDateIncorrect);
   },
 
-  async enterCorrectedHearingDate(hearingDetails) {
+  enterCorrectedHearingDate(hearingDetails) {
     I.fillDateAndTime(hearingDetails.startDate, this.fields.correctedStartDate);
     I.fillDateAndTime(hearingDetails.endDate, this.fields.correctedEndDate);
   },
