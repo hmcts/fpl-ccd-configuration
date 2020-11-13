@@ -82,10 +82,36 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
+    "ListElementCode": "allocatedJudgeLabel",
+    "FieldType": "Text",
+    "ElementLabel": "Allocated judge or magistrate",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "hearingJudgeLabel",
+    "FieldType": "Text",
+    "ElementLabel": "Hearing judge or magistrate",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "legalAdvisorLabel",
+    "FieldType": "Text",
+    "ElementLabel": "Justices' Legal Adviser's full name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
     "ListElementCode": "judgeAndLegalAdvisor",
     "FieldType": "JudgeAndLegalAdvisor",
     "ElementLabel": "Judge and Justices' Legal Adviser",
-    "SecurityClassification": "Public"
+    "FieldShowCondition": "hearingJudgeLabel!=\"*\" AND allocatedJudgeLabel!=\"*\"",
+    "SecurityClassification": "Public",
+    "Comment" : "Not shown for new/edited hearings after FPLA-2030, text labels shown instead of complex type (preferred UX)"
   },
   {
     "LiveFrom": "01/01/2017",

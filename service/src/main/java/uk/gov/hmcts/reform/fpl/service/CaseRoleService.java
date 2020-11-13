@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.exceptions.GrantCaseAccessException;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.util.Collections;
 import java.util.List;
@@ -92,9 +93,15 @@ public class CaseRoleService {
         try {
             final String userToken = idam.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
             final String serviceToken = authTokenGenerator.generate();
+
+            final String organisationId = organisationService.findOrganisation()
+                .map(Organisation::getOrganisationIdentifier)
+                .orElse(null);
+
             List<CaseAssignedUserRoleWithOrganisation> caseAssignedRoles = users.stream()
                 .map(user -> CaseAssignedUserRoleWithOrganisation.builder()
                     .caseDataId(caseId)
+                    .organisationId(organisationId)
                     .userId(user)
                     .caseRole(CaseRole.LASOLICITOR.formattedName())
                     .build())
