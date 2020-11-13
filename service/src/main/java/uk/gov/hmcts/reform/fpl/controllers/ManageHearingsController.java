@@ -172,7 +172,8 @@ public class ManageHearingsController extends CallbackController {
         }
 
         if (caseData.isHearingDateInPast() && featureToggleService.isAddHearingsInPastEnabled()) {
-            caseDetails.getData().putAll(hearingsService.populateFieldsWhenPastHearingDateAdded(caseData.getHearingStartDate(),
+            caseDetails.getData().putAll(hearingsService.populateFieldsWhenPastHearingDateAdded(caseData
+                    .getHearingStartDate(),
                 caseData.getHearingStartDate()));
         }
 
