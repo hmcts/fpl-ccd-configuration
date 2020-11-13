@@ -51,7 +51,7 @@ public class ManageHearingsControllerValidateHearingDatesMidEventTest extends Ab
     }
 
     @Test
-    void shouldThrowErrorsWhenInvalidHearingDatesEnteredOnAddHearingIfToggledOff() {
+    void shouldThrowErrorsWhenInvalidHearingDatesEnteredOnAddHearingAndPastHearingDatesIsDisabled() {
         given(featureToggleService.isAddHearingsInPastEnabled()).willReturn(false);
 
         CaseDetails caseDetails = CaseDetails.builder()
@@ -69,7 +69,7 @@ public class ManageHearingsControllerValidateHearingDatesMidEventTest extends Ab
     }
 
     @Test
-    void shouldNotThrowErrorsWhenPastHearingDatesEnteredOnAddHearingIfToggledOn() {
+    void shouldNotThrowErrorsWhenPastHearingDatesEnteredOnAddHearingAndPastHearingDatesIsEnabled() {
         given(featureToggleService.isAddHearingsInPastEnabled()).willReturn(true);
 
         CaseDetails caseDetails = CaseDetails.builder()
@@ -85,7 +85,7 @@ public class ManageHearingsControllerValidateHearingDatesMidEventTest extends Ab
     }
 
     @Test
-    void shouldNotThrowErrorsWhenPastHearingDateEnteredOnFirstHearingAddedAndToggledOn() {
+    void shouldNotThrowErrorsWhenPastHearingDateEnteredOnFirstHearingAndPastHearingDatesIsEnabled() {
         given(featureToggleService.isAddHearingsInPastEnabled()).willReturn(true);
 
         CaseDetails caseDetails = CaseDetails.builder()
@@ -100,7 +100,7 @@ public class ManageHearingsControllerValidateHearingDatesMidEventTest extends Ab
     }
 
     @Test
-    void shouldThrowOnlyInvalidTimeErrorsWhenPastHearingDatesEnteredOnAddHearingIfToggledOn() {
+    void shouldThrowOnlyInvalidTimeErrorsWhenPastHearingDatesEnteredOnAddHearingAndPastHearingDatesIsEnabled() {
         given(featureToggleService.isAddHearingsInPastEnabled()).willReturn(true);
 
         LocalDateTime dateWithInvalidTime = LocalDateTime.of(1990, 10, 2, 00, 00);
@@ -119,7 +119,7 @@ public class ManageHearingsControllerValidateHearingDatesMidEventTest extends Ab
     }
 
     @Test
-    void shouldPopulateConfirmationHearingFieldsWhenHearingDateInPastAndToggledOn() {
+    void shouldPopulateConfirmationHearingFieldsWhenHearingDateInPastAndPastHearingDatesIsEnabled() {
         given(featureToggleService.isAddHearingsInPastEnabled()).willReturn(true);
 
         CaseDetails caseDetails = CaseDetails.builder()
@@ -138,7 +138,7 @@ public class ManageHearingsControllerValidateHearingDatesMidEventTest extends Ab
     }
 
     @Test
-    void shouldNotPopulateConfirmationHearingFieldsWhenHearingDateInPastAndToggledOff() {
+    void shouldNotPopulateConfirmationHearingFieldsWhenHearingDateInPastAndPastHearingDatesIsDisabled() {
         given(featureToggleService.isAddHearingsInPastEnabled()).willReturn(false);
 
         CaseDetails caseDetails = CaseDetails.builder()
@@ -156,7 +156,7 @@ public class ManageHearingsControllerValidateHearingDatesMidEventTest extends Ab
     }
 
     @Test
-    void shouldNotPopulateConfirmationHearingFieldsWhenHearingDateInFutureAndToggledOn() {
+    void shouldNotPopulateConfirmationHearingFieldsWhenHearingDateInFutureAndPastHearingDatesIsEnabled() {
         given(featureToggleService.isAddHearingsInPastEnabled()).willReturn(true);
 
         CaseDetails caseDetails = CaseDetails.builder()
@@ -174,7 +174,7 @@ public class ManageHearingsControllerValidateHearingDatesMidEventTest extends Ab
     }
 
     @Test
-    void shouldNotThrowWhenValidHearingDatesEntered() {
+    void shouldNotThrowErrorsWhenValidHearingDatesEntered() {
         CaseDetails caseDetails = CaseDetails.builder()
             .id(parseLong(CASE_ID))
             .data(Map.of("hearingStartDate", futureDate,

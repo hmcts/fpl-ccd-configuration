@@ -605,49 +605,43 @@ class ManageHearingsServiceTest {
 
         @Test
         void shouldSetStartDateHearingFieldsWhenHearingStartDateIsInThePast() {
-            CaseData caseData = CaseData.builder()
-                .hearingStartDate(LocalDateTime.of(2010, 3, 15, 20, 20))
-                .hearingEndDate(LocalDateTime.now().plusDays(3))
-                .build();
+            LocalDateTime hearingStartDate = LocalDateTime.of(2010, 3, 15, 20, 20);
+            LocalDateTime hearingEndDate = LocalDateTime.now().plusDays(3);
 
-            Map<String, Object> startDateFields = service.populateFieldsWhenPastDateAdded(caseData);
+            Map<String, Object> startDateFields = service.populateFieldsWhenPastDateAdded(hearingStartDate, hearingEndDate);
 
             assertThat(startDateFields).hasSize(3);
-            assertThat(startDateFields.get("showConfirmPastHearingDatesPage")).isEqualTo("Yes");
-            assertThat(startDateFields.get("startDateFlag")).isEqualTo("Yes");
-            assertThat(startDateFields.get("hearingStartDateLabel")).isEqualTo("15 March 2010, 8:20pm");
+            assertThat(startDateFields).containsEntry("showConfirmPastHearingDatesPage", "Yes");
+            assertThat(startDateFields).containsEntry("startDateFlag", "Yes");
+            assertThat(startDateFields).containsEntry("hearingStartDateLabel", "15 March 2010, 8:20pm");
         }
 
         @Test
         void shouldSetEndDateHearingFieldsWhenHearingEndDateIsInThePast() {
-            CaseData caseData = CaseData.builder()
-                .hearingStartDate(LocalDateTime.now().plusDays(3))
-                .hearingEndDate(LocalDateTime.of(2010, 3, 15, 20, 20))
-                .build();
+            LocalDateTime hearingStartDate = LocalDateTime.now().plusDays(3);
+            LocalDateTime hearingEndDate = LocalDateTime.of(2010, 3, 15, 20, 20);
 
-            Map<String, Object> startDateFields = service.populateFieldsWhenPastDateAdded(caseData);
+            Map<String, Object> startDateFields = service.populateFieldsWhenPastDateAdded(hearingStartDate, hearingEndDate);
 
             assertThat(startDateFields).hasSize(3);
-            assertThat(startDateFields.get("showConfirmPastHearingDatesPage")).isEqualTo("Yes");
-            assertThat(startDateFields.get("endDateFlag")).isEqualTo("Yes");
-            assertThat(startDateFields.get("hearingEndDateLabel")).isEqualTo("15 March 2010, 8:20pm");
+            assertThat(startDateFields).containsEntry("showConfirmPastHearingDatesPage", "Yes");
+            assertThat(startDateFields).containsEntry("endDateFlag", "Yes");
+            assertThat(startDateFields).containsEntry("hearingEndDateLabel", "15 March 2010, 8:20pm");
         }
 
         @Test
         void shouldSetBothStartAndEndHearingFieldsWhenBothHearingDatesAreInThePast() {
-            CaseData caseData = CaseData.builder()
-                .hearingStartDate(LocalDateTime.of(2011, 4, 16, 20, 20))
-                .hearingEndDate(LocalDateTime.of(2010, 3, 15, 20, 20))
-                .build();
+            LocalDateTime hearingStartDate = LocalDateTime.of(2011, 4, 16, 20, 20);
+            LocalDateTime hearingEndDate = LocalDateTime.of(2010, 3, 15, 20, 20);
 
-            Map<String, Object> hearingDateFields = service.populateFieldsWhenPastDateAdded(caseData);
+            Map<String, Object> hearingDateFields = service.populateFieldsWhenPastDateAdded(hearingStartDate, hearingEndDate);
 
             assertThat(hearingDateFields).hasSize(5);
-            assertThat(hearingDateFields.get("showConfirmPastHearingDatesPage")).isEqualTo("Yes");
-            assertThat(hearingDateFields.get("startDateFlag")).isEqualTo("Yes");
-            assertThat(hearingDateFields.get("hearingStartDateLabel")).isEqualTo("16 April 2011, 8:20pm");
-            assertThat(hearingDateFields.get("endDateFlag")).isEqualTo("Yes");
-            assertThat(hearingDateFields.get("hearingEndDateLabel")).isEqualTo("15 March 2010, 8:20pm");
+            assertThat(hearingDateFields).containsEntry("showConfirmPastHearingDatesPage", "Yes");
+            assertThat(hearingDateFields).containsEntry("startDateFlag", "Yes");
+            assertThat(hearingDateFields).containsEntry("hearingStartDateLabel", "16 April 2011, 8:20pm");
+            assertThat(hearingDateFields).containsEntry("endDateFlag", "Yes");
+            assertThat(hearingDateFields).containsEntry("hearingEndDateLabel", "15 March 2010, 8:20pm");
         }
 
         @Test
@@ -660,7 +654,7 @@ class ManageHearingsServiceTest {
 
             Map<String, Object> hearingDateFields = service.changeHearingDateToDateAddedOnConfirmationPage(caseData);
 
-            assertThat(hearingDateFields.get("hearingStartDate")).isEqualTo(expectedHearingStartDate);
+            assertThat(hearingDateFields).containsEntry("hearingStartDate", expectedHearingStartDate);
         }
 
         @Test
@@ -673,7 +667,7 @@ class ManageHearingsServiceTest {
 
             Map<String, Object> hearingDateFields = service.changeHearingDateToDateAddedOnConfirmationPage(caseData);
 
-            assertThat(hearingDateFields.get("hearingEndDate")).isEqualTo(expectedHearingEndDate);
+            assertThat(hearingDateFields).containsEntry("hearingEndDate", expectedHearingEndDate);
         }
 
         @Test
@@ -690,8 +684,8 @@ class ManageHearingsServiceTest {
 
             Map<String, Object> hearingDateFields = service.changeHearingDateToDateAddedOnConfirmationPage(caseData);
 
-            assertThat(hearingDateFields.get("hearingEndDate")).isEqualTo(expectedHearingEndDate);
-            assertThat(hearingDateFields.get("hearingStartDate")).isEqualTo(expectedHearingStartDate);
+            assertThat(hearingDateFields).containsEntry("hearingEndDate", expectedHearingEndDate);
+            assertThat(hearingDateFields).containsEntry("hearingStartDate", expectedHearingStartDate);
         }
     }
 

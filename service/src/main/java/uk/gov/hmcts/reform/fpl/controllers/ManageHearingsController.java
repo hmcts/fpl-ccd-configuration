@@ -172,7 +172,8 @@ public class ManageHearingsController extends CallbackController {
         }
 
         if (caseData.isHearingDateInPast() && featureToggleService.isAddHearingsInPastEnabled()) {
-            caseDetails.getData().putAll(hearingsService.populateFieldsWhenPastDateAdded(caseData));
+            caseDetails.getData().putAll(hearingsService.populateFieldsWhenPastDateAdded(caseData.getHearingStartDate(),
+                caseData.getHearingStartDate()));
         }
 
         return respond(caseDetails, errors);
@@ -184,8 +185,7 @@ public class ManageHearingsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        if (featureToggleService.isAddHearingsInPastEnabled() && NO.getValue()
-            .equals(caseDetails.getData().get("confirmHearingDate"))) {
+        if (NO.getValue().equals(caseDetails.getData().get("confirmHearingDate"))) {
 
             List<String> errors = pastHearingDatesValidatorService.validateHearingDates(caseData
                     .getHearingStartDateConfirmation(),
@@ -194,7 +194,6 @@ public class ManageHearingsController extends CallbackController {
 
             return respond(caseDetails, errors);
         }
-
 
         return respond(caseDetails);
     }

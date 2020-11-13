@@ -76,6 +76,12 @@ public class ManageHearingsService {
     public static final String PAST_HEARING_LIST = "pastAndTodayHearingDateList";
     public static final String FUTURE_HEARING_LIST = "futureAndTodayHearingDateList";
     public static final String HAS_EXISTING_HEARINGS_FLAG = "hasExistingHearings";
+    public static final String HEARING_START_DATE = "hearingStartDate";
+    public static final String HEARING_END_DATE = "hearingEndDate";
+    public static final String HEARING_START_DATE_LABEL = "hearingStartDateLabel";
+    public static final String HEARING_END_DATE_LABEL = "hearingEndDateLabel";
+    public static final String START_DATE_FLAG = "startDateFlag";
+    public static final String END_DATE_FLAG = "endDateFlag";
 
     public Map<String, Object> populatePastAndFutureHearingLists(CaseData caseData) {
         List<Element<HearingBooking>> futureHearings = caseData.getFutureHearings();
@@ -189,8 +195,8 @@ public class ManageHearingsService {
         }
 
         caseFields.put("hearingType", hearingBooking.getType());
-        caseFields.put("hearingStartDate", hearingBooking.getStartDate());
-        caseFields.put("hearingEndDate", hearingBooking.getEndDate());
+        caseFields.put(HEARING_START_DATE, hearingBooking.getStartDate());
+        caseFields.put(HEARING_END_DATE, hearingBooking.getEndDate());
         caseFields.put("judgeAndLegalAdvisor", judgeAndLegalAdvisor);
 
         if (hearingBooking.getPreviousHearingVenue() == null
@@ -257,8 +263,8 @@ public class ManageHearingsService {
             "hearingTypeDetails",
             "hearingVenue",
             "hearingVenueCustom",
-            "hearingStartDate",
-            "hearingEndDate",
+            HEARING_START_DATE,
+            HEARING_END_DATE,
             "sendNoticeOfHearing",
             "judgeAndLegalAdvisor",
             "hearingOption",
@@ -275,14 +281,14 @@ public class ManageHearingsService {
             HAS_EXISTING_HEARINGS_FLAG,
             HAS_FUTURE_HEARING_FLAG,
             "hearingReListOption",
-            "hearingStartDateLabel",
+            HEARING_START_DATE_LABEL,
             "pageShow",
-            "hearingEndDateLabel",
+            HEARING_END_DATE_LABEL,
             "confirmHearingDate",
             "hearingStartDateConfirmation",
             "hearingEndDateConfirmation",
-            "startDateFlag",
-            "endDateFlag");
+            START_DATE_FLAG,
+            END_DATE_FLAG);
     }
 
     public Object getSelectedDynamicListType(CaseData caseData) {
@@ -293,26 +299,22 @@ public class ManageHearingsService {
         return caseData.getPastAndTodayHearingDateList();
     }
 
-    public Map<String, Object> populateFieldsWhenPastDateAdded(CaseData caseData) {
+    public Map<String, Object> populateFieldsWhenPastDateAdded(LocalDateTime hearingStartDate, LocalDateTime hearingEndDate) {
         Map<String, Object> data = new HashMap<>();
         data.put("showConfirmPastHearingDatesPage", YES.getValue());
+        LocalDateTime currentDateTime = LocalDateTime.now();
 
-        if (caseData.getHearingEndDate().isBefore(LocalDateTime.now()) && caseData.getHearingStartDate()
-            .isBefore(LocalDateTime.now())) {
-            data.put("hearingStartDateLabel", formatLocalDateTimeBaseUsingFormat(caseData
-                .getHearingStartDate(), DATE_TIME));
-            data.put("hearingEndDateLabel", formatLocalDateTimeBaseUsingFormat(caseData
-                .getHearingEndDate(), DATE_TIME));
-            data.put("startDateFlag", YES.getValue());
-            data.put("endDateFlag", YES.getValue());
-        } else if (caseData.getHearingStartDate().isBefore(LocalDateTime.now())) {
-            data.put("hearingStartDateLabel", formatLocalDateTimeBaseUsingFormat(caseData
-                .getHearingStartDate(), DATE_TIME));
-            data.put("startDateFlag", YES.getValue());
-        } else if (caseData.getHearingEndDate().isBefore(LocalDateTime.now())) {
-            data.put("hearingEndDateLabel", formatLocalDateTimeBaseUsingFormat(caseData
-                .getHearingEndDate(), DATE_TIME));
-            data.put("endDateFlag", YES.getValue());
+        if (hearingEndDate.isBefore(currentDateTime) && hearingStartDate.isBefore(currentDateTime)) {
+            data.put(HEARING_START_DATE_LABEL, formatLocalDateTimeBaseUsingFormat(hearingStartDate, DATE_TIME));
+            data.put(HEARING_END_DATE_LABEL, formatLocalDateTimeBaseUsingFormat(hearingEndDate, DATE_TIME));
+            data.put(START_DATE_FLAG, YES.getValue());
+            data.put(END_DATE_FLAG, YES.getValue());
+        } else if (hearingStartDate.isBefore(currentDateTime)) {
+            data.put(HEARING_START_DATE_LABEL, formatLocalDateTimeBaseUsingFormat(hearingStartDate, DATE_TIME));
+            data.put(START_DATE_FLAG, YES.getValue());
+        } else if (hearingEndDate.isBefore(currentDateTime)) {
+            data.put(HEARING_END_DATE_LABEL, formatLocalDateTimeBaseUsingFormat(hearingEndDate, DATE_TIME));
+            data.put(END_DATE_FLAG, YES.getValue());
         }
 
         return data;
@@ -323,12 +325,12 @@ public class ManageHearingsService {
 
         if (isNotEmpty(caseData.getHearingEndDateConfirmation()) && isNotEmpty(caseData
             .getHearingStartDateConfirmation())) {
-            data.put("hearingStartDate", caseData.getHearingStartDateConfirmation());
-            data.put("hearingEndDate", caseData.getHearingEndDateConfirmation());
+            data.put(HEARING_START_DATE, caseData.getHearingStartDateConfirmation());
+            data.put(HEARING_END_DATE, caseData.getHearingEndDateConfirmation());
         } else if (isNotEmpty(caseData.getHearingStartDateConfirmation())) {
-            data.put("hearingStartDate", caseData.getHearingStartDateConfirmation());
+            data.put(HEARING_START_DATE, caseData.getHearingStartDateConfirmation());
         } else if (isNotEmpty(caseData.getHearingEndDateConfirmation())) {
-            data.put("hearingEndDate", caseData.getHearingEndDateConfirmation());
+            data.put(HEARING_END_DATE, caseData.getHearingEndDateConfirmation());
         }
 
         return data;

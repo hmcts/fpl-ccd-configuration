@@ -17,16 +17,12 @@ public class PastHearingDatesValidatorService {
     public List<String> validateHearingDates(LocalDateTime hearingStartDate, LocalDateTime hearingEndDate) {
         List<String> errors = new ArrayList<>();
 
-        if (hearingStartDate != null) {
-            if (!isValid(hearingStartDate)) {
-                errors.add("Enter a valid start time");
-            }
+        if (hearingStartDate != null && !isValid(hearingStartDate)) {
+            errors.add("Enter a valid start time");
         }
 
-        if (hearingEndDate != null) {
-            if (!isValid(hearingEndDate)) {
+        if (hearingEndDate != null &!isValid(hearingEndDate)) {
                 errors.add("Enter a valid end time");
-            }
         }
 
         return errors;
