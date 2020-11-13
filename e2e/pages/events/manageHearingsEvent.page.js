@@ -120,7 +120,7 @@ module.exports = {
     I.click(this.fields.confirmHearingDate.hearingDateIncorrect);
   },
 
-   enterCorrectedHearingDate(hearingDetails) {
+  enterCorrectedHearingDate(hearingDetails) {
     I.fillDateAndTime(hearingDetails.startDate, this.fields.correctedStartDate);
     I.fillDateAndTime(hearingDetails.endDate, this.fields.correctedEndDate);
   },
