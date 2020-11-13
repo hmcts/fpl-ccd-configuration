@@ -186,7 +186,6 @@ public class ManageHearingsController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         if (NO.getValue().equals(caseDetails.getData().get("confirmHearingDate"))) {
-
             List<String> errors = pastHearingDatesValidatorService.validateHearingDates(caseData
                     .getHearingStartDateConfirmation(),
                 caseData.getHearingEndDateConfirmation());

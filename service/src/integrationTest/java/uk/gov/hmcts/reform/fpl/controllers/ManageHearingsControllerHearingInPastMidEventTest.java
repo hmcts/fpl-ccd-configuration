@@ -7,7 +7,9 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Map;
 
 import static java.lang.Long.parseLong;
@@ -101,5 +103,44 @@ public class ManageHearingsControllerHearingInPastMidEventTest extends AbstractC
         Map<String, Object> responseData = callbackResponse.getData();
 
         assertThat(responseData.get("hearingStartDate").equals(pastDate));
+    }
+
+    @Test
+    void shouldThrowValidationErrorsWhenCorrectedHearingDateTimeIsInvalid() {
+        LocalDateTime correctStartDate = LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT);
+        LocalDateTime correctEndDate = LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(parseLong(CASE_ID))
+            .data(Map.of("hearingStartDate", pastDate,
+                "hearingEndDate", pastDate,
+                "hearingStartDateConfirmation", correctStartDate,
+                "hearingEndDateConfirmation", correctEndDate,
+                "confirmHearingDate","No"))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "hearing-in-past");
+
+        assertThat(callbackResponse.getErrors().contains("Enter a valid start time"));
+        assertThat(callbackResponse.getErrors().contains("Enter a valid end time"));
+    }
+
+    @Test
+    void shouldNotThrowValidationErrorsWhenCorrectedHearingDateTimeIsValid() {
+        LocalDateTime correctStartDate = LocalDateTime.now().plusDays(2);
+        LocalDateTime correctEndDate = LocalDateTime.now().plusDays(2);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(parseLong(CASE_ID))
+            .data(Map.of("hearingStartDate", pastDate,
+                "hearingEndDate", pastDate,
+                "hearingStartDateConfirmation", correctStartDate,
+                "hearingEndDateConfirmation", correctEndDate,
+                "confirmHearingDate","No"))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "hearing-in-past");
+
+        assertThat(callbackResponse.getErrors().isEmpty());
     }
 }
