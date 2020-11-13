@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -50,15 +52,16 @@ public class ManageHearingsControllerHearingInPastMidEventTest extends AbstractC
         assertThat(responseData.get("hearingEndDate").equals(correctEndDate));
     }
 
-    @Test
-    void shouldCorrectHearingEndDateWhenIncorrect() {
-        LocalDateTime correctEndDate = LocalDateTime.now().minusDays(2);
+    @ParameterizedTest
+    @ValueSource(strings = {"hearingEndDateConfirmation", "hearingStartDateConfirmation"})
+    void shouldCorrectHearingDateWhenIncorrect(String hearingDateConfirmation) {
+        LocalDateTime correctDate = LocalDateTime.now().minusDays(2);
 
         CaseDetails caseDetails = CaseDetails.builder()
             .id(parseLong(CASE_ID))
             .data(Map.of("hearingStartDate", pastDate,
                 "hearingEndDate", pastDate,
-                "hearingEndDateConfirmation", correctEndDate,
+                hearingDateConfirmation, correctDate,
                 "confirmHearingDate","No"))
             .build();
 
@@ -67,27 +70,7 @@ public class ManageHearingsControllerHearingInPastMidEventTest extends AbstractC
         Map<String, Object> responseData = callbackResponse.getData();
 
         assertThat(responseData.get("hearingStartDate").equals(pastDate));
-        assertThat(responseData.get("hearingEndDate").equals(correctEndDate));
-    }
-
-    @Test
-    void shouldCorrectHearingStartDateToCorrectOneWhenIncorrect() {
-        LocalDateTime correctStartDate = LocalDateTime.now().plusDays(2);
-
-        CaseDetails caseDetails = CaseDetails.builder()
-            .id(parseLong(CASE_ID))
-            .data(Map.of("hearingStartDate", pastDate,
-                "hearingEndDate", pastDate,
-                "hearingStartDateConfirmation", correctStartDate,
-                "confirmHearingDate","No"))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "hearing-in-past");
-
-        Map<String, Object> responseData = callbackResponse.getData();
-
-        assertThat(responseData.get("hearingStartDate").equals(correctStartDate));
-        assertThat(responseData.get("hearingEndDate").equals(pastDate));
+        assertThat(responseData.get("hearingEndDate").equals(correctDate));
     }
 
     @Test
