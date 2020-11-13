@@ -14,7 +14,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes=PastHearingDatesValidatorService.class)
+@ContextConfiguration(classes = PastHearingDatesValidatorService.class)
 class PastHearingDatesValidatorServiceTest {
     @Autowired
     private PastHearingDatesValidatorService service;

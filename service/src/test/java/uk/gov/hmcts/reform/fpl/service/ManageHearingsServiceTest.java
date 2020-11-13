@@ -702,7 +702,7 @@ class ManageHearingsServiceTest {
             Map<String, Object> hearingDateFields = service.changeHearingDateToDateAddedOnConfirmationPage(caseData);
 
             Map<String, Object> extractedFields = Map.of("hearingEndDate", expectedHearingEndDate,
-            "hearingStartDate", expectedHearingStartDate);
+                "hearingStartDate", expectedHearingStartDate);
 
             assertThat(hearingDateFields).containsAllEntriesOf(extractedFields);
         }
