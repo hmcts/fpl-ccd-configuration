@@ -21,8 +21,8 @@ public class PastHearingDatesValidatorService {
             errors.add("Enter a valid start time");
         }
 
-        if (hearingEndDate != null &!isValid(hearingEndDate)) {
-                errors.add("Enter a valid end time");
+        if (hearingEndDate != null && !isValid(hearingEndDate)) {
+            errors.add("Enter a valid end time");
         }
 
         return errors;

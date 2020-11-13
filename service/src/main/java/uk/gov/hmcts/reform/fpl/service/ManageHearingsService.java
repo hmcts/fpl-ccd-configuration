@@ -299,7 +299,8 @@ public class ManageHearingsService {
         return caseData.getPastAndTodayHearingDateList();
     }
 
-    public Map<String, Object> populateFieldsWhenPastDateAdded(LocalDateTime hearingStartDate, LocalDateTime hearingEndDate) {
+    public Map<String, Object> populateFieldsWhenPastDateAdded(LocalDateTime hearingStartDate,
+                                                               LocalDateTime hearingEndDate) {
         Map<String, Object> data = new HashMap<>();
         data.put("showConfirmPastHearingDatesPage", YES.getValue());
         LocalDateTime currentDateTime = LocalDateTime.now();

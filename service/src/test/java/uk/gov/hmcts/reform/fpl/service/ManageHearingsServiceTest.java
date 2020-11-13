@@ -608,7 +608,8 @@ class ManageHearingsServiceTest {
             LocalDateTime hearingStartDate = LocalDateTime.of(2010, 3, 15, 20, 20);
             LocalDateTime hearingEndDate = LocalDateTime.now().plusDays(3);
 
-            Map<String, Object> startDateFields = service.populateFieldsWhenPastDateAdded(hearingStartDate, hearingEndDate);
+            Map<String, Object> startDateFields = service.populateFieldsWhenPastDateAdded(hearingStartDate,
+                hearingEndDate);
 
             assertThat(startDateFields).hasSize(3);
             assertThat(startDateFields).containsEntry("showConfirmPastHearingDatesPage", "Yes");
@@ -621,7 +622,8 @@ class ManageHearingsServiceTest {
             LocalDateTime hearingStartDate = LocalDateTime.now().plusDays(3);
             LocalDateTime hearingEndDate = LocalDateTime.of(2010, 3, 15, 20, 20);
 
-            Map<String, Object> startDateFields = service.populateFieldsWhenPastDateAdded(hearingStartDate, hearingEndDate);
+            Map<String, Object> startDateFields = service.populateFieldsWhenPastDateAdded(hearingStartDate,
+                hearingEndDate);
 
             assertThat(startDateFields).hasSize(3);
             assertThat(startDateFields).containsEntry("showConfirmPastHearingDatesPage", "Yes");
@@ -634,7 +636,8 @@ class ManageHearingsServiceTest {
             LocalDateTime hearingStartDate = LocalDateTime.of(2011, 4, 16, 20, 20);
             LocalDateTime hearingEndDate = LocalDateTime.of(2010, 3, 15, 20, 20);
 
-            Map<String, Object> hearingDateFields = service.populateFieldsWhenPastDateAdded(hearingStartDate, hearingEndDate);
+            Map<String, Object> hearingDateFields = service.populateFieldsWhenPastDateAdded(hearingStartDate,
+                hearingEndDate);
 
             assertThat(hearingDateFields).hasSize(5);
             assertThat(hearingDateFields).containsEntry("showConfirmPastHearingDatesPage", "Yes");
