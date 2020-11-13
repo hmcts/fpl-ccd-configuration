@@ -78,7 +78,6 @@ public class OrganisationService {
         return findOrganisation()
             .map(org -> OrganisationPolicy.builder()
                 .organisation(uk.gov.hmcts.reform.ccd.model.Organisation.builder()
-                    .organisationName(org.getName())
                     .organisationID(org.getOrganisationIdentifier())
                     .build())
                 .orgPolicyCaseAssignedRole(LASOLICITOR.formattedName())

@@ -53,7 +53,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getHearingJudge;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getJudgeForTabView;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.prepareJudgeFields;
 
 @Service
@@ -230,7 +233,6 @@ public class ManageHearingsService {
         }
     }
 
-
     public void sendNoticeOfHearing(CaseData caseData, HearingBooking hearingBooking) {
         if (YES.getValue().equals(caseData.getSendNoticeOfHearing())) {
             DocmosisNoticeOfHearing notice = noticeOfHearingGenerationService.getTemplateData(caseData, hearingBooking);
@@ -356,6 +358,10 @@ public class ManageHearingsService {
             .venueCustomAddress(caseData.getHearingVenueCustom())
             .startDate(caseData.getHearingStartDate())
             .endDate(caseData.getHearingEndDate())
+            .allocatedJudgeLabel(caseData.getAllocatedJudge() != null
+                ? formatJudgeTitleAndName(caseData.getAllocatedJudge().toJudgeAndLegalAdvisor()) : null)
+            .hearingJudgeLabel(getHearingJudge(caseData.getJudgeAndLegalAdvisor()))
+            .legalAdvisorLabel(getLegalAdvisorName(caseData.getJudgeAndLegalAdvisor()))
             .judgeAndLegalAdvisor(getJudgeForTabView(caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()))
             .additionalNotes(caseData.getNoticeOfHearingNotes())
             .build();
@@ -385,6 +391,10 @@ public class ManageHearingsService {
             .customPreviousVenue(customPreviousVenue)
             .startDate(caseData.getHearingStartDate())
             .endDate(caseData.getHearingEndDate())
+            .allocatedJudgeLabel(caseData.getAllocatedJudge() != null
+                ? formatJudgeTitleAndName(caseData.getAllocatedJudge().toJudgeAndLegalAdvisor()) : null)
+            .hearingJudgeLabel(getHearingJudge(caseData.getJudgeAndLegalAdvisor()))
+            .legalAdvisorLabel(getLegalAdvisorName(caseData.getJudgeAndLegalAdvisor()))
             .judgeAndLegalAdvisor(getJudgeForTabView(caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()))
             .previousHearingVenue(caseData.getPreviousHearingVenue())
             .additionalNotes(caseData.getNoticeOfHearingNotes())
