@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.rd.model.Organisation;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -206,7 +207,9 @@ class CaseRoleServiceTest {
 
         @Test
         void shouldGrantAccessToAllUsersWithOrganisationId() {
-            final Set<String> localAuthorityUsers = Set.of(USER_1_ID, USER_2_ID);
+            final Set<String> localAuthorityUsers = new TreeSet<>();
+            localAuthorityUsers.add(USER_1_ID);
+            localAuthorityUsers.add(USER_2_ID);
 
             final Organisation organisation = Organisation.builder()
                 .organisationIdentifier(randomAlphanumeric(5))
@@ -227,7 +230,9 @@ class CaseRoleServiceTest {
 
         @Test
         void shouldGrantAccessToAllUsersWithoutOrganisationId() {
-            final Set<String> localAuthorityUsers = Set.of(USER_1_ID, USER_2_ID);
+            final Set<String> localAuthorityUsers = new TreeSet<>();
+            localAuthorityUsers.add(USER_1_ID);
+            localAuthorityUsers.add(USER_2_ID);
 
             when(organisationService.findUserIdsInSameOrganisation(LOCAL_AUTHORITY)).thenReturn(localAuthorityUsers);
             when(organisationService.findOrganisation()).thenReturn(Optional.empty());
