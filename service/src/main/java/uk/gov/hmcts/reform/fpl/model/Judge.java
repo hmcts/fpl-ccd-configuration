@@ -22,7 +22,7 @@ public class Judge extends AbstractJudge {
     @Builder(toBuilder = true)
     private Judge(JudgeOrMagistrateTitle judgeTitle, String otherTitle, String judgeLastName,
                   String judgeFullName, String judgeEmailAddress) {
-        super(judgeTitle, otherTitle, judgeLastName, judgeFullName);
+        super(judgeTitle, otherTitle, judgeLastName, judgeFullName, judgeEmailAddress);
         this.judgeTitle = judgeTitle;
         this.otherTitle = otherTitle;
         this.judgeLastName = judgeLastName;

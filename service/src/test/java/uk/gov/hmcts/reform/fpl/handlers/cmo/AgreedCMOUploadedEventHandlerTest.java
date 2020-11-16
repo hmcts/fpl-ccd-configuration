@@ -26,11 +26,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE;
@@ -42,8 +40,21 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class AgreedCMOUploadedEventHandlerTest {
 
     private static final String HMCTS_ADMIN_EMAIL = "admin@hmcts.gov.uk";
-    private static final String HMCTS_JUDGE_EMAIL = "judge@hmcts.gov.uk";
+    private static final String ALLOCATED_JUDGE_EMAIL = "allocatedjudge@hmcts.gov.uk";
+    private static final String TEMP_JUDGE_EMAIL = "tempjudge@hmcts.gov.uk";
     private static final String FAKE_URL = "https://fake.com/case/url";
+
+    private static Judge allocatedJudge = Judge.builder()
+        .judgeTitle(HIS_HONOUR_JUDGE)
+        .judgeLastName("Hastings")
+        .judgeEmailAddress(ALLOCATED_JUDGE_EMAIL)
+        .build();
+
+    private static JudgeAndLegalAdvisor tempJudge = JudgeAndLegalAdvisor.builder()
+        .judgeTitle(HIS_HONOUR_JUDGE)
+        .judgeLastName("Dave")
+        .judgeEmailAddress(TEMP_JUDGE_EMAIL)
+        .build();
 
     @MockBean
     private NotificationService notificationService;
@@ -64,9 +75,9 @@ class AgreedCMOUploadedEventHandlerTest {
 
     @Test
     void shouldSendNotificationForAdmin() {
-        CaseData caseData = caseDataWithAllocatedJudgeEmail(HMCTS_JUDGE_EMAIL);
-        HearingBooking hearing = buildHearing();
-        CMOReadyToSealTemplate template = expectedTemplate();
+        CaseData caseData = caseData();
+        HearingBooking hearing = buildHearing(allocatedJudge);
+        CMOReadyToSealTemplate template = expectedJudgeTemplate(allocatedJudge.getJudgeName());
 
         mockContentProvider(
             caseData.getAllRespondents(),
@@ -88,10 +99,35 @@ class AgreedCMOUploadedEventHandlerTest {
     }
 
     @Test
-    void shouldSendNotificationForJudge() {
-        CaseData caseData = caseDataWithAllocatedJudgeEmail(HMCTS_JUDGE_EMAIL);
-        HearingBooking hearing = buildHearing();
-        CMOReadyToSealTemplate template = expectedTemplate();
+    void shouldSendNotificationToTemporaryHearingJudgeWhenTemporaryJudgeHasEmai() {
+        CaseData caseData = caseData();
+        HearingBooking hearing = buildHearing(tempJudge);
+        CMOReadyToSealTemplate template = expectedJudgeTemplate(tempJudge.getJudgeName());
+
+        mockContentProvider(
+            caseData.getAllRespondents(),
+            caseData.getFamilyManCaseNumber(),
+            hearing,
+            hearing.getJudgeAndLegalAdvisor(),
+            template
+        );
+
+        AgreedCMOUploaded event = new AgreedCMOUploaded(caseData, hearing);
+        eventHandler.sendNotificationForJudge(event);
+
+        verify(notificationService).sendEmail(
+            CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE,
+            TEMP_JUDGE_EMAIL,
+            template,
+            caseData.getId().toString()
+        );
+    }
+
+    @Test
+    void shouldSendNotificationToAllocatedJudgeWhenTemporaryJudgeHasNoEmail() {
+        CaseData caseData = caseData();
+        HearingBooking hearing = buildHearing(tempJudge.toBuilder().judgeEmailAddress(null).build());
+        CMOReadyToSealTemplate template = expectedJudgeTemplate(allocatedJudge.getJudgeName());
 
         mockContentProvider(
             caseData.getAllRespondents(),
@@ -106,26 +142,22 @@ class AgreedCMOUploadedEventHandlerTest {
 
         verify(notificationService).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE,
-            HMCTS_JUDGE_EMAIL,
+            ALLOCATED_JUDGE_EMAIL,
             template,
             caseData.getId().toString()
         );
     }
 
     @Test
-    void shouldNotSendNotificationForJudgeWhenNoEmailIsProvided() {
-        CaseData caseData = caseDataWithoutAllocatedJudgeEmail();
-        HearingBooking hearing = buildHearing();
+    void shouldNotSendNotificationWhenNeitherJudgeEmailAddressSet() {
+        CaseData caseData = caseData().toBuilder().allocatedJudge(
+            allocatedJudge.toBuilder().judgeEmailAddress(null).build()).build();
+        HearingBooking hearing = buildHearing(JudgeAndLegalAdvisor.builder().judgeEmailAddress(null).build());
         AgreedCMOUploaded event = new AgreedCMOUploaded(caseData, hearing);
 
         eventHandler.sendNotificationForJudge(event);
 
-        verify(notificationService, never()).sendEmail(
-            anyString(),
-            anyString(),
-            anyMap(),
-            anyString()
-        );
+        verifyNoInteractions(notificationService);
     }
 
     private void mockContentProvider(List<Element<Respondent>> respondents, String familyManNumber,
@@ -140,11 +172,7 @@ class AgreedCMOUploadedEventHandlerTest {
         )).thenReturn(template);
     }
 
-    private CaseData caseDataWithoutAllocatedJudgeEmail() {
-        return caseDataWithAllocatedJudgeEmail("");
-    }
-
-    private CaseData caseDataWithAllocatedJudgeEmail(String email) {
+    private CaseData caseData() {
         CaseData.CaseDataBuilder builder = CaseData.builder()
             .id(12345L)
             .familyManCaseNumber("12345")
@@ -157,33 +185,29 @@ class AgreedCMOUploadedEventHandlerTest {
                     .build()
                 )
             )
-            .allocatedJudge(Judge.builder()
-                .judgeTitle(HIS_HONOUR_JUDGE)
-                .judgeLastName("Hastings")
-                .judgeEmailAddress(email)
-                .build());
+            .allocatedJudge(allocatedJudge);
 
         return builder.build();
     }
 
-    private static CMOReadyToSealTemplate expectedTemplate() {
+    private static CMOReadyToSealTemplate expectedJudgeTemplate(String judgeName) {
         return new CMOReadyToSealTemplate()
             .setRespondentLastName("Smith")
             .setJudgeTitle("His Honour Judge")
-            .setJudgeName("Hastings")
+            .setJudgeName(judgeName)
             .setCaseUrl(FAKE_URL)
             .setSubjectLineWithHearingDate("Smith, 12345, Case management hearing, 1 February 2020");
     }
 
-    private HearingBooking buildHearing() {
+    private HearingBooking buildHearing(AbstractJudge judgeAndLegalAdvisor) {
         return HearingBooking.builder()
             .type(HearingType.CASE_MANAGEMENT)
             .startDate(LocalDateTime.of(2020, 2, 1, 0, 0))
-            .judgeAndLegalAdvisor(
-                JudgeAndLegalAdvisor.builder()
-                    .judgeTitle(HIS_HONOUR_JUDGE)
-                    .judgeLastName("Dave")
-                    .build())
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeTitle(judgeAndLegalAdvisor.getJudgeTitle())
+                .judgeLastName(judgeAndLegalAdvisor.getJudgeLastName())
+                .judgeEmailAddress(judgeAndLegalAdvisor.getJudgeEmailAddress())
+                .build())
             .build();
     }
 }

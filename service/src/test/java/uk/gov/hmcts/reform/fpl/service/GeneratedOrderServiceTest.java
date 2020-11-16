@@ -155,28 +155,20 @@ class GeneratedOrderServiceTest {
         @ArgumentsSource(GeneratedCareOrderProvider.class)
         void shouldReturnFalseWhenNotAllChildrenHaveFinalOrder(GeneratedOrderType type, GeneratedOrderSubtype subtype) {
             assertThat(service.showCloseCase(
-                orderTypeAndDocument(type, subtype), CHILDREN_WITHOUT_FINAL, true)
-            ).isFalse();
-        }
-
-        @ParameterizedTest
-        @ArgumentsSource(GeneratedCareOrderProvider.class)
-        void shouldReturnFalseWhenClosingCaseIsNotEnabled(GeneratedOrderType type, GeneratedOrderSubtype subtype) {
-            assertThat(service.showCloseCase(
-                orderTypeAndDocument(type, subtype), CHILDREN_WITH_FINAL, false)
+                orderTypeAndDocument(type, subtype), CHILDREN_WITHOUT_FINAL)
             ).isFalse();
         }
 
         @ParameterizedTest
         @ArgumentsSource(NotCloseableGeneratedCareOrderProvider.class)
         void shouldReturnFalseWhenOrderIsCloseable(GeneratedOrderType type, GeneratedOrderSubtype subtype) {
-            assertThat(service.showCloseCase(orderTypeAndDocument(type, subtype), CHILDREN_WITH_FINAL, true)).isFalse();
+            assertThat(service.showCloseCase(orderTypeAndDocument(type, subtype), CHILDREN_WITH_FINAL)).isFalse();
         }
 
         @ParameterizedTest
         @ArgumentsSource(CloseableGeneratedCareOrderProvider.class)
         void shouldReturnTrueWhenOrderIsCloseable(GeneratedOrderType type, GeneratedOrderSubtype subtype) {
-            assertThat(service.showCloseCase(orderTypeAndDocument(type, subtype), CHILDREN_WITH_FINAL, true)).isTrue();
+            assertThat(service.showCloseCase(orderTypeAndDocument(type, subtype), CHILDREN_WITH_FINAL)).isTrue();
         }
 
     }
