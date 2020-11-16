@@ -44,12 +44,12 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @OverrideAutoConfiguration(enabled = true)
 class UploadCMOSubmittedControllerTest extends AbstractUploadCMOControllerTest {
 
+    static final String JUDGE_EMAIL = "judge@hmcts.gov.uk";
     private static final DocumentReference DOCUMENT_REFERENCE = DocumentReference.builder()
         .binaryUrl("FAKE BINARY")
         .url("FAKE URL")
         .filename("FAKE FILE")
         .build();
-    private static final String JUDGE_EMAIL = "judge@hmcts.gov.uk";
     private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
     private static final long CASE_ID = 12345L;
     private static final String ADMIN_EMAIL = "admin@family-court.com";
