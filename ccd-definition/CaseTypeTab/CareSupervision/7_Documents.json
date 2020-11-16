@@ -6,7 +6,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "manageDocumentsLink",
+    "CaseFieldID": "submittedForm",
     "TabFieldDisplayOrder": 1
   },
   {
@@ -16,7 +16,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "submittedForm",
+    "CaseFieldID": "manageDocumentsLink",
     "TabFieldDisplayOrder": 2
   },
   {
@@ -27,7 +27,8 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
     "CaseFieldID": "standardDirectionsDocument",
-    "TabFieldDisplayOrder": 3
+    "TabFieldDisplayOrder": 3,
+    "Comment": "This is deprecated - field for old SDO documents that were uploaded in uploadStandardDirections event"
   },
   {
     "LiveFrom": "01/01/2017",
