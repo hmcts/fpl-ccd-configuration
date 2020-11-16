@@ -17,6 +17,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.controllers.UploadCMOSubmittedControllerTest.JUDGE_EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -95,6 +96,7 @@ public abstract class AbstractUploadCMOControllerTest extends AbstractController
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
                 .judgeLastName("Judy")
+                .judgeEmailAddress(JUDGE_EMAIL)
                 .build())
             .caseManagementOrderId(cmoId)
             .build();
