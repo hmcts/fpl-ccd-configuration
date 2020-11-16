@@ -35,7 +35,6 @@ import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -91,9 +90,6 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
     private UploadDocumentService uploadDocumentService;
 
     @MockBean
-    private FeatureToggleService featureToggleService;
-
-    @MockBean
     private IdamClient idamClient;
 
     GeneratedOrderControllerAboutToSubmitTest() {
@@ -107,7 +103,6 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
             .willReturn(testDocmosisDocument(TestDataHelper.DOCUMENT_CONTENT));
         given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document);
-        given(featureToggleService.isCloseCaseEnabled()).willReturn(true);
     }
 
     @Test
@@ -375,17 +370,6 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
 
         assertThat(updatedCaseData.getAllChildren()).extracting(element -> element.getValue().getFinalOrderIssued())
             .containsOnly("Yes");
-    }
-
-    @Test
-    void shouldNotUpdateChildrenWhenFeatureIsNotEnabled() {
-        given(featureToggleService.isCloseCaseEnabled()).willReturn(false);
-
-        final CaseData caseData = commonCaseData(CARE_ORDER, FINAL, false).build();
-
-        final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
-
-        assertThat(updatedCaseData.getAllChildren()).isEqualTo(caseData.getAllChildren());
     }
 
     private JudgeAndLegalAdvisor buildJudgeAndLegalAdvisor(YesNo useAllocatedJudge) {
