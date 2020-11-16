@@ -55,7 +55,7 @@ public class NotifyOfGatekeepingEventHandler {
 
         String localAuthority = caseData.getCaseLocalAuthority();
 
-        if (localAuthority != null && featureToggleService.isNotifyCourtOfGatekeepingEnabled(localAuthority)) {
+        if (featureToggleService.isNotifyCourtOfGatekeepingEnabled(localAuthority)) {
             String email = hmctsCourtLookupConfiguration.getCourt(localAuthority).getEmail();
 
             notificationService.sendEmail(GATEKEEPER_SUBMISSION_COURT_TEMPLATE, email, parameters,
