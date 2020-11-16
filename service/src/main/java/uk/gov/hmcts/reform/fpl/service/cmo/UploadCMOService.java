@@ -139,7 +139,7 @@ public class UploadCMOService {
         }
     }
 
-    public UploadCMOEvent buildEventToPublish(CaseData caseData, CaseData caseDataBefore) {
+    public Optional<UploadCMOEvent> buildEventToPublish(CaseData caseData, CaseData caseDataBefore) {
         List<Element<CaseManagementOrder>> unsealedCMOs = new ArrayList<>(caseData.getDraftUploadedCMOs());
         unsealedCMOs.removeAll(caseDataBefore.getDraftUploadedCMOs());
 
@@ -149,20 +149,18 @@ public class UploadCMOService {
             .filter(hearingElement -> cmo.getId().equals(hearingElement.getValue().getCaseManagementOrderId()))
             .findFirst();
 
+        UploadCMOEvent event = null;
         if (optionalHearing.isPresent()) {
             HearingBooking hearing = optionalHearing.get().getValue();
             CMOStatus status = cmo.getValue().getStatus();
 
             if (SEND_TO_JUDGE == status) {
-                return new AgreedCMOUploaded(caseData, hearing);
+                event = new AgreedCMOUploaded(caseData, hearing);
             } else if (DRAFT == status) {
-                return new DraftCMOUploaded(caseData, hearing);
-            } else {
-                throw new IllegalStateException("Unexpected cmo status: " + status);
+                event = new DraftCMOUploaded(caseData, hearing);
             }
-        } else {
-            throw new HearingNotFoundException("No hearing found for cmo: " + cmo.getId());
         }
+        return Optional.ofNullable(event);
     }
 
     private void migrateDocuments(List<Element<HearingFurtherEvidenceBundle>> evidenceBundles, UUID selectedHearingId,

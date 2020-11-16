@@ -28,6 +28,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -475,9 +476,9 @@ class UploadCMOServiceTest {
             .draftUploadedCMOs(unsealedOrders)
             .build();
 
-        UploadCMOEvent event = service.buildEventToPublish(caseData, caseDataBefore);
+        Optional<UploadCMOEvent> event = service.buildEventToPublish(caseData, caseDataBefore);
 
-        assertThat(event).isEqualTo(new AgreedCMOUploaded(caseData, updatedHearing));
+        assertThat(event).contains(new AgreedCMOUploaded(caseData, updatedHearing));
     }
 
     @Test
@@ -505,9 +506,9 @@ class UploadCMOServiceTest {
             .draftUploadedCMOs(unsealedOrders)
             .build();
 
-        UploadCMOEvent event = service.buildEventToPublish(caseData, caseDataBefore);
+        Optional<UploadCMOEvent> event = service.buildEventToPublish(caseData, caseDataBefore);
 
-        assertThat(event).isEqualTo(new DraftCMOUploaded(caseData, updatedHearing));
+        assertThat(event).contains(new DraftCMOUploaded(caseData, updatedHearing));
     }
 
     private DynamicList dynamicList(UUID uuid1, UUID uuid2, UUID uuid3, DynamicListElement... additional) {

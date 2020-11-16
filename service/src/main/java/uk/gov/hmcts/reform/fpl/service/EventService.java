@@ -14,7 +14,7 @@ public class EventService {
     private final ApplicationEventPublisher applicationEventPublisher;
 
     public void publishEvent(Object event) {
-        log.info("Publishing event {}", event.getClass().getSimpleName());
+        log.debug("Publishing event {}", event.getClass().getSimpleName());
         applicationEventPublisher.publishEvent(event);
     }
 }
