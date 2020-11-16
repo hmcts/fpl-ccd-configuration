@@ -284,7 +284,7 @@ public class ManageHearingsService {
             HAS_FUTURE_HEARING_FLAG,
             "hearingReListOption",
             HEARING_START_DATE_LABEL,
-            "pageShow",
+            "showConfirmPastHearingDatesPage",
             HEARING_END_DATE_LABEL,
             "confirmHearingDate",
             "hearingStartDateConfirmation",
