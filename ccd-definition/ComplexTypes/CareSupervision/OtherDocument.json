@@ -12,7 +12,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "OtherDocument",
     "ListElementCode": "dateTimeUploaded",
-    "FieldType": "Text",
+    "FieldType": "DateTime",
     "ElementLabel": "Date and time uploaded",
     "SecurityClassification": "Public"
   },
