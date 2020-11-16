@@ -30,7 +30,6 @@ import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.DischargeCareOrderService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
@@ -78,7 +77,6 @@ public class GeneratedOrderController extends CallbackController {
     private final ChildrenService childrenService;
     private final DischargeCareOrderService dischargeCareOrder;
     private final DocumentDownloadService documentDownloadService;
-    private final FeatureToggleService featureToggleService;
     private final Time time;
 
     @PostMapping("/about-to-start")
@@ -200,7 +198,7 @@ public class GeneratedOrderController extends CallbackController {
         }
 
         // If can display close case, set the flag in order to show the close case page
-        if (service.showCloseCase(orderTypeAndDocument, children, featureToggleService.isCloseCaseEnabled())) {
+        if (service.showCloseCase(orderTypeAndDocument, children)) {
             data.put("showCloseCaseFromOrderPage", YES);
             data.put("close_case_label", CloseCaseController.LABEL);
         } else {
@@ -255,7 +253,7 @@ public class GeneratedOrderController extends CallbackController {
 
         data.put("orderCollection", orders);
 
-        if (featureToggleService.isCloseCaseEnabled() && typeAndDocument.isClosable()) {
+        if (typeAndDocument.isClosable()) {
             data.put("children1", getUpdatedChildren(caseData));
         }
 
