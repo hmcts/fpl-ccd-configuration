@@ -149,9 +149,9 @@ class FeatureToggleServiceTest {
     void shouldMakeCorrectCallForNewCaseStateModel(Boolean toggleState) {
         givenToggle(toggleState);
 
-        assertThat(service.isNewCaseStateModelEnabled()).isEqualTo(toggleState);
+        assertThat(service.isCaseUserBulkAssignmentEnabled()).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
-            eq("new-case-state-model"),
+            eq("case-user-assignment"),
             ldUser(ENVIRONMENT).build(),
             eq(false));
     }
