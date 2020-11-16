@@ -85,18 +85,6 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForCloseCase(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isCloseCaseEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("close-case"),
-            ldUser(ENVIRONMENT).build(),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
     void shouldMakeCorrectCallForAllocatedJudgeNotificationCMO(Boolean toggleState) {
         givenToggle(toggleState);
 
@@ -217,10 +205,6 @@ class FeatureToggleServiceTest {
 
     private static Stream<Arguments> userAttributesTestSource() {
         return Stream.of(
-            Arguments.of(
-                (Runnable) () -> service.isCloseCaseEnabled(),
-                (Runnable) () -> service.isCtscReportEnabled(),
-                buildAttributes()),
             Arguments.of(
                 (Runnable) () -> service.isCtscReportEnabled(),
                 (Runnable) () -> service.isCtscEnabled("test name"),
