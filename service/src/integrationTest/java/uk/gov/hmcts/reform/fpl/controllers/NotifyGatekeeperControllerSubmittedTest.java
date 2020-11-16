@@ -10,10 +10,12 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.handlers.PopulateStandardDirectionsHandler;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.service.notify.NotificationClient;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
@@ -45,6 +47,9 @@ public class NotifyGatekeeperControllerSubmittedTest extends AbstractControllerT
 
     @MockBean
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     NotifyGatekeeperControllerSubmittedTest() {
         super("notify-gatekeeper");
@@ -86,12 +91,25 @@ public class NotifyGatekeeperControllerSubmittedTest extends AbstractControllerT
     }
 
     @Test
-    void shouldSendEmailToLocalCourt() throws Exception {
+    void shouldSendEmailToLocalCourtWhenNotifyingLocalCourtOnGatekeepingStateIsEnabled() throws Exception {
+        given(featureToggleService.isNotifyCourtOfGatekeepingEnabled(LA_NAME)).willReturn(true);
+
         postSubmittedEvent(callbackRequest());
 
         verify(notificationClient).sendEmail(
             eq(GATEKEEPER_SUBMISSION_COURT_TEMPLATE), eq(COURT_EMAIL),
             anyMap(), eq(NOTIFICATION_REFERENCE));
+    }
+
+    @Test
+    void shouldNotSendEmailToLocalCourtWhenNotifyingLocalCourtOnGatekeepingStateIsEnabled() throws Exception {
+        given(featureToggleService.isNotifyCourtOfGatekeepingEnabled(LA_NAME)).willReturn(false);
+
+        postSubmittedEvent(callbackRequest());
+
+        verify(notificationClient, never()).sendEmail(
+            anyString(), eq(COURT_EMAIL),
+            anyMap(), anyString());
     }
 
     private CallbackRequest buildCallbackRequest(String state) {

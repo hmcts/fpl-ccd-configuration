@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.sendtogatekeeper.NotifyGatekeeperTemplate;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
@@ -22,8 +23,11 @@ import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvi
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_COURT_TEMPLATE;
@@ -55,6 +59,8 @@ class NotifyOfGatekeepingEventHandlerTest {
     private DocumentDownloadService documentDownloadService;
     @MockBean
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     @BeforeEach
     void init() {
@@ -87,8 +93,10 @@ class NotifyOfGatekeepingEventHandlerTest {
     }
 
     @Test
-    void shouldSendEmailToLocalCourt() {
+    void shouldSendEmailToLocalCourtWhenNotifyingLocalCourtOnGatekeepingStateIsEnabled() {
         CaseData caseData = caseData();
+
+        given(featureToggleService.isNotifyCourtOfGatekeepingEnabled(LA_NAME)).willReturn(true);
 
         given(hmctsCourtLookupConfiguration.getCourt(LA_NAME))
             .willReturn(new HmctsCourtLookupConfiguration.Court(COURT_NAME, COURT_EMAIL,
@@ -99,6 +107,16 @@ class NotifyOfGatekeepingEventHandlerTest {
         verify(notificationService).sendEmail(
             eq(GATEKEEPER_SUBMISSION_COURT_TEMPLATE), eq(COURT_EMAIL),
             captor.capture(), eq(CASE_ID));
+    }
+
+    @Test
+    void shouldNotSendEmailToLocalCourtWhenNotifyingLocalCourtOnGatekeepingStateIsDisabled() {
+        CaseData caseData = caseData();
+
+        given(featureToggleService.isNotifyCourtOfGatekeepingEnabled(LA_NAME)).willReturn(false);
+        notifyGatekeeperEventHandler.sendEmailToLocalCourt(new NotifyOfGatekeeingEvent(caseData));
+
+        verify(notificationService, never()).sendEmail(anyString(), anyString(), anyMap(), anyString());
     }
 
     private NotifyGatekeeperTemplate getExpectedTemplate() {

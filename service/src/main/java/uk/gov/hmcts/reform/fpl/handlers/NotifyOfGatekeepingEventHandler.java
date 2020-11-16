@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.notify.sendtogatekeeper.NotifyGatekeeperTemplate;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
 
@@ -26,6 +27,7 @@ public class NotifyOfGatekeepingEventHandler {
     private final NotificationService notificationService;
     private final GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+    private final FeatureToggleService featureToggleService;
 
     @EventListener
     public void sendEmailToGatekeeper(NotifyOfGatekeeingEvent event) {
@@ -50,10 +52,15 @@ public class NotifyOfGatekeepingEventHandler {
     public void sendEmailToLocalCourt(NotifyOfGatekeeingEvent event) {
         CaseData caseData = event.getCaseData();
         NotifyGatekeeperTemplate parameters = gatekeeperEmailContentProvider.buildGatekeeperNotification(caseData);
-        String email = hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getEmail();
 
-        notificationService.sendEmail(GATEKEEPER_SUBMISSION_COURT_TEMPLATE, email, parameters,
-            caseData.getId().toString());
+        String localAuthority = caseData.getCaseLocalAuthority();
+
+        if (localAuthority != null && featureToggleService.isNotifyCourtOfGatekeepingEnabled(localAuthority)) {
+            String email = hmctsCourtLookupConfiguration.getCourt(localAuthority).getEmail();
+
+            notificationService.sendEmail(GATEKEEPER_SUBMISSION_COURT_TEMPLATE, email, parameters,
+                caseData.getId().toString());
+        }
     }
 
     private List<String> getDistinctGatekeeperEmails(List<Element<EmailAddress>> emailCollection) {

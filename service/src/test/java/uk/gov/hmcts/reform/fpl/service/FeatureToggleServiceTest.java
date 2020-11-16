@@ -215,6 +215,18 @@ class FeatureToggleServiceTest {
             eq(false));
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForNotifyingLocalCourtOnGatekeepingStateTransition(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isNotifyCourtOfGatekeepingEnabled(LOCAL_AUTHORITY)).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("notify-local-court-on-gatekeeping"),
+            ldUser(ENVIRONMENT).withLocalAuthority(LOCAL_AUTHORITY).build(),
+            eq(false));
+    }
+
     private static Stream<Arguments> userAttributesTestSource() {
         return Stream.of(
             Arguments.of(
