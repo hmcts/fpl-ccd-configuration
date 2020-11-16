@@ -44,16 +44,23 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "DSC",
+    "ListElement": "Derbyshire County Council",
+    "DisplayOrder": 9
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "DCC",
     "ListElement": "Durham County Council",
-    "DisplayOrder": 9
+    "DisplayOrder": 10
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "ERY",
     "ListElement": "East Riding of Yorkshire Council",
-    "DisplayOrder": 10
+    "DisplayOrder": 11
   },
   {
     "LiveFrom": "01/01/2017",
@@ -65,9 +72,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "HFC",
+    "ListElement": "Herefordshire Council",
+    "DisplayOrder": 16
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "HCC",
     "ListElement": "Hertfordshire County Council",
-    "DisplayOrder": 16
+    "DisplayOrder": 17
   },
   {
     "LiveFrom": "01/01/2017",
@@ -94,7 +108,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "LCO",
-    "ListElement": "Leicester County Council",
+    "ListElement": "Leicestershire County Council",
     "DisplayOrder": 23
   },
   {
@@ -159,6 +173,20 @@
     "ListElementCode": "NLC",
     "ListElement": "North Lincolnshire Council",
     "DisplayOrder": 50
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "NHC",
+    "ListElement": "Nottingham City Council",
+    "DisplayOrder": 51
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "NGC",
+    "ListElement": "Nottinghamshire County Council",
+    "DisplayOrder": 52
   },
   {
     "LiveFrom": "01/01/2017",
@@ -250,5 +278,12 @@
     "ListElementCode": "SNW",
     "ListElement": "Wiltshire Council",
     "DisplayOrder": 95
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "WSC",
+    "ListElement": "Worcestershire County Council",
+    "DisplayOrder": 96
   }
 ]

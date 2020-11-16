@@ -260,7 +260,6 @@ public class ManageHearingsService {
             "hearingEndDate",
             "sendNoticeOfHearing",
             "judgeAndLegalAdvisor",
-            "hearingOption",
             "noticeOfHearingNotes",
             "previousHearingVenue",
             "firstHearingFlag",
@@ -272,8 +271,7 @@ public class ManageHearingsService {
             HAS_HEARINGS_TO_ADJOURN,
             HAS_HEARINGS_TO_VACATE,
             HAS_EXISTING_HEARINGS_FLAG,
-            HAS_FUTURE_HEARING_FLAG,
-            "hearingReListOption");
+            HAS_FUTURE_HEARING_FLAG);
     }
 
     public Object getSelectedDynamicListType(CaseData caseData) {
