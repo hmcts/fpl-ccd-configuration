@@ -269,7 +269,6 @@ public class ManageHearingsService {
             HEARING_END_DATE,
             "sendNoticeOfHearing",
             "judgeAndLegalAdvisor",
-            "hearingOption",
             "noticeOfHearingNotes",
             "previousHearingVenue",
             "firstHearingFlag",
