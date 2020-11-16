@@ -27,10 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_DRAFT_UPLOADED_NOTIFICATION_TEMPLATE;
@@ -38,7 +36,6 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
-import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -63,24 +60,6 @@ class UploadCMOSubmittedControllerTest extends AbstractUploadCMOControllerTest {
 
     protected UploadCMOSubmittedControllerTest() {
         super("upload-cmo");
-    }
-
-    // TODO: 21/10/2020 Can be removed when FPLA-2019 toggled on
-    @Test
-    void shouldNotSendNotificationIfNoChange() {
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(hearings(LocalDateTime.of(2020, 11, 3, 12, 0)))
-            .draftUploadedCMOs(List.of())
-            .build();
-
-        CallbackRequest callbackRequest = CallbackRequest.builder()
-            .caseDetails(asCaseDetails(caseData))
-            .caseDetailsBefore(asCaseDetails(caseData))
-            .build();
-
-        postSubmittedEvent(callbackRequest);
-
-        checkThat(() -> verify(notificationClient, never()).sendEmail(any(), any(), any(), any()));
     }
 
     @Test

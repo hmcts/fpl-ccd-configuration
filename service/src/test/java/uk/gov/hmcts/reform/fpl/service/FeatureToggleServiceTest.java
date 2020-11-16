@@ -191,18 +191,6 @@ class FeatureToggleServiceTest {
             eq(false));
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsUploadDraftCMOEnabled(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isUploadDraftCMOEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("upload-draft-cmo"),
-            ldUser(ENVIRONMENT).build(),
-            eq(false));
-    }
-
     private static Stream<Arguments> userAttributesTestSource() {
         return Stream.of(
             Arguments.of(
