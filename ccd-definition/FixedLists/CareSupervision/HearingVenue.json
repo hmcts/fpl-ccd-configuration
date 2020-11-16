@@ -1696,22 +1696,22 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
+    "ListElementCode": "310",
+    "ListElement": "Newcastle Civil & Family Court",
+    "DisplayOrder": 243
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingVenue",
     "ListElementCode": "308",
     "ListElement": "Newcastle Moot Hall",
-    "DisplayOrder": 243
+    "DisplayOrder": 244
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "309",
     "ListElement": "Newcastle SS&CS Tribunal",
-    "DisplayOrder": 244
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingVenue",
-    "ListElementCode": "310",
-    "ListElement": "Newcastle upon Tyne CC Centre",
     "DisplayOrder": 245
   },
   {
