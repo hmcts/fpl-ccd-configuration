@@ -206,13 +206,10 @@ public class GeneratedOrderService {
      *
      * @param orderType        type of order
      * @param children         list of children in the case
-     * @param closeCaseEnabled feature toggle flag for close case
      */
     public boolean showCloseCase(OrderTypeAndDocument orderType,
-                                 List<Element<Child>> children,
-                                 boolean closeCaseEnabled) {
-        return closeCaseEnabled
-            && orderType.isClosable()
+                                 List<Element<Child>> children) {
+        return orderType.isClosable()
             && childrenService.allChildrenHaveFinalOrder(children);
     }
 
