@@ -9,6 +9,7 @@ public final class NotifyTemplates {
     public static final String HMCTS_COURT_SUBMISSION_TEMPLATE = "a1562b56-4ff7-4e3e-b62d-5fb9f086ee8f";
     public static final String CAFCASS_SUBMISSION_TEMPLATE = "e5630e8b-3b25-4773-a41a-a42af123bebc";
     public static final String GATEKEEPER_SUBMISSION_TEMPLATE = "1e8f7e14-64aa-44ce-a5c1-83affff5f1a0";
+    public static final String GATEKEEPER_SUBMISSION_COURT_TEMPLATE = "3a8b45b0-89d4-4339-a1cc-f507bae3a6c4";
 
     public static final String C2_UPLOAD_NOTIFICATION_TEMPLATE = "23d406cb-73fb-42c2-93b8-87b74a91c6e8";
     public static final String C2_UPLOAD_NOTIFICATION_TEMPLATE_JUDGE = "9e4d4365-bc82-4a94-a752-a75a9abe78ad";

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.events.NotifyGatekeepersEvent;
+import uk.gov.hmcts.reform.fpl.events.NotifyOfGatekeeingEvent;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -57,7 +57,7 @@ public class NotifyGatekeeperController extends CallbackController {
         if (SUBMITTED.equals(caseData.getState())) {
             publishEvent(new PopulateStandardDirectionsEvent(callbackRequest));
         }
-        publishEvent(new NotifyGatekeepersEvent(caseData));
+        publishEvent(new NotifyOfGatekeeingEvent(caseData));
     }
 
     private List<Element<EmailAddress>> resetGateKeeperEmailCollection() {

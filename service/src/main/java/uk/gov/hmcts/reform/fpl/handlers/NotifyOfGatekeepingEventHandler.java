@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.events.NotifyGatekeepersEvent;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.events.NotifyOfGatekeeingEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
@@ -15,17 +16,19 @@ import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvi
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_COURT_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class NotifyGatekeeperEventHandler {
+public class NotifyOfGatekeepingEventHandler {
     private final NotificationService notificationService;
     private final GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
+    private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
     @EventListener
-    public void sendEmailToGatekeeper(NotifyGatekeepersEvent event) {
+    public void sendEmailToGatekeeper(NotifyOfGatekeeingEvent event) {
         CaseData caseData = event.getCaseData();
 
         NotifyGatekeeperTemplate parameters = gatekeeperEmailContentProvider.buildGatekeeperNotification(caseData);
@@ -41,6 +44,16 @@ public class NotifyGatekeeperEventHandler {
             notificationService.sendEmail(GATEKEEPER_SUBMISSION_TEMPLATE, recipientEmail, template,
                 caseData.getId().toString());
         });
+    }
+
+    @EventListener
+    public void sendEmailToLocalCourt(NotifyOfGatekeeingEvent event) {
+        CaseData caseData = event.getCaseData();
+        NotifyGatekeeperTemplate parameters = gatekeeperEmailContentProvider.buildGatekeeperNotification(caseData);
+        String email = hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getEmail();
+
+        notificationService.sendEmail(GATEKEEPER_SUBMISSION_COURT_TEMPLATE, email, parameters,
+            caseData.getId().toString());
     }
 
     private List<String> getDistinctGatekeeperEmails(List<Element<EmailAddress>> emailCollection) {

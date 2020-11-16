@@ -6,6 +6,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 @Getter
 @RequiredArgsConstructor
-public class NotifyGatekeepersEvent {
+public class NotifyOfGatekeeingEvent {
     private final CaseData caseData;
 }

@@ -9,7 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.fpl.events.NotifyGatekeepersEvent;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.events.NotifyOfGatekeeingEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.sendtogatekeeper.NotifyGatekeeperTemplate;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
@@ -22,8 +23,10 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_COURT_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -31,21 +34,27 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {NotifyGatekeeperEventHandler.class, LookupTestConfig.class,
+@SpringBootTest(classes = {NotifyOfGatekeepingEventHandler.class, LookupTestConfig.class,
     GatekeeperEmailContentProvider.class})
-class NotifyGatekeeperEventHandlerTest {
+class NotifyOfGatekeepingEventHandlerTest {
     private static final String CASE_ID = "12345";
+    private static final String LA_NAME = "example";
+    private static final String COURT_NAME = "Family Court";
+    private static final String COURT_CODE = "11";
+    private static final String COURT_EMAIL = "familycourt@test.com";
 
     @Captor
     private ArgumentCaptor<NotifyGatekeeperTemplate> captor;
     @MockBean
     private NotificationService notificationService;
     @Autowired
-    private NotifyGatekeeperEventHandler notifyGatekeeperEventHandler;
+    private NotifyOfGatekeepingEventHandler notifyGatekeeperEventHandler;
     @MockBean
     private CaseUrlService caseUrlService;
     @MockBean
     private DocumentDownloadService documentDownloadService;
+    @MockBean
+    private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
     @BeforeEach
     void init() {
@@ -56,7 +65,7 @@ class NotifyGatekeeperEventHandlerTest {
     void shouldSendEmailToMultipleGatekeepers() {
         CaseData caseData = caseData();
 
-        notifyGatekeeperEventHandler.sendEmailToGatekeeper(new NotifyGatekeepersEvent(caseData));
+        notifyGatekeeperEventHandler.sendEmailToGatekeeper(new NotifyOfGatekeeingEvent(caseData));
 
         verify(notificationService).sendEmail(
             eq(GATEKEEPER_SUBMISSION_TEMPLATE), eq(GATEKEEPER_EMAIL_ADDRESS),
@@ -75,6 +84,21 @@ class NotifyGatekeeperEventHandlerTest {
 
         assertThat(captor.getAllValues()).usingFieldByFieldElementComparator()
             .containsOnly(firstTemplate, secondTemplate);
+    }
+
+    @Test
+    void shouldSendEmailToLocalCourt() {
+        CaseData caseData = caseData();
+
+        given(hmctsCourtLookupConfiguration.getCourt(LA_NAME))
+            .willReturn(new HmctsCourtLookupConfiguration.Court(COURT_NAME, COURT_EMAIL,
+                COURT_CODE));
+
+        notifyGatekeeperEventHandler.sendEmailToLocalCourt(new NotifyOfGatekeeingEvent(caseData));
+
+        verify(notificationService).sendEmail(
+            eq(GATEKEEPER_SUBMISSION_COURT_TEMPLATE), eq(COURT_EMAIL),
+            captor.capture(), eq(CASE_ID));
     }
 
     private NotifyGatekeeperTemplate getExpectedTemplate() {
