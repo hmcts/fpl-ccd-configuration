@@ -139,28 +139,27 @@ public class UploadCMOService {
         }
     }
 
-    public Optional<UploadCMOEvent> buildEventToPublish(CaseData caseData, CaseData caseDataBefore) {
+    public UploadCMOEvent buildEventToPublish(CaseData caseData, CaseData caseDataBefore) {
         List<Element<CaseManagementOrder>> unsealedCMOs = new ArrayList<>(caseData.getDraftUploadedCMOs());
         unsealedCMOs.removeAll(caseDataBefore.getDraftUploadedCMOs());
 
         Element<CaseManagementOrder> cmo = unsealedCMOs.get(0);
 
-        Optional<Element<HearingBooking>> optionalHearing = caseData.getHearingDetails().stream()
+        HearingBooking hearing = caseData.getHearingDetails().stream()
             .filter(hearingElement -> cmo.getId().equals(hearingElement.getValue().getCaseManagementOrderId()))
-            .findFirst();
+            .findFirst()
+            .orElseThrow()
+            .getValue();
 
-        UploadCMOEvent event = null;
-        if (optionalHearing.isPresent()) {
-            HearingBooking hearing = optionalHearing.get().getValue();
-            CMOStatus status = cmo.getValue().getStatus();
+        CMOStatus status = cmo.getValue().getStatus();
 
-            if (SEND_TO_JUDGE == status) {
-                event = new AgreedCMOUploaded(caseData, hearing);
-            } else if (DRAFT == status) {
-                event = new DraftCMOUploaded(caseData, hearing);
-            }
+        if (SEND_TO_JUDGE == status) {
+            return new AgreedCMOUploaded(caseData, hearing);
+        } else if (DRAFT == status) {
+            return new DraftCMOUploaded(caseData, hearing);
         }
-        return Optional.ofNullable(event);
+
+        throw new IllegalStateException("Unexpected cmo status: " + status);
     }
 
     private void migrateDocuments(List<Element<HearingFurtherEvidenceBundle>> evidenceBundles, UUID selectedHearingId,

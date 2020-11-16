@@ -2,6 +2,9 @@ package uk.gov.hmcts.reform.fpl.service.cmo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.CMOType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
@@ -28,10 +31,11 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
@@ -476,9 +480,9 @@ class UploadCMOServiceTest {
             .draftUploadedCMOs(unsealedOrders)
             .build();
 
-        Optional<UploadCMOEvent> event = service.buildEventToPublish(caseData, caseDataBefore);
+        UploadCMOEvent event = service.buildEventToPublish(caseData, caseDataBefore);
 
-        assertThat(event).contains(new AgreedCMOUploaded(caseData, updatedHearing));
+        assertThat(event).isEqualTo(new AgreedCMOUploaded(caseData, updatedHearing));
     }
 
     @Test
@@ -506,9 +510,59 @@ class UploadCMOServiceTest {
             .draftUploadedCMOs(unsealedOrders)
             .build();
 
-        Optional<UploadCMOEvent> event = service.buildEventToPublish(caseData, caseDataBefore);
+        UploadCMOEvent event = service.buildEventToPublish(caseData, caseDataBefore);
 
-        assertThat(event).contains(new DraftCMOUploaded(caseData, updatedHearing));
+        assertThat(event).isEqualTo(new DraftCMOUploaded(caseData, updatedHearing));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = CMOStatus.class, names = {"SEND_TO_JUDGE", "DRAFT"}, mode = EnumSource.Mode.EXCLUDE)
+    void shouldThrowExceptionWhenCMOHasWrongState(CMOStatus status) {
+        List<Element<CaseManagementOrder>> invalidOrders = List.of(
+            element(CaseManagementOrder.builder().status(status).build())
+        );
+
+        List<Element<HearingBooking>> hearingsBefore = new ArrayList<>(hearings());
+
+        CaseData caseDataBefore = CaseData.builder()
+            .hearingDetails(hearingsBefore)
+            .build();
+
+        List<Element<HearingBooking>> hearingsAfter = new ArrayList<>(hearingsBefore);
+
+        HearingBooking updatedHearing = hearingsAfter.get(0).getValue().toBuilder()
+            .caseManagementOrderId(invalidOrders.get(0).getId())
+            .build();
+        hearingsAfter.set(0, element(hearingsAfter.get(0).getId(), updatedHearing));
+
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(hearingsAfter)
+            .draftUploadedCMOs(invalidOrders)
+            .build();
+
+        assertThatThrownBy(() -> service.buildEventToPublish(caseData, caseDataBefore))
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessage("Unexpected cmo status: " + status);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenHearingHasNoCMOAssociated() {
+        List<Element<HearingBooking>> hearings = new ArrayList<>(hearings());
+
+        CaseData caseDataBefore = CaseData.builder()
+            .hearingDetails(hearings)
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(hearings)
+            .draftUploadedCMOs(List.of(
+                element(CaseManagementOrder.builder().status(DRAFT).build())
+            ))
+            .build();
+
+        assertThatThrownBy(() -> service.buildEventToPublish(caseData, caseDataBefore))
+            .isInstanceOf(NoSuchElementException.class);
     }
 
     private DynamicList dynamicList(UUID uuid1, UUID uuid2, UUID uuid3, DynamicListElement... additional) {

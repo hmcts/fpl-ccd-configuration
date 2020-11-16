@@ -97,7 +97,6 @@ public class UploadCMOController extends CallbackController {
         CaseData caseDataBefore = getCaseDataBefore(request);
         CaseData caseData = getCaseData(request);
 
-        service.buildEventToPublish(caseData, caseDataBefore)
-            .ifPresent(this::publishEvent);
+        publishEvent(service.buildEventToPublish(caseData, caseDataBefore));
     }
 }
