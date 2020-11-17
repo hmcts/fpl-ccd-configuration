@@ -45,7 +45,7 @@ public class FeatureToggleService {
     }
 
     public boolean isCaseUserBulkAssignmentEnabled() {
-        return ldClient.boolVariation("case-user-assignment", createLDUser(), false);
+        return ldClient.boolVariation("case-user-assignment", createLDUser(), true);
     }
 
     public boolean isNewCaseStateModelEnabled() {

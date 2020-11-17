@@ -80,7 +80,7 @@ class FeatureToggleServiceTest {
         verify(ldClient).boolVariation(
             eq("case-user-assignment"),
             ldUser(ENVIRONMENT).build(),
-            eq(false));
+            eq(true));
     }
 
     @ParameterizedTest
