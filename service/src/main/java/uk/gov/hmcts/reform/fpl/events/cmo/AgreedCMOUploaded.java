@@ -1,13 +1,11 @@
 package uk.gov.hmcts.reform.fpl.events.cmo;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 
-@Getter
-@RequiredArgsConstructor
+@Value
 public class AgreedCMOUploaded implements UploadCMOEvent {
-    private final CaseData caseData;
-    private final HearingBooking hearing;
+    CaseData caseData;
+    HearingBooking hearing;
 }
