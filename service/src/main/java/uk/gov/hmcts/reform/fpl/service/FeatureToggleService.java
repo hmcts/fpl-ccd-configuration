@@ -48,10 +48,6 @@ public class FeatureToggleService {
         return ldClient.boolVariation("case-user-assignment", createLDUser(), false);
     }
 
-    public boolean isCloseCaseEnabled() {
-        return ldClient.boolVariation("close-case", createLDUser(), false);
-    }
-
     public boolean isNewCaseStateModelEnabled() {
         return ldClient.boolVariation("new-case-state-model", createLDUser(), false);
     }
@@ -69,10 +65,6 @@ public class FeatureToggleService {
     public boolean isSendLAEmailsToSolicitorEnabled(String localAuthorityName) {
         return ldClient.boolVariation("send-la-emails-to-solicitor",
             createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
-    }
-
-    public boolean isUploadDraftCMOEnabled() {
-        return ldClient.boolVariation("upload-draft-cmo", createLDUser(), false);
     }
 
     private LDUser createLDUser() {
