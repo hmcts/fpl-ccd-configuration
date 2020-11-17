@@ -45,6 +45,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED_AND_RE_LISTE
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_AND_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -85,6 +86,7 @@ public class ManageHearingsService {
     public static final String HEARING_END_DATE_LABEL = "hearingEndDateLabel";
     public static final String START_DATE_FLAG = "startDateFlag";
     public static final String END_DATE_FLAG = "endDateFlag";
+    public static final String SHOW_PAST_HEARINGS_PAGE = "showConfirmPastHearingDatesPage";
 
     public Map<String, Object> populatePastAndFutureHearingLists(CaseData caseData) {
         List<Element<HearingBooking>> futureHearings = caseData.getFutureHearings();
@@ -303,20 +305,19 @@ public class ManageHearingsService {
     public Map<String, Object> populateFieldsWhenPastHearingDateAdded(LocalDateTime hearingStartDate,
                                                                       LocalDateTime hearingEndDate) {
         Map<String, Object> data = new HashMap<>();
-        data.put("showConfirmPastHearingDatesPage", YES.getValue());
         LocalDateTime currentDateTime = LocalDateTime.now();
 
-        if (hearingEndDate.isBefore(currentDateTime) && hearingStartDate.isBefore(currentDateTime)) {
-            data.put(HEARING_START_DATE_LABEL, formatLocalDateTimeBaseUsingFormat(hearingStartDate, DATE_TIME));
-            data.put(HEARING_END_DATE_LABEL, formatLocalDateTimeBaseUsingFormat(hearingEndDate, DATE_TIME));
-            data.put(START_DATE_FLAG, YES.getValue());
-            data.put(END_DATE_FLAG, YES.getValue());
-        } else if (hearingStartDate.isBefore(currentDateTime)) {
+        data.put(SHOW_PAST_HEARINGS_PAGE, NO.getValue());
+
+        if (hearingStartDate.isBefore(currentDateTime)) {
             data.put(HEARING_START_DATE_LABEL, formatLocalDateTimeBaseUsingFormat(hearingStartDate, DATE_TIME));
             data.put(START_DATE_FLAG, YES.getValue());
-        } else if (hearingEndDate.isBefore(currentDateTime)) {
+            data.put(SHOW_PAST_HEARINGS_PAGE, YES.getValue());
+        }
+        if (hearingEndDate.isBefore(currentDateTime)) {
             data.put(HEARING_END_DATE_LABEL, formatLocalDateTimeBaseUsingFormat(hearingEndDate, DATE_TIME));
             data.put(END_DATE_FLAG, YES.getValue());
+            data.put(SHOW_PAST_HEARINGS_PAGE, YES.getValue());
         }
 
         return data;

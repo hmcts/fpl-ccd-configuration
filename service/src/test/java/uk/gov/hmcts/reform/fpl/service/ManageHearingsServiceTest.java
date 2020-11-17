@@ -575,39 +575,7 @@ class ManageHearingsServiceTest {
     }
 
     @Nested
-    class AddOrUpdate {
-
-        @Test
-        void shouldUpdateExistingHearing() {
-            Element<HearingBooking> hearing1 = element(hearing(time.now().plusDays(1), time.now().plusDays(2)));
-            Element<HearingBooking> hearing2 = element(hearing(time.now().plusDays(2), time.now().plusDays(3)));
-            Element<HearingBooking> updatedHearing = element(hearing1.getId(),
-                hearing(time.now().plusDays(4), time.now().plusDays(5)));
-
-            CaseData caseData = CaseData.builder()
-                .hearingDetails(List.of(hearing1, hearing2))
-                .build();
-
-            service.addOrUpdate(updatedHearing, caseData);
-
-            assertThat(caseData.getHearingDetails()).containsExactly(updatedHearing, hearing2);
-        }
-
-        @Test
-        void shouldAddNewHearing() {
-            Element<HearingBooking> hearing1 = element(hearing(time.now().plusDays(1), time.now().plusDays(2)));
-            Element<HearingBooking> hearing2 = element(hearing(time.now().plusDays(2), time.now().plusDays(3)));
-            Element<HearingBooking> newHearing = element(hearing(time.now().plusDays(4), time.now().plusDays(5)));
-
-            CaseData caseData = CaseData.builder()
-                .hearingDetails(newArrayList(hearing1, hearing2))
-                .build();
-
-            service.addOrUpdate(newHearing, caseData);
-
-            assertThat(caseData.getHearingDetails())
-                .containsExactly(hearing1, hearing2, newHearing);
-        }
+    class PastHearings {
 
         @Test
         void shouldSetStartDateHearingFieldsWhenHearingStartDateIsInThePast() {
@@ -622,7 +590,7 @@ class ManageHearingsServiceTest {
                 "startDateFlag", "Yes",
                 "hearingStartDateLabel", "15 March 2010, 8:20pm");
 
-            assertThat(startDateFields).containsAllEntriesOf(extractedFields);
+            assertThat(startDateFields).isEqualTo(extractedFields);
         }
 
         @Test
@@ -638,8 +606,7 @@ class ManageHearingsServiceTest {
                 "endDateFlag", "Yes",
                 "hearingEndDateLabel", "15 March 2010, 8:20pm");
 
-            assertThat(startDateFields).hasSize(3);
-            assertThat(startDateFields).containsAllEntriesOf(extractedFields);
+            assertThat(startDateFields).isEqualTo(extractedFields);
         }
 
         @Test
@@ -655,12 +622,27 @@ class ManageHearingsServiceTest {
                 "startDateFlag", "Yes",
                 "hearingStartDateLabel", "16 April 2011, 8:20pm",
                 "endDateFlag", "Yes",
-                "hearingEndDateLabel","15 March 2010, 8:20pm");
+                "hearingEndDateLabel", "15 March 2010, 8:20pm");
 
-            assertThat(hearingDateFields).hasSize(5);
-            assertThat(hearingDateFields).containsAllEntriesOf(extractedFields);
+            assertThat(hearingDateFields).isEqualTo(extractedFields);
         }
 
+        @Test
+        void shouldHidePastHearingsDatesPageWhenDatesAreInFuture() {
+            LocalDateTime hearingStartDate = LocalDateTime.now().plusDays(1);
+            LocalDateTime hearingEndDate = hearingStartDate.plusHours(1);
+
+            Map<String, Object> hearingDateFields = service.populateFieldsWhenPastHearingDateAdded(hearingStartDate,
+                hearingEndDate);
+
+            Map<String, Object> extractedFields = Map.of("showConfirmPastHearingDatesPage", "No");
+
+            assertThat(hearingDateFields).isEqualTo(extractedFields);
+        }
+    }
+
+    @Nested
+    class HearingDates {
         @Test
         void shouldSetHearingStartDateToCorrectDateWhenIncorrectDateAdded() {
             LocalDateTime expectedHearingStartDate = LocalDateTime.of(2010, 3, 15, 20, 20);
@@ -706,6 +688,43 @@ class ManageHearingsServiceTest {
 
             assertThat(hearingDateFields).containsAllEntriesOf(extractedFields);
         }
+    }
+
+    @Nested
+    class AddOrUpdate {
+
+        @Test
+        void shouldUpdateExistingHearing() {
+            Element<HearingBooking> hearing1 = element(hearing(time.now().plusDays(1), time.now().plusDays(2)));
+            Element<HearingBooking> hearing2 = element(hearing(time.now().plusDays(2), time.now().plusDays(3)));
+            Element<HearingBooking> updatedHearing = element(hearing1.getId(),
+                hearing(time.now().plusDays(4), time.now().plusDays(5)));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(List.of(hearing1, hearing2))
+                .build();
+
+            service.addOrUpdate(updatedHearing, caseData);
+
+            assertThat(caseData.getHearingDetails()).containsExactly(updatedHearing, hearing2);
+        }
+
+        @Test
+        void shouldAddNewHearing() {
+            Element<HearingBooking> hearing1 = element(hearing(time.now().plusDays(1), time.now().plusDays(2)));
+            Element<HearingBooking> hearing2 = element(hearing(time.now().plusDays(2), time.now().plusDays(3)));
+            Element<HearingBooking> newHearing = element(hearing(time.now().plusDays(4), time.now().plusDays(5)));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(newArrayList(hearing1, hearing2))
+                .build();
+
+            service.addOrUpdate(newHearing, caseData);
+
+            assertThat(caseData.getHearingDetails())
+                .containsExactly(hearing1, hearing2, newHearing);
+        }
+
     }
 
     @Nested

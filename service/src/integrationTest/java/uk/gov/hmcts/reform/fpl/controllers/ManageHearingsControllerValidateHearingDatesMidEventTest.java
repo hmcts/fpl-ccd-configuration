@@ -170,7 +170,8 @@ public class ManageHearingsControllerValidateHearingDatesMidEventTest extends Ab
 
         Map<String, Object> responseData = callbackResponse.getData();
 
-        assertThat(responseData).doesNotContainKeys("showConfirmPastHearingDatesPage", "startDateFlag", "endDateFlag");
+        assertThat(responseData).doesNotContainKeys("startDateFlag", "endDateFlag");
+        assertThat(responseData).containsEntry("showConfirmPastHearingDatesPage", "No");
     }
 
     @Test

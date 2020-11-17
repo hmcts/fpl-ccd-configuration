@@ -173,7 +173,7 @@ public class ManageHearingsController extends CallbackController {
             errors = validateGroupService.validateGroup(caseData, HearingDatesGroup.class);
         }
 
-        if (caseData.isHearingDateInPast() && featureToggleService.isAddHearingsInPastEnabled()) {
+        if (featureToggleService.isAddHearingsInPastEnabled()) {
             caseDetails.getData().putAll(hearingsService.populateFieldsWhenPastHearingDateAdded(caseData
                     .getHearingStartDate(),
                 caseData.getHearingEndDate()));
