@@ -6,7 +6,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "hearingFurtherEvidenceDocuments",
+    "CaseFieldID": "submittedForm",
     "TabFieldDisplayOrder": 1
   },
   {
@@ -16,8 +16,81 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "furtherEvidenceDocuments",
+    "CaseFieldID": "manageDocumentsLink",
     "TabFieldDisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DocumentsTab",
+    "TabLabel": "Documents",
+    "TabDisplayOrder": 7,
+    "CaseFieldID": "standardDirectionsDocument",
+    "TabFieldDisplayOrder": 3,
+    "Comment": "This is deprecated - field for old SDO documents that were uploaded in uploadStandardDirections event"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DocumentsTab",
+    "TabLabel": "Documents",
+    "TabDisplayOrder": 7,
+    "CaseFieldID": "documentTabFurtherEvidenceHeading",
+    "TabFieldDisplayOrder": 4,
+    "FieldShowCondition": "hearingFurtherEvidenceDocuments=\"*\" OR furtherEvidenceDocuments=\"*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DocumentsTab",
+    "TabLabel": "Documents",
+    "TabDisplayOrder": 7,
+    "CaseFieldID": "hearingFurtherEvidenceDocuments",
+    "TabFieldDisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DocumentsTab",
+    "TabLabel": "Documents",
+    "TabDisplayOrder": 7,
+    "CaseFieldID": "furtherEvidenceDocuments",
+    "TabFieldDisplayOrder": 6
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DocumentsTab",
+    "TabLabel": "Documents",
+    "TabDisplayOrder": 7,
+    "CaseFieldID": "documentTabBulkScanHeading",
+    "TabFieldDisplayOrder": 7,
+    "FieldShowCondition": "scannedDocuments=\"*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DocumentsTab",
+    "TabLabel": "Documents",
+    "TabDisplayOrder": 7,
+    "CaseFieldID": "scannedDocuments",
+    "TabFieldDisplayOrder": 8
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DocumentsTab",
+    "TabLabel": "Documents",
+    "TabDisplayOrder": 7,
+    "CaseFieldID": "documentTabApplicationHeading",
+    "TabFieldDisplayOrder": 9
   },
   {
     "LiveFrom": "01/01/2017",
@@ -28,76 +101,6 @@
     "TabDisplayOrder": 7,
     "CaseFieldID": "documents_socialWorkChronology_document",
     "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\"",
-    "TabFieldDisplayOrder": 3
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 7,
-    "CaseFieldID": "documents_socialWorkStatement_document",
-    "TabFieldDisplayOrder": 4
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 7,
-    "CaseFieldID": "documents_socialWorkAssessment_document",
-    "TabFieldDisplayOrder": 5
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 7,
-    "CaseFieldID": "documents_socialWorkCarePlan_document",
-    "TabFieldDisplayOrder": 6
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 7,
-    "CaseFieldID": "standardDirectionsDocument",
-    "TabFieldDisplayOrder": 7
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 7,
-    "CaseFieldID": "documents_socialWorkEvidenceTemplate_document",
-    "TabFieldDisplayOrder": 8
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 7,
-    "CaseFieldID": "documents_threshold_document",
-    "TabFieldDisplayOrder": 9
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 7,
-    "CaseFieldID": "documents_checklist_document",
     "TabFieldDisplayOrder": 10
   },
   {
@@ -107,7 +110,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "courtBundle",
+    "CaseFieldID": "documents_socialWorkStatement_document",
     "TabFieldDisplayOrder": 11
   },
   {
@@ -117,7 +120,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "documents_socialWorkOther",
+    "CaseFieldID": "documents_socialWorkAssessment_document",
     "TabFieldDisplayOrder": 12
   },
   {
@@ -127,9 +130,10 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "otherCourtAdminDocuments",
+    "CaseFieldID": "documents_socialWorkCarePlan_document",
     "TabFieldDisplayOrder": 13
   },
+
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
@@ -137,7 +141,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "submittedForm",
+    "CaseFieldID": "documents_socialWorkEvidenceTemplate_document",
     "TabFieldDisplayOrder": 14
   },
   {
@@ -147,7 +151,47 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "scannedDocuments",
+    "CaseFieldID": "documents_threshold_document",
     "TabFieldDisplayOrder": 15
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DocumentsTab",
+    "TabLabel": "Documents",
+    "TabDisplayOrder": 7,
+    "CaseFieldID": "documents_checklist_document",
+    "TabFieldDisplayOrder": 16
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DocumentsTab",
+    "TabLabel": "Documents",
+    "TabDisplayOrder": 7,
+    "CaseFieldID": "courtBundle",
+    "TabFieldDisplayOrder": 17
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DocumentsTab",
+    "TabLabel": "Documents",
+    "TabDisplayOrder": 7,
+    "CaseFieldID": "documents_socialWorkOther",
+    "TabFieldDisplayOrder": 18
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DocumentsTab",
+    "TabLabel": "Documents",
+    "TabDisplayOrder": 7,
+    "CaseFieldID": "otherCourtAdminDocuments",
+    "TabFieldDisplayOrder": 19
   }
 ]
