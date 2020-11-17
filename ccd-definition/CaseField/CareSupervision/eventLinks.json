@@ -166,5 +166,13 @@
     "FieldType": "Label",
     "Label": "[Manage legal representatives](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/manageLegalRepresentatives)",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageDocumentsLink",
+    "FieldType": "Label",
+    "Label": "[Manage documents](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/manageDocuments)",
+    "SecurityClassification": "Public"
   }
 ]
