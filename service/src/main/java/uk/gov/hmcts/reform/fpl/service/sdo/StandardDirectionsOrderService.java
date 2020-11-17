@@ -7,8 +7,10 @@ import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
@@ -16,13 +18,19 @@ import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import java.time.LocalDate;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFromStringUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.prepareJudgeFields;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class StandardDirectionsOrderService {
     private final DocumentSealingService sealingService;
+    private final FeatureToggleService featureToggleService;
     private final Time time;
     private final IdamClient idamClient;
     private final RequestData requestData;
@@ -37,22 +45,34 @@ public class StandardDirectionsOrderService {
         return dateOfIssue;
     }
 
-    public StandardDirectionOrder buildTemporarySDO(CaseData caseData) {
+    public StandardDirectionOrder buildTemporarySDO(CaseData caseData, StandardDirectionOrder previousSDO) {
         DocumentReference document = caseData.getPreparedSDO();
 
         if (document == null) {
             // been through once, either pull from replacement doc or SDO if that isn't present
             document = defaultIfNull(
                 caseData.getReplacementSDO(),
-                caseData.getStandardDirectionOrder().getOrderDoc()
+                previousSDO.getOrderDoc()
             );
         }
-        return StandardDirectionOrder.builder()
-            .orderDoc(document)
-            .build();
+
+        StandardDirectionOrder.StandardDirectionOrderBuilder builder = StandardDirectionOrder.builder()
+            .orderDoc(document);
+
+        if (caseData.getJudgeAndLegalAdvisor() != null) {
+            JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
+                caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()
+            );
+
+            removeAllocatedJudgeProperties(judgeAndLegalAdvisor);
+
+            builder.judgeAndLegalAdvisor(judgeAndLegalAdvisor);
+        }
+
+        return builder.build();
     }
 
-    public StandardDirectionOrder buildOrderFromUpload(StandardDirectionOrder currentOrder) throws Exception {
+    public StandardDirectionOrder buildOrderFromUpload(StandardDirectionOrder currentOrder) {
         UserInfo userInfo = idamClient.getUserInfo(requestData.authorisation());
 
         return StandardDirectionOrder.builder()
@@ -60,10 +80,40 @@ public class StandardDirectionsOrderService {
             .dateOfUpload(time.now().toLocalDate())
             .uploader(userInfo.getName())
             .orderDoc(prepareOrderDocument(currentOrder.getOrderDoc(), currentOrder.getOrderStatus()))
-            .build();
+            .judgeAndLegalAdvisor(currentOrder.getJudgeAndLegalAdvisor()).build();
     }
 
-    private DocumentReference prepareOrderDocument(DocumentReference document, OrderStatus status) throws Exception {
+    public JudgeAndLegalAdvisor getJudgeAndLegalAdvisorFromSDO(CaseData caseData) {
+        StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
+
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder().build();
+
+        if (standardDirectionOrder != null && isNotEmpty(standardDirectionOrder.getJudgeAndLegalAdvisor())) {
+            judgeAndLegalAdvisor = standardDirectionOrder.getJudgeAndLegalAdvisor();
+        }
+
+        if (isNotEmpty(caseData.getAllocatedJudge())) {
+            judgeAndLegalAdvisor = prepareSDOJudgeFields(caseData);
+        }
+
+        return judgeAndLegalAdvisor;
+    }
+
+    private JudgeAndLegalAdvisor prepareSDOJudgeFields(CaseData caseData) {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder().build();
+
+        if (isNotEmpty(caseData.getStandardDirectionOrder())
+            && isNotEmpty(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor())) {
+            judgeAndLegalAdvisor = prepareJudgeFields(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor(),
+                caseData.getAllocatedJudge());
+        }
+
+        judgeAndLegalAdvisor.setAllocatedJudgeLabel(buildAllocatedJudgeLabel(caseData.getAllocatedJudge()));
+
+        return judgeAndLegalAdvisor;
+    }
+
+    private DocumentReference prepareOrderDocument(DocumentReference document, OrderStatus status) {
         if (status != OrderStatus.SEALED) {
             return document;
         }

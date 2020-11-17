@@ -48,7 +48,8 @@ class LocalAuthorityEmailContentProviderTest extends AbstractEmailContentProvide
             .put("leadRespondentsName", "Smith")
             .put("hearingDate", "1 January 2020")
             .put("reference", CASE_REFERENCE)
-            .put("caseUrl", caseUrl(CASE_REFERENCE))
+            .put("caseUrl", caseUrl(CASE_REFERENCE, "OrdersTab"))
+            .put("callout", "^Smith, 12345, hearing 1 Jan 2020")
             .build();
     }
 
@@ -58,14 +59,15 @@ class LocalAuthorityEmailContentProviderTest extends AbstractEmailContentProvide
             .put("familyManCaseNumber", "")
             .put("hearingDate", "")
             .put("leadRespondentsName", "Moley")
-            .put("reference", "1")
-            .put("caseUrl", String.format("http://fake-url/cases/case-details/%s", 1L))
+            .put("reference", CASE_REFERENCE)
+            .put("caseUrl", caseUrl(CASE_REFERENCE, "OrdersTab"))
+            .put("callout", "^Moley")
             .build();
     }
 
     private CaseData getCaseData() {
         return CaseData.builder()
-            .id(1L)
+            .id(Long.valueOf(CASE_REFERENCE))
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .respondents1(wrapElements(Respondent.builder()
                 .party(RespondentParty.builder().lastName("Moley").build())

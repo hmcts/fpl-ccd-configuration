@@ -80,9 +80,23 @@ withPipeline(type, product, component) {
   enableAksStagingDeployment()
   enableSlackNotifications('#fpla-tech')
 
-  env.PROXY_SERVER = "proxyout.reform.hmcts.net:8080"
-
   after('checkout') {
+    onMaster {
+      withCredentials([usernamePassword(credentialsId: 'jenkins-github-hmcts-api-token', usernameVariable: 'USERNAME', passwordVariable: 'BEARER_TOKEN')]) {
+        try {
+          sh '''
+            set -e
+
+            git remote set-url origin $(git config remote.origin.url | sed "s/github.com/${BEARER_TOKEN}@github.com/g")
+
+            git fetch origin demo:demo
+            git push --force origin HEAD:demo
+          '''
+        } catch (err) {
+          notifyBuildEvent channel: '#fpla-tech', color: 'warning', message: 'Failed to update demo branch'
+        }
+      }
+    }
     sh """ git submodule update --init """
   }
 
@@ -104,6 +118,7 @@ withPipeline(type, product, component) {
     env.URL="https://xui-fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
     env.MOCKED_PAYMENTS=false
     env.PARALLEL_CHUNKS=5
+    env.TEST_RETRIES=2
   }
 
   after('smoketest:saat') {
@@ -122,25 +137,29 @@ withPipeline(type, product, component) {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
 
-  before('functionalTest:saat') {
-    env.SKIP_FUNCTIONAL_TESTS = 'true'
+  before('functionalTest:preview') {
+    env.ENV = 'preview'
   }
 
   before('functionalTest:aat') {
-    env.TESTS_SELECTOR="@smoke-tests"
+    env.ENV = 'aat'
+    env.SKIP_BROWSER_TESTS = 'true'
   }
 
   before('functionalTest:demo') {
-    env.SKIP_FUNCTIONAL_TESTS = 'true'
+    env.SKIP_API_TESTS = 'true'
+    env.SKIP_BROWSER_TESTS = 'true'
   }
 
   after('functionalTest:aat') {
     archiveCoreCaseDataDefinitions('prod')
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
   }
 
   after('functionalTest:preview') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/**/*'
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
   }
 
   before('buildinfra:demo') {
@@ -172,6 +191,7 @@ withPipeline(type, product, component) {
 
   before('smoketest:aat') {
     env.URL = "https://manage-case.aat.platform.hmcts.net"
+    env.TEST_CONF_FPL_URL = "http://fpl-case-service-staging.service.core-compute-aat.internal"
     archiveCoreCaseDataDefinitions('aat')
     uploadCoreCaseDataDefinitions('aat')
   }

@@ -27,6 +27,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECT
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
 @ExtendWith(SpringExtension.class)
@@ -61,6 +62,8 @@ class EPOGenerationServiceTest extends AbstractOrderGenerationServiceTest {
 
     CaseData getCase(OrderStatus orderStatus) {
         return defaultCaseData(orderStatus)
+            .dateOfIssue(null)
+            .dateAndTimeOfIssue(time.now())
             .orderTypeAndDocument(OrderTypeAndDocument.builder()
                 .type(EMERGENCY_PROTECTION_ORDER)
                 .document(DocumentReference.builder().build())
@@ -69,7 +72,7 @@ class EPOGenerationServiceTest extends AbstractOrderGenerationServiceTest {
                 .descriptionNeeded("Yes")
                 .description("Test description")
                 .build())
-            .epoEndDate(time.now())
+            .epoEndDate(time.now().plusDays(5))
             .epoPhrase(EPOPhrase.builder()
                 .includePhrase("Yes")
                 .build())
@@ -98,8 +101,8 @@ class EPOGenerationServiceTest extends AbstractOrderGenerationServiceTest {
             .epoType(REMOVE_TO_ACCOMMODATION)
             .includePhrase("Yes")
             .removalAddress("1 Main Street, Lurgan, BT66 7PP, Armagh, United Kingdom")
-            .epoStartDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), "d MMMM yyyy 'at' h:mma"))
-            .epoEndDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), "d MMMM yyyy 'at' h:mma"))
+            .epoStartDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
+            .epoEndDateTime(formatLocalDateTimeBaseUsingFormat(time.now().plusDays(5), DATE_TIME_AT))
             .children(getChildren())
             .build();
 

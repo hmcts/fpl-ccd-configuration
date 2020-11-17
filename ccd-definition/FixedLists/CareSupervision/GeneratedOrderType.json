@@ -26,5 +26,12 @@
     "ListElementCode": "SUPERVISION_ORDER",
     "ListElement": "Supervision order",
     "DisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrderType",
+    "ListElementCode": "UPLOAD",
+    "ListElement": "Upload a sealed order from family man",
+    "DisplayOrder": 6
   }
 ]

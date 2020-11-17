@@ -21,8 +21,8 @@ public class Judge extends AbstractJudge {
 
     @Builder(toBuilder = true)
     private Judge(JudgeOrMagistrateTitle judgeTitle, String otherTitle, String judgeLastName,
-                 String judgeFullName, String judgeEmailAddress) {
-        super(judgeTitle, otherTitle, judgeLastName, judgeFullName);
+                  String judgeFullName, String judgeEmailAddress) {
+        super(judgeTitle, otherTitle, judgeLastName, judgeFullName, judgeEmailAddress);
         this.judgeTitle = judgeTitle;
         this.otherTitle = otherTitle;
         this.judgeLastName = judgeLastName;
@@ -35,5 +35,15 @@ public class Judge extends AbstractJudge {
             && StringUtils.equals(getOtherTitle(), judgeAndLegalAdvisor.getOtherTitle())
             && StringUtils.equals(getJudgeLastName(), judgeAndLegalAdvisor.getJudgeLastName())
             && StringUtils.equals(getJudgeFullName(), judgeAndLegalAdvisor.getJudgeFullName());
+    }
+
+    public JudgeAndLegalAdvisor toJudgeAndLegalAdvisor() {
+        return JudgeAndLegalAdvisor.builder()
+            .judgeTitle(judgeTitle)
+            .otherTitle(otherTitle)
+            .judgeLastName(judgeLastName)
+            .judgeFullName(judgeFullName)
+            .judgeEmailAddress(judgeEmailAddress)
+            .build();
     }
 }

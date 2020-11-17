@@ -11,8 +11,6 @@ properties([
       description: 'The URL of idam api'),
     string(name: 'DM_STORE_URL', defaultValue: 'http://dm-store-aat.service.core-compute-aat.internal',
       description: 'The URL of dm store'),
-    string(name: 'PROXY_SERVER', defaultValue: 'proxyout.reform.hmcts.net:8080',
-      description: 'The proxy server to use'),
     string(name: 'SECURITY_RULES',
       defaultValue: 'https://raw.githubusercontent.com/hmcts/security-test-rules/master/conf/security-rules.conf',
       description: 'The security rules to use'),
@@ -34,7 +32,6 @@ withNightlyPipeline(type, product, component) {
   env.DM_STORE_URL=params.DM_STORE_URL
   env.IDAM_API_URL=params.IDAM_API_URL
   env.CASE_SERVICE_URL=params.CASE_SERVICE_URL
-  env.PROXY_SERVER = params.PROXY_SERVER
   env.SECURITY_RULES = params.SECURITY_RULES
 
   enableSecurityScan()
@@ -48,13 +45,14 @@ withNightlyPipeline(type, product, component) {
   }
 
   before('fullFunctionalTest') {
-    env.PROXY = params.PROXY_SERVER
     env.PARALLEL_CHUNKS = params.FUNCTIONAL_TESTS_WORKERS
     env.MOCKED_PAYMENTS = false
     env.TEST_RETRIES = 2
+    env.ENV = 'aat'
   }
 
   after('fullFunctionalTest') {
     archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+    archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
   }
 }

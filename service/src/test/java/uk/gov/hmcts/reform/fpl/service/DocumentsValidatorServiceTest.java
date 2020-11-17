@@ -46,7 +46,8 @@ class DocumentsValidatorServiceTest {
         List<Element<DocumentSocialWorkOther>> additionalDocuments =
             createSocialWorkOtherDocuments("Mock title");
         List<String> validationErrors = documentsValidatorService.validateSocialWorkOtherDocuments(additionalDocuments);
-        assertThat(validationErrors.size()).isEqualTo(0);
+
+        assertThat(validationErrors).isEmpty();
     }
 
     @Test
@@ -83,7 +84,7 @@ class DocumentsValidatorServiceTest {
         CaseData caseData = generateMandatoryDocuments(ATTACHED.getLabel(), POPULATED_DOCUMENT);
         List<String> validationErrors = documentsValidatorService.validateDocuments(caseData);
 
-        assertThat(validationErrors.size()).isEqualTo(0);
+        assertThat(validationErrors).isEmpty();
     }
 
     private CaseData generateMandatoryDocuments(String documentStatus, DocumentReference documentReference) {

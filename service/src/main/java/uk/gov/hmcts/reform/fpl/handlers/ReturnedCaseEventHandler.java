@@ -6,10 +6,13 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.ReturnedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.returnedcase.ReturnedCaseTemplate;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.ReturnedCaseContentProvider;
+
+import java.util.Collection;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_RETURNED_TO_THE_LA;
 
@@ -26,8 +29,12 @@ public class ReturnedCaseEventHandler {
 
         ReturnedCaseTemplate parameters = returnedCaseContentProvider.parametersWithCaseUrl(caseData);
 
-        String email = inboxLookupService.getNotificationRecipientEmail(caseData);
+        Collection<String> emails = inboxLookupService.getRecipients(
+            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData)
+                .excludeLegalRepresentatives(true)
+                .build()
+        );
 
-        notificationService.sendEmail(APPLICATION_RETURNED_TO_THE_LA, email, parameters, caseData.getId().toString());
+        notificationService.sendEmail(APPLICATION_RETURNED_TO_THE_LA, emails, parameters, caseData.getId().toString());
     }
 }

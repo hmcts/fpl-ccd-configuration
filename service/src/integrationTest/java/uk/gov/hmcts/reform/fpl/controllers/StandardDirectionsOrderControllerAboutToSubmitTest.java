@@ -12,6 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
@@ -21,6 +22,8 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
@@ -29,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
@@ -55,10 +59,13 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
-import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
+import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_PARTIES;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -77,6 +84,9 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
     private static final String DIRECTION_TYPE = "Identify alternative carers";
     private static final String DIRECTION_TEXT = "Contact the parents to make sure there is a complete family tree "
         + "showing family members who could be alternative carers.";
+    private static final String LA_NAME = "example";
+    private static final String COURT_NAME = "Family Court";
+    private static final String COURT_CODE = "11";
 
     @MockBean
     private DocmosisDocumentGeneratorService docmosisService;
@@ -89,6 +99,9 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
 
     @MockBean
     private DocumentSealingService sealingService;
+
+    @MockBean
+    private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
     @Captor
     private ArgumentCaptor<String> filename;
@@ -103,6 +116,16 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
 
         given(docmosisService.generateDocmosisDocument(any(DocmosisData.class), any())).willReturn(docmosisDocument);
         given(uploadDocumentService.uploadPDF(eq(PDF), filename.capture())).willReturn(DOCUMENT);
+
+        given(docmosisService.generateDocmosisDocument(any(DocmosisNoticeOfProceeding.class), eq(C6)))
+            .willReturn(docmosisDocument);
+
+        given(uploadDocumentService.uploadPDF(PDF, C6.getDocumentTitle()))
+            .willReturn(DOCUMENT);
+
+        given(hmctsCourtLookupConfiguration.getCourt(LA_NAME))
+            .willReturn(new HmctsCourtLookupConfiguration.Court(COURT_NAME, "hmcts-non-admin@test.com",
+                COURT_CODE));
     }
 
     @Test
@@ -164,10 +187,21 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
     }
 
     @Test
-    void shouldUpdateStateWhenOrderIsSealedThroughServiceRouteAndRemoveRouter() {
+    void shouldUpdateStateWhenOrderIsSealedThroughServiceRouteAndRemoveRouterAndSendNoticeOfProceedings() {
         CaseDetails caseDetails = validSealedCaseDetailsForServiceRoute();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
+
+        CaseData responseCaseData = mapper.convertValue(response.getData(), CaseData.class);
+
+        DocumentReference noticeOfProceedingBundle = responseCaseData.getNoticeOfProceedingsBundle().get(0).getValue()
+            .getDocument();
+
+        assertThat(responseCaseData.getNoticeOfProceedingsBundle()).hasSize(1);
+        assertThat(noticeOfProceedingBundle.getUrl()).isEqualTo(DOCUMENT.links.self.href);
+        assertThat(noticeOfProceedingBundle.getFilename()).isEqualTo(DOCUMENT.originalDocumentName);
+        assertThat(noticeOfProceedingBundle.getBinaryUrl()).isEqualTo(DOCUMENT.links.binary.href);
 
         assertThat(response.getData())
             .containsEntry("state", "PREPARE_FOR_HEARING")
@@ -175,14 +209,26 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
     }
 
     @Test
-    void shouldUpdateStateWhenOrderIsSealedThroughUploadRouteAndRemoveRouter() throws Exception {
+    void shouldUpdateStateWhenOrderIsSealedThroughUploadRouteAndRemoveRouterAndSendNoticeOfProceedings()
+        throws Exception {
         DocumentReference document = DocumentReference.builder().filename("final.pdf").build();
         CaseDetails caseDetails = validCaseDetailsForUploadRoute(document, SEALED);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         given(idamClient.getUserInfo(anyString())).willReturn(UserInfo.builder().name("adam").build());
         given(sealingService.sealDocument(document)).willReturn(document);
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
+
+        CaseData responseCaseData = mapper.convertValue(response.getData(), CaseData.class);
+
+        DocumentReference noticeOfProceedingBundle = responseCaseData.getNoticeOfProceedingsBundle().get(0).getValue()
+            .getDocument();
+
+        assertThat(responseCaseData.getNoticeOfProceedingsBundle()).hasSize(1);
+        assertThat(noticeOfProceedingBundle.getUrl()).isEqualTo(DOCUMENT.links.self.href);
+        assertThat(noticeOfProceedingBundle.getFilename()).isEqualTo(DOCUMENT.originalDocumentName);
+        assertThat(noticeOfProceedingBundle.getBinaryUrl()).isEqualTo(DOCUMENT.links.binary.href);
 
         assertThat(response.getData())
             .containsEntry("state", "PREPARE_FOR_HEARING")
@@ -198,14 +244,14 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
         CaseDetails caseDetails = validCaseDetailsForUploadRoute(order, DRAFT);
         Map<String, Object> dataMap = new HashMap<>(caseDetails.getData());
 
-        // dummy data
         dataMap.putAll(Map.of(
             "dateOfIssue", dateNow(),
             "preparedSDO", DocumentReference.builder().build(),
             "currentSDO", DocumentReference.builder().build(),
             "replacementSDO", DocumentReference.builder().build(),
             "useServiceRoute", "",
-            "useUploadRoute", "YES"
+            "useUploadRoute", "YES",
+            "noticeOfProceedings", NoticeOfProceedings.builder().build()
         ));
 
         caseDetails.setData(dataMap);
@@ -219,7 +265,8 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
             "currentSDO",
             "replacementSDO",
             "useServiceRoute",
-            "useUploadRoute"
+            "useUploadRoute",
+            "noticeOfProceedings"
         );
     }
 
@@ -240,16 +287,19 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
     private CaseDetails validSealedCaseDetailsForServiceRoute() {
         ImmutableMap.Builder<String, Object> data = directionsWithShowHideValuesRemoved()
             .put("dateOfIssue", dateNow())
+            .put("noticeOfProceedings", buildNoticeOfProceedings())
             .put("standardDirectionOrder", StandardDirectionOrder.builder().orderStatus(SEALED).build())
             .putAll(buildJudgeAndLegalAdvisorDetails())
             .put(HEARING_DETAILS_KEY, wrapElements(HearingBooking.builder()
-                .startDate(HEARING_START_DATE)
-                .endDate(HEARING_END_DATE)
+                .startDate(LocalDateTime.now())
+                .endDate(LocalDateTime.now().plusDays(1))
                 .venue("EXAMPLE")
                 .build()))
-            .put("caseLocalAuthority", "example")
+            .put("caseLocalAuthority", LA_NAME)
             .put("dateSubmitted", dateNow())
             .put("applicants", getApplicant())
+            .put("familyManCaseNumber", "1234")
+            .put("orders", Orders.builder().orderType(List.of(CARE_ORDER)).build())
             .put("sdoRouter", SDORoute.SERVICE);
 
         return CaseDetails.builder()
@@ -261,14 +311,18 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
         ImmutableMap.Builder<String, Object> data = ImmutableMap.<String, Object>builder()
             .putAll(buildJudgeAndLegalAdvisorDetails())
             .put(HEARING_DETAILS_KEY, wrapElements(HearingBooking.builder()
-                .startDate(HEARING_START_DATE)
-                .endDate(HEARING_END_DATE)
+                .startDate(LocalDateTime.now())
+                .endDate(LocalDateTime.now().plusDays(1))
                 .venue("EXAMPLE")
                 .build()))
             .put("standardDirectionOrder", StandardDirectionOrder.builder()
                 .orderStatus(status)
                 .orderDoc(document)
                 .build())
+            .put("caseLocalAuthority", LA_NAME)
+            .put("familyManCaseNumber", "1234")
+            .put("orders", Orders.builder().orderType(List.of(CARE_ORDER)).build())
+            .put("noticeOfProceedings", buildNoticeOfProceedings())
             .put("sdoRouter", SDORoute.UPLOAD);
 
         return CaseDetails.builder()
@@ -363,7 +417,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
             .directionRemovable("Yes")
             .directionNeeded("Yes")
             .readOnly("Yes")
-            .dateToBeCompletedBy(HEARING_START_DATE.toLocalDate().atStartOfDay())
+            .dateToBeCompletedBy(LocalDateTime.now().toLocalDate().atStartOfDay())
             .build();
     }
 
@@ -392,5 +446,11 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
 
     private List<Element<Applicant>> getApplicant() {
         return wrapElements(Applicant.builder().party(ApplicantParty.builder().organisationName("").build()).build());
+    }
+
+    private NoticeOfProceedings buildNoticeOfProceedings() {
+        return NoticeOfProceedings.builder()
+            .proceedingTypes(List.of(NOTICE_OF_PROCEEDINGS_FOR_PARTIES))
+            .build();
     }
 }

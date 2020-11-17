@@ -16,14 +16,15 @@ import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -47,9 +48,9 @@ class StandardDirectionsServiceTest {
 
     @Test
     void shouldReturnExpectedListOfDirectionsWithPopulatedDatesWhenThereIsHearingDate() {
-        LocalDate date = LocalDate.of(2099, 6, 1);
-        given(calendarService.getWorkingDayFrom(eq(date), eq(-2))).willReturn(date.minusDays(2));
-        given(calendarService.getWorkingDayFrom(eq(date), eq(-3))).willReturn(date.minusDays(3));
+        LocalDate date = LocalDate.now().plusYears(10);
+        given(calendarService.getWorkingDayFrom(date, -2)).willReturn(date.minusDays(2));
+        given(calendarService.getWorkingDayFrom(date, -3)).willReturn(date.minusDays(3));
 
         List<Element<Direction>> directions = service.getDirections(hearingOnDateAtMidday(date));
 
@@ -89,6 +90,31 @@ class StandardDirectionsServiceTest {
             .build();
 
         assertThat(service.hasEmptyDates(caseData)).isFalse();
+    }
+
+    @Test
+    void shouldPopulateStandardDirections() {
+        LocalDate hearingDate = LocalDate.now().plusYears(10);
+        given(calendarService.getWorkingDayFrom(hearingDate, -2)).willReturn(hearingDate.minusDays(2));
+        given(calendarService.getWorkingDayFrom(hearingDate, -3)).willReturn(hearingDate.minusDays(3));
+
+        List<Element<HearingBooking>> hearings = createHearingBookings(hearingDate.atStartOfDay(),
+            hearingDate.atStartOfDay().plusDays(1));
+
+        CaseData caseData = CaseData.builder().hearingDetails(hearings).build();
+
+        Map<String, List<Element<Direction>>> standardDirections = service.populateStandardDirections(
+            caseData);
+
+        //test data in test/resources/ordersConfig.json
+        List<Element<Direction>> allPartiesDirections = standardDirections.get(ALL_PARTIES.getValue());
+        List<Element<Direction>> localAuthorityDirections = standardDirections.get(LOCAL_AUTHORITY.getValue());
+
+        Direction[] expectedDirections = expectedDirections(hearingDate);
+
+        assertThat(unwrapElements(allPartiesDirections)).containsExactly(expectedDirections[0]);
+        assertThat(unwrapElements(localAuthorityDirections)).containsExactly(
+            expectedDirections[1], expectedDirections[2]);
     }
 
     private Direction buildDirectionWithDate() {

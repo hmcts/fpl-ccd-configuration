@@ -54,7 +54,7 @@
     "ID": "StandardDirectionOrder",
     "ListElementCode": "orderStatus",
     "FieldType": "FixedRadioList",
-    "ElementLabel": "Is this the final version?",
+    "ElementLabel": "Do you want to send the order now?",
     "FieldTypeParameter": "OrderStatus",
     "SecurityClassification": "Public",
     "FieldShowCondition": "directions=\"DO NOT SHOW\""

@@ -15,6 +15,7 @@ const normalizeCaseId = caseId => caseId.toString().replace(/\D/g, '');
 const baseUrl = process.env.URL || 'http://localhost:3333';
 const signedInSelector = 'exui-header';
 const signedOutSelector = '#global-header';
+const maxRetries = 5;
 let currentUser = {};
 
 'use strict';
@@ -26,7 +27,7 @@ module.exports = function () {
         output.debug(`Logging in as ${user.email}`);
         currentUser = {}; // reset in case the login fails
         await this.retryUntilExists(async () => {
-          this.amOnPage(baseUrl);
+          await this.goToPage(baseUrl);
 
           if (await this.waitForAnySelector([signedOutSelector, signedInSelector]) == null) {
             return;
@@ -42,6 +43,31 @@ module.exports = function () {
         currentUser = user;
       } else {
         output.debug(`Already logged in as ${user.email}`);
+      }
+    },
+
+    async goToPage(url){
+      this.amOnPage(url);
+      await this.logWithHmctsAccount();
+    },
+
+    async logWithHmctsAccount(){
+      const hmctsLoginIn = 'div.win-scroll';
+
+      if (await this.hasSelector(hmctsLoginIn)) {
+        if (!config.hmctsUser.email || !config.hmctsUser.password) {
+          throw new Error('For environment requiring hmcts authentication please provide HMCTS_USER_USERNAME and HMCTS_USER_PASSWORD environment variables');
+        }
+        within(hmctsLoginIn, () => {
+          this.fillField('//input[@type="email"]', config.hmctsUser.email);
+          this.wait(0.2);
+          this.click('Next');
+          this.wait(0.2);
+          this.fillField('//input[@type="password"]', config.hmctsUser.password);
+          this.wait(0.2);
+          this.click('Sign in');
+          this.click('Yes');
+        });
       }
     },
 
@@ -106,7 +132,7 @@ module.exports = function () {
       }, 'ccd-case-event-trigger');
     },
 
-    seeDocument(title, name, status = '', reason = '') {
+    seeDocument(title, name, status = '', reason = '', dateAndTimeUploaded, uploadedBy) {
       this.see(title);
       if (status !== '') {
         this.see(status);
@@ -115,6 +141,12 @@ module.exports = function () {
         this.see(reason);
       } else {
         this.see(name);
+      }
+      if (dateAndTimeUploaded) {
+        this.see(dateAndTimeUploaded);
+      }
+      if (uploadedBy) {
+        this.see(uploadedBy);
       }
     },
 
@@ -146,6 +178,11 @@ module.exports = function () {
       }
     },
 
+    seeTextInTab (pathToField) {
+      const fieldSelector = this.tabFieldSelector(pathToField);
+      this.seeElement(locate(fieldSelector));
+    },
+
     dontSeeInTab(pathToField) {
       this.dontSeeElement(locate(this.tabFieldSelector(pathToField)));
     },
@@ -166,8 +203,8 @@ module.exports = function () {
     async navigateToCaseDetails(caseId) {
       const currentUrl = await this.grabCurrentUrl();
       if (!currentUrl.replace(/#.+/g, '').endsWith(caseId)) {
-        await this.retryUntilExists(() => {
-          this.amOnPage(`${baseUrl}/cases/case-details/${caseId}`);
+        await this.retryUntilExists(async () => {
+          await this.goToPage(`${baseUrl}/cases/case-details/${caseId}`);
         }, signedInSelector);
       } else {
         this.refreshPage();
@@ -252,6 +289,24 @@ module.exports = function () {
       return caseId;
     },
 
+    async goToNextPage(label = 'Continue', maxNumberOfTries = maxRetries){
+      const currentUrl = await this.grabCurrentUrl();
+      this.click(label);
+
+      for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
+        if(await this.grabCurrentUrl() !== currentUrl){
+          break;
+        } else {
+          this.wait(1);
+          if(await this.grabCurrentUrl() === currentUrl){
+            this.click(label);
+          }
+        }
+      }
+    },
+    async getActiveElementIndex() {
+      return await this.grabNumberOfVisibleElements('//button[text()="Remove"]') - 1;
+    },
     /**
      * Retries defined action util element described by the locator is present. If element is not present
      * after 4 tries (run + 3 retries) this step throws an error.
@@ -263,7 +318,7 @@ module.exports = function () {
      * @param locator - locator for an element that is expected to be present upon successful execution of an action
      * @returns {Promise<void>} - promise holding no result if resolved or error if rejected
      */
-    async retryUntilExists(action, locator, maxNumberOfTries = 6) {
+    async retryUntilExists(action, locator, maxNumberOfTries = maxRetries) {
       for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
         output.log(`retryUntilExists(${locator}): starting try #${tryNumber}`);
         if (tryNumber > 1 && await this.hasSelector(locator)) {

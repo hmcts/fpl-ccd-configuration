@@ -19,9 +19,13 @@ import static uk.gov.hmcts.reform.fpl.enums.ChildGender.BOY;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.DRAFT_WATERMARK;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 
@@ -58,16 +62,19 @@ abstract class AbstractOrderGenerationServiceTest {
     }
 
     DocmosisGeneratedOrder enrichWithStandardData(GeneratedOrderType type,
-                                                               OrderStatus orderStatus,
-                                                               DocmosisGeneratedOrder docmosisGeneratedOrder) {
+                                                  OrderStatus orderStatus,
+                                                  DocmosisGeneratedOrder docmosisGeneratedOrder) {
         return enrichWithStandardData(type, null, orderStatus, docmosisGeneratedOrder);
     }
 
     DocmosisGeneratedOrder enrichWithStandardData(GeneratedOrderType type,
-                                                               GeneratedOrderSubtype subtype,
-                                                               OrderStatus orderStatus,
-                                                               DocmosisGeneratedOrder docmosisGeneratedOrder) {
+                                                  GeneratedOrderSubtype subtype,
+                                                  OrderStatus orderStatus,
+                                                  DocmosisGeneratedOrder docmosisGeneratedOrder) {
 
+        String date = EMERGENCY_PROTECTION_ORDER.equals(type)
+            ? formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME)
+            : formatLocalDateToString(time.now().toLocalDate(), DATE);
         DocmosisJudgeAndLegalAdvisor judgeAndLegalAdvisor = DocmosisJudgeAndLegalAdvisor.builder()
             .judgeTitleAndName("Her Honour Judge Judy")
             .legalAdvisorName("Peter Parker")
@@ -79,7 +86,7 @@ abstract class AbstractOrderGenerationServiceTest {
             .furtherDirections(type != BLANK_ORDER ? "Example Directions" : "")
             .familyManCaseNumber("123")
             .courtName("Family Court")
-            .dateOfIssue(formatLocalDateToString(time.now().toLocalDate(), "d MMMM yyyy"))
+            .dateOfIssue(date)
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
             .crest("[userImage:crest.png]");
 

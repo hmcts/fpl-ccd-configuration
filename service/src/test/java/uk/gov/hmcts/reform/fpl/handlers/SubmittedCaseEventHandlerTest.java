@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
+import uk.gov.hmcts.reform.fnp.exception.RetryablePaymentException;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
@@ -171,6 +172,26 @@ class SubmittedCaseEventHandlerTest {
             final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(caseData, caseData);
 
             final Exception exception = new PaymentsApiException("", new RuntimeException());
+
+            doThrow(exception).when(paymentService).makePaymentForCaseOrders(caseData);
+
+            submittedCaseEventHandler.makePayment(submittedCaseEvent);
+
+            verify(applicationEventPublisher)
+                .publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION));
+        }
+
+        @Test
+        void shouldEmitFailureEventWhenPaymentFailedOnRetryablePaymentException() {
+            CaseData caseData = CaseData.builder()
+                .id(RandomUtils.nextLong())
+                .state(OPEN)
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .displayAmountToPay("Yes")
+                .build();
+            final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(caseData, caseData);
+
+            final Exception exception = new RetryablePaymentException("", new RuntimeException());
 
             doThrow(exception).when(paymentService).makePaymentForCaseOrders(caseData);
 

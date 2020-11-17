@@ -9,6 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
+import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
@@ -40,6 +41,7 @@ import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
@@ -61,7 +63,7 @@ class ReviewCMOServiceTest {
     private static final String hearing1 = "Case management hearing, 2 March 2020";
     private static final String hearing2 = "Test hearing, 15 October 2020";
     private static final DocumentReference order = testDocumentReference();
-    private UUID cmoID = UUID.randomUUID();
+    private final UUID cmoID = UUID.randomUUID();
     private LocalDateTime futureDate;
 
     @Autowired
@@ -80,14 +82,14 @@ class ReviewCMOServiceTest {
 
     @Test
     void shouldBuildDynamicListWithAppropriateElementSelected() {
-        Element<CaseManagementOrder> firstCMO = draftCMO(hearing1);
-        List<Element<CaseManagementOrder>> draftCMOs = List.of(
-            firstCMO, draftCMO(hearing2)
+        Element<CaseManagementOrder> firstCMO = agreedCMO(hearing1);
+        List<Element<CaseManagementOrder>> agreedCMOs = List.of(
+            firstCMO, agreedCMO(hearing2)
         );
         UUID firstElementId = firstCMO.getId();
 
         CaseData caseData = CaseData.builder()
-            .draftUploadedCMOs(draftCMOs)
+            .draftUploadedCMOs(agreedCMOs)
             //This replicates bug in CCD which sends only String UUID in mid event
             .cmoToReviewList(firstElementId.toString())
             .numDraftCMOs("MULTI")
@@ -96,7 +98,7 @@ class ReviewCMOServiceTest {
         DynamicList actualDynamicList = service.buildDynamicList(caseData);
 
         DynamicList expectedDynamicList = ElementUtils
-            .asDynamicList(draftCMOs, firstElementId, CaseManagementOrder::getHearing);
+            .asDynamicList(agreedCMOs, firstElementId, CaseManagementOrder::getHearing);
 
         assertThat(actualDynamicList)
             .isEqualTo(expectedDynamicList);
@@ -104,17 +106,17 @@ class ReviewCMOServiceTest {
 
     @Test
     void shouldBuildUnselectedDynamicList() {
-        List<Element<CaseManagementOrder>> draftCMOs = List.of(
-            draftCMO(hearing1), draftCMO(hearing2)
+        List<Element<CaseManagementOrder>> agreedCMOs = List.of(
+            agreedCMO(hearing1), agreedCMO(hearing2)
         );
 
         CaseData caseData = CaseData.builder()
-            .draftUploadedCMOs(draftCMOs)
+            .draftUploadedCMOs(agreedCMOs)
             .build();
 
         DynamicList actualDynamicList = service.buildUnselectedDynamicList(caseData);
         DynamicList expectedDynamicList = ElementUtils
-            .asDynamicList(draftCMOs, CaseManagementOrder::getHearing);
+            .asDynamicList(agreedCMOs, CaseManagementOrder::getHearing);
 
         assertThat(actualDynamicList)
             .isEqualTo(expectedDynamicList);
@@ -122,21 +124,21 @@ class ReviewCMOServiceTest {
 
     @Test
     void shouldReturnMultiPageDataWhenThereAreMultipleDraftCMOsReadyForApproval() {
-        List<Element<CaseManagementOrder>> draftCMOs = List.of(draftCMO(hearing1), draftCMO(hearing2));
-        CaseData caseData = CaseData.builder().draftUploadedCMOs(draftCMOs).build();
+        List<Element<CaseManagementOrder>> agreedCMOs = List.of(agreedCMO(hearing1), agreedCMO(hearing2));
+        CaseData caseData = CaseData.builder().draftUploadedCMOs(agreedCMOs).build();
 
         Map<String, Object> expectedData = Map.of(
             "numDraftCMOs", MULTI,
             "cmoToReviewList", DynamicList.builder()
                 .value(EMPTY)
-                .listItems(dynamicListItems(draftCMOs.get(0).getId(), draftCMOs.get(1).getId())).build());
+                .listItems(dynamicListItems(agreedCMOs.get(0).getId(), agreedCMOs.get(1).getId())).build());
 
         assertThat(service.getPageDisplayControls(caseData)).isEqualTo(expectedData);
     }
 
     @Test
     void shouldReturnSinglePageDataWhenThereIsOneDraftCMOReadyForApproval() {
-        CaseData caseData = CaseData.builder().draftUploadedCMOs(List.of(draftCMO(hearing1))).build();
+        CaseData caseData = CaseData.builder().draftUploadedCMOs(List.of(agreedCMO(hearing1))).build();
 
         Map<String, Object> expectedData = Map.of(
             "numDraftCMOs", SINGLE,
@@ -159,27 +161,27 @@ class ReviewCMOServiceTest {
 
     @Test
     void shouldReturnCMOsThatAreReadyForApproval() {
-        Element<CaseManagementOrder> draftCMO1 = element(CaseManagementOrder.builder().status(SEND_TO_JUDGE).build());
-        Element<CaseManagementOrder> draftCMO2 = element(CaseManagementOrder.builder().status(SEND_TO_JUDGE).build());
-        Element<CaseManagementOrder> draftCMO3 = element(CaseManagementOrder.builder().status(RETURNED).build());
-        Element<CaseManagementOrder> draftCMO4 = element(CaseManagementOrder.builder().status(APPROVED).build());
+        Element<CaseManagementOrder> agreedCMO1 = element(CaseManagementOrder.builder().status(SEND_TO_JUDGE).build());
+        Element<CaseManagementOrder> agreedCMO2 = element(CaseManagementOrder.builder().status(SEND_TO_JUDGE).build());
+        Element<CaseManagementOrder> agreedCMO3 = element(CaseManagementOrder.builder().status(RETURNED).build());
+        Element<CaseManagementOrder> agreedCMO4 = element(CaseManagementOrder.builder().status(APPROVED).build());
 
-        List<Element<CaseManagementOrder>> draftCMOs = List.of(draftCMO1, draftCMO2, draftCMO3, draftCMO4);
+        List<Element<CaseManagementOrder>> draftCMOs = List.of(agreedCMO1, agreedCMO2, agreedCMO3, agreedCMO4);
         CaseData caseData = CaseData.builder().draftUploadedCMOs(draftCMOs).build();
 
-        List<Element<CaseManagementOrder>> expectedCMOs = List.of(draftCMO1, draftCMO2);
+        List<Element<CaseManagementOrder>> expectedCMOs = List.of(agreedCMO1, agreedCMO2);
 
         assertThat(service.getCMOsReadyForApproval(caseData)).isEqualTo(expectedCMOs);
     }
 
     @Test
     void shouldReturnCMOToSealWithOriginalDocumentWhenJudgeSelectsSealAndSend() {
-        Element<CaseManagementOrder> draftCMO = draftCMO(hearing1);
+        Element<CaseManagementOrder> agreedCMO = agreedCMO(hearing1);
 
         CaseData caseData = CaseData.builder()
-            .draftUploadedCMOs(List.of(draftCMO))
+            .draftUploadedCMOs(List.of(agreedCMO))
             .reviewCMODecision(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build())
-            .hearingDetails(List.of(element(hearing(draftCMO.getId())))).build();
+            .hearingDetails(List.of(element(hearing(agreedCMO.getId())))).build();
 
         CaseManagementOrder expectedCmo = CaseManagementOrder.builder()
             .order(order)
@@ -194,16 +196,16 @@ class ReviewCMOServiceTest {
 
     @Test
     void shouldReturnCMOToSealWithJudgeAmendedDocumentWhenJudgeSelectsMakeChanges() {
-        Element<CaseManagementOrder> draftCMO = draftCMO(hearing1);
+        Element<CaseManagementOrder> agreedCMO = agreedCMO(hearing1);
         DocumentReference judgeAmendedOrder = testDocumentReference();
 
         CaseData caseData = CaseData.builder()
-            .draftUploadedCMOs(List.of(draftCMO))
+            .draftUploadedCMOs(List.of(agreedCMO))
             .reviewCMODecision(ReviewDecision.builder()
                 .decision(JUDGE_AMENDS_DRAFT)
                 .judgeAmendedDocument(judgeAmendedOrder)
                 .build())
-            .hearingDetails(List.of(element(hearing(draftCMO.getId())))).build();
+            .hearingDetails(List.of(element(hearing(agreedCMO.getId())))).build();
 
         CaseManagementOrder expectedCmo = CaseManagementOrder.builder()
             .order(judgeAmendedOrder)
@@ -218,35 +220,48 @@ class ReviewCMOServiceTest {
 
     @Test
     void shouldReturnCMOThatWasSelectedFromDynamicListWhenMultipleCMOsExist() {
-        Element<CaseManagementOrder> draftCMO1 = draftCMO(hearing1);
-        Element<CaseManagementOrder> draftCMO2 = draftCMO(hearing1);
+        Element<CaseManagementOrder> agreedCMO1 = agreedCMO(hearing1);
+        Element<CaseManagementOrder> agreedCMO2 = agreedCMO(hearing1);
 
         CaseData caseData = CaseData.builder()
-            .draftUploadedCMOs(List.of(draftCMO1, draftCMO2))
+            .draftUploadedCMOs(List.of(agreedCMO1, agreedCMO2))
             .cmoToReviewList(DynamicList.builder()
-                .value(DynamicListElement.builder().code(draftCMO1.getId()).build())
-                .listItems(dynamicListItems(draftCMO1.getId(), draftCMO2.getId())).build())
+                .value(DynamicListElement.builder().code(agreedCMO1.getId()).build())
+                .listItems(dynamicListItems(agreedCMO1.getId(), agreedCMO2.getId())).build())
             .numDraftCMOs(MULTI)
             .build();
 
-        assertThat(service.getSelectedCMO(caseData)).isEqualTo(draftCMO1);
+        assertThat(service.getSelectedCMO(caseData)).isEqualTo(agreedCMO1);
     }
 
     @Test
     void shouldReturnCMOFromDraftListWhenOnlyOneCMOExists() {
-        Element<CaseManagementOrder> draftCMO = draftCMO(hearing1);
+        Element<CaseManagementOrder> agreedCMO = agreedCMO(hearing1);
         CaseData caseData = CaseData.builder()
-            .draftUploadedCMOs(List.of(draftCMO))
+            .draftUploadedCMOs(List.of(agreedCMO))
             .numDraftCMOs(SINGLE)
             .build();
 
-        assertThat(service.getSelectedCMO(caseData)).isEqualTo(draftCMO);
+        assertThat(service.getSelectedCMO(caseData)).isEqualTo(agreedCMO);
+    }
+
+    @Test
+    void shouldIgnoreCMOsThatAreDraft() {
+        Element<CaseManagementOrder> agreedCMO = agreedCMO(hearing1);
+        Element<CaseManagementOrder> draftCMO = draftCMO(hearing2);
+
+        CaseData caseData = CaseData.builder()
+            .draftUploadedCMOs(List.of(agreedCMO, draftCMO))
+            .numDraftCMOs(SINGLE)
+            .build();
+
+        assertThat(service.getSelectedCMO(caseData)).isEqualTo(agreedCMO);
     }
 
     @Test
     void shouldGetLatestSealedCMOFromSealedCMOsList() {
-        Element<CaseManagementOrder> cmo1 = draftCMO(hearing1);
-        Element<CaseManagementOrder> cmo2 = draftCMO(hearing2);
+        Element<CaseManagementOrder> cmo1 = agreedCMO(hearing1);
+        Element<CaseManagementOrder> cmo2 = agreedCMO(hearing2);
 
         CaseData caseData = CaseData.builder().sealedCMOs(List.of(cmo1, cmo2)).build();
 
@@ -346,10 +361,18 @@ class ReviewCMOServiceTest {
     }
 
     private static Element<CaseManagementOrder> draftCMO(String hearing) {
+        return buildCMO(hearing, DRAFT);
+    }
+
+    private static Element<CaseManagementOrder> agreedCMO(String hearing) {
+        return buildCMO(hearing, SEND_TO_JUDGE);
+    }
+
+    private static Element<CaseManagementOrder> buildCMO(String hearing, CMOStatus status) {
         return element(CaseManagementOrder.builder()
             .hearing(hearing)
             .order(order)
-            .status(SEND_TO_JUDGE)
+            .status(status)
             .judgeTitleAndName("Her Honour Judge Judy").build());
     }
 

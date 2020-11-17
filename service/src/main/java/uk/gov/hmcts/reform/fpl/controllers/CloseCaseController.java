@@ -32,11 +32,10 @@ public class CloseCaseController extends CallbackController {
         + "   •  upload a document\n"
         + "   •  issue a C21 (blank order)\n"
         + "   •  submit a C2 application\n";
+    public static final String CLOSE_CASE_TAB_FIELD = "closeCaseTabField";
+    public static final String DEPRIVATION_OF_LIBERTY_FLAG = "deprivationOfLiberty";
     private static final String LABEL_FIELD = "close_case_label";
     private static final String CLOSE_CASE_FIELD = "closeCase";
-    private static final String CLOSE_CASE_TAB_FIELD = "closeCaseTabField";
-    private static final String DEPRIVATION_OF_LIBERTY_FLAG = "deprivationOfLiberty";
-
     private final ValidateGroupService validatorService;
     private final ChildrenService childrenService;
 

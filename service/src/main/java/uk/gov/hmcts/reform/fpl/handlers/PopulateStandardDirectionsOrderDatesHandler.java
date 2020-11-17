@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
@@ -30,23 +29,19 @@ public class PopulateStandardDirectionsOrderDatesHandler {
     private final CoreCaseDataService coreCaseDataService;
     private final StandardDirectionsService standardDirectionsService;
     private final ObjectMapper mapper;
-    private final HearingBookingService hearingBookingService;
 
     @Async
     @EventListener
     public void populateDates(PopulateStandardDirectionsOrderDatesEvent event) {
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
-        var hearingDetails = mapper.convertValue(caseDetails.getData(), CaseData.class).getHearingDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         coreCaseDataService.triggerEvent(caseDetails.getJurisdiction(),
             caseDetails.getCaseTypeId(),
             caseDetails.getId(),
             "populateSDO",
-            getDataWithDates(getFirstHearing(hearingDetails), caseDetails.getData()));
-    }
-
-    private HearingBooking getFirstHearing(List<Element<HearingBooking>> hearingDetails) {
-        return hearingBookingService.getFirstHearing(hearingDetails).orElseThrow(NoHearingBookingException::new);
+            getDataWithDates(caseData.getFirstHearing().orElseThrow(NoHearingBookingException::new),
+                caseDetails.getData()));
     }
 
     private Map<String, Object> getDataWithDates(HearingBooking hearingBooking, Map<String, Object> data) {

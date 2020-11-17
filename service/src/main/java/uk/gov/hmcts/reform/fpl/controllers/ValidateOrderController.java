@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.InterimEndDateGroup;
@@ -24,7 +24,6 @@ import java.util.List;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.NAMED_DATE;
 
 @Api
 @RestController
@@ -39,8 +38,15 @@ public class ValidateOrderController extends CallbackController {
 
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        List<String> errors = validateGroupService.validateGroup(caseData, DateOfIssueGroup.class);
 
-        return respond(caseDetails, validateGroupService.validateGroup(caseData, DateOfIssueGroup.class));
+        if (GeneratedOrderSubtype.INTERIM.equals(caseData.getOrderTypeAndDocument().getSubtype())) {
+            errors.addAll(validateGroupService.validateGroup(
+                caseData.getInterimEndDate(), InterimEndDateGroup.class
+            ));
+        }
+
+        return respond(caseDetails, errors);
     }
 
     @PostMapping("/address/mid-event")
@@ -69,22 +75,6 @@ public class ValidateOrderController extends CallbackController {
         if (StringUtils.isEmpty(caseData.getRemainingChildIndex())
             && caseData.getChildSelector().getSelected().isEmpty()) {
             errors.add("Select the children included in the order.");
-        }
-
-        return respond(callbackRequest.getCaseDetails(), errors);
-    }
-
-    @PostMapping("/interim-end-date/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEventValidateInterimEndDate(
-        @RequestBody CallbackRequest callbackRequest) {
-
-        CaseData caseData = getCaseData(callbackRequest);
-        final InterimEndDate interimEndDate = caseData.getInterimEndDate();
-
-        List<String> errors = List.of();
-
-        if (interimEndDate.getType() == NAMED_DATE) {
-            errors = validateGroupService.validateGroup(interimEndDate, InterimEndDateGroup.class);
         }
 
         return respond(callbackRequest.getCaseDetails(), errors);

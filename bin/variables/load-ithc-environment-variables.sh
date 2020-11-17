@@ -12,5 +12,3 @@ echo "export CCD_DEFINITION_STORE_API_BASE_URL=http://ccd-definition-store-api-i
 
 # definition placeholders
 echo "export CCD_DEF_CASE_SERVICE_BASE_URL=http://fpl-case-service-ithc.service.core-compute-ithc.internal"
-echo "export https_proxy=proxyout.reform.hmcts.net:8080"
-echo "export http_proxy=proxyout.reform.hmcts.net:8080"

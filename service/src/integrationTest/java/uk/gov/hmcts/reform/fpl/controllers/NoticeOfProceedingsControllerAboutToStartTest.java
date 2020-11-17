@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
-import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -20,7 +19,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
-import static uk.gov.hmcts.reform.fpl.service.HearingBookingService.HEARING_DETAILS_KEY;
+import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -47,29 +46,11 @@ class NoticeOfProceedingsControllerAboutToStartTest extends AbstractControllerTe
     }
 
     @Test
-    void shouldUpdateProceedingLabelToIncludeHearingBookingDetailsDate() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .id(12345L)
-            .data(Map.of(
-                HEARING_DETAILS_KEY, createHearingBookings(),
-                "familyManCaseNumber", "123"
-            ))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
-
-        String proceedingLabel = callbackResponse.getData().get("proceedingLabel").toString();
-
-        String expectedContent = String.format("The case management hearing will be on the %s.",
-            formatLocalDateTimeBaseUsingFormat(now(), DATE));
-
-        assertThat(proceedingLabel).isEqualTo(expectedContent);
-    }
-
-    @Test
-    void shouldSetAssignJudgeLabelOnNoticeOfProceedingWhenAllocatedJudgeIsPopulated() {
+    void shouldSetInitialNoticeOfHearingDataWhenRequiredDataIsPresentOnCaseDetails() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(ImmutableMap.of(
+                    HEARING_DETAILS_KEY, createHearingBookings(),
+                "familyManCaseNumber", "123",
                 "allocatedJudge", Judge.builder()
                     .judgeTitle(HIS_HONOUR_JUDGE)
                     .judgeLastName("Richards")
@@ -81,25 +62,13 @@ class NoticeOfProceedingsControllerAboutToStartTest extends AbstractControllerTe
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor();
 
+        String expectedContent = String.format("The case management hearing will be on the %s.",
+            formatLocalDateTimeBaseUsingFormat(now(), DATE));
+
+        assertThat(callbackResponse.getData().get("proceedingLabel")).isEqualTo(expectedContent);
+
         assertThat(judgeAndLegalAdvisor.getAllocatedJudgeLabel())
             .isEqualTo("Case assigned to: His Honour Judge Richards");
-    }
-
-    @Test
-    void shouldNotSetAssignedJudgeLabelOnNoticeOfProceedingIfAllocatedJudgeNotSet() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(ImmutableMap.of(
-                "noticeOfProceedings", NoticeOfProceedings.builder()
-                    .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
-                    .build()
-            ))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor();
-
-        assertThat(judgeAndLegalAdvisor.getAllocatedJudgeLabel()).isNull();
     }
 
     private List<Element<HearingBooking>> createHearingBookings() {

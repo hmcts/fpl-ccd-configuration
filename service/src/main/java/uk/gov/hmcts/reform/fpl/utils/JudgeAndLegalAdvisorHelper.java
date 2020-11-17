@@ -35,6 +35,21 @@ public class JudgeAndLegalAdvisorHelper {
         }
     }
 
+    public static JudgeAndLegalAdvisor getJudgeForTabView(JudgeAndLegalAdvisor judgeAndLegalAdvisor,
+                                                          Judge allocatedJudge) {
+        JudgeAndLegalAdvisor judgeForTabView = getSelectedJudge(judgeAndLegalAdvisor, allocatedJudge);
+        removeAllocatedJudgeProperties(judgeForTabView);
+        return judgeForTabView;
+    }
+
+    public static String getHearingJudge(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+        if (!judgeAndLegalAdvisor.isUsingAllocatedJudge()) {
+            return formatJudgeTitleAndName(judgeAndLegalAdvisor);
+        } else {
+            return null;
+        }
+    }
+
     private static JudgeAndLegalAdvisor migrateJudgeAndLegalAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor,
                                                                     Judge allocatedJudge) {
         return JudgeAndLegalAdvisor.builder()

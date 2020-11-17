@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -26,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotification
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -89,8 +91,9 @@ class GeneratedOrderEventHandlerTest {
     void before() {
         caseData = caseData();
 
-        given(inboxLookupService.getNotificationRecipientEmail(caseData))
-            .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
+        given(inboxLookupService.getRecipients(
+            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))
+            .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         given(orderIssuedEmailContentProvider.buildParametersWithCaseUrl(caseData, DOCUMENT_CONTENTS, GENERATED_ORDER))
             .willReturn(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true));
@@ -126,7 +129,7 @@ class GeneratedOrderEventHandlerTest {
 
         verify(notificationService).sendEmail(
             eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
-            eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            eq(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS)),
             eqJson(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true)),
             eq("12345"));
 

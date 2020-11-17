@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.RandomUtils;
 import org.json.JSONObject;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForC2;
 import uk.gov.hmcts.reform.fpl.model.notify.c2uploaded.C2UploadedTemplate;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
@@ -27,15 +29,17 @@ import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.util.Map;
+import java.util.Set;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
@@ -91,6 +95,14 @@ class C2UploadedEventHandlerTest {
             given(requestData.authorisation()).willReturn(AUTH_TOKEN);
         }
 
+        @AfterEach
+        void resetInvocations() {
+            reset(notificationService);
+            reset(inboxLookupService);
+            reset(featureToggleService);
+            reset(c2UploadedEmailContentProvider);
+        }
+
         @Test
         void shouldNotifyNonHmctsAdminOnC2Upload() {
             CaseData caseData = caseData();
@@ -124,8 +136,9 @@ class C2UploadedEventHandlerTest {
             given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(
                 UserInfo.builder().sub(CTSC_INBOX).roles(LOCAL_AUTHORITY.getRoles()).build());
 
-            given(inboxLookupService.getNotificationRecipientEmail(caseData))
-                .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
+            given(inboxLookupService.getRecipients(
+                LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))
+                .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
             given(c2UploadedEmailContentProvider
                 .buildC2UploadNotificationTemplate(caseData, c2DocumentBundle.getDocument()))
@@ -205,7 +218,7 @@ class C2UploadedEventHandlerTest {
             c2UploadedEventHandler.sendC2UploadedNotificationToAllocatedJudge(
                 new C2UploadedEvent(caseData, c2DocumentBundle));
 
-            verify(notificationService, never()).sendEmail(any(), any(), anyMap(), any());
+            verifyNoInteractions(notificationService);
         }
 
         private AllocatedJudgeTemplateForC2 getAllocatedJudgeParametersForC2() {
@@ -228,7 +241,7 @@ class C2UploadedEventHandlerTest {
 
             uploadC2Template.setCallout(subjectLine);
             uploadC2Template.setRespondentLastName("Smith");
-            uploadC2Template.setCaseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345");
+            uploadC2Template.setCaseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345#C2Tab");
             uploadC2Template.setDocumentLink(jsonFileObject.toMap());
 
             return uploadC2Template;

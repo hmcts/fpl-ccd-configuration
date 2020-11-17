@@ -67,11 +67,7 @@ class NotifyGatekeeperEventHandlerTest {
             captor.capture(), eq(CASE_ID));
 
         NotifyGatekeeperTemplate firstTemplate = getExpectedTemplate();
-        firstTemplate.setGatekeeperRecipients("Cafcass+gatekeeper@gmail.com has also received this notification");
-
         NotifyGatekeeperTemplate secondTemplate = getExpectedTemplate();
-        secondTemplate.setGatekeeperRecipients(
-            "FamilyPublicLaw+gatekeeper@gmail.com has also received this notification");
 
         assertThat(captor.getAllValues()).usingFieldByFieldElementComparator()
             .containsOnly(firstTemplate, secondTemplate);
