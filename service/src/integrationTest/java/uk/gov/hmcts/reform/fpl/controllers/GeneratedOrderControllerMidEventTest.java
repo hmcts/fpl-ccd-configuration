@@ -37,7 +37,6 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.utils.OrderHelper;
@@ -88,9 +87,6 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
 
     @MockBean
     private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
-
-    @MockBean
-    private FeatureToggleService toggleService;
 
     @MockBean
     private UploadDocumentService uploadDocumentService;
@@ -386,7 +382,6 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
 
         @Test
         void shouldAddCloseCaseLabelAndSetFlagToYesWhenCloseCasePageCanBeShown() {
-            given(toggleService.isCloseCaseEnabled()).willReturn(true);
 
             CaseData caseData = generateFinalCareOrderWithChildren("Yes");
 
@@ -400,7 +395,6 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
 
         @Test
         void shouldNotAddCloseCaseLabelAndSetFlagToNoWhenCloseCasePageCanNotBeShown() {
-            given(toggleService.isCloseCaseEnabled()).willReturn(true);
 
             CaseData caseData = generateFinalCareOrderWithChildren("No");
 
@@ -414,7 +408,6 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
 
         @Test
         void shouldAddCheckYourOrderDetailsWhenOrderTypeIsSubmitted() {
-            given(toggleService.isCloseCaseEnabled()).willReturn(true);
 
             List<Element<Child>> children = testChildren();
             String familyManCaseNumber = "famNum";
