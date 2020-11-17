@@ -8,18 +8,12 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.sendtogatekeeper.NotifyGatekeeperTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.SharedNotifyContentProvider;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class GatekeeperEmailContentProvider extends SharedNotifyContentProvider {
     private final LocalAuthorityNameLookupConfiguration config;
 
-
     public NotifyGatekeeperTemplate buildGatekeeperNotification(CaseData caseData) {
-
-
         NotifyGatekeeperTemplate template = super.buildNotifyTemplate(new NotifyGatekeeperTemplate(),
             caseData.getId(),
             caseData.getOrders(),
@@ -29,16 +23,5 @@ public class GatekeeperEmailContentProvider extends SharedNotifyContentProvider 
         template.setLocalAuthority(config.getLocalAuthorityName(caseData.getCaseLocalAuthority()));
 
         return template;
-    }
-
-    public String buildRecipientsLabel(List<String> emailList, String recipientEmail) {
-        String formattedRecipients = emailList.stream()
-            .filter(email -> !recipientEmail.equals(email))
-            .collect(Collectors.joining(", "));
-
-        if (!formattedRecipients.isEmpty()) {
-            return String.format("%s has also received this notification", formattedRecipients);
-        }
-        return "";
     }
 }
