@@ -48,51 +48,7 @@ class UploadCMOAboutToSubmitControllerTest extends AbstractUploadCMOControllerTe
     }
 
     @Test
-    void shouldUpdateHearingAndAppendToDraftCMOList() {
-        givenLegacyFlow();
-
-        List<Element<HearingBooking>> hearings = hearingsOnDateAndDayAfter(LocalDateTime.of(2020, 3, 15, 10, 7));
-
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(hearings)
-            .uploadCMOEventData(UploadCMOEventData.builder()
-                .pastHearingsForCMO(dynamicList(hearings))
-                .uploadedCaseManagementOrder(DOCUMENT_REFERENCE)
-                .build())
-            .build();
-
-        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
-
-        CaseManagementOrder cmo = order(hearings.get(0).getValue(), SEND_TO_JUDGE);
-
-        List<Element<CaseManagementOrder>> uploadedCMOs = responseData.getDraftUploadedCMOs();
-
-        assertThat(uploadedCMOs).first().extracting(Element::getValue).isEqualTo(cmo);
-
-        hearings.get(0).getValue().setCaseManagementOrderId(uploadedCMOs.get(0).getId());
-
-        assertThat(responseData.getHearingDetails()).isEqualTo(hearings);
-    }
-
-    @Test
-    void shouldNotAlterHearingAndDraftCMOListsIfThereWereNoValidHearings() {
-        givenLegacyFlow();
-
-        List<Element<HearingBooking>> hearings = hearingsOnDateAndDayAfter(now().plusDays(3));
-
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(hearings)
-            .build();
-
-        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
-
-        assertThat(responseData.getHearingDetails()).isEqualTo(hearings);
-    }
-
-    @Test
     void shouldAddCMOToListWithDraftStatusAndNotMigrateDocs() {
-        givenNewFlow();
-
         List<Element<SupportingEvidenceBundle>> bundles = List.of(element(
             SupportingEvidenceBundle.builder()
                 .name("case summary")
@@ -134,8 +90,6 @@ class UploadCMOAboutToSubmitControllerTest extends AbstractUploadCMOControllerTe
 
     @Test
     void shouldAddCMOToListWithSendToJudgeStatusAndMigrateDocs() {
-        givenNewFlow();
-
         List<Element<SupportingEvidenceBundle>> bundles = List.of(element(
             SupportingEvidenceBundle.builder()
                 .name("case summary")
@@ -186,8 +140,6 @@ class UploadCMOAboutToSubmitControllerTest extends AbstractUploadCMOControllerTe
 
     @Test
     void shouldRemoveTemporaryFields() {
-        givenNewFlow();
-
         List<Element<HearingBooking>> hearings = hearingsOnDateAndDayAfter(LocalDateTime.of(2020, 3, 15, 10, 7));
         List<Element<CaseManagementOrder>> draftCMOs = List.of();
 
@@ -206,11 +158,6 @@ class UploadCMOAboutToSubmitControllerTest extends AbstractUploadCMOControllerTe
                 .showCMOsSentToJudge(YesNo.NO)
                 .cmosSentToJudge("DUMMY DATA")
                 .cmoUploadType(CMOType.DRAFT)
-                .numHearingsWithoutCMO(UploadCMOEventData.NumberOfHearingsOptions.MULTI)
-                .showHearingsMultiTextArea(YesNo.YES)
-                .multiHearingsWithCMOs("DUMMY DATA")
-                .showHearingsSingleTextArea(YesNo.NO)
-                .singleHearingWithCMO("DUMMY DATA")
                 .build())
             .hearingDetails(hearings)
             .draftUploadedCMOs(draftCMOs)
@@ -231,10 +178,6 @@ class UploadCMOAboutToSubmitControllerTest extends AbstractUploadCMOControllerTe
         ));
 
         assertThat(response.getData().keySet()).isEqualTo(keys);
-    }
-
-    private CaseManagementOrder order(HearingBooking hearing, CMOStatus status) {
-        return orderWithDocs(hearing, status, List.of());
     }
 
     private CaseManagementOrder orderWithDocs(HearingBooking hearing, CMOStatus status,

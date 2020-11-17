@@ -67,10 +67,6 @@ public class FeatureToggleService {
             createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
     }
 
-    public boolean isUploadDraftCMOEnabled() {
-        return ldClient.boolVariation("upload-draft-cmo", createLDUser(), false);
-    }
-
     public boolean isNotifyCourtOfGatekeepingEnabled(String localAuthorityName) {
         return ldClient.boolVariation("notify-local-court-on-gatekeeping",
             createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
@@ -88,5 +84,4 @@ public class FeatureToggleService {
         values.forEach(builder::custom);
         return builder.build();
     }
-
 }
