@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +45,10 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED_AND_RE_LISTE
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_AND_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
@@ -76,6 +80,13 @@ public class ManageHearingsService {
     public static final String PAST_HEARING_LIST = "pastAndTodayHearingDateList";
     public static final String FUTURE_HEARING_LIST = "futureAndTodayHearingDateList";
     public static final String HAS_EXISTING_HEARINGS_FLAG = "hasExistingHearings";
+    public static final String HEARING_START_DATE = "hearingStartDate";
+    public static final String HEARING_END_DATE = "hearingEndDate";
+    public static final String HEARING_START_DATE_LABEL = "hearingStartDateLabel";
+    public static final String HEARING_END_DATE_LABEL = "hearingEndDateLabel";
+    public static final String START_DATE_FLAG = "startDateFlag";
+    public static final String END_DATE_FLAG = "endDateFlag";
+    public static final String SHOW_PAST_HEARINGS_PAGE = "showConfirmPastHearingDatesPage";
 
     public Map<String, Object> populatePastAndFutureHearingLists(CaseData caseData) {
         List<Element<HearingBooking>> futureHearings = caseData.getFutureHearings();
@@ -189,8 +200,8 @@ public class ManageHearingsService {
         }
 
         caseFields.put("hearingType", hearingBooking.getType());
-        caseFields.put("hearingStartDate", hearingBooking.getStartDate());
-        caseFields.put("hearingEndDate", hearingBooking.getEndDate());
+        caseFields.put(HEARING_START_DATE, hearingBooking.getStartDate());
+        caseFields.put(HEARING_END_DATE, hearingBooking.getEndDate());
         caseFields.put("judgeAndLegalAdvisor", judgeAndLegalAdvisor);
 
         if (hearingBooking.getPreviousHearingVenue() == null
@@ -256,8 +267,8 @@ public class ManageHearingsService {
             "hearingTypeDetails",
             "hearingVenue",
             "hearingVenueCustom",
-            "hearingStartDate",
-            "hearingEndDate",
+            HEARING_START_DATE,
+            HEARING_END_DATE,
             "sendNoticeOfHearing",
             "judgeAndLegalAdvisor",
             "noticeOfHearingNotes",
@@ -271,7 +282,16 @@ public class ManageHearingsService {
             HAS_HEARINGS_TO_ADJOURN,
             HAS_HEARINGS_TO_VACATE,
             HAS_EXISTING_HEARINGS_FLAG,
-            HAS_FUTURE_HEARING_FLAG);
+            HAS_FUTURE_HEARING_FLAG,
+            "hearingReListOption",
+            HEARING_START_DATE_LABEL,
+            "showConfirmPastHearingDatesPage",
+            HEARING_END_DATE_LABEL,
+            "confirmHearingDate",
+            "hearingStartDateConfirmation",
+            "hearingEndDateConfirmation",
+            START_DATE_FLAG,
+            END_DATE_FLAG);
     }
 
     public Object getSelectedDynamicListType(CaseData caseData) {
@@ -280,6 +300,43 @@ public class ManageHearingsService {
         }
 
         return caseData.getPastAndTodayHearingDateList();
+    }
+
+    public Map<String, Object> populateFieldsWhenPastHearingDateAdded(LocalDateTime hearingStartDate,
+                                                                      LocalDateTime hearingEndDate) {
+        Map<String, Object> data = new HashMap<>();
+        LocalDateTime currentDateTime = LocalDateTime.now();
+
+        data.put(SHOW_PAST_HEARINGS_PAGE, NO.getValue());
+
+        if (hearingStartDate.isBefore(currentDateTime)) {
+            data.put(HEARING_START_DATE_LABEL, formatLocalDateTimeBaseUsingFormat(hearingStartDate, DATE_TIME));
+            data.put(START_DATE_FLAG, YES.getValue());
+            data.put(SHOW_PAST_HEARINGS_PAGE, YES.getValue());
+        }
+        if (hearingEndDate.isBefore(currentDateTime)) {
+            data.put(HEARING_END_DATE_LABEL, formatLocalDateTimeBaseUsingFormat(hearingEndDate, DATE_TIME));
+            data.put(END_DATE_FLAG, YES.getValue());
+            data.put(SHOW_PAST_HEARINGS_PAGE, YES.getValue());
+        }
+
+        return data;
+    }
+
+    public Map<String, Object> updateHearingDates(CaseData caseData) {
+        Map<String, Object> data = new HashMap<>();
+
+        if (isNotEmpty(caseData.getHearingEndDateConfirmation()) && isNotEmpty(caseData
+            .getHearingStartDateConfirmation())) {
+            data.put(HEARING_START_DATE, caseData.getHearingStartDateConfirmation());
+            data.put(HEARING_END_DATE, caseData.getHearingEndDateConfirmation());
+        } else if (isNotEmpty(caseData.getHearingStartDateConfirmation())) {
+            data.put(HEARING_START_DATE, caseData.getHearingStartDateConfirmation());
+        } else if (isNotEmpty(caseData.getHearingEndDateConfirmation())) {
+            data.put(HEARING_END_DATE, caseData.getHearingEndDateConfirmation());
+        }
+
+        return data;
     }
 
     private UUID cancelAndReListHearing(CaseData caseData,

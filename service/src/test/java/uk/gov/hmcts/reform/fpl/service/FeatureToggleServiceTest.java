@@ -80,7 +80,7 @@ class FeatureToggleServiceTest {
         verify(ldClient).boolVariation(
             eq("case-user-assignment"),
             ldUser(ENVIRONMENT).build(),
-            eq(false));
+            eq(true));
     }
 
     @ParameterizedTest
@@ -188,6 +188,18 @@ class FeatureToggleServiceTest {
         verify(ldClient).boolVariation(
             eq("restrict-case-submission"),
             ldUser(ENVIRONMENT).withLocalAuthority(LOCAL_AUTHORITY).build(),
+            eq(false));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForIsAddHearingsInPastEnabled(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isAddHearingsInPastEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("add-hearings-in-past"),
+            ldUser(ENVIRONMENT).build(),
             eq(false));
     }
 

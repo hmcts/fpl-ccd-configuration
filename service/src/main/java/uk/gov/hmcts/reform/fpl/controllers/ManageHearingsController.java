@@ -18,7 +18,9 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ManageHearingsService;
+import uk.gov.hmcts.reform.fpl.service.PastHearingDatesValidatorService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
@@ -60,6 +62,8 @@ public class ManageHearingsController extends CallbackController {
     private final ValidateGroupService validateGroupService;
     private final StandardDirectionsService standardDirectionsService;
     private final ManageHearingsService hearingsService;
+    private final FeatureToggleService featureToggleService;
+    private final PastHearingDatesValidatorService pastHearingDatesValidatorService;
 
     @PostMapping("/about-to-start")
     public CallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -116,7 +120,8 @@ public class ManageHearingsController extends CallbackController {
                 caseDetails.getData().put(FIRST_HEARING_FLAG, "Yes");
             }
         } else if (ADJOURN_HEARING == caseData.getHearingOption()) {
-            UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData.getPastAndTodayHearingDateList());
+            UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData
+                .getPastAndTodayHearingDateList());
 
             caseDetails.getData().put(PAST_HEARING_LIST,
                 hearingsService.asDynamicList(caseData.getPastAndTodayHearings(), hearingBookingId));
@@ -159,9 +164,40 @@ public class ManageHearingsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        List<String> errors = validateGroupService.validateGroup(caseData, HearingDatesGroup.class);
+        List<String> errors;
+
+        if (featureToggleService.isAddHearingsInPastEnabled() && isAddingNewHearing(caseData)) {
+            errors = pastHearingDatesValidatorService.validateHearingDates(caseData.getHearingStartDate(),
+                caseData.getHearingEndDate());
+        } else {
+            errors = validateGroupService.validateGroup(caseData, HearingDatesGroup.class);
+        }
+
+        if (featureToggleService.isAddHearingsInPastEnabled()) {
+            caseDetails.getData().putAll(hearingsService.populateFieldsWhenPastHearingDateAdded(caseData
+                    .getHearingStartDate(),
+                caseData.getHearingEndDate()));
+        }
 
         return respond(caseDetails, errors);
+
+    }
+
+    @PostMapping("/hearing-in-past/mid-event")
+    public CallbackResponse populateHearingDateIfIncorrect(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        if (NO.getValue().equals(caseDetails.getData().get("confirmHearingDate"))) {
+            List<String> errors = pastHearingDatesValidatorService.validateHearingDates(caseData
+                    .getHearingStartDateConfirmation(),
+                caseData.getHearingEndDateConfirmation());
+            caseDetails.getData().putAll(hearingsService.updateHearingDates(caseData));
+
+            return respond(caseDetails, errors);
+        }
+
+        return respond(caseDetails);
     }
 
     @PostMapping("/about-to-submit")
@@ -259,6 +295,10 @@ public class ManageHearingsController extends CallbackController {
         return JudgeAndLegalAdvisor.builder()
             .allocatedJudgeLabel(assignedJudgeLabel)
             .build();
+    }
+
+    private boolean isAddingNewHearing(CaseData caseData) {
+        return isEmpty(caseData.getHearingOption()) || NEW_HEARING.equals(caseData.getHearingOption());
     }
 
     private boolean isNewOrReListedHearing(CaseData caseData) {

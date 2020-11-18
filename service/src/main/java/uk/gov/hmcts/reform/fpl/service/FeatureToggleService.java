@@ -45,7 +45,7 @@ public class FeatureToggleService {
     }
 
     public boolean isCaseUserBulkAssignmentEnabled() {
-        return ldClient.boolVariation("case-user-assignment", createLDUser(), false);
+        return ldClient.boolVariation("case-user-assignment", createLDUser(), true);
     }
 
     public boolean isNewCaseStateModelEnabled() {
@@ -65,6 +65,14 @@ public class FeatureToggleService {
     public boolean isSendLAEmailsToSolicitorEnabled(String localAuthorityName) {
         return ldClient.boolVariation("send-la-emails-to-solicitor",
             createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
+    }
+
+    public boolean isUploadDraftCMOEnabled() {
+        return ldClient.boolVariation("upload-draft-cmo", createLDUser(), false);
+    }
+
+    public boolean isAddHearingsInPastEnabled() {
+        return ldClient.boolVariation("add-hearings-in-past", createLDUser(), false);
     }
 
     private LDUser createLDUser() {

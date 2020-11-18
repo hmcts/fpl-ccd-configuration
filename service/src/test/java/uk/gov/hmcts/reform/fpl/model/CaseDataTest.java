@@ -41,6 +41,7 @@ class CaseDataTest {
     private final Time time = new FixedTimeConfiguration().stoppedTime();
     private final UUID cmoID = randomUUID();
     private final LocalDateTime futureDate = time.now().plusDays(1);
+    private final LocalDateTime pastDate = time.now().minusDays(1);
 
     @Test
     void shouldGetAllOthersWhenFirstAndAdditionalOthersExist() {
@@ -302,6 +303,54 @@ class CaseDataTest {
         boolean hearingBookingInFuture = caseData.hasFutureHearing(hearingBooking);
 
         assertThat(hearingBookingInFuture).isFalse();
+    }
+
+    @Test
+    void shouldReturnTrueWhenStartDateIsInThePast() {
+        CaseData caseData = CaseData.builder()
+            .hearingStartDate(pastDate)
+            .hearingEndDate(futureDate)
+            .build();
+
+        boolean hearingInPast = caseData.isHearingDateInPast();
+
+        assertThat(hearingInPast).isTrue();
+    }
+
+    @Test
+    void shouldReturnTrueWhenEndHearingDateIsInThePast() {
+        CaseData caseData = CaseData.builder()
+            .hearingStartDate(futureDate)
+            .hearingEndDate(pastDate)
+            .build();
+
+        boolean hearingInPast = caseData.isHearingDateInPast();
+
+        assertThat(hearingInPast).isTrue();
+    }
+
+    @Test
+    void shouldReturnTrueWhenHearingDateIsInThePast() {
+        CaseData caseData = CaseData.builder()
+            .hearingStartDate(futureDate)
+            .hearingEndDate(pastDate)
+            .build();
+
+        boolean hearingInPast = caseData.isHearingDateInPast();
+
+        assertThat(hearingInPast).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenHearingDateIsTheFuture() {
+        CaseData caseData = CaseData.builder()
+            .hearingStartDate(futureDate)
+            .hearingEndDate(futureDate)
+            .build();
+
+        boolean hearingInPast = caseData.isHearingDateInPast();
+
+        assertThat(hearingInPast).isFalse();
     }
 
     @Test
