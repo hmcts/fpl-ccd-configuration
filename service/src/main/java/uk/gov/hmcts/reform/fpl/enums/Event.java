@@ -31,7 +31,8 @@ public enum Event {
     OTHERS("enterOthers", "Other people in the case", List.of(OPEN, RETURNED)),
     COURT_SERVICES("attendingHearing", "Court services needed", List.of(OPEN, RETURNED)),
     SUBMIT_APPLICATION("submitApplication", "Submit application", List.of(OPEN, RETURNED)),
-    CASE_NAME("changeCaseName", "Change case name", List.of(OPEN, RETURNED));
+    CASE_NAME("changeCaseName", "Change case name", List.of(OPEN, RETURNED)),
+    SUPPORTING_DOCUMENTS("uploadSupportingDocuments", "Upload supporting documents", List.of(OPEN)),;
 
     private final String id;
     private String name;

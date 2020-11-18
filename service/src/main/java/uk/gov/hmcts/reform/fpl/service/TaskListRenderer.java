@@ -32,6 +32,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.OTHER_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RISK_AND_HARM;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.enums.Event.SUPPORTING_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskSection.newSection;
 
 @Service
@@ -79,6 +80,9 @@ public class TaskListRenderer {
         final TaskSection documents = newSection("Add supporting documents", of(tasks.get(DOCUMENTS)))
             .withHint("For example, SWET, social work chronology and care plan");
 
+        final TaskSection supportingDocuments = newSection("Add supporting documents", of(tasks.get(SUPPORTING_DOCUMENTS)))
+            .withHint("For example, SWET, social work chronology and care plan<br> test ");
+
         final TaskSection parties = newSection("Add information about the parties",
             List.of(
                 tasks.get(ORGANISATION_DETAILS),
@@ -102,6 +106,7 @@ public class TaskListRenderer {
         return List.of(applicationDetails,
             applicationGrounds,
             documents,
+            supportingDocuments,
             parties,
             courtRequirements,
             additionalInformation,
