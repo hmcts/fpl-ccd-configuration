@@ -135,10 +135,10 @@ module.exports = {
     I.fillField(this.fields.details, orders[0].details);
   },
 
-  enterJudge(judgeAndLegalAdvisor) {
+  enterJudge(judge) {
     judgeAndLegalAdvisor.selectJudgeTitle('', judgeAndLegalAdvisor.fields.judgeTitleRadioGroup.herHonourJudge);
-    judgeAndLegalAdvisor.enterJudgeLastName(judgeAndLegalAdvisor.judgeLastName);
-    judgeAndLegalAdvisor.enterJudgeEmailAddress(judgeAndLegalAdvisor.judgeEmailAddress);
+    judgeAndLegalAdvisor.enterJudgeLastName(judge.judgeLastName);
+    judgeAndLegalAdvisor.enterJudgeEmailAddress(judge.judgeEmailAddress);
   },
 
   enterLegalAdvisor(legalAdvisorName) {
