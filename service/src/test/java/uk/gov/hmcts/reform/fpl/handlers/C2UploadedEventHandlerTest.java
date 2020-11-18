@@ -32,9 +32,6 @@ import java.util.Map;
 import java.util.Set;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -44,7 +41,6 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE_JUDGE;
-import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.ALLOCATED_JUDGE_EMAIL_ADDRESS;
@@ -168,12 +164,10 @@ class C2UploadedEventHandlerTest {
         }
 
         @Test
-        void shouldNotifyAllocatedJudgeOnC2UploadWhenAllocatedJudgeExistsAndEnabled() {
+        void shouldNotifyAllocatedJudgeOnC2UploadWhenAllocatedJudgeExists() {
             CaseData caseData = caseData();
 
             AllocatedJudgeTemplateForC2 allocatedJudgeParametersForC2 = getAllocatedJudgeParametersForC2();
-
-            given(featureToggleService.isAllocatedJudgeNotificationEnabled(C2_APPLICATION)).willReturn(true);
 
             given(c2UploadedEmailContentProvider.buildC2UploadNotificationForAllocatedJudge(caseData))
                 .willReturn(allocatedJudgeParametersForC2);
@@ -186,26 +180,6 @@ class C2UploadedEventHandlerTest {
                 ALLOCATED_JUDGE_EMAIL_ADDRESS,
                 allocatedJudgeParametersForC2,
                 "12345");
-        }
-
-        @Test
-        void shouldNotifyAllocatedJudgeOnC2UploadWhenAllocatedJudgeExistsAndDisabled() {
-            CaseData caseData = caseData();
-            AllocatedJudgeTemplateForC2 allocatedJudgeParametersForC2 = getAllocatedJudgeParametersForC2();
-
-            given(featureToggleService.isAllocatedJudgeNotificationEnabled(C2_APPLICATION)).willReturn(false);
-
-            given(c2UploadedEmailContentProvider.buildC2UploadNotificationForAllocatedJudge(caseData))
-                .willReturn(allocatedJudgeParametersForC2);
-
-            c2UploadedEventHandler.sendC2UploadedNotificationToAllocatedJudge(
-                new C2UploadedEvent(caseData, c2DocumentBundle));
-
-            verify(notificationService, never()).sendEmail(
-                eq(C2_UPLOAD_NOTIFICATION_TEMPLATE_JUDGE),
-                anyString(),
-                anyMap(),
-                anyString());
         }
 
         @Test
