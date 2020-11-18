@@ -350,6 +350,44 @@ Scenario('HMCTS admin vacates and re-lists a hearing', async ({I, caseViewPage, 
   I.seeInTab(['Further evidence documents 2', 'Hearing'], 'Case management hearing, 1 January 2060');
 });
 
+Scenario('HMCTS admin adds past hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
+  hearingStartDate = moment().subtract(5,'m').toDate();
+  hearingEndDate = moment(hearingStartDate).subtract(5,'m').toDate();
+
+  const correctedHearingStartDate = moment().subtract(5,'m').toDate();
+  const correctedHearingEndDate = moment(correctedHearingStartDate).subtract(5,'m').toDate();
+
+  await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
+  await manageHearingsEventPage.selectAddNewHearing();
+  await I.goToNextPage();
+
+  await manageHearingsEventPage.enterHearingDetails({startDate: hearingStartDate, endDate: hearingEndDate});
+  await manageHearingsEventPage.selectPreviousVenue();
+  await I.goToNextPage();
+
+  manageHearingsEventPage.selectHearingDateIncorrect();
+  manageHearingsEventPage.enterCorrectedHearingDate({startDate: correctedHearingStartDate, endDate: correctedHearingEndDate});
+
+  await I.goToNextPage();
+  await manageHearingsEventPage.enterJudgeAndLegalAdvisorDetails(hearingDetails[0]);
+  await I.goToNextPage();
+  await manageHearingsEventPage.sendNoticeOfHearingWithNotes(hearingDetails[0].additionalNotes);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageHearings);
+
+  caseViewPage.selectTab(caseViewPage.tabs.hearings);
+
+  I.seeInTab(['Hearing 3', 'Type of hearing'], hearingDetails[0].caseManagement);
+  I.seeInTab(['Hearing 3', 'Venue'], hearingDetails[0].venue);
+  I.seeInTab(['Hearing 3', 'Start date and time'],  formatHearingTime(correctedHearingStartDate));
+  I.seeInTab(['Hearing 3', 'End date and time'], formatHearingTime(correctedHearingEndDate));
+  I.seeInTab(['Hearing 3', 'Allocated judge or magistrate'], 'Her Honour Judge Moley');
+  I.seeInTab(['Hearing 3', 'Hearing judge or magistrate'], 'Her Honour Judge Reed');
+  I.seeInTab(['Hearing 3', 'Justices\' Legal Adviser\'s full name'], hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
+  I.seeInTab(['Hearing 3', 'Additional notes'], hearingDetails[0].additionalNotes);
+  I.seeInTab(['Hearing 3', 'Notice of hearing'], `Notice_of_hearing_${dateFormat(submittedAt, 'ddmmmm')}.pdf`);
+});
+
 Scenario('HMCTS admin share case with representatives', async ({I, caseViewPage, enterRepresentativesEventPage}) => {
   const representative1 = representatives.servedByDigitalService;
   const representative2 = representatives.servedByPost;
