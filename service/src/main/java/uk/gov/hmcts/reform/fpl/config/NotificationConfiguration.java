@@ -1,4 +1,3 @@
-
 package uk.gov.hmcts.reform.fpl.config;
 
 import org.springframework.beans.factory.annotation.Value;
