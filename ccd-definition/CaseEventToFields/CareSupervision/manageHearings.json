@@ -258,7 +258,7 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "COMPLEX",
     "PageID": "JudgeInformation",
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "ShowSummaryChangeOption": "Y",
     "PageShowCondition": "hearingOption=\"NEW_HEARING\" OR hearingOption=\"EDIT_HEARING\" OR hearingOption=\"\" OR hearingReListOption=\"RE_LIST_NOW\""
   },
@@ -271,7 +271,7 @@
     "DisplayContext": "MANDATORY",
     "PageID": "SendNoticeOfHearing",
     "ShowSummaryChangeOption": "Y",
-    "PageDisplayOrder": 7,
+    "PageDisplayOrder": 8,
     "PageShowCondition": "hearingOption=\"NEW_HEARING\" OR hearingOption=\"EDIT_HEARING\" OR hearingOption=\"\" OR hearingReListOption=\"RE_LIST_NOW\""
   },
   {
@@ -283,7 +283,7 @@
     "DisplayContext": "OPTIONAL",
     "PageID": "SendNoticeOfHearing",
     "ShowSummaryChangeOption": "Y",
-    "PageDisplayOrder": 7,
+    "PageDisplayOrder": 8,
     "FieldShowCondition": "sendNoticeOfHearing=\"Yes\""
   }
 ]
