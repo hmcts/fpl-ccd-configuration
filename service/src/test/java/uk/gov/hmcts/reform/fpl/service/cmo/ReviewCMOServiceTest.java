@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
@@ -22,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -37,7 +35,6 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
@@ -71,9 +68,6 @@ class ReviewCMOServiceTest {
 
     @Autowired
     private Time time;
-
-    @MockBean
-    private FeatureToggleService featureToggleService;
 
     @BeforeEach
     void setUp() {
@@ -276,8 +270,7 @@ class ReviewCMOServiceTest {
     }
 
     @Test
-    void shouldReturnCaseManagementStateWhenNextHearingIsOfIssueResolutionTypeAndFeatureToggleIsToggledOn() {
-        given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
+    void shouldReturnCaseManagementStateWhenNextHearingIsOfIssueResolutionType() {
 
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6), FINAL, cmoID)),
@@ -292,8 +285,7 @@ class ReviewCMOServiceTest {
     }
 
     @Test
-    void shouldReturnFinalHearingStateWhenNextHearingIsOfFinalTypeAndFeatureToggleIsToggledOn() {
-        given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
+    void shouldReturnFinalHearingStateWhenNextHearingIsOfFinalType() {
 
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6), FINAL, cmoID)),
@@ -307,20 +299,9 @@ class ReviewCMOServiceTest {
         assertThat(service.getStateBasedOnNextHearing(caseData, cmoID)).isEqualTo(State.FINAL_HEARING);
     }
 
-    @Test
-    void shouldReturnCaseManagementStateWhenNextHearingIsOfIssueResolutionTypeAndFeatureToggleIsToggledOff() {
-        given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(false);
-
-        CaseData caseData = CaseData.builder()
-            .state(State.CASE_MANAGEMENT)
-            .build();
-
-        assertThat(service.getStateBasedOnNextHearing(caseData, cmoID)).isEqualTo(caseData.getState());
-    }
 
     @Test
     void shouldReturnCaseManagementStateWhenNextHearingIsNotOfIssueResolutionOrFinalType() {
-        given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
 
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6), FURTHER_CASE_MANAGEMENT,
@@ -334,7 +315,6 @@ class ReviewCMOServiceTest {
 
     @Test
     void shouldReturnCaseManagementStateWhenNextReviewDecisionIsNotSendToAllParties() {
-        given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
 
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6), FINAL, cmoID)),
@@ -350,7 +330,6 @@ class ReviewCMOServiceTest {
 
     @Test
     void shouldThrowAnExceptionWhenNoUpcomingHearingsAreAvailable() {
-        given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
         List<Element<HearingBooking>> hearingBookings = new ArrayList<>();
         CaseData caseData = buildCaseData(SEND_TO_ALL_PARTIES, hearingBookings);
 
