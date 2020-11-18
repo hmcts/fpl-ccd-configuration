@@ -73,30 +73,28 @@ public class RemoveOrderController {
 
         List<Element<GeneratedOrder>> generatedOrders = caseData.getOrderCollection();
         List<Element<GeneratedOrder>> hiddenGeneratedOrders = caseData.getHiddenOrders();
+        List<Element<CaseManagementOrder>> sealedCMOs = caseData.getSealedCMOs();
+        List<Element<CaseManagementOrder>> hiddenCMOs = caseData.getHiddenCMOs();
+
         String reasonToRemoveOrder = caseData.getReasonToRemoveOrder();
 
         UUID removedOrderId = getDynamicListSelectedValue(caseData.getRemovableOrderList(), mapper);
         RemovableOrder removableOrder = service.getRemovedOrderByUUID(caseData, removedOrderId);
 
         if (isRemovingCMO(removableOrder)) {
-            List<Element<CaseManagementOrder>> sealedCMOs = caseData.getSealedCMOs();
-            List<Element<CaseManagementOrder>> hiddenCMOs = caseData.getHiddenCMOs();
-            
-            service.hideOrder(
-                sealedCMOs, hiddenCMOs, caseData.getRemovableOrderList(), reasonToRemoveOrder
-            );
+            data.put("hearingDetails", service.removeHearingLinkedToCMO(caseData.getHearingDetails(), removedOrderId));
 
+            data.put("hiddenCaseManagementOrders", service.hideOrder(
+                sealedCMOs, hiddenCMOs, removedOrderId, reasonToRemoveOrder));
         } else {
-            // Removing generated order
             data.put("children1", service.removeFinalOrderPropertiesFromChildren(caseData));
 
-            service.hideOrder(
-                generatedOrders, hiddenGeneratedOrders, caseData.getRemovableOrderList(), reasonToRemoveOrder
-            );
+            data.put("hiddenOrders", service.hideOrder(
+                generatedOrders, hiddenGeneratedOrders, removedOrderId, reasonToRemoveOrder));
         }
 
         data.put("orderCollection", generatedOrders);
-        data.put("hiddenOrders", hiddenGeneratedOrders);
+        data.put("sealedCMOs", sealedCMOs);
         removeTemporaryFields(
             caseDetails,
             REMOVABLE_ORDER_LIST_KEY,

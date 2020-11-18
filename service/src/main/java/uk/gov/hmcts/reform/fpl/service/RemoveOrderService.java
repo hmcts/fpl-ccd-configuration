@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
@@ -20,6 +21,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
 
@@ -57,20 +59,25 @@ public class RemoveOrderService {
         return orderData;
     }
 
-    private void hideOrder(List<Element<? extends RemovableOrder>> orders,
-                          List<Element<? extends RemovableOrder>> hiddenOrders,
-                          Object removableOrderList,
-                          String reason) {
-        UUID id = getDynamicListSelectedValue(removableOrderList, mapper);
+    public List<Element<RemovableOrder>> hideOrder(List<? extends Element<? extends RemovableOrder>> orders,
+                                                   List<? extends Element<? extends RemovableOrder>> hiddenOrders,
+                                                   UUID removedOrderId,
+                                                   String reason) {
+        List<Element<RemovableOrder>> updatedHiddenOrders = new ArrayList<>();
+
+        hiddenOrders.forEach(orderElement ->
+            updatedHiddenOrders.add(element(orderElement.getId(), orderElement.getValue())));
 
         orders.stream()
-            .filter(order -> id.equals(order.getId()))
+            .filter(order -> removedOrderId.equals(order.getId()))
             .findFirst()
             .ifPresent(order -> {
                 orders.remove(order);
                 order.getValue().setRemovalReason(reason);
-                hiddenOrders.add(order);
+                updatedHiddenOrders.add(element(order.getId(), order.getValue()));
             });
+
+        return updatedHiddenOrders;
     }
 
     public List<Element<Child>> removeFinalOrderPropertiesFromChildren(CaseData caseData) {
@@ -111,6 +118,20 @@ public class RemoveOrderService {
             .map(Element::getValue)
             .findAny()
             .orElseThrow(() -> new IllegalStateException("Failed to find order matching id " + removedOrderId));
+    }
+
+    public List<Element<HearingBooking>> removeHearingLinkedToCMO(List<Element<HearingBooking>> hearings,
+                                                                  UUID removedOrderId) {
+        return hearings.stream()
+            .map(element -> {
+                HearingBooking hearingBooking = element.getValue();
+
+                if (removedOrderId.equals(hearingBooking.getCaseManagementOrderId())) {
+                    hearingBooking.setCaseManagementOrderId(null);
+                }
+
+                return element;
+            }).collect(Collectors.toList());
     }
 
     private List<Element<? extends RemovableOrder>> getRemovableOrderList(CaseData caseData) {

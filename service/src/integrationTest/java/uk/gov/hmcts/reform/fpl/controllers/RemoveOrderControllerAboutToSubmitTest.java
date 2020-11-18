@@ -11,9 +11,11 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
 import java.util.List;
@@ -21,6 +23,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -44,7 +47,7 @@ public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTe
     }
 
     @Test
-    void shouldUpdateOrderCollectionAndHiddenOrderCollection() {
+    void shouldUpdateGeneratedOrderCollectionAndHiddenGeneratedOrderCollection() {
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
             asCaseDetails(buildCaseData(selectedOrder))
         );
@@ -158,6 +161,42 @@ public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTe
         List<Element<Child>> returnedChildren = returnedCaseData.getChildren1();
 
         assertThat(returnedChildren).isEqualTo(childrenList);
+    }
+
+    @Test
+    void shouldRemoveCaseManagementOrderAndRemoveHearingAssociation() {
+        UUID removedOrderId = UUID.randomUUID();
+
+        Element<CaseManagementOrder> caseManagementOrder1 = element(removedOrderId, CaseManagementOrder.builder()
+            .status(APPROVED)
+            .build());
+
+        List<Element<CaseManagementOrder>> caseManagementOrders = List.of(
+            caseManagementOrder1,
+            element(CaseManagementOrder.builder().build()));
+
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(HearingBooking.builder()
+                .caseManagementOrderId(removedOrderId)
+                .build()));
+
+        CaseData caseData = CaseData.builder()
+            .sealedCMOs(caseManagementOrders)
+            .hearingDetails(hearingBookings)
+            .removableOrderList(DynamicList.builder()
+                .value(buildListElement(removedOrderId, "Case management order - 15 June 2020"))
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
+
+        CaseData responseData = mapper.convertValue(response.getData(), CaseData.class);
+        List<Element<CaseManagementOrder>> hiddenCMOs = responseData.getHiddenCMOs();
+
+        assertThat(hiddenCMOs).hasSize(1);
+        assertThat(hiddenCMOs.get(0)).isEqualTo(caseManagementOrder1);
+        assertThat(responseData.getSealedCMOs()).hasSize(1);
+        assertThat(responseData.getHearingDetails().get(0).getValue().getCaseManagementOrderId()).isNull();
     }
 
     private CaseData buildCaseData(Element<GeneratedOrder> order) {

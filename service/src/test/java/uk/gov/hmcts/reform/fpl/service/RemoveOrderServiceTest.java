@@ -10,10 +10,12 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
@@ -112,16 +114,13 @@ class RemoveOrderServiceTest {
         List<Element<GeneratedOrder>> orders = new ArrayList<>(List.of(order1, order2));
         List<Element<GeneratedOrder>> hiddenOrders = new ArrayList<>();
 
-        DynamicList listToRemove = DynamicList.builder()
-            .value(buildListElement(order1.getId(), "order 1 - 15 June 2020"))
-            .build();
-
         String reason = "added to the wrong case for some reason, don't ask me how users do this but they do";
 
-        service.hideOrder(orders, hiddenOrders, listToRemove, reason);
+        List<Element<RemovableOrder>> removedOrders = service.hideOrder(orders, hiddenOrders, order1.getId(), reason);
 
         assertThat(orders).hasSize(1).containsOnly(order2);
-        assertThat(hiddenOrders).hasSize(1).containsOnly(order1);
+        assertThat(removedOrders).hasSize(1);
+        assertThat(removedOrders.get(0)).isEqualTo(order1);
     }
 
     @Test
@@ -132,13 +131,9 @@ class RemoveOrderServiceTest {
         List<Element<GeneratedOrder>> orders = new ArrayList<>(List.of(order1, order2));
         List<Element<GeneratedOrder>> hiddenOrders = new ArrayList<>();
 
-        DynamicList listToRemove = DynamicList.builder()
-            .value(buildListElement(order1.getId(), "order 1 - 15 June 2020"))
-            .build();
-
         String reason = "like really, do they not see the big case number and family man number at the top of the page";
 
-        service.hideOrder(orders, hiddenOrders, listToRemove, reason);
+        service.hideOrder(orders, hiddenOrders, order1.getId(), reason);
 
         assertThat(order1.getValue().getRemovalReason()).isEqualTo(reason);
         assertThat(order2.getValue().getRemovalReason()).isNull();
@@ -382,6 +377,48 @@ class RemoveOrderServiceTest {
         assertThat(exception.getMessage()).isEqualTo(
             String.format("Failed to find order matching id %s", removedOrderId)
         );
+    }
+
+    @Test
+    void shouldRemoveHearingAssociationWithARemovedCaseManagementOrder() {
+        UUID removedCaseManagementOrderId = UUID.randomUUID();
+
+        Element<HearingBooking> hearing1 = element(HearingBooking.builder()
+            .caseManagementOrderId(removedCaseManagementOrderId)
+            .build());
+
+        Element<HearingBooking> hearing2 = element(HearingBooking.builder()
+            .caseManagementOrderId(UUID.randomUUID())
+            .build());
+
+        List<Element<HearingBooking>> hearingBookings = List.of(hearing1, hearing2);
+
+        List<Element<HearingBooking>> updatedHearingBookings =
+            service.removeHearingLinkedToCMO(hearingBookings, removedCaseManagementOrderId);
+
+        assertThat(updatedHearingBookings.get(0).getValue().getCaseManagementOrderId()).isNull();
+        assertThat(updatedHearingBookings.get(1)).isEqualTo(hearing2);
+    }
+
+    @Test
+    void shouldNotRemoveHearingAssociationWithARemovedCaseManagementOrderWhenCannotMatchAssociatedHearing() {
+        UUID removedCaseManagementOrderId = UUID.randomUUID();
+
+        Element<HearingBooking> hearing1 = element(HearingBooking.builder()
+            .caseManagementOrderId(UUID.randomUUID())
+            .build());
+
+        Element<HearingBooking> hearing2 = element(HearingBooking.builder()
+            .caseManagementOrderId(UUID.randomUUID())
+            .build());
+
+        List<Element<HearingBooking>> hearingBookings = List.of(hearing1, hearing2);
+
+        List<Element<HearingBooking>> updatedHearingBookings =
+            service.removeHearingLinkedToCMO(hearingBookings, removedCaseManagementOrderId);
+
+        assertThat(updatedHearingBookings.get(0)).isEqualTo(hearing1);
+        assertThat(updatedHearingBookings.get(1)).isEqualTo(hearing2);
     }
 
     private DynamicListElement buildListElement(UUID id, String label) {

@@ -591,6 +591,7 @@ public class CaseData {
 
     private final List<Element<CaseManagementOrder>> hiddenCaseManagementOrders;
 
+    @JsonIgnore
     public List<Element<CaseManagementOrder>> getHiddenCMOs() {
         return defaultIfNull(hiddenCaseManagementOrders, new ArrayList<>());
     }
