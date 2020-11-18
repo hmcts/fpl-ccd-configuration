@@ -8,8 +8,10 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,16 +28,18 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedV
 public class RemoveOrderService {
     private final ObjectMapper mapper;
 
-    public DynamicList buildDynamicListOfOrders(List<Element<GeneratedOrder>> orders, UUID selected) {
-        List<Element<GeneratedOrder>> blankOrders = orders.stream()
+    @SuppressWarnings("unchecked")
+    public DynamicList buildDynamicListOfOrders(CaseData caseData, UUID selected) {
+        List<Element<RemovableOrder>> blankOrders = getRemovableOrderList(caseData).stream()
             .filter(order -> order.getValue().isRemovable())
+            .map(order -> (Element<RemovableOrder>) order)
             .collect(Collectors.toList());
 
-        return asDynamicList(blankOrders, selected, GeneratedOrder::asLabel);
+        return asDynamicList(blankOrders, selected, RemovableOrder::asLabel);
     }
 
-    public DynamicList buildDynamicListOfOrders(List<Element<GeneratedOrder>> orders) {
-        return buildDynamicListOfOrders(orders, null);
+    public DynamicList buildDynamicListOfOrders(CaseData caseData) {
+        return buildDynamicListOfOrders(caseData, null);
     }
 
     public Map<String, Object> populateSelectedOrderFields(List<Element<GeneratedOrder>> orders, UUID id) {
@@ -97,5 +101,22 @@ public class RemoveOrderService {
                 return element;
             })
             .collect(Collectors.toList());
+    }
+
+    public RemovableOrder getRemovedOrderByUUID(CaseData caseData, UUID removedOrderId) {
+        return getRemovableOrderList(caseData).stream()
+            .filter(orderElement -> removedOrderId.equals(orderElement.getId()))
+            .map(Element::getValue)
+            .findAny()
+            .orElseThrow(() -> new IllegalStateException("Failed to find order matching id " + removedOrderId));
+    }
+
+    private List<Element<? extends RemovableOrder>> getRemovableOrderList(CaseData caseData) {
+        List<Element<? extends RemovableOrder>> orders =  new ArrayList<>();
+
+        orders.addAll(caseData.getOrderCollection());
+        orders.addAll(caseData.getSealedCMOs());
+
+        return orders;
     }
 }

@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.RemoveOrderService;
 
@@ -29,7 +30,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedV
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RemoveOrderController {
     private static final String REMOVABLE_ORDER_LIST_KEY = "removableOrderList";
-
+    private static final String CMO_TYPE_KEY = "Case management order";
     private final ObjectMapper mapper;
     private final RemoveOrderService service;
 
@@ -38,7 +39,7 @@ public class RemoveOrderController {
         Map<String, Object> data = request.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        data.put(REMOVABLE_ORDER_LIST_KEY, service.buildDynamicListOfOrders(caseData.getOrderCollection()));
+        data.put(REMOVABLE_ORDER_LIST_KEY, service.buildDynamicListOfOrders(caseData));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -56,7 +57,7 @@ public class RemoveOrderController {
         data.putAll(service.populateSelectedOrderFields(caseData.getOrderCollection(), id));
 
         // Can be removed once dynamic lists are fixed
-        data.put(REMOVABLE_ORDER_LIST_KEY, service.buildDynamicListOfOrders(caseData.getOrderCollection(), id));
+        data.put(REMOVABLE_ORDER_LIST_KEY, service.buildDynamicListOfOrders(caseData, id));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -72,9 +73,19 @@ public class RemoveOrderController {
         List<Element<GeneratedOrder>> orders = caseData.getOrderCollection();
         List<Element<GeneratedOrder>> hiddenOrders = caseData.getHiddenOrders();
 
-        data.put("children1", service.removeFinalOrderPropertiesFromChildren(caseData));
+        UUID removedOrderId = getDynamicListSelectedValue(caseData.getRemovableOrderList(), mapper);
+        RemovableOrder removableOrder = service.getRemovedOrderByUUID(caseData, removedOrderId);
 
-        service.hideOrder(orders, hiddenOrders, caseData.getRemovableOrderList(), caseData.getReasonToRemoveOrder());
+        if (isRemovingCMO(removableOrder)) {
+            // Remove CMO logic
+
+        } else {
+            data.put("children1", service.removeFinalOrderPropertiesFromChildren(caseData));
+
+            service.hideOrder(
+                orders, hiddenOrders, caseData.getRemovableOrderList(), caseData.getReasonToRemoveOrder()
+            );
+        }
 
         data.put("orderCollection", orders);
         data.put("hiddenOrders", hiddenOrders);
@@ -91,5 +102,9 @@ public class RemoveOrderController {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
             .build();
+    }
+
+    private boolean isRemovingCMO(RemovableOrder removableOrder) {
+        return CMO_TYPE_KEY.equals(removableOrder.getType());
     }
 }

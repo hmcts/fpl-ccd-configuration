@@ -14,8 +14,10 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,10 +25,13 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
 
@@ -38,24 +43,29 @@ class RemoveOrderServiceTest {
 
     private static final UUID CHILD_ONE_ID = UUID.randomUUID();
     private static final UUID CHILD_TWO_ID = UUID.randomUUID();
+    private static final LocalDate NOW = LocalDate.now();
 
     @Autowired
     private RemoveOrderService service;
 
     @Test
     void shouldMakeDynamicListOfBlankOrders() {
-        List<Element<GeneratedOrder>> orders = List.of(
+        List<Element<GeneratedOrder>> generatedOrders = List.of(
             element(buildOrder(BLANK_ORDER, "order 1", "15 June 2020")),
             element(buildOrder(BLANK_ORDER, "order 2", "16 July 2020"))
         );
 
-        DynamicList listOfOrders = service.buildDynamicListOfOrders(orders);
+        CaseData caseData = CaseData.builder()
+            .orderCollection(generatedOrders)
+            .build();
+
+        DynamicList listOfOrders = service.buildDynamicListOfOrders(caseData);
 
         DynamicList expectedList = DynamicList.builder()
             .value(DynamicListElement.EMPTY)
             .listItems(List.of(
-                buildListElement(orders.get(0).getId(), "order 1 - 15 June 2020"),
-                buildListElement(orders.get(1).getId(), "order 2 - 16 July 2020")
+                buildListElement(generatedOrders.get(0).getId(), "order 1 - 15 June 2020"),
+                buildListElement(generatedOrders.get(1).getId(), "order 2 - 16 July 2020")
             ))
             .build();
 
@@ -64,23 +74,31 @@ class RemoveOrderServiceTest {
 
     @Test
     void shouldMakeDynamicListOfMixedOrderTypes() {
-        List<Element<GeneratedOrder>> orders = List.of(
+        List<Element<GeneratedOrder>> generatedOrders = List.of(
             element(buildOrder(BLANK_ORDER, "order 1", "15 June 2020")),
             element(buildOrder(CARE_ORDER, "order 2", "16 July 2020")),
             element(buildOrder(EMERGENCY_PROTECTION_ORDER, "order 3", "17 August 2020")),
             element(buildOrder(SUPERVISION_ORDER, "order 4", "18 September 2020"))
         );
 
-        DynamicList listOfOrders = service.buildDynamicListOfOrders(orders);
+        List<Element<CaseManagementOrder>> caseManagementOrders = buildCaseManagementOrders();
+
+        CaseData caseData = CaseData.builder()
+            .orderCollection(generatedOrders)
+            .sealedCMOs(caseManagementOrders)
+            .build();
+
+        DynamicList listOfOrders = service.buildDynamicListOfOrders(caseData);
 
         DynamicList expectedList = DynamicList.builder()
             .value(DynamicListElement.EMPTY)
             .listItems(List.of(
-                buildListElement(orders.get(0).getId(), "order 1 - 15 June 2020"),
-                buildListElement(orders.get(1).getId(), "order 2 - 16 July 2020"),
-                buildListElement(orders.get(2).getId(), "order 3 - 17 August 2020"),
-                buildListElement(orders.get(3).getId(), "order 4 - 18 September 2020")
-            ))
+                buildListElement(generatedOrders.get(0).getId(), "order 1 - 15 June 2020"),
+                buildListElement(generatedOrders.get(1).getId(), "order 2 - 16 July 2020"),
+                buildListElement(generatedOrders.get(2).getId(), "order 3 - 17 August 2020"),
+                buildListElement(generatedOrders.get(3).getId(), "order 4 - 18 September 2020"),
+                buildListElement(caseManagementOrders.get(0).getId(), String.format("Case management order - %s",
+                    formatLocalDateToString(NOW, "d MMMM yyyy")))))
             .build();
 
         assertThat(listOfOrders).isEqualTo(expectedList);
@@ -325,6 +343,47 @@ class RemoveOrderServiceTest {
         assertThat(exception.getMessage()).isEqualTo("Failed to find the order to be removed");
     }
 
+    @Test
+    void shouldGetRemovedOrderWhenRemovedOrderIdMatchesElementId() {
+        UUID removedOrderId = UUID.randomUUID();
+        List<Element<CaseManagementOrder>> caseManagementOrders = buildCaseManagementOrders();
+
+        Element<GeneratedOrder> order1 = element(
+            removedOrderId,
+            buildOrder(BLANK_ORDER, "order 1", "15 June 2020")
+        );
+
+        Element<GeneratedOrder> order2 = element(buildOrder(BLANK_ORDER, "order 2", "15 June 2020"));
+
+        CaseData caseData = CaseData.builder()
+            .orderCollection(List.of(order1, order2))
+            .sealedCMOs(caseManagementOrders)
+            .build();
+
+        assertThat(service.getRemovedOrderByUUID(caseData, removedOrderId)).isEqualTo(order1.getValue());
+    }
+
+    @Test
+    void shouldThrowAnExceptionWhenFailedToFindAnOrderWithRemovedOrderId() {
+        UUID removedOrderId = UUID.randomUUID();
+        List<Element<CaseManagementOrder>> caseManagementOrders = buildCaseManagementOrders();
+
+        Element<GeneratedOrder> order1 = element(buildOrder(BLANK_ORDER, "order 1", "15 June 2020"));
+        Element<GeneratedOrder> order2 = element(buildOrder(BLANK_ORDER, "order 2", "15 June 2020"));
+
+        CaseData caseData = CaseData.builder()
+            .orderCollection(List.of(order1, order2))
+            .sealedCMOs(caseManagementOrders)
+            .build();
+
+        final IllegalStateException exception = assertThrows(IllegalStateException.class,
+            () -> service.getRemovedOrderByUUID(caseData, removedOrderId));
+
+        assertThat(exception.getMessage()).isEqualTo(
+            String.format("Failed to find order matching id %s", removedOrderId)
+        );
+    }
+
     private DynamicListElement buildListElement(UUID id, String label) {
         return DynamicListElement.builder()
             .code(id)
@@ -345,5 +404,18 @@ class RemoveOrderServiceTest {
         return buildOrder(type, title, dateOfIssue).toBuilder()
             .children(children)
             .build();
+    }
+
+    private List<Element<CaseManagementOrder>> buildCaseManagementOrders() {
+        return List.of(
+            element(CaseManagementOrder.builder()
+                .status(APPROVED)
+                .dateIssued(NOW)
+                .build()),
+            element(CaseManagementOrder.builder()
+                .status(DRAFT)
+                .dateIssued(NOW)
+                .build())
+        );
     }
 }
