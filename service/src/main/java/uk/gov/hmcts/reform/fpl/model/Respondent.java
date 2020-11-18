@@ -27,7 +27,7 @@ public class Respondent implements Representable, ConfidentialParty<Respondent> 
     @NotNull(message = "You need to add details to respondents")
     private final RespondentParty party;
     private final String leadRespondentIndicator;
-    @Deprecated(since = "FPLA-2396")
+    @Deprecated(since = "FPLA-2428")
     private String persistRepresentedBy;
     @Builder.Default
     private List<Element<UUID>> representedBy = new ArrayList<>();

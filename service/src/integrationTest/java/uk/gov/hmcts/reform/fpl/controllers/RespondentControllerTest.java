@@ -93,8 +93,8 @@ class RespondentControllerTest extends AbstractControllerTest {
             .respondents1(List.of(oldRespondent))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(
-            toCallBackRequest(asCaseDetails(caseData), asCaseDetails(caseDataBefore)), "persist-representatives"
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+            toCallBackRequest(asCaseDetails(caseData), asCaseDetails(caseDataBefore))
         );
         CaseData responseData = extractCaseData(response);
 
