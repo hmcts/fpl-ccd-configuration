@@ -6,4 +6,6 @@ public interface RemovableOrder {
     String asLabel();
 
     String getType();
+
+    void setRemovalReason(String reason);
 }

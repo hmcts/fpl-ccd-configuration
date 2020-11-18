@@ -57,8 +57,10 @@ public class RemoveOrderService {
         return orderData;
     }
 
-    public void hideOrder(List<Element<GeneratedOrder>> orders, List<Element<GeneratedOrder>> hiddenOrders,
-                          Object removableOrderList, String reason) {
+    private void hideOrder(List<Element<? extends RemovableOrder>> orders,
+                          List<Element<? extends RemovableOrder>> hiddenOrders,
+                          Object removableOrderList,
+                          String reason) {
         UUID id = getDynamicListSelectedValue(removableOrderList, mapper);
 
         orders.stream()

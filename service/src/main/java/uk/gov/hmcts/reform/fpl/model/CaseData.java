@@ -589,6 +589,12 @@ public class CaseData {
             .min(comparing(HearingBooking::getStartDate));
     }
 
+    private final List<Element<CaseManagementOrder>> hiddenCaseManagementOrders;
+
+    public List<Element<CaseManagementOrder>> getHiddenCMOs() {
+        return defaultIfNull(hiddenCaseManagementOrders, new ArrayList<>());
+    }
+
     private String sendToCtsc;
     private String displayAmountToPay;
     private final String confirmChangeState;

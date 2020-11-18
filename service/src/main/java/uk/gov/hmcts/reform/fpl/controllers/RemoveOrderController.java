@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
+import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.RemoveOrderService;
 
@@ -70,25 +71,32 @@ public class RemoveOrderController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        List<Element<GeneratedOrder>> orders = caseData.getOrderCollection();
-        List<Element<GeneratedOrder>> hiddenOrders = caseData.getHiddenOrders();
+        List<Element<GeneratedOrder>> generatedOrders = caseData.getOrderCollection();
+        List<Element<GeneratedOrder>> hiddenGeneratedOrders = caseData.getHiddenOrders();
+        String reasonToRemoveOrder = caseData.getReasonToRemoveOrder();
 
         UUID removedOrderId = getDynamicListSelectedValue(caseData.getRemovableOrderList(), mapper);
         RemovableOrder removableOrder = service.getRemovedOrderByUUID(caseData, removedOrderId);
 
         if (isRemovingCMO(removableOrder)) {
-            // Remove CMO logic
+            List<Element<CaseManagementOrder>> sealedCMOs = caseData.getSealedCMOs();
+            List<Element<CaseManagementOrder>> hiddenCMOs = caseData.getHiddenCMOs();
+            
+            service.hideOrder(
+                sealedCMOs, hiddenCMOs, caseData.getRemovableOrderList(), reasonToRemoveOrder
+            );
 
         } else {
+            // Removing generated order
             data.put("children1", service.removeFinalOrderPropertiesFromChildren(caseData));
 
             service.hideOrder(
-                orders, hiddenOrders, caseData.getRemovableOrderList(), caseData.getReasonToRemoveOrder()
+                generatedOrders, hiddenGeneratedOrders, caseData.getRemovableOrderList(), reasonToRemoveOrder
             );
         }
 
-        data.put("orderCollection", orders);
-        data.put("hiddenOrders", hiddenOrders);
+        data.put("orderCollection", generatedOrders);
+        data.put("hiddenOrders", hiddenGeneratedOrders);
         removeTemporaryFields(
             caseDetails,
             REMOVABLE_ORDER_LIST_KEY,
