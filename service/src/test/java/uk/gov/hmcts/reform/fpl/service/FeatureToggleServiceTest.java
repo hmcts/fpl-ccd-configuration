@@ -145,18 +145,6 @@ class FeatureToggleServiceTest {
     }
 
     @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForNewCaseStateModel(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isNewCaseStateModelEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("new-case-state-model"),
-            ldUser(ENVIRONMENT).build(),
-            eq(false));
-    }
-
-    @ParameterizedTest
     @MethodSource("userAttributesTestSource")
     void shouldNotAccumulateAttributesBetweenRequests(Runnable functionToTest, Runnable accumulateFunction,
                                                       List<UserAttribute> attributes) {
