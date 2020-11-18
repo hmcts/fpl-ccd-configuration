@@ -61,7 +61,17 @@ xui-webapp:
       SERVICES_CCD_DATA_STORE_API: http://${SERVICE_NAME}-ccd-data-store-api
       SERVICES_TERMS_AND_CONDITIONS: http://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal
       JURISDICTIONS: PUBLICLAW
-      LAUNCH_DARKLY_CLIENT_ID: 5bf2a3795b18c34b8b0e225b
+      LAUNCH_DARKLY_CLIENT_ID: dummy
+      APPINSIGHTS_INSTRUMENTATIONKEY: fake
+      REDISCLOUD_URL: http://dummyrediscloudurl
+      FEATURE_REDIS_ENABLED: "false"
+      FEATURE_APP_INSIGHTS_ENABLED: "false"
+      FEATURE_SECURE_COOKIE_ENABLED: "false"
+    keyVaults:
+      rpx:
+        secrets:
+          - mc-s2s-client-secret
+          - mc-idam-client-secret
 
 ccd:
   ccd:
