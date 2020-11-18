@@ -40,10 +40,6 @@ public class FeatureToggleService {
         return ldClient.boolVariation("case-user-assignment", createLDUser(), true);
     }
 
-    public boolean isNewCaseStateModelEnabled() {
-        return ldClient.boolVariation("new-case-state-model", createLDUser(), false);
-    }
-
     public boolean isAllowCaseCreationForUsersNotOnboardedToMOEnabled(String localAuthorityName) {
         return ldClient.boolVariation("allow-case-creation-for-users-not-onboarded-to-mo",
             createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
@@ -57,6 +53,14 @@ public class FeatureToggleService {
     public boolean isSendLAEmailsToSolicitorEnabled(String localAuthorityName) {
         return ldClient.boolVariation("send-la-emails-to-solicitor",
             createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
+    }
+
+    public boolean isUploadDraftCMOEnabled() {
+        return ldClient.boolVariation("upload-draft-cmo", createLDUser(), false);
+    }
+
+    public boolean isAddHearingsInPastEnabled() {
+        return ldClient.boolVariation("add-hearings-in-past", createLDUser(), false);
     }
 
     private LDUser createLDUser() {
