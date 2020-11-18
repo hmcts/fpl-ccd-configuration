@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.event.UploadCMOEventData;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,9 +44,6 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @MockBean
     private DocumentSealingService documentSealingService;
-
-    @MockBean
-    private FeatureToggleService featureToggleService;
 
     private final CaseManagementOrder cmo = buildCMO();
     private final DocumentReference convertedDocument = DocumentReference.builder().filename("converted").build();
@@ -112,7 +108,6 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
     void shouldKeepStateInCaseManagementWhenNextHearingTypeIsIssueResolutionAndCmoDecisionIsSendToAllParties()
         throws Exception {
         given(documentSealingService.sealDocument(convertedDocument)).willReturn(sealedDocument);
-        given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
 
         UUID cmoId = UUID.randomUUID();
         CaseData caseData = CaseData.builder()
@@ -131,7 +126,6 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
     void shouldUpdateStateToFinalHearingWhenNextHearingTypeIsFinalAndCmoDecisionIsSendToAllParties()
         throws Exception {
         given(documentSealingService.sealDocument(convertedDocument)).willReturn(sealedDocument);
-        given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
 
         UUID cmoId = UUID.randomUUID();
         CaseData caseData = CaseData.builder()
