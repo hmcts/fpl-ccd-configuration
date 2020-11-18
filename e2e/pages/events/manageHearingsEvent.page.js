@@ -27,6 +27,12 @@ module.exports = {
     sendNotice: '#sendNoticeOfHearing-Yes',
     dontSendNotice: '#sendNoticeOfHearing-No',
     noticeNotes: '#noticeOfHearingNotes',
+    confirmHearingDate: {
+      hearingDateCorrect: '#confirmHearingDate-Yes',
+      hearingDateIncorrect: '#confirmHearingDate-No',
+    },
+    correctedStartDate: '#hearingStartDateConfirmation',
+    correctedEndDate: '#hearingEndDateConfirmation',
   },
 
   async selectAddNewHearing() {
@@ -109,6 +115,15 @@ module.exports = {
 
   async dontSendNoticeOfHearing() {
     I.click(this.fields.dontSendNotice);
+  },
+
+  selectHearingDateIncorrect() {
+    I.click(this.fields.confirmHearingDate.hearingDateIncorrect);
+  },
+
+  enterCorrectedHearingDate(hearingDetails) {
+    I.fillDateAndTime(hearingDetails.startDate, this.fields.correctedStartDate);
+    I.fillDateAndTime(hearingDetails.endDate, this.fields.correctedEndDate);
   },
 
 };
