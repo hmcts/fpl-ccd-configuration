@@ -136,7 +136,8 @@ module.exports = {
   },
 
   enterJudge(judge) {
-    judgeAndLegalAdvisor.selectJudgeTitle('', judgeAndLegalAdvisor.fields.judgeTitleRadioGroup.herHonourJudge);
+    judge.judgeTitle = judgeAndLegalAdvisor.fields.judgeTitleRadioGroup.herHonourJudge;
+    judgeAndLegalAdvisor.selectJudgeTitle('', judge.judgeTitle);
     judgeAndLegalAdvisor.enterJudgeLastName(judge.judgeLastName);
     judgeAndLegalAdvisor.enterJudgeEmailAddress(judge.judgeEmailAddress);
   },
