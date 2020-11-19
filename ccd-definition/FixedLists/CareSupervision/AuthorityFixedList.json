@@ -9,22 +9,36 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "BSP",
+    "ListElement": "Bournemouth, Christchurch and Poole Council",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "BSC",
     "ListElement": "Buckinghamshire Council",
-    "DisplayOrder": 2
+    "DisplayOrder": 3
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "CDF",
     "ListElement": "Cardiff Council",
-    "DisplayOrder": 5
+    "DisplayOrder": 4
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "CEB",
     "ListElement": "Cheshire East Borough Council",
+    "DisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "CCC",
+    "ListElement": "Coventry City Council",
     "DisplayOrder": 6
   },
   {
@@ -271,6 +285,13 @@
     "ListElementCode": "WMD",
     "ListElement": "Wakefield Metropolitan District Council",
     "DisplayOrder": 92
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "WCC",
+    "ListElement": "Warwickshire County Council",
+    "DisplayOrder": 93
   },
   {
     "LiveFrom": "01/01/2017",
