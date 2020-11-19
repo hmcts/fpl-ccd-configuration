@@ -208,7 +208,6 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
             eq(NOTIFICATION_REFERENCE));
     }
 
-
     @Test
     void shouldTriggerTemporaryHearingJudgeEventWhenCreatingANewHearingWithTemporaryJudgeAllocated()
         throws NotificationClientException {
@@ -220,6 +219,7 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
                 .judgeLastName("Davidson")
                 .judgeTitle(HER_HONOUR_JUDGE)
                 .build())
+            .hearingJudgeLabel("Her Honour Judge Davidson")
             .build());
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
@@ -257,6 +257,7 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
                 .judgeLastName("Davidson")
                 .judgeTitle(HER_HONOUR_JUDGE)
                 .build())
+            .hearingJudgeLabel("Her Honour Judge Davidson")
             .build());
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
@@ -284,7 +285,7 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldNotTriggerTemporaryHearingJudgeEventWhenUsingAllocatedJudge() throws NotificationClientException {
+    void shouldNotTriggerTemporaryHearingJudgeEventWhenUsingAllocatedJudge() {
         Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
             .type(CASE_MANAGEMENT)
             .startDate(LocalDateTime.of(2050, 5, 20, 13, 00))
@@ -320,7 +321,7 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
     @ParameterizedTest
     @EnumSource(value = HearingOptions.class, names = {"EDIT_HEARING", "ADJOURN_HEARING", "VACATE_HEARING"})
     void shouldNotTriggerTemporaryHearingJudgeEventWhenAdjourningOrVacatingAHearingWithoutReListing(
-        HearingOptions hearingOption) throws NotificationClientException {
+        HearingOptions hearingOption) {
         Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
             .type(CASE_MANAGEMENT)
             .startDate(LocalDateTime.of(2050, 5, 20, 13, 00))
