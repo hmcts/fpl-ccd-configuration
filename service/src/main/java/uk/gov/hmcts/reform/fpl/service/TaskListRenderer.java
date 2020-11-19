@@ -81,7 +81,7 @@ public class TaskListRenderer {
             .withHint("For example, SWET, social work chronology and care plan");
 
         final TaskSection supportingDocuments = newSection("Add supporting documents", of(tasks.get(SUPPORTING_DOCUMENTS)))
-            .withHint("For example, SWET, social work chronology and care plan<br> test ");
+            .withHint("For example, SWET, social work chronology and care plan<br> In emergency cases, you can send your application without this information ");
 
         final TaskSection parties = newSection("Add information about the parties",
             List.of(
