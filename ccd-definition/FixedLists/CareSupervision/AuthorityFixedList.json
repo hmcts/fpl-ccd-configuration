@@ -16,7 +16,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
-    "ListElementCode": "BSP",
+    "ListElementCode": "BCP",
     "ListElement": "Bournemouth, Christchurch and Poole Council",
     "DisplayOrder": 3
   },
