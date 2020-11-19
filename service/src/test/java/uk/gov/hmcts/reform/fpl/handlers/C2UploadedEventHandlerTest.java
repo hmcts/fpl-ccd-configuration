@@ -73,9 +73,6 @@ class C2UploadedEventHandlerTest {
     @MockBean
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
-    @MockBean
-    private FeatureToggleService featureToggleService;
-
     @Autowired
     private C2UploadedEventHandler c2UploadedEventHandler;
 
@@ -95,7 +92,6 @@ class C2UploadedEventHandlerTest {
         void resetInvocations() {
             reset(notificationService);
             reset(inboxLookupService);
-            reset(featureToggleService);
             reset(c2UploadedEmailContentProvider);
         }
 
@@ -184,15 +180,12 @@ class C2UploadedEventHandlerTest {
 
         @Test
         void shouldNotNotifyAllocatedJudgeOnC2UploadWhenAllocatedJudgeDoesNotExist() {
-            CaseData caseData = caseData(Map.of("caseLocalAuthority", "SA"));
-
-            given(c2UploadedEmailContentProvider.buildC2UploadNotificationForAllocatedJudge(caseData))
-                .willReturn(getAllocatedJudgeParametersForC2());
+            CaseData caseData = CaseData.builder().build();
 
             c2UploadedEventHandler.sendC2UploadedNotificationToAllocatedJudge(
                 new C2UploadedEvent(caseData, c2DocumentBundle));
 
-            verifyNoInteractions(notificationService);
+            verifyNoInteractions(c2UploadedEmailContentProvider,notificationService);
         }
 
         private AllocatedJudgeTemplateForC2 getAllocatedJudgeParametersForC2() {
