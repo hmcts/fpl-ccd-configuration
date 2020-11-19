@@ -629,4 +629,6 @@ public class CaseData {
     private final HearingCancellationReason vacatedReason;
     private final List<ProceedingType> proceedingType;
     private final State closedStateRadioList;
+
+    private final List<Element<SupportingDocument>> documents;
 }
