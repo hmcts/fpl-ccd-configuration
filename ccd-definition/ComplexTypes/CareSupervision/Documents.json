@@ -2,6 +2,15 @@
   {
   "LiveFrom": "01/01/2017",
   "ID": "Documents",
+  "ListElementCode": "documentType",
+  "FieldType": "FixedList",
+  "FieldTypeParameter": "DocumentType",
+  "ElementLabel": "Type of document",
+  "SecurityClassification": "Public"
+  },
+  {
+  "LiveFrom": "01/01/2017",
+  "ID": "Documents",
   "ListElementCode": "document",
   "FieldType": "Document",
   "ElementLabel": "Upload a file",

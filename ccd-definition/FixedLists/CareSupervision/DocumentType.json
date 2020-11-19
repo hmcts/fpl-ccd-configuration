@@ -1,0 +1,58 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DocumentType",
+    "ListElementCode": "Threshold",
+    "ListElement": "Threshold",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DocumentType",
+    "ListElementCode": "SWET",
+    "ListElement": "SWET",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DocumentType",
+    "ListElementCode": "Care plan",
+    "ListElement": "Care plan",
+    "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DocumentType",
+    "ListElementCode": "Social work chronology",
+    "ListElement": "Social work chronology",
+    "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DocumentType",
+    "ListElementCode": "Genogram",
+    "ListElement": "Genogram",
+    "DisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DocumentType",
+    "ListElementCode": "Checklist document",
+    "ListElement": "Checklist document",
+    "DisplayOrder": 6
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DocumentType",
+    "ListElementCode": "Birth certificate",
+    "ListElement": "Birth certificate",
+    "DisplayOrder": 7
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DocumentType",
+    "ListElementCode": "Other",
+    "ListElement": "Other",
+    "DisplayOrder": 8
+  }
+]
