@@ -1,28 +1,17 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.VACATE_HEARING;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
-import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
-@ActiveProfiles("integration-test")
-@WebMvcTest(ManageHearingsController.class)
-@OverrideAutoConfiguration(enabled = true)
-class ManageHearingsControllerReListHearingMidEventTest extends AbstractControllerTest {
+class ManageHearingsControllerReListHearingMidEventTest extends ManageHearingsControllerTest {
 
     ManageHearingsControllerReListHearingMidEventTest() {
         super("manage-hearings");
@@ -30,8 +19,8 @@ class ManageHearingsControllerReListHearingMidEventTest extends AbstractControll
 
     @Test
     void shouldPrePopulateNewReListedHearingWithAdjournedHearingDetails() {
-        Element<HearingBooking> hearingToBeAdjourned = element(randomHearing());
-        Element<HearingBooking> otherHearing = element(randomHearing());
+        Element<HearingBooking> hearingToBeAdjourned = element(testHearing(now()));
+        Element<HearingBooking> otherHearing = element(testHearing(now().minusDays(2)));
 
         CaseData initialCaseData = CaseData.builder()
             .hearingOption(ADJOURN_HEARING)
@@ -41,22 +30,13 @@ class ManageHearingsControllerReListHearingMidEventTest extends AbstractControll
 
         CaseData updatedCaseData = extractCaseData(postMidEvent(initialCaseData, "re-list"));
 
-        assertThat(updatedCaseData.getHearingStartDate()).isNull();
-        assertThat(updatedCaseData.getHearingEndDate()).isNull();
-        assertThat(updatedCaseData.getPreviousHearingVenue()).isNull();
-
-        assertThat(updatedCaseData.getHearingType())
-            .isEqualTo(hearingToBeAdjourned.getValue().getType());
-        assertThat(updatedCaseData.getJudgeAndLegalAdvisor())
-            .isEqualTo(hearingToBeAdjourned.getValue().getJudgeAndLegalAdvisor());
-        assertThat(updatedCaseData.getHearingVenue())
-            .isEqualTo(hearingToBeAdjourned.getValue().getVenue());
+        assertCurrentHearingReListedFrom(updatedCaseData, hearingToBeAdjourned.getValue());
     }
 
     @Test
     void shouldPrePopulateNewReListedHearingWithVacatedHearingDetails() {
-        Element<HearingBooking> hearingToBeVacated = element(randomHearing());
-        Element<HearingBooking> otherHearing = element(randomHearing());
+        Element<HearingBooking> hearingToBeVacated = element(testHearing(now()));
+        Element<HearingBooking> otherHearing = element(testHearing(now().minusDays(2)));
 
         CaseData initialCaseData = CaseData.builder()
             .hearingOption(VACATE_HEARING)
@@ -66,29 +46,7 @@ class ManageHearingsControllerReListHearingMidEventTest extends AbstractControll
 
         CaseData updatedCaseData = extractCaseData(postMidEvent(initialCaseData, "re-list"));
 
-        assertThat(updatedCaseData.getHearingStartDate()).isNull();
-        assertThat(updatedCaseData.getHearingEndDate()).isNull();
-        assertThat(updatedCaseData.getPreviousHearingVenue()).isNull();
-
-        assertThat(updatedCaseData.getHearingType())
-            .isEqualTo(hearingToBeVacated.getValue().getType());
-        assertThat(updatedCaseData.getJudgeAndLegalAdvisor())
-            .isEqualTo(hearingToBeVacated.getValue().getJudgeAndLegalAdvisor());
-        assertThat(updatedCaseData.getHearingVenue())
-            .isEqualTo(hearingToBeVacated.getValue().getVenue());
+        assertCurrentHearingReListedFrom(updatedCaseData, hearingToBeVacated.getValue());
     }
 
-    private static HearingBooking randomHearing() {
-        LocalDateTime startDate = LocalDateTime.now().minusDays(2);
-        return HearingBooking.builder()
-            .type(CASE_MANAGEMENT)
-            .startDate(startDate)
-            .endDate(startDate.plusDays(1))
-            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                .judgeTitle(HER_HONOUR_JUDGE)
-                .judgeLastName("Judy")
-                .build())
-            .venue("96")
-            .build();
-    }
 }
