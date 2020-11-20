@@ -3,11 +3,8 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
@@ -59,10 +56,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
-@ActiveProfiles("integration-test")
-@WebMvcTest(ManageHearingsController.class)
-@OverrideAutoConfiguration(enabled = true)
-class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
+class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest {
 
     private static final String CASE_ID = "12345";
     private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
@@ -153,7 +147,7 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldTriggerNewHearingsAddedEventForNewHearingWhenNoticeOfHearingPresent()
+    void shouldTriggerSendNoticeOfHearingEventForNewHearingWhenNoticeOfHearingPresent()
         throws NotificationClientException {
         Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
             .type(CASE_MANAGEMENT)
@@ -186,8 +180,6 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
         given(documentDownloadService.downloadDocument(anyString())).willReturn(DOCUMENT_CONTENT);
 
         postSubmittedEvent(callbackRequest);
-
-        verifyNoInteractions(coreCaseDataService);
 
         verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(NOTICE_OF_NEW_HEARING),
