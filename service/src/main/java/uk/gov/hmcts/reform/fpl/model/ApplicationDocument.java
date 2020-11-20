@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 @Data
 @Builder
 @AllArgsConstructor
-public class SupportingDocument {
+public class ApplicationDocument {
     private final DocumentReference document;
     private final DocumentType documentType;
 }

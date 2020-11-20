@@ -673,8 +673,8 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "uploadSupportingDocuments",
-    "Name": "Upload supporting documents",
+    "ID": "uploadApplicationDocuments",
+    "Name": "Application documents",
     "Description": "Upload supporting documents",
     "DisplayOrder": 14,
     "PreConditionState(s)": "Open",

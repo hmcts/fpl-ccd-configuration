@@ -27,7 +27,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.OTHER_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RISK_AND_HARM;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
-import static uk.gov.hmcts.reform.fpl.enums.Event.SUPPORTING_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
 
 @Service
 public class EventsChecker {
@@ -81,7 +81,7 @@ public class EventsChecker {
     private FactorsAffectingParentingChecker factorsAffectingParentingChecker;
 
     @Autowired
-    private SupportingDocumentChecker supportingDocumentsChecker;
+    private ApplicationDocumentChecker supportingDocumentsChecker;
 
     private final EnumMap<Event, EventChecker> eventCheckers = new EnumMap<>(Event.class);
 
@@ -102,7 +102,7 @@ public class EventsChecker {
         eventCheckers.put(INTERNATIONAL_ELEMENT, internationalElementChecker);
         eventCheckers.put(OTHERS, othersChecker);
         eventCheckers.put(COURT_SERVICES, courtServiceChecker);
-        eventCheckers.put(SUPPORTING_DOCUMENTS, supportingDocumentsChecker);
+        eventCheckers.put(APPLICATION_DOCUMENTS, supportingDocumentsChecker);
         eventCheckers.put(SUBMIT_APPLICATION, caseSubmissionChecker);
 
     }

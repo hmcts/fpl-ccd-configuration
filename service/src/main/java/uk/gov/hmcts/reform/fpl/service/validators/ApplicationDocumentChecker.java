@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.validators;
 
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.SupportingDocument;
+import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
@@ -13,7 +13,7 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyNonEmpty;
 
 @Service
-public class SupportingDocumentChecker implements EventChecker {
+public class ApplicationDocumentChecker implements EventChecker {
 
     @Override
     public List<String> validate(CaseData caseData) {
@@ -22,13 +22,13 @@ public class SupportingDocumentChecker implements EventChecker {
 
     @Override
     public boolean isStarted(CaseData caseData) {
-        final List<Element<SupportingDocument>> supportingDocuments = caseData.getDocuments();
+        final List<Element<ApplicationDocument>> applicationDocuments = caseData.getDocuments();
 
-        if (isEmpty(supportingDocuments)) {
+        if (isEmpty(applicationDocuments)) {
             return false;
         }
 
-        SupportingDocument anyDocument = supportingDocuments.stream().filter(Objects::nonNull).findAny().get().getValue();
+        ApplicationDocument anyDocument = applicationDocuments.stream().filter(Objects::nonNull).findAny().get().getValue();
 
         return anyNonEmpty(
             anyDocument.getDocument(),
