@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 import static java.lang.String.format;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
+@Component
 public class OtherOrderRemovalAction implements OrderRemovalAction {
 
     @Override
