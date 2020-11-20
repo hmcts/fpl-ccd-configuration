@@ -15,7 +15,6 @@ import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.String.format;
-import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -54,29 +53,29 @@ class OtherOrderRemovalActionTest {
             "order 1",
             "15 June 2020",
             newArrayList(
-                 element(CHILD_ONE_ID, Child.builder()
-                     .finalOrderIssued("Yes")
-                     .finalOrderIssuedType("Some type")
-                     .build()),
-                 element(CHILD_TWO_ID, Child.builder()
-                     .finalOrderIssued("Yes")
-                     .finalOrderIssuedType("Some type")
-                     .build())
-             )
+                element(CHILD_ONE_ID, Child.builder()
+                    .finalOrderIssued("Yes")
+                    .finalOrderIssuedType("Some type")
+                    .build()),
+                element(CHILD_TWO_ID, Child.builder()
+                    .finalOrderIssued("Yes")
+                    .finalOrderIssuedType("Some type")
+                    .build())
+            )
         );
 
         CaseData caseData = CaseData.builder()
             .reasonToRemoveOrder(REASON)
             .children1(List.of(
-                 element(CHILD_ONE_ID, Child.builder()
-                     .finalOrderIssued("Yes")
-                     .finalOrderIssuedType("Some type")
-                     .build()),
-                 element(CHILD_TWO_ID, Child.builder()
-                     .finalOrderIssued("Yes")
-                     .finalOrderIssuedType("Some type")
-                     .build())
-             ))
+                element(CHILD_ONE_ID, Child.builder()
+                    .finalOrderIssued("Yes")
+                    .finalOrderIssuedType("Some type")
+                    .build()),
+                element(CHILD_TWO_ID, Child.builder()
+                    .finalOrderIssued("Yes")
+                    .finalOrderIssuedType("Some type")
+                    .build())
+            ))
             .orderCollection(newArrayList(element(TO_REMOVE_ORDER_ID, generatedOrder)))
             .build();
 
@@ -112,8 +111,7 @@ class OtherOrderRemovalActionTest {
                      ),
                     REASON
                 ))
-            ),
-            "orderCollection", emptyList()
+            )
         ));
 
     }
@@ -239,8 +237,7 @@ class OtherOrderRemovalActionTest {
                     ),
                     REASON
                 ))
-            ),
-            "orderCollection", emptyList()
+            )
         ));
 
     }
@@ -311,8 +308,7 @@ class OtherOrderRemovalActionTest {
                     ),
                     REASON
                 ))
-            ),
-            "orderCollection", emptyList()
+            )
         ));
 
     }
@@ -375,8 +371,7 @@ class OtherOrderRemovalActionTest {
                     ),
                     REASON
                 ))
-            ),
-            "orderCollection", emptyList()
+            )
         ));
 
     }

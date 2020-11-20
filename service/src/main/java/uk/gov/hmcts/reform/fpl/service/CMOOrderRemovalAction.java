@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static org.springframework.util.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.updateOrRemoveIfEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Component
@@ -42,7 +43,7 @@ public class CMOOrderRemovalAction implements OrderRemovalAction {
         hiddenCMOs.add(element(removedOrderId, caseManagementOrder));
 
         data.put("hiddenCaseManagementOrders", hiddenCMOs);
-        data.put("sealedCMOs", sealedCMOs);
+        updateOrRemoveIfEmpty(data,"sealedCMOs", sealedCMOs);
         data.put("hearingDetails", removeHearingLinkedToCMO(caseData.getHearingDetails(), removedOrderId));
     }
 

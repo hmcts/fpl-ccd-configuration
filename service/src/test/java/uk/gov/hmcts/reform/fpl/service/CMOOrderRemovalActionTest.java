@@ -15,7 +15,6 @@ import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.String.format;
-import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -81,10 +80,36 @@ class CMOOrderRemovalActionTest {
             "hiddenCaseManagementOrders", List.of(
                 element(ALREADY_REMOVED_ORDER_ID, CaseManagementOrder.builder().build()),
                 element(TO_REMOVE_ORDER_ID, CaseManagementOrder.builder().removalReason(REASON).build())
-            ),
-            "sealedCMOs", emptyList()
+            )
         ));
 
+    }
+
+    @Test
+    void shouldRemovedCaseManagementOrderWhenOtherOtherCMOisPresent() {
+
+        CaseData caseData = CaseData.builder()
+            .reasonToRemoveOrder(REASON)
+            .sealedCMOs(newArrayList(
+                element(TO_REMOVE_ORDER_ID, CaseManagementOrder.builder().build()),
+                element(ANOTHER_CASE_MANAGEMENT_ORDER_ID, CaseManagementOrder.builder().build())))
+            .hiddenCaseManagementOrders(null)
+            .hearingDetails(null)
+            .build();
+        Map<String, Object> data = Maps.newHashMap();
+
+        underTest.action(caseData, data, TO_REMOVE_ORDER_ID, CaseManagementOrder.builder().build());
+
+        Map<String, List<?>> expectedData = Maps.newHashMap();
+        expectedData.put("hearingDetails", null);
+        expectedData.put("hiddenCaseManagementOrders", List.of(
+            element(TO_REMOVE_ORDER_ID, CaseManagementOrder.builder().removalReason(REASON).build())
+        ));
+        expectedData.put("sealedCMOs", List.of(
+            element(ANOTHER_CASE_MANAGEMENT_ORDER_ID, CaseManagementOrder.builder().build()))
+        );
+
+        assertThat(data).isEqualTo(expectedData);
     }
 
     @Test
@@ -107,7 +132,6 @@ class CMOOrderRemovalActionTest {
             element(ALREADY_REMOVED_ORDER_ID, CaseManagementOrder.builder().build()),
             element(TO_REMOVE_ORDER_ID, CaseManagementOrder.builder().removalReason(REASON).build())
         ));
-        expectedData.put("sealedCMOs", emptyList());
 
         assertThat(data).isEqualTo(expectedData);
     }
@@ -149,8 +173,7 @@ class CMOOrderRemovalActionTest {
             "hiddenCaseManagementOrders", List.of(
                 element(ALREADY_REMOVED_ORDER_ID, CaseManagementOrder.builder().build()),
                 element(TO_REMOVE_ORDER_ID, CaseManagementOrder.builder().removalReason(REASON).build())
-            ),
-            "sealedCMOs", emptyList()
+            )
         ));
 
     }

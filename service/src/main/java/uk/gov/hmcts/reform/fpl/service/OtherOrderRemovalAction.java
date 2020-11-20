@@ -13,6 +13,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.updateOrRemoveIfEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Component
@@ -44,7 +45,7 @@ public class OtherOrderRemovalAction implements OrderRemovalAction {
 
         data.put("children1", removeFinalOrderPropertiesFromChildren(caseData, generatedRemovableOrder));
         data.put("hiddenOrders", hiddenGeneratedOrders);
-        data.put("orderCollection", generatedOrders);
+        updateOrRemoveIfEmpty(data, "orderCollection", generatedOrders);
     }
 
     public List<Element<Child>> removeFinalOrderPropertiesFromChildren(CaseData caseData,
