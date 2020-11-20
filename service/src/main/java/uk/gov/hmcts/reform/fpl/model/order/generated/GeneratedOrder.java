@@ -63,6 +63,7 @@ public class GeneratedOrder implements RemovableOrder {
         return FINAL.equals(descriptor.getSubtype());
     }
 
+    @JsonIgnore
     public String asLabel() {
         return defaultIfEmpty(title, type) + " - " + dateOfIssue;
     }
