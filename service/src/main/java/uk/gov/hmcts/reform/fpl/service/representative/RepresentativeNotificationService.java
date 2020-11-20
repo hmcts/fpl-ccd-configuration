@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))

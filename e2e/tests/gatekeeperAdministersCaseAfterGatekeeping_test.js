@@ -66,7 +66,8 @@ Scenario('Gatekeeper manages hearings', async ({I, caseViewPage, manageHearingsE
   await manageHearingsEventPage.enterHearingDetails(hearingDetails[0]);
   await manageHearingsEventPage.enterVenue(hearingDetails[0]);
   await I.goToNextPage();
-  await manageHearingsEventPage.enterJudgeAndLegalAdvisorDetails(hearingDetails[0]);
+  await manageHearingsEventPage.enterJudgeDetails(hearingDetails[0]);
+  await manageHearingsEventPage.enterLegalAdvisorName(hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
   await I.goToNextPage();
   await manageHearingsEventPage.sendNoticeOfHearingWithNotes(hearingDetails[0].additionalNotes);
   await I.completeEvent('Save and continue');
