@@ -2,6 +2,9 @@ package uk.gov.hmcts.reform.fpl.model;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -145,5 +148,103 @@ class HearingBookingTest {
 
             assertThat(hearingBooking.startsTodayOrAfter()).isFalse();
         }
+    }
+
+    @Nested
+    class Status {
+
+        @ParameterizedTest
+        @EnumSource(
+            value = HearingStatus.class,
+            names = {"ADJOURNED", "ADJOURNED_TO_BE_RE_LISTED", "ADJOURNED_AND_RE_LISTED"})
+        void shouldReturnTrueForAdjournedHearings(HearingStatus hearingStatus) {
+            HearingBooking hearingBooking = HearingBooking.builder().status(hearingStatus).build();
+
+            assertThat(hearingBooking.isAdjourned()).isTrue();
+            assertThat(hearingBooking.isVacated()).isFalse();
+        }
+
+        @ParameterizedTest
+        @EnumSource(
+            value = uk.gov.hmcts.reform.fpl.enums.HearingStatus.class,
+            names = {"VACATED", "VACATED_TO_BE_RE_LISTED", "VACATED_AND_RE_LISTED"})
+        void shouldReturnTrueForVacatedHearings(HearingStatus hearingStatus) {
+            HearingBooking hearingBooking = HearingBooking.builder().status(hearingStatus).build();
+
+            assertThat(hearingBooking.isVacated()).isTrue();
+            assertThat(hearingBooking.isAdjourned()).isFalse();
+        }
+
+        @ParameterizedTest
+        @EnumSource(
+            value = HearingStatus.class,
+            names = {"ADJOURNED_TO_BE_RE_LISTED", "VACATED_TO_BE_RE_LISTED"})
+        void shouldReturnTrueForToBeReListedHearings(HearingStatus hearingStatus) {
+            HearingBooking hearingBooking = HearingBooking.builder().status(hearingStatus).build();
+
+            assertThat(hearingBooking.isToBeReListed()).isTrue();
+        }
+
+        @ParameterizedTest
+        @EnumSource(
+            value = HearingStatus.class,
+            names = {"ADJOURNED_TO_BE_RE_LISTED", "VACATED_TO_BE_RE_LISTED"},
+            mode = EnumSource.Mode.EXCLUDE)
+        void shouldReturnFalseForNotToBeReListedHearings(HearingStatus hearingStatus) {
+            HearingBooking hearingBooking = HearingBooking.builder().status(hearingStatus).build();
+
+            assertThat(hearingBooking.isToBeReListed()).isFalse();
+        }
+
+        @Test
+        void shouldHandleNullStatus() {
+            HearingBooking hearingBooking = HearingBooking.builder().status(null).build();
+
+            assertThat(hearingBooking.isToBeReListed()).isFalse();
+            assertThat(hearingBooking.isAdjourned()).isFalse();
+            assertThat(hearingBooking.isVacated()).isFalse();
+        }
+
+    }
+
+    @Nested
+    class Label {
+
+        @Test
+        void shouldBuildHearingLableWithoutStatus() {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .type(CASE_MANAGEMENT)
+                .startDate(LocalDate.of(2020, 10, 10).atStartOfDay())
+                .build();
+
+            assertThat(hearingBooking.toLabel()).isEqualTo("Case management hearing, 10 October 2020");
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = HearingStatus.class,
+            names = {"ADJOURNED", "ADJOURNED_TO_BE_RE_LISTED", "ADJOURNED_AND_RE_LISTED"})
+        void shouldBuildLabelWithStatusForAdjournedHearings(HearingStatus hearingStatus) {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .type(CASE_MANAGEMENT)
+                .status(hearingStatus)
+                .startDate(LocalDate.of(2020, 10, 1).atStartOfDay())
+                .build();
+
+            assertThat(hearingBooking.toLabel()).isEqualTo("Case management hearing, 1 October 2020 - adjourned");
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = HearingStatus.class,
+            names = {"VACATED", "VACATED_TO_BE_RE_LISTED", "VACATED_AND_RE_LISTED"})
+        void shouldBuildLabelWithStatusForVacatedHearings(HearingStatus hearingStatus) {
+            HearingBooking hearingBooking = HearingBooking.builder()
+                .type(CASE_MANAGEMENT)
+                .status(hearingStatus)
+                .startDate(LocalDate.of(2020, 10, 30).atStartOfDay())
+                .build();
+
+            assertThat(hearingBooking.toLabel()).isEqualTo("Case management hearing, 30 October 2020 - vacated");
+        }
+
     }
 }

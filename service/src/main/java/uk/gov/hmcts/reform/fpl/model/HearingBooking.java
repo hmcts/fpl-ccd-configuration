@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,6 +28,12 @@ import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.capitalize;
 import static uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked.NONE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked.SOMETHING_ELSE;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED_AND_RE_LISTED;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED_TO_BE_RE_LISTED;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_AND_RE_LISTED;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -37,7 +44,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @HasEndDateAfterStartDate(groups = HearingBookingDetailsGroup.class)
 public class HearingBooking {
     private final HearingType type;
-    private final HearingStatus status;
+    private HearingStatus status;
     private final String typeDetails;
     private final String venue;
     private final String customPreviousVenue;
@@ -86,8 +93,11 @@ public class HearingBooking {
     }
 
     public String toLabel() {
-        String label = OTHER == type ? capitalize(typeDetails) : type.getLabel();
-        return format("%s hearing, %s", label, formatLocalDateTimeBaseUsingFormat(startDate, DATE));
+        String type = OTHER == this.type ? capitalize(typeDetails) : this.type.getLabel();
+        String label = format("%s hearing, %s", type, formatLocalDateTimeBaseUsingFormat(startDate, DATE));
+        String status = isAdjourned() ? "adjourned" : isVacated() ? "vacated" : null;
+
+        return ofNullable(status).map(suffix -> label + " - " + suffix).orElse(label);
     }
 
     public List<String> buildHearingNeedsList() {
@@ -108,5 +118,20 @@ public class HearingBooking {
 
     public boolean isOfType(HearingType hearingType) {
         return type == hearingType;
+    }
+
+    @JsonIgnore
+    public boolean isAdjourned() {
+        return status == ADJOURNED || status == ADJOURNED_TO_BE_RE_LISTED || status == ADJOURNED_AND_RE_LISTED;
+    }
+
+    @JsonIgnore
+    public boolean isVacated() {
+        return status == VACATED || status == VACATED_TO_BE_RE_LISTED || status == VACATED_AND_RE_LISTED;
+    }
+
+    @JsonIgnore
+    public boolean isToBeReListed() {
+        return status == VACATED_TO_BE_RE_LISTED || status == ADJOURNED_TO_BE_RE_LISTED;
     }
 }

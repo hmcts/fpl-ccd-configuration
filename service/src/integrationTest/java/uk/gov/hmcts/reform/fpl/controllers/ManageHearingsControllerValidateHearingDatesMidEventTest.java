@@ -2,30 +2,31 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.time.LocalDateTime;
 import java.util.Map;
 
-import static java.lang.Long.parseLong;
+import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
 
 @ActiveProfiles("integration-test")
 @OverrideAutoConfiguration(enabled = true)
 @WebMvcTest(ManageHearingsController.class)
-public class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractControllerTest {
+class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractControllerTest {
     @MockBean
     private FeatureToggleService featureToggleService;
 
-    private static final String CASE_ID = "12345";
     private static LocalDateTime pastDate = LocalDateTime.now().minusDays(1);
     private static LocalDateTime futureDate = LocalDateTime.now().plusDays(1);
 
@@ -34,16 +35,16 @@ public class ManageHearingsControllerValidateHearingDatesMidEventTest extends Ab
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"EDIT_HEARING", "ADJOURN_HEARING", "VACATE_HEARING"})
-    void shouldThrowErrorsWhenInvalidHearingDatesEnteredOnHearingOption(String hearingOption) {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .id(parseLong(CASE_ID))
-            .data(Map.of("hearingStartDate", pastDate,
-                "hearingEndDate", pastDate,
-                "hearingOption", hearingOption))
+    @EnumSource(value = HearingOptions.class, names = {"EDIT_HEARING", "ADJOURN_HEARING", "VACATE_HEARING"})
+    void shouldThrowErrorsWhenInvalidHearingDatesEnteredOnHearingOption(HearingOptions hearingOption) {
+        CaseData caseData = CaseData.builder()
+            .id(nextLong())
+            .hearingStartDate(pastDate)
+            .hearingEndDate(pastDate)
+            .hearingOption(hearingOption)
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "validate-hearing-dates");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "validate-hearing-dates");
 
         assertThat(callbackResponse.getErrors()).containsExactlyInAnyOrder(
             "Enter a start date in the future",
@@ -54,14 +55,14 @@ public class ManageHearingsControllerValidateHearingDatesMidEventTest extends Ab
     void shouldThrowErrorsWhenInvalidHearingDatesEnteredOnAddHearingAndPastHearingDatesIsDisabled() {
         given(featureToggleService.isAddHearingsInPastEnabled()).willReturn(false);
 
-        CaseDetails caseDetails = CaseDetails.builder()
-            .id(parseLong(CASE_ID))
-            .data(Map.of("hearingStartDate", pastDate,
-                "hearingEndDate", pastDate,
-                "hearingOption","NEW_HEARING"))
+        CaseData caseData = CaseData.builder()
+            .id(nextLong())
+            .hearingStartDate(pastDate)
+            .hearingEndDate(pastDate)
+            .hearingOption(NEW_HEARING)
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "validate-hearing-dates");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "validate-hearing-dates");
 
         assertThat(callbackResponse.getErrors()).containsExactlyInAnyOrder(
             "Enter a start date in the future",
@@ -72,14 +73,14 @@ public class ManageHearingsControllerValidateHearingDatesMidEventTest extends Ab
     void shouldNotThrowErrorsWhenPastHearingDatesEnteredOnAddHearingAndPastHearingDatesIsEnabled() {
         given(featureToggleService.isAddHearingsInPastEnabled()).willReturn(true);
 
-        CaseDetails caseDetails = CaseDetails.builder()
-            .id(parseLong(CASE_ID))
-            .data(Map.of("hearingStartDate", pastDate,
-                "hearingEndDate", pastDate,
-                "hearingOption","NEW_HEARING"))
+        CaseData caseData = CaseData.builder()
+            .id(nextLong())
+            .hearingStartDate(pastDate)
+            .hearingEndDate(pastDate)
+            .hearingOption(NEW_HEARING)
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "validate-hearing-dates");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "validate-hearing-dates");
 
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
@@ -88,13 +89,13 @@ public class ManageHearingsControllerValidateHearingDatesMidEventTest extends Ab
     void shouldNotThrowErrorsWhenPastHearingDateEnteredOnFirstHearingAndPastHearingDatesIsEnabled() {
         given(featureToggleService.isAddHearingsInPastEnabled()).willReturn(true);
 
-        CaseDetails caseDetails = CaseDetails.builder()
-            .id(parseLong(CASE_ID))
-            .data(Map.of("hearingStartDate", pastDate,
-                "hearingEndDate", pastDate))
+        CaseData caseData = CaseData.builder()
+            .id(nextLong())
+            .hearingStartDate(pastDate)
+            .hearingEndDate(pastDate)
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "validate-hearing-dates");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "validate-hearing-dates");
 
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
@@ -105,11 +106,11 @@ public class ManageHearingsControllerValidateHearingDatesMidEventTest extends Ab
 
         LocalDateTime dateWithInvalidTime = LocalDateTime.of(1990, 10, 2, 00, 00);
 
-        CaseDetails caseDetails = CaseDetails.builder()
-            .id(parseLong(CASE_ID))
-            .data(Map.of("hearingStartDate", pastDate,
-                "hearingEndDate", dateWithInvalidTime,
-                "hearingOption","NEW_HEARING"))
+        CaseData caseDetails = CaseData.builder()
+            .id(nextLong())
+            .hearingStartDate(pastDate)
+            .hearingEndDate(dateWithInvalidTime)
+            .hearingOption(NEW_HEARING)
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "validate-hearing-dates");
@@ -122,14 +123,14 @@ public class ManageHearingsControllerValidateHearingDatesMidEventTest extends Ab
     void shouldPopulateConfirmationHearingFieldsWhenHearingDateInPastAndPastHearingDatesIsEnabled() {
         given(featureToggleService.isAddHearingsInPastEnabled()).willReturn(true);
 
-        CaseDetails caseDetails = CaseDetails.builder()
-            .id(parseLong(CASE_ID))
-            .data(Map.of("hearingStartDate", pastDate,
-                "hearingEndDate", pastDate,
-                "hearingOption","NEW_HEARING"))
+        CaseData caseData = CaseData.builder()
+            .id(nextLong())
+            .hearingStartDate(pastDate)
+            .hearingEndDate(pastDate)
+            .hearingOption(NEW_HEARING)
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "validate-hearing-dates");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "validate-hearing-dates");
 
         Map<String, Object> responseData = callbackResponse.getData();
         assertThat(responseData.get("showConfirmPastHearingDatesPage").equals("Yes"));
@@ -141,14 +142,14 @@ public class ManageHearingsControllerValidateHearingDatesMidEventTest extends Ab
     void shouldNotPopulateConfirmationHearingFieldsWhenHearingDateInPastAndPastHearingDatesIsDisabled() {
         given(featureToggleService.isAddHearingsInPastEnabled()).willReturn(false);
 
-        CaseDetails caseDetails = CaseDetails.builder()
-            .id(parseLong(CASE_ID))
-            .data(Map.of("hearingStartDate", pastDate,
-                "hearingEndDate", pastDate,
-                "hearingOption","NEW_HEARING"))
+        CaseData caseData = CaseData.builder()
+            .id(nextLong())
+            .hearingStartDate(pastDate)
+            .hearingEndDate(pastDate)
+            .hearingOption(NEW_HEARING)
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "validate-hearing-dates");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "validate-hearing-dates");
 
         Map<String, Object> responseData = callbackResponse.getData();
 
@@ -159,14 +160,14 @@ public class ManageHearingsControllerValidateHearingDatesMidEventTest extends Ab
     void shouldNotPopulateConfirmationHearingFieldsWhenHearingDateInFutureAndPastHearingDatesIsEnabled() {
         given(featureToggleService.isAddHearingsInPastEnabled()).willReturn(true);
 
-        CaseDetails caseDetails = CaseDetails.builder()
-            .id(parseLong(CASE_ID))
-            .data(Map.of("hearingStartDate", futureDate,
-                "hearingEndDate", futureDate,
-                "hearingOption","NEW_HEARING"))
+        CaseData caseData = CaseData.builder()
+            .id(nextLong())
+            .hearingStartDate(futureDate)
+            .hearingEndDate(futureDate)
+            .hearingOption(NEW_HEARING)
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "validate-hearing-dates");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "validate-hearing-dates");
 
         Map<String, Object> responseData = callbackResponse.getData();
 
@@ -176,13 +177,13 @@ public class ManageHearingsControllerValidateHearingDatesMidEventTest extends Ab
 
     @Test
     void shouldNotThrowErrorsWhenValidHearingDatesEntered() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .id(parseLong(CASE_ID))
-            .data(Map.of("hearingStartDate", futureDate,
-                "hearingEndDate", futureDate))
+        CaseData caseData = CaseData.builder()
+            .id(nextLong())
+            .hearingStartDate(futureDate)
+            .hearingEndDate(futureDate)
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "validate-hearing-dates");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "validate-hearing-dates");
 
         assertThat(callbackResponse.getErrors()).isEmpty();
     }

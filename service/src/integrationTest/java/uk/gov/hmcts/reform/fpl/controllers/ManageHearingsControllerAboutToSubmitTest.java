@@ -1,18 +1,12 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
-import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
-import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -20,8 +14,6 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCancellationReason;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
@@ -29,10 +21,7 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.RandomUtils.nextLong;
@@ -41,21 +30,24 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.RE_LIST_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.VACATE_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingReListOption.RE_LIST_LATER;
 import static uk.gov.hmcts.reform.fpl.enums.HearingReListOption.RE_LIST_NOW;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED_AND_RE_LISTED;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED_TO_BE_RE_LISTED;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElementsId;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
 
-@ActiveProfiles("integration-test")
-@WebMvcTest(ManageHearingsController.class)
-@OverrideAutoConfiguration(enabled = true)
-class ManageHearingsControllerAboutToSubmitTest extends AbstractControllerTest {
+class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsControllerTest {
 
     @MockBean
     private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
@@ -69,7 +61,7 @@ class ManageHearingsControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldAddNewHearingToHearingDetailsListWhenAddHearingSelected() {
-        HearingBooking newHearing = hearing(now().plusDays(2));
+        HearingBooking newHearing = testHearing(now().plusDays(2));
         CaseData initialCaseData = CaseData.builder()
             .hearingType(newHearing.getType())
             .hearingVenue(newHearing.getVenue())
@@ -96,7 +88,7 @@ class ManageHearingsControllerAboutToSubmitTest extends AbstractControllerTest {
             .willReturn(testDocmosisDocument(TestDataHelper.DOCUMENT_CONTENT));
         given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document);
 
-        HearingBooking newHearing = hearing(now().plusDays(2));
+        HearingBooking newHearing = testHearing(now().plusDays(2));
         CaseData initialCaseData = CaseData.builder()
             .children1(createPopulatedChildren(now().toLocalDate()))
             .caseLocalAuthority("example")
@@ -122,7 +114,7 @@ class ManageHearingsControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldUpdateExistingHearingInHearingDetailsListWhenEditHearingSelected() {
-        HearingBooking existingHearing = hearing(now().plusDays(2));
+        HearingBooking existingHearing = testHearing(now().plusDays(2));
 
         Element<HearingBooking> hearingElement = element(existingHearing);
 
@@ -149,9 +141,9 @@ class ManageHearingsControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldAdjournAndReListHearing() {
-        Element<HearingBooking> pastHearing = element(hearing(LocalDateTime.now().minusDays(1)));
-        Element<HearingBooking> pastHearingToBeAdjourned = element(hearing(LocalDateTime.now().minusDays(2)));
-        Element<HearingBooking> futureHearing = element(hearing(LocalDateTime.now().plusDays(1)));
+        Element<HearingBooking> pastHearing = element(testHearing(LocalDateTime.now().minusDays(1)));
+        Element<HearingBooking> pastHearingToBeAdjourned = element(testHearing(LocalDateTime.now().minusDays(2)));
+        Element<HearingBooking> futureHearing = element(testHearing(LocalDateTime.now().plusDays(1)));
 
         LocalDateTime reListedHearingStartTime = now().plusDays(nextLong(1, 50));
         LocalDateTime reListedHearingEndTime = reListedHearingStartTime.plusDays(nextLong(1, 10));
@@ -202,9 +194,9 @@ class ManageHearingsControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldVacateAndReListHearing() {
-        Element<HearingBooking> pastHearing = element(hearing(LocalDateTime.now().minusDays(1)));
-        Element<HearingBooking> futureHearing = element(hearing(LocalDateTime.now().plusDays(1)));
-        Element<HearingBooking> futureHearingToBeVacated = element(hearing(LocalDateTime.now().plusDays(1)));
+        Element<HearingBooking> pastHearing = element(testHearing(LocalDateTime.now().minusDays(1)));
+        Element<HearingBooking> futureHearing = element(testHearing(LocalDateTime.now().plusDays(1)));
+        Element<HearingBooking> futureHearingToBeVacated = element(testHearing(LocalDateTime.now().plusDays(1)));
 
         LocalDateTime reListedHearingStartTime = now().plusDays(nextLong(1, 50));
         LocalDateTime reListedHearingEndTime = reListedHearingStartTime.plusDays(nextLong(1, 10));
@@ -253,10 +245,54 @@ class ManageHearingsControllerAboutToSubmitTest extends AbstractControllerTest {
             .isIn(findElementsId(expectedReListedHearing, updatedCaseData.getHearingDetails()));
     }
 
+    @Test
+    void shouldReListCancelledHearing() {
+        Element<HearingBooking> adjournedHearing = element(testHearing(ADJOURNED_TO_BE_RE_LISTED));
+        Element<HearingBooking> vacatedHearing = element(testHearing(VACATED_TO_BE_RE_LISTED));
+
+        LocalDateTime reListedHearingStartTime = now().plusDays(nextLong(1, 50));
+        LocalDateTime reListedHearingEndTime = reListedHearingStartTime.plusDays(nextLong(1, 10));
+
+        CaseData initialCaseData = CaseData.builder()
+            .hearingOption(RE_LIST_HEARING)
+            .toReListHearingDateList(dynamicList(adjournedHearing.getId(), adjournedHearing, vacatedHearing))
+            .cancelledHearingDetails(List.of(adjournedHearing, vacatedHearing))
+            .hearingType(CASE_MANAGEMENT)
+            .hearingVenue(adjournedHearing.getValue().getVenue())
+            .hearingVenueCustom(adjournedHearing.getValue().getVenueCustomAddress())
+            .hearingStartDate(reListedHearingStartTime)
+            .hearingEndDate(reListedHearingEndTime)
+            .judgeAndLegalAdvisor(adjournedHearing.getValue().getJudgeAndLegalAdvisor())
+            .noticeOfHearingNotes(adjournedHearing.getValue().getAdditionalNotes())
+            .children1(ElementUtils.wrapElements(Child.builder().party(ChildParty.builder().build()).build()))
+            .build();
+
+        CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(initialCaseData));
+
+        HearingBooking expectedReListedHearing = adjournedHearing.getValue().toBuilder()
+            .startDate(reListedHearingStartTime)
+            .endDate(reListedHearingEndTime)
+            .status(null)
+            .build();
+
+        Element<HearingBooking> expectedAdjournedHearing = element(
+            adjournedHearing.getId(),
+            adjournedHearing.getValue().toBuilder()
+                .status(ADJOURNED_AND_RE_LISTED)
+                .build());
+
+        assertThat(updatedCaseData.getHearingDetails()).extracting(Element::getValue)
+            .containsExactly(expectedReListedHearing);
+        assertThat(updatedCaseData.getCancelledHearingDetails())
+            .containsExactlyInAnyOrder(expectedAdjournedHearing, vacatedHearing);
+        assertThat(updatedCaseData.getSelectedHearingId())
+            .isIn(findElementsId(expectedReListedHearing, updatedCaseData.getHearingDetails()));
+    }
+
     @ParameterizedTest
     @EnumSource(value = HearingReListOption.class, names = {"RE_LIST_NOW"}, mode = EnumSource.Mode.EXCLUDE)
     void shouldAdjournHearing(HearingReListOption adjournmentOption) {
-        Element<HearingBooking> pastHearingToBeAdjourned = element(hearing(LocalDateTime.now().minusDays(2)));
+        Element<HearingBooking> pastHearingToBeAdjourned = element(testHearing(LocalDateTime.now().minusDays(2)));
 
         HearingCancellationReason adjournmentReason = HearingCancellationReason.builder()
             .reason("Test reason")
@@ -276,7 +312,7 @@ class ManageHearingsControllerAboutToSubmitTest extends AbstractControllerTest {
         Element<HearingBooking> expectedAdjournedHearing = element(
             pastHearingToBeAdjourned.getId(),
             pastHearingToBeAdjourned.getValue().toBuilder()
-                .status(HearingStatus.ADJOURNED)
+                .status(adjournmentOption == RE_LIST_LATER ? ADJOURNED_TO_BE_RE_LISTED : ADJOURNED)
                 .cancellationReason(adjournmentReason.getReason())
                 .build());
 
@@ -288,7 +324,7 @@ class ManageHearingsControllerAboutToSubmitTest extends AbstractControllerTest {
     @ParameterizedTest
     @EnumSource(value = HearingReListOption.class, names = {"RE_LIST_NOW"}, mode = EnumSource.Mode.EXCLUDE)
     void shouldVacateHearing(HearingReListOption adjournmentOption) {
-        Element<HearingBooking> futureHearingToBeAdjourned = element(hearing(LocalDateTime.now().plusDays(2)));
+        Element<HearingBooking> futureHearingToBeAdjourned = element(testHearing(LocalDateTime.now().plusDays(2)));
 
         HearingCancellationReason vacatedReason = HearingCancellationReason.builder()
             .reason("Test reason")
@@ -308,41 +344,13 @@ class ManageHearingsControllerAboutToSubmitTest extends AbstractControllerTest {
         Element<HearingBooking> expectedVacatedHearing = element(
             futureHearingToBeAdjourned.getId(),
             futureHearingToBeAdjourned.getValue().toBuilder()
-                .status(HearingStatus.VACATED)
+                .status(adjournmentOption == RE_LIST_LATER ? VACATED_TO_BE_RE_LISTED : VACATED)
                 .cancellationReason(vacatedReason.getReason())
                 .build());
 
         assertThat(updatedCaseData.getHearingDetails()).isNull();
         assertThat(updatedCaseData.getCancelledHearingDetails()).containsExactly(expectedVacatedHearing);
         assertThat(updatedCaseData.getSelectedHearingId()).isNull();
-    }
-
-    private static HearingBooking hearing(LocalDateTime startDate) {
-        return HearingBooking.builder()
-            .type(CASE_MANAGEMENT)
-            .startDate(startDate)
-            .endDate(startDate.plusDays(1))
-            .hearingJudgeLabel("Her Honour Judge Judy")
-            .legalAdvisorLabel("")
-            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
-                .judgeLastName("Judy")
-                .build())
-            .venueCustomAddress(Address.builder().build())
-            .venue("96")
-            .build();
-    }
-
-    @SafeVarargs
-    private Object dynamicList(UUID selectedId, Element<HearingBooking>... hearings) {
-        DynamicList dynamicList = asDynamicList(Arrays.asList(hearings), selectedId, HearingBooking::toLabel);
-        return mapper.convertValue(dynamicList, new TypeReference<Map<String, Object>>() {
-        });
-    }
-
-    @SafeVarargs
-    private Object dynamicList(Element<HearingBooking>... hearings) {
-        return dynamicList(null, hearings);
     }
 
 }
