@@ -281,8 +281,7 @@ public class ManageHearingsController extends CallbackController {
                         publishEvent(new SendNoticeOfHearing(caseData, hearingBooking));
                     }
 
-                    if (isNewOrReListedHearing(caseData)
-                        && isTemporaryJudge(caseData.getAllocatedJudge(), hearingBooking)) {
+                    if (isNewOrReListedHearing(caseData) && isTemporaryHearingJudge(hearingBooking)) {
                         publishEvent(new TemporaryHearingJudgeAllocationEvent(caseData, hearingBooking));
                     }
                 });
@@ -302,11 +301,11 @@ public class ManageHearingsController extends CallbackController {
     }
 
     private boolean isNewOrReListedHearing(CaseData caseData) {
-        return NEW_HEARING.equals(caseData.getHearingOption()) || RE_LIST_NOW.equals(caseData.getHearingReListOption());
+        return caseData.getHearingOption() == null
+            || NEW_HEARING.equals(caseData.getHearingOption()) || RE_LIST_NOW.equals(caseData.getHearingReListOption());
     }
 
-    private boolean isTemporaryJudge(Judge allocatedJudge, HearingBooking hearingBooking) {
-        return (allocatedJudge == null
-            || !allocatedJudge.hasEqualJudgeFields(hearingBooking.getJudgeAndLegalAdvisor()));
+    private boolean isTemporaryHearingJudge(HearingBooking hearingBooking) {
+        return (hearingBooking.getHearingJudgeLabel() != null);
     }
 }

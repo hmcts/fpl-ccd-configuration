@@ -92,12 +92,15 @@ module.exports = {
     }
   },
 
-  async enterJudgeAndLegalAdvisorDetails(hearingDetails) {
+  async enterJudgeDetails(hearingDetails) {
     judgeAndLegalAdvisor.useAlternateJudge();
     judgeAndLegalAdvisor.selectJudgeTitle();
     judgeAndLegalAdvisor.enterJudgeLastName(hearingDetails.judgeAndLegalAdvisor.judgeLastName);
-    judgeAndLegalAdvisor.enterLegalAdvisorName(hearingDetails.judgeAndLegalAdvisor.legalAdvisorName);
     judgeAndLegalAdvisor.enterJudgeEmailAddress(hearingDetails.judgeAndLegalAdvisor.judgeEmail);
+  },
+
+  async enterLegalAdvisorName(legalAdvisorName) {
+    judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName);
   },
 
   async enterJudgeName(name) {
