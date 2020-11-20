@@ -216,15 +216,12 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadDocuments",
-    "UserRole": "[LASOLICITOR]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadDocuments",
-    "UserRole": "caseworker-publiclaw-solicitor",
-    "CRUD": "R"
+    "AccessControl":  [
+      {
+        "UserRoles": ["caseworker-publiclaw-solicitor", "[LASOLICITOR]", "[LABARRISTER]"],
+        "CRUD": "R"
+      }
+    ]
   },
   {
     "LiveFrom": "01/01/2017",
@@ -542,13 +539,6 @@
     "CaseEventID": "allocatedJudge",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadDocuments",
-    "UserRole": "[LABARRISTER]",
-    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1243,6 +1233,21 @@
       },
       {
         "UserRoles": ["caseworker-publiclaw-judiciary", "caseworker-publiclaw-magistrate", "caseworker-publiclaw-solicitor"],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageDocumentsLA",
+    "AccessControl": [
+      {
+        "UserRoles": ["[LABARRISTER]", "[LASOLICITOR]"],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": ["caseworker-publiclaw-solicitor"],
         "CRUD": "R"
       }
     ]

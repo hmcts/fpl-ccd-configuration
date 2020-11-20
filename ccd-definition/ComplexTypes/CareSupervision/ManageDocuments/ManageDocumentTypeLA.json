@@ -1,0 +1,37 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentTypeLA",
+    "ListElementCode": "label",
+    "FieldType": "Label",
+    "ElementLabel": "You can add, replace or delete documents",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentTypeLA",
+    "ListElementCode": "type",
+    "FieldType": "FixedRadioList",
+    "ElementLabel": "Which document type do you want to manage?",
+    "FieldTypeParameter": "ManageDocumentTypeListLA",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentTypeLA",
+    "ListElementCode": "hasHearings",
+    "FieldType": "Text",
+    "ElementLabel": "Hidden to control display of the next field when there are no hearings",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type=\"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentTypeLA",
+    "ListElementCode": "relatedToHearing",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Does the evidence document relate to a hearing?",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type=\"FURTHER_EVIDENCE_DOCUMENTS\" AND hasHearings=\"Yes\""
+  }
+]

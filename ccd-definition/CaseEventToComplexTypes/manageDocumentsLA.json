@@ -1,0 +1,40 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "supportingEvidenceDocumentsTempLA",
+    "ListElementCode": "name",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY",
+    "EventHintText": "Add a descriptive name. For example, ‘Parenting assessment’, ‘Email with evidence attached’ or ‘Form C110a’."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "supportingEvidenceDocumentsTempLA",
+    "ListElementCode": "notes",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "supportingEvidenceDocumentsTempLA",
+    "ListElementCode": "dateTimeReceived",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "supportingEvidenceDocumentsTempLA",
+    "ListElementCode": "document",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Upload document"
+  }
+]
