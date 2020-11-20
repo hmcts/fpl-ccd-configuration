@@ -10,21 +10,24 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.interfaces.IssuableOrder;
+import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 
 import java.time.LocalDate;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFromStringUsingFormat;
 
 @Data
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class StandardDirectionOrder implements IssuableOrder {
+public class StandardDirectionOrder implements IssuableOrder, RemovableOrder {
     private final String hearingDate;
     private final String dateOfIssue;
     private final OrderStatus orderStatus;
@@ -56,5 +59,20 @@ public class StandardDirectionOrder implements IssuableOrder {
         return ofNullable(dateOfIssue)
             .map(date -> parseLocalDateFromStringUsingFormat(date, DATE))
             .orElse(LocalDate.now());
+    }
+
+    @Override
+    public boolean isRemovable() {
+        return SEALED.equals(orderStatus);
+    }
+
+    @Override
+    public String asLabel() {
+        return "Case management order - " + formatLocalDateToString(dateOfUpload, "d MMMM yyyy");
+    }
+
+    @Override
+    public void setRemovalReason(String reason) {
+
     }
 }
