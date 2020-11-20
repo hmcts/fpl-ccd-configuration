@@ -1,0 +1,40 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadApplicationDocuments",
+    "CaseEventID": "uploadApplicationDocuments",
+    "CaseFieldID": "documents",
+    "ListElementCode": "documentType",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadApplicationDocuments",
+    "CaseEventID": "uploadApplicationDocuments",
+    "CaseFieldID": "documents",
+    "ListElementCode": "document",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadApplicationDocuments",
+    "CaseEventID": "uploadApplicationDocuments",
+    "CaseFieldID": "documents",
+    "ListElementCode": "dateTimeUploaded",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL",
+    "FieldShowCondition": "showMetaFields=\"YES\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadApplicationDocuments",
+    "CaseEventID": "uploadApplicationDocuments",
+    "CaseFieldID": "documents",
+    "ListElementCode": "uploadedBy",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL",
+    "FieldShowCondition": "showMetaFields=\"YES\""
+  }
+]
