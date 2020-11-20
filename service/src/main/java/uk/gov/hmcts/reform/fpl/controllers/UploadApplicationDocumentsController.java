@@ -40,7 +40,7 @@ public class UploadApplicationDocumentsController extends CallbackController {
         CaseData caseDataBefore = getCaseDataBefore(callbackrequest);
         caseDetails.getData().putAll(uploadDocumentsService.updateCaseDocuments(caseData, caseDataBefore));
 
-            caseDetails.getData().put("showMetaFields", YES);
+        caseDetails.getData().put("showMetaFields", YES);
 
         return respond(caseDetails);
     }
