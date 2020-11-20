@@ -29,9 +29,9 @@ public class OtherOrderRemovalAction implements OrderRemovalAction {
         GeneratedOrder generatedRemovableOrder = (GeneratedOrder) removableOrder;
 
         List<Element<GeneratedOrder>> generatedOrders = caseData.getOrderCollection();
-        boolean removed = generatedOrders.remove(element(removedOrderId,generatedRemovableOrder));
+        boolean removed = generatedOrders.remove(element(removedOrderId, generatedRemovableOrder));
 
-        if(!removed) {
+        if (!removed) {
             throw new IllegalArgumentException(format("Failed to find order matching id %s", removedOrderId));
         }
 

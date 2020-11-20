@@ -32,7 +32,7 @@ public class CMOOrderRemovalAction implements OrderRemovalAction {
 
         List<Element<CaseManagementOrder>> sealedCMOs = caseData.getSealedCMOs();
         boolean removed = sealedCMOs.remove(element(removedOrderId, caseManagementOrder));
-        if(!removed) {
+        if (!removed) {
             throw new IllegalArgumentException(format("Failed to find order matching id %s", removedOrderId));
         }
 
@@ -48,7 +48,7 @@ public class CMOOrderRemovalAction implements OrderRemovalAction {
 
     public List<Element<HearingBooking>> removeHearingLinkedToCMO(List<Element<HearingBooking>> hearings,
                                                                   UUID removedOrderId) {
-        if(isEmpty(hearings)) {
+        if (isEmpty(hearings)) {
             return null;
         }
 
