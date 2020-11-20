@@ -2,15 +2,11 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.ChildParty;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -20,13 +16,16 @@ import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
@@ -37,18 +36,27 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {
-    RemoveOrderService.class, JacksonAutoConfiguration.class
-})
+@ExtendWith(MockitoExtension.class)
 class RemoveOrderServiceTest {
 
-    private static final UUID CHILD_ONE_ID = UUID.randomUUID();
-    private static final UUID CHILD_TWO_ID = UUID.randomUUID();
     private static final LocalDate NOW = LocalDate.now();
+    private static final java.util.UUID REMOVED_UUID = java.util.UUID.randomUUID();
 
-    @Autowired
-    private RemoveOrderService service;
+    @Mock
+    private OrderRemovalActions orderRemovalActions;
+    @Mock
+    private OrderRemovalAction orderRemovalAction;
+    @Mock
+    private OrderRemovalAction anotherOrderRemovalAction;
+    @Mock
+    private RemovableOrder removableOrder;
+    @Mock
+    private Map<String, Object> data;
+    @Mock
+    private CaseData caseData;
+
+    @InjectMocks
+    private RemoveOrderService underTest;
 
     @Test
     void shouldMakeDynamicListOfBlankOrders() {
@@ -61,7 +69,7 @@ class RemoveOrderServiceTest {
             .orderCollection(generatedOrders)
             .build();
 
-        DynamicList listOfOrders = service.buildDynamicListOfOrders(caseData);
+        DynamicList listOfOrders = underTest.buildDynamicListOfOrders(caseData);
 
         DynamicList expectedList = DynamicList.builder()
             .value(DynamicListElement.EMPTY)
@@ -90,7 +98,7 @@ class RemoveOrderServiceTest {
             .sealedCMOs(caseManagementOrders)
             .build();
 
-        DynamicList listOfOrders = service.buildDynamicListOfOrders(caseData);
+        DynamicList listOfOrders = underTest.buildDynamicListOfOrders(caseData);
 
         DynamicList expectedList = DynamicList.builder()
             .value(DynamicListElement.EMPTY)
@@ -99,44 +107,11 @@ class RemoveOrderServiceTest {
                 buildListElement(generatedOrders.get(1).getId(), "order 2 - 16 July 2020"),
                 buildListElement(generatedOrders.get(2).getId(), "order 3 - 17 August 2020"),
                 buildListElement(generatedOrders.get(3).getId(), "order 4 - 18 September 2020"),
-                buildListElement(caseManagementOrders.get(0).getId(), String.format("Case management order - %s",
+                buildListElement(caseManagementOrders.get(0).getId(), format("Case management order - %s",
                     formatLocalDateToString(NOW, "d MMMM yyyy")))))
             .build();
 
         assertThat(listOfOrders).isEqualTo(expectedList);
-    }
-
-    @Test
-    void shouldRemoveSelectedOrderFromMainListAndAddToHiddenList() {
-        Element<GeneratedOrder> order1 = element(buildOrder(BLANK_ORDER, "order 1", "15 June 2020"));
-        Element<GeneratedOrder> order2 = element(buildOrder(BLANK_ORDER, "order 2", "16 July 2020"));
-
-        List<Element<GeneratedOrder>> orders = new ArrayList<>(List.of(order1, order2));
-        List<Element<GeneratedOrder>> hiddenOrders = new ArrayList<>();
-
-        String reason = "added to the wrong case for some reason, don't ask me how users do this but they do";
-
-        List<Element<RemovableOrder>> removedOrders = service.hideOrder(orders, hiddenOrders, order1.getId(), reason);
-
-        assertThat(orders).hasSize(1).containsOnly(order2);
-        assertThat(removedOrders).hasSize(1);
-        assertThat(removedOrders.get(0)).isEqualTo(order1);
-    }
-
-    @Test
-    void shouldSetTheRemovalReasonForTheRemovedOrder() {
-        Element<GeneratedOrder> order1 = element(buildOrder(BLANK_ORDER, "order 1", "15 June 2020"));
-        Element<GeneratedOrder> order2 = element(buildOrder(BLANK_ORDER, "order 2", "16 July 2020"));
-
-        List<Element<GeneratedOrder>> orders = new ArrayList<>(List.of(order1, order2));
-        List<Element<GeneratedOrder>> hiddenOrders = new ArrayList<>();
-
-        String reason = "like really, do they not see the big case number and family man number at the top of the page";
-
-        service.hideOrder(orders, hiddenOrders, order1.getId(), reason);
-
-        assertThat(order1.getValue().getRemovalReason()).isEqualTo(reason);
-        assertThat(order2.getValue().getRemovalReason()).isNull();
     }
 
     @Test
@@ -153,7 +128,7 @@ class RemoveOrderServiceTest {
             .build()
         );
 
-        Map<String, Object> orderFields = service.populateSelectedOrderFields(List.of(order), order.getId());
+        Map<String, Object> orderFields = underTest.populateSelectedOrderFields(List.of(order), order.getId());
 
         Map<String, Object> expectedFields = Map.of(
             "orderToBeRemoved", document,
@@ -179,246 +154,42 @@ class RemoveOrderServiceTest {
                 .build()
         );
 
-        Map<String, Object> orderFields = service.populateSelectedOrderFields(List.of(order), UUID.randomUUID());
+        Map<String, Object> orderFields = underTest.populateSelectedOrderFields(List.of(order),
+            java.util.UUID.randomUUID());
 
         assertThat(orderFields).isEmpty();
     }
 
     @Test
-    void shouldModifyChildrenThatHaveBeenAssociatedWithAFinalOrder() {
-        List<Element<Child>> childrenList = List.of(
-            element(CHILD_ONE_ID, Child.builder()
-                .finalOrderIssued("Yes")
-                .finalOrderIssuedType("Some type")
-                .build()),
-            element(CHILD_TWO_ID, Child.builder()
-                .finalOrderIssued("Yes")
-                .finalOrderIssuedType("Some type")
-                .build())
-        );
-
-        Element<GeneratedOrder> order1 = element(buildOrder(
-            EMERGENCY_PROTECTION_ORDER,
-            "order 1",
-            "15 June 2020",
-            childrenList
+    void shouldRemoveOrderFromCaseWithMatchedAction() {
+        when(orderRemovalActions.getActions()).thenReturn(List.of(
+            orderRemovalAction,
+            anotherOrderRemovalAction
         ));
+        when(orderRemovalAction.isAccepted(removableOrder)).thenReturn(true);
 
-        CaseData caseData = CaseData.builder()
-            .children1(childrenList)
-            .orderCollection(List.of(order1))
-            .removableOrderList(DynamicList.builder()
-                .value(buildListElement(order1.getId(), "order 1 - 15 June 2020"))
-                .build())
-            .build();
+        underTest.removeOrderFromCase(caseData, data, REMOVED_UUID, removableOrder);
 
-        List<Element<Child>> updatedChildren = service.removeFinalOrderPropertiesFromChildren(caseData);
-
-        List<Element<Child>> expectedChildrenList = List.of(
-            element(CHILD_ONE_ID, Child.builder()
-                .build()),
-            element(CHILD_TWO_ID, Child.builder()
-                .build())
-        );
-
-        assertThat(updatedChildren).isEqualTo(expectedChildrenList);
+        verify(orderRemovalAction).action(caseData, data, REMOVED_UUID, removableOrder);
+        verifyNoInteractions(anotherOrderRemovalAction);
     }
 
     @Test
-    void shouldNotModifyChildrenThatHaveNotBeenAssociatedWithAFinalOrder() {
-        List<Element<Child>> childrenList = List.of(
-            element(UUID.randomUUID(), Child.builder()
-                .finalOrderIssued("Yes")
-                .finalOrderIssuedType("Some type")
-                .build()),
-            element(UUID.randomUUID(), Child.builder()
-                .finalOrderIssued("Yes")
-                .finalOrderIssuedType("Some type")
-                .build())
-        );
-
-        Element<GeneratedOrder> order1 = element(buildOrder(
-            BLANK_ORDER,
-            "order 1",
-            "15 June 2020",
-            childrenList
+    void shouldThrowExceptionIfActionNotMatchedRemovingOrderFromCase() {
+        when(orderRemovalActions.getActions()).thenReturn(List.of(
+            orderRemovalAction,
+            anotherOrderRemovalAction
         ));
+        when(orderRemovalAction.isAccepted(removableOrder)).thenReturn(false);
+        when(anotherOrderRemovalAction.isAccepted(removableOrder)).thenReturn(false);
 
-        CaseData caseData = CaseData.builder()
-            .children1(childrenList)
-            .orderCollection(List.of(order1))
-            .removableOrderList(DynamicList.builder()
-                .value(buildListElement(order1.getId(), "order 1 - 15 June 2020"))
-                .build())
-            .build();
-
-        List<Element<Child>> updatedChildren = service.removeFinalOrderPropertiesFromChildren(caseData);
-
-        assertThat(updatedChildren).isEqualTo(childrenList);
-    }
-
-    @Test
-    void shouldRemoveFinalOrderOnChildrenAssiocatedToTheOrderOnly() {
-        Element<Child> childToBeRemoved = element(CHILD_ONE_ID, Child.builder()
-            .finalOrderIssued("Yes")
-            .finalOrderIssuedType("Some type")
-            .party(ChildParty.builder().build())
-            .build());
-
-        List<Element<Child>> childrenList = List.of(
-            childToBeRemoved,
-            element(CHILD_TWO_ID, Child.builder()
-                .finalOrderIssued("Yes")
-                .finalOrderIssuedType("Some type")
-                .party(ChildParty.builder().build())
-                .build())
+        IllegalArgumentException actualException = assertThrows(IllegalArgumentException.class,
+            () -> underTest.removeOrderFromCase(caseData, data, REMOVED_UUID, removableOrder)
         );
 
-        Element<GeneratedOrder> order1 = element(buildOrder(
-            EMERGENCY_PROTECTION_ORDER,
-            "order 1",
-            "15 June 2020",
-            List.of(childToBeRemoved)
-        ));
-
-        CaseData caseData = CaseData.builder()
-            .children1(childrenList)
-            .orderCollection(List.of(order1))
-            .removableOrderList(DynamicList.builder()
-                .value(buildListElement(order1.getId(), "order 1 - 15 June 2020"))
-                .build())
-            .build();
-
-        List<Element<Child>> updatedChildren = service.removeFinalOrderPropertiesFromChildren(caseData);
-
-        List<Element<Child>> expectedChildrenList = List.of(
-            element(CHILD_ONE_ID, Child.builder()
-                .party(ChildParty.builder().build())
-                .build()),
-            element(CHILD_TWO_ID, Child.builder()
-                .finalOrderIssued("Yes")
-                .finalOrderIssuedType("Some type")
-                .party(ChildParty.builder().build())
-                .build())
+        assertThat(actualException.getMessage()).isEqualTo(
+            format("Action not found for order %s", REMOVED_UUID)
         );
-
-        assertThat(updatedChildren).isEqualTo(expectedChildrenList);
-    }
-
-    @Test
-    void shouldThrowAnExceptionWhenOrderIntendedToBeRemovedDoesNotExist() {
-        List<Element<Child>> childrenList = List.of(
-            element(UUID.randomUUID(), Child.builder()
-                .finalOrderIssued("Yes")
-                .finalOrderIssuedType("Some type")
-                .build()),
-            element(UUID.randomUUID(), Child.builder()
-                .finalOrderIssued("Yes")
-                .finalOrderIssuedType("Some type")
-                .build())
-        );
-
-        Element<GeneratedOrder> order1 = element(buildOrder(
-            BLANK_ORDER,
-            "order 1",
-            "15 June 2020",
-            childrenList
-        ));
-
-        CaseData caseData = CaseData.builder()
-            .children1(childrenList)
-            .removableOrderList(DynamicList.builder()
-                .value(buildListElement(order1.getId(), "order 1 - 15 June 2020"))
-                .build())
-            .build();
-
-        final IllegalStateException exception = assertThrows(IllegalStateException.class,
-            () -> service.removeFinalOrderPropertiesFromChildren(caseData));
-
-        assertThat(exception.getMessage()).isEqualTo("Failed to find the order to be removed");
-    }
-
-    @Test
-    void shouldGetRemovedOrderWhenRemovedOrderIdMatchesElementId() {
-        UUID removedOrderId = UUID.randomUUID();
-        List<Element<CaseManagementOrder>> caseManagementOrders = buildCaseManagementOrders();
-
-        Element<GeneratedOrder> order1 = element(
-            removedOrderId,
-            buildOrder(BLANK_ORDER, "order 1", "15 June 2020")
-        );
-
-        Element<GeneratedOrder> order2 = element(buildOrder(BLANK_ORDER, "order 2", "15 June 2020"));
-
-        CaseData caseData = CaseData.builder()
-            .orderCollection(List.of(order1, order2))
-            .sealedCMOs(caseManagementOrders)
-            .build();
-
-        assertThat(service.getRemovedOrderByUUID(caseData, removedOrderId)).isEqualTo(order1.getValue());
-    }
-
-    @Test
-    void shouldThrowAnExceptionWhenFailedToFindAnOrderWithRemovedOrderId() {
-        UUID removedOrderId = UUID.randomUUID();
-        List<Element<CaseManagementOrder>> caseManagementOrders = buildCaseManagementOrders();
-
-        Element<GeneratedOrder> order1 = element(buildOrder(BLANK_ORDER, "order 1", "15 June 2020"));
-        Element<GeneratedOrder> order2 = element(buildOrder(BLANK_ORDER, "order 2", "15 June 2020"));
-
-        CaseData caseData = CaseData.builder()
-            .orderCollection(List.of(order1, order2))
-            .sealedCMOs(caseManagementOrders)
-            .build();
-
-        final IllegalStateException exception = assertThrows(IllegalStateException.class,
-            () -> service.getRemovedOrderByUUID(caseData, removedOrderId));
-
-        assertThat(exception.getMessage()).isEqualTo(
-            String.format("Failed to find order matching id %s", removedOrderId)
-        );
-    }
-
-    @Test
-    void shouldRemoveHearingAssociationWithARemovedCaseManagementOrder() {
-        UUID removedCaseManagementOrderId = UUID.randomUUID();
-
-        Element<HearingBooking> hearing1 = element(HearingBooking.builder()
-            .caseManagementOrderId(removedCaseManagementOrderId)
-            .build());
-
-        Element<HearingBooking> hearing2 = element(HearingBooking.builder()
-            .caseManagementOrderId(UUID.randomUUID())
-            .build());
-
-        List<Element<HearingBooking>> hearingBookings = List.of(hearing1, hearing2);
-
-        List<Element<HearingBooking>> updatedHearingBookings =
-            service.removeHearingLinkedToCMO(hearingBookings, removedCaseManagementOrderId);
-
-        assertThat(updatedHearingBookings.get(0).getValue().getCaseManagementOrderId()).isNull();
-        assertThat(updatedHearingBookings.get(1)).isEqualTo(hearing2);
-    }
-
-    @Test
-    void shouldNotRemoveHearingAssociationWithARemovedCaseManagementOrderWhenCannotMatchAssociatedHearing() {
-        UUID removedCaseManagementOrderId = UUID.randomUUID();
-
-        Element<HearingBooking> hearing1 = element(HearingBooking.builder()
-            .caseManagementOrderId(UUID.randomUUID())
-            .build());
-
-        Element<HearingBooking> hearing2 = element(HearingBooking.builder()
-            .caseManagementOrderId(UUID.randomUUID())
-            .build());
-
-        List<Element<HearingBooking>> hearingBookings = List.of(hearing1, hearing2);
-
-        List<Element<HearingBooking>> updatedHearingBookings =
-            service.removeHearingLinkedToCMO(hearingBookings, removedCaseManagementOrderId);
-
-        assertThat(updatedHearingBookings.get(0)).isEqualTo(hearing1);
-        assertThat(updatedHearingBookings.get(1)).isEqualTo(hearing2);
     }
 
     private DynamicListElement buildListElement(UUID id, String label) {
@@ -433,13 +204,6 @@ class RemoveOrderServiceTest {
             .type(getFullOrderType(type))
             .title(title)
             .dateOfIssue(dateOfIssue)
-            .build();
-    }
-
-    private GeneratedOrder buildOrder(GeneratedOrderType type, String title, String dateOfIssue,
-                                      List<Element<Child>> children) {
-        return buildOrder(type, title, dateOfIssue).toBuilder()
-            .children(children)
             .build();
     }
 

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model.order;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
@@ -52,11 +51,7 @@ public class CaseManagementOrder implements RemovableOrder {
     }
 
     public String asLabel() {
-        return getType() + " - " + formatLocalDateToString(dateIssued, "d MMMM yyyy");
+        return "Case management order - " + formatLocalDateToString(dateIssued, "d MMMM yyyy");
     }
 
-    @JsonIgnore
-    public String getType() {
-        return "Case management order";
-    }
 }
