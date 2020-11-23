@@ -23,20 +23,7 @@
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "manageDocumentLA.type=\"FURTHER_EVIDENCE_DOCUMENTS\" AND manageDocumentLA.relatedToHearing=\"Yes\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "manageDocumentsLA",
-    "CaseFieldID": "manageDocumentsCourtBundleHearingList",
-    "PageFieldDisplayOrder": 2,
-    "DisplayContext": "MANDATORY",
-    "PageID": "ManageDocumentType",
-    "PageDisplayOrder": 1,
-    "PageColumnNumber": 1,
-    "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "manageDocumentLA.type=\"COURT_BUNDLE\" AND manageDocumentLA.hasHearings=\"Yes\""
+    "FieldShowCondition": "manageDocumentLA.type!=\"CORRESPONDENCE\" AND manageDocumentLA.type!=\"C2\" AND manageDocumentLA.type!=\"APPLICATION\" AND manageDocumentLA.relatedToHearing=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",

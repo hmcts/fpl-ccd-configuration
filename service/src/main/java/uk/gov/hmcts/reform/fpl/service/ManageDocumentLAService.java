@@ -17,7 +17,6 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 public class ManageDocumentLAService {
 
     public static final String MANAGE_DOCUMENTS_HEARING_LIST_KEY = "manageDocumentsHearingList";
-    public static final String COURT_BUNDLE_HEARING_LIST_KEY = "manageDocumentsCourtBundleHearingList";
     public static final String SUPPORTING_C2_LIST_KEY = "manageDocumentsSupportingC2List";
     public static final String MANAGE_DOCUMENT_KEY = "manageDocumentLA";
 
@@ -27,7 +26,6 @@ public class ManageDocumentLAService {
 
         if (caseData.getHearingDetails() != null && !caseData.getHearingDetails().isEmpty()) {
             listAndLabel.put(MANAGE_DOCUMENTS_HEARING_LIST_KEY, caseData.buildDynamicHearingList());
-            listAndLabel.put(COURT_BUNDLE_HEARING_LIST_KEY, caseData.buildDynamicHearingList());
             hasHearings = YES.getValue();
         } else {
             hasHearings = NO.getValue();

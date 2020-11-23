@@ -77,6 +77,11 @@ public class ManageDocumentsLAController extends CallbackController {
                 supportingEvidence = manageDocumentService.getC2SupportingEvidenceBundle(caseData);
                 break;
             case COURT_BUNDLE:
+                System.out.println("Court bundle");
+                break;
+            case APPLICATION_DOCUMENTS:
+                System.out.println("Application");
+                break;
         }
 
         caseDetails.getData().put(TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, supportingEvidence);

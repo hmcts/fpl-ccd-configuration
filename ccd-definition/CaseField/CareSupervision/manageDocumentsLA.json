@@ -12,15 +12,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageDocumentsCourtBundleNoHearingsLabel",
     "FieldType": "Label",
-    "Label": "There are no hearings",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "manageDocumentsCourtBundleHearingList",
-    "FieldType": "DynamicList",
-    "Label": "Which hearing?",
+    "Label": "There are no hearings to associate a bundle with",
     "SecurityClassification": "Public"
   },
   {
