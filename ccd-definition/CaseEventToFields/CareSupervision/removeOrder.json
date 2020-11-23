@@ -58,7 +58,8 @@
     "PageID": 2,
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
-    "ShowSummaryChangeOption": "N"
+    "ShowSummaryChangeOption": "N",
+    "FieldShowCondition": "orderTitleToBeRemoved!=\"Case management order\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -70,7 +71,8 @@
     "PageID": 2,
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
-    "ShowSummaryChangeOption": "N"
+    "ShowSummaryChangeOption": "N",
+    "FieldShowCondition": "orderTitleToBeRemoved!=\"Case management order\""
   },
   {
     "LiveFrom": "01/01/2017",
