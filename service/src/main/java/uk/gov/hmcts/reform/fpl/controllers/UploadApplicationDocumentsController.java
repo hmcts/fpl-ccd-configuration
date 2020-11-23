@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.UploadApplicationDocumentsService;
+import uk.gov.hmcts.reform.fpl.service.ApplicationDocumentsService;
 
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
@@ -20,12 +20,11 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 @RequestMapping("/callback/upload-application-documents")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UploadApplicationDocumentsController extends CallbackController {
-    private final UploadApplicationDocumentsService uploadDocumentsService;
+    private final ApplicationDocumentsService service;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
 
         caseDetails.getData().remove("showMetaFields");
 
@@ -38,7 +37,7 @@ public class UploadApplicationDocumentsController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         CaseData caseDataBefore = getCaseDataBefore(callbackrequest);
-        caseDetails.getData().putAll(uploadDocumentsService.updateCaseDocuments(caseData, caseDataBefore));
+        caseDetails.getData().putAll(service.updateCaseDocuments(caseData.getDocuments(), caseDataBefore.getDocuments()));
 
         caseDetails.getData().put("showMetaFields", YES);
 

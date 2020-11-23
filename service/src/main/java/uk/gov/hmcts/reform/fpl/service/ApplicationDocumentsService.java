@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
@@ -21,18 +20,19 @@ import static java.util.Objects.isNull;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
-public class UploadApplicationDocumentsService {
+public class ApplicationDocumentsService {
 
     private final Time time;
     private final DocumentUploadHelper documentUploadHelper;
 
-    public Map<String, Object> updateCaseDocuments(CaseData caseData, CaseData caseDataBefore) {
-        List<Element<ApplicationDocument>> otherSocialWorkDocuments = setUpdatedByAndDateAndTimeOnDocuments(
-            caseData.getDocuments(), caseDataBefore.getDocuments());
+    public Map<String, Object> updateCaseDocuments(List<Element<ApplicationDocument>> currentDocuments,
+                                                   List<Element<ApplicationDocument>> previousDocuments) {
+        List<Element<ApplicationDocument>> updatedDocuments = setUpdatedByAndDateAndTimeOnDocuments(
+           currentDocuments, previousDocuments);
 
         Map<String, Object> updatedCaseData = new HashMap<>();
 
-        updatedCaseData.put("documents", otherSocialWorkDocuments);
+        updatedCaseData.put("documents", updatedDocuments);
 
         return updatedCaseData;
     }
