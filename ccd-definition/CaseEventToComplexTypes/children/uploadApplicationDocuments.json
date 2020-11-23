@@ -22,7 +22,7 @@
     "ID": "UploadApplicationDocuments",
     "CaseEventID": "uploadApplicationDocuments",
     "CaseFieldID": "documents",
-    "ListElementCode": "swetDescription",
+    "ListElementCode": "includedInSWET",
     "EventElementLabel": "Let us know what you are including in your SWET",
     "FieldDisplayOrder": 3,
     "DisplayContext": "OPTIONAL"

@@ -21,7 +21,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Documents",
-    "ListElementCode": "swetDescription",
+    "ListElementCode": "includedInSWET",
     "FieldType": "TextArea",
     "ElementLabel": "Included in SWET",
     "HintText": "Use a meaningful name. For example, Genogram",
