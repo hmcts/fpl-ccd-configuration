@@ -244,12 +244,24 @@ module.exports = function () {
 
       if (date) {
         return within(sectionId, () => {
-          this.fillField('Day', date.day);
-          this.fillField('Month', date.month);
-          this.fillField('Year', date.year);
-          this.fillField('Hour', date.hour);
-          this.fillField('Minute', date.minute);
-          this.fillField('Second', date.second);
+          if(date.day) {
+            this.fillField('Day', date.day);
+          }
+          if(date.month) {
+            this.fillField('Month', date.month);
+          }
+          if(date.year) {
+            this.fillField('Year', date.year);
+          }
+          if(date.hour) {
+            this.fillField('Hour', date.hour);
+          }
+          if(date.minute) {
+            this.fillField('Minute', date.minute);
+          }
+          if(date.second) {
+            this.fillField('Second', date.second);
+          }
         });
       }
     },

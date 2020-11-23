@@ -76,4 +76,18 @@ module.exports = [
     },
     sendNoticeOfHearing: 'No',
   },
+  {
+    startDate: {
+      hour: '11',
+      day: '11',
+      month: '01',
+      year: '2060',
+    },
+    endDate: {
+      hour: '14',
+      day: '11',
+      month: '01',
+      year: '2060',
+    },
+  },
 ];
