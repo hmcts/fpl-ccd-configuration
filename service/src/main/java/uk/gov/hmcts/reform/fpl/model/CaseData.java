@@ -427,6 +427,7 @@ public class CaseData {
     private final String closeCaseFromOrder;
 
     private final ManageDocument manageDocument;
+    private final ManageDocumentLA manageDocumentLA;
     private final List<Element<SupportingEvidenceBundle>> supportingEvidenceDocumentsTemp;
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments;
     private final List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;

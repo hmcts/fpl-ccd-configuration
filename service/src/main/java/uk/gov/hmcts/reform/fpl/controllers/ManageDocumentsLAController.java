@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.ManageDocumentLAService;
 import uk.gov.hmcts.reform.fpl.service.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.SupportingEvidenceValidatorService;
 
@@ -39,6 +40,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFie
 @RequestMapping("/callback/manage-documents-la")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ManageDocumentsLAController extends CallbackController {
+    private final ManageDocumentLAService manageDocumentLAService;
     private final ManageDocumentService manageDocumentService;
     private final SupportingEvidenceValidatorService supportingEvidenceValidatorService;
 
@@ -47,7 +49,7 @@ public class ManageDocumentsLAController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().putAll(manageDocumentService.initialiseManageDocumentEvent(caseData));
+        caseDetails.getData().putAll(manageDocumentLAService.initialiseManageDocumentEvent(caseData));
 
         caseDetails.getData().remove("furtherEvidenceDocumentsTEMP");
 
@@ -61,7 +63,7 @@ public class ManageDocumentsLAController extends CallbackController {
 
         List<Element<SupportingEvidenceBundle>> supportingEvidence = new ArrayList<>();
 
-        switch (caseData.getManageDocument().getType()) {
+        switch (caseData.getManageDocumentLA().getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
                 caseDetails.getData().putAll(manageDocumentService.initialiseHearingListAndLabel(caseData));
                 supportingEvidence = manageDocumentService.getFurtherEvidenceCollection(caseData);
@@ -74,6 +76,7 @@ public class ManageDocumentsLAController extends CallbackController {
                 caseDetails.getData().putAll(manageDocumentService.initialiseC2DocumentListAndLabel(caseData));
                 supportingEvidence = manageDocumentService.getC2SupportingEvidenceBundle(caseData);
                 break;
+            case COURT_BUNDLE:
         }
 
         caseDetails.getData().put(TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, supportingEvidence);

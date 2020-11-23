@@ -10,17 +10,17 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "manageDocumentsHearingListLA",
-    "FieldType": "DynamicList",
-    "Label": "Which hearing?",
+    "ID": "manageDocumentsCourtBundleNoHearingsLabel",
+    "FieldType": "Label",
+    "Label": "There are no hearings",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "manageDocumentsSupportingC2ListLA",
+    "ID": "manageDocumentsCourtBundleHearingList",
     "FieldType": "DynamicList",
-    "Label": "Choose the relevant C2 application for this document",
+    "Label": "Which hearing?",
     "SecurityClassification": "Public"
   },
   {
@@ -53,19 +53,34 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "c2SupportingDocumentsLA",
+    "ID": "supportingEvidenceDocumentsTempLA",
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
-    "Label": "C2 supporting document",
+    "Label": "Document",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "supportingEvidenceDocumentsTempLA",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
-    "Label": "Document",
+    "ID": "manageDocumentsCourtBundle",
+    "FieldType": "Document",
+    "Label": "Attach court bundle",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageDocumentsRedactedCourtBundle",
+    "FieldType": "Document",
+    "Label": "Attach redacted court bundle",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageDocumentsCourtBundleHearingLabel",
+    "FieldType": "Text",
+    "Label": "Court bundle for:",
     "SecurityClassification": "Public"
   }
 ]
