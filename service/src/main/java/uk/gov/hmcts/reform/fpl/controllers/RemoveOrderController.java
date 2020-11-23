@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
-import uk.gov.hmcts.reform.fpl.service.RemoveOrderService;
+import uk.gov.hmcts.reform.fpl.service.removeorder.RemoveOrderService;
 
 import java.util.Map;
 import java.util.UUID;
@@ -48,12 +48,13 @@ public class RemoveOrderController {
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         // When dynamic lists are fixed this can be moved into the below method
-        UUID id = getDynamicListSelectedValue(caseData.getRemovableOrderList(), mapper);
+        UUID removedOrderId = getDynamicListSelectedValue(caseData.getRemovableOrderList(), mapper);
+        RemovableOrder removableOrder = service.getRemovedOrderByUUID(caseData, removedOrderId);
 
-        data.putAll(service.populateSelectedOrderFields(caseData.getOrderCollection(), id));
+        service.populateSelectedOrderFields(caseData, data, removedOrderId, removableOrder);
 
         // Can be removed once dynamic lists are fixed
-        data.put(REMOVABLE_ORDER_LIST_KEY, service.buildDynamicListOfOrders(caseData, id));
+        data.put(REMOVABLE_ORDER_LIST_KEY, service.buildDynamicListOfOrders(caseData, removedOrderId));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -78,12 +79,12 @@ public class RemoveOrderController {
             "orderToBeRemoved",
             "orderTitleToBeRemoved",
             "orderIssuedDateToBeRemoved",
-            "orderDateToBeRemoved"
+            "orderDateToBeRemoved",
+            "unlinkedHearing"
         );
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
             .build();
     }
-
 }

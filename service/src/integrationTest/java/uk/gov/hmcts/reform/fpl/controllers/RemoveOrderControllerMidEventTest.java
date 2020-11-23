@@ -8,17 +8,21 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ActiveProfiles("integration-test")
@@ -38,7 +42,7 @@ public class RemoveOrderControllerMidEventTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldExtractSelectedOrderFields() {
+    void shouldExtractSelectedGeneratedOrderFields() {
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(
             asCaseDetails(buildCaseData(selectedOrder))
         );
@@ -51,6 +55,48 @@ public class RemoveOrderControllerMidEventTest extends AbstractControllerTest {
             "orderTitleToBeRemoved", selectedOrder.getValue().getTitle(),
             "orderIssuedDateToBeRemoved", selectedOrder.getValue().getDateOfIssue(),
             "orderDateToBeRemoved", selectedOrder.getValue().getDate()
+        );
+
+        assertThat(responseData).containsAllEntriesOf(extractedFields);
+    }
+
+    @Test
+    void shouldExtractSelectedCaseManagementOrderFields() {
+        UUID removedOrderId = UUID.randomUUID();
+        DocumentReference documentReference = DocumentReference.builder().build();
+
+        HearingBooking hearingBooking = HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .startDate(LocalDateTime.now())
+            .caseManagementOrderId(removedOrderId)
+            .build();
+
+        CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder()
+            .order(documentReference)
+            .build();
+
+        DynamicList dynamicList = DynamicList.builder()
+            .value(DynamicListElement.builder()
+                .code(removedOrderId)
+                .label("Case management order - 12 March 1234")
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .sealedCMOs(List.of(element(removedOrderId, caseManagementOrder)))
+            .hearingDetails(List.of(element(hearingBooking)))
+            .removableOrderList(dynamicList)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
+
+        Map<String, Object> responseData = response.getData();
+
+        Map<String, Object> extractedFields = Map.of(
+            "orderToBeRemoved", mapper.convertValue(caseManagementOrder.getOrder(),
+                new TypeReference<Map<String, Object>>() {}),
+            "orderTitleToBeRemoved", "Case management order",
+            "unlinkedHearing", hearingBooking.toLabel()
         );
 
         assertThat(responseData).containsAllEntriesOf(extractedFields);

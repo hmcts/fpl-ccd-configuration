@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service;
+package uk.gov.hmcts.reform.fpl.service.removeorder;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,10 +7,8 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
-import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -39,19 +37,18 @@ public class RemoveOrderService {
         return buildDynamicListOfOrders(caseData, null);
     }
 
-    public Map<String, Object> populateSelectedOrderFields(List<Element<GeneratedOrder>> orders, UUID id) {
-        Map<String, Object> orderData = new HashMap<>();
-        orders.stream()
-            .filter(o -> id.equals(o.getId()))
+    public void populateSelectedOrderFields(CaseData caseData,
+                                            Map<String, Object> data,
+                                            UUID removedOrderId,
+                                            RemovableOrder removableOrder) {
+        orderRemovalActions
+            .getActions()
+            .stream()
+            .filter(orderRemovalAction -> orderRemovalAction.isAccepted(removableOrder))
             .findFirst()
-            .ifPresent(orderElement -> {
-                GeneratedOrder order = orderElement.getValue();
-                orderData.put("orderToBeRemoved", order.getDocument());
-                orderData.put("orderTitleToBeRemoved", order.getTitle());
-                orderData.put("orderIssuedDateToBeRemoved", order.getDateOfIssue());
-                orderData.put("orderDateToBeRemoved", order.getDate());
-            });
-        return orderData;
+            .orElseThrow(() -> new IllegalArgumentException(
+                format("Action not found for order %s", removedOrderId)))
+            .populateCaseFields(caseData, data, removedOrderId, removableOrder);
     }
 
     public void removeOrderFromCase(CaseData caseData,

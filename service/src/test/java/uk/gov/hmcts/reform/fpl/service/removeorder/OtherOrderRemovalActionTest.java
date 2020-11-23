@@ -1,10 +1,11 @@
-package uk.gov.hmcts.reform.fpl.service;
+package uk.gov.hmcts.reform.fpl.service.removeorder;
 
 import com.google.common.collect.Maps;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
@@ -47,7 +48,6 @@ class OtherOrderRemovalActionTest {
 
     @Test
     void shouldGetRemovedOrderWhenNotFinal() {
-
         GeneratedOrder generatedOrder = buildOrder(
             NON_FINAL_ORDER,
             "order 1",
@@ -151,7 +151,6 @@ class OtherOrderRemovalActionTest {
 
     @Test
     void shouldGetRemovedOrderWhenNotFinalAndOtherAlreadyHidden() {
-
         GeneratedOrder generatedOrder = buildOrder(
             NON_FINAL_ORDER,
             "order 1",
@@ -244,7 +243,6 @@ class OtherOrderRemovalActionTest {
 
     @Test
     void shouldGetRemovedOrderAndRevertChildrenMarkersWhenFinal() {
-
         GeneratedOrder generatedOrder = buildOrder(
             FINAL_ORDER,
             "order 1",
@@ -315,7 +313,6 @@ class OtherOrderRemovalActionTest {
 
     @Test
     void shouldGetRemovedOrderAndRevertOnlyRelatedChildrenMarkersWhenFinal() {
-
         GeneratedOrder generatedOrder = buildOrder(
             FINAL_ORDER,
             "order 1",
@@ -373,7 +370,37 @@ class OtherOrderRemovalActionTest {
                 ))
             )
         ));
+    }
 
+    @Test
+    void shouldPopulateGeneratedOrderCaseFieldsFromRemovedGeneratedOrder() {
+        GeneratedOrder generatedOrder = buildOrder(
+            FINAL_ORDER,
+            "order 1",
+            "15 June 2020"
+        );
+
+        DocumentReference document = DocumentReference.builder().build();
+        generatedOrder = generatedOrder.toBuilder().document(document).build();
+
+        CaseData caseData = CaseData.builder()
+            .reasonToRemoveOrder(REASON)
+            .orderCollection(newArrayList(element(TO_REMOVE_ORDER_ID, generatedOrder)))
+            .build();
+
+        Map<String, Object> data = Maps.newHashMap();
+
+        underTest.populateCaseFields(caseData, data, TO_REMOVE_ORDER_ID, generatedOrder);
+
+        assertThat(data)
+            .extracting("orderToBeRemoved",
+                "orderTitleToBeRemoved",
+                "orderIssuedDateToBeRemoved",
+                "orderDateToBeRemoved")
+            .containsExactly(document,
+                generatedOrder.getTitle(),
+                generatedOrder.getDateOfIssue(),
+                generatedOrder.getRemovalReason());
     }
 
     private GeneratedOrder buildOrder(GeneratedOrderType type, String title, String dateOfIssue) {
@@ -398,5 +425,4 @@ class OtherOrderRemovalActionTest {
             .removalReason(removalReason)
             .build();
     }
-
 }

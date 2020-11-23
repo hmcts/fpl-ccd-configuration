@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service;
+package uk.gov.hmcts.reform.fpl.service.removeorder;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -47,7 +47,22 @@ public class CMOOrderRemovalAction implements OrderRemovalAction {
         data.put("hearingDetails", removeHearingLinkedToCMO(caseData.getHearingDetails(), removedOrderId));
     }
 
-    public List<Element<HearingBooking>> removeHearingLinkedToCMO(List<Element<HearingBooking>> hearings,
+    @Override
+    public void populateCaseFields(CaseData caseData,
+                                   Map<String, Object> data,
+                                   UUID removableOrderId,
+                                   RemovableOrder removableOrder) {
+        CaseManagementOrder caseManagementOrder = (CaseManagementOrder) removableOrder;
+
+        Element<HearingBooking> hearingBooking
+            = getHearingLinkedToCMO(caseData.getHearingDetails(), removableOrderId);
+
+        data.put("orderToBeRemoved", caseManagementOrder.getOrder());
+        data.put("orderTitleToBeRemoved", "Case management order");
+        data.put("unlinkedHearing", hearingBooking.getValue().toLabel());
+    }
+
+    private List<Element<HearingBooking>> removeHearingLinkedToCMO(List<Element<HearingBooking>> hearings,
                                                                   UUID removedOrderId) {
         if (isEmpty(hearings)) {
             return null;
@@ -63,4 +78,14 @@ public class CMOOrderRemovalAction implements OrderRemovalAction {
             }).collect(Collectors.toList());
     }
 
+    private Element<HearingBooking> getHearingLinkedToCMO(List<Element<HearingBooking>> hearings,
+                                                                    UUID removedOrderId) {
+        return hearings.stream()
+            .filter(hearingBookingElement -> {
+                return removedOrderId.equals(hearingBookingElement.getValue().getCaseManagementOrderId());
+            })
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException(
+                format("Could not find hearing matching id %s", removedOrderId)));
+    }
 }

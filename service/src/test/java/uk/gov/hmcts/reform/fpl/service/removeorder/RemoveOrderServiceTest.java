@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service;
+package uk.gov.hmcts.reform.fpl.service.removeorder;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
@@ -115,49 +114,35 @@ class RemoveOrderServiceTest {
     }
 
     @Test
-    void shouldReturnAMapOfExtractedOrderDetailsWhenIdMatchesOrderInDynamicList() {
-        DocumentReference document = DocumentReference.builder().build();
-        String orderTitle = "order title";
-        String dateOfIssue = "14 July 2020";
-        String dateAndTimeOfUpload = "2:28pm, 31 August 2020";
+    void shouldPopulateCaseFieldsFromCaseWithMatchedAction() {
+        when(orderRemovalActions.getActions()).thenReturn(List.of(
+            orderRemovalAction,
+            anotherOrderRemovalAction
+        ));
+        when(orderRemovalAction.isAccepted(removableOrder)).thenReturn(true);
 
-        Element<GeneratedOrder> order = element(
-            buildOrder(BLANK_ORDER, orderTitle, dateOfIssue).toBuilder()
-            .date(dateAndTimeOfUpload)
-            .document(document)
-            .build()
-        );
+        underTest.populateSelectedOrderFields(caseData, data, REMOVED_UUID, removableOrder);
 
-        Map<String, Object> orderFields = underTest.populateSelectedOrderFields(List.of(order), order.getId());
-
-        Map<String, Object> expectedFields = Map.of(
-            "orderToBeRemoved", document,
-            "orderTitleToBeRemoved", orderTitle,
-            "orderIssuedDateToBeRemoved", dateOfIssue,
-            "orderDateToBeRemoved", dateAndTimeOfUpload
-        );
-
-        assertThat(orderFields).isEqualTo(expectedFields);
+        verify(orderRemovalAction).populateCaseFields(caseData, data, REMOVED_UUID, removableOrder);
+        verifyNoInteractions(anotherOrderRemovalAction);
     }
 
     @Test
-    void shouldReturnEmptyMapWhenIdDoesNotMatchOrderInDynamicList() {
-        DocumentReference document = DocumentReference.builder().build();
-        String orderTitle = "order title";
-        String dateOfIssue = "14 July 2020";
-        String dateAndTimeOfUpload = "2:28pm, 31 August 2020";
+    void shouldThrowExceptionIfActionNotMatchedPopulateCaseFieldsFromCase() {
+        when(orderRemovalActions.getActions()).thenReturn(List.of(
+            orderRemovalAction,
+            anotherOrderRemovalAction
+        ));
+        when(orderRemovalAction.isAccepted(removableOrder)).thenReturn(false);
+        when(anotherOrderRemovalAction.isAccepted(removableOrder)).thenReturn(false);
 
-        Element<GeneratedOrder> order = element(
-            buildOrder(BLANK_ORDER, orderTitle, dateOfIssue).toBuilder()
-                .date(dateAndTimeOfUpload)
-                .document(document)
-                .build()
+        IllegalArgumentException actualException = assertThrows(IllegalArgumentException.class,
+            () -> underTest.populateSelectedOrderFields(caseData, data, REMOVED_UUID, removableOrder)
         );
 
-        Map<String, Object> orderFields = underTest.populateSelectedOrderFields(List.of(order),
-            java.util.UUID.randomUUID());
-
-        assertThat(orderFields).isEmpty();
+        assertThat(actualException.getMessage()).isEqualTo(
+            format("Action not found for order %s", REMOVED_UUID)
+        );
     }
 
     @Test

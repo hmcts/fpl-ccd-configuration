@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service;
+package uk.gov.hmcts.reform.fpl.service.removeorder;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -48,7 +48,21 @@ public class OtherOrderRemovalAction implements OrderRemovalAction {
         updateOrRemoveIfEmpty(data, "orderCollection", generatedOrders);
     }
 
-    public List<Element<Child>> removeFinalOrderPropertiesFromChildren(CaseData caseData,
+    @Override
+    public void populateCaseFields(CaseData caseData,
+                                   Map<String, Object> data,
+                                   UUID removableOrderId,
+                                   RemovableOrder removableOrder) {
+        GeneratedOrder generatedRemovableOrder = (GeneratedOrder) removableOrder;
+
+
+        data.put("orderToBeRemoved", generatedRemovableOrder.getDocument());
+        data.put("orderTitleToBeRemoved", generatedRemovableOrder.getTitle());
+        data.put("orderIssuedDateToBeRemoved", generatedRemovableOrder.getDateOfIssue());
+        data.put("orderDateToBeRemoved", generatedRemovableOrder.getDate());
+    }
+
+    private List<Element<Child>> removeFinalOrderPropertiesFromChildren(CaseData caseData,
                                                                        GeneratedOrder removedOrder) {
         if (!removedOrder.isFinalOrder()) {
             return caseData.getAllChildren();
@@ -66,5 +80,4 @@ public class OtherOrderRemovalAction implements OrderRemovalAction {
                 return element;
             }).collect(Collectors.toList());
     }
-
 }
