@@ -14,8 +14,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Others;
 
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-
 @Api
 @RestController
 @RequestMapping("/callback/migrate-case")
@@ -31,11 +29,7 @@ public class MigrateCaseController extends CallbackController {
         if ("CF20C50024".equals(caseData.getFamilyManCaseNumber())) {
             log.info("Removing others from case reference {}", caseDetails.getId());
             Others others = caseData.getOthers();
-            if (isEmpty(others.getAdditionalOthers())) {
-                caseDetails.getData().remove("others");
-            } else {
-                caseDetails.getData().put("others", nullFirstOther(others));
-            }
+            caseDetails.getData().put("others", nullFirstOther(others));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
