@@ -9,6 +9,16 @@
   "SecurityClassification": "Public"
   },
   {
+    "LiveFrom": "01/01/2017",
+    "ID": "Documents",
+    "ListElementCode": "documentName",
+    "FieldType": "Text",
+    "ElementLabel": "Document name",
+    "HintText": "Use a meaningful name. For example, medical report",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "documentType=\"OTHER\""
+  },
+  {
   "LiveFrom": "01/01/2017",
   "ID": "Documents",
   "ListElementCode": "document",

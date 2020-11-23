@@ -16,4 +16,5 @@ public class ApplicationDocument {
     private final DocumentType documentType;
     protected LocalDateTime dateTimeUploaded;
     private String uploadedBy;
+    private String documentName;
 }
