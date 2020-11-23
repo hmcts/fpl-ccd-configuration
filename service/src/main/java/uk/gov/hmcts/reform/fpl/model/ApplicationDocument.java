@@ -17,4 +17,5 @@ public class ApplicationDocument {
     protected LocalDateTime dateTimeUploaded;
     private String uploadedBy;
     private String documentName;
+    private String swetDescription;
 }

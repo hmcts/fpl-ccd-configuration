@@ -44,7 +44,7 @@ public class UploadApplicationDocumentsService {
 
         if (isNull(previousDocuments) && currentDocuments.size() > 0) {
             // this is for very first scenario
-
+            //bug needs fixed here as only adds to last element
             currentDocuments.get(currentDocuments.size() - 1).getValue().setDateTimeUploaded(time.now());
             currentDocuments.get(currentDocuments.size() - 1).getValue().setUploadedBy(uploadedBy);
             return currentDocuments;

@@ -22,8 +22,17 @@
     "ID": "UploadApplicationDocuments",
     "CaseEventID": "uploadApplicationDocuments",
     "CaseFieldID": "documents",
-    "ListElementCode": "document",
+    "ListElementCode": "swetDescription",
     "FieldDisplayOrder": 3,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadApplicationDocuments",
+    "CaseEventID": "uploadApplicationDocuments",
+    "CaseFieldID": "documents",
+    "ListElementCode": "document",
+    "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -32,7 +41,7 @@
     "CaseEventID": "uploadApplicationDocuments",
     "CaseFieldID": "documents",
     "ListElementCode": "dateTimeUploaded",
-    "FieldDisplayOrder": 4,
+    "FieldDisplayOrder": 5,
     "DisplayContext": "OPTIONAL",
     "FieldShowCondition": "showMetaFields=\"YES\""
   },
@@ -42,7 +51,7 @@
     "CaseEventID": "uploadApplicationDocuments",
     "CaseFieldID": "documents",
     "ListElementCode": "uploadedBy",
-    "FieldDisplayOrder": 5,
+    "FieldDisplayOrder": 6,
     "DisplayContext": "OPTIONAL",
     "FieldShowCondition": "showMetaFields=\"YES\""
   }
