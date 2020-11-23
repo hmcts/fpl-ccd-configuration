@@ -23,6 +23,7 @@
     "CaseEventID": "uploadApplicationDocuments",
     "CaseFieldID": "documents",
     "ListElementCode": "swetDescription",
+    "EventElementLabel": "Let us know what you are including in your SWET",
     "FieldDisplayOrder": 3,
     "DisplayContext": "OPTIONAL"
   },
@@ -32,6 +33,7 @@
     "CaseEventID": "uploadApplicationDocuments",
     "CaseFieldID": "documents",
     "ListElementCode": "document",
+    "EventElementLabel": "Upload a file",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY"
   },

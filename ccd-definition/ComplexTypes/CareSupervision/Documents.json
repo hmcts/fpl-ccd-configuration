@@ -23,18 +23,18 @@
     "ID": "Documents",
     "ListElementCode": "swetDescription",
     "FieldType": "TextArea",
-    "ElementLabel": "Let us know what you are including in your SWET",
+    "ElementLabel": "Included in SWET",
     "HintText": "Use a meaningful name. For example, Genogram",
     "SecurityClassification": "Public",
     "FieldShowCondition": "documentType=\"SWET\""
   },
   {
-  "LiveFrom": "01/01/2017",
-  "ID": "Documents",
-  "ListElementCode": "document",
-  "FieldType": "Document",
-  "ElementLabel": "Upload a file",
-  "SecurityClassification": "Public"
+    "LiveFrom": "01/01/2017",
+    "ID": "Documents",
+    "ListElementCode": "document",
+    "FieldType": "Document",
+    "ElementLabel": "File",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
