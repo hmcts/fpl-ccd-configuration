@@ -102,7 +102,7 @@ class CMOOrderRemovalActionTest {
         underTest.action(caseData, data, TO_REMOVE_ORDER_ID, CaseManagementOrder.builder().build());
 
         Map<String, List<?>> expectedData = Maps.newHashMap();
-        expectedData.put("hearingDetails", null);
+        expectedData.put("hearingDetails", List.of());
         expectedData.put("hiddenCaseManagementOrders", List.of(
             element(TO_REMOVE_ORDER_ID, CaseManagementOrder.builder().removalReason(REASON).build())
         ));
@@ -127,7 +127,7 @@ class CMOOrderRemovalActionTest {
         underTest.action(caseData, data, TO_REMOVE_ORDER_ID, CaseManagementOrder.builder().build());
 
         Map<String, List<?>> expectedData = Maps.newHashMap();
-        expectedData.put("hearingDetails", null);
+        expectedData.put("hearingDetails", List.of());
         expectedData.put("hiddenCaseManagementOrders", List.of(
             element(ALREADY_REMOVED_ORDER_ID, CaseManagementOrder.builder().build()),
             element(TO_REMOVE_ORDER_ID, CaseManagementOrder.builder().removalReason(REASON).build())
@@ -174,19 +174,20 @@ class CMOOrderRemovalActionTest {
                 element(TO_REMOVE_ORDER_ID, CaseManagementOrder.builder().removalReason(REASON).build())
             )
         ));
-
     }
 
     @Test
     void shouldThrowExceptionIfOrderNotFound() {
+        CaseManagementOrder emptyCaseManagementOrder = CaseManagementOrder.builder().build();
+
         CaseData caseData = CaseData.builder()
             .reasonToRemoveOrder(REASON)
-            .sealedCMOs(newArrayList(element(TO_REMOVE_ORDER_ID, CaseManagementOrder.builder().build())))
+            .sealedCMOs(newArrayList(element(TO_REMOVE_ORDER_ID, emptyCaseManagementOrder)))
             .build();
         Map<String, Object> data = Maps.newHashMap();
 
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-            () -> underTest.action(caseData, data, ALREADY_REMOVED_ORDER_ID, CaseManagementOrder.builder().build()));
+            () -> underTest.action(caseData, data, ALREADY_REMOVED_ORDER_ID, emptyCaseManagementOrder));
 
         assertThat(exception.getMessage()).isEqualTo(
             format("Failed to find order matching id %s", ALREADY_REMOVED_ORDER_ID)

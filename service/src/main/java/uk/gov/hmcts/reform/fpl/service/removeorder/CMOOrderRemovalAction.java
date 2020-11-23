@@ -65,7 +65,7 @@ public class CMOOrderRemovalAction implements OrderRemovalAction {
     private List<Element<HearingBooking>> removeHearingLinkedToCMO(List<Element<HearingBooking>> hearings,
                                                                   UUID removedOrderId) {
         if (isEmpty(hearings)) {
-            return null;
+            return List.of();
         }
 
         return hearings.stream()
@@ -81,9 +81,8 @@ public class CMOOrderRemovalAction implements OrderRemovalAction {
     private Element<HearingBooking> getHearingLinkedToCMO(List<Element<HearingBooking>> hearings,
                                                                     UUID removedOrderId) {
         return hearings.stream()
-            .filter(hearingBookingElement -> {
-                return removedOrderId.equals(hearingBookingElement.getValue().getCaseManagementOrderId());
-            })
+            .filter(hearingBookingElement ->
+                removedOrderId.equals(hearingBookingElement.getValue().getCaseManagementOrderId()))
             .findFirst()
             .orElseThrow(() -> new IllegalArgumentException(
                 format("Could not find hearing matching id %s", removedOrderId)));
