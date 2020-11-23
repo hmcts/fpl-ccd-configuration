@@ -17,7 +17,6 @@ import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -36,6 +35,7 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder {
     private final String uploader;
     private List<Element<Direction>> directions;
     private DocumentReference orderDoc;
+    private String removalReason;
 
     @JsonIgnore
     public boolean isSealed() {
@@ -68,11 +68,6 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder {
 
     @Override
     public String asLabel() {
-        return "Case management order - " + formatLocalDateToString(dateOfUpload, "d MMMM yyyy");
-    }
-
-    @Override
-    public void setRemovalReason(String reason) {
-
+        return "Standard direction order - " + formatLocalDateToString(dateOfUpload, "d MMMM yyyy");
     }
 }
