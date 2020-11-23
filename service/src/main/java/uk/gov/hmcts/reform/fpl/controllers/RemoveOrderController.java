@@ -11,10 +11,15 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderRemovedEvent;
+import uk.gov.hmcts.reform.fpl.events.cmo.CMORemovedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
+import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.RemoveOrderService;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -25,7 +30,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedV
 @RestController
 @RequestMapping("/callback/remove-order")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class RemoveOrderController {
+public class RemoveOrderController extends CallbackController {
     private static final String REMOVABLE_ORDER_LIST_KEY = "removableOrderList";
     private final ObjectMapper mapper;
     private final RemoveOrderService service;
@@ -84,6 +89,35 @@ public class RemoveOrderController {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
             .build();
+    }
+
+    @PostMapping("/submitted")
+    public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
+        CaseData previousData = getCaseDataBefore(callbackRequest);
+        CaseData caseData = getCaseData(callbackRequest);
+
+        CaseManagementOrder removedCMO = getRemovedCMO(previousData.getSealedCMOs(), caseData.getSealedCMOs());
+
+        if (removedCMO != null) {
+            publishEvent(new CMORemovedEvent(caseData, removedCMO.getRemovalReason()));
+        } else if (isSDORemoved(previousData, caseData)) {
+            publishEvent(new StandardDirectionsOrderRemovedEvent(caseData, null));
+            // TODO: set sdo removalReason
+        }
+    }
+
+    private boolean isSDORemoved(CaseData previousData, CaseData caseData) {
+        return previousData.getStandardDirectionOrder() != null && caseData.getStandardDirectionOrder() == null;
+    }
+
+    private CaseManagementOrder getRemovedCMO(
+        List<Element<CaseManagementOrder>> previousSealedCMOs,
+        List<Element<CaseManagementOrder>> newSealedCMOs
+    ) {
+        return previousSealedCMOs.stream()
+            .filter(element -> !newSealedCMOs.contains(element))
+            .findFirst()
+            .map(Element::getValue).orElse(null);
     }
 
 }
