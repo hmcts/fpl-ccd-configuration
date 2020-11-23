@@ -29,6 +29,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadApplicationDocuments",
     "CaseFieldID": "documentsToFollow",
+    "CaseEventFieldLabel": "Give details of documents to follow, including why you're not sending them now, and when you think they'll be ready.",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "OPTIONAL",
     "PageID": 1,
