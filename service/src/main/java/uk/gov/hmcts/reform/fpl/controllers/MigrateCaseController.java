@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,39 +12,47 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 @Api
 @RestController
 @RequestMapping("/callback/migrate-case")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Slf4j
-public class MigrateCaseController {
-
-    private final ObjectMapper mapper;
+public class MigrateCaseController extends CallbackController {
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        Map<String, Object> data = caseDetails.getData();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = getCaseData(caseDetails);
 
-        if ("PO20C50014".equals(caseData.getFamilyManCaseNumber())) {
-            log.info("Removing c2 document bundle from case reference {}", caseDetails.getId());
-            data.put("c2DocumentBundle", removeC2Document(caseData.getC2DocumentBundle()));
+        if ("ZW20C50003".equals(caseData.getFamilyManCaseNumber())) {
+            log.info("Removing hearings from case reference {}", caseDetails.getId());
+            caseDetails.getData().put("hearingDetails", removeHearings(caseData.getHearingDetails()));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
+            .data(caseDetails.getData())
             .build();
     }
 
-    private List<Element<C2DocumentBundle>> removeC2Document(List<Element<C2DocumentBundle>> documentBundle) {
-        documentBundle.remove(0);
-        return documentBundle;
+    private List<Element<HearingBooking>> removeHearings(List<Element<HearingBooking>> hearings) {
+        for (int i = 0; i < 3; i++) {
+            assertHearingDate(hearings.get(i).getValue());
+            log.info("hearing {} has correct date", i);
+        }
+        hearings.remove(2);
+        hearings.remove(0);
+        return hearings;
+    }
+
+    private void assertHearingDate(HearingBooking hearing) {
+        if (!LocalDate.of(2020, 11, 10).isEqual(hearing.getStartDate().toLocalDate())) {
+            throw new IllegalArgumentException(String.format("Invalid hearing date %s", hearing.getStartDate()));
+        }
     }
 }
