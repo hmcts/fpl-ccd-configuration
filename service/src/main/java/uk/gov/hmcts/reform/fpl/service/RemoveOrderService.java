@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -80,7 +81,8 @@ public class RemoveOrderService {
         List<Element<? extends RemovableOrder>> orders = new ArrayList<>();
         orders.addAll(caseData.getOrderCollection());
         orders.addAll(caseData.getSealedCMOs());
-        //orders.addAll(List.of(caseData.getStandardDirectionOrder()));
+        orders.add(element(caseData.getStandardDirectionOrder().getUniqueCollectionId(),
+                                            caseData.getStandardDirectionOrder()));
         return orders;
     }
 }

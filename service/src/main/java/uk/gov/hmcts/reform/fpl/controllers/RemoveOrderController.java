@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.service.RemoveOrderService;
+import uk.gov.hmcts.reform.fpl.service.SDOOrderRemovalAction;
 
 import java.util.Map;
 import java.util.UUID;
@@ -68,9 +69,13 @@ public class RemoveOrderController {
 
         UUID removedOrderId = getDynamicListSelectedValue(caseData.getRemovableOrderList(), mapper);
         RemovableOrder removableOrder = service.getRemovedOrderByUUID(caseData, removedOrderId);
-
-        service.removeOrderFromCase(caseData, data, removedOrderId, removableOrder);
-
+        if (caseData.getStandardDirectionOrder().getUniqueCollectionId().toString()
+                                                        .equals("1111111-1111-1111-1111-111111111111")) {
+            SDOOrderRemovalAction action = new SDOOrderRemovalAction();
+            action.action(caseData, data, removedOrderId, removableOrder);
+        } else {
+            service.removeOrderFromCase(caseData, data, removedOrderId, removableOrder);
+        }
         removeTemporaryFields(
             caseDetails,
             REMOVABLE_ORDER_LIST_KEY,

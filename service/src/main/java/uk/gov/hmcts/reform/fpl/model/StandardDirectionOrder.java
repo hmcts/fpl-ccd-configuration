@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
@@ -24,7 +25,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFromStringUsingFormat;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StandardDirectionOrder implements IssuableOrder, RemovableOrder {
     private final String hearingDate;
@@ -36,6 +37,7 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder {
     private List<Element<Direction>> directions;
     private DocumentReference orderDoc;
     private String removalReason;
+    private String uniqueCollectionId;
 
     @JsonIgnore
     public boolean isSealed() {
@@ -45,6 +47,11 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder {
     @JsonIgnore
     public void setDirectionsToEmptyList() {
         this.directions = emptyList();
+    }
+
+    @JsonIgnore
+    public UUID getUniqueCollectionId() {
+        return UUID.fromString("11111111-1111-1111-1111-111111111111");
     }
 
     @JsonIgnore
