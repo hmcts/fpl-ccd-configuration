@@ -7,12 +7,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -33,6 +35,9 @@ class CaseSubmissionCheckerTest {
     @Mock
     private EventsChecker eventsChecker;
 
+    @Mock
+    private FeatureToggleService featureToggleService;
+
     @InjectMocks
     private CaseSubmissionChecker caseSubmissionValidator;
 
@@ -40,6 +45,7 @@ class CaseSubmissionCheckerTest {
 
     @Test
     void shouldReportGroupedErrorsForAllRelevantEvents() {
+        given(featureToggleService.isApplicationDocumentsEventEnabled()).willReturn(false);
         final List<String> caseNameErrors = List.of("Case name error");
         final List<String> ordersNeededErrors = List.of("Orders needed error 1", "Orders needed error 2");
         final List<String> hearingNeededErrors = List.of("Hearing needed error");
