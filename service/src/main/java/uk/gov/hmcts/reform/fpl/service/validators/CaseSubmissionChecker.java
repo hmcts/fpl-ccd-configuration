@@ -1,8 +1,11 @@
 package uk.gov.hmcts.reform.fpl.service.validators;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.util.List;
 
@@ -18,8 +21,12 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.ORGANISATION_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
 
 @Service
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class CaseSubmissionChecker extends CompoundEventChecker {
 
+    private final FeatureToggleService featureToggleService;
+
+    //TO DO remove when toggling on FPLA-768
     private static final List<Event> REQUIRED_EVENTS = List.of(
             CASE_NAME,
             ORDERS_SOUGHT,
@@ -32,9 +39,24 @@ public class CaseSubmissionChecker extends CompoundEventChecker {
             ALLOCATION_PROPOSAL
     );
 
+    private static final List<Event> REQUIRED_EVENTS_FOR_SUBMISSION = List.of(
+        CASE_NAME,
+        ORDERS_SOUGHT,
+        HEARING_URGENCY,
+        GROUNDS,
+        ORGANISATION_DETAILS,
+        CHILDREN,
+        RESPONDENTS,
+        ALLOCATION_PROPOSAL
+    );
+
     @Override
     public List<String> validate(CaseData caseData) {
-        return super.validate(caseData, REQUIRED_EVENTS);
+        if(featureToggleService.isApplicationDocumentsEventEnabled()) {
+            return super.validate(caseData, REQUIRED_EVENTS_FOR_SUBMISSION);
+        } else {
+            return super.validate(caseData, REQUIRED_EVENTS);
+        }
     }
 
     @Override

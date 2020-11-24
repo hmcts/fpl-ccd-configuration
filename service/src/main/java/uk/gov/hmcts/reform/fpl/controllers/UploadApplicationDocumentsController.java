@@ -37,7 +37,8 @@ public class UploadApplicationDocumentsController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         CaseData caseDataBefore = getCaseDataBefore(callbackrequest);
-        caseDetails.getData().putAll(service.updateCaseDocuments(caseData.getDocuments(), caseDataBefore.getDocuments()));
+        caseDetails.getData().putAll(service.updateCaseDocuments(caseData.getDocuments(),
+            caseDataBefore.getDocuments()));
 
         caseDetails.getData().put("showMetaFields", YES);
 

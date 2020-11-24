@@ -28,7 +28,7 @@ public class ApplicationDocumentsService {
     public Map<String, Object> updateCaseDocuments(List<Element<ApplicationDocument>> currentDocuments,
                                                    List<Element<ApplicationDocument>> previousDocuments) {
         List<Element<ApplicationDocument>> updatedDocuments = setUpdatedByAndDateAndTimeOnDocuments(
-           currentDocuments, previousDocuments);
+             currentDocuments, previousDocuments);
 
         Map<String, Object> updatedCaseData = new HashMap<>();
 
@@ -53,9 +53,10 @@ public class ApplicationDocumentsService {
             //An old document which have not been changed
             List<Element<ApplicationDocument>> currentDocs = currentDocuments.stream()
                 .map(currentDoc -> {
-                    Optional<Element<ApplicationDocument>> previousDoc = getMetaDataBasedOnID(currentDoc.getId(), previousDocuments);
+                    Optional<Element<ApplicationDocument>> previousDoc = getMetaDataBasedOnID(currentDoc.getId(),
+                        previousDocuments);
 
-                    if(previousDoc.isPresent()) {
+                    if (previousDoc.isPresent()) {
                         Element<ApplicationDocument> oldDocument = previousDoc.get();
 
 
@@ -87,8 +88,10 @@ public class ApplicationDocumentsService {
         }
     }
 
-    private Optional<Element<ApplicationDocument>> getMetaDataBasedOnID(UUID documentID, List<Element<ApplicationDocument>> previousDocuments) {
-        return Optional.ofNullable(previousDocuments.stream().filter((previousDocument) -> previousDocument.getId()
+    private Optional<Element<ApplicationDocument>> getMetaDataBasedOnID(UUID documentID,
+        List<Element<ApplicationDocument>> previousDocuments) {
+        return Optional.ofNullable(previousDocuments.stream().filter((previousDocument)
+            -> previousDocument.getId()
             .equals(documentID)).findAny().orElse(null));
     }
 }

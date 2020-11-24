@@ -17,6 +17,7 @@ import static java.util.stream.Collectors.toMap;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
+import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
 import static uk.gov.hmcts.reform.fpl.enums.Event.COURT_SERVICES;
@@ -32,7 +33,6 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.OTHER_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RISK_AND_HARM;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
-import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskSection.newSection;
 
 @Service
@@ -42,9 +42,11 @@ public class TaskListRenderer {
     private static final String NEW_LINE = "<br/>";
 
     private final String imagesBaseUrl;
+    private final FeatureToggleService featureToggleService;
 
-    public TaskListRenderer(@Value("${resources.images.baseUrl}") String imagesBaseUrl) {
+    public TaskListRenderer(@Value("${resources.images.baseUrl}") String imagesBaseUrl, FeatureToggleService featureToggleService) {
         this.imagesBaseUrl = imagesBaseUrl;
+        this.featureToggleService = featureToggleService;
     }
 
     //TODO consider templating solution like mustache
@@ -77,11 +79,16 @@ public class TaskListRenderer {
                 .withHint("In emergency cases, you can send your application without this information")
         ));
 
-        final TaskSection documents = newSection("Add supporting documents", of(tasks.get(DOCUMENTS)))
-            .withHint("For example, SWET, social work chronology and care plan");
-
-        final TaskSection applicationDocuments = newSection("Add application documents", of(tasks.get(APPLICATION_DOCUMENTS)))
-            .withHint("For example, SWET, social work chronology and care plan<br> In emergency cases, you can send your application without this information ");
+        final TaskSection documents;
+        if(featureToggleService.isApplicationDocumentsEventEnabled()) {
+            documents = newSection("Add application documents",
+                of(tasks.get(APPLICATION_DOCUMENTS)))
+                .withHint("For example, SWET, social work chronology and care plan<br> In emergency cases, "
+                    + "you can send your application without this information ");
+        } else {
+            documents = newSection("Add supporting documents", of(tasks.get(DOCUMENTS)))
+                .withHint("For example, SWET, social work chronology and care plan");
+        }
 
         final TaskSection parties = newSection("Add information about the parties",
             List.of(
@@ -106,7 +113,6 @@ public class TaskListRenderer {
         return List.of(applicationDetails,
             applicationGrounds,
             documents,
-            applicationDocuments,
             parties,
             courtRequirements,
             additionalInformation,

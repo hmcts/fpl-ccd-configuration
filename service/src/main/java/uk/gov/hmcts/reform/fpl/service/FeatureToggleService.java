@@ -67,6 +67,10 @@ public class FeatureToggleService {
             createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
     }
 
+    public boolean isApplicationDocumentsEventEnabled() {
+        return ldClient.boolVariation("application-documents-event", createLDUser(), true);
+    }
+
     private LDUser createLDUser() {
         return createLDUser(Map.of());
     }

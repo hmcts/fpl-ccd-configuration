@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service.validators;
 
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
@@ -28,7 +28,8 @@ public class ApplicationDocumentChecker implements EventChecker {
             return false;
         }
 
-        ApplicationDocument anyDocument = applicationDocuments.stream().filter(Objects::nonNull).findAny().get().getValue();
+        ApplicationDocument anyDocument = applicationDocuments.stream().filter(Objects::nonNull).findAny()
+            .get().getValue();
 
         return anyNonEmpty(
             anyDocument.getDocument(),
