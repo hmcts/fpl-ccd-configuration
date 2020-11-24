@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.util.EnumMap;
 import java.util.List;
@@ -81,6 +82,9 @@ public class EventsChecker {
     private FactorsAffectingParentingChecker factorsAffectingParentingChecker;
 
     @Autowired
+    private FeatureToggleService featureToggleService;
+
+    @Autowired
     private ApplicationDocumentChecker supportingDocumentsChecker;
 
     private final EnumMap<Event, EventChecker> eventCheckers = new EnumMap<>(Event.class);
@@ -108,7 +112,9 @@ public class EventsChecker {
     }
 
     public List<String> validate(Event event, CaseData caseData) {
-        return ofNullable(eventCheckers.get(event))
+        if(featureToggleService.isApplicationDocumentsEventEnabled() && event.equals(Event.DOCUMENTS)) {
+            return emptyList();
+        } else return ofNullable(eventCheckers.get(event))
                 .map(validator -> validator.validate(caseData))
                 .orElse(emptyList());
     }

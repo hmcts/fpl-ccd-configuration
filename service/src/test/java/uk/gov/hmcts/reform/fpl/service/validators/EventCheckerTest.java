@@ -14,10 +14,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.util.List;
 import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.mockito.Mockito.verify;
@@ -77,6 +79,10 @@ class EventCheckerTest {
     private CourtServiceChecker courtServiceChecker;
     @MockBean
     private FactorsAffectingParentingChecker factorsAffectingParentingChecker;
+    @MockBean
+    private ApplicationDocumentChecker applicationDocumentChecker;
+    @MockBean
+    private FeatureToggleService featureToggleService;
     @Autowired
     private EventsChecker eventsChecker;
 
@@ -128,6 +134,16 @@ class EventCheckerTest {
         assertThat(eventsChecker.isAvailable(event, caseData)).isEqualTo(isAvailable);
 
         verify(validator).isAvailable(caseData);
+    }
+
+    @ParameterizedTest
+    @MethodSource("getEventsValidators")
+    void shouldNotValidateDocumentEventWhenApplicationDocumentEventToggledOn(Event event, EventChecker validator) {
+        when(validator.validate(caseData)).thenReturn(emptyList());
+
+        assertThat(eventsChecker.validate(event, caseData)).isEqualTo(emptyList());
+
+        verify(validator).validate(caseData);
     }
 
     @AfterEach
