@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(MockitoExtension.class)
@@ -225,10 +226,12 @@ class CMOOrderRemovalActionTest {
         assertThat(data)
             .extracting("orderToBeRemoved",
                 "orderTitleToBeRemoved",
-                "unlinkedHearing")
+                "unlinkedHearing",
+                "showRemoveCMOFieldsFlag")
             .containsExactly(orderDocument,
                 "Case management order",
-                hearingToBeUnlinked.toLabel());
+                hearingToBeUnlinked.toLabel(),
+                YES.getValue());
     }
 
     @Test

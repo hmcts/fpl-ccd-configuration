@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static org.springframework.util.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.updateOrRemoveIfEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -60,6 +61,7 @@ public class CMOOrderRemovalAction implements OrderRemovalAction {
         data.put("orderToBeRemoved", caseManagementOrder.getOrder());
         data.put("orderTitleToBeRemoved", "Case management order");
         data.put("unlinkedHearing", hearingBooking.getValue().toLabel());
+        data.put("showRemoveCMOFieldsFlag", YES.getValue());
     }
 
     private List<Element<HearingBooking>> removeHearingLinkedToCMO(List<Element<HearingBooking>> hearings,

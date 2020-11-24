@@ -28,7 +28,7 @@ Scenario('HMCTS super user updates FamilyMan reference number', async ({I, caseV
   I.seeFamilyManNumber('newMockCaseID');
 });
 
-Scenario('HMCTS super user removes an order from a case', async ({I, caseViewPage, removeOrderEventPage}) => {
+Scenario('HMCTS super user removes a generated order from a case', async ({I, caseViewPage, removeOrderEventPage}) => {
   await caseViewPage.goToNewActions(config.superUserActions.removeOrder);
   let order = orderCaseData.caseData.orderCollection[0];
   const labelToSelect = order.value.title + ' - ' + order.value.dateOfIssue;

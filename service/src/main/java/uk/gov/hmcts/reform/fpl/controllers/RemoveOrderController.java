@@ -80,7 +80,8 @@ public class RemoveOrderController {
             "orderTitleToBeRemoved",
             "orderIssuedDateToBeRemoved",
             "orderDateToBeRemoved",
-            "unlinkedHearing"
+            "unlinkedHearing",
+            "showRemoveCMOFieldsFlag"
         );
 
         return AboutToStartOrSubmitCallbackResponse.builder()

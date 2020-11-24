@@ -70,7 +70,8 @@ public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTe
                 "orderTitleToBeRemoved", "dummy data",
                 "orderIssuedDateToBeRemoved", "dummy data",
                 "orderDateToBeRemoved", "dummy data",
-                "unlinkedHearing", "dummy data"
+                "unlinkedHearing", "dummy data",
+                "showRemoveCMOFieldsFlag", "dummy data"
             )
         );
 
@@ -83,7 +84,8 @@ public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTe
             "orderTitleToBeRemoved",
             "orderIssuedDateToBeRemoved",
             "orderDateToBeRemoved",
-            "unlinkedHearing"
+            "unlinkedHearing",
+            "showRemoveCMOFieldsFlag"
         );
     }
 
