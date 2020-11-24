@@ -96,5 +96,12 @@
     "CaseFieldID": "closedStateRadioList",
     "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "noticeOfProceedings",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "D"
   }
 ]
