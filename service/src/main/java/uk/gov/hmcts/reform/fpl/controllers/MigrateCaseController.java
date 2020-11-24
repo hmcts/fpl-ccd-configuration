@@ -40,7 +40,8 @@ public class MigrateCaseController extends CallbackController {
     }
 
     private List<Element<C2DocumentBundle>> removeC2Document(List<Element<C2DocumentBundle>> documentBundle) {
-        documentBundle.remove(1);
+        // remove latest bundle (will be the last one added)
+        documentBundle.remove(documentBundle.size() - 1);
         return documentBundle;
     }
 }
