@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForC2;
 import uk.gov.hmcts.reform.fpl.model.notify.c2uploaded.C2UploadedTemplate;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
@@ -19,7 +18,6 @@ import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE_JUDGE;
-import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.C2_APPLICATION;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -29,7 +27,6 @@ public class C2UploadedEventHandler {
     private final NotificationService notificationService;
     private final HmctsAdminNotificationHandler adminNotificationHandler;
     private final C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
-    private final FeatureToggleService featureToggleService;
 
     @EventListener
     public void sendNotifications(final C2UploadedEvent event) {
@@ -50,8 +47,7 @@ public class C2UploadedEventHandler {
     public void sendC2UploadedNotificationToAllocatedJudge(final C2UploadedEvent event) {
         CaseData caseData = event.getCaseData();
 
-        if (featureToggleService.isAllocatedJudgeNotificationEnabled(C2_APPLICATION)
-            && caseData.hasAllocatedJudgeEmail()) {
+        if (caseData.hasAllocatedJudgeEmail()) {
             AllocatedJudgeTemplateForC2 parameters = c2UploadedEmailContentProvider
                 .buildC2UploadNotificationForAllocatedJudge(caseData);
 
