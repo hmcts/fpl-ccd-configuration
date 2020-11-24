@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.service.RemoveOrderService;
-import uk.gov.hmcts.reform.fpl.service.SDOOrderRemovalAction;
 
 import java.util.Map;
 import java.util.UUID;

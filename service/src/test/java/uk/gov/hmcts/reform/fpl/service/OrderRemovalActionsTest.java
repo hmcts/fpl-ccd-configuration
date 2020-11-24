@@ -13,9 +13,11 @@ class OrderRemovalActionsTest {
     void testGetActions() {
         CMOOrderRemovalAction cmoOrderRemovalAction = mock(CMOOrderRemovalAction.class);
         OtherOrderRemovalAction otherOrderRemovalAction = mock(OtherOrderRemovalAction.class);
+        SDOOrderRemovalAction sdoOrderRemovalAction = mock(SDOOrderRemovalAction.class);
         assertThat(new OrderRemovalActions(
             cmoOrderRemovalAction,
-            otherOrderRemovalAction
+            otherOrderRemovalAction,
+            sdoOrderRemovalAction
         ).getActions()).isEqualTo(List.of(
             cmoOrderRemovalAction,
             otherOrderRemovalAction
