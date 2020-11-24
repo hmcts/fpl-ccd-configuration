@@ -20,7 +20,8 @@ class OrderRemovalActionsTest {
             sdoOrderRemovalAction
         ).getActions()).isEqualTo(List.of(
             cmoOrderRemovalAction,
-            otherOrderRemovalAction
+            otherOrderRemovalAction,
+            sdoOrderRemovalAction
         ));
     }
 }
