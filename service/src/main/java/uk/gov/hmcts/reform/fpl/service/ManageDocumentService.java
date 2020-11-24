@@ -28,6 +28,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -259,11 +260,11 @@ public class ManageDocumentService {
             .build());
     }
 
-    private List<Element<SupportingEvidenceBundle>> getEmptySupportingEvidenceBundle() {
+    public List<Element<SupportingEvidenceBundle>> getEmptySupportingEvidenceBundle() {
         return List.of(element(SupportingEvidenceBundle.builder().build()));
     }
 
-    private String formatHearingBookingExceptionMessage(UUID hearingId) {
+    public String formatHearingBookingExceptionMessage(UUID hearingId) {
         return String.format("Failed to find hearing with ID: %s", hearingId);
     }
 }

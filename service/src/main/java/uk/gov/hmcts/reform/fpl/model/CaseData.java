@@ -430,11 +430,17 @@ public class CaseData {
     private final ManageDocumentLA manageDocumentLA;
     private final List<Element<SupportingEvidenceBundle>> supportingEvidenceDocumentsTemp;
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments;
+    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA;
     private final List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocuments;
+    private final List<Element<SupportingEvidenceBundle>> correspondenceDocumentsLA;
     private final List<Element<SupportingEvidenceBundle>> c2SupportingDocuments;
     private final Object manageDocumentsHearingList;
     private final Object manageDocumentsSupportingC2List;
+
+    private final DocumentReference courtBundleTemp;
+    private final DocumentReference courtBundleRedactedTemp;
+    private final List<Element<CourtBundle>> courtBundleList;
 
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceDocumentsTemp() {
         return defaultIfNull(supportingEvidenceDocumentsTemp, new ArrayList<>());

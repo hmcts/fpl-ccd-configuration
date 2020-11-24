@@ -1282,13 +1282,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "hearingFurtherEvidenceDocumentsLA",
-    "UserRole": "[LASOLICITOR]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "correspondenceDocumentsLA",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "CRU"
@@ -1303,9 +1296,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "supportingEvidenceDocumentsTempLA",
+    "CaseFieldID": "supportingEvidenceDocumentsTemp",
     "UserRole": "[LASOLICITOR]",
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1373,7 +1366,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "manageDocumentsCourtBundleHearingLabel",
+    "CaseFieldID": "manageDocumentsCourtBundleHearingList",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "CRU"
   }

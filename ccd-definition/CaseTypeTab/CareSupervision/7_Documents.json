@@ -68,8 +68,18 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
+    "CaseFieldID": "furtherEvidenceDocumentsLA",
+    "TabFieldDisplayOrder": 7
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DocumentsTab",
+    "TabLabel": "Documents",
+    "TabDisplayOrder": 7,
     "CaseFieldID": "documentTabBulkScanHeading",
-    "TabFieldDisplayOrder": 7,
+    "TabFieldDisplayOrder": 8,
     "FieldShowCondition": "scannedDocuments=\"*\""
   },
   {
@@ -80,7 +90,7 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
     "CaseFieldID": "scannedDocuments",
-    "TabFieldDisplayOrder": 8
+    "TabFieldDisplayOrder": 9
   },
   {
     "LiveFrom": "01/01/2017",
@@ -90,7 +100,7 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
     "CaseFieldID": "documentTabApplicationHeading",
-    "TabFieldDisplayOrder": 9
+    "TabFieldDisplayOrder": 10
   },
   {
     "LiveFrom": "01/01/2017",
@@ -101,16 +111,6 @@
     "TabDisplayOrder": 7,
     "CaseFieldID": "documents_socialWorkChronology_document",
     "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\"",
-    "TabFieldDisplayOrder": 10
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 7,
-    "CaseFieldID": "documents_socialWorkStatement_document",
     "TabFieldDisplayOrder": 11
   },
   {
@@ -120,7 +120,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "documents_socialWorkAssessment_document",
+    "CaseFieldID": "documents_socialWorkStatement_document",
     "TabFieldDisplayOrder": 12
   },
   {
@@ -130,8 +130,18 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "documents_socialWorkCarePlan_document",
+    "CaseFieldID": "documents_socialWorkAssessment_document",
     "TabFieldDisplayOrder": 13
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DocumentsTab",
+    "TabLabel": "Documents",
+    "TabDisplayOrder": 7,
+    "CaseFieldID": "documents_socialWorkCarePlan_document",
+    "TabFieldDisplayOrder": 14
   },
 
   {
@@ -142,16 +152,6 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
     "CaseFieldID": "documents_socialWorkEvidenceTemplate_document",
-    "TabFieldDisplayOrder": 14
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 7,
-    "CaseFieldID": "documents_threshold_document",
     "TabFieldDisplayOrder": 15
   },
   {
@@ -161,7 +161,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "documents_checklist_document",
+    "CaseFieldID": "documents_threshold_document",
     "TabFieldDisplayOrder": 16
   },
   {
@@ -171,7 +171,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "courtBundle",
+    "CaseFieldID": "documents_checklist_document",
     "TabFieldDisplayOrder": 17
   },
   {
@@ -181,7 +181,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "documents_socialWorkOther",
+    "CaseFieldID": "courtBundle",
     "TabFieldDisplayOrder": 18
   },
   {
@@ -191,7 +191,17 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "otherCourtAdminDocuments",
+    "CaseFieldID": "documents_socialWorkOther",
     "TabFieldDisplayOrder": 19
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DocumentsTab",
+    "TabLabel": "Documents",
+    "TabDisplayOrder": 7,
+    "CaseFieldID": "otherCourtAdminDocuments",
+    "TabFieldDisplayOrder": 20
   }
 ]

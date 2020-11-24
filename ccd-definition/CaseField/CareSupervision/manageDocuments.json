@@ -29,7 +29,7 @@
     "ID": "furtherEvidenceDocuments",
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
-    "Label": "Further evidence document",
+    "Label": "HMCTS further evidence documents",
     "SecurityClassification": "Public"
   },
   {
@@ -38,7 +38,7 @@
     "ID": "hearingFurtherEvidenceDocuments",
     "FieldType": "Collection",
     "FieldTypeParameter": "HearingFurtherEvidenceBundle",
-    "Label": "Further evidence documents",
+    "Label": "Further evidence documents for hearings",
     "SecurityClassification": "Public"
   },
   {

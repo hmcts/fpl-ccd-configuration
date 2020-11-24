@@ -21,16 +21,7 @@
     "ID": "furtherEvidenceDocumentsLA",
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
-    "Label": "Further evidence document",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "hearingFurtherEvidenceDocumentsLA",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "HearingFurtherEvidenceBundle",
-    "Label": "Further evidence documents",
+    "Label": "Local authority further evidence documents",
     "SecurityClassification": "Public"
   },
   {
@@ -45,34 +36,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "supportingEvidenceDocumentsTempLA",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
-    "Label": "Document",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageDocumentsCourtBundle",
-    "FieldType": "Document",
-    "Label": "Attach court bundle",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "manageDocumentsRedactedCourtBundle",
-    "FieldType": "Document",
-    "Label": "Attach redacted court bundle",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "manageDocumentsCourtBundleHearingLabel",
-    "FieldType": "Text",
-    "Label": "Court bundle for:",
+    "FieldType": "CourtBundle",
+    "Label": " ",
     "SecurityClassification": "Public"
   }
 ]
