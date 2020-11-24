@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -59,8 +58,7 @@ public class GeneratedOrderEventHandler {
         JudgeAndLegalAdvisor mostRecentOrderJudge
             = generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData);
 
-        if (featureToggleService.isAllocatedJudgeNotificationEnabled(AllocatedJudgeNotificationType.GENERATED_ORDER)
-            && isNotEmpty(mostRecentOrderJudge.getJudgeEmailAddress())) {
+        if (isNotEmpty(mostRecentOrderJudge.getJudgeEmailAddress())) {
             AllocatedJudgeTemplateForGeneratedOrder parameters = orderIssuedEmailContentProvider
                 .buildAllocatedJudgeOrderIssuedNotification(caseData);
 
