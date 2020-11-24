@@ -546,6 +546,24 @@ Scenario('local authority cannot upload court bundle', async ({I, caseViewPage, 
   I.click('Cancel');
 });
 
+Scenario('local authority adds multiple application documents', async ({I, caseViewPage, addApplicationDocumentsEventPage}) => {
+  await caseViewPage.goToNewActions(config.applicationActions.addApplicationDocuments);
+  await addApplicationDocumentsEventPage.selectDocumentType('Threshold');
+  await addApplicationDocumentsEventPage.uploadFile(config.testPdfFile);
+
+  await addApplicationDocumentsEventPage.selectDocumentType('SWET');
+  await addApplicationDocumentsEventPage.uploadFile(config.testPdfFile);
+  await addApplicationDocumentsEventPage.enterWhatIsIncludedInSWET('Genogram included');
+
+  await addApplicationDocumentsEventPage.selectDocumentType('SWET');
+  await addApplicationDocumentsEventPage.uploadFile(config.testPdfFile);
+  await addApplicationDocumentsEventPage.enterWhatIsIncludedInSWET('Genogram included');
+
+  await I.seeCheckAnswersAndCompleteEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.addApplicationDocuments);
+  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
+});
+
 Scenario('local authority tries to submit without giving consent', async ({I, caseViewPage, submitApplicationEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationEventPage.seeDraftApplicationFile();
