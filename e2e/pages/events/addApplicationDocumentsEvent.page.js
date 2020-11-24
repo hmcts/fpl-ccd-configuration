@@ -4,10 +4,9 @@ module.exports = {
   fields: function (index) {
     return {
       documentType: `#documents_${index}_documentType`,
-      documents: {
-        document: `#documents_${index}_document`,
-      },
+      document: `#documents_${index}_document`,
       includedInSWET: `#documents_${index}_includedInSWET`,
+      documentName: `#documents_${index}_documentName`,
     };
   },
 
@@ -19,12 +18,17 @@ module.exports = {
 
   async uploadFile(file) {
     const elementIndex = await this.getActiveElementIndex();
-    I.attachFile(this.fields(elementIndex).documents.document, file);
+    I.attachFile(this.fields(elementIndex).document, file);
   },
 
   async enterWhatIsIncludedInSWET(description) {
     const elementIndex = await this.getActiveElementIndex();
     I.fillField(this.fields(elementIndex).includedInSWET, description);
+  },
+
+  async enterDocumentName(name) {
+    const elementIndex = await this.getActiveElementIndex();
+    I.fillField(this.fields(elementIndex).documentName, name);
   },
 
   async getActiveElementIndex() {

@@ -555,9 +555,9 @@ Scenario('local authority adds multiple application documents', async ({I, caseV
   await addApplicationDocumentsEventPage.uploadFile(config.testPdfFile);
   await addApplicationDocumentsEventPage.enterWhatIsIncludedInSWET('Genogram included');
 
-  await addApplicationDocumentsEventPage.selectDocumentType('SWET');
+  await addApplicationDocumentsEventPage.selectDocumentType('Other');
   await addApplicationDocumentsEventPage.uploadFile(config.testPdfFile);
-  await addApplicationDocumentsEventPage.enterWhatIsIncludedInSWET('Genogram included');
+  await addApplicationDocumentsEventPage.enterDocumentName('Medical report');
 
   await I.seeCheckAnswersAndCompleteEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.addApplicationDocuments);
