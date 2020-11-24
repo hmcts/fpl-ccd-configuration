@@ -81,8 +81,10 @@ public class RemoveOrderService {
         List<Element<? extends RemovableOrder>> orders = new ArrayList<>();
         orders.addAll(caseData.getOrderCollection());
         orders.addAll(caseData.getSealedCMOs());
-        orders.add(element(caseData.getStandardDirectionOrder().getUniqueCollectionId(),
-                                            caseData.getStandardDirectionOrder()));
+        if (null != caseData.getStandardDirectionOrder()) {
+            orders.add(element(caseData.getStandardDirectionOrder().getUniqueCollectionId(),
+                caseData.getStandardDirectionOrder()));
+        }
         return orders;
     }
 }
