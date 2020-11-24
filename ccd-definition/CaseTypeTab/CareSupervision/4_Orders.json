@@ -101,7 +101,7 @@
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
     "TabDisplayOrder": 4,
-    "CaseFieldID": "hiddenCaseManagementOrders",
+    "CaseFieldID": "hiddenStandardDirectionOrder",
     "TabFieldDisplayOrder": 7
   },
   {

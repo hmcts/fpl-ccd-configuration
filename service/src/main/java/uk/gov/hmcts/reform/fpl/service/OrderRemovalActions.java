@@ -11,13 +11,13 @@ import java.util.List;
 public class OrderRemovalActions {
     private final CMOOrderRemovalAction cmoOrderRemovalAction;
     private final OtherOrderRemovalAction otherOrderRemovalAction;
+    private final SDOOrderRemovalAction sdoOrderRemovalAction;
 
     public List<OrderRemovalAction> getActions() {
         return List.of(
             cmoOrderRemovalAction,
-            otherOrderRemovalAction
+            otherOrderRemovalAction,
+            sdoOrderRemovalAction
         );
     }
-
-
 }

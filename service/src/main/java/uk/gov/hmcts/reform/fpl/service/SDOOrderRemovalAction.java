@@ -1,13 +1,14 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 
 import java.util.Map;
 import java.util.UUID;
+
+import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 
 @Component
 public class SDOOrderRemovalAction implements OrderRemovalAction {
@@ -24,9 +25,13 @@ public class SDOOrderRemovalAction implements OrderRemovalAction {
         StandardDirectionOrder standardDirectionOrder = (StandardDirectionOrder) removableOrder;
 
         standardDirectionOrder.setRemovalReason(caseData.getReasonToRemoveOrder());
+        standardDirectionOrder = standardDirectionOrder.toBuilder().judgeAndLegalAdvisor(null).build();
 
-        data.put("standardDirectionOrder",standardDirectionOrder);
-        data.put("state", State.GATEKEEPING);
-        data.remove("noticeOfProceedings");
+        data.remove("standardDirectionOrder");
+        data.remove("noticeOfProceedingsBundle");
+
+        data.put("hiddenStandardDirectionOrder", standardDirectionOrder);
+
+        data.put("state", GATEKEEPING);
     }
 }

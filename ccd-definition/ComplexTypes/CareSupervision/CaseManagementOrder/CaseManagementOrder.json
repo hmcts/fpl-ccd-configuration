@@ -66,13 +66,5 @@
     "FieldType": "Text",
     "ElementLabel": "Changes requested by judge",
     "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "UploadedCaseManagementOrder",
-    "ListElementCode": "removalReason",
-    "FieldType": "TextArea",
-    "ElementLabel": "Reason for removal",
-    "SecurityClassification": "Public"
   }
 ]

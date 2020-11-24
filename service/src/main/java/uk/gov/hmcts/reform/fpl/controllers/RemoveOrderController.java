@@ -69,13 +69,9 @@ public class RemoveOrderController {
 
         UUID removedOrderId = getDynamicListSelectedValue(caseData.getRemovableOrderList(), mapper);
         RemovableOrder removableOrder = service.getRemovedOrderByUUID(caseData, removedOrderId);
-        if (caseData.getStandardDirectionOrder().getUniqueCollectionId().toString()
-                                                        .equals("1111111-1111-1111-1111-111111111111")) {
-            SDOOrderRemovalAction action = new SDOOrderRemovalAction();
-            action.action(caseData, data, removedOrderId, removableOrder);
-        } else {
-            service.removeOrderFromCase(caseData, data, removedOrderId, removableOrder);
-        }
+
+        service.removeOrderFromCase(caseData, data, removedOrderId, removableOrder);
+
         removeTemporaryFields(
             caseDetails,
             REMOVABLE_ORDER_LIST_KEY,

@@ -37,7 +37,6 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder {
     private List<Element<Direction>> directions;
     private DocumentReference orderDoc;
     private String removalReason;
-    private String uniqueCollectionId;
 
     @JsonIgnore
     public boolean isSealed() {
@@ -69,6 +68,7 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder {
     }
 
     @Override
+    @JsonIgnore
     public boolean isRemovable() {
         return SEALED.equals(orderStatus);
     }
