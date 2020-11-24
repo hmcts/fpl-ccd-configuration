@@ -36,7 +36,7 @@ withNightlyPipeline(type, product, component) {
 
   enableSecurityScan()
   enableMutationTest()
-  enableFullFunctionalTest(60)
+  enableFullFunctionalTest(120)
 
   after('mutationTest') {
     withSonarQubeEnv('SonarQube') {
@@ -47,7 +47,8 @@ withNightlyPipeline(type, product, component) {
   before('fullFunctionalTest') {
     env.PARALLEL_CHUNKS = params.FUNCTIONAL_TESTS_WORKERS
     env.MOCKED_PAYMENTS = false
-    env.TEST_RETRIES = 2
+    env.TEST_RETRIES = 5
+    env.WAIT_FOR_TIMEOUT = 60000
     env.ENV = 'aat'
   }
 
