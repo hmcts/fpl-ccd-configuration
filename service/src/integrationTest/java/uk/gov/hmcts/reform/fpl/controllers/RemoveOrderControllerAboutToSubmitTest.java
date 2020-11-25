@@ -53,7 +53,7 @@ public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTe
             asCaseDetails(buildCaseData(selectedOrder))
         );
 
-        CaseData responseData = mapper.convertValue(response.getData(), CaseData.class);
+        CaseData responseData = extractCaseData(response);
 
         selectedOrder.getValue().setRemovalReason(REASON);
 
@@ -120,7 +120,7 @@ public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTe
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
 
-        CaseData returnedCaseData = mapper.convertValue(response.getData(), CaseData.class);
+        CaseData returnedCaseData = extractCaseData(response);
         List<Element<Child>> returnedChildren = returnedCaseData.getChildren1();
 
         List<Element<Child>> expectedChildrenList = List.of(
@@ -162,7 +162,7 @@ public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTe
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
 
-        CaseData returnedCaseData = mapper.convertValue(response.getData(), CaseData.class);
+        CaseData returnedCaseData = extractCaseData(response);
         List<Element<Child>> returnedChildren = returnedCaseData.getChildren1();
 
         assertThat(returnedChildren).isEqualTo(childrenList);
@@ -195,7 +195,7 @@ public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTe
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
 
-        CaseData responseData = mapper.convertValue(response.getData(), CaseData.class);
+        CaseData responseData = extractCaseData(response);
         List<Element<CaseManagementOrder>> hiddenCMOs = responseData.getHiddenCMOs();
 
         assertThat(hiddenCMOs).hasSize(1);

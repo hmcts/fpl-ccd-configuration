@@ -27,7 +27,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedV
 @RestController
 @RequestMapping("/callback/remove-order")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class RemoveOrderController {
+public class RemoveOrderController extends CallbackController {
     private static final String REMOVABLE_ORDER_LIST_KEY = "removableOrderList";
     private final ObjectMapper mapper;
     private final RemoveOrderService service;
@@ -35,20 +35,18 @@ public class RemoveOrderController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
         Map<String, Object> data = request.getCaseDetails().getData();
-        CaseData caseData = mapper.convertValue(data, CaseData.class);
+        CaseData caseData = getCaseData(request.getCaseDetails());
 
         data.put(REMOVABLE_ORDER_LIST_KEY, service.buildDynamicListOfOrders(caseData));
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .build();
+        return respond(data);
     }
 
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest request) {
-        Map<String, Object> data = request.getCaseDetails().getData();
-        CaseDetailsMap caseDetailsMap = caseDetailsMap(request.getCaseDetails());
-        CaseData caseData = mapper.convertValue(data, CaseData.class);
+        CaseDetails caseDetails = request.getCaseDetails();
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
+        CaseData caseData = getCaseData(caseDetails);
 
         // When dynamic lists are fixed this can be moved into the below method
         UUID removedOrderId = getDynamicListSelectedValue(caseData.getRemovableOrderList(), mapper);
@@ -59,16 +57,14 @@ public class RemoveOrderController {
         // Can be removed once dynamic lists are fixed
         caseDetailsMap.put(REMOVABLE_ORDER_LIST_KEY, service.buildDynamicListOfOrders(caseData, removedOrderId));
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetailsMap)
-            .build();
+        return respond(caseDetailsMap);
     }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = getCaseData(caseDetails);
 
         UUID removedOrderId = getDynamicListSelectedValue(caseData.getRemovableOrderList(), mapper);
         RemovableOrder removableOrder = service.getRemovedOrderByUUID(caseData, removedOrderId);
@@ -87,8 +83,6 @@ public class RemoveOrderController {
             "showRemoveCMOFieldsFlag"
         );
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetailsMap)
-            .build();
+        return respond(caseDetailsMap);
     }
 }
