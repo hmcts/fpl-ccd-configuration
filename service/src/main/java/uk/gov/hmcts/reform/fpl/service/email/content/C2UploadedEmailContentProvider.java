@@ -26,12 +26,13 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
     private final Time time;
     @Value("${manage-case.ui.base.url}")
     private String xuiBaseUrl;
+    private static final String C2 = "C2Tab";
 
     public C2UploadedTemplate getNotifyData(final CaseData caseData, final DocumentReference latestC2) {
         C2UploadedTemplate adminTemplateForC2 = new C2UploadedTemplate();
         adminTemplateForC2.setCallout(buildCallout(caseData));
-        adminTemplateForC2.setRespondentLastName(getFirstRespondentLastName(caseData));
-        adminTemplateForC2.setCaseUrl(getCaseUrl(caseData.getId()));
+        adminTemplateForC2.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
+        adminTemplateForC2.setCaseUrl(getCaseUrl(caseData.getId(), C2));
         adminTemplateForC2.setDocumentUrl(concatUrlAndMostRecentUploadedDocumentPath(xuiBaseUrl,
             latestC2.getBinaryUrl()));
 
@@ -41,7 +42,7 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
     public AllocatedJudgeTemplateForC2 getNotifyDataForAllocatedJudge(final CaseData caseData) {
 
         return AllocatedJudgeTemplateForC2.builder()
-            .caseUrl(getCaseUrl(caseData.getId()))
+            .caseUrl(getCaseUrl(caseData.getId(), C2))
             .callout(buildCallout(caseData))
             .judgeTitle(caseData.getAllocatedJudge().getJudgeOrMagistrateTitle())
             .judgeName(caseData.getAllocatedJudge().getJudgeName())
@@ -62,7 +63,7 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
 
     public BaseCaseNotifyData getPbaPaymentNotTakenNotifyData(final CaseData caseData) {
         return BaseCaseNotifyData.builder()
-            .caseUrl(getCaseUrl(caseData))
+            .caseUrl(getCaseUrl(caseData.getId(), C2))
             .build();
     }
 }

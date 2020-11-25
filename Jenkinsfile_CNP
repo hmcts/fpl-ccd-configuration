@@ -72,24 +72,13 @@ def uploadCoreCaseDataDefinitions(env) {
 
 withPipeline(type, product, component) {
   pipelineConf = config;
-  onMaster {
-    loadVaultSecrets(serviceSecrets + otherSecrets)
-  }
-  onDemo {
-    loadVaultSecrets(serviceSecrets + otherSecrets)
-  }
-  onIthc {
-    loadVaultSecrets(serviceSecrets + otherSecrets)
-  }
-  onPR {
-    loadVaultSecrets(serviceSecrets + otherSecrets)
-  }
+
+  loadVaultSecrets(serviceSecrets + otherSecrets)
+
   disableLegacyDeployment()
 
   enableAksStagingDeployment()
   enableSlackNotifications('#fpla-tech')
-
-  env.PROXY_SERVER = "proxyout.reform.hmcts.net:8080"
 
   after('checkout') {
     onMaster {
@@ -129,6 +118,7 @@ withPipeline(type, product, component) {
     env.URL="https://xui-fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
     env.MOCKED_PAYMENTS=false
     env.PARALLEL_CHUNKS=5
+    env.TEST_RETRIES=2
   }
 
   after('smoketest:saat') {
@@ -147,29 +137,33 @@ withPipeline(type, product, component) {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
 
-  before('functionalTest:saat') {
-    env.SKIP_FUNCTIONAL_TESTS = 'true'
+  before('functionalTest:preview') {
+    env.ENV = 'preview'
   }
 
   before('functionalTest:aat') {
-    env.SKIP_FUNCTIONAL_TESTS = 'true'
+    env.ENV = 'aat'
+    env.SKIP_BROWSER_TESTS = 'true'
   }
 
   before('functionalTest:demo') {
-    env.SKIP_FUNCTIONAL_TESTS = 'true'
+    env.SKIP_API_TESTS = 'true'
+    env.SKIP_BROWSER_TESTS = 'true'
   }
 
   after('functionalTest:aat') {
     archiveCoreCaseDataDefinitions('prod')
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
   }
 
   after('functionalTest:preview') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/**/*'
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
   }
 
   before('buildinfra:demo') {
-    def subscription = 'nonprod'
-    withSubscription(subscription) {
+    withSubscription('nonprod') {
       withTeamSecrets(pipelineConf, 'demo') {
         archiveCoreCaseDataDefinitions('demo')
         uploadCoreCaseDataDefinitions('demo')
@@ -178,8 +172,7 @@ withPipeline(type, product, component) {
   }
 
   before('buildinfra:ithc') {
-    def subscription = 'nonprod'
-    withSubscription(subscription) {
+    withSubscription('nonprod') {
       withTeamSecrets(pipelineConf, 'ithc') {
         archiveCoreCaseDataDefinitions('ithc')
         uploadCoreCaseDataDefinitions('ithc')
@@ -187,8 +180,18 @@ withPipeline(type, product, component) {
     }
   }
 
+  before('buildinfra:perftest') {
+    withSubscription('nonprod') {
+      withTeamSecrets(pipelineConf, 'perftest') {
+        archiveCoreCaseDataDefinitions('perftest')
+        uploadCoreCaseDataDefinitions('perftest')
+      }
+    }
+  }
+
   before('smoketest:aat') {
     env.URL = "https://manage-case.aat.platform.hmcts.net"
+    env.TEST_CONF_FPL_URL = "http://fpl-case-service-staging.service.core-compute-aat.internal"
     archiveCoreCaseDataDefinitions('aat')
     uploadCoreCaseDataDefinitions('aat')
   }

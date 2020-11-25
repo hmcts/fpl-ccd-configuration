@@ -21,9 +21,9 @@ public class IssuedOrderAdminNotificationHandler {
     public void notifyAdmin(final CaseData caseData,
                             final byte[] documentContents,
                             final IssuedOrderType issuedOrderType) {
-
         NotifyData notifyData = orderIssuedEmailContentProvider
             .getNotifyDataWithCaseUrl(caseData, documentContents, issuedOrderType);
+
         String recipient = adminNotificationHandler.getHmctsAdminEmail(caseData);
 
         notificationService

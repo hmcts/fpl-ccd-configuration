@@ -16,7 +16,7 @@ public class PlacementApplicationContentProvider extends AbstractEmailContentPro
     public BaseCaseNotifyData buildPlacementApplicationNotificationParameters(CaseData caseData) {
 
         return BaseCaseNotifyData.builder()
-            .caseUrl(getCaseUrl(caseData.getId()))
+            .caseUrl(getCaseUrl(caseData.getId(), "PlacementTab"))
             .respondentLastName(getFirstRespondentLastName(caseData))
             .build();
     }

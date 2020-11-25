@@ -16,6 +16,8 @@ import uk.gov.hmcts.reform.fpl.service.email.content.PlacementApplicationContent
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
@@ -44,8 +46,7 @@ class PlacementApplicationEventHandlerTest {
         given(placementApplicationContentProvider.buildPlacementApplicationNotificationParameters(caseData))
             .willReturn(expectedParameters);
 
-        placementApplicationEventHandler.notifyAdmin(
-            new PlacementApplicationEvent(caseData));
+        placementApplicationEventHandler.notifyAdmin(new PlacementApplicationEvent(caseData));
 
         verify(notificationService).sendEmail(
             PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
@@ -66,8 +67,7 @@ class PlacementApplicationEventHandlerTest {
         given(placementApplicationContentProvider.buildPlacementApplicationNotificationParameters(caseData))
             .willReturn(expectedParameters);
 
-        placementApplicationEventHandler.notifyAdmin(
-            new PlacementApplicationEvent(caseData));
+        placementApplicationEventHandler.notifyAdmin(new PlacementApplicationEvent(caseData));
 
         verify(notificationService).sendEmail(
             PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
@@ -79,7 +79,7 @@ class PlacementApplicationEventHandlerTest {
     private BaseCaseNotifyData getExpectedPlacementNotificationParameters() {
         return BaseCaseNotifyData.builder()
             .respondentLastName("Moley")
-            .caseUrl("http://fpl/case/1234533")
+            .caseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
     }
 }

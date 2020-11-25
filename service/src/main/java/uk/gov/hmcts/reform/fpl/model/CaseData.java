@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.model;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +10,11 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
+import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
+import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
+import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
@@ -23,29 +26,36 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.common.Recital;
-import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
+import uk.gov.hmcts.reform.fpl.model.event.UploadCMOEventData;
+import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
+import uk.gov.hmcts.reform.fpl.model.order.generated.OrderExclusionClause;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
+import uk.gov.hmcts.reform.fpl.utils.IncrementalInteger;
 import uk.gov.hmcts.reform.fpl.validation.groups.CaseExtensionGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.MigrateStateGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.SealedSDOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.UploadDocumentsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOEndDateGroup;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.HasDocumentsIncludedInSwet;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.IsStateMigratable;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.IsValidHearingEdit;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.time.EPOTimeRange;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeDifference;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeNotMidnight;
-import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeRange;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -66,7 +76,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 
 import static java.time.temporal.ChronoUnit.DAYS;
-import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparing;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
@@ -74,17 +83,20 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Data
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @HasDocumentsIncludedInSwet(groups = UploadDocumentsGroup.class)
-@SuppressWarnings({"java:S1874", "java:S1133"}) // Remove once deprecations dealt with
+@IsStateMigratable(groups = MigrateStateGroup.class)
+@IsValidHearingEdit(groups = HearingBookingGroup.class)
+@EPOTimeRange(message = "Date must be within 8 days of the order date", groups = EPOEndDateGroup.class,
+    maxDate = @TimeDifference(amount = 8, unit = DAYS))
 public class CaseData {
     private final Long id;
     private final State state;
@@ -134,32 +146,6 @@ public class CaseData {
     private final List<Element<Direction>> respondentDirections;
     private final List<Element<Direction>> respondentDirectionsCustom;
 
-    // How do we want to deal with compliance for CMO now, can we just remove the fields and just have the sdo
-    // directions.
-    @JsonIgnore
-    public List<Element<Direction>> getDirectionsToComplyWith() {
-        if (getServedCaseManagementOrders().isEmpty() && standardDirectionOrder == null) {
-            return emptyList();
-        }
-
-        if (getServedCaseManagementOrders().isEmpty()) {
-            return standardDirectionOrder.getDirections();
-        }
-
-        return servedCaseManagementOrders.get(0).getValue().getDirections();
-    }
-
-    @JsonUnwrapped
-    private Directions directionsForCaseManagementOrder;
-
-    public Directions getDirectionsForCaseManagementOrder() {
-        if (directionsForCaseManagementOrder != null && directionsForCaseManagementOrder.containsDirections()) {
-            return directionsForCaseManagementOrder;
-        }
-
-        return null;
-    }
-
     private final List<Element<Placement>> placements;
     private final StandardDirectionOrder standardDirectionOrder;
     private SDORoute sdoRouter;
@@ -202,7 +188,8 @@ public class CaseData {
     public final Document thresholdDocument;
     @JsonProperty("documents_socialWorkEvidenceTemplate_document")
     @Valid
-    private final Document socialWorkEvidenceTemplateDocument;
+    public final Document socialWorkEvidenceTemplateDocument;
+    public final CourtBundle courtBundle;
     @NotEmpty(message = "Add the child's details")
     @Valid
     private final List<@NotNull(message = "Add the child's details") Element<Child>> children1;
@@ -226,10 +213,19 @@ public class CaseData {
         return children1 != null ? children1 : new ArrayList<>();
     }
 
+    //TODO add null-checker getter for hearingDetails during refactor/removal of legacy code (FPLA-2280)
     @NotNull(message = "Enter hearing details", groups = NoticeOfProceedingsGroup.class)
     @NotEmpty(message = "You need to enter a hearing date.", groups = SealedSDOGroup.class)
-    private final List<Element<HearingBooking>> hearingDetails;
+    @JsonProperty
+    private List<Element<HearingBooking>> hearingDetails;
+    @JsonProperty
+    private List<Element<HearingBooking>> cancelledHearingDetails;
     private final List<Element<UUID>> selectedHearingIds;
+
+    @JsonIgnore
+    public Optional<Element<HearingBooking>> findHearingBookingElement(UUID elementId) {
+        return findElement(elementId, hearingDetails);
+    }
 
     private LocalDate dateSubmitted;
     private final List<Element<DocumentBundle>> noticeOfProceedingsBundle;
@@ -237,6 +233,11 @@ public class CaseData {
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final C2DocumentBundle temporaryC2Document;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
+
+    @JsonIgnore
+    public boolean hasC2DocumentBundle() {
+        return c2DocumentBundle != null && !c2DocumentBundle.isEmpty();
+    }
 
     @JsonIgnore
     public C2DocumentBundle getLastC2DocumentBundle() {
@@ -247,10 +248,30 @@ public class CaseData {
             .orElse(null);
     }
 
+    @JsonIgnore
+    public C2DocumentBundle getC2DocumentBundleByUUID(UUID elementId) {
+        return c2DocumentBundle.stream()
+            .filter(c2DocumentBundleElement -> c2DocumentBundleElement.getId().equals(elementId))
+            .map(Element::getValue)
+            .findFirst()
+            .orElse(null);
+    }
+
+    public DynamicList buildC2DocumentDynamicList(UUID selected) {
+        IncrementalInteger i = new IncrementalInteger(1);
+        return asDynamicList(c2DocumentBundle, selected, documentBundle -> documentBundle.toLabel(i.getAndIncrement()));
+    }
+
+    public DynamicList buildC2DocumentDynamicList() {
+        return buildC2DocumentDynamicList(null);
+    }
+
     private final Map<String, C2ApplicationType> c2ApplicationType;
     private final OrderTypeAndDocument orderTypeAndDocument;
     private final FurtherDirections orderFurtherDirections;
+    private final OrderExclusionClause orderExclusionClause;
     private final GeneratedOrder order;
+    private final DocumentReference uploadedOrder;
     @JsonIgnore
     private OrderStatus generatedOrderStatus;
     private final Integer orderMonths;
@@ -283,204 +304,18 @@ public class CaseData {
         return defaultIfNull(hiddenOrders, new ArrayList<>());
     }
 
-    /**
-     * General object for CMO. Can be either in a draft state or action state. Ignored by jackson so that custom
-     * getters and setters can be used.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @JsonIgnore
-    @Deprecated(since = "FPLA-1915")
-    private CaseManagementOrder caseManagementOrder;
-
-    /**
-     * Gets a merged cmo.
-     *
-     * @see #prepareCaseManagementOrder()
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated(since = "FPLA-1915")
-    public CaseManagementOrder getCaseManagementOrder() {
-        return prepareCaseManagementOrder();
-    }
-
-    /**
-     * Merges the current populated CMO with the individual components of the CMO.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated(since = "FPLA-1915")
-    private CaseManagementOrder prepareCaseManagementOrder() {
-        //existing order
-        Optional<CaseManagementOrder> oldOrder = ofNullable(caseManagementOrder);
-
-        //hearing date list that cmo is heard in
-        Optional<DynamicList> optionalDateList = ofNullable(cmoHearingDateList);
-        UUID idFromDynamicList = optionalDateList.map(DynamicList::getValueCode).orElse(null);
-        String hearingDate = optionalDateList.map(DynamicList::getValueLabel).orElse(null);
-
-        //schedule
-        Schedule scheduleFromOrder = oldOrder.map(CaseManagementOrder::getSchedule).orElse(null);
-
-        //recital
-        List<Element<Recital>> recitalsFromOrder = oldOrder.map(CaseManagementOrder::getRecitals).orElse(emptyList());
-
-        //directions
-        Optional<Directions> directions = ofNullable(getDirectionsForCaseManagementOrder());
-        List<Element<Direction>> orderDirections = oldOrder.map(CaseManagementOrder::getDirections).orElse(emptyList());
-
-        //date of issue
-        Optional<LocalDate> optionalDateOfIssue = ofNullable(dateOfIssue);
-        String stringDate = optionalDateOfIssue.map(date -> formatLocalDateToString(date, DATE)).orElse(null);
-
-        CaseManagementOrder preparedOrder = CaseManagementOrder.builder()
-            .id(oldOrder.map(CaseManagementOrder::getId).orElse(idFromDynamicList))
-            .hearingDate(oldOrder.map(CaseManagementOrder::getHearingDate).orElse(hearingDate))
-            .schedule(ofNullable(schedule).orElse(scheduleFromOrder))
-            .recitals(ofNullable(recitals).orElse(recitalsFromOrder))
-            .directions(directions.map(Directions::getDirectionsList).orElse(orderDirections))
-            .dateOfIssue(oldOrder.map(CaseManagementOrder::getDateOfIssue).orElse(stringDate))
-            .status(oldOrder.map(CaseManagementOrder::getStatus).orElse(null))
-            .orderDoc(oldOrder.map(CaseManagementOrder::getOrderDoc).orElse(null))
-            .action(oldOrder.map(CaseManagementOrder::getAction).orElse(null))
-            .nextHearing(oldOrder.map(CaseManagementOrder::getNextHearing).orElse(null))
-            .build();
-
-        preparedOrder.setActionWithNullDocument(orderAction);
-
-        if (preparedOrder.isSealed() && nextHearingDateList != null) {
-            preparedOrder.setNextHearingFromDynamicElement(nextHearingDateList.getValue());
-        }
-
-        return preparedOrder;
-    }
-
-    /**
-     * Populates the CCD field caseManagementOrder when the CMO is for the LA.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated(since = "FPLA-1915")
-    @JsonGetter("caseManagementOrder")
-    private CaseManagementOrder getCaseManagementOrderForLocalAuthority() {
-        if (caseManagementOrder != null && caseManagementOrder.getStatus() != SEND_TO_JUDGE) {
-            return caseManagementOrder;
-        }
-        return null;
-    }
-
-    /**
-     * Populates {@link #caseManagementOrder} with the CMO for the LA.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated(since = "FPLA-1915")
-    @JsonSetter("caseManagementOrder")
-    private void setCaseManagementOrderForLocalAuthority(CaseManagementOrder order) {
-        if (order != null) {
-            caseManagementOrder = order;
-        }
-    }
-
-    /**
-     * Populates the CCD field cmoToAction when the CMO is to be sent to judge.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated(since = "FPLA-1915")
-    @JsonGetter("cmoToAction")
-    private CaseManagementOrder getCaseManagementOrderForJudiciary() {
-        if (caseManagementOrder != null && caseManagementOrder.getStatus() == SEND_TO_JUDGE) {
-            return caseManagementOrder;
-        }
-        return null;
-    }
-
-    /**
-     * Populates {@link #caseManagementOrder} with the CMO for the judge.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated(since = "FPLA-1915")
-    @JsonSetter("cmoToAction")
-    private void setCaseManagementOrderForJudiciary(CaseManagementOrder order) {
-        if (order != null) {
-            caseManagementOrder = order;
-        }
-    }
-
-    /**
-     * Action decided by judge for CMO.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated(since = "FPLA-1915")
-    private final OrderAction orderAction;
-    /**
-     * Date list for CMO.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated(since = "FPLA-1915")
-    private final DynamicList cmoHearingDateList;
-    /**
-     * Schedule for CMO.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated(since = "FPLA-1915")
-    private final Schedule schedule;
-    /**
-     * Recitals for CMO.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated(since = "FPLA-1915")
-    private final List<Element<Recital>> recitals;
-    /**
-     * Document object for other other parties to view.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated(since = "FPLA-1915")
-    private final DocumentReference sharedDraftCMODocument;
-
-    /**
-     * All CMOs that have been served.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated(since = "FPLA-1915")
-    private final List<Element<CaseManagementOrder>> servedCaseManagementOrders;
-
-    /**
-     * Get all served CMOs returning an empty list if null.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated(since = "FPLA-1915")
-    public List<Element<CaseManagementOrder>> getServedCaseManagementOrders() {
-        return defaultIfNull(servedCaseManagementOrders, new ArrayList<>());
-    }
-
-    /**
-     * List of dates for the next hearing after the CMO.
-     *
-     * @deprecated to be removed with {@link uk.gov.hmcts.reform.fpl.model.CaseManagementOrder}
-     */
-    @Deprecated(since = "FPLA-1915")
-    private final DynamicList nextHearingDateList;
-
     private final Others others;
 
     private final List<Element<Representative>> representatives;
 
+    private final List<Element<LegalRepresentative>> legalRepresentatives;
+
     // EPO Order
+    @PastOrPresent(message = "Date of issue cannot be in the future", groups = DateOfIssueGroup.class)
+    private final LocalDateTime dateAndTimeOfIssue;
     private final EPOChildren epoChildren;
     @TimeNotMidnight(message = "Enter a valid end time", groups = EPOEndDateGroup.class)
     @Future(message = "Enter an end date in the future", groups = EPOEndDateGroup.class)
-    @TimeRange(message = "Date must be within the next 8 days", groups = EPOEndDateGroup.class,
-        maxDate = @TimeDifference(amount = 8, unit = DAYS))
     private final LocalDateTime epoEndDate;
     private final EPOPhrase epoPhrase;
     private final EPOType epoType;
@@ -539,6 +374,11 @@ public class CaseData {
         return Optional.ofNullable(orderFurtherDirections).map(FurtherDirections::getDirections).orElse("");
     }
 
+    @JsonIgnore
+    public String getExclusionClauseText() {
+        return Optional.ofNullable(orderExclusionClause).map(OrderExclusionClause::getExclusionClause).orElse("");
+    }
+
     private final List<Element<Child>> confidentialChildren;
 
     public List<Element<Child>> getConfidentialChildren() {
@@ -583,7 +423,34 @@ public class CaseData {
 
     private final CloseCase closeCase;
     private final String deprivationOfLiberty;
+    private final CloseCase closeCaseTabField;
     private final String closeCaseFromOrder;
+
+    private final ManageDocument manageDocument;
+    private final List<Element<SupportingEvidenceBundle>> supportingEvidenceDocumentsTemp;
+    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments;
+    private final List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
+    private final List<Element<SupportingEvidenceBundle>> correspondenceDocuments;
+    private final List<Element<SupportingEvidenceBundle>> c2SupportingDocuments;
+    private final Object manageDocumentsHearingList;
+    private final Object manageDocumentsSupportingC2List;
+
+    public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceDocumentsTemp() {
+        return defaultIfNull(supportingEvidenceDocumentsTemp, new ArrayList<>());
+    }
+
+    public List<Element<SupportingEvidenceBundle>> getCorrespondenceDocuments() {
+        return defaultIfNull(correspondenceDocuments, new ArrayList<>());
+    }
+
+    public List<Element<HearingFurtherEvidenceBundle>> getHearingFurtherEvidenceDocuments() {
+        return defaultIfNull(hearingFurtherEvidenceDocuments, new ArrayList<>());
+    }
+
+    public boolean documentBundleContainsHearingId(UUID hearingId) {
+        return getHearingFurtherEvidenceDocuments().stream()
+            .anyMatch(element -> element.getId().equals(hearingId));
+    }
 
     @JsonIgnore
     public boolean isClosedFromOrder() {
@@ -607,9 +474,40 @@ public class CaseData {
 
     public HearingBooking getMostUrgentHearingBookingAfter(LocalDateTime time) {
         return unwrapElements(hearingDetails).stream()
-            .filter(hearing -> hearing.getStartDate().isAfter(time))
+            .filter(hearingBooking -> hearingBooking.getStartDate().isAfter(time))
             .min(comparing(HearingBooking::getStartDate))
             .orElseThrow(NoHearingBookingException::new);
+    }
+
+    @JsonIgnore
+    public List<Element<HearingBooking>> addCancelledHearingBooking(Element<HearingBooking> hearing) {
+        if (cancelledHearingDetails == null) {
+            cancelledHearingDetails = new ArrayList<>();
+        }
+        this.cancelledHearingDetails.add(hearing);
+        return this.cancelledHearingDetails;
+    }
+
+    @JsonIgnore
+    public List<Element<HearingBooking>> addHearingBooking(Element<HearingBooking> hearing) {
+        if (hearingDetails == null) {
+            hearingDetails = new ArrayList<>();
+        }
+        hearingDetails.add(hearing);
+        return hearingDetails;
+    }
+
+    @JsonIgnore
+    public List<Element<HearingBooking>> setHearingDetails(List<Element<HearingBooking>> hearings) {
+        this.hearingDetails = hearings;
+        return hearingDetails;
+    }
+
+    @JsonIgnore
+    public void removeHearingDetails(Element<HearingBooking> hearing) {
+        if (hearingDetails != null) {
+            hearingDetails.remove(hearing);
+        }
     }
 
     public boolean hasFutureHearing(List<Element<HearingBooking>> hearingBookings) {
@@ -619,11 +517,11 @@ public class CaseData {
 
     private final DocumentReference submittedForm;
 
-    private final DocumentReference uploadedCaseManagementOrder;
-    private final List<Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder>> draftUploadedCMOs;
-    private final Object hearingsWithoutApprovedCMO; // Could be dynamic list or string
+    private final List<Element<CaseManagementOrder>> draftUploadedCMOs;
+    @JsonUnwrapped
+    private final UploadCMOEventData uploadCMOEventData;
 
-    public List<Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder>> getDraftUploadedCMOs() {
+    public List<Element<CaseManagementOrder>> getDraftUploadedCMOs() {
         return defaultIfNull(draftUploadedCMOs, new ArrayList<>());
     }
 
@@ -634,12 +532,40 @@ public class CaseData {
             .collect(toList());
     }
 
+    @JsonIgnore
+    public List<Element<HearingBooking>> getPastAndTodayHearings() {
+        return defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()).stream()
+            .filter(hearingBooking -> hearingBooking.getValue().startsTodayOrBefore())
+            .collect(toList());
+    }
+
+    @JsonIgnore
+    public List<Element<HearingBooking>> getFutureHearings() {
+        return defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()).stream()
+            .filter(hearingBooking -> hearingBooking.getValue().startsAfterToday())
+            .collect(toList());
+    }
+
+    @JsonIgnore
+    public List<Element<HearingBooking>> getFutureAndTodayHearings() {
+        return defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()).stream()
+            .filter(hearingBooking -> hearingBooking.getValue().startsTodayOrAfter())
+            .collect(toList());
+    }
+
+    @JsonIgnore
+    public List<Element<HearingBooking>> getToBeReListedHearings() {
+        return defaultIfNull(cancelledHearingDetails, new ArrayList<Element<HearingBooking>>()).stream()
+            .filter(hearingBooking -> hearingBooking.getValue().isToBeReListed())
+            .collect(toList());
+    }
+
     private final Object cmoToReviewList;
     private final ReviewDecision reviewCMODecision;
     private final String numDraftCMOs;
-    private final List<Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder>> sealedCMOs;
+    private final List<Element<CaseManagementOrder>> sealedCMOs;
 
-    public List<Element<uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder>> getSealedCMOs() {
+    public List<Element<CaseManagementOrder>> getSealedCMOs() {
         return defaultIfNull(sealedCMOs, new ArrayList<>());
     }
 
@@ -658,4 +584,52 @@ public class CaseData {
 
     private String sendToCtsc;
     private String displayAmountToPay;
+    private final String confirmChangeState;
+
+    public DynamicList buildDynamicHearingList() {
+        return buildDynamicHearingList(null);
+    }
+
+    public DynamicList buildDynamicHearingList(UUID selected) {
+        return asDynamicList(getHearingDetails(), selected, HearingBooking::toLabel);
+    }
+
+    private final HearingType hearingType;
+    private final String hearingTypeDetails;
+    private final String hearingVenue;
+    private final Address hearingVenueCustom;
+    private final String firstHearingFlag; //also used for logic surrounding legacy hearings
+    private final PreviousHearingVenue previousHearingVenue;
+    private String previousVenueId;
+    private final String noticeOfHearingNotes;
+    private final Object hearingDateList;
+    private final Object pastAndTodayHearingDateList;
+    private final Object futureAndTodayHearingDateList;
+    private final Object toReListHearingDateList;
+    private final String hasExistingHearings;
+    private final UUID selectedHearingId;
+
+    @TimeNotMidnight(message = "Enter a valid start time", groups = HearingDatesGroup.class)
+    @Future(message = "Enter a start date in the future", groups = HearingDatesGroup.class)
+    private final LocalDateTime hearingStartDate;
+
+    @TimeNotMidnight(message = "Enter a valid end time", groups = HearingDatesGroup.class)
+    @Future(message = "Enter an end date in the future", groups = HearingDatesGroup.class)
+    private final LocalDateTime hearingEndDate;
+    private final String sendNoticeOfHearing;
+    private final HearingOptions hearingOption;
+    private final HearingReListOption hearingReListOption;
+    private final HearingCancellationReason adjournmentReason;
+    private final HearingCancellationReason vacatedReason;
+    private final List<ProceedingType> proceedingType;
+    private final State closedStateRadioList;
+
+    private final LocalDateTime hearingEndDateConfirmation;
+    private final LocalDateTime hearingStartDateConfirmation;
+
+    @JsonIgnore
+    public boolean isHearingDateInPast() {
+        return hearingEndDate.isBefore(LocalDateTime.now()) || hearingStartDate.isBefore(LocalDateTime.now());
+    }
+
 }

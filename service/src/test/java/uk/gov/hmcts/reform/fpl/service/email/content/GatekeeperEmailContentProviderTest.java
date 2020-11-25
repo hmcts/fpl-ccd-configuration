@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -39,10 +38,10 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
         gatekeeperNotificationTemplate.setNonUrgentHearing(NO.getValue());
         gatekeeperNotificationTemplate.setFirstRespondentName("Smith");
         gatekeeperNotificationTemplate.setReference(CASE_REFERENCE);
-        gatekeeperNotificationTemplate.setCaseUrl(getCaseUrl(CASE_REFERENCE));
+        gatekeeperNotificationTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
 
         assertThat(gatekeeperEmailContentProvider.buildGatekeeperNotification(populatedCaseData()))
-            .isEqualToComparingFieldByField(gatekeeperNotificationTemplate);
+            .usingRecursiveComparison().isEqualTo(gatekeeperNotificationTemplate);
     }
 
     @Test
@@ -58,17 +57,17 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
         gatekeeperNotificationTemplate.setUrgentHearing(NO.getValue());
         gatekeeperNotificationTemplate.setNonUrgentHearing(NO.getValue());
         gatekeeperNotificationTemplate.setFirstRespondentName("");
-        gatekeeperNotificationTemplate.setReference("123");
-        gatekeeperNotificationTemplate.setCaseUrl(getCaseUrl("123"));
+        gatekeeperNotificationTemplate.setReference(CASE_REFERENCE);
+        gatekeeperNotificationTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
 
         CaseData caseData = CaseData.builder()
-            .id(123L)
+            .id(Long.valueOf(CASE_REFERENCE))
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .orders(Orders.builder().orderType(List.of(CARE_ORDER)).build())
             .build();
 
         assertThat(gatekeeperEmailContentProvider.buildGatekeeperNotification(caseData))
-            .isEqualToComparingFieldByField(gatekeeperNotificationTemplate);
+            .usingRecursiveComparison().isEqualTo(gatekeeperNotificationTemplate);
     }
 
     @Test
@@ -84,11 +83,11 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
         gatekeeperNotificationTemplate.setUrgentHearing(NO.getValue());
         gatekeeperNotificationTemplate.setNonUrgentHearing(YES.getValue());
         gatekeeperNotificationTemplate.setFirstRespondentName("");
-        gatekeeperNotificationTemplate.setReference("123");
-        gatekeeperNotificationTemplate.setCaseUrl(getCaseUrl("123"));
+        gatekeeperNotificationTemplate.setReference(CASE_REFERENCE);
+        gatekeeperNotificationTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
 
         CaseData caseData = CaseData.builder()
-            .id(123L)
+            .id(Long.valueOf(CASE_REFERENCE))
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .orders(Orders.builder().orderType(List.of(CARE_ORDER)).build())
             .hearing(Hearing.builder()
@@ -97,30 +96,6 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
             .build();
 
         assertThat(gatekeeperEmailContentProvider.buildGatekeeperNotification(caseData))
-            .isEqualToComparingFieldByField(gatekeeperNotificationTemplate);
-    }
-
-    @Test
-    void shouldFormatRecipientLabelCorrectlyWhenMultipleGatekeeperEmailsArePresent() {
-        List<String> gatekeeperEmails = ImmutableList.of(
-            "JohnSmith@gmail.com",
-            "SarahSimpson@gmail.com",
-            "JohnSamuels@gmail.com"
-        );
-
-        String formattedMessage = gatekeeperEmailContentProvider.buildRecipientsLabel(gatekeeperEmails,
-            "JohnSmith@gmail.com");
-
-        assertThat(formattedMessage).isEqualTo("SarahSimpson@gmail.com, JohnSamuels@gmail.com has also received"
-            + " this notification");
-    }
-
-    @Test
-    void shouldReturnEmptyStringIfOnlyOneRecipient() {
-        List<String> gatekeeperEmails = ImmutableList.of("JohnSmith@gmail.com");
-        String formattedMessage = gatekeeperEmailContentProvider.buildRecipientsLabel(gatekeeperEmails,
-            "JohnSmith@gmail.com");
-
-        assertThat(formattedMessage).isEmpty();
+            .usingRecursiveComparison().isEqualTo(gatekeeperNotificationTemplate);
     }
 }

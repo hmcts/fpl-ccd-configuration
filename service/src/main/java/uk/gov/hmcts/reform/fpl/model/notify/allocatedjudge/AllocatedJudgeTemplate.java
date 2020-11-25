@@ -11,4 +11,5 @@ public final class AllocatedJudgeTemplate implements NotifyData {
     private String judgeName;
     private String caseName;
     private String caseUrl;
+    private String familyManCaseNumber;
 }

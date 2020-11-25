@@ -9,6 +9,11 @@ module.exports = {
     details: '#order_details',
     orderTypeList: '#orderTypeAndDocument_type',
     orderSubtypeList: '#orderTypeAndDocument_subtype',
+    orderUploadedTypeList: '#orderTypeAndDocument_uploadedOrderType',
+    order: {
+      name: '#orderTypeAndDocument_orderName',
+      description: '#orderTypeAndDocument_orderDescription',
+    },
     directionsNeeded: {
       id: '#orderFurtherDirections_directionsNeeded',
       options: {
@@ -17,14 +22,26 @@ module.exports = {
       },
     },
     directions: '#orderFurtherDirections_directions',
+    exclusionClauseNeeded: {
+      id: '#orderExclusionClause_exclusionClauseNeeded',
+      options: {
+        yes: '#orderExclusionClause_exclusionClauseNeeded-Yes',
+        no: '#orderExclusionClause_exclusionClauseNeeded-No',
+      },
+    },
+    exclusionClause: '#orderExclusionClause_exclusionClause',
     dateOfIssue: {
       id: '#dateOfIssue',
+    },
+    dateAndTimeOfIssue: {
+      id: '#dateAndTimeOfIssue',
     },
     interimEndDate: {
       id: '#interimEndDate_interimEndDate',
       options: {
         endOfProceedings: 'At the end of the proceedings',
-        namedDate: 'On a named date',
+        namedDate: 'At the end of a named date',
+        specificTimeNamedDate: 'At a specific time on a named date',
       },
       endDate: {
         day: '#interimEndDate_endDate-day',
@@ -80,16 +97,37 @@ module.exports = {
         no: '#closeCaseFromOrder-No',
       },
     },
+    uploadedOrder: '#uploadedOrder',
+    checkYourOrder: '#checkYourOrder_label',
   },
 
-  selectType(type, subtype) {
+  selectType(type, subtype, orderType) {
     within(this.fields.orderTypeList, () => {
       I.click(locate('label').withText(type));
     });
-    if (subtype)
+    if (subtype) {
       within(this.fields.orderSubtypeList, () => {
         I.click(locate('label').withText(subtype));
       });
+    }
+    if (orderType) {
+      I.selectOption(this.fields.orderUploadedTypeList, orderType);
+    }
+  },
+
+  enterOrderNameAndDescription(name, description) {
+    I.fillField(this.fields.order.name, name);
+    I.fillField(this.fields.order.description, description);
+  },
+
+  async uploadOrder(order) {
+    await I.attachFile(this.fields.uploadedOrder, order);
+  },
+
+  checkOrder(orderChecks) {
+    I.see(orderChecks.familyManCaseNumber);
+    I.see(orderChecks.children);
+    I.see(orderChecks.order);
   },
 
   enterC21OrderDetails() {
@@ -97,11 +135,14 @@ module.exports = {
     I.fillField(this.fields.details, orders[0].details);
   },
 
-  enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName, judgeTitle = judgeAndLegalAdvisor.fields.judgeTitleRadioGroup.herHonourJudge,
-    judgeEmailAddress) {
-    judgeAndLegalAdvisor.selectJudgeTitle('', judgeTitle);
-    judgeAndLegalAdvisor.enterJudgeLastName(judgeLastName);
-    judgeAndLegalAdvisor.enterJudgeEmailAddress(judgeEmailAddress);
+  enterJudge(judge) {
+    judge.judgeTitle = judgeAndLegalAdvisor.fields.judgeTitleRadioGroup.herHonourJudge;
+    judgeAndLegalAdvisor.selectJudgeTitle('', judge.judgeTitle);
+    judgeAndLegalAdvisor.enterJudgeLastName(judge.judgeLastName);
+    judgeAndLegalAdvisor.enterJudgeEmailAddress(judge.judgeEmailAddress);
+  },
+
+  enterLegalAdvisor(legalAdvisorName) {
     judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName);
   },
 
@@ -117,6 +158,11 @@ module.exports = {
   enterDirections(directions) {
     I.click(this.fields.directionsNeeded.options.yes);
     I.fillField(this.fields.directions, directions);
+  },
+
+  enterExclusionClause(exclusionClause) {
+    I.click(this.fields.exclusionClauseNeeded.options.yes);
+    I.fillField(this.fields.exclusionClause, exclusionClause);
   },
 
   enterNumberOfMonths(numOfMonths) {
@@ -150,12 +196,7 @@ module.exports = {
   },
 
   enterEpoEndDate(date) {
-    I.fillField(this.fields.epo.endDate.day, date.getDate());
-    I.fillField(this.fields.epo.endDate.month, date.getMonth() + 1);
-    I.fillField(this.fields.epo.endDate.year, date.getFullYear());
-    I.fillField(this.fields.epo.endDate.hour, date.getHours());
-    I.fillField(this.fields.epo.endDate.minute, date.getMinutes());
-    I.fillField(this.fields.epo.endDate.second, date.getSeconds());
+    I.fillDateAndTime(date, this.fields.epo.endDate.id);
   },
 
   async selectEndOfProceedings() {
@@ -166,6 +207,10 @@ module.exports = {
 
   async enterDateOfIssue(date) {
     I.fillDate(date);
+  },
+
+  enterDateAndTimeOfIssue(dateAndTime) {
+    I.fillDateAndTime(dateAndTime, this.fields.dateAndTimeOfIssue.id);
   },
 
   async selectAndEnterNamedDate(date) {

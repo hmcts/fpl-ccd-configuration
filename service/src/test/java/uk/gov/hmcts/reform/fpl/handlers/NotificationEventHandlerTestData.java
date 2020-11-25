@@ -3,13 +3,9 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplate;
-import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForCMO;
-import uk.gov.hmcts.reform.fpl.model.notify.cmo.CmoNotifyData;
 
 import java.util.List;
 
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 
@@ -33,42 +29,13 @@ public class NotificationEventHandlerTestData {
     private NotificationEventHandlerTestData() {
     }
 
-    public static AllocatedJudgeTemplateForCMO getCMOReadyForJudgeNotificationParameters() {
-        CmoNotifyData commonCMONotificationParameters = expectedCommonCMONotificationParameters();
-
-        return AllocatedJudgeTemplateForCMO.builder()
-            .subjectLineWithHearingDate(commonCMONotificationParameters.getSubjectLineWithHearingDate())
-            .caseUrl(commonCMONotificationParameters.getCaseUrl())
-            .reference(commonCMONotificationParameters.getReference())
-            .respondentLastName("Smith")
-            .judgeTitle("Her Honour Judge")
-            .judgeName("Moley")
-            .build();
-    }
-
     public static AllocatedJudgeTemplate getExpectedAllocatedJudgeNotificationParameters() {
         return AllocatedJudgeTemplate.builder()
             .judgeTitle("Her Honour Judge")
             .judgeName("Moley")
             .caseName("test")
             .caseUrl("http://fake-url/cases/case-details/12345")
-            .build();
-    }
-
-    public static CmoNotifyData expectedCommonCMONotificationParameters() {
-        return CmoNotifyData.builder()
-            .subjectLineWithHearingDate("Lastname, SACCCCCCCC5676576567")
-            .reference("12345")
-            .caseUrl(String.format("null/case/%s/%s/12345", JURISDICTION, CASE_TYPE))
-            .build();
-    }
-
-    public static CmoNotifyData getCMOIssuedCaseLinkNotificationParameters() {
-        return CmoNotifyData.builder()
-            .subjectLineWithHearingDate("Lastname, SACCCCCCCC5676576567")
-            .reference("12345")
-            .caseUrl(String.format("null/case/%s/%s/12345", JURISDICTION, CASE_TYPE))
-            .localAuthorityNameOrRepresentativeFullName(LOCAL_AUTHORITY_NAME)
+            .familyManCaseNumber("12345L")
             .build();
     }
 

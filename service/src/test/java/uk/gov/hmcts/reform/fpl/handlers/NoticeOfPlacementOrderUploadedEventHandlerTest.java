@@ -8,13 +8,15 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
+import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.OrderIssuedNotifyData;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
+
+import java.util.Set;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -29,9 +31,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 
 @ExtendWith(SpringExtension.class)
 class NoticeOfPlacementOrderUploadedEventHandlerTest {
-
-    @Mock
-    private RequestData requestData;
 
     @Mock
     private InboxLookupService inboxLookupService;
@@ -69,8 +68,9 @@ class NoticeOfPlacementOrderUploadedEventHandlerTest {
         final NoticeOfPlacementOrderUploadedEvent event = new NoticeOfPlacementOrderUploadedEvent(
             caseData, DOCUMENT_CONTENTS);
 
-        given(inboxLookupService.getNotificationRecipientEmail(caseData))
-            .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
+        given(inboxLookupService.getRecipients(
+            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))
+            .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         given(localAuthorityEmailContentProvider.buildNoticeOfPlacementOrderUploadedNotification(caseData))
             .willReturn(localAuthorityParameters);
@@ -83,9 +83,9 @@ class NoticeOfPlacementOrderUploadedEventHandlerTest {
 
         verify(notificationService).sendEmail(
             NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE,
-            LOCAL_AUTHORITY_EMAIL_ADDRESS,
+            Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             localAuthorityParameters,
-            caseData.getId());
+            caseData.getId().toString());
 
         verify(issuedOrderAdminNotificationHandler).notifyAdmin(
             caseData,

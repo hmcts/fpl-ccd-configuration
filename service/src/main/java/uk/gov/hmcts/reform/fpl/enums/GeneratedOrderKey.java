@@ -10,6 +10,7 @@ public enum GeneratedOrderKey {
     ORDER("order"),
     JUDGE_AND_LEGAL_ADVISOR("judgeAndLegalAdvisor"),
     ORDER_FURTHER_DIRECTIONS("orderFurtherDirections"),
+    ORDER_EXCLUSION_CLAUSE("orderExclusionClause"),
     ORDER_MONTHS("orderMonths"),
     DATE_OF_ISSUE("dateOfIssue"),
     PAGE_SHOW("pageShow"),
@@ -27,7 +28,11 @@ public enum GeneratedOrderKey {
     MULTIPLE_CARE_ORDER_LABEL("multipleCareOrder_label"),
     CARE_ORDER_SELECTOR("careOrderSelector"),
     NEW_HEARING_SELECTOR("newHearingSelector"),
-    NEW_HEARING_LABEL("newHearing_label");
+    NEW_HEARING_LABEL("newHearing_label"),
+    READ_ONLY_FAMILY_MAN_NUMBER("readOnlyFamilyManCaseNumber"),
+    READ_ONLY_ORDER("readOnlyOrder"),
+    READ_ONLY_CHILDREN("readOnlyChildren"),
+    UPLOADED_ORDER("uploadedOrder");
 
     private final String key;
 }

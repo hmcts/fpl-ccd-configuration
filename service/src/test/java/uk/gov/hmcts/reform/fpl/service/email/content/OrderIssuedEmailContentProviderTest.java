@@ -52,7 +52,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
         NotifyData actualParameters = orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(
             caseData, documentContents, GENERATED_ORDER);
 
-        assertThat(actualParameters).isEqualTo(expectedParameters);
+        assertThat(actualParameters).usingRecursiveComparison().isEqualTo(expectedParameters);
     }
 
     @Test
@@ -61,7 +61,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
         NotifyData actualParameters = orderIssuedEmailContentProvider.getNotifyDataWithoutCaseUrl(
             caseData, documentContents, GENERATED_ORDER);
 
-        assertThat(actualParameters).isEqualTo(expectedParameters);
+        assertThat(actualParameters).usingRecursiveComparison().isEqualTo(expectedParameters);
     }
 
     @Test
@@ -80,7 +80,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
         NotifyData actualParameters = orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(
             caseData, documentContents, CMO);
 
-        assertThat(actualParameters).isEqualTo(expectedParameters);
+        assertThat(actualParameters).usingRecursiveComparison().isEqualTo(expectedParameters);
     }
 
     @Test

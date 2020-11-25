@@ -23,6 +23,7 @@ import javax.validation.constraints.NotNull;
 @HasTelephoneOrMobile
 @HasContactDirection
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@ToString(callSuper = true)
 public class ApplicantParty extends Party implements TelephoneContacts {
     private final Telephone mobileNumber;
     @NotBlank(message = "Enter a job title for the contact")

@@ -58,7 +58,7 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
         cafcassSubmissionTemplate.setNonUrgentHearing(NO.getValue());
         cafcassSubmissionTemplate.setFirstRespondentName("Smith");
         cafcassSubmissionTemplate.setReference(CASE_REFERENCE);
-        cafcassSubmissionTemplate.setCaseUrl(getCaseUrl(CASE_REFERENCE));
+        cafcassSubmissionTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
         cafcassSubmissionTemplate.setDocumentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
             .map(JSONObject::toMap)
             .orElse(null));
@@ -66,7 +66,7 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
         CaseData caseData = populatedCaseData(Map.of("applicationBinaryUrl", applicationDocument.getBinaryUrl()));
 
         assertThat(cafcassEmailContentProvider.buildCafcassSubmissionNotification(caseData))
-            .isEqualToComparingFieldByField(cafcassSubmissionTemplate);
+            .usingRecursiveComparison().isEqualTo(cafcassSubmissionTemplate);
     }
 
     @Test
@@ -82,18 +82,18 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
         cafcassSubmissionTemplate.setUrgentHearing(NO.getValue());
         cafcassSubmissionTemplate.setNonUrgentHearing(NO.getValue());
         cafcassSubmissionTemplate.setFirstRespondentName("");
-        cafcassSubmissionTemplate.setReference("123");
-        cafcassSubmissionTemplate.setCaseUrl(getCaseUrl("123"));
+        cafcassSubmissionTemplate.setReference(CASE_REFERENCE);
+        cafcassSubmissionTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
         cafcassSubmissionTemplate.setDocumentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
             .map(JSONObject::toMap).orElse(null));
 
         assertThat(cafcassEmailContentProvider.buildCafcassSubmissionNotification(buildCaseData(applicationDocument)))
-            .isEqualToComparingFieldByField(cafcassSubmissionTemplate);
+            .usingRecursiveComparison().isEqualTo(cafcassSubmissionTemplate);
     }
 
     private CaseData buildCaseData(DocumentReference applicationDocument) {
         return CaseData.builder()
-            .id(123L)
+            .id(Long.valueOf(CASE_REFERENCE))
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .submittedForm(applicationDocument)
             .orders(Orders.builder()

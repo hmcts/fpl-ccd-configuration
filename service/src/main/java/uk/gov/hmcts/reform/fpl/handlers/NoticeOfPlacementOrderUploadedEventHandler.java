@@ -6,6 +6,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.OrderIssuedNotifyData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
@@ -13,6 +14,8 @@ import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
+
+import java.util.Collection;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
@@ -33,13 +36,15 @@ public class NoticeOfPlacementOrderUploadedEventHandler {
     @EventListener
     public void notifyParties(NoticeOfPlacementOrderUploadedEvent noticeOfPlacementEvent) {
         CaseData caseData = noticeOfPlacementEvent.getCaseData();
+        Collection<String> emails = inboxLookupService.getRecipients(
+            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()
+        );
 
-        String recipient = inboxLookupService.getNotificationRecipientEmail(caseData);
         NotifyData notifyData =
             localAuthorityEmailContentProvider.buildNoticeOfPlacementOrderUploadedNotification(caseData);
 
-        notificationService
-            .sendEmail(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE, recipient, notifyData, caseData.getId());
+        notificationService.sendEmail(
+            NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE, emails, notifyData, caseData.getId().toString());
 
         issuedOrderAdminNotificationHandler.notifyAdmin(caseData,
             noticeOfPlacementEvent.getDocumentContents(), NOTICE_OF_PLACEMENT_ORDER);

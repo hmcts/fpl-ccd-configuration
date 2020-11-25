@@ -13,4 +13,25 @@
     <gav regex="true">^org\.springframework\.security:.*$</gav>
     <cve>CVE-2018-1258</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+            CVE is a json vulnerability for Node projects. False positive reported at https://github.com/jeremylong/DependencyCheck/issues/2794
+        ]]></notes>
+    <cve>CVE-2020-10663</cve>
+    <cve>CVE-2020-7712</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: tomcat-embed-core-9.0.38.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-core@.*$</packageUrl>
+    <cve>CVE-2020-13943</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: tomcat-embed-websocket-9.0.38.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-websocket@.*$</packageUrl>
+    <cve>CVE-2020-13943</cve>
+  </suppress>
 </suppressions>

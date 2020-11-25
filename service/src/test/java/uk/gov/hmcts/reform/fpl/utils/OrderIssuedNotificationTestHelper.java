@@ -31,7 +31,6 @@ public class OrderIssuedNotificationTestHelper {
     private static final String callout = "^Jones, SACCCCCCCC5676576567, hearing " + LocalDateTime.now().plusMonths(3)
         .toLocalDate().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).localizedBy(Locale.UK));
 
-
     public static Map<String, Object> getExpectedParametersMap(String orderType, boolean withCallout) {
         String fileContent = new String(Base64.encodeBase64(PDF), ISO_8859_1);
         JSONObject jsonFileObject = new JSONObject()
@@ -43,10 +42,9 @@ public class OrderIssuedNotificationTestHelper {
             "callout", withCallout ? callout : "",
             "courtName", EXAMPLE_COURT,
             "documentLink", jsonFileObject,
-            "caseUrl", formatCaseUrl("http://fake-url", 12345L),
+            "caseUrl", formatCaseUrl("http://fake-url", 12345L, "OrdersTab"),
             "respondentLastName", "Jones");
     }
-
 
     public static OrderIssuedNotifyData getExpectedParameters(String orderType, boolean withCallout) {
         String fileContent = new String(Base64.encodeBase64(PDF), ISO_8859_1);
@@ -59,7 +57,7 @@ public class OrderIssuedNotificationTestHelper {
             .callout(withCallout ? callout : "")
             .courtName(EXAMPLE_COURT)
             .documentLink(jsonFileObject)
-            .caseUrl(formatCaseUrl("http://fake-url", 12345L))
+            .caseUrl(formatCaseUrl("http://fake-url", 12345L, "OrdersTab"))
             .respondentLastName("Jones")
             .build();
     }
@@ -100,7 +98,7 @@ public class OrderIssuedNotificationTestHelper {
             .respondentLastName("Jones")
             .judgeTitle("Deputy District Judge")
             .judgeName("Scott")
-            .caseUrl("http://fake-url/cases/case-details/12345")
+            .caseUrl(formatCaseUrl("http://fake-url", 12345L, "OrdersTab"))
             .build();
     }
 

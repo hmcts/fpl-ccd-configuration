@@ -23,10 +23,10 @@ import static uk.gov.hmcts.reform.fpl.service.email.NotificationServiceTest.ENV;
 @ContextConfiguration(classes = {NotificationService.class, JacksonAutoConfiguration.class})
 @TestPropertySource(properties = {"fpl.env=" + ENV})
 class NotificationServiceTest {
-    static final String ENV = "TEST_ENV";
     private static final String TEST_RECIPIENT_EMAIL = "test@example.com";
     private static final String REFERENCE = "12345L";
     private static final String TEMPLATE_ID = PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
+    static final String ENV = "TEST_ENV";
     private static final String NOTIFICATION_REFERENCE = String.format("%s/%s", ENV, REFERENCE);
 
     @MockBean

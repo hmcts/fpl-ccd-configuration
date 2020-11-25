@@ -30,7 +30,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @WebMvcTest(UploadC2DocumentsController.class)
 @OverrideAutoConfiguration(enabled = true)
 class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
-    private static final String ERROR_MESSAGE = "Date of time received cannot be in the future";
+    private static final String ERROR_MESSAGE = "Date received cannot be in the future";
 
     @MockBean
     private FeeService feeService;
@@ -104,7 +104,7 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
     void shouldDisplayErrorForInvalidPbaNumber() {
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
             .data(Map.of("temporaryC2Document", Map.of("pbaNumber", "12345")))
-            .build(), "validate-pba-number");
+            .build(), "validate");
 
         assertThat(response.getErrors()).contains("Payment by account (PBA) number must include 7 numbers");
         assertThat(response.getData()).extracting("temporaryC2Document").extracting("pbaNumber").isEqualTo("PBA12345");
@@ -114,7 +114,7 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
     void shouldNotDisplayErrorForValidPbaNumber() {
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
             .data(Map.of("temporaryC2Document", Map.of("pbaNumber", "1234567")))
-            .build(), "validate-pba-number");
+            .build(), "validate");
 
         assertThat(response.getErrors()).isEmpty();
         assertThat(response.getData()).extracting("temporaryC2Document")
@@ -128,7 +128,7 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
             .data(Map.of("temporaryC2Document",
                 Map.of(
                     "supportingEvidenceBundle", wrapElements(createSupportingEvidenceBundle()),
-                "pbaNumber", "12345")))
+                    "pbaNumber", "12345")))
             .build(), "validate");
 
         assertThat(response.getErrors()).contains("Payment by account (PBA) number must include 7 numbers");

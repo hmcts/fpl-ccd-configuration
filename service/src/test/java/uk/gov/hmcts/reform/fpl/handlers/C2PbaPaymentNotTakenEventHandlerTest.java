@@ -10,12 +10,15 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.events.C2PbaPaymentNotTakenEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
+import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
+
+import java.util.Set;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -73,8 +76,9 @@ class C2PbaPaymentNotTakenEventHandlerTest {
         given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(
             UserInfo.builder().sub(CTSC_INBOX).roles(LOCAL_AUTHORITY.getRoles()).build());
 
-        given(inboxLookupService.getNotificationRecipientEmail(caseData))
-            .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
+        given(inboxLookupService.getRecipients(
+            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))
+            .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         given(c2UploadedEmailContentProvider.getPbaPaymentNotTakenNotifyData(caseData))
             .willReturn(c2PaymentNotTakenParameters);

@@ -1,0 +1,5 @@
+test-conf:
+  idam-url: http://localhost:5000
+  fpl-url: http://localhost:4000
+  placeholders:
+    OrganisationID: 62LYJRF

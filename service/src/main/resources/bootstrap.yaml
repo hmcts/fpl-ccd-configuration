@@ -6,6 +6,7 @@ spring:
       aliases:
         notify-api-key: notify.api_key
         docmosis-api-key: docmosis.tornado.key
+        send-grid-api-key: send-grid.api_key
         fpl-case-service-s2s-secret: idam.s2s-auth.totp_secret
         fpl-case-service-idam-client-secret: idam.client.secret
         local-authority-email-to-code-mapping: fpl.local_authority_email_to_code.mapping

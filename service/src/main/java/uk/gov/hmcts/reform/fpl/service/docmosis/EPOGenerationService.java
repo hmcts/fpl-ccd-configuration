@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -18,8 +17,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class EPOGenerationService extends GeneratedOrderTemplateDataGeneration {
 
-    private final Time time;
-
     @Override
     DocmosisGeneratedOrder populateCustomOrderFields(CaseData caseData) {
         return DocmosisGeneratedOrder.builder()
@@ -28,7 +25,7 @@ public class EPOGenerationService extends GeneratedOrderTemplateDataGeneration {
             .epoType(caseData.getEpoType())
             .includePhrase(caseData.getEpoPhrase().getIncludePhrase())
             .removalAddress(getFormattedRemovalAddress(caseData))
-            .epoStartDateTime(formatEPODateTime(time.now()))
+            .epoStartDateTime(formatEPODateTime(caseData.getDateAndTimeOfIssue()))
             .epoEndDateTime(formatEPODateTime(caseData.getEpoEndDate()))
             .build();
     }

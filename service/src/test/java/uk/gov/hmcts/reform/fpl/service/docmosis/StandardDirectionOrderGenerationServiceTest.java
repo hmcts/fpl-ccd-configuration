@@ -85,15 +85,6 @@ class StandardDirectionOrderGenerationServiceTest {
     }
 
     @Test
-    void shouldMapEmptyCaseDataForDraftSDO() {
-        StandardDirectionOrder order = StandardDirectionOrder.builder().dateOfIssue("29 November 2019").build();
-
-        DocmosisStandardDirectionOrder template = service.getTemplateData(getCaseData(order));
-
-        assertThat(template).isEqualToComparingFieldByField(emptyDocmosisOrder(order));
-    }
-
-    @Test
     void shouldMapDirectionsForDraftSDOWhenAllAssignees() {
         StandardDirectionOrder order = StandardDirectionOrder.builder().directions(getDirections()).build();
         DocmosisStandardDirectionOrder templateData = service.getTemplateData(getCaseData(order));

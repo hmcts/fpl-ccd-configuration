@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.sdo.SDONotifyData;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.StandardDirectionOrderContent;
 
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCallout;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 @Service
@@ -23,14 +24,15 @@ public class LocalAuthorityEmailContentProvider extends StandardDirectionOrderCo
             .leadRespondentsName(getLeadRespondentsName(caseData))
             .hearingDate(getHearingDate(caseData))
             .reference(caseData.getId().toString())
-            .caseUrl(getCaseUrl(caseData.getId()))
+            .caseUrl(getCaseUrl(caseData.getId(), "OrdersTab"))
+            .callout(buildCallout(caseData))
             .build();
     }
 
     public BaseCaseNotifyData buildNoticeOfPlacementOrderUploadedNotification(CaseData caseData) {
         return BaseCaseNotifyData.builder()
             .respondentLastName(getFirstRespondentLastName(caseData))
-            .caseUrl(getCaseUrl(caseData))
+            .caseUrl(getCaseUrl(caseData.getId(), "PlacementTab"))
             .build();
     }
 }

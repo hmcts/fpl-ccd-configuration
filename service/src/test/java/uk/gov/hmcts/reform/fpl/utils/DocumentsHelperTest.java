@@ -5,6 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import uk.gov.hmcts.reform.fpl.enums.DocumentStatus;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import java.util.Optional;
 
@@ -15,6 +16,8 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.concatUrlAndMostRece
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasDocumentStatusOf;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasDocumentStatusSet;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasDocumentUploaded;
+import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasExtension;
+import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.updateExtension;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 class DocumentsHelperTest {
@@ -42,12 +45,12 @@ class DocumentsHelperTest {
 
     @Test
     void shouldReturnTrueIfDocumentHasBinaries() {
-        assertThat(hasDocumentUploaded(document(true))).isEqualTo(true);
+        assertThat(hasDocumentUploaded(document(true))).isTrue();
     }
 
     @Test
     void shouldReturnFalseIfDocumentHasNotBinaries() {
-        assertThat(hasDocumentUploaded(document(false))).isEqualTo(false);
+        assertThat(hasDocumentUploaded(document(false))).isFalse();
     }
 
     @Test
@@ -69,6 +72,36 @@ class DocumentsHelperTest {
         String documentUrl = concatUrlAndMostRecentUploadedDocumentPath(url, invalidMostRecentDocumentLink);
 
         assertThat(documentUrl).isEmpty();
+    }
+
+    @Test
+    void shouldReturnTrueWhenFilenameExtensionIncludesExpectedExtension() {
+        DocumentReference documentReference = buildDocumentReferenceWithExtension("test.pdf");
+        assertThat(hasExtension(documentReference, "pdf")).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenFilenameExtensionDoesNotIncludeExpectedExtension() {
+        DocumentReference documentReference = buildDocumentReferenceWithExtension("test.doc");
+        assertThat(hasExtension(documentReference, "pdf")).isFalse();
+    }
+
+    @Test
+    void shouldUpdateFilenameWithDocExtensionToPDF() {
+        DocumentReference documentReference = buildDocumentReferenceWithExtension("test.doc");
+
+        assertThat(updateExtension(documentReference.getFilename(), "pdf")).isEqualTo("test.pdf");
+    }
+
+    @Test
+    void shouldPersistCurrentPdfExtension() {
+        DocumentReference documentReference = buildDocumentReferenceWithExtension("test.pdf");
+
+        assertThat(updateExtension(documentReference.getFilename(), "pdf")).isEqualTo("test.pdf");
+    }
+
+    private DocumentReference buildDocumentReferenceWithExtension(String filename) {
+        return DocumentReference.builder().filename(filename).build();
     }
 
     private static Document document(DocumentStatus documentStatus) {

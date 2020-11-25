@@ -1,175 +1,52 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.skyscreamer.jsonassert.JSONAssert;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.fpl.enums.ActionType;
-import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.Recital;
-import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
+import uk.gov.hmcts.reform.fpl.model.order.generated.OrderExclusionClause;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
+import uk.gov.hmcts.reform.fpl.utils.IncrementalInteger;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.FormatStyle;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static java.lang.String.format;
-import static java.util.Collections.emptyList;
-import static java.util.UUID.fromString;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
-import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
-import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
-import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE_LIST;
-import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.NEXT_HEARING_DATE_LIST;
-import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION;
-import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED_AND_RE_LISTED;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED_TO_BE_RE_LISTED;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_AND_RE_LISTED;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, FixedTimeConfiguration.class})
 class CaseDataTest {
 
-    @Autowired
-    private ObjectMapper mapper;
+    private static final String EXCLUSION_CLAUSE = "exclusionClause";
+    private static final UUID[] HEARING_IDS = {randomUUID(), randomUUID(), randomUUID(), randomUUID()};
 
-    @Autowired
-    private Time time;
-
-    private LocalDateTime futureDate;
-    private UUID cmoID = UUID.randomUUID();
-
-    @BeforeEach
-    void setUp() {
-        futureDate = time.now().plusDays(1);
-    }
-
-    @Nested
-    class GetDirectionsToComplyWith {
-
-        @Test
-        void shouldReturnStandardDirectionOrderDirectionsWhenServedCaseManagementOrdersIsEmpty() {
-            List<Element<Direction>> sdoDirections = wrapElements(directionForParty(LOCAL_AUTHORITY));
-            CaseData caseData = buildCaseData(sdoDirections, emptyList());
-
-            assertThat(caseData.getDirectionsToComplyWith()).isEqualTo(sdoDirections);
-        }
-
-        @Test
-        void shouldReturnCaseManagementOrderDirectionsWhenServedCaseManagementOrdersIsNotEmpty() {
-            List<Element<Direction>> cmoDirections = wrapElements(directionForParty(LOCAL_AUTHORITY));
-            List<Element<Direction>> sdoDirections = wrapElements(directionForParty(CAFCASS));
-            CaseData caseData = buildCaseData(sdoDirections, servedCaseManagementOrder(cmoDirections));
-
-            assertThat(caseData.getDirectionsToComplyWith()).isEqualTo(cmoDirections);
-        }
-
-        @Test
-        void shouldReturnEmptyListWhenNoDirections() {
-            CaseData caseData = CaseData.builder().build();
-
-            assertThat(caseData.getDirectionsToComplyWith()).isEqualTo(emptyList());
-        }
-
-        private CaseData buildCaseData(List<Element<Direction>> sdoDirections,
-                                       List<Element<CaseManagementOrder>> cmoDirections) {
-            return CaseData.builder()
-                .standardDirectionOrder(StandardDirectionOrder.builder().directions(sdoDirections).build())
-                .servedCaseManagementOrders(cmoDirections)
-                .build();
-        }
-
-        private List<Element<CaseManagementOrder>> servedCaseManagementOrder(List<Element<Direction>> cmoDirections) {
-            return wrapElements(CaseManagementOrder.builder().directions(cmoDirections).build());
-        }
-    }
-
-    @Test
-    void shouldSerialiseCaseManagementOrderToCorrectStringValueWhenInSelfReview() throws JsonProcessingException {
-        String serialised = mapper.writeValueAsString(CaseData.builder()
-            .caseManagementOrder(CaseManagementOrder.builder().status(SELF_REVIEW).build())
-            .build());
-
-        JSONAssert.assertEquals(format("{%s:{status: %s}}",
-            CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), SELF_REVIEW.name()), serialised, false);
-    }
-
-    @Test
-    void shouldSerialiseCaseManagementOrderToCorrectStringValueWhenInSendToJudge() throws JsonProcessingException {
-        String serialised = mapper.writeValueAsString(CaseData.builder()
-            .caseManagementOrder(CaseManagementOrder.builder().status(SEND_TO_JUDGE).build())
-            .build());
-
-        JSONAssert.assertEquals(
-            format("{%s:{status: %s}}", CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), SEND_TO_JUDGE.name()),
-            serialised, false);
-    }
-
-    @Test
-    void shouldDeserialiseCaseDataWhenCaseManagementOrderWithSelfReviewState() throws JsonProcessingException {
-        String content = format("{\"%s\":{\"status\": \"%s\"}}",
-            CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), SELF_REVIEW.name());
-
-        CaseData deserialised = mapper.readValue(content, CaseData.class);
-
-        assertThat(deserialised).isEqualTo(CaseData.builder()
-            .caseManagementOrder(CaseManagementOrder.builder().status(SELF_REVIEW).build())
-            .directionsForCaseManagementOrder(Directions.builder().build())
-            .build());
-    }
-
-    @Test
-    void shouldDeserialiseCaseDataWhenCaseManagementOrderWithSendToJudgeState() throws JsonProcessingException {
-        String content = format("{\"%s\":{\"status\": \"%s\"}}",
-            CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), SEND_TO_JUDGE.name());
-
-        CaseData deserialised = mapper.readValue(content, CaseData.class);
-
-        assertThat(deserialised).isEqualTo(CaseData.builder()
-            .caseManagementOrder(CaseManagementOrder.builder().status(SEND_TO_JUDGE).build())
-            .directionsForCaseManagementOrder(Directions.builder().build())
-            .build());
-    }
+    private final Time time = new FixedTimeConfiguration().stoppedTime();
+    private final UUID cmoID = randomUUID();
+    private final LocalDateTime futureDate = time.now().plusDays(1);
+    private final LocalDateTime pastDate = time.now().minusDays(1);
 
     @Test
     void shouldGetAllOthersWhenFirstAndAdditionalOthersExist() {
@@ -215,7 +92,7 @@ class CaseDataTest {
         Other other1 = otherWithName("John");
         CaseData caseData = caseData(Others.builder().firstOther(other1));
 
-        assertThat(caseData.findOther(0)).isEqualTo(Optional.of(other1));
+        assertThat(caseData.findOther(0)).contains(other1);
     }
 
     @Test
@@ -223,7 +100,7 @@ class CaseDataTest {
         Other other1 = otherWithName("John");
         CaseData caseData = caseData(Others.builder().firstOther(other1));
 
-        assertThat(caseData.findOther(1)).isEqualTo(Optional.empty());
+        assertThat(caseData.findOther(1)).isEmpty();
     }
 
     @Test
@@ -236,7 +113,7 @@ class CaseDataTest {
             .build())
             .build();
 
-        assertThat(caseData.findOther(1)).isEqualTo(Optional.of(other2));
+        assertThat(caseData.findOther(1)).contains(other2);
     }
 
     @Test
@@ -244,7 +121,7 @@ class CaseDataTest {
         Respondent respondent = Respondent.builder().build();
         CaseData caseData = CaseData.builder().respondents1(wrapElements(respondent)).build();
 
-        assertThat(caseData.findRespondent(0)).isEqualTo(Optional.of(respondent));
+        assertThat(caseData.findRespondent(0)).contains(respondent);
     }
 
     @Test
@@ -252,7 +129,7 @@ class CaseDataTest {
         Respondent respondent = Respondent.builder().build();
         CaseData caseData = CaseData.builder().respondents1(wrapElements(respondent)).build();
 
-        assertThat(caseData.findRespondent(1)).isEqualTo(Optional.empty());
+        assertThat(caseData.findRespondent(1)).isEmpty();
     }
 
     @Test
@@ -260,7 +137,7 @@ class CaseDataTest {
         Applicant applicant = Applicant.builder().build();
         CaseData caseData = CaseData.builder().applicants(wrapElements(applicant)).build();
 
-        assertThat(caseData.findApplicant(0)).isEqualTo(Optional.of(applicant));
+        assertThat(caseData.findApplicant(0)).contains(applicant);
     }
 
     @Test
@@ -268,14 +145,14 @@ class CaseDataTest {
         Applicant applicant = Applicant.builder().build();
         CaseData caseData = CaseData.builder().applicants(wrapElements(applicant)).build();
 
-        assertThat(caseData.findApplicant(1)).isEqualTo(Optional.empty());
+        assertThat(caseData.findApplicant(1)).isEmpty();
     }
 
     @Test
     void shouldNotFindApplicantWhenNull() {
         CaseData caseData = CaseData.builder().build();
 
-        assertThat(caseData.findApplicant(0)).isEqualTo(Optional.empty());
+        assertThat(caseData.findApplicant(0)).isEmpty();
     }
 
     @Test
@@ -350,152 +227,8 @@ class CaseDataTest {
         @Test
         void shouldReturnNullIfC2DocumentBundleIsNotPopulated() {
             caseData = CaseData.builder().c2DocumentBundle(null).build();
-            assertThat(caseData.getLastC2DocumentBundle()).isEqualTo(null);
+            assertThat(caseData.getLastC2DocumentBundle()).isNull();
         }
-    }
-
-    @Nested
-    class PrepareCaseManagementOrder {
-        final Schedule schedule = Schedule.builder().includeSchedule("Yes").build();
-        final List<Element<Recital>> recitals = wrapElements(Recital.builder().title("example title").build());
-        final OrderAction action = baseOrderActionWithType().build();
-
-        @Test
-        void shouldReturnCaseManagementOrderWhenFullDetailsButNoPreviousOrder() {
-            assertThat(getCaseData().getCaseManagementOrder())
-                .isEqualToComparingFieldByField(orderWithDirections(createCmoDirections()));
-        }
-
-        @Test
-        void shouldReturnCaseManagementOrderWithOrderDirectionsWhenOnlyPreviousOrder() {
-            Map<String, Object> data = new HashMap<>();
-            data.put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), orderWithDirections(createCmoDirections()));
-
-            CaseData caseData = mapper.convertValue(data, CaseData.class);
-
-            assertThat(caseData.getCaseManagementOrder()).isEqualTo(orderWithDirections(createCmoDirections()));
-        }
-
-        @Test
-        void shouldReturnCaseManagementOrderWhenNoCaseData() {
-            CaseData caseData = CaseData.builder().build();
-
-            assertThat(caseData.getCaseManagementOrder()).isEqualTo(CaseManagementOrder.builder()
-                .directions(emptyList())
-                .recitals(emptyList())
-                .build());
-        }
-
-        @Test
-        void shouldOverwriteRecitalsWithEmptyListWhenRemovingAllRecitals() {
-            Map<String, Object> data = new HashMap<>();
-            data.put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), orderWithDirections(emptyList()));
-            data.put(RECITALS.getKey(), emptyList());
-
-            CaseData caseData = mapper.convertValue(data, CaseData.class);
-
-            assertThat(caseData.getCaseManagementOrder().getRecitals()).isEmpty();
-        }
-
-        @Test
-        void shouldOverwriteDirectionsWithEmptyListWhenAllDirectionsRemoved() {
-            Map<String, Object> data = new HashMap<>();
-            data.put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), orderWithDirections(createCmoDirections()));
-
-            Stream.of(DirectionAssignee.values()).forEach(assignee ->
-                data.put(assignee.toCaseManagementOrderDirectionField(), emptyList()));
-
-            CaseData caseData = mapper.convertValue(data, CaseData.class);
-
-            assertThat(caseData.getCaseManagementOrder().getDirections()).isEmpty();
-        }
-
-        private CaseManagementOrder orderWithDirections(List<Element<Direction>> directions) {
-            return CaseManagementOrder.builder()
-                .id(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
-                .hearingDate(formatLocalDateToMediumStyle(5))
-                .directions(directions)
-                .action(action)
-                .nextHearing(NextHearing.builder()
-                    .id(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
-                    .date(formatLocalDateToMediumStyle(5))
-                    .build())
-                .dateOfIssue(formatLocalDateToString(time.now().toLocalDate(), DATE))
-                .schedule(schedule)
-                .recitals(recitals)
-                .build();
-        }
-
-        private CaseData getCaseData() {
-            Map<String, Object> caseData = new HashMap<>();
-
-            Stream.of(DirectionAssignee.values()).forEach(direction -> {
-                Direction unassignedDirection = createUnassignedDirection();
-                caseData.put(direction.toCaseManagementOrderDirectionField(), wrapElements(unassignedDirection));
-            });
-
-            caseData.put(HEARING_DATE_LIST.getKey(), getDynamicList());
-            caseData.put(NEXT_HEARING_DATE_LIST.getKey(), getDynamicList());
-            caseData.put(ORDER_ACTION.getKey(), action);
-            caseData.put("dateOfIssue", time.now());
-            caseData.put("schedule", schedule);
-            caseData.put("recitals", recitals);
-
-            return mapper.convertValue(caseData, CaseData.class);
-        }
-
-        private OrderAction.OrderActionBuilder baseOrderActionWithType() {
-            return OrderAction.builder().type(ActionType.SEND_TO_ALL_PARTIES);
-        }
-
-        private DynamicList getDynamicList() {
-            DynamicListElement listElement = DynamicListElement.builder()
-                .label(formatLocalDateToMediumStyle(5))
-                .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
-                .build();
-
-            return DynamicList.builder()
-                .listItems(List.of(
-                    listElement,
-                    DynamicListElement.builder()
-                        .code(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
-                        .label(formatLocalDateToMediumStyle(2))
-                        .build(),
-                    DynamicListElement.builder()
-                        .code(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
-                        .label(formatLocalDateToMediumStyle(0))
-                        .build()))
-                .value(listElement)
-                .build();
-        }
-
-        private String formatLocalDateToMediumStyle(int i) {
-            return formatLocalDateToString(time.now().plusDays(i).toLocalDate(), FormatStyle.MEDIUM);
-        }
-    }
-
-    @Test
-    void shouldSerialiseDirectionsAsNullWhenEmptyDirections() {
-        assertThat(CaseData.builder().build()).hasFieldOrPropertyWithValue("directionsForCaseManagementOrder", null);
-    }
-
-    @Test
-    void shouldDeserialiseIndividualCmoDirectionsToDirectionsObject() throws JsonProcessingException {
-        UUID id = randomUUID();
-
-        CaseData deserialised = mapper.readValue(buildJsonDirections(id), CaseData.class);
-
-        assertThat(deserialised).isEqualToComparingFieldByField(caseDataWithPopulatedDirections(id));
-    }
-
-    @Test
-    void shouldSerialiseDirectionsObjectToIndividualDirections() throws JsonProcessingException {
-        UUID id = randomUUID();
-
-        String serialised = mapper.writeValueAsString(caseDataWithPopulatedDirections(id));
-
-        Stream.of(DirectionAssignee.values())
-            .forEach(assignee -> JSONAssert.assertEquals(getExpectedString(assignee, id), serialised, false));
     }
 
     @Test
@@ -504,14 +237,14 @@ class CaseDataTest {
             .judgeFullName("Test Judge")
             .build()).build();
 
-        assertThat(caseData.allocatedJudgeExists()).isEqualTo(true);
+        assertThat(caseData.allocatedJudgeExists()).isTrue();
     }
 
     @Test
     void shouldReturnFalseWhenAllocatedJudgeDoesNotExist() {
         CaseData caseData = CaseData.builder().build();
 
-        assertThat(caseData.allocatedJudgeExists()).isEqualTo(false);
+        assertThat(caseData.allocatedJudgeExists()).isFalse();
     }
 
     @Test
@@ -522,7 +255,7 @@ class CaseDataTest {
                 .build())
             .build();
 
-        assertThat(caseData.hasAllocatedJudgeEmail()).isEqualTo(true);
+        assertThat(caseData.hasAllocatedJudgeEmail()).isTrue();
     }
 
     @Test
@@ -533,7 +266,7 @@ class CaseDataTest {
                 .build())
             .build();
 
-        assertThat(caseData.hasAllocatedJudgeEmail()).isEqualTo(false);
+        assertThat(caseData.hasAllocatedJudgeEmail()).isFalse();
     }
 
     @Test
@@ -544,7 +277,7 @@ class CaseDataTest {
                 .build())
             .build();
 
-        assertThat(caseData.hasAllocatedJudgeEmail()).isEqualTo(false);
+        assertThat(caseData.hasAllocatedJudgeEmail()).isFalse();
     }
 
     @Test
@@ -577,12 +310,76 @@ class CaseDataTest {
         assertThat(hearingBookingInFuture).isFalse();
     }
 
+    @Test
+    void shouldReturnTrueWhenStartDateIsInThePast() {
+        CaseData caseData = CaseData.builder()
+            .hearingStartDate(pastDate)
+            .hearingEndDate(futureDate)
+            .build();
+
+        boolean hearingInPast = caseData.isHearingDateInPast();
+
+        assertThat(hearingInPast).isTrue();
+    }
+
+    @Test
+    void shouldReturnTrueWhenEndHearingDateIsInThePast() {
+        CaseData caseData = CaseData.builder()
+            .hearingStartDate(futureDate)
+            .hearingEndDate(pastDate)
+            .build();
+
+        boolean hearingInPast = caseData.isHearingDateInPast();
+
+        assertThat(hearingInPast).isTrue();
+    }
+
+    @Test
+    void shouldReturnTrueWhenHearingDateIsInThePast() {
+        CaseData caseData = CaseData.builder()
+            .hearingStartDate(futureDate)
+            .hearingEndDate(pastDate)
+            .build();
+
+        boolean hearingInPast = caseData.isHearingDateInPast();
+
+        assertThat(hearingInPast).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenHearingDateIsTheFuture() {
+        CaseData caseData = CaseData.builder()
+            .hearingStartDate(futureDate)
+            .hearingEndDate(futureDate)
+            .build();
+
+        boolean hearingInPast = caseData.isHearingDateInPast();
+
+        assertThat(hearingInPast).isFalse();
+    }
+
+    @Test
+    void testGetExclusionClauseTextIfNull() {
+        CaseData underTest = CaseData.builder().build();
+
+        assertThat(underTest.getExclusionClauseText()).isEmpty();
+    }
+
+    @Test
+    void testGetExclusionClauseTextIfExists() {
+        CaseData underTest = CaseData.builder().orderExclusionClause(OrderExclusionClause.builder()
+            .exclusionClause(EXCLUSION_CLAUSE)
+            .build()).build();
+
+        assertThat(underTest.getExclusionClauseText()).isEqualTo(EXCLUSION_CLAUSE);
+    }
+
     @Nested
     class GetNextHearingAfterCmo {
         @Test
         void shouldReturnExpectedNextHearingBooking() {
             HearingBooking nextHearing = createHearingBooking(futureDate.plusDays(6), futureDate.plusDays(7),
-                ISSUE_RESOLUTION, UUID.randomUUID());
+                ISSUE_RESOLUTION, randomUUID());
 
             List<Element<HearingBooking>> hearingBookings = List.of(
                 element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3), CASE_MANAGEMENT, null)),
@@ -598,14 +395,14 @@ class CaseDataTest {
 
         @Test
         void shouldThrowAnExceptionWhenNoHearingsNotMatchCmo() {
-            UUID cmoID = UUID.randomUUID();
+            UUID cmoID = randomUUID();
             List<Element<HearingBooking>> hearingBookings = List.of(
                 element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6), FINAL,
-                    UUID.randomUUID())),
+                    randomUUID())),
                 element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3), CASE_MANAGEMENT,
-                    UUID.randomUUID())),
+                    randomUUID())),
                 element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION,
-                    UUID.randomUUID())));
+                    randomUUID())));
 
             CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
 
@@ -620,8 +417,8 @@ class CaseDataTest {
             List<Element<HearingBooking>> hearingBookings = List.of(
                 element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6), FINAL, cmoID)),
                 element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3), CASE_MANAGEMENT,
-                    UUID.randomUUID())),
-                element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, UUID.randomUUID())));
+                    randomUUID())),
+                element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, randomUUID())));
 
             CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
             Optional<HearingBooking> nextHearingBooking = caseData.getNextHearingAfterCmo(cmoID);
@@ -630,50 +427,454 @@ class CaseDataTest {
         }
     }
 
-    private String buildJsonDirections(UUID id) throws JsonProcessingException {
-        List<Element<Direction>> directions = List.of(element(id, Direction.builder().directionType("title").build()));
-        String directionString = mapper.writeValueAsString(directions);
+    @Nested
+    class BuildDynamicHearingList {
+        @Test
+        void shouldBuildDynamicHearingListFromHearingDetails() {
+            List<Element<HearingBooking>> hearingBookings = List.of(
+                element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))),
+                element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3))),
+                element(createHearingBooking(futureDate, futureDate.plusDays(1))));
 
-        StringBuilder builder = new StringBuilder().append("{");
+            CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
+            DynamicList expectedDynamicList = ElementUtils
+                .asDynamicList(hearingBookings, null, HearingBooking::toLabel);
 
-        DirectionAssignee[] values = DirectionAssignee.values();
-        for (int i = 0; i < values.length; i++) {
-            DirectionAssignee assignee = values[i];
-            builder.append(getJsonDirectionForParty(assignee.toCaseManagementOrderDirectionField(), directionString));
-
-            if (i != values.length - 1) {
-                builder.append(",");
-            }
+            assertThat(caseData.buildDynamicHearingList())
+                .isEqualTo(expectedDynamicList);
         }
 
-        return builder.append("}").toString();
+        @Test
+        void shouldBuildDynamicHearingListWithSelectorPropertyFromHearingDetails() {
+            UUID selectedHearingId = randomUUID();
+
+            List<Element<HearingBooking>> hearingBookings = List.of(
+                element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))),
+                element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3))),
+                element(createHearingBooking(futureDate, futureDate.plusDays(1))),
+                element(selectedHearingId, createHearingBooking(futureDate, futureDate.plusDays(3)))
+            );
+
+            CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
+            DynamicList expectedDynamicList = ElementUtils
+                .asDynamicList(hearingBookings, selectedHearingId, HearingBooking::toLabel);
+
+            assertThat(caseData.buildDynamicHearingList(selectedHearingId))
+                .isEqualTo(expectedDynamicList);
+        }
     }
 
-    private Direction directionForParty(DirectionAssignee assignee) {
-        return Direction.builder().assignee(assignee).custom("Yes").readOnly("No").directionType("title").build();
+    @Nested
+    class BuildDynamicC2DocumentBundleList {
+        @Test
+        void shouldBuildDynamicC2DocumentBundleListFromC2Documents() {
+            List<Element<C2DocumentBundle>> c2DocumentBundle = List.of(
+                element(buildC2DocumentBundle(futureDate.plusDays(2))),
+                element(buildC2DocumentBundle(futureDate.plusDays(1)))
+            );
+
+            CaseData caseData = CaseData.builder().c2DocumentBundle(c2DocumentBundle).build();
+            IncrementalInteger i = new IncrementalInteger(1);
+            DynamicList expectedDynamicList = ElementUtils
+                .asDynamicList(c2DocumentBundle, null, documentBundle ->
+                    documentBundle.toLabel(i.getAndIncrement()));
+
+            assertThat(caseData.buildC2DocumentDynamicList()).isEqualTo(expectedDynamicList);
+        }
+
+        @Test
+        void shouldBuildDynamicHearingListWithSelectorPropertyFromHearingDetails() {
+            UUID selectedC2Id = randomUUID();
+
+            List<Element<C2DocumentBundle>> c2DocumentBundle = List.of(
+                element(buildC2DocumentBundle(futureDate.plusDays(2))),
+                element(buildC2DocumentBundle(futureDate.plusDays(1))),
+                element(selectedC2Id, buildC2DocumentBundle(futureDate.plusDays(5)))
+            );
+
+            CaseData caseData = CaseData.builder().c2DocumentBundle(c2DocumentBundle).build();
+            IncrementalInteger i = new IncrementalInteger(1);
+            DynamicList expectedDynamicList = ElementUtils
+                .asDynamicList(c2DocumentBundle, null, documentBundle ->
+                    documentBundle.toLabel(i.getAndIncrement()));
+
+            assertThat(caseData.buildC2DocumentDynamicList()).isEqualTo(expectedDynamicList);
+        }
     }
 
-    private String getJsonDirectionForParty(String key, String directionString) {
-        return format("\"%s\": %s", key, directionString);
+    @Nested
+    class DocumentBundleContainsHearingId {
+        @Test
+        void shouldReturnTrueIfDocumentBundleContainsHearingId() {
+            UUID hearingId = randomUUID();
+            List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments = List.of(
+                element(hearingId, HearingFurtherEvidenceBundle.builder().build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingFurtherEvidenceDocuments(hearingFurtherEvidenceDocuments)
+                .build();
+
+            assertThat(caseData.documentBundleContainsHearingId(hearingId)).isTrue();
+        }
+
+        @Test
+        void shouldReturnFalseIfDocumentBundleDoesNotContainHearingId() {
+            UUID hearingId = randomUUID();
+            List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments = List.of(
+                element(randomUUID(), HearingFurtherEvidenceBundle.builder().build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingFurtherEvidenceDocuments(hearingFurtherEvidenceDocuments)
+                .build();
+
+            assertThat(caseData.documentBundleContainsHearingId(hearingId)).isFalse();
+        }
     }
 
-    private CaseData caseDataWithPopulatedDirections(UUID id) {
-        return CaseData.builder()
-            .directionsForCaseManagementOrder(Directions.builder()
-                .allPartiesCustomCMO(List.of(element(id, directionForParty(ALL_PARTIES))))
-                .localAuthorityDirectionsCustomCMO(List.of(element(id, directionForParty(LOCAL_AUTHORITY))))
-                .respondentDirectionsCustomCMO(List.of(element(id, directionForParty(PARENTS_AND_RESPONDENTS))))
-                .cafcassDirectionsCustomCMO(List.of(element(id, directionForParty(CAFCASS))))
-                .otherPartiesDirectionsCustomCMO(List.of(element(id, directionForParty(OTHERS))))
-                .courtDirectionsCustomCMO(List.of(element(id, directionForParty(COURT))))
-                .build())
-            .build();
+    @Nested
+    class GetC2DocumentBundleByUUID {
+        @Test
+        void shouldReturnC2DocumentBundleWhenIdMatches() {
+            UUID elementId = randomUUID();
+            C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder().author("Test").build();
+            List<Element<C2DocumentBundle>> c2DocumentBundles = List.of(
+                element(elementId, c2DocumentBundle),
+                element(C2DocumentBundle.builder().build()));
+
+            CaseData caseData = CaseData.builder().c2DocumentBundle(c2DocumentBundles).build();
+
+            assertThat(caseData.getC2DocumentBundleByUUID(elementId)).isEqualTo(c2DocumentBundle);
+        }
+
+        @Test
+        void shouldReturnNullWhenIdDoNotMatch() {
+            UUID elementId = randomUUID();
+            List<Element<C2DocumentBundle>> c2DocumentBundles = List.of(
+                element(C2DocumentBundle.builder().build()),
+                element(C2DocumentBundle.builder().build()));
+
+            CaseData caseData = CaseData.builder().c2DocumentBundle(c2DocumentBundles).build();
+
+            assertThat(caseData.getC2DocumentBundleByUUID(elementId)).isNull();
+        }
     }
 
-    private String getExpectedString(DirectionAssignee assignee, UUID id) {
-        String key = assignee.toCaseManagementOrderDirectionField();
+    @Nested
+    class HasC2DocumentBundle {
+        @Test
+        void shouldReturnTrueIfC2DocumentBundleIsPresentOnCaseDataAndNotEmpty() {
+            List<Element<C2DocumentBundle>> c2DocumentBundles = List.of(
+                element(C2DocumentBundle.builder().build()),
+                element(C2DocumentBundle.builder().build()));
 
-        return format("{\"%s\": [{\"id\":\"%s\",\"value\":{\"directionType\":\"title\",\"assignee\":\"%s\","
-            + "\"readOnly\":\"No\",\"custom\":\"Yes\",\"responses\":[]}}]}", key, id, assignee.toString());
+            CaseData caseData = CaseData.builder().c2DocumentBundle(c2DocumentBundles).build();
+
+            assertThat(caseData.hasC2DocumentBundle()).isTrue();
+        }
+
+        @Test
+        void shouldReturnFalseIfC2DocumentBundleIsPresentOnCaseDataButIsEmpty() {
+            CaseData caseData = CaseData.builder().c2DocumentBundle(List.of()).build();
+            assertThat(caseData.hasC2DocumentBundle()).isFalse();
+        }
+
+        @Test
+        void shouldReturnFalseIfC2DocumentBundleIsNotPresentOnCaseData() {
+            CaseData caseData = CaseData.builder().build();
+            assertThat(caseData.hasC2DocumentBundle()).isFalse();
+        }
+    }
+
+    @Nested
+    class GetPastAndTodayHearings {
+
+        @Test
+        void shouldReturnPastAndTodayHearingBookings() {
+            Element<HearingBooking> todayHearingBooking = element(HearingBooking.builder()
+                .startDate(LocalDateTime.now())
+                .build());
+            Element<HearingBooking> todayLateHearingBooking = element(HearingBooking.builder()
+                .startDate(LocalDate.now().plusDays(1).atStartOfDay().minusMinutes(1))
+                .build());
+            Element<HearingBooking> pastHearingBooking = element(HearingBooking.builder()
+                .startDate(LocalDateTime.now().minusDays(1))
+                .build());
+            Element<HearingBooking> futureHearingBooking = element(HearingBooking.builder()
+                .startDate(LocalDateTime.now().plusDays(1))
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(List.of(
+                    pastHearingBooking,
+                    todayHearingBooking,
+                    todayLateHearingBooking,
+                    futureHearingBooking))
+                .build();
+
+            assertThat(caseData.getPastAndTodayHearings())
+                .containsExactly(pastHearingBooking, todayHearingBooking, todayLateHearingBooking);
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenNoPastOrTodayHearingBookings() {
+            Element<HearingBooking> futureHearingBooking = element(HearingBooking.builder()
+                .startDate(LocalDateTime.now().plusDays(1))
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(List.of(futureHearingBooking))
+                .build();
+
+            assertThat(caseData.getPastAndTodayHearings()).isEmpty();
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenNoHearingBookings() {
+            CaseData caseData = CaseData.builder().build();
+
+            assertThat(caseData.getPastAndTodayHearings()).isEmpty();
+        }
+    }
+
+    @Nested
+    class GetFutureAndTodayHearings {
+
+        @Test
+        void shouldReturnFutureAndTodayHearingBookings() {
+            Element<HearingBooking> todayHearingBooking = element(HearingBooking.builder()
+                .startDate(LocalDateTime.now())
+                .build());
+            Element<HearingBooking> todayLateHearingBooking = element(HearingBooking.builder()
+                .startDate(LocalDate.now().plusDays(1).atStartOfDay().minusMinutes(1))
+                .build());
+            Element<HearingBooking> pastHearingBooking = element(HearingBooking.builder()
+                .startDate(LocalDateTime.now().minusDays(1))
+                .build());
+            Element<HearingBooking> futureHearingBooking = element(HearingBooking.builder()
+                .startDate(LocalDateTime.now().plusDays(1))
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(List.of(
+                    pastHearingBooking,
+                    todayHearingBooking,
+                    todayLateHearingBooking,
+                    futureHearingBooking))
+                .build();
+
+            assertThat(caseData.getFutureAndTodayHearings())
+                .containsExactly(todayHearingBooking, todayLateHearingBooking, futureHearingBooking);
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenNoFutureOrTodayHearingBookings() {
+            Element<HearingBooking> pastHearingBooking = element(HearingBooking.builder()
+                .startDate(LocalDateTime.now().minusDays(1))
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(List.of(pastHearingBooking))
+                .build();
+
+            assertThat(caseData.getFutureAndTodayHearings()).isEmpty();
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenNoHearingBookings() {
+            CaseData caseData = CaseData.builder().build();
+
+            assertThat(caseData.getFutureAndTodayHearings()).isEmpty();
+        }
+    }
+
+    @Nested
+    class ToBeReListedHearings {
+
+        @Test
+        void shouldReturnOnlyHearingsToBeReListed() {
+            Element<HearingBooking> hearing1 = element(HearingBooking.builder()
+                .status(ADJOURNED)
+                .build());
+
+            Element<HearingBooking> hearing2 = element(HearingBooking.builder()
+                .status(ADJOURNED_TO_BE_RE_LISTED)
+                .build());
+
+            Element<HearingBooking> hearing3 = element(HearingBooking.builder()
+                .status(ADJOURNED_AND_RE_LISTED)
+                .build());
+
+            Element<HearingBooking> hearing4 = element(HearingBooking.builder()
+                .status(VACATED)
+                .build());
+
+            Element<HearingBooking> hearing5 = element(HearingBooking.builder()
+                .status(VACATED_TO_BE_RE_LISTED)
+                .build());
+
+            Element<HearingBooking> hearing6 = element(HearingBooking.builder()
+                .status(VACATED_AND_RE_LISTED)
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .cancelledHearingDetails(List.of(hearing1, hearing2, hearing3, hearing4, hearing5, hearing6))
+                .build();
+
+            assertThat(caseData.getToBeReListedHearings()).containsExactly(hearing2, hearing5);
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenNoHearingsToBeReListed() {
+            Element<HearingBooking> hearing1 = element(HearingBooking.builder()
+                .status(ADJOURNED)
+                .build());
+
+            Element<HearingBooking> hearing2 = element(HearingBooking.builder()
+                .status(VACATED_AND_RE_LISTED)
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .cancelledHearingDetails(List.of(hearing1, hearing2))
+                .build();
+
+            assertThat(caseData.getToBeReListedHearings()).isEmpty();
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenNoCancelledHearings() {
+            CaseData caseData = CaseData.builder().build();
+
+            assertThat(caseData.getToBeReListedHearings()).isEmpty();
+        }
+    }
+
+    @Nested
+    class AddHearingBooking {
+
+        @Test
+        void shouldAddFirstHearingBooking() {
+            Element<HearingBooking> firstHearingBooking = element(HearingBooking.builder()
+                .startDate(LocalDateTime.now().plusDays(1))
+                .build());
+
+            CaseData caseData = CaseData.builder().build();
+
+            caseData.addHearingBooking(firstHearingBooking);
+
+            assertThat(caseData.getHearingDetails()).containsExactly(firstHearingBooking);
+        }
+
+        @Test
+        void shouldAddNewHearingBooking() {
+            Element<HearingBooking> existingHearingBooking = element(HearingBooking.builder()
+                .startDate(LocalDateTime.now())
+                .build());
+
+            Element<HearingBooking> newHearingBooking = element(HearingBooking.builder()
+                .startDate(LocalDateTime.now().plusDays(1))
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(newArrayList(existingHearingBooking))
+                .build();
+
+            caseData.addHearingBooking(newHearingBooking);
+
+            assertThat(caseData.getHearingDetails()).containsExactly(existingHearingBooking, newHearingBooking);
+        }
+    }
+
+    @Nested
+    class AddAdjournedOrVacatedHearingBooking {
+
+        @Test
+        void shouldAddFirstAdjournedOrVacatedHearingBooking() {
+            Element<HearingBooking> firstAdjournedBooking = element(HearingBooking.builder()
+                .status(ADJOURNED)
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .build();
+
+            caseData.addCancelledHearingBooking(firstAdjournedBooking);
+
+            assertThat(caseData.getCancelledHearingDetails()).containsExactly(firstAdjournedBooking);
+        }
+
+        @Test
+        void shouldAddNewAdjournedHearingBooking() {
+            Element<HearingBooking> existingAdjournedHearingBooking = element(HearingBooking.builder()
+                .startDate(LocalDateTime.now().minusDays(1))
+                .status(ADJOURNED)
+                .build());
+
+            Element<HearingBooking> newAdjournedHearingBooking = element(HearingBooking.builder()
+                .startDate(LocalDateTime.now().plusDays(1))
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(newArrayList(existingAdjournedHearingBooking))
+                .build();
+
+            caseData.addHearingBooking(newAdjournedHearingBooking);
+
+            assertThat(caseData.getHearingDetails())
+                .containsExactly(existingAdjournedHearingBooking, newAdjournedHearingBooking);
+        }
+    }
+
+    @Nested
+    class FindHearingBookingElement {
+        @Test
+        void shouldFindHearingBookingElementWhenKeyMatchesHearingBookingElementUUID() {
+            Element<HearingBooking> expectedHearingBookingElement
+                = element(HEARING_IDS[2], createHearingBooking(futureDate, futureDate.plusDays(1)));
+
+            List<Element<HearingBooking>> hearingBookings = new ArrayList<>(List.of(
+                element(HEARING_IDS[0], createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))),
+                element(HEARING_IDS[1], createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3))),
+                expectedHearingBookingElement,
+                element(HEARING_IDS[3], createHearingBooking(futureDate.minusDays(2), futureDate.plusDays(3)))
+            ));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(hearingBookings)
+                .build();
+
+            Optional<Element<HearingBooking>> hearingBookingElement
+                = caseData.findHearingBookingElement(HEARING_IDS[2]);
+
+            assertThat(hearingBookingElement).contains(expectedHearingBookingElement);
+        }
+
+        @Test
+        void shouldReturnAnEmptyOptionalWhenKeyDoesNotMatchHearingBookingElementUUID() {
+            List<Element<HearingBooking>> hearingBookings = new ArrayList<>(List.of(
+                element(HEARING_IDS[0], createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))),
+                element(HEARING_IDS[1], createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3))),
+                element(HEARING_IDS[2], createHearingBooking(futureDate, futureDate.plusDays(1))),
+                element(HEARING_IDS[3], createHearingBooking(futureDate.minusDays(2), futureDate.plusDays(3)))
+            ));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(hearingBookings)
+                .build();
+
+            Optional<Element<HearingBooking>> hearingBooking = caseData.findHearingBookingElement(randomUUID());
+
+            assertThat(hearingBooking).isNotPresent();
+        }
+
+        @Test
+        void shouldReturnAnEmptyOptionalWhenHearingDetailsDoNotExistOnCaseData() {
+            CaseData caseData = CaseData.builder().build();
+            Optional<Element<HearingBooking>> hearingBooking = caseData.findHearingBookingElement(randomUUID());
+
+            assertThat(hearingBooking).isNotPresent();
+        }
+    }
+
+    private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {
+        return C2DocumentBundle.builder().uploadedDateTime(dateTime.toString()).build();
     }
 }

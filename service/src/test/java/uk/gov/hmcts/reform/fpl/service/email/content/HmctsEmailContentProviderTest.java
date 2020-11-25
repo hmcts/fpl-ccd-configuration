@@ -56,7 +56,7 @@ class HmctsEmailContentProviderTest extends AbstractEmailContentProviderTest {
         hmctsSubmissionTemplate.setNonUrgentHearing(NO.getValue());
         hmctsSubmissionTemplate.setFirstRespondentName("Smith");
         hmctsSubmissionTemplate.setReference(CASE_REFERENCE);
-        hmctsSubmissionTemplate.setCaseUrl(getCaseUrl(CASE_REFERENCE));
+        hmctsSubmissionTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
         hmctsSubmissionTemplate.setDocumentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
             .map(JSONObject::toMap)
             .orElse(null));
@@ -64,7 +64,7 @@ class HmctsEmailContentProviderTest extends AbstractEmailContentProviderTest {
         CaseData caseData = populatedCaseData(Map.of("applicationBinaryUrl", applicationDocument.getBinaryUrl()));
 
         assertThat(hmctsEmailContentProvider.buildHmctsSubmissionNotification(caseData))
-            .isEqualToComparingFieldByField(hmctsSubmissionTemplate);
+            .usingRecursiveComparison().isEqualTo(hmctsSubmissionTemplate);
     }
 
     @Test
@@ -81,18 +81,18 @@ class HmctsEmailContentProviderTest extends AbstractEmailContentProviderTest {
         hmctsSubmissionTemplate.setUrgentHearing(NO.getValue());
         hmctsSubmissionTemplate.setNonUrgentHearing(NO.getValue());
         hmctsSubmissionTemplate.setFirstRespondentName("");
-        hmctsSubmissionTemplate.setReference("123");
-        hmctsSubmissionTemplate.setCaseUrl(getCaseUrl("123"));
+        hmctsSubmissionTemplate.setReference(CASE_REFERENCE);
+        hmctsSubmissionTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
         hmctsSubmissionTemplate.setDocumentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
             .map(JSONObject::toMap).orElse(null));
 
         assertThat(hmctsEmailContentProvider.buildHmctsSubmissionNotification(buildCaseData(applicationDocument)))
-            .isEqualToComparingFieldByField(hmctsSubmissionTemplate);
+            .usingRecursiveComparison().isEqualTo(hmctsSubmissionTemplate);
     }
 
     private CaseData buildCaseData(DocumentReference applicationDocument) {
         return CaseData.builder()
-            .id(123L)
+            .id(Long.valueOf(CASE_REFERENCE))
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .submittedForm(applicationDocument)
             .orders(Orders.builder()

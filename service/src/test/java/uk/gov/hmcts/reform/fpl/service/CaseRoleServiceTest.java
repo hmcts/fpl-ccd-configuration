@@ -9,18 +9,28 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
 import uk.gov.hmcts.reform.ccd.client.CaseUserApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseUser;
+import uk.gov.hmcts.reform.ccd.model.AddCaseAssignedUserRolesRequest;
+import uk.gov.hmcts.reform.ccd.model.AddCaseAssignedUserRolesResponse;
+import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRoleWithOrganisation;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.exceptions.GrantCaseAccessException;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.rd.model.Organisation;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toSet;
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.AdditionalMatchers.or;
@@ -59,11 +69,15 @@ class CaseRoleServiceTest {
     @Mock
     private OrganisationService organisationService;
 
+    @Mock
+    private CaseAccessDataStoreApi caseAccessDataStoreApi;
+
     @Spy
     private SystemUpdateUserConfiguration userConfig = new SystemUpdateUserConfiguration("SYS", "SYSPASS");
 
     @InjectMocks
     private CaseRoleService caseRoleService;
+
 
     @BeforeEach
     void setup() {
@@ -162,8 +176,10 @@ class CaseRoleServiceTest {
             GrantCaseAccessException expectedException =
                 new GrantCaseAccessException(CASE_ID, Set.of(USER_1_ID, USER_2_ID), CASE_ROLES);
 
+            Set<String> excludeUsers = emptySet();
+
             GrantCaseAccessException actualException = assertThrows(GrantCaseAccessException.class,
-                () -> caseRoleService.grantAccessToLocalAuthority(CASE_ID, LOCAL_AUTHORITY, CASE_ROLES, emptySet()));
+                () -> caseRoleService.grantAccessToLocalAuthority(CASE_ID, LOCAL_AUTHORITY, CASE_ROLES, excludeUsers));
 
             assertThat(actualException).isEqualTo(expectedException);
         }
@@ -177,11 +193,89 @@ class CaseRoleServiceTest {
             GrantCaseAccessException expectedException =
                 new GrantCaseAccessException(CASE_ID, LOCAL_AUTHORITY, CASE_ROLES, fetchUsersException);
 
+            Set<String> excludeUsers = emptySet();
+
             GrantCaseAccessException actualException = assertThrows(GrantCaseAccessException.class,
-                () -> caseRoleService.grantAccessToLocalAuthority(CASE_ID, LOCAL_AUTHORITY, CASE_ROLES, emptySet()));
+                () -> caseRoleService.grantAccessToLocalAuthority(CASE_ID, LOCAL_AUTHORITY, CASE_ROLES, excludeUsers));
 
             assertThat(actualException).isEqualTo(expectedException);
         }
+    }
+
+    @Nested
+    class CaseAssignment {
+
+        @Test
+        void shouldGrantAccessToAllUsersWithOrganisationId() {
+            final Set<String> localAuthorityUsers = new TreeSet<>();
+            localAuthorityUsers.add(USER_1_ID);
+            localAuthorityUsers.add(USER_2_ID);
+
+            final Organisation organisation = Organisation.builder()
+                .organisationIdentifier(randomAlphanumeric(5))
+                .build();
+
+            when(organisationService.findUserIdsInSameOrganisation(LOCAL_AUTHORITY)).thenReturn(localAuthorityUsers);
+            when(organisationService.findOrganisation()).thenReturn(Optional.of(organisation));
+            when(caseAccessDataStoreApi.addCaseUserRoles(any(), any(), any()))
+                .thenReturn(AddCaseAssignedUserRolesResponse.builder().status("Granted").build());
+
+            final AddCaseAssignedUserRolesRequest assignmentRequest =
+                buildAssignmentRequest(CASE_ID, localAuthorityUsers, organisation.getOrganisationIdentifier());
+
+            caseRoleService.grantCaseAssignmentToLocalAuthority(CASE_ID, LOCAL_AUTHORITY, Set.of(LASOLICITOR));
+
+            verify(caseAccessDataStoreApi).addCaseUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN, assignmentRequest);
+        }
+
+        @Test
+        void shouldGrantAccessToAllUsersWithoutOrganisationId() {
+            final Set<String> localAuthorityUsers = new TreeSet<>();
+            localAuthorityUsers.add(USER_1_ID);
+            localAuthorityUsers.add(USER_2_ID);
+
+            when(organisationService.findUserIdsInSameOrganisation(LOCAL_AUTHORITY)).thenReturn(localAuthorityUsers);
+            when(organisationService.findOrganisation()).thenReturn(Optional.empty());
+            when(caseAccessDataStoreApi.addCaseUserRoles(any(), any(), any()))
+                .thenReturn(AddCaseAssignedUserRolesResponse.builder().status("Granted").build());
+
+            final AddCaseAssignedUserRolesRequest assignmentRequest =
+                buildAssignmentRequest(CASE_ID, localAuthorityUsers, null);
+
+            caseRoleService.grantCaseAssignmentToLocalAuthority(CASE_ID, LOCAL_AUTHORITY, Set.of(LASOLICITOR));
+
+            verify(caseAccessDataStoreApi).addCaseUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN, assignmentRequest);
+        }
+
+        @Test
+        void shouldThrowsExceptionWhenLocalAuthorityUsersCannotBeFetch() {
+            Exception fetchUsersException = new RuntimeException(format("Can not fetch users for %s", LOCAL_AUTHORITY));
+
+            doThrow(new RuntimeException()).when(organisationService).findUserIdsInSameOrganisation(LOCAL_AUTHORITY);
+
+            final GrantCaseAccessException expectedException =
+                new GrantCaseAccessException(CASE_ID, LOCAL_AUTHORITY, CASE_ROLES, fetchUsersException);
+
+            final GrantCaseAccessException actualException = assertThrows(GrantCaseAccessException.class,
+                () -> caseRoleService.grantCaseAssignmentToLocalAuthority(CASE_ID, LOCAL_AUTHORITY, CASE_ROLES));
+
+            assertThat(actualException).isEqualTo(expectedException);
+        }
+    }
+
+    private AddCaseAssignedUserRolesRequest buildAssignmentRequest(String caseId, Set<String> userIds, String orgId) {
+        final List<CaseAssignedUserRoleWithOrganisation> caseAssignedRoles = userIds.stream()
+            .map(userId -> CaseAssignedUserRoleWithOrganisation.builder()
+                .caseDataId(caseId)
+                .userId(userId)
+                .organisationId(orgId)
+                .caseRole(CaseRole.LASOLICITOR.formattedName())
+                .build())
+            .collect(Collectors.toList());
+
+        return AddCaseAssignedUserRolesRequest.builder()
+            .caseAssignedUserRoles(caseAssignedRoles)
+            .build();
     }
 
     private void verifyAccessGrantAttempted(String userId) {

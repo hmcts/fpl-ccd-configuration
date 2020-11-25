@@ -76,160 +76,188 @@ class StandardDirectionsOrderControllerDateOfIssueMidEventTest extends AbstractC
             assertThat(response.getData()).isNotEmpty()
                 .doesNotContainKey("preparedSDO");
         }
-    }
-
-    @Nested
-    class DateOfIssueValidation {
 
         @Test
-        void shouldReturnErrorsWhenTheDateOfIssueIsInFuture() {
-            CaseDetails caseDetails = caseDetails(now().plusDays(1));
-            AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseDetails, "date-of-issue");
-            assertThat(response.getErrors()).containsOnlyOnce("Date of issue cannot be in the future");
+        void shouldSetJudgeAndLegalAdvisorWhenSendNoticeOfProceedingsViaSDO() {
+            JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor();
+
+            CaseData caseData = CaseData.builder()
+                .standardDirectionOrder(StandardDirectionOrder.builder()
+                    .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postMidEvent(
+                asCaseDetails(caseData), "populate-date-of-issue"
+            );
+
+            CaseData responseCaseData = mapper.convertValue(response.getData(), CaseData.class);
+
+            assertThat(responseCaseData.getJudgeAndLegalAdvisor()).isEqualTo(judgeAndLegalAdvisor);
+        }
+
+        @Nested
+        class DateOfIssueValidation {
+
+            @Test
+            void shouldReturnErrorsWhenTheDateOfIssueIsInFuture() {
+                CaseDetails caseDetails = caseDetails(now().plusDays(1));
+                AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseDetails, "date-of-issue");
+                assertThat(response.getErrors()).containsOnlyOnce("Date of issue cannot be in the future");
+            }
+
+            @Test
+            void shouldNotReturnErrorsWhenDateOfIssueIsToday() {
+                CaseDetails caseDetails = caseDetails(now());
+                AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseDetails, "date-of-issue");
+                assertThat(response.getErrors()).isNull();
+            }
+
+            @Test
+            void shouldNotReturnErrorsWhenDateOfIssueIsInPast() {
+                CaseDetails caseDetails = caseDetails(now().minusDays(1));
+                AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseDetails, "date-of-issue");
+                assertThat(response.getErrors()).isNull();
+            }
+
+            private CaseDetails caseDetails(LocalDateTime localDateTime) {
+                return CaseDetails.builder().data(Map.of("dateOfIssue", localDateTime.toLocalDate())).build();
+            }
         }
 
         @Test
-        void shouldNotReturnErrorsWhenDateOfIssueIsToday() {
-            CaseDetails caseDetails = caseDetails(now());
-            AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseDetails, "date-of-issue");
-            assertThat(response.getErrors()).isNull();
+        void shouldPopulateCorrectHearingDate() {
+            LocalDateTime hearingDate = LocalDateTime.of(2020, 1, 1, 0, 0, 0);
+
+            CaseDetails caseDetails = CaseDetails.builder()
+                .data(Map.of("hearingDetails", wrapElements(createHearingBooking(hearingDate,
+                    hearingDate.plusDays(1)))))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "date-of-issue");
+
+            Stream.of(DirectionAssignee.values()).forEach(assignee ->
+                assertThat(callbackResponse.getData().get(assignee.toHearingDateField()))
+                    .isEqualTo("1 January 2020, 12:00am"));
         }
 
         @Test
-        void shouldNotReturnErrorsWhenDateOfIssueIsInPast() {
-            CaseDetails caseDetails = caseDetails(now().minusDays(1));
-            AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseDetails, "date-of-issue");
-            assertThat(response.getErrors()).isNull();
+        void shouldShowEmptyPlaceHolderForHearingDateWhenNoHearingDate() {
+            CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
+
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "date-of-issue");
+
+            Stream.of(DirectionAssignee.values()).forEach(assignee ->
+                assertThat(callbackResponse.getData().get(assignee.toHearingDateField()))
+                    .isEqualTo("Please enter a hearing date"));
         }
 
-        private CaseDetails caseDetails(LocalDateTime localDateTime) {
-            return CaseDetails.builder().data(Map.of("dateOfIssue", localDateTime.toLocalDate())).build();
+        @Test
+        void shouldUpdateAllocatedJudgeLabelOnCurrentJudgeAndLegalAdvisorWhenExists() {
+            List<Direction> directions = createDirections();
+
+            CaseDetails caseDetails = CaseDetails.builder()
+                .data(Map.of(
+                    "allocatedJudge", testJudge(),
+                    "standardDirectionOrder", StandardDirectionOrder.builder()
+                        .directions(buildDirections(directions))
+                        .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                            .judgeTitle(HIS_HONOUR_JUDGE)
+                            .judgeLastName("Davidson")
+                            .allocatedJudgeLabel("Case assigned to: His Honour Judge Davidson")
+                            .build())
+                        .build()))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "date-of-issue");
+
+            CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+            JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
+
+            assertThat(judgeAndLegalAdvisor.getAllocatedJudgeLabel()).isEqualTo(
+                "Case assigned to: Magistrates (JP) Brandon Stark");
+            assertThat(judgeAndLegalAdvisor.getJudgeTitle()).isEqualTo(HIS_HONOUR_JUDGE);
+            assertThat(judgeAndLegalAdvisor.getJudgeLastName()).isEqualTo("Davidson");
         }
-    }
 
-    @Test
-    void shouldPopulateCorrectHearingDate() {
-        LocalDateTime hearingDate = LocalDateTime.of(2020, 1, 1, 0, 0, 0);
+        @Test
+        void shouldSetAssignJudgeLabelWhenAllocatedJudgeIsPopulated() {
+            CaseDetails caseDetails = CaseDetails.builder()
+                .data(Map.of("allocatedJudge", testJudge()))
+                .build();
 
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("hearingDetails", wrapElements(createHearingBooking(hearingDate, hearingDate.plusDays(1)))))
-            .build();
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "date-of-issue");
+            CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+            JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "date-of-issue");
+            assertThat(judgeAndLegalAdvisor.getAllocatedJudgeLabel())
+                .isEqualTo("Case assigned to: Magistrates (JP) Brandon Stark");
+        }
 
-        Stream.of(DirectionAssignee.values()).forEach(assignee ->
-            assertThat(callbackResponse.getData().get(assignee.toHearingDateField()))
-                .isEqualTo("1 January 2020, 12:00am"));
-    }
+        @Test
+        void shouldPopulateUseAllocatedJudgeWithYesWhenJudgeAndAllocatedJudgeAreEqual() {
+            CaseDetails caseDetails = buildSameJudgeCaseDetails(testJudge());
 
-    @Test
-    void shouldShowEmptyPlaceHolderForHearingDateWhenNoHearingDate() {
-        CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "date-of-issue");
+            CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+            JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "date-of-issue");
+            assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isEqualTo("Yes");
+        }
 
-        Stream.of(DirectionAssignee.values()).forEach(assignee ->
-            assertThat(callbackResponse.getData().get(assignee.toHearingDateField()))
-                .isEqualTo("Please enter a hearing date"));
-    }
+        @Test
+        void shouldNotSetAssignedJudgeLabelIfAllocatedJudgeNotSet() {
+            CaseDetails caseDetails = CaseDetails.builder()
+                .data(Map.of("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build()))
+                .build();
 
-    @Test
-    void shouldUpdateAllocatedJudgeLabelOnCurrentJudgeAndLegalAdvisorWhenExists() {
-        List<Direction> directions = createDirections();
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "date-of-issue");
+            CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+            JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
 
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of(
-                "allocatedJudge", testJudge(),
-                "standardDirectionOrder", StandardDirectionOrder.builder()
-                    .directions(buildDirections(directions))
-                    .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                        .judgeTitle(HIS_HONOUR_JUDGE)
-                        .judgeLastName("Davidson")
-                        .allocatedJudgeLabel("Case assigned to: His Honour Judge Davidson")
-                        .build())
-                    .build()))
-            .build();
+            assertThat(judgeAndLegalAdvisor.getAllocatedJudgeLabel()).isNull();
+        }
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "date-of-issue");
+        private CaseDetails buildSameJudgeCaseDetails(Judge judge) {
+            return CaseDetails.builder()
+                .data(Map.of(
+                    "allocatedJudge", judge,
+                    "standardDirectionOrder", StandardDirectionOrder.builder()
+                        .directions(buildDirections(createDirections()))
+                        .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                            .judgeTitle(judge.getJudgeTitle())
+                            .judgeLastName(judge.getJudgeLastName())
+                            .judgeFullName(judge.getJudgeFullName())
+                            .build())
+                        .build()))
+                .build();
+        }
 
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        private List<Direction> createDirections() {
+            String title = "example direction";
 
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
+            return List.of(
+                Direction.builder().directionType(title).assignee(ALL_PARTIES).build(),
+                Direction.builder().directionType(title).assignee(LOCAL_AUTHORITY).build(),
+                Direction.builder().directionType(title).assignee(PARENTS_AND_RESPONDENTS).build(),
+                Direction.builder().directionType(title).assignee(CAFCASS).build(),
+                Direction.builder().directionType(title).assignee(OTHERS).build(),
+                Direction.builder().directionType(title).assignee(COURT).build(),
+                Direction.builder().directionType(title).custom("Yes").assignee(COURT).build()
+            );
+        }
 
-        assertThat(judgeAndLegalAdvisor.getAllocatedJudgeLabel()).isEqualTo(
-            "Case assigned to: Magistrates (JP) Brandon Stark");
-        assertThat(judgeAndLegalAdvisor.getJudgeTitle()).isEqualTo(HIS_HONOUR_JUDGE);
-        assertThat(judgeAndLegalAdvisor.getJudgeLastName()).isEqualTo("Davidson");
-    }
+        private List<Element<Direction>> buildDirections(List<Direction> directions) {
+            return directions.stream().map(ElementUtils::element).collect(toList());
+        }
 
-    @Test
-    void shouldSetAssignJudgeLabelWhenAllocatedJudgeIsPopulated() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("allocatedJudge", testJudge()))
-            .build();
+        private JudgeAndLegalAdvisor buildJudgeAndLegalAdvisor() {
+            return JudgeAndLegalAdvisor.builder()
+                .judgeTitle(HIS_HONOUR_JUDGE)
+                .judgeLastName("Davidson")
+                .build();
+        }
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "date-of-issue");
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
-
-        assertThat(judgeAndLegalAdvisor.getAllocatedJudgeLabel())
-            .isEqualTo("Case assigned to: Magistrates (JP) Brandon Stark");
-    }
-
-    @Test
-    void shouldPopulateUseAllocatedJudgeWithYesWhenJudgeAndAllocatedJudgeAreEqual() {
-        CaseDetails caseDetails = buildSameJudgeCaseDetails(testJudge());
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "date-of-issue");
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
-
-        assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isEqualTo("Yes");
-    }
-
-    @Test
-    void shouldNotSetAssignedJudgeLabelIfAllocatedJudgeNotSet() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build()))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "date-of-issue");
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getJudgeAndLegalAdvisor();
-
-        assertThat(judgeAndLegalAdvisor.getAllocatedJudgeLabel()).isNull();
-    }
-
-    private CaseDetails buildSameJudgeCaseDetails(Judge judge) {
-        return CaseDetails.builder()
-            .data(Map.of(
-                "allocatedJudge", judge,
-                "standardDirectionOrder", StandardDirectionOrder.builder()
-                    .directions(buildDirections(createDirections()))
-                    .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                        .judgeTitle(judge.getJudgeTitle())
-                        .judgeLastName(judge.getJudgeLastName())
-                        .judgeFullName(judge.getJudgeFullName())
-                        .build())
-                    .build()))
-            .build();
-    }
-
-    private List<Direction> createDirections() {
-        String title = "example direction";
-
-        return List.of(
-            Direction.builder().directionType(title).assignee(ALL_PARTIES).build(),
-            Direction.builder().directionType(title).assignee(LOCAL_AUTHORITY).build(),
-            Direction.builder().directionType(title).assignee(PARENTS_AND_RESPONDENTS).build(),
-            Direction.builder().directionType(title).assignee(CAFCASS).build(),
-            Direction.builder().directionType(title).assignee(OTHERS).build(),
-            Direction.builder().directionType(title).assignee(COURT).build(),
-            Direction.builder().directionType(title).custom("Yes").assignee(COURT).build()
-        );
-    }
-
-    private List<Element<Direction>> buildDirections(List<Direction> directions) {
-        return directions.stream().map(ElementUtils::element).collect(toList());
     }
 }

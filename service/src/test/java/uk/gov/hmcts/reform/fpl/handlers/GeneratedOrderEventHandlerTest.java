@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProv
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -80,8 +82,9 @@ class GeneratedOrderEventHandlerTest {
     void before() {
         caseData = caseData();
 
-        given(inboxLookupService.getNotificationRecipientEmail(caseData))
-            .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
+        given(inboxLookupService.getRecipients(
+            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))
+            .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         given(orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(caseData, DOCUMENT_CONTENTS, GENERATED_ORDER))
             .willReturn(getExpectedParameters(BLANK_ORDER.getLabel(), true));
@@ -117,9 +120,9 @@ class GeneratedOrderEventHandlerTest {
 
         verify(notificationService).sendEmail(
             ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES,
-            LOCAL_AUTHORITY_EMAIL_ADDRESS,
+            Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             getExpectedParameters(BLANK_ORDER.getLabel(), true),
-            caseData.getId());
+            caseData.getId().toString());
 
         verify(notificationService).sendEmail(
             ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES,

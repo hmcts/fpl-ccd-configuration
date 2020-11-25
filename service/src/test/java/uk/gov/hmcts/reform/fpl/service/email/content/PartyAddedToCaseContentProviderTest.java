@@ -35,11 +35,10 @@ class PartyAddedToCaseContentProviderTest extends AbstractEmailContentProviderTe
     @Test
     void shouldGetPartyAddedToCaseThroughDigitalServiceNotificationParameters() {
         final CaseData caseData = caseData();
-
         final PartyAddedNotifyData expectedParameters = PartyAddedNotifyData.builder()
             .firstRespondentLastName("Smith")
             .familyManCaseNumber("12345L")
-            .caseUrl(getCaseUrl(CASE_REFERENCE))
+            .caseUrl(caseUrl(CASE_REFERENCE))
             .build();
 
         final PartyAddedNotifyData actualParameters = partyAddedToCaseContentProvider

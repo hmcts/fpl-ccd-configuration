@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LegalRepresentativeRole",
+    "ListElementCode": "EXTERNAL_LA_BARRISTER",
+    "ListElement": "Barrister",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LegalRepresentativeRole",
+    "ListElementCode": "EXTERNAL_LA_SOLICITOR",
+    "ListElement": "Solicitor",
+    "DisplayOrder": 2
+  }
+]

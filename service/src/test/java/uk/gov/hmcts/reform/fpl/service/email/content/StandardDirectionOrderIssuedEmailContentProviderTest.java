@@ -24,13 +24,15 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
     @Autowired
     private StandardDirectionOrderIssuedEmailContentProvider standardDirectionOrderIssuedEmailContentProvider;
 
+    private static final String ORDERS = "OrdersTab";
+
     @Test
     void shouldReturnNotifyDataForJudgeWithValidSDODetails() {
         AllocatedJudgeTemplateForSDO expectedData = allocatedJudgeSDOTemplateParameters();
         AllocatedJudgeTemplateForSDO actualData = standardDirectionOrderIssuedEmailContentProvider
             .buildNotificationParametersForAllocatedJudge(populatedCaseData());
 
-        assertThat(actualData).isEqualToComparingFieldByField(expectedData);
+        assertThat(actualData).usingRecursiveComparison().isEqualTo(expectedData);
     }
 
     @Test
@@ -39,7 +41,7 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
         CTSCTemplateForSDO actualData = standardDirectionOrderIssuedEmailContentProvider
             .buildNotificationParametersForCTSC(populatedCaseData());
 
-        assertThat(actualData).isEqualToComparingFieldByField(expectedData);
+        assertThat(actualData).usingRecursiveComparison().isEqualTo(expectedData);
     }
 
     @Test
@@ -48,7 +50,7 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
         CTSCTemplateForSDO actualData = standardDirectionOrderIssuedEmailContentProvider
             .buildNotificationParametersForCTSC(caseData());
 
-        assertThat(actualData).isEqualToComparingFieldByField(expectedData);
+        assertThat(actualData).usingRecursiveComparison().isEqualTo(expectedData);
     }
 
     private AllocatedJudgeTemplateForSDO allocatedJudgeSDOTemplateParameters() {
@@ -56,9 +58,10 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
             .familyManCaseNumber("12345,")
             .leadRespondentsName("Smith")
             .hearingDate("1 January 2020")
-            .caseUrl(getCaseUrl(CASE_REFERENCE))
+            .caseUrl(caseUrl(CASE_REFERENCE))
             .judgeTitle("Her Honour Judge")
             .judgeName("Byrne")
+            .callout("^Smith, 12345, hearing 1 Jan 2020")
             .build();
     }
 
@@ -66,13 +69,11 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
         CTSCTemplateForSDO ctscTemplateForSDO = new CTSCTemplateForSDO();
         ctscTemplateForSDO.setDocumentLink("http://fake-url/documents/be17a76e-38ed-4448-8b83-45de1aa93f55/binary");
         ctscTemplateForSDO.setHearingNeeds(List.of("Intermediary"));
-        ctscTemplateForSDO.setHearingNeedsDetails("Some details about what needs to be booked");
         ctscTemplateForSDO.setHearingNeedsPresent("Yes");
-        ctscTemplateForSDO.setShowDetailsLabel("Yes");
         ctscTemplateForSDO.setCourtName(COURT_NAME);
         ctscTemplateForSDO.setCallout("^Smith, 12345, hearing 1 Jan 2020");
         ctscTemplateForSDO.setRespondentLastName("Smith");
-        ctscTemplateForSDO.setCaseUrl(getCaseUrl(CASE_REFERENCE));
+        ctscTemplateForSDO.setCaseUrl(caseUrl(CASE_REFERENCE, ORDERS));
 
         return ctscTemplateForSDO;
     }
@@ -82,12 +83,10 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
         ctscTemplateForSDO.setDocumentLink("http://fake-url/documents/be17a76e-38ed-4448-8b83-45de1aa93f55/binary");
         ctscTemplateForSDO.setHearingNeedsPresent("No");
         ctscTemplateForSDO.setHearingNeeds(List.of());
-        ctscTemplateForSDO.setHearingNeedsDetails("");
-        ctscTemplateForSDO.setShowDetailsLabel("No");
         ctscTemplateForSDO.setCourtName(COURT_NAME);
         ctscTemplateForSDO.setCallout("^Smith, 12345L, hearing 1 Jan 2020");
         ctscTemplateForSDO.setRespondentLastName("Smith");
-        ctscTemplateForSDO.setCaseUrl(getCaseUrl(CASE_REFERENCE));
+        ctscTemplateForSDO.setCaseUrl(caseUrl(CASE_REFERENCE, ORDERS));
 
         return ctscTemplateForSDO;
     }

@@ -271,5 +271,22 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "Direction",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "migrateToMoWarning",
+    "Label": "# Check you're registered for an account\n\nAfter 14 September 2020, only registered users can create cases on this system.\n\nAsk your team administrator to [check if you're registered](https://manage-org.platform.hmcts.net/organisation).",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "furtherEvidenceDocumentsTEMP",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "Label": "Further evidence document",
+    "SecurityClassification": "Public"
   }
 ]

@@ -1,5 +1,6 @@
 const { I } = inject();
 const assert = require('assert');
+const output = require('codeceptjs').output;
 
 module.exports = {
 
@@ -22,6 +23,7 @@ module.exports = {
     overview: 'Overview',
     viewApplication: 'View application',
     startApplication: 'Start application',
+    correspondence: 'Correspondence',
   },
   actionsDropdown: '.ccd-dropdown',
   goButton: 'Go',
@@ -29,9 +31,19 @@ module.exports = {
 
   async goToNewActions(actionSelected) {
     I.waitForElement(this.actionsDropdown);
-    await I.retryUntilExists(() => {
-      I.selectOption(this.actionsDropdown, actionSelected);
-      I.click(this.goButton);
+    const currentUrl = await I.grabCurrentUrl();
+    await I.retryUntilExists(async () => {
+      if(await I.hasSelector(this.actionsDropdown)) {
+        I.selectOption(this.actionsDropdown, actionSelected);
+        I.click(this.goButton);
+      } else {
+        const newUrl = await I.grabCurrentUrl();
+        if(newUrl === currentUrl){
+          output.print('Page refresh');
+          I.refreshPage();
+          I.wait(5);
+        }
+      }
     }, 'ccd-case-event-trigger');
   },
 

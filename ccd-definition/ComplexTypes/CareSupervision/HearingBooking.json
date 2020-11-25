@@ -6,14 +6,15 @@
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "HearingType",
     "ElementLabel": "Type of hearing",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type!=\"OTHER\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
     "ListElementCode": "typeDetails",
     "FieldType": "TextArea",
-    "ElementLabel": "Give details",
+    "ElementLabel": "Type of hearing",
     "FieldShowCondition": "type=\"OTHER\"",
     "SecurityClassification": "Public"
   },
@@ -24,6 +25,14 @@
     "FieldType": "FixedList",
     "FieldTypeParameter": "HearingVenue",
     "ElementLabel": "Venue",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "customPreviousVenue",
+    "FieldType": "Text",
+    "ElementLabel": "Hearing address",
     "SecurityClassification": "Public"
   },
   {
@@ -73,9 +82,44 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
+    "ListElementCode": "allocatedJudgeLabel",
+    "FieldType": "Text",
+    "ElementLabel": "Allocated judge or magistrate",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "hearingJudgeLabel",
+    "FieldType": "Text",
+    "ElementLabel": "Hearing judge or magistrate",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "legalAdvisorLabel",
+    "FieldType": "Text",
+    "ElementLabel": "Justices' Legal Adviser's full name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
     "ListElementCode": "judgeAndLegalAdvisor",
     "FieldType": "JudgeAndLegalAdvisor",
     "ElementLabel": "Judge and Justices' Legal Adviser",
+    "FieldShowCondition": "hearingJudgeLabel!=\"*\" AND allocatedJudgeLabel!=\"*\"",
+    "SecurityClassification": "Public",
+    "Comment" : "Not shown for new/edited hearings after FPLA-2030, text labels shown instead of complex type (preferred UX)"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "additionalNotes",
+    "FieldType": "TextArea",
+    "ElementLabel": "Additional notes",
+    "HintText": "This will be printed on the notice of hearing, if issued",
     "SecurityClassification": "Public"
   },
   {
@@ -94,5 +138,33 @@
     "ElementLabel": "Id of the Case Management Order for this hearing",
     "SecurityClassification": "Public",
     "FieldShowCondition": "judgeAndLegalAdvisor=\"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "previousHearingVenue",
+    "FieldType": "PreviousHearingVenue",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "previousHearingVenue=\"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "status",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "HearingStatus",
+    "ElementLabel": "Status",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "status=\"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "cancellationReason",
+    "FieldType": "Text",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "status=\"DO NOT SHOW\""
   }
 ]

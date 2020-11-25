@@ -2431,12 +2431,12 @@
   },
   {
     "hearingVenueId": 310,
-    "venue": "Newcastle upon Tyne CC Centre",
+    "venue": "Newcastle Civil & Family Court",
     "address": {
-      "AddressLine1": "Newcastle upon Tyne Combined Court Centre, The Quayside",
-      "AddressLine2": "The Law Courts",
+      "AddressLine1": "Newcastle Civil & Family Court",
+      "AddressLine2": "Barras Bridge",
       "PostTown": "Newcastle-upon-Tyne",
-      "PostCode": "NE1 3LA"
+      "PostCode": "NE1 8QF"
     }
   },
   {
@@ -2793,8 +2793,8 @@
     "hearingVenueId": 91,
     "venue": "Portsmouth Magistrates' Court",
     "address": {
-      "AddressLine1": "Portsmouth Magistrates' Court, Winston Churchill Avenue",
-      "AddressLine2": "The Law Courts",
+      "AddressLine1": "The Law Courts",
+      "AddressLine2": "Winston Churchill Avenue",
       "PostTown": "Portsmouth",
       "PostCode": "PO1 2DQ"
     }

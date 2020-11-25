@@ -47,7 +47,7 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
                                                           final IssuedOrderType issuedOrderType) {
         return getNotifyDataWithoutCaseUrl(caseData, documentContents, issuedOrderType)
             .toBuilder()
-            .caseUrl(getCaseUrl(caseData))
+            .caseUrl(getCaseUrl(caseData.getId(), "OrdersTab"))
             .build();
     }
 
@@ -58,7 +58,7 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
         return AllocatedJudgeTemplateForGeneratedOrder.builder()
             .orderType(getTypeOfOrder(caseData, GENERATED_ORDER))
             .callout(buildCallout(caseData))
-            .caseUrl(getCaseUrl(caseData.getId()))
+            .caseUrl(getCaseUrl(caseData.getId(), "OrdersTab"))
             .respondentLastName(getFirstRespondentLastName(caseData))
             .judgeTitle(judge.getJudgeOrMagistrateTitle())
             .judgeName(judge.getJudgeName())
