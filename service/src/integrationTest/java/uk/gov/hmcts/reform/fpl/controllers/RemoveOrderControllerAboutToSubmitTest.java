@@ -197,13 +197,9 @@ public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTe
 
         CaseData responseData = extractCaseData(response);
         List<Element<CaseManagementOrder>> hiddenCMOs = responseData.getHiddenCMOs();
-
-        assertThat(hiddenCMOs).hasSize(1);
-        assertThat(hiddenCMOs.get(0)).isEqualTo(caseManagementOrder1);
-        assertThat(responseData.getSealedCMOs()).hasSize(1);
-
         HearingBooking unlinkedHearing = responseData.getHearingDetails().get(0).getValue();
 
+        assertThat(hiddenCMOs).hasSize(1).first().isEqualTo(caseManagementOrder1);
         assertNull(unlinkedHearing.getCaseManagementOrderId());
     }
 
