@@ -25,6 +25,8 @@ import java.util.List;
 @Slf4j
 public class MigrateCaseController extends CallbackController {
 
+    private static final String MIGRATION_ID_KEY = "migrationId";
+
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
@@ -38,6 +40,10 @@ public class MigrateCaseController extends CallbackController {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
+    }
+
+    private Object getMigrationId(CaseDetails caseDetails) {
+        return caseDetails.getData().get(MIGRATION_ID_KEY);
     }
 
     private List<Element<HearingBooking>> removeHearings(List<Element<HearingBooking>> hearings) {
