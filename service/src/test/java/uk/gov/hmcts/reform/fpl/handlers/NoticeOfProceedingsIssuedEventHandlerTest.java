@@ -49,8 +49,11 @@ class NoticeOfProceedingsIssuedEventHandlerTest {
         noticeOfProceedingsIssuedEventHandler.notifyAllocatedJudge(
             new NoticeOfProceedingsIssuedEvent(caseData));
 
-        verify(notificationService).sendEmail(NOTICE_OF_PROCEEDINGS_ISSUED_JUDGE_TEMPLATE,
-            ALLOCATED_JUDGE_EMAIL_ADDRESS, expectedParameters, caseData.getId());
+        verify(notificationService).sendEmail(
+            NOTICE_OF_PROCEEDINGS_ISSUED_JUDGE_TEMPLATE,
+            ALLOCATED_JUDGE_EMAIL_ADDRESS,
+            expectedParameters,
+            caseData.getId());
     }
 
     @Test

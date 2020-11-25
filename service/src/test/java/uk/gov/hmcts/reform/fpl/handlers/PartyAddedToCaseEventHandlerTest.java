@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
@@ -121,13 +120,13 @@ class PartyAddedToCaseEventHandlerTest {
             eq(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE),
             eq(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_EMAIL),
             any(),
-            anyLong());
+            eq(caseData.getId()));
 
         verify(notificationService, never()).sendEmail(
             eq(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE),
             eq(PARTY_ADDED_TO_CASE_BY_EMAIL_ADDRESS),
             any(),
-            anyLong());
+            eq(caseData.getId()));
 
         verify(notificationService).sendEmail(
             PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE,

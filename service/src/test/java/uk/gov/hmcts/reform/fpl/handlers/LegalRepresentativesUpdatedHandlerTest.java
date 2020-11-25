@@ -83,16 +83,6 @@ class LegalRepresentativesUpdatedHandlerTest {
         );
     }
 
-    /*private LegalRepresentativeAddedTemplate getLegalRepresentativeAddedTemplateParameters(String repName) {
-        return LegalRepresentativeAddedTemplate.builder()
-            .firstRespondentLastName("test")
-            .familyManCaseNumber("6789")
-            .localAuthority(REPRESENTATIVE_EMAIL)
-            .repName(repName)
-            .caseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + CASE_ID)
-            .build();
-    }*/
-
     @Test
     void sendEmailToLegalRepresentativesAddedToCaseMultiple() {
         when(legalRepresentativesDifferenceCalculator.calculate(

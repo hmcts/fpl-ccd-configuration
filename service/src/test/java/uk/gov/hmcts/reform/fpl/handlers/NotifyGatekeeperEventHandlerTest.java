@@ -28,6 +28,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMP
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.GATEKEEPER_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_NAME;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 
 @ExtendWith(SpringExtension.class)
@@ -85,7 +86,7 @@ class NotifyGatekeeperEventHandlerTest {
         expectedTemplate.setTimeFrameValue("same day");
         expectedTemplate.setUrgentHearing(YES.getValue());
         expectedTemplate.setOrdersAndDirections(List.of("Emergency protection order", "Contact with any named person"));
-        expectedTemplate.setLocalAuthority("Example Local Authority");
+        expectedTemplate.setLocalAuthority(LOCAL_AUTHORITY_NAME);
         return expectedTemplate;
     }
 }

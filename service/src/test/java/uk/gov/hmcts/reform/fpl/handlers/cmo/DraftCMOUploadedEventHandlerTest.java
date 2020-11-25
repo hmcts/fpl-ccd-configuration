@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.service.email.content.cmo.DraftCMOUploadedContent
 import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -71,7 +70,7 @@ class DraftCMOUploadedEventHandlerTest {
             any(),
             eq(ALLOCATED_JUDGE_EMAIL),
             any(NotifyData.class),
-            anyLong()
+            eq(CASE_ID)
         );
     }
 

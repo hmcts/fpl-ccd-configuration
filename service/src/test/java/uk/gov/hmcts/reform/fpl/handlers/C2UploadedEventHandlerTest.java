@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForC2;
 import uk.gov.hmcts.reform.fpl.model.notify.c2uploaded.C2UploadedTemplate;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -27,7 +26,6 @@ import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvi
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
-import java.util.Map;
 import java.util.Set;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
@@ -39,7 +37,6 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE_JUDGE;
-import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.ALLOCATED_JUDGE_EMAIL_ADDRESS;
@@ -72,9 +69,6 @@ class C2UploadedEventHandlerTest {
     @MockBean
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
-    @MockBean
-    private FeatureToggleService featureToggleService;
-
     @Autowired
     private C2UploadedEventHandler c2UploadedEventHandler;
 
@@ -92,7 +86,6 @@ class C2UploadedEventHandlerTest {
     void resetInvocations() {
         reset(notificationService);
         reset(inboxLookupService);
-        reset(featureToggleService);
         reset(c2UploadedEmailContentProvider);
     }
 
@@ -111,8 +104,7 @@ class C2UploadedEventHandlerTest {
             c2DocumentBundle.getDocument()))
             .willReturn(c2Parameters);
 
-        c2UploadedEventHandler.notifyAdmin(
-            new C2UploadedEvent(caseData, c2DocumentBundle));
+        c2UploadedEventHandler.notifyAdmin(new C2UploadedEvent(caseData, c2DocumentBundle));
 
         verify(notificationService).sendEmail(
             C2_UPLOAD_NOTIFICATION_TEMPLATE,
@@ -139,8 +131,7 @@ class C2UploadedEventHandlerTest {
             .getNotifyData(caseData, c2DocumentBundle.getDocument()))
             .willReturn(c2Parameters);
 
-        c2UploadedEventHandler.notifyAdmin(
-            new C2UploadedEvent(caseData, c2DocumentBundle));
+        c2UploadedEventHandler.notifyAdmin(new C2UploadedEvent(caseData, c2DocumentBundle));
 
         verify(notificationService).sendEmail(
             C2_UPLOAD_NOTIFICATION_TEMPLATE,
@@ -156,25 +147,21 @@ class C2UploadedEventHandlerTest {
         given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(
             UserInfo.builder().sub("hmcts-admin@test.com").roles(HMCTS_ADMIN.getRoles()).build());
 
-        c2UploadedEventHandler.notifyAdmin(
-            new C2UploadedEvent(caseData, c2DocumentBundle));
+        c2UploadedEventHandler.notifyAdmin(new C2UploadedEvent(caseData, c2DocumentBundle));
 
         verifyNoInteractions(notificationService);
     }
 
     @Test
-    void shouldNotifyAllocatedJudgeOnC2UploadWhenAllocatedJudgeExistsAndEnabled() {
+    void shouldNotifyAllocatedJudgeOnC2UploadWhenAllocatedJudgeExists() {
         CaseData caseData = caseData();
 
         AllocatedJudgeTemplateForC2 allocatedJudgeParametersForC2 = getAllocatedJudgeParametersForC2();
 
-        given(featureToggleService.isAllocatedJudgeNotificationEnabled(C2_APPLICATION)).willReturn(true);
-
         given(c2UploadedEmailContentProvider.getNotifyDataForAllocatedJudge(caseData))
             .willReturn(allocatedJudgeParametersForC2);
 
-        c2UploadedEventHandler.notifyAllocatedJudge(
-            new C2UploadedEvent(caseData, c2DocumentBundle));
+        c2UploadedEventHandler.notifyAllocatedJudge(new C2UploadedEvent(caseData, c2DocumentBundle));
 
         verify(notificationService).sendEmail(
             C2_UPLOAD_NOTIFICATION_TEMPLATE_JUDGE,
@@ -184,34 +171,13 @@ class C2UploadedEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyAllocatedJudgeOnC2UploadWhenAllocatedJudgeExistsAndDisabled() {
-        CaseData caseData = caseData();
-        AllocatedJudgeTemplateForC2 allocatedJudgeParametersForC2 = getAllocatedJudgeParametersForC2();
-
-        given(featureToggleService.isAllocatedJudgeNotificationEnabled(C2_APPLICATION)).willReturn(false);
-
-        given(c2UploadedEmailContentProvider.getNotifyDataForAllocatedJudge(caseData))
-            .willReturn(allocatedJudgeParametersForC2);
-
-        c2UploadedEventHandler.notifyAllocatedJudge(
-            new C2UploadedEvent(caseData, c2DocumentBundle));
-
-        verifyNoInteractions(notificationService);
-    }
-
-    @Test
     void shouldNotNotifyAllocatedJudgeOnC2UploadWhenAllocatedJudgeDoesNotExist() {
-        CaseData caseData = caseData(Map.of("caseLocalAuthority", "SA")).toBuilder()
-            .allocatedJudge(null)
-            .build();
+        CaseData caseData = CaseData.builder().build();
 
-
-        given(c2UploadedEmailContentProvider.getNotifyDataForAllocatedJudge(caseData))
-            .willReturn(getAllocatedJudgeParametersForC2());
         c2UploadedEventHandler.notifyAllocatedJudge(
             new C2UploadedEvent(caseData, c2DocumentBundle));
 
-        verifyNoInteractions(notificationService);
+        verifyNoInteractions(c2UploadedEmailContentProvider, notificationService);
     }
 
     private AllocatedJudgeTemplateForC2 getAllocatedJudgeParametersForC2() {
