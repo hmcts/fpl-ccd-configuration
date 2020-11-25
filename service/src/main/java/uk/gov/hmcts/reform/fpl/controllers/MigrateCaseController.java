@@ -36,11 +36,10 @@ public class MigrateCaseController extends CallbackController {
         if (isCorrectCase(migrationId, familyManCaseNumber, "FPLA-2450", "CF20C50014")) {
             log.info("Removing c2 document bundle from case reference {}", caseDetails.getId());
             caseDetails.getData().put("c2DocumentBundle", removeC2Document(caseData.getC2DocumentBundle()));
+            caseDetails.getData().remove(MIGRATION_ID_KEY);
         }
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .build();
+        return respond(caseDetails);
     }
 
     private boolean isCorrectCase(Object migrationId, String familyManCaseNumber, String expectedMigrationId,
