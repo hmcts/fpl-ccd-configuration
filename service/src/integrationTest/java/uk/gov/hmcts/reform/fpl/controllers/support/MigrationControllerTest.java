@@ -22,8 +22,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @OverrideAutoConfiguration(enabled = true)
 public class MigrationControllerTest extends AbstractControllerTest {
 
-    private final Element<C2DocumentBundle> c2_1 = element(C2DocumentBundle.builder().author("first author").build());
-    private final Element<C2DocumentBundle> c2_2 = element(C2DocumentBundle.builder().author("second author").build());
+    private final Element<C2DocumentBundle> firstC2 = element(C2DocumentBundle.builder().author("first author").build());
+    private final Element<C2DocumentBundle> secondC2 = element(C2DocumentBundle.builder().author("second author").build());
     private String familyManCaseNumber;
     private String migrationId;
 
@@ -39,36 +39,36 @@ public class MigrationControllerTest extends AbstractControllerTest {
 
     @Test
     void removeLastC2FromCorrectCase() {
-        CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, c2_1, c2_2);
+        CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, firstC2, secondC2);
 
         CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
         assertThat(extractedCaseData.getC2DocumentBundle()).hasSize(1)
-            .containsOnly(c2_1);
+            .containsOnly(firstC2);
     }
 
     @Test
     void shouldNotRemoveC2IfNotExpectedFamilyManNumber() {
         familyManCaseNumber = "something different";
 
-        CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, c2_1, c2_2);
+        CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, firstC2, secondC2);
 
         CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
         assertThat(extractedCaseData.getC2DocumentBundle()).hasSize(2)
-            .containsOnly(c2_1, c2_2);
+            .containsOnly(firstC2, secondC2);
     }
 
     @Test
     void shouldNotRemoveC2IfNotExpectedMigrationId() {
         migrationId = "something different";
 
-        CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, c2_1, c2_2);
+        CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, firstC2, secondC2);
 
         CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
         assertThat(extractedCaseData.getC2DocumentBundle()).hasSize(2)
-            .containsOnly(c2_1, c2_2);
+            .containsOnly(firstC2, secondC2);
     }
 
     @SafeVarargs
