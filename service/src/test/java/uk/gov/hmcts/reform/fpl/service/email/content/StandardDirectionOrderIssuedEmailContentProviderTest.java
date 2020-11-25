@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForSDO;
 import uk.gov.hmcts.reform.fpl.model.notify.sdo.CTSCTemplateForSDO;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
@@ -28,15 +27,6 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
     private static final String ORDERS = "OrdersTab";
 
     @Test
-    void shouldReturnExpectedMapForJudgeWithValidSDODetails() {
-        AllocatedJudgeTemplateForSDO expectedMap = allocatedJudgeSDOTemplateParameters();
-
-        assertThat(standardDirectionOrderIssuedEmailContentProvider
-            .buildNotificationParametersForAllocatedJudge(populatedCaseData()))
-            .isEqualToComparingFieldByField(expectedMap);
-    }
-
-    @Test
     void shouldReturnExpectedMapForCTSCWithValidSDODetails() {
         CTSCTemplateForSDO expectedMap = ctscSDOTemplateParameters();
 
@@ -52,19 +42,6 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
         assertThat(standardDirectionOrderIssuedEmailContentProvider
             .buildNotificationParametersForCTSC(caseData()))
             .isEqualToComparingFieldByField(expectedMap);
-    }
-
-    private AllocatedJudgeTemplateForSDO allocatedJudgeSDOTemplateParameters() {
-        AllocatedJudgeTemplateForSDO allocatedJudgeTemplate = new AllocatedJudgeTemplateForSDO();
-        allocatedJudgeTemplate.setFamilyManCaseNumber("12345,");
-        allocatedJudgeTemplate.setLeadRespondentsName("Smith");
-        allocatedJudgeTemplate.setHearingDate("1 January 2020");
-        allocatedJudgeTemplate.setCaseUrl(caseUrl(CASE_REFERENCE, ORDERS));
-        allocatedJudgeTemplate.setJudgeTitle("Her Honour Judge");
-        allocatedJudgeTemplate.setJudgeName("Byrne");
-        allocatedJudgeTemplate.setCallout("^Smith, 12345, hearing 1 Jan 2020");
-
-        return allocatedJudgeTemplate;
     }
 
     private CTSCTemplateForSDO ctscSDOTemplateParameters() {
