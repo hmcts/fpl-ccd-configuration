@@ -9,4 +9,5 @@ public final class AllocatedJudgeTemplateForSDO extends SharedAllocatedJudgeTemp
     private String familyManCaseNumber;
     private String leadRespondentsName;
     private String hearingDate;
+    private String callout;
 }

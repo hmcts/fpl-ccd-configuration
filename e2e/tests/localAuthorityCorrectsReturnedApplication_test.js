@@ -1,18 +1,18 @@
 const config = require('../config.js');
 const dateFormat = require('dateformat');
 const applicant = require('../fixtures/applicant.js');
-const mandatorySubmissionFields = require('../fixtures/mandatorySubmissionFields.json');
+const mandatorySubmissionFields = require('../fixtures/caseData/mandatorySubmissionFields.json');
 
 let caseId;
 
 Feature('Local authority corrects returned application');
 
-BeforeSuite(async (I) => {
+BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData(mandatorySubmissionFields);
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 });
 
-Scenario('Admin returns application to the LA', async (I, caseViewPage, returnApplicationEventPage) => {
+Scenario('Admin returns application to the LA', async ({I, caseViewPage, returnApplicationEventPage}) => {
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await caseViewPage.goToNewActions(config.administrationActions.returnApplication);
   returnApplicationEventPage.selectApplicationIncorrect();
   returnApplicationEventPage.enterRejectionNote();
@@ -20,7 +20,7 @@ Scenario('Admin returns application to the LA', async (I, caseViewPage, returnAp
   await I.seeEventSubmissionConfirmation(config.administrationActions.returnApplication);
 });
 
-Scenario('LA makes corrections to the application', async (I, caseViewPage, enterApplicantEventPage, submitApplicationEventPage) => {
+Scenario('LA makes corrections to the application', async ({I, caseViewPage, enterApplicantEventPage, submitApplicationEventPage}) => {
   const now = new Date();
   const formattedDate = dateFormat(now, 'd mmmm yyyy');
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);

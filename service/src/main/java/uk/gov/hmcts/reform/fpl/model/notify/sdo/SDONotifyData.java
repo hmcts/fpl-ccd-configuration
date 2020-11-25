@@ -5,6 +5,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 
+import java.util.Map;
+
 @Getter
 @Builder
 @EqualsAndHashCode
@@ -15,4 +17,6 @@ public class SDONotifyData implements NotifyData {
     private final String reference;
     private final String caseUrl;
     private final String title;
+    private final Map<String, Object> documentLink;
+    private final String callout;
 }

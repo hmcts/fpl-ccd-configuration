@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.ApplicantService;
 import uk.gov.hmcts.reform.fpl.service.OrganisationService;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
+import uk.gov.hmcts.reform.rd.model.Organisation;
 
 @Api
 @RestController
@@ -30,8 +31,10 @@ public class ApplicantController extends CallbackController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().put(APPLICANTS_PROPERTY, applicantService.expandApplicantCollection(caseData,
-            organisationService.findOrganisation()));
+        Organisation organisation = organisationService.findOrganisation().orElse(Organisation.builder().build());
+
+        caseDetails.getData()
+            .put(APPLICANTS_PROPERTY, applicantService.expandApplicantCollection(caseData, organisation));
 
         return respond(caseDetails);
     }

@@ -101,7 +101,7 @@ class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
     }
 
     private ReturnedCaseTemplateBuilder returnedCaseTemplateWithCaseUrl() {
-        return returnedCaseTemplate().caseUrl(getCaseUrl(CASE_REFERENCE));
+        return returnedCaseTemplate().caseUrl(caseUrl(CASE_REFERENCE));
     }
 
     private ReturnedCaseTemplateBuilder returnedCaseTemplateWithApplicationUrl() {

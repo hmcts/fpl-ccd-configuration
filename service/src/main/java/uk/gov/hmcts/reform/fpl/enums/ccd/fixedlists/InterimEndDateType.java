@@ -7,7 +7,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum InterimEndDateType {
     END_OF_PROCEEDINGS("End of the proceedings"),
-    NAMED_DATE("A named date");
+    NAMED_DATE("A named date"),
+    SPECIFIC_TIME_NAMED_DATE("A specific time on a named date");
 
     private final String label;
 }

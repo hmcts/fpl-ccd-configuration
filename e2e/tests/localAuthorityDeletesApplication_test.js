@@ -5,17 +5,17 @@ let caseName;
 
 Feature('Application draft (empty draft)');
 
-BeforeSuite(async I => {
+BeforeSuite(async ({I}) => {
   caseName = `Case ${new Date().toISOString()}`;
   caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne, caseName);
 });
 
-Before(async I => await I.navigateToCaseDetails(caseId));
+Before(async ({I}) => await I.navigateToCaseDetails(caseId));
 
-Scenario('local authority tries to submit incomplete case', async (I, caseViewPage, submitApplicationEventPage) => {
+Scenario('local authority tries to submit incomplete case', async ({I, caseViewPage, submitApplicationEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationEventPage.giveConsent();
-  I.click('Continue');
+  await I.goToNextPage();
   I.waitForElement('.error-summary-list');
   I.see('Add the orders and directions sought');
   I.see('Add the hearing urgency details');
@@ -28,10 +28,10 @@ Scenario('local authority tries to submit incomplete case', async (I, caseViewPa
   I.see('Add the allocation proposal');
 });
 
-Scenario('local authority deletes application', async (I, caseViewPage, deleteApplicationEventPage, caseListPage) => {
+Scenario('local authority deletes application', async ({I, caseViewPage, deleteApplicationEventPage, caseListPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.deleteApplication);
   deleteApplicationEventPage.tickDeletionConsent();
-  await I.retryUntilExists(() => I.click('Continue'), '.check-your-answers');
+  await I.goToNextPage();
   await I.retryUntilExists(() => I.click('Delete application'), '.search-block');
   await caseListPage.searchForCasesWithName(caseName);
   I.see('No cases found.');

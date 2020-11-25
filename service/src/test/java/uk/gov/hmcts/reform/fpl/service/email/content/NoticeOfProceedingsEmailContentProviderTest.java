@@ -21,12 +21,12 @@ class NoticeOfProceedingsEmailContentProviderTest extends AbstractEmailContentPr
         NotifyData actualData = noticeOfProceedingsEmailContentProvider
             .buildAllocatedJudgeNotification(populatedCaseData());
 
-        assertThat(actualData).isEqualToComparingFieldByField(expectedData);
+        assertThat(actualData).usingRecursiveComparison().isEqualTo(expectedData);
     }
 
     private AllocatedJudgeTemplateForNoticeOfProceedings getExpectedAllocatedJudgeParameters() {
         return AllocatedJudgeTemplateForNoticeOfProceedings.builder()
-            .caseUrl(getCaseUrl(CASE_REFERENCE))
+            .caseUrl(caseUrl(CASE_REFERENCE, "HearingTab"))
             .familyManCaseNumber("12345")
             .hearingDate("1 January 2020")
             .judgeName("Moley")

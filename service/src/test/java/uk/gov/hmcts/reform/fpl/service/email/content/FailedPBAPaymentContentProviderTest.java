@@ -27,7 +27,7 @@ class FailedPBAPaymentContentProviderTest extends AbstractEmailContentProviderTe
 
         final FailedPBANotificationData expectedParameters = FailedPBANotificationData.builder()
             .applicationType(applicationType.getType())
-            .caseUrl(getCaseUrl(caseData.getId().toString()))
+            .caseUrl(caseUrl(caseData.getId().toString(), "C2Tab"))
             .build();
 
         final FailedPBANotificationData actualParameters = contentProvider

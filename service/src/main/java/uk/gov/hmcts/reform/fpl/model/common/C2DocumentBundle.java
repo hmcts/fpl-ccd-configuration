@@ -8,6 +8,8 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 
 import java.util.List;
 
+import static java.lang.String.format;
+
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -22,5 +24,9 @@ public class C2DocumentBundle {
     private final String description;
     private final String uploadedDateTime;
     private final String author;
-    private final List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle;
+    private List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle;
+
+    public String toLabel(int index) {
+        return format("Application %d: %s", index, uploadedDateTime);
+    }
 }

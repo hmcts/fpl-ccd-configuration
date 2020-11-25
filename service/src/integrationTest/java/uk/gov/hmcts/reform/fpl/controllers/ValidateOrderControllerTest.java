@@ -1,18 +1,19 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
-import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.Address;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,16 +23,20 @@ import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
-import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.NAMED_DATE;
+import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.SPECIFIC_TIME_NAMED_DATE;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ValidateOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
 class ValidateOrderControllerTest extends AbstractControllerTest {
 
-    @Autowired
-    private Time time;
+    private static final OrderTypeAndDocument ORDER_TYPE_AND_DOCUMENT = OrderTypeAndDocument.builder()
+        .type(GeneratedOrderType.BLANK_ORDER)
+        .build();
+    private static final OrderTypeAndDocument INTERIM_ORDER_TYPE_AND_DOCUMENT = OrderTypeAndDocument.builder()
+        .subtype(GeneratedOrderSubtype.INTERIM)
+        .build();
 
     ValidateOrderControllerTest() {
         super("validate-order");
@@ -39,28 +44,88 @@ class ValidateOrderControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldReturnErrorsWhenTheDateOfIssueIsInFuture() {
-        CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, time.now().plusDays(1), NAMED_DATE);
+        CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, now().plusDays(1), ORDER_TYPE_AND_DOCUMENT);
         final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "date-of-issue");
         assertThat(callbackResponse.getErrors()).containsOnlyOnce("Date of issue cannot be in the future");
     }
 
     @Test
     void shouldNotReturnErrorsWhenDateOfIssueIsToday() {
-        CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, time.now(), NAMED_DATE);
+        CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, now(), ORDER_TYPE_AND_DOCUMENT);
         final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "date-of-issue");
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
     @Test
     void shouldNotReturnErrorsWhenDateOfIssueIsInPast() {
-        CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, time.now().minusDays(1), NAMED_DATE);
+        CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, now().minusDays(1), ORDER_TYPE_AND_DOCUMENT);
         final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "date-of-issue");
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
     @Test
+    void shouldNotReturnErrorsWithInterimOrderWhenEndDateInTheFuture() {
+        CaseDetails caseDetails = caseDetailsFor(INTERIM_ORDER_TYPE_AND_DOCUMENT,InterimEndDate.builder()
+            .type(NAMED_DATE)
+            .endDate(dateNow().plusDays(1))
+            .build());
+        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "date-of-issue");
+        assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
+    @Test
+    void shouldReturnErrorsWithInterimOrderWhenEndDateToday() {
+        CaseDetails caseDetails = caseDetailsFor(INTERIM_ORDER_TYPE_AND_DOCUMENT,InterimEndDate.builder()
+            .type(NAMED_DATE)
+            .endDate(dateNow())
+            .build());
+        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "date-of-issue");
+        assertThat(callbackResponse.getErrors()).containsOnlyOnce("Enter an end date in the future");
+    }
+
+    @Test
+    void shouldReturnErrorsWithInterimOrderWhenEndDateInThePast() {
+        CaseDetails caseDetails = caseDetailsFor(INTERIM_ORDER_TYPE_AND_DOCUMENT,InterimEndDate.builder()
+            .type(NAMED_DATE)
+            .endDate(dateNow().minusDays(1))
+            .build());
+        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "date-of-issue");
+        assertThat(callbackResponse.getErrors()).containsOnlyOnce("Enter an end date in the future");
+    }
+
+    @Test
+    void shouldNotReturnErrorsWithInterimOrderWhenEndDateTimeInTheFuture() {
+        CaseDetails caseDetails = caseDetailsFor(INTERIM_ORDER_TYPE_AND_DOCUMENT,InterimEndDate.builder()
+            .type(SPECIFIC_TIME_NAMED_DATE)
+            .endDateTime(now().plusMinutes(1))
+            .build());
+        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "date-of-issue");
+        assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
+    @Test
+    void shouldReturnErrorsWithInterimOrderWhenEndDateTimeNow() {
+        CaseDetails caseDetails = caseDetailsFor(INTERIM_ORDER_TYPE_AND_DOCUMENT,InterimEndDate.builder()
+            .type(SPECIFIC_TIME_NAMED_DATE)
+            .endDateTime(now())
+            .build());
+        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "date-of-issue");
+        assertThat(callbackResponse.getErrors()).containsOnlyOnce("Enter an end date in the future");
+    }
+
+    @Test
+    void shouldReturnErrorsWithInterimOrderWhenEndDateTimeInThePast() {
+        CaseDetails caseDetails = caseDetailsFor(INTERIM_ORDER_TYPE_AND_DOCUMENT,InterimEndDate.builder()
+            .type(SPECIFIC_TIME_NAMED_DATE)
+            .endDateTime(now().minusMinutes(1))
+            .build());
+        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "date-of-issue");
+        assertThat(callbackResponse.getErrors()).containsOnlyOnce("Enter an end date in the future");
+    }
+
+    @Test
     void shouldReturnErrorsWhenEPOTypeIsPreventRemovalButAddressIsIncomplete() {
-        CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, time.now());
+        CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, now());
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "address");
         assertThat(callbackResponse.getErrors()).containsOnlyOnce(
             "Enter a valid address for the contact",
@@ -69,52 +134,22 @@ class ValidateOrderControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldNotReturnErrorsWhenEPOTypeIsRemoveToAccommodation() {
-        CaseDetails caseDetails = createCaseDetails(REMOVE_TO_ACCOMMODATION, time.now());
+        CaseDetails caseDetails = createCaseDetails(REMOVE_TO_ACCOMMODATION, now());
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "address");
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
     @Test
     void shouldReturnErrorsWhenTheEPOEndDateIsNotWithinTheNextEightDays() {
-        LocalDateTime nowPlusNineDays = time.now().plusDays(9);
-        CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, nowPlusNineDays);
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "epo-end-date");
-        assertThat(callbackResponse.getErrors()).containsOnlyOnce("Date must be within the next 8 days");
+        CaseData caseData = CaseData.builder().dateAndTimeOfIssue(now()).epoEndDate(now().plusDays(9)).build();
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "epo-end-date");
+        assertThat(callbackResponse.getErrors()).containsOnlyOnce("Date must be within 8 days of the order date");
     }
 
     @Test
     void shouldNotReturnErrorsWhenTheEPOEndDateIsWithinTheNextEightDays() {
-        LocalDateTime nowPlusSevenDays = time.now().plusDays(7);
-        CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, nowPlusSevenDays);
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "epo-end-date");
-        assertThat(callbackResponse.getErrors()).isEmpty();
-    }
-
-    @Test
-    void shouldReturnErrorsWhenTheInterimEndDateIsNotInTheFuture() {
-        CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, time.now().minusDays(1), NAMED_DATE);
-        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "interim-end-date");
-        assertThat(callbackResponse.getErrors()).containsOnlyOnce("Enter an end date in the future");
-    }
-
-    @Test
-    void shouldReturnErrorsWhenTheInterimEndDateIsToday() {
-        CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, time.now(), NAMED_DATE);
-        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "interim-end-date");
-        assertThat(callbackResponse.getErrors()).containsOnlyOnce("Enter an end date in the future");
-    }
-
-    @Test
-    void shouldNotReturnErrorsWhenTheInterimEndDateIsInTheFuture() {
-        CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, time.now().plusDays(1), NAMED_DATE);
-        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "interim-end-date");
-        assertThat(callbackResponse.getErrors()).isEmpty();
-    }
-
-    @Test
-    void shouldNotReturnErrorsWhenTheInterimEndDateTypeIsEndOfProceedings() {
-        CaseDetails caseDetails = createCaseDetails(PREVENT_REMOVAL, time.now().minusDays(1), END_OF_PROCEEDINGS);
-        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "interim-end-date");
+        CaseData caseData = CaseData.builder().dateAndTimeOfIssue(now()).epoEndDate(now().plusDays(7)).build();
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "epo-end-date");
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
@@ -174,21 +209,28 @@ class ValidateOrderControllerTest extends AbstractControllerTest {
     }
 
     private CaseDetails createCaseDetails(EPOType preventRemoval, LocalDateTime now) {
-        return createCaseDetails(preventRemoval, now, END_OF_PROCEEDINGS);
+        return createCaseDetails(preventRemoval, now, ORDER_TYPE_AND_DOCUMENT);
     }
 
     private CaseDetails createCaseDetails(EPOType epoType, LocalDateTime localDateTime,
-                                          InterimEndDateType interimEndDateType) {
+                                          OrderTypeAndDocument orderTypeAndDocument) {
+
         return CaseDetails.builder()
             .data(Map.of(
                 "dateOfIssue", localDateTime.toLocalDate(),
                 "epoType", epoType,
                 "epoRemovalAddress", Address.builder().build(),
                 "epoEndDate", localDateTime,
-                "interimEndDate", InterimEndDate.builder()
-                    .type(interimEndDateType)
-                    .endDate(localDateTime.toLocalDate())
-                    .build()
+                "orderTypeAndDocument", orderTypeAndDocument
+            )).build();
+    }
+
+    private CaseDetails caseDetailsFor(OrderTypeAndDocument orderTypeAndDocument,
+                                       InterimEndDate interimEndDate) {
+        return CaseDetails.builder()
+            .data(Map.of(
+                "interimEndDate", interimEndDate,
+                "orderTypeAndDocument", orderTypeAndDocument
             )).build();
     }
 }

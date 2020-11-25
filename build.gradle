@@ -6,7 +6,7 @@ buildscript {
 
 plugins {
   id 'java'
-  id 'org.owasp.dependencycheck' version '5.3.2.1' apply true
+  id 'org.owasp.dependencycheck' version '6.0.3' apply true
 }
 
 allprojects {
@@ -14,24 +14,8 @@ allprojects {
   targetCompatibility = '11'
 }
 
-sourceSets {
-  performanceTest {
-    java {
-      srcDir file('src/gatling/simulations')
-    }
-    resources.srcDir file('src/gatling/conf')
-    resources.srcDir file('src/gatling/resources')
-  }
-}
-
 repositories {
   jcenter()
-}
-
-dependencies {
-  performanceTestImplementation group: 'org.scala-lang', name: 'scala-library', version: '2.13.3'
-  performanceTestImplementation group: 'io.gatling', name: 'gatling-core', version: '3.1.1'
-  performanceTestImplementation group: 'io.gatling', name: 'gatling-http', version: '3.1.1'
 }
 
 dependencyCheck {

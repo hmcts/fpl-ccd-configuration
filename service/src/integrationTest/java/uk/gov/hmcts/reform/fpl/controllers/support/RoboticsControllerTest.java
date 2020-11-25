@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.service.EmailService;
+import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 
 import java.time.LocalDate;
 

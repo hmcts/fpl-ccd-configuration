@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.util.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,34 +19,22 @@ import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
-import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.UploadC2DocumentsService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
-import static io.jsonwebtoken.lang.Collections.isEmpty;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @Api
 @Slf4j
@@ -59,12 +46,10 @@ public class UploadC2DocumentsController extends CallbackController {
     private static final String AMOUNT_TO_PAY = "amountToPay";
     private static final String TEMPORARY_C2_DOCUMENT = "temporaryC2Document";
     private final ObjectMapper mapper;
-    private final IdamClient idamClient;
     private final FeeService feeService;
     private final PaymentService paymentService;
     private final PbaNumberService pbaNumberService;
     private final Time time;
-    private final RequestData requestData;
     private final UploadC2DocumentsService uploadC2DocumentsService;
 
     @PostMapping("/get-fee/mid-event")
@@ -105,26 +90,13 @@ public class UploadC2DocumentsController extends CallbackController {
         return respond(caseDetails, errors);
     }
 
-    //TODO: Remove below endpoint when above validate midpoint is live in prod
-    @PostMapping("/validate-pba-number/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleValidatePbaNumberMidEvent(
-        @RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
-
-        var updatedTemporaryC2Document = pbaNumberService.update(caseData.getTemporaryC2Document());
-        caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, updatedTemporaryC2Document);
-
-        return respond(caseDetails, pbaNumberService.validate(updatedTemporaryC2Document));
-    }
-
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().put("c2DocumentBundle", buildC2DocumentBundle(caseData));
+        caseDetails.getData().put("c2DocumentBundle", uploadC2DocumentsService.buildC2DocumentBundle(caseData));
         caseDetails.getData().keySet().removeAll(Set.of(TEMPORARY_C2_DOCUMENT, "c2ApplicationType", AMOUNT_TO_PAY));
 
         return respond(caseDetails);
@@ -166,33 +138,6 @@ public class UploadC2DocumentsController extends CallbackController {
         var updatedC2DocumentMap = mapper.convertValue(data.get(TEMPORARY_C2_DOCUMENT), Map.class);
         updatedC2DocumentMap.remove("document");
         data.put(TEMPORARY_C2_DOCUMENT, updatedC2DocumentMap);
-    }
-
-    private List<Element<C2DocumentBundle>> buildC2DocumentBundle(CaseData caseData) {
-        List<Element<C2DocumentBundle>> c2DocumentBundle = defaultIfNull(caseData.getC2DocumentBundle(),
-            Lists.newArrayList());
-
-        List<SupportingEvidenceBundle> updatedSupportingEvidenceBundle =
-            unwrapElements(caseData.getTemporaryC2Document().getSupportingEvidenceBundle())
-                .stream()
-                .map(supportingEvidence -> supportingEvidence.toBuilder().dateTimeUploaded(time.now()).build())
-                .collect(Collectors.toList());
-
-        var c2DocumentBundleBuilder = caseData.getTemporaryC2Document().toBuilder()
-            .author(idamClient.getUserInfo(requestData.authorisation()).getName())
-            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
-            .supportingEvidenceBundle(
-                //TODO: Below empty check can be removed when supporting documents is toggled on in prod
-                !isEmpty(updatedSupportingEvidenceBundle) ? wrapElements(updatedSupportingEvidenceBundle) : null);
-
-        c2DocumentBundleBuilder.type(caseData.getC2ApplicationType().get("type"));
-
-        c2DocumentBundle.add(Element.<C2DocumentBundle>builder()
-            .id(UUID.randomUUID())
-            .value(c2DocumentBundleBuilder.build())
-            .build());
-
-        return c2DocumentBundle;
     }
 
     private boolean displayAmountToPay(CaseDetails caseDetails) {

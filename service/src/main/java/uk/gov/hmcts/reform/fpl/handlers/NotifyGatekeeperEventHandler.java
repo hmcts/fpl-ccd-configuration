@@ -34,10 +34,6 @@ public class NotifyGatekeeperEventHandler {
 
         emailList.forEach(recipientEmail -> {
             NotifyGatekeeperTemplate template = parameters.duplicate();
-
-            template.setGatekeeperRecipients(gatekeeperEmailContentProvider.buildRecipientsLabel(
-                emailList, recipientEmail));
-
             notificationService.sendEmail(GATEKEEPER_SUBMISSION_TEMPLATE, recipientEmail, template, caseData.getId());
         });
     }

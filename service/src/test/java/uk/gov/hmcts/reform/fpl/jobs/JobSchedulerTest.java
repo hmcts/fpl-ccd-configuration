@@ -31,7 +31,7 @@ import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.TriggerBuilder.newTrigger;
 
 @ExtendWith(SpringExtension.class)
-public class JobSchedulerTest {
+class JobSchedulerTest {
 
     @Mock
     private Scheduler scheduler;

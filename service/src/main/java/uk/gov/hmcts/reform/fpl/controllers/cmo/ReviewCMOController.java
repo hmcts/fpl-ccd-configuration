@@ -21,10 +21,11 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ReviewCMOService;
-import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 
 import java.util.List;
+import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
@@ -36,9 +37,9 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 public class ReviewCMOController extends CallbackController {
 
     private final ReviewCMOService reviewCMOService;
-    private final DocumentConversionService documentConversionService;
     private final DocumentSealingService documentSealingService;
     private final ApplicationEventPublisher eventPublisher;
+    private final CoreCaseDataService coreCaseDataService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -72,8 +73,7 @@ public class ReviewCMOController extends CallbackController {
     }
 
     @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest)
-        throws Exception {
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
@@ -88,11 +88,7 @@ public class ReviewCMOController extends CallbackController {
 
                 caseData.getDraftUploadedCMOs().remove(cmo);
 
-                //TODO merge these actions together to improve performance FPLA-2056
-                DocumentReference convertedDocument = documentConversionService.convertToPdf(
-                    cmoToSeal.getValue().getOrder());
-                DocumentReference sealedDocument = documentSealingService.sealDocument(convertedDocument);
-                cmoToSeal.getValue().setOrder(sealedDocument);
+                cmoToSeal.getValue().setOrder(documentSealingService.sealDocument(cmoToSeal.getValue().getOrder()));
 
                 List<Element<CaseManagementOrder>> sealedCMOs = caseData.getSealedCMOs();
                 sealedCMOs.add(cmoToSeal);
@@ -124,6 +120,15 @@ public class ReviewCMOController extends CallbackController {
         if (!cmosReadyForApproval.isEmpty()) {
             if (!JUDGE_REQUESTED_CHANGES.equals(caseData.getReviewCMODecision().getDecision())) {
                 CaseManagementOrder sealed = reviewCMOService.getLatestSealedCMO(caseData);
+                DocumentReference documentToBeSent = sealed.getOrder();
+
+                coreCaseDataService.triggerEvent(
+                    callbackRequest.getCaseDetails().getJurisdiction(),
+                    callbackRequest.getCaseDetails().getCaseTypeId(),
+                    callbackRequest.getCaseDetails().getId(),
+                    "internal-change-SEND_DOCUMENT",
+                    Map.of("documentToBeSent", documentToBeSent)
+                );
 
                 publishEvent(new CaseManagementOrderIssuedEvent(caseData, sealed));
             } else {

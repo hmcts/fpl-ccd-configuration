@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 
 import java.util.List;
 
-import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -29,7 +29,7 @@ public class RepresentativeNotificationService {
             caseData.getRepresentatives(), servedPreference);
 
         if (!representatives.isEmpty()) {
-            sendNotificationToRepresentatives(caseData, notifyData, representatives, templateId);
+            sendNotificationToRepresentatives(caseData.getId(), notifyData, representatives, templateId);
         }
     }
 
@@ -39,11 +39,11 @@ public class RepresentativeNotificationService {
                                              List<Representative> representatives) {
 
         if (!representatives.isEmpty()) {
-            sendNotificationToRepresentatives(caseData, notifyData, representatives, templateId);
+            sendNotificationToRepresentatives(caseData.getId(), notifyData, representatives, templateId);
         }
     }
 
-    private void sendNotificationToRepresentatives(final CaseData caseData,
+    private void sendNotificationToRepresentatives(final Long caseId,
                                                    final NotifyData parameters,
                                                    final List<Representative> representatives,
                                                    final String templateId) {
@@ -53,6 +53,6 @@ public class RepresentativeNotificationService {
                 templateId,
                 representative.getEmail(),
                 parameters,
-                caseData.getId()));
+                caseId));
     }
 }

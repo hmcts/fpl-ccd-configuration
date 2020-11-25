@@ -7,14 +7,17 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute.SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute.UPLOAD;
 
@@ -27,33 +30,6 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractControll
 
     StandardDirectionsOrderControllerAboutToStartTest() {
         super("draft-standard-directions");
-    }
-
-    @Test
-    void shouldPopulateDateOfIssueWithTodayWhenNoDatePreviouslyEntered() {
-        CaseDetails caseDetails = buildCaseDetailsWithDateOfIssue(null);
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
-
-        assertThat(callbackResponse.getData().get("dateOfIssue")).isEqualTo(dateNow().toString());
-    }
-
-    @Test
-    void shouldPopulateDateOfIssueWithPreviouslyEnteredDate() {
-        CaseDetails caseDetails = buildCaseDetailsWithDateOfIssue("20 March 2020");
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
-
-        assertThat(callbackResponse.getData().get("dateOfIssue")).isEqualTo(LocalDate.of(2020, 3, 20).toString());
-    }
-
-    @Test
-    void shouldPopulateDateOfIssueWithPreviouslyEnteredDateWhenRouterIsNull() {
-        CaseDetails caseDetails = buildCaseDetailsWithDateOfIssueAndRoute("20 March 2020", null);
-
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
-
-        assertThat(response.getData().get("dateOfIssue")).isEqualTo(LocalDate.of(2020, 3, 20).toString());
     }
 
     @Test
@@ -107,8 +83,22 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractControll
             .containsEntry("useUploadRoute", "YES");
     }
 
-    private CaseDetails buildCaseDetailsWithDateOfIssue(String date) {
-        return buildCaseDetails(date, null, null);
+    @Test
+    void shouldPopulateJudgeAndLegalAdvisorInUploadRoute() {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor();
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of(
+                "sdoRouter", UPLOAD,
+                "standardDirectionOrder", StandardDirectionOrder.builder()
+                    .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
+                    .build()
+            )).build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
+        CaseData responseCaseData = mapper.convertValue(response.getData(), CaseData.class);
+
+        assertThat(responseCaseData.getJudgeAndLegalAdvisor()).isEqualTo(judgeAndLegalAdvisor);
     }
 
     private CaseDetails buildCaseDetailsWithDateOfIssueAndRoute(String date, SDORoute route) {
@@ -128,6 +118,13 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractControll
 
         return CaseDetails.builder()
             .data(data)
+            .build();
+    }
+
+    private JudgeAndLegalAdvisor buildJudgeAndLegalAdvisor() {
+        return JudgeAndLegalAdvisor.builder()
+            .judgeTitle(HIS_HONOUR_JUDGE)
+            .judgeLastName("Davidson")
             .build();
     }
 }

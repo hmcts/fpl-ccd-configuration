@@ -9,13 +9,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "RepresentativeRole",
-    "ListElementCode": "LA_BARRISTER",
-    "ListElement": "LA Barrister",
-    "DisplayOrder": 2
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "RepresentativeRole",
     "ListElementCode": "BARRISTER",
     "ListElement": "Barrister",
     "DisplayOrder": 3

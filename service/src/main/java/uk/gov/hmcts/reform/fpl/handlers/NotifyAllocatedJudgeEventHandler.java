@@ -23,6 +23,7 @@ public class NotifyAllocatedJudgeEventHandler {
         CaseData caseData = event.getCaseData();
 
         NotifyData notifyData = allocatedJudgeContentProvider.buildNotificationParameters(caseData);
+
         String recipient = caseData.getAllocatedJudge().getJudgeEmailAddress();
 
         notificationService.sendEmail(ALLOCATED_JUDGE_TEMPLATE, recipient, notifyData, caseData.getId());

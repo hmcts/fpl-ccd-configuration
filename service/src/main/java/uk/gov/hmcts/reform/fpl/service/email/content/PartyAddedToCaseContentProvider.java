@@ -19,6 +19,7 @@ public class PartyAddedToCaseContentProvider extends AbstractEmailContentProvide
     public PartyAddedNotifyData getPartyAddedToCaseNotificationParameters(
         CaseData caseData,
         RepresentativeServingPreferences servingPreference) {
+
         return PartyAddedNotifyData.builder()
             .familyManCaseNumber(defaultIfNull(caseData.getFamilyManCaseNumber(), ""))
             .firstRespondentLastName(getFirstRespondentLastName(caseData))

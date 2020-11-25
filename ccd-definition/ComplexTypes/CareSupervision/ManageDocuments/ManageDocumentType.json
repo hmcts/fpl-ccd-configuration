@@ -1,0 +1,29 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentType",
+    "ListElementCode": "type",
+    "FieldType": "FixedRadioList",
+    "ElementLabel": "Which document type do you want to manage?",
+    "FieldTypeParameter": "ManageDocumentTypeList",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentType",
+    "ListElementCode": "hasHearings",
+    "FieldType": "Text",
+    "ElementLabel": "Hidden to control display of the next field when there are no hearings",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type=\"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentType",
+    "ListElementCode": "relatedToHearing",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Does the evidence document relate to a hearing?",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type=\"FURTHER_EVIDENCE_DOCUMENTS\" AND hasHearings=\"Yes\""
+  }
+]

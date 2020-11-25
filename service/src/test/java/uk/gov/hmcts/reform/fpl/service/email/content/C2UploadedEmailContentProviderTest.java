@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -16,7 +17,9 @@ import java.util.Map;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ContextConfiguration(classes = {C2UploadedEmailContentProvider.class, FixedTimeConfiguration.class})
@@ -26,7 +29,17 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
     @Autowired
     private C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
 
-    private static DocumentReference applicationDocument = testDocumentReference();
+    private static final byte[] C2_DOCUMENT_BINARY = testDocumentBinaries();
+    private static DocumentReference applicationDocument;
+    private DocumentReference uploadedC2 = testDocumentReference();
+    private static final String C2 = "C2Tab";
+
+    @BeforeEach
+    void init() {
+        applicationDocument = testDocumentReference();
+        when(documentDownloadService.downloadDocument(uploadedC2.getBinaryUrl()))
+            .thenReturn(C2_DOCUMENT_BINARY);
+    }
 
     @Test
     void shouldReturnExpectedMapWithGivenCaseDetails() {
@@ -42,7 +55,7 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
         C2UploadedTemplate actualParameters = c2UploadedEmailContentProvider
             .getNotifyData(caseData, uploadedC2);
 
-        assertThat(actualParameters).isEqualToComparingFieldByField(expectedParameters);
+        assertThat(actualParameters).usingRecursiveComparison().isEqualTo(expectedParameters);
     }
 
     @Test
@@ -50,7 +63,7 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
         CaseData caseData = populatedCaseData();
 
         BaseCaseNotifyData expectedParameters = BaseCaseNotifyData.builder()
-            .caseUrl(getCaseUrl(caseData))
+            .caseUrl(caseUrl(CASE_REFERENCE, C2))
             .build();
 
         BaseCaseNotifyData actualParameters = c2UploadedEmailContentProvider
@@ -67,12 +80,12 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
         AllocatedJudgeTemplateForC2 actualData = c2UploadedEmailContentProvider
             .getNotifyDataForAllocatedJudge(caseData);
 
-        assertThat(actualData).isEqualToComparingFieldByField(expectedData);
+        assertThat(actualData).usingRecursiveComparison().isEqualTo(expectedData);
     }
 
     private AllocatedJudgeTemplateForC2 getAllocatedJudgeParametersForC2() {
         return AllocatedJudgeTemplateForC2.builder()
-            .caseUrl("http://fake-url/cases/case-details/12345")
+            .caseUrl(caseUrl(CASE_REFERENCE, C2))
             .callout(format("Smith, %s", CASE_REFERENCE))
             .judgeTitle("Her Honour Judge")
             .judgeName("Moley")
@@ -85,7 +98,7 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
 
         c2UploadedTemplate.setCallout(format("Smith, %s", CASE_REFERENCE));
         c2UploadedTemplate.setRespondentLastName("Smith");
-        c2UploadedTemplate.setCaseUrl("http://fake-url/cases/case-details/12345");
+        c2UploadedTemplate.setCaseUrl(caseUrl(CASE_REFERENCE, C2));
         c2UploadedTemplate.setDocumentUrl("http://fake-url/documents/b28f859b-7521-4c84-9057-47e56afd773f/binary");
 
         return c2UploadedTemplate;

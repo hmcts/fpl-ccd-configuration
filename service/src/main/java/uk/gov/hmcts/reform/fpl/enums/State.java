@@ -23,20 +23,24 @@ public enum State {
     // State label renamed to 'Case management' as of FPLA-1920.
     // State ID remains 'PREPARE_FOR_HEARING' to avoid breaking existing cases.
     @JsonProperty("PREPARE_FOR_HEARING")
-    CASE_MANAGEMENT("PREPARE_FOR_HEARING"),
+    CASE_MANAGEMENT("PREPARE_FOR_HEARING", "Case management"),
 
-    CLOSED("CLOSED"),
+    CLOSED("CLOSED", "Closed"),
 
     @JsonProperty("Deleted")
     DELETED("Deleted"),
 
-    RETURNED("RETURNED"),
+    RETURNED("RETURNED", "Returned"),
 
-    ISSUE_RESOLUTION("ISSUE_RESOLUTION"),
-
-    FINAL_HEARING("FINAL_HEARING");
+    FINAL_HEARING("FINAL_HEARING", "Final hearing");
 
     private final String value;
+    private final String label;
+
+    State(String value) {
+        this.value = value;
+        this.label = value;
+    }
 
     public static State fromValue(final String value) {
         return tryFromValue(value)

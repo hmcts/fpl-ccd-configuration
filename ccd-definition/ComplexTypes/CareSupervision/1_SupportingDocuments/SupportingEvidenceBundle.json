@@ -5,7 +5,6 @@
     "ListElementCode": "name",
     "FieldType": "Text",
     "ElementLabel": "Document name",
-    "HintText": "Give the document a meaningful name, for example form C100 or C1A.",
     "SecurityClassification": "Public"
   },
   {
@@ -36,9 +35,17 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "SupportingEvidenceBundle",
+    "ListElementCode": "uploadedBy",
+    "FieldType": "Text",
+    "ElementLabel": "Uploaded by",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SupportingEvidenceBundle",
     "ListElementCode": "document",
     "FieldType": "Document",
-    "ElementLabel": "Upload document",
+    "ElementLabel": "File",
     "SecurityClassification": "Public"
   }
 ]

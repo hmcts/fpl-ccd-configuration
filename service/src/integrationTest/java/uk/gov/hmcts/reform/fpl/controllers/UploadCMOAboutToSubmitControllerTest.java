@@ -1,39 +1,41 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.cmo.UploadCMOController;
-import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
+import uk.gov.hmcts.reform.fpl.enums.CMOType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.event.UploadCMOEventData;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(UploadCMOController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class UploadCMOAboutToSubmitControllerTest extends AbstractControllerTest {
+class UploadCMOAboutToSubmitControllerTest extends AbstractUploadCMOControllerTest {
 
     private static final DocumentReference DOCUMENT_REFERENCE = DocumentReference.builder()
         .binaryUrl("FAKE BINARY")
@@ -46,43 +48,94 @@ public class UploadCMOAboutToSubmitControllerTest extends AbstractControllerTest
     }
 
     @Test
-    void shouldUpdateHearingAndAppendToDraftCMOList() {
-        List<Element<HearingBooking>> hearings = hearingsOnDateAndDayAfter(LocalDateTime.of(2020, 3, 15, 10, 7));
+    void shouldAddCMOToListWithDraftStatusAndNotMigrateDocs() {
+        List<Element<SupportingEvidenceBundle>> bundles = List.of(element(
+            SupportingEvidenceBundle.builder()
+                .name("case summary")
+                .build()
+        ));
 
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(hearings)
-            .hearingsWithoutApprovedCMO(dynamicList(hearings))
+        List<Element<HearingBooking>> hearings = hearingsOnDateAndDayAfter(now().plusDays(3));
+
+        UploadCMOEventData eventData = UploadCMOEventData.builder()
+            .futureHearingsForCMO(dynamicList(hearings))
             .uploadedCaseManagementOrder(DOCUMENT_REFERENCE)
+            .cmoUploadType(CMOType.DRAFT)
+            .cmoSupportingDocs(bundles)
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(asCaseDetails(caseData));
+        CaseData caseData = CaseData.builder()
+            .uploadCMOEventData(eventData)
+            .hearingDetails(hearings)
+            .build();
 
-        CaseData responseData = mapper.convertValue(response.getData(), CaseData.class);
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
-        CaseManagementOrder cmo = order(hearings);
+        CaseManagementOrder cmo = orderWithDocs(hearings.get(0).getValue(), DRAFT, bundles);
 
-        List<Element<CaseManagementOrder>> uploadedCMOs = responseData.getDraftUploadedCMOs();
+        List<Element<CaseManagementOrder>> unsealedCMOs = responseData.getDraftUploadedCMOs();
 
-        assertThat(uploadedCMOs).extracting("value").containsOnly(cmo);
+        assertThat(unsealedCMOs)
+            .hasSize(1)
+            .first()
+            .extracting(Element::getValue)
+            .isEqualTo(cmo);
 
-        hearings.get(0).getValue().setCaseManagementOrderId(uploadedCMOs.get(0).getId());
+        hearings.get(0).getValue().setCaseManagementOrderId(unsealedCMOs.get(0).getId());
 
         assertThat(responseData.getHearingDetails()).isEqualTo(hearings);
+
+        assertThat(responseData.getHearingFurtherEvidenceDocuments()).isEmpty();
     }
 
     @Test
-    void shouldNotAlterHearingAndDraftCMOListsIfThereWereNoValidHearings() {
-        List<Element<HearingBooking>> hearings = hearingsOnDateAndDayAfter(LocalDateTime.now().plusDays(3));
+    void shouldAddCMOToListWithSendToJudgeStatusAndMigrateDocs() {
+        List<Element<SupportingEvidenceBundle>> bundles = List.of(element(
+            SupportingEvidenceBundle.builder()
+                .name("case summary")
+                .build()
+        ));
+
+        List<Element<HearingBooking>> hearings = hearingsOnDateAndDayAfter(now().minusDays(3));
+
+        UploadCMOEventData eventData = UploadCMOEventData.builder()
+            .pastHearingsForCMO(dynamicList(hearings))
+            .uploadedCaseManagementOrder(DOCUMENT_REFERENCE)
+            .cmoUploadType(CMOType.AGREED)
+            .cmoSupportingDocs(bundles)
+            .build();
 
         CaseData caseData = CaseData.builder()
+            .uploadCMOEventData(eventData)
             .hearingDetails(hearings)
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(asCaseDetails(caseData));
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
-        CaseData responseData = mapper.convertValue(response.getData(), CaseData.class);
+        CaseManagementOrder cmo = orderWithDocs(hearings.get(0).getValue(), SEND_TO_JUDGE, bundles);
+
+        List<Element<CaseManagementOrder>> unsealedCMOs = responseData.getDraftUploadedCMOs();
+
+        assertThat(unsealedCMOs)
+            .hasSize(1)
+            .first()
+            .extracting(Element::getValue)
+            .isEqualTo(cmo);
+
+        hearings.get(0).getValue().setCaseManagementOrderId(unsealedCMOs.get(0).getId());
 
         assertThat(responseData.getHearingDetails()).isEqualTo(hearings);
+
+        List<Element<HearingFurtherEvidenceBundle>> furtherEvidenceBundle = List.of(
+            element(hearings.get(0).getId(), HearingFurtherEvidenceBundle.builder()
+                .hearingName(hearings.get(0).getValue().toLabel())
+                .supportingEvidenceBundle(bundles)
+                .build())
+        );
+
+        assertThat(responseData.getHearingFurtherEvidenceDocuments())
+            .hasSize(1)
+            .isEqualTo(furtherEvidenceBundle);
     }
 
     @Test
@@ -91,83 +144,65 @@ public class UploadCMOAboutToSubmitControllerTest extends AbstractControllerTest
         List<Element<CaseManagementOrder>> draftCMOs = List.of();
 
         CaseData caseData = CaseData.builder()
-            .hearingsWithoutApprovedCMO(dynamicList(hearings))
+            .uploadCMOEventData(UploadCMOEventData.builder()
+                .uploadedCaseManagementOrder(DOCUMENT_REFERENCE)
+                .pastHearingsForCMO(dynamicList(hearings))
+                .futureHearingsForCMO("DUMMY DATA")
+                .cmoJudgeInfo("DUMMY DATA")
+                .cmoHearingInfo("DUMMY DATA")
+                .showReplacementCMO(YesNo.NO)
+                .replacementCMO(DOCUMENT_REFERENCE)
+                .previousCMO(DOCUMENT_REFERENCE)
+                .cmoSupportingDocs(List.of())
+                .cmoToSend(DOCUMENT_REFERENCE)
+                .showCMOsSentToJudge(YesNo.NO)
+                .cmosSentToJudge("DUMMY DATA")
+                .cmoUploadType(CMOType.DRAFT)
+                .build())
             .hearingDetails(hearings)
             .draftUploadedCMOs(draftCMOs)
             .build();
 
-        HashMap<String, Object> data = mapper.convertValue(caseData, new TypeReference<>() {});
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(asCaseDetails(caseData));
 
-        data.putAll(Map.of(
-            "uploadedCaseManagementOrder", DocumentReference.builder().build(),
-            "cmoJudgeInfo", "DUMMY DATA",
-            "cmoHearingInfo", "DUMMY DATA",
-            "numHearingsWithoutCMO", "DUMMY DATA",
-            "singleHearingWithCMO", "DUMMY DATA",
-            "multiHearingsWithCMOs", "DUMMY DATA",
-            "showHearingsSingleTextArea", "DUMMY DATA",
-            "showHearingsMultiTextArea", "DUMMY DATA"
+        Set<String> keys = mapper.convertValue(caseData, new TypeReference<Map<String, Object>>() {
+        }).keySet();
+
+        keys.removeAll(List.of(
+            "showCMOsSentToJudge", "cmosSentToJudge", "cmoUploadType", "pastHearingsForCMO", "futureHearingsForCMO",
+            "cmoHearingInfo", "showReplacementCMO", "previousCMO", "uploadedCaseManagementOrder", "replacementCMO",
+            "cmoSupportingDocs", "cmoJudgeInfo", "cmoToSend",
+            // Delete these ones below when cleaning up
+            "numHearingsWithoutCMO", "singleHearingWithCMO", "multiHearingsWithCMOs", "showHearingsSingleTextArea",
+            "showHearingsMultiTextArea"
         ));
 
-        CaseDetails caseDetails = CaseDetails.builder().data(data).build();
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
-
-        assertThat(response.getData()).doesNotContainKeys(
-            "uploadedCaseManagementOrder",
-            "cmoJudgeInfo",
-            "cmoHearingInfo",
-            "numHearingsWithoutCMO",
-            "singleHearingWithCMO",
-            "multiHearingsWithCMOs",
-            "showHearingsSingleTextArea",
-            "showHearingsMultiTextArea"
-        );
+        assertThat(response.getData().keySet()).isEqualTo(keys);
     }
 
-    private CaseManagementOrder order(List<Element<HearingBooking>> hearings) {
+    private CaseManagementOrder orderWithDocs(HearingBooking hearing, CMOStatus status,
+                                              List<Element<SupportingEvidenceBundle>> supportingDocs) {
         return CaseManagementOrder.builder()
-            .status(SEND_TO_JUDGE)
-            .hearing(hearings.get(0).getValue().toLabel(DATE))
+            .status(status)
+            .hearing(hearing.toLabel())
             .order(DOCUMENT_REFERENCE)
             .dateSent(dateNow())
-            .judgeTitleAndName(formatJudgeTitleAndName(hearings.get(0).getValue().getJudgeAndLegalAdvisor()))
+            .judgeTitleAndName(formatJudgeTitleAndName(hearing.getJudgeAndLegalAdvisor()))
+            .supportingDocs(supportingDocs)
             .build();
     }
 
     private DynamicList dynamicList(List<Element<HearingBooking>> hearings) {
-        return DynamicList.builder()
-            .value(DynamicListElement.builder()
-                .code(hearings.get(0).getId())
-                .label(hearings.get(0).getValue().toLabel(DATE))
-                .build()
-            ).listItems(List.of(
-                DynamicListElement.builder()
-                    .code(hearings.get(0).getId())
-                    .label(hearings.get(0).getValue().toLabel(DATE))
-                    .build(),
-                DynamicListElement.builder()
-                    .code(hearings.get(1).getId())
-                    .label(hearings.get(1).getValue().toLabel(DATE))
-                    .build()
-            ))
-            .build();
+        return dynamicListWithFirstSelected(
+            Pair.of(hearings.get(0).getValue().toLabel(), hearings.get(0).getId()),
+            Pair.of(hearings.get(1).getValue().toLabel(), hearings.get(1).getId())
+        );
     }
 
     private List<Element<HearingBooking>> hearingsOnDateAndDayAfter(LocalDateTime startDate) {
         return List.of(
-            element(hearing(startDate)),
-            element(hearing(startDate.plusDays(1)))
+            hearing(startDate),
+            hearing(startDate.plusDays(1))
         );
-    }
-
-    private HearingBooking hearing(LocalDateTime startDate) {
-        return HearingBooking.builder()
-            .type(CASE_MANAGEMENT)
-            .startDate(startDate)
-            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
-                .judgeLastName("Judy")
-                .build())
-            .build();
     }
 }

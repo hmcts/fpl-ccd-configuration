@@ -38,7 +38,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
@@ -196,7 +196,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             return Map.of(
                 "respondentLastName", "Watson",
                 "caseUrl",
-                String.format("%s/cases/case-details/%s", "http://fake-url", parseLong(CASE_ID)));
+                String.format("%s/cases/case-details/%s#%s", "http://fake-url", parseLong(CASE_ID), "PlacementTab"));
         }
     }
 
@@ -217,16 +217,16 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             postSubmittedEvent(callbackRequestWithEmptyCaseDetailsBefore());
 
             verify(notificationClient).sendEmail(
-                PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
-                ADMIN_EMAIL_ADDRESS,
-                expectedParameters(),
-                NOTIFICATION_REFERENCE);
+                eq(PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE),
+                eq(ADMIN_EMAIL_ADDRESS),
+                eqJson(expectedParameters()),
+                eq(NOTIFICATION_REFERENCE));
 
             verify(notificationClient).sendEmail(
-                NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE,
-                LOCAL_AUTHORITY_EMAIL_ADDRESS,
-                expectedParameters(),
-                NOTIFICATION_REFERENCE);
+                eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
+                eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+                eqJson(expectedParameters()),
+                eq(NOTIFICATION_REFERENCE));
 
             verify(notificationClient).sendEmail(
                 NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE,
@@ -253,7 +253,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
                 any(),
                 any());
 
-            verifyZeroInteractions(notificationClient);
+            verifyNoMoreInteractions(notificationClient);
         }
 
         @Test
@@ -324,7 +324,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             return Map.of(
                 "respondentLastName", "Jones",
                 "caseUrl",
-                String.format("%s/cases/case-details/%s", "http://fake-url", parseLong(CASE_ID)));
+                String.format("%s/cases/case-details/%s#%s", "http://fake-url", parseLong(CASE_ID), "PlacementTab"));
         }
 
         private Respondent respondent() {

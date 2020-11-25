@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.google.common.collect.ImmutableList;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -12,21 +11,15 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
-import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
-import static java.util.Collections.EMPTY_LIST;
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
@@ -36,7 +29,6 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 class CommonDirectionServiceTest {
@@ -122,46 +114,6 @@ class CommonDirectionServiceTest {
     }
 
     @Nested
-    class CollectDirectionsToMap {
-
-        @Test
-        void shouldReturnMapWithEmptyListWhenNoDirectionsForAssignee() {
-            Map<DirectionAssignee, List<Element<Direction>>> map =
-                service.directionsToMap(CaseData.builder().build());
-
-            @SuppressWarnings("unchecked")
-            Collection<List<Element<Direction>>> expected = ImmutableList
-                .of(EMPTY_LIST, EMPTY_LIST, EMPTY_LIST, EMPTY_LIST, EMPTY_LIST, EMPTY_LIST);
-            Collection<List<Element<Direction>>> actual = new ArrayList<>(map.values());
-
-            assertThat(actual)
-                .isEqualTo(expected);
-        }
-
-        @Test
-        void shouldReturnMapWithDirectionListWhenDirectionsForAssignees() {
-            Map<DirectionAssignee, List<Element<Direction>>> map =
-                service.directionsToMap(populateCaseDataWithFixedDirections()
-                    .courtDirectionsCustom(buildDirections(COURT))
-                    .build());
-
-            Map<DirectionAssignee, List<Element<Direction>>> expectedMap = Stream.of(DirectionAssignee.values())
-                .collect(toMap(directionAssignee ->
-                    directionAssignee, CommonDirectionServiceTest.this::buildDirections));
-
-            AtomicReference<List<Direction>> directionsFromMap = new AtomicReference<>();
-            AtomicReference<List<Direction>> expectedDirections = new AtomicReference<>();
-
-            map.forEach((key, value) -> {
-                directionsFromMap.set(value.stream().map(Element::getValue).collect(toList()));
-                expectedDirections.set(expectedMap.get(key).stream().map(Element::getValue).collect(toList()));
-
-                assertThat(directionsFromMap.get()).isEqualTo(expectedDirections.get());
-            });
-        }
-    }
-
-    @Nested
     class RemoveCustomDirections {
 
         @Test
@@ -181,76 +133,6 @@ class CommonDirectionServiceTest {
                     .build())));
 
             assertThat(filteredDirections).hasSize(1);
-        }
-    }
-
-    @Nested
-    class GetDirectionsForAssignee {
-
-        @Test
-        void shouldFilterAListOfDirectionsWhenDirectionsForSingleAssignee() {
-            List<Element<Direction>> directions = new ArrayList<>(buildDirections(LOCAL_AUTHORITY, DIRECTION_ID));
-
-            List<Element<Direction>> returnedDirections = service.getDirectionsForAssignee(directions, LOCAL_AUTHORITY);
-
-            assertThat(returnedDirections).hasSize(1);
-            assertThat(returnedDirections).isEqualTo(buildDirections(LOCAL_AUTHORITY, DIRECTION_ID));
-        }
-
-        @Test
-        void shouldFilterAListOfDirectionsWhenDirectionsForManyAssignees() {
-            List<Element<Direction>> directions = new ArrayList<>();
-            directions.addAll(buildDirections(LOCAL_AUTHORITY, DIRECTION_ID));
-            directions.addAll(buildDirections(CAFCASS));
-            directions.addAll(buildDirections(COURT));
-
-            List<Element<Direction>> returnedDirections = service.getDirectionsForAssignee(directions, LOCAL_AUTHORITY);
-
-            assertThat(returnedDirections).hasSize(1);
-            assertThat(returnedDirections).isEqualTo(buildDirections(LOCAL_AUTHORITY, DIRECTION_ID));
-        }
-
-        @Test
-        void shouldReturnEmptyListOfDirectionsWhenNoneExistForAssignee() {
-            List<Element<Direction>> directions = new ArrayList<>();
-
-            List<Element<Direction>> returnedDirections = service.getDirectionsForAssignee(directions, LOCAL_AUTHORITY);
-
-            assertThat(returnedDirections).isEmpty();
-        }
-    }
-
-    @Nested
-    class GetResponses {
-
-        @Test
-        void shouldAddCorrectAssigneeAndDirectionToResponseWhenResponseExists() {
-            DirectionResponse response = DirectionResponse.builder()
-                .complied("Yes")
-                .documentDetails("Details")
-                .build();
-
-            List<DirectionResponse> responses = service.getResponses(
-                Map.of(LOCAL_AUTHORITY, buildDirection(response)));
-
-            assertThat(responses).containsOnly(response);
-        }
-
-        @Test
-        void shouldNotReturnResponseWhenNoResponseExists() {
-            List<DirectionResponse> responses = service.getResponses(
-                Map.of(LOCAL_AUTHORITY, buildDirection(null)));
-
-            assertThat(responses).isEmpty();
-        }
-
-        private List<Element<Direction>> buildDirection(DirectionResponse response) {
-            return wrapElements(Direction.builder()
-                .directionType("direction")
-                .directionText("example direction text")
-                .assignee(LOCAL_AUTHORITY)
-                .response(response)
-                .build());
         }
     }
 

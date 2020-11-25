@@ -14,14 +14,18 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
@@ -35,12 +39,15 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 @WebMvcTest(UploadC2DocumentsController.class)
 @OverrideAutoConfiguration(enabled = true)
 class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTest {
-    private static final String USER_NAME = "Emma Taylor";
+    private static final String USER_NAME = "HMCTS";
     private static final Long CASE_ID = 12345L;
     private static final DocumentReference document = testDocumentReference();
 
     @MockBean
     private IdamClient idamClient;
+
+    @MockBean
+    private RequestData requestData;
 
     @Autowired
     private Time time;
@@ -51,7 +58,9 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
 
     @BeforeEach
     void before() {
-        given(idamClient.getUserInfo(USER_AUTH_TOKEN)).willReturn(UserInfo.builder().name("Emma Taylor").build());
+        given(idamClient.getUserInfo(USER_AUTH_TOKEN)).willReturn(UserInfo.builder().name(USER_NAME).build());
+        given(idamClient.getUserDetails(eq(USER_AUTH_TOKEN))).willReturn(createUserDetailsWithHmctsRole());
+        given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
     }
 
     @Test
@@ -92,7 +101,6 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
         assertThat(caseData.getTemporaryC2Document()).isNull();
         assertThat(caseData.getC2DocumentBundle()).hasSize(2);
         assertThat(appendedC2Document.getAuthor()).isEqualTo(USER_NAME);
-        assertThat(appendedC2Document.getSupportingEvidenceBundle()).isNull();
     }
 
     private void assertC2BundleDocument(C2DocumentBundle documentBundle, String description) {
@@ -114,13 +122,15 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
                 SupportingEvidenceBundle::getNotes,
                 SupportingEvidenceBundle::getDateTimeReceived,
                 SupportingEvidenceBundle::getDateTimeUploaded,
-                SupportingEvidenceBundle::getDocument
+                SupportingEvidenceBundle::getDocument,
+                SupportingEvidenceBundle::getUploadedBy
             ).containsExactly(
             "Supporting document",
             "Document notes",
             time.now().minusDays(1),
             time.now(),
-            document
+            document,
+            USER_NAME
         );
     }
 
@@ -154,6 +164,16 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
             .dateTimeReceived(time.now().minusDays(1))
             .dateTimeUploaded(time.now())
             .document(document)
+            .build();
+    }
+
+    private UserDetails createUserDetailsWithHmctsRole() {
+        return UserDetails.builder()
+            .id(USER_ID)
+            .surname("Hudson")
+            .forename("Steve")
+            .email("steve.hudson@gov.uk")
+            .roles(Arrays.asList("caseworker-publiclaw-courtadmin", "caseworker-publiclaw-judiciary"))
             .build();
     }
 }

@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
+import feign.FeignException;
+import feign.Request;
+import feign.Response;
 import org.apache.commons.lang3.RandomUtils;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.ChildGender;
@@ -23,11 +26,15 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudge;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
+import static feign.Request.HttpMethod.GET;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.time.LocalDate.now;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.fpl.enums.ChildGender.BOY;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
@@ -41,8 +48,12 @@ public class TestDataHelper {
     }
 
     public static DocumentReference testDocumentReference() {
+        return testDocumentReference(randomAlphanumeric(10));
+    }
+
+    public static DocumentReference testDocumentReference(String filename) {
         return DocumentReference.builder()
-            .filename(randomAlphanumeric(10))
+            .filename(filename)
             .url(randomAlphanumeric(10))
             .binaryUrl(randomAlphanumeric(10))
             .build();
@@ -214,5 +225,16 @@ public class TestDataHelper {
         return DocmosisJudge.builder()
             .judgeTitleAndName("Brandon Stark (JP)")
             .build();
+    }
+
+    public static FeignException feignException(int status) {
+        return feignException(status, "Test");
+    }
+
+    public static FeignException feignException(int status, String message) {
+        return FeignException.errorStatus(message, Response.builder()
+            .status(status)
+            .request(Request.create(GET, EMPTY, Map.of(), new byte[]{}, UTF_8, null))
+            .build());
     }
 }

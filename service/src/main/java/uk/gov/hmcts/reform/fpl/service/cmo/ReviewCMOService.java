@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -14,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.HashMap;
@@ -35,7 +35,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 public class ReviewCMOService {
 
     private final ObjectMapper mapper;
-    private final FeatureToggleService featureToggleService;
     private final Time time;
 
     /**
@@ -46,15 +45,13 @@ public class ReviewCMOService {
         List<Element<CaseManagementOrder>> cmosReadyForApproval = getCMOsReadyForApproval(caseData);
         Element<CaseManagementOrder> selectedCMO = getSelectedCMO(caseData);
 
-        return asDynamicList(cmosReadyForApproval, selectedCMO.getId(),
-            uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder::getHearing);
+        return asDynamicList(cmosReadyForApproval, selectedCMO.getId(), CaseManagementOrder::getHearing);
     }
 
     public DynamicList buildUnselectedDynamicList(CaseData caseData) {
         List<Element<CaseManagementOrder>> cmosReadyForApproval = getCMOsReadyForApproval(caseData);
 
-        return asDynamicList(cmosReadyForApproval, null,
-            uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder::getHearing);
+        return asDynamicList(cmosReadyForApproval, null, CaseManagementOrder::getHearing);
     }
 
     public Map<String, Object> getPageDisplayControls(CaseData caseData) {
@@ -104,7 +101,8 @@ public class ReviewCMOService {
     }
 
     public Element<CaseManagementOrder> getSelectedCMO(CaseData caseData) {
-        if (getCMOsReadyForApproval(caseData).size() > 1) {
+        List<Element<CaseManagementOrder>> readyForApproval = getCMOsReadyForApproval(caseData);
+        if (readyForApproval.size() > 1) {
             UUID selectedCMOCode = getSelectedCMOId(caseData.getCmoToReviewList());
 
             return caseData.getDraftUploadedCMOs().stream()
@@ -112,7 +110,7 @@ public class ReviewCMOService {
                 .findFirst()
                 .orElseThrow(() -> new CMONotFoundException("Could not find draft cmo with id " + selectedCMOCode));
         } else {
-            return caseData.getDraftUploadedCMOs().get(caseData.getDraftUploadedCMOs().size() - 1);
+            return readyForApproval.get(0);
         }
     }
 
@@ -127,20 +125,12 @@ public class ReviewCMOService {
 
     public State getStateBasedOnNextHearing(CaseData caseData, UUID cmoID) {
         State currentState = caseData.getState();
-        if (featureToggleService.isNewCaseStateModelEnabled()) {
-            Optional<HearingBooking> nextHearingBooking = caseData.getNextHearingAfterCmo(cmoID);
+        Optional<HearingBooking> nextHearingBooking = caseData.getNextHearingAfterCmo(cmoID);
 
-            if (nextHearingBooking.isPresent()
-                && caseData.getReviewCMODecision().hasReviewOutcomeOf(SEND_TO_ALL_PARTIES)) {
-                switch (nextHearingBooking.get().getType()) {
-                    case ISSUE_RESOLUTION:
-                        return State.ISSUE_RESOLUTION;
-                    case FINAL:
-                        return State.FINAL_HEARING;
-                    default:
-                        return currentState;
-                }
-            }
+        if (nextHearingBooking.isPresent()
+            && caseData.getReviewCMODecision().hasReviewOutcomeOf(SEND_TO_ALL_PARTIES)
+            && nextHearingBooking.get().isOfType(HearingType.FINAL)) {
+            return State.FINAL_HEARING;
         }
         return currentState;
     }

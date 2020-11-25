@@ -7,6 +7,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityCodeException;
 import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
@@ -23,8 +24,10 @@ import java.util.Optional;
 import java.util.Set;
 
 import static java.lang.String.format;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.utils.MaskHelper.maskEmail;
 
 @Service
@@ -48,6 +51,39 @@ public class OrganisationService {
         return useLocalMapping(localAuthorityCode);
     }
 
+    public Optional<String> findUserByEmail(String email) {
+        try {
+            return Optional.of(organisationApi.findUserByEmail(requestData.authorisation(),
+                authTokenGenerator.generate(), email).getUserIdentifier());
+        } catch (FeignException.NotFound notFoundException) {
+            log.info("User with email {} not found", MaskHelper.maskEmail(email));
+            return Optional.empty();
+        } catch (FeignException exception) {
+            throw new UserLookupException(maskEmail(getStackTrace(exception), email));
+        }
+    }
+
+    public Optional<Organisation> findOrganisation() {
+        try {
+            return ofNullable(organisationApi.findUserOrganisation(requestData.authorisation(),
+                authTokenGenerator.generate()));
+
+        } catch (FeignException.NotFound | FeignException.Forbidden ex) {
+            log.error("User not registered in MO", ex);
+            return Optional.empty();
+        }
+    }
+
+    public Optional<OrganisationPolicy> findOrganisationPolicy() {
+        return findOrganisation()
+            .map(org -> OrganisationPolicy.builder()
+                .organisation(uk.gov.hmcts.reform.ccd.model.Organisation.builder()
+                    .organisationID(org.getOrganisationIdentifier())
+                    .build())
+                .orgPolicyCaseAssignedRole(LASOLICITOR.formattedName())
+                .build());
+    }
+
     private Set<String> useLocalMapping(String localAuthorityCode) {
         try {
             return Set.copyOf(getUsersFromSameOrganisationBasedOnAppConfig(localAuthorityCode));
@@ -64,33 +100,10 @@ public class OrganisationService {
 
     private List<String> getUsersFromSameOrganisationBasedOnReferenceData(String authorisation) {
         return organisationApi
-            .findUsersByOrganisation(authorisation, authTokenGenerator.generate(), Status.ACTIVE, false)
+            .findUsersInOrganisation(authorisation, authTokenGenerator.generate(), Status.ACTIVE, false)
             .getUsers()
             .stream()
             .map(OrganisationUser::getUserIdentifier)
             .collect(toList());
-    }
-
-    public Optional<String> findUserByEmail(String email) {
-        try {
-            return Optional.of(organisationApi.findUserByEmail(requestData.authorisation(),
-                authTokenGenerator.generate(), email).getUserIdentifier());
-        } catch (FeignException.NotFound notFoundException) {
-            log.info("User with email {} not found", MaskHelper.maskEmail(email));
-            return Optional.empty();
-        } catch (FeignException exception) {
-            throw new UserLookupException(maskEmail(getStackTrace(exception), email));
-        }
-    }
-
-    public Organisation findOrganisation() {
-        try {
-            return organisationApi.findOrganisationById(requestData.authorisation(),
-                authTokenGenerator.generate());
-
-        } catch (FeignException ex) {
-            log.error("Could not find the associated organisation from reference data", ex);
-            return Organisation.builder().build();
-        }
     }
 }

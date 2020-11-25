@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
+import java.util.Collection;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.utils.MaskHelper.maskEmail;
@@ -30,6 +31,16 @@ public class NotificationService {
         this.environment = environment;
     }
 
+    // TODO Remove
+    public void sendEmail(String templateId, String email, Map<String, Object> parameters, String reference) {
+        log.debug("Sending email (with template id: {}) to {}", templateId, maskEmail(email));
+        try {
+            notificationClient.sendEmail(templateId, email, parameters, environment + "/" + reference);
+        } catch (NotificationClientException e) {
+            log.error("Failed to send email (with template id: {}) to {}", templateId, maskEmail(email), e);
+        }
+    }
+
     public void sendEmail(String templateId, String recipient, NotifyData data, String reference) {
         Map<String, Object> personalisation = mapper.convertValue(data, new TypeReference<>() {
         });
@@ -40,6 +51,10 @@ public class NotificationService {
         } catch (NotificationClientException e) {
             log.error("Failed to send email (with template id: {}) to {}", templateId, maskEmail(recipient), e);
         }
+    }
+
+    public void sendEmail(String templateId, Collection<String> emails, NotifyData data, String reference) {
+        emails.forEach(email -> sendEmail(templateId, email, data, reference));
     }
 
     public void sendEmail(String templateId, String recipient, NotifyData data, Long reference) {

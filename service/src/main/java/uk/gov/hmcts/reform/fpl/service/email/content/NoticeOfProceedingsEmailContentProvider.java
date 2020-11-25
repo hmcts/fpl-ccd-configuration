@@ -23,7 +23,7 @@ public class NoticeOfProceedingsEmailContentProvider extends AbstractEmailConten
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .respondentLastName(getFirstRespondentLastName(caseData))
             .hearingDate(getHearingBookingStartDate(caseData))
-            .caseUrl(getCaseUrl(caseData.getId()))
+            .caseUrl(getCaseUrl(caseData.getId(), "HearingTab"))
             .judgeTitle(caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()
                 .getJudgeOrMagistrateTitle())
             .judgeName(caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor().getJudgeName())

@@ -1,18 +1,38 @@
 const config = require('../config.js');
 const recipients = require('../fixtures/recipients.js');
+const legalRepresentatives = require('../fixtures/legalRepresentatives.js');
 const placementHelper = require('../helpers/placement_helper.js');
 const uploadDocumentsHelper = require('../helpers/upload_case_documents_helper.js');
-const mandatoryWithMultipleChildren = require('../fixtures/mandatoryWithMultipleChildren.json');
+const mandatoryWithMultipleChildren = require('../fixtures/caseData/mandatoryWithMultipleChildren.json');
 
 let caseId;
 
 Feature('Case maintenance after submission');
 
-BeforeSuite(async I => caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren));
+BeforeSuite(async ({I}) => {
+  caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
+  await I.signIn(config.swanseaLocalAuthorityUserOne);
+});
 
-Before(async I => await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId));
+Before(async ({I}) => await I.navigateToCaseDetails(caseId));
 
-Scenario('local authority uploads documents', async (I, caseViewPage, uploadDocumentsEventPage) => {
+Scenario('local authority add an external barrister as a legal representative for the case', async ({I, caseViewPage, manageLegalRepresentativesEventPage}) => {
+  await caseViewPage.goToNewActions(config.applicationActions.manageLegalRepresentatives);
+  await I.goToNextPage();
+  await manageLegalRepresentativesEventPage.addLegalRepresentative(legalRepresentatives.barrister);
+  await I.completeEvent('Save and continue');
+
+  I.seeEventSubmissionConfirmation(config.applicationActions.manageLegalRepresentatives);
+
+  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+  I.seeInTab(['LA Legal representatives 1', 'Full name'], legalRepresentatives.barrister.fullName);
+  I.seeInTab(['LA Legal representatives 1', 'Role'], legalRepresentatives.barrister.role);
+  I.seeInTab(['LA Legal representatives 1', 'Organisation'], legalRepresentatives.barrister.organisation);
+  I.seeInTab(['LA Legal representatives 1', 'Email address'], legalRepresentatives.barrister.email);
+  I.seeInTab(['LA Legal representatives 1', 'Phone number'], legalRepresentatives.barrister.telephone);
+});
+
+Scenario('local authority uploads documents', async ({I, caseViewPage, uploadDocumentsEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
   uploadDocumentsHelper.uploadCaseDocuments(uploadDocumentsEventPage);
   await I.completeEvent('Save and continue');
@@ -21,7 +41,7 @@ Scenario('local authority uploads documents', async (I, caseViewPage, uploadDocu
   uploadDocumentsHelper.assertCaseDocuments(I);
 });
 
-Scenario('local authority uploads documents when SWET not required', async (I, caseViewPage, uploadDocumentsEventPage) => {
+Scenario('local authority uploads documents when SWET not required', async ({I, caseViewPage, uploadDocumentsEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
   uploadDocumentsHelper.uploadCaseDocuments(uploadDocumentsEventPage, false);
   await I.completeEvent('Save and continue');
@@ -30,16 +50,26 @@ Scenario('local authority uploads documents when SWET not required', async (I, c
   uploadDocumentsHelper.assertCaseDocuments(I, false);
 });
 
-Scenario('local authority uploads court bundle', async (I, caseViewPage, uploadDocumentsEventPage) => {
+Scenario('local authority uploads court bundle', async ({I, caseViewPage, uploadDocumentsEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
   uploadDocumentsEventPage.uploadCourtBundle(config.testFile);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
-  I.seeDocument('Court bundle', 'mockFile.txt');
+  I.seeDocument('Court bundle', 'mockFile.txt', '', '', 'Date and time uploaded', 'Uploaded by');
 });
 
-Scenario('local authority provides a statements of service', async (I, caseViewPage, loginPage, addStatementOfServiceEventPage) => {
+Scenario('local authority update solicitor', async ({I, caseViewPage, enterApplicantEventPage}) => {
+  const solicitorEmail = 'solicitor@test.com';
+  await caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
+  enterApplicantEventPage.enterSolicitorDetails({email: solicitorEmail});
+  await I.seeCheckAnswersAndCompleteEvent('Save and continue');
+
+  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+  I.seeInTab(['Solicitor', 'Solicitor\'s email'], solicitorEmail);
+});
+
+Scenario('local authority provides a statements of service', async ({I, caseViewPage, addStatementOfServiceEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.addStatementOfService);
   await addStatementOfServiceEventPage.enterRecipientDetails(recipients[0]);
   await I.addAnotherElementToCollection();
@@ -77,13 +107,13 @@ Scenario('local authority provides a statements of service', async (I, caseViewP
   I.seeInTab(['Recipients 2', 'Recipient\'s email address'], recipients[1].email);
 });
 
-Scenario('local authority upload placement application', async (I, caseViewPage, placementEventPage) => {
+Scenario('local authority upload placement application', async ({I, caseViewPage, placementEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.placement);
   await placementEventPage.selectChild('Timothy Jones');
   await placementEventPage.addApplication(config.testFile);
   await placementEventPage.addSupportingDocument(0, 'Statement of facts', config.testFile);
   await placementEventPage.addConfidentialDocument(0, 'Annex B', config.testFile);
-  await placementEventPage.addOrderOrNotice(0, 'Placement order', config.testNonEmptyPdfFile, 'test note');
+  await placementEventPage.addOrderOrNotice(0, 'Placement order', config.testPdfFile, 'test note');
   await I.completeEvent('Save and continue');
 
   await caseViewPage.goToNewActions(config.administrationActions.placement);
@@ -114,3 +144,5 @@ Scenario('local authority upload placement application', async (I, caseViewPage,
 
   await placementHelper.assertCafcassCannotSeePlacementOrder(I, caseViewPage, caseId);
 });
+
+

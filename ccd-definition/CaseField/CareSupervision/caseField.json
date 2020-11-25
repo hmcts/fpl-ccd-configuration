@@ -605,14 +605,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "uploadC2Link",
-    "FieldType": "Label",
-    "Label": "[Upload a new C2 application](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/uploadC2)",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "respondents_label",
     "Label": " ",
     "FieldType": "TextArea",
@@ -631,22 +623,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "orderTypeAndDocument",
-    "Label": "Type of order",
-    "FieldType": "OrderTypeAndDocument",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "orderFurtherDirections",
-    "Label": "Further directions",
-    "FieldType": "FurtherDirections",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "orderCollection",
     "Label": "Order",
     "FieldType": "Collection",
@@ -656,19 +632,27 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "order",
-    "Label": "Create an order",
-    "FieldType": "GeneratedOrder",
-    "SecurityClassification": "Public",
-    "Comment": "Event is single order centric: order added to Collection of orderCollection above (displayed in orders tab) then deleted from case data so that event can be used to create a new order"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "representatives",
     "Label": "Representatives",
     "FieldType": "Collection",
     "FieldTypeParameter": "Representative",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "legalRepresentatives",
+    "Label": "LA Legal representatives",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "LegalRepresentative",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageLegalRepresentativesLabel",
+    "Label": "Legal representatives must be registered to use the service before you can add them to a case.<br/><br/>After they're registered, they'll only have access to cases you add them to. They will not be able to see all your organisation's cases.<br/><br/>They will be able to upload:<ul><li>case documents</li><li>c2 applications and associated documents</li><li>pre- and post-hearing CMOs</li></ul>They can register at [https://manage-org.platform.hmcts.net/register-org/register](https://manage-org.platform.hmcts.net/register-org/register)",
+    "FieldType": "Label",
     "SecurityClassification": "Public"
   },
   {
@@ -718,168 +702,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "orderMonths",
-    "Label": "How many months will this order remain in place",
-    "FieldType": "Number",
-    "SecurityClassification": "Public",
-    "Max": "99",
-    "Min": "1"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "epoChildren",
-    "Label": "Describe the children",
-    "FieldType": "EPOChildren",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "epoType",
-    "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "EPOTypes",
-    "Label": "What type of EPO are you requesting?",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "epoRemovalAddress",
-    "FieldType": "AddressUK",
-    "Label": "Address",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "epoPhrase",
-    "Label": "Do you want to include this phrase in the order?",
-    "FieldType": "EPOPhrase",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "epoEndDate",
-    "Label": "When does the order end",
-    "FieldType": "DateTime",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "interimEndDate",
-    "Label": "When will this order end?",
-    "FieldType": "InterimEndDate",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "childSelector",
-    "Label": "Who’s included in the order?",
-    "FieldType": "ChildSelector",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "orderAppliesToAllChildren",
-    "Label": "Is the order about all the children?",
-    "FieldType": "YesOrNo",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "pageShow",
     "Label": " ",
     "FieldType": "Text",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "children_label",
-    "Label": " ",
-    "FieldType": "TextArea",
-    "SecurityClassification": "Public",
-    "Comment": "Displays a list of names for children, usage of this should be readonly"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "showFinalOrderSingleChildPage",
-    "FieldType": "YesOrNo",
-    "Label": " ",
-    "SecurityClassification": "Public",
-    "Comment": "Field to contain condition for hiding the page displaying the single child without a final order issued"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "remainingChildIndex",
-    "Label": " ",
-    "FieldType": "Text",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "remainingChild_label",
-    "Label": "## Create order for",
-    "FieldType": "Label",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "remainingChild",
-    "Label": "Child included in the order",
-    "FieldType": "Text",
-    "SecurityClassification": "Public",
-    "Comment": "Displays a list of names for children, usage of this should be readonly"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "otherFinalOrderChildren_label",
-    "Label": "### Other children in this case with final orders:",
-    "FieldType": "Label",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "otherFinalOrderChildren",
-    "Label": " ",
-    "FieldType": "TextArea",
-    "SecurityClassification": "Public",
-    "Comment": "Displays a list of names for children, usage of this should be readonly"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "singleCareOrder_label",
-    "Label": " ",
-    "FieldType": "TextArea",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "multipleCareOrder_label",
-    "Label": " ",
-    "FieldType": "TextArea",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "careOrderSelector",
-    "Label": "Which orders are being discharged?",
-    "FieldType": "CareOrderSelector",
     "SecurityClassification": "Public"
   },
   {
@@ -1031,6 +856,14 @@
     "ID": "dateOfIssue",
     "Label": "Enter the date that the order was issued",
     "FieldType": "Date",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "dateAndTimeOfIssue",
+    "Label": "Enter the date and time that the order was issued",
+    "FieldType": "DateTime",
     "SecurityClassification": "Public"
   },
   {
@@ -1417,129 +1250,58 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "ordersAndDirectionsLink",
-    "FieldType": "Label",
-    "Label": "[Make changes to orders and directions sought](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/ordersNeeded)",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "hearingUrgencyLink",
-    "FieldType": "Label",
-    "Label": "[Make changes to hearing urgency](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/hearingNeeded)",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "thresholdCriteriaLink",
-    "FieldType": "Label",
-    "Label": "[Make changes to threshold criteria](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/enterGrounds)",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "riskAndHarmToChildrenLink",
-    "FieldType": "Label",
-    "Label": "[Make changes to risk and harm to children](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/enterRiskHarm)",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "factorsAffectingParentingLink",
-    "FieldType": "Label",
-    "Label": "[Make changes to factors affecting parenting](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/enterParentingFactors)",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "otherProceedingsLink",
-    "FieldType": "Label",
-    "Label": "[Make changes to other proceedings for the child](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/otherProceedings)",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "internationalElementLink",
-    "FieldType": "Label",
-    "Label": "[Make changes to international element](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/enterInternationalElement)",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "documentsLink",
-    "FieldType": "Label",
-    "Label": "[Make changes to documents](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/uploadDocuments)",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "organisationDetailsLink",
-    "FieldType": "Label",
-    "Label": "[Make changes to local authority details](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/enterApplicant)",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "childrenLink",
-    "FieldType": "Label",
-    "Label": "[Make changes to the child's details](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/enterChildren)",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "respondentsLink",
-    "FieldType": "Label",
-    "Label": "[Make changes to the respondents' details](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/enterRespondents)",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "othersLink",
-    "FieldType": "Label",
-    "Label": "[Make changes to other people in the case](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/enterOthers)",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "allocationProposalLink",
-    "FieldType": "Label",
-    "Label": "[Make changes to allocation proposal](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/otherProposal)",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "facilitiesOrServicesNeededLink",
-    "FieldType": "Label",
-    "Label": "[Make changes to court services needed](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/attendingHearing)",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "migrateToMoWarning",
-    "Label": "# Check you're registered for an account\n\nAfter 14 September 2020, only registered users can create cases on this system.\n\nAsk your team administrator to [check if you're registered](https://manage-org.platform.hmcts.net/organisation).",
-    "FieldType": "Label",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "showManageOrgWarning",
     "Label": " ",
     "FieldType": "Text",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "localAuthorityPolicy",
+    "Label": "Organisation policy",
+    "FieldType": "OrganisationPolicy",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderTabHeading",
+    "Label": "## Orders",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documentTabFurtherEvidenceHeading",
+    "Label": "## Further evidence documents",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documentTabBulkScanHeading",
+    "Label": "## Bulk scan documents",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documentTabApplicationHeading",
+    "Label": "## Application documents",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hearingsTabHeading",
+    "Label": "## Hearings",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]

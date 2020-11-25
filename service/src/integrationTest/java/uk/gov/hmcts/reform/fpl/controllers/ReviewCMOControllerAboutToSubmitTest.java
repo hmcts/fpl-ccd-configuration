@@ -15,10 +15,9 @@ import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.event.UploadCMOEventData;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -46,15 +45,9 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
     @MockBean
     private DocumentSealingService documentSealingService;
 
-    @MockBean
-    private DocumentConversionService documentConversionService;
-
-    @MockBean
-    private FeatureToggleService featureToggleService;
-
-    private CaseManagementOrder cmo = buildCMO();
-    private DocumentReference convertedDocument;
-    private DocumentReference sealedDocument;
+    private final CaseManagementOrder cmo = buildCMO();
+    private final DocumentReference convertedDocument = DocumentReference.builder().filename("converted").build();
+    private final DocumentReference sealedDocument = DocumentReference.builder().filename("sealed").build();
 
     ReviewCMOControllerAboutToSubmitTest() {
         super("review-cmo");
@@ -87,11 +80,7 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldSealPDFAndAddToSealedCMOsListWhenJudgeApprovesOrder() throws Exception {
-        DocumentReference convertedDocument = testDocumentReference();
-        DocumentReference sealedDocument = testDocumentReference();
-
-        given(documentConversionService.convertToPdf(cmo.getOrder())).willReturn(convertedDocument);
-        given(documentSealingService.sealDocument(convertedDocument)).willReturn(sealedDocument);
+        given(documentSealingService.sealDocument((cmo.getOrder()))).willReturn(sealedDocument);
 
         UUID cmoId = UUID.randomUUID();
 
@@ -109,7 +98,6 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
             .status(APPROVED)
             .build();
 
-        assertThat(State.ISSUE_RESOLUTION).isNotEqualTo(responseData.getState());
         assertThat(responseData.getDraftUploadedCMOs()).isEmpty();
         assertThat(responseData.getSealedCMOs())
             .extracting(Element::getValue)
@@ -117,11 +105,9 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldUpdateStateToIssueResolutionWhenNextHearingTypeIsIssueResolutionAndCmoDecisionIsSendToAllParties()
+    void shouldKeepStateInCaseManagementWhenNextHearingTypeIsIssueResolutionAndCmoDecisionIsSendToAllParties()
         throws Exception {
-        given(documentConversionService.convertToPdf(cmo.getOrder())).willReturn(convertedDocument);
         given(documentSealingService.sealDocument(convertedDocument)).willReturn(sealedDocument);
-        given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
 
         UUID cmoId = UUID.randomUUID();
         CaseData caseData = CaseData.builder()
@@ -133,15 +119,13 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
             .reviewCMODecision(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build()).build();
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
-        assertThat(State.ISSUE_RESOLUTION).isEqualTo(responseData.getState());
+        assertThat(State.CASE_MANAGEMENT).isEqualTo(responseData.getState());
     }
 
     @Test
     void shouldUpdateStateToFinalHearingWhenNextHearingTypeIsFinalAndCmoDecisionIsSendToAllParties()
         throws Exception {
-        given(documentConversionService.convertToPdf(cmo.getOrder())).willReturn(convertedDocument);
         given(documentSealingService.sealDocument(convertedDocument)).willReturn(sealedDocument);
-        given(featureToggleService.isNewCaseStateModelEnabled()).willReturn(true);
 
         UUID cmoId = UUID.randomUUID();
         CaseData caseData = CaseData.builder()
@@ -158,7 +142,10 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldNotModifyDataIfNoDraftCMOsReadyForApproval() {
-        CaseData caseData = CaseData.builder().draftUploadedCMOs(List.of()).build();
+        CaseData caseData = CaseData.builder()
+            .draftUploadedCMOs(List.of())
+            .uploadCMOEventData(UploadCMOEventData.builder().build()) // required due to the json unwrapping
+            .build();
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 

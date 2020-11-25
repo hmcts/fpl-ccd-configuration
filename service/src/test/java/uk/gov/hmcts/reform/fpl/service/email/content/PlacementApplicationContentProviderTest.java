@@ -18,7 +18,7 @@ class PlacementApplicationContentProviderTest extends AbstractEmailContentProvid
     void shouldBuildPlacementNotificationWithExpectedParameters() {
         BaseCaseNotifyData expected = BaseCaseNotifyData.builder()
             .respondentLastName("Smith")
-            .caseUrl(getCaseUrl(CASE_REFERENCE))
+            .caseUrl(caseUrl(CASE_REFERENCE, "PlacementTab"))
             .build();
 
         BaseCaseNotifyData actual = placementApplicationContentProvider

@@ -1,6 +1,6 @@
 const { I } = inject();
 const money = require('../../helpers/money_helper');
-const c2SupportingDocuments = require('../../fixtures/testData/c2SupportingDocuments.js');
+const c2SupportingDocuments = require('../../fixtures/c2SupportingDocuments.js');
 const supportingDocumentsFragment = require('../../fragments/supportingDocuments.js');
 module.exports = {
   fields: {
@@ -13,7 +13,7 @@ module.exports = {
     pbaNumber: '#temporaryC2Document_pbaNumber',
     clientCode: '#temporaryC2Document_clientCode',
     customerReference: '#temporaryC2Document_fileReference',
-    supportingDocuments: supportingDocumentsFragment.supportingDocuments(0, 'temporaryC2Document'),
+    supportingDocuments: supportingDocumentsFragment.supportingDocuments(0, 'temporaryC2Document_supportingEvidenceBundle'),
   },
 
   applicationTypePrefix: '#c2ApplicationType_type-',

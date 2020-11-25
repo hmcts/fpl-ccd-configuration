@@ -9,13 +9,16 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 
 import static org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode.APPEND;
 import static org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject.createFromByteArray;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
+import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.updateExtension;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
 @Service
@@ -23,6 +26,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 public class DocumentSealingService {
 
     private static final String SEAL = "static_data/familycourtseal.png";
+    private static final String PDF = "pdf";
     private static final float POINTS_PER_INCH = 72;
     private static final float POINTS_PER_MM = 1 / (10 * 2.54f) * POINTS_PER_INCH;
     private static final int SEAL_HEIGHT = mm2pt(25);
@@ -30,17 +34,21 @@ public class DocumentSealingService {
     private static final int MARGIN_TOP = mm2pt(30);
     private static final int MARGIN_RIGHT = mm2pt(30);
 
-    private final DocumentDownloadService documentDownloadService;
     private final UploadDocumentService uploadDocumentService;
+    private final DocumentConversionService documentConversionService;
+    private final DocumentDownloadService documentDownloadService;
 
-    public DocumentReference sealDocument(DocumentReference document) throws Exception {
-        byte[] documentContent = documentDownloadService.downloadDocument(document.getBinaryUrl());
-        byte[] sealedDocument = sealDocument(documentContent);
+    public DocumentReference sealDocument(DocumentReference document) {
+        byte[] documentContents = documentDownloadService.downloadDocument(document.getBinaryUrl());
+        documentContents = documentConversionService.convertToPdf(documentContents, document.getFilename());
+        documentContents = sealDocument(documentContents);
 
-        return buildFromDocument(uploadDocumentService.uploadPDF(sealedDocument, document.getFilename()));
+        String newFilename = updateExtension(document.getFilename(), PDF);
+
+        return buildFromDocument(uploadDocumentService.uploadPDF(documentContents, newFilename));
     }
 
-    private static byte[] sealDocument(byte[] binaries) throws Exception {
+    private static byte[] sealDocument(byte[] binaries) {
         byte[] seal = readBytes(SEAL);
 
         try (final PDDocument document = PDDocument.load(binaries)) {
@@ -50,13 +58,15 @@ public class DocumentSealingService {
             try (PDPageContentStream pdfStream = new PDPageContentStream(document, firstPage, APPEND, true, true)) {
                 final PDImageXObject courtSealImage = createFromByteArray(document, seal, null);
                 pdfStream.drawImage(courtSealImage,
-                        pageSize.getUpperRightX() - (SEAL_WIDTH + MARGIN_RIGHT),
-                        pageSize.getUpperRightY() - (SEAL_HEIGHT + MARGIN_TOP),
-                        SEAL_WIDTH,
-                        SEAL_HEIGHT);
+                    pageSize.getUpperRightX() - (SEAL_WIDTH + MARGIN_RIGHT),
+                    pageSize.getUpperRightY() - (SEAL_HEIGHT + MARGIN_TOP),
+                    SEAL_WIDTH,
+                    SEAL_HEIGHT);
             }
 
             return getBinary(document);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -70,5 +80,4 @@ public class DocumentSealingService {
     private static int mm2pt(int mm) {
         return Math.round(POINTS_PER_MM * mm);
     }
-
 }

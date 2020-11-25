@@ -27,6 +27,12 @@ module.exports = {
     forename: 'siva@hillingdon.gov.uk',
     surname: '(local-authority)',
   },
+  localAuthorityBarristerUserOne: {
+    email: 'la-barrister@mailnesia.com',
+    password: process.env.LA_BARRISTER_USER_PASSWORD || defaultPassword,
+    forename: 'la-barrister@mailnesia.com',
+    surname: '(local-authority-barrister)',
+  },
   hmctsAdminUser: {
     email: 'hmcts-admin@example.com',
     password: process.env.CA_USER_PASSWORD || defaultPassword,
@@ -47,6 +53,10 @@ module.exports = {
     email: 'judiciary-only@mailnesia.com',
     password: process.env.JUDICIARY_USER_PASSWORD || defaultPassword,
   },
+  magistrateUser: {
+    email: 'magistrate@mailnesia.com',
+    password: process.env.MAGISTRATE_USER_PASSWORD || defaultPassword,
+  },
   systemUpdateUser: {
     email: process.env.SYSTEM_UPDATE_USER_USERNAME || 'fpl-system-update@mailnesia.com',
     password: process.env.SYSTEM_UPDATE_USER_PASSWORD || defaultPassword,
@@ -54,6 +64,10 @@ module.exports = {
   smokeTestUser: {
     email: process.env.SMOKE_TEST_LA_USER_USERNAME || 'james@swansea.gov.uk',
     password: process.env.SMOKE_TEST_LA_USER_PASSWORD || defaultPassword,
+  },
+  hmctsUser: {
+    email: process.env.HMCTS_USER_USERNAME,
+    password: process.env.HMCTS_USER_PASSWORD,
   },
   localAuthorityPassword: process.env.LA_USER_PASSWORD || defaultPassword,
   fplServiceUrl: process.env.CASE_SERVICE_URL || 'http://localhost:4000',
@@ -86,10 +100,11 @@ module.exports = {
     changeCaseName: 'Change case name',
     submitCase: 'Submit application',
     deleteApplication: 'Delete an application',
-    uploadCMO: 'Send agreed CMO to judge',
+    uploadCMO: 'Upload CMO',
     reviewAgreedCmo: 'Review agreed CMO',
     allocatedJudge: 'Allocated Judge',
     extend26WeekTimeline: 'Extend 26-week timeline',
+    manageLegalRepresentatives: 'Manage legal representatives',
   },
   administrationActions: {
     addFamilyManCaseNumber: 'Add case number',
@@ -103,11 +118,12 @@ module.exports = {
     amendAttendingHearing: 'Attending the hearing',
     amendRepresentatives: 'Manage representatives',
     addHearingBookingDetails: 'Add hearing details',
+    manageHearings: 'Manage hearings',
     createNoticeOfProceedings: 'Create notice of proceedings',
     addStatementOfService: 'Add statement of service (c9)',
     uploadC2Documents: 'Upload a C2',
     draftStandardDirections: 'Add the gatekeeping order',
-    createOrder: 'Create an order',
+    createOrder: 'Create or upload an order',
     placement: 'Placement',
     handleSupplementaryEvidence: 'Handle supplementary evidence',
     bulkScan: 'Attach scanned docs',
@@ -115,14 +131,16 @@ module.exports = {
     addExpertReportLog: 'Log expert report',
     closeTheCase: 'Close the case',
     returnApplication: 'Return application',
+    manageDocuments: 'Manage documents',
   },
   superUserActions: {
     removeOrder: 'Remove an order',
+    changeCaseState: 'Change case state',
   },
   // files
-  testFile: './e2e/fixtures/mockFile.txt',
-  testNonEmptyPdfFile: './e2e/fixtures/mockFile.pdf',
-  testNonEmptyWordFile: './e2e/fixtures/mockFile.docx',
+  testFile: './e2e/fixtures/testFiles/mockFile.txt',
+  testPdfFile: './e2e/fixtures/testFiles/mockFile.pdf',
+  testWordFile: './e2e/fixtures/testFiles/mockFile.docx',
   // urls
   presidentsGuidanceUrl: 'https://www.judiciary.uk/wp-content/uploads/2013/03/President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf',
   scheduleUrl: 'https://www.judiciary.uk/wp-content/uploads/2013/03/Schedule-to-the-President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf',
