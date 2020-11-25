@@ -75,6 +75,6 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder {
 
     @Override
     public String asLabel() {
-        return "Standard direction order - " + formatLocalDateToString(dateOfUpload, "d MMMM yyyy");
+        return "Standard direction order - " + formatLocalDateToString(getDateOfIssueAsDate(), "d MMMM yyyy");
     }
 }

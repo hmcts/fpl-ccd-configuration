@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 
 @Component
@@ -26,12 +27,13 @@ public class SDOOrderRemovalAction implements OrderRemovalAction {
 
         standardDirectionOrder.setRemovalReason(caseData.getReasonToRemoveOrder());
         standardDirectionOrder = standardDirectionOrder.toBuilder().judgeAndLegalAdvisor(null).build();
-
+        if (data.size() == 0) {
+            throw new IllegalArgumentException(format("Failed to find order matching id %s", removedOrderId));
+        }
         data.remove("standardDirectionOrder");
         data.remove("noticeOfProceedingsBundle");
 
         data.put("hiddenStandardDirectionOrder", standardDirectionOrder);
-
         data.put("state", GATEKEEPING);
     }
 }
