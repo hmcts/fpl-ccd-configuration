@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,7 +25,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @WebMvcTest(RemoveOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
 public class RemoveOrderControllerAboutToStartTest extends AbstractControllerTest {
-    private static final LocalDate NOW = LocalDate.now();
 
     RemoveOrderControllerAboutToStartTest() {
         super("remove-order");
@@ -45,11 +43,11 @@ public class RemoveOrderControllerAboutToStartTest extends AbstractControllerTes
         List<Element<CaseManagementOrder>> caseManagementOrders = List.of(
             element(CaseManagementOrder.builder()
                 .status(APPROVED)
-                .dateIssued(NOW)
+                .dateIssued(dateNow())
                 .build()),
             element(CaseManagementOrder.builder()
                 .status(DRAFT)
-                .dateIssued(NOW)
+                .dateIssued(dateNow())
                 .build())
         );
 
@@ -71,7 +69,7 @@ public class RemoveOrderControllerAboutToStartTest extends AbstractControllerTes
                 buildListElement(generatedOrders.get(2).getId(), "order 3 - 29 August 2021"),
                 buildListElement(generatedOrders.get(3).getId(), "order 4 - 12 August 2022"),
                 buildListElement(caseManagementOrders.get(0).getId(), String.format("Case management order - %s",
-                    formatLocalDateToString(NOW, "d MMMM yyyy")))
+                    formatLocalDateToString(dateNow(), "d MMMM yyyy")))
             ))
             .build();
 

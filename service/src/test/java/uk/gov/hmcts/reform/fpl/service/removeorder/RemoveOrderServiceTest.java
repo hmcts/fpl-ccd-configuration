@@ -13,17 +13,17 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
@@ -44,13 +44,13 @@ class RemoveOrderServiceTest {
     @Mock
     private OrderRemovalActions orderRemovalActions;
     @Mock
-    private OrderRemovalAction orderRemovalAction;
+    private GeneratedOrderRemovalAction generatedOrderRemovalAction;
     @Mock
-    private OrderRemovalAction anotherOrderRemovalAction;
+    private CMOOrderRemovalAction cmoOrderRemovalAction;
     @Mock
     private RemovableOrder removableOrder;
     @Mock
-    private Map<String, Object> data;
+    private CaseDetailsMap data;
     @Mock
     private CaseData caseData;
 
@@ -114,67 +114,47 @@ class RemoveOrderServiceTest {
     }
 
     @Test
-    void shouldPopulateCaseFieldsFromCaseWithMatchedAction() {
-        when(orderRemovalActions.getActions()).thenReturn(List.of(
-            orderRemovalAction,
-            anotherOrderRemovalAction
-        ));
-        when(orderRemovalAction.isAccepted(removableOrder)).thenReturn(true);
-
-        underTest.populateSelectedOrderFields(caseData, data, REMOVED_UUID, removableOrder);
-
-        verify(orderRemovalAction).populateCaseFields(caseData, data, REMOVED_UUID, removableOrder);
-        verifyNoInteractions(anotherOrderRemovalAction);
-    }
-
-    @Test
-    void shouldThrowExceptionIfActionNotMatchedPopulateCaseFieldsFromCase() {
-        when(orderRemovalActions.getActions()).thenReturn(List.of(
-            orderRemovalAction,
-            anotherOrderRemovalAction
-        ));
-        when(orderRemovalAction.isAccepted(removableOrder)).thenReturn(false);
-        when(anotherOrderRemovalAction.isAccepted(removableOrder)).thenReturn(false);
-
-        IllegalArgumentException actualException = assertThrows(IllegalArgumentException.class,
-            () -> underTest.populateSelectedOrderFields(caseData, data, REMOVED_UUID, removableOrder)
-        );
-
-        assertThat(actualException.getMessage()).isEqualTo(
-            format("Action not found for order %s", REMOVED_UUID)
-        );
-    }
-
-    @Test
-    void shouldRemoveOrderFromCaseWithMatchedAction() {
-        when(orderRemovalActions.getActions()).thenReturn(List.of(
-            orderRemovalAction,
-            anotherOrderRemovalAction
-        ));
-        when(orderRemovalAction.isAccepted(removableOrder)).thenReturn(true);
+    void shouldUseGeneratedOrderRemovalActionWhenRemovingGeneratedOrder() {
+        when(orderRemovalActions.getAction(REMOVED_UUID, removableOrder)).thenReturn(generatedOrderRemovalAction);
 
         underTest.removeOrderFromCase(caseData, data, REMOVED_UUID, removableOrder);
 
-        verify(orderRemovalAction).action(caseData, data, REMOVED_UUID, removableOrder);
-        verifyNoInteractions(anotherOrderRemovalAction);
+        verify(generatedOrderRemovalAction).remove(caseData, data, REMOVED_UUID, removableOrder);
+        verifyNoMoreInteractions(generatedOrderRemovalAction);
+        verifyNoInteractions(cmoOrderRemovalAction);
     }
 
     @Test
-    void shouldThrowExceptionIfActionNotMatchedRemovingOrderFromCase() {
-        when(orderRemovalActions.getActions()).thenReturn(List.of(
-            orderRemovalAction,
-            anotherOrderRemovalAction
-        ));
-        when(orderRemovalAction.isAccepted(removableOrder)).thenReturn(false);
-        when(anotherOrderRemovalAction.isAccepted(removableOrder)).thenReturn(false);
+    void shouldUseCMORemovalActionWhenRemovingCMO() {
+        when(orderRemovalActions.getAction(REMOVED_UUID, removableOrder)).thenReturn(cmoOrderRemovalAction);
 
-        IllegalArgumentException actualException = assertThrows(IllegalArgumentException.class,
-            () -> underTest.removeOrderFromCase(caseData, data, REMOVED_UUID, removableOrder)
-        );
+        underTest.removeOrderFromCase(caseData, data, REMOVED_UUID, removableOrder);
 
-        assertThat(actualException.getMessage()).isEqualTo(
-            format("Action not found for order %s", REMOVED_UUID)
-        );
+        verify(cmoOrderRemovalAction).remove(caseData, data, REMOVED_UUID, removableOrder);
+        verifyNoMoreInteractions(cmoOrderRemovalAction);
+        verifyNoInteractions(generatedOrderRemovalAction);
+    }
+
+    @Test
+    void shouldUseGeneratedOrderPopulateCaseFieldActionWhenPopulatingCaseFieldsForGeneratedOrder() {
+        when(orderRemovalActions.getAction(REMOVED_UUID, removableOrder)).thenReturn(generatedOrderRemovalAction);
+
+        underTest.populateSelectedOrderFields(caseData, data, REMOVED_UUID, removableOrder);
+
+        verify(generatedOrderRemovalAction).populateCaseFields(caseData, data, REMOVED_UUID, removableOrder);
+        verifyNoMoreInteractions(generatedOrderRemovalAction);
+        verifyNoInteractions(cmoOrderRemovalAction);
+    }
+
+    @Test
+    void shouldUseCMOPopulateCaseFieldActionWhenPopulatingCaseFieldsForCMO() {
+        when(orderRemovalActions.getAction(REMOVED_UUID, removableOrder)).thenReturn(cmoOrderRemovalAction);
+
+        underTest.populateSelectedOrderFields(caseData, data, REMOVED_UUID, removableOrder);
+
+        verify(cmoOrderRemovalAction).populateCaseFields(caseData, data, REMOVED_UUID, removableOrder);
+        verifyNoMoreInteractions(cmoOrderRemovalAction);
+        verifyNoInteractions(generatedOrderRemovalAction);
     }
 
     private DynamicListElement buildListElement(UUID id, String label) {

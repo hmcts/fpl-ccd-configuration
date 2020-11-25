@@ -6,18 +6,17 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.updateOrRemoveIfEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Component
-public class OtherOrderRemovalAction implements OrderRemovalAction {
+public class GeneratedOrderRemovalAction implements OrderRemovalAction {
 
     @Override
     public boolean isAccepted(RemovableOrder removableOrder) {
@@ -25,8 +24,8 @@ public class OtherOrderRemovalAction implements OrderRemovalAction {
     }
 
     @Override
-    public void action(CaseData caseData,
-                       Map<String, Object> data, UUID removedOrderId,
+    public void remove(CaseData caseData,
+                       CaseDetailsMap data, UUID removedOrderId,
                        RemovableOrder removableOrder) {
 
         GeneratedOrder generatedRemovableOrder = (GeneratedOrder) removableOrder;
@@ -45,12 +44,12 @@ public class OtherOrderRemovalAction implements OrderRemovalAction {
 
         data.put("children1", removeFinalOrderPropertiesFromChildren(caseData, generatedRemovableOrder));
         data.put("hiddenOrders", hiddenGeneratedOrders);
-        updateOrRemoveIfEmpty(data, "orderCollection", generatedOrders);
+        data.putIfNotEmpty("orderCollection", generatedOrders);
     }
 
     @Override
     public void populateCaseFields(CaseData caseData,
-                                   Map<String, Object> data,
+                                   CaseDetailsMap data,
                                    UUID removableOrderId,
                                    RemovableOrder removableOrder) {
         GeneratedOrder generatedRemovableOrder = (GeneratedOrder) removableOrder;

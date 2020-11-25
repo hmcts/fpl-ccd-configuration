@@ -14,11 +14,13 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.service.removeorder.RemoveOrderService;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.Map;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
 
 @Api
@@ -45,47 +47,48 @@ public class RemoveOrderController {
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest request) {
         Map<String, Object> data = request.getCaseDetails().getData();
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(request.getCaseDetails());
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         // When dynamic lists are fixed this can be moved into the below method
         UUID removedOrderId = getDynamicListSelectedValue(caseData.getRemovableOrderList(), mapper);
         RemovableOrder removableOrder = service.getRemovedOrderByUUID(caseData, removedOrderId);
 
-        service.populateSelectedOrderFields(caseData, data, removedOrderId, removableOrder);
+        service.populateSelectedOrderFields(caseData, caseDetailsMap, removedOrderId, removableOrder);
 
         // Can be removed once dynamic lists are fixed
-        data.put(REMOVABLE_ORDER_LIST_KEY, service.buildDynamicListOfOrders(caseData, removedOrderId));
+        caseDetailsMap.put(REMOVABLE_ORDER_LIST_KEY, service.buildDynamicListOfOrders(caseData, removedOrderId));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
+            .data(caseDetailsMap)
             .build();
     }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
-        Map<String, Object> data = caseDetails.getData();
-        CaseData caseData = mapper.convertValue(data, CaseData.class);
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         UUID removedOrderId = getDynamicListSelectedValue(caseData.getRemovableOrderList(), mapper);
         RemovableOrder removableOrder = service.getRemovedOrderByUUID(caseData, removedOrderId);
 
-        service.removeOrderFromCase(caseData, data, removedOrderId, removableOrder);
+        service.removeOrderFromCase(caseData, caseDetailsMap, removedOrderId, removableOrder);
 
         removeTemporaryFields(
-            caseDetails,
+            caseDetailsMap,
             REMOVABLE_ORDER_LIST_KEY,
             "reasonToRemoveOrder",
             "orderToBeRemoved",
             "orderTitleToBeRemoved",
             "orderIssuedDateToBeRemoved",
             "orderDateToBeRemoved",
-            "unlinkedHearing",
+            "hearingToUnlink",
             "showRemoveCMOFieldsFlag"
         );
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
+            .data(caseDetailsMap)
             .build();
     }
 }

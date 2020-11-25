@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
@@ -70,7 +71,7 @@ public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTe
                 "orderTitleToBeRemoved", "dummy data",
                 "orderIssuedDateToBeRemoved", "dummy data",
                 "orderDateToBeRemoved", "dummy data",
-                "unlinkedHearing", "dummy data",
+                "hearingToUnlink", "dummy data",
                 "showRemoveCMOFieldsFlag", "dummy data"
             )
         );
@@ -84,7 +85,7 @@ public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTe
             "orderTitleToBeRemoved",
             "orderIssuedDateToBeRemoved",
             "orderDateToBeRemoved",
-            "unlinkedHearing",
+            "hearingToUnlink",
             "showRemoveCMOFieldsFlag"
         );
     }
@@ -200,7 +201,10 @@ public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTe
         assertThat(hiddenCMOs).hasSize(1);
         assertThat(hiddenCMOs.get(0)).isEqualTo(caseManagementOrder1);
         assertThat(responseData.getSealedCMOs()).hasSize(1);
-        assertThat(responseData.getHearingDetails().get(0).getValue().getCaseManagementOrderId()).isNull();
+
+        HearingBooking unlinkedHearing = responseData.getHearingDetails().get(0).getValue();
+
+        assertNull(unlinkedHearing.getCaseManagementOrderId());
     }
 
     private CaseData buildCaseData(Element<GeneratedOrder> order) {

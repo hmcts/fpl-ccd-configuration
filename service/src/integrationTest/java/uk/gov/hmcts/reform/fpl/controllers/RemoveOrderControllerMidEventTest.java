@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -67,7 +66,7 @@ public class RemoveOrderControllerMidEventTest extends AbstractControllerTest {
 
         HearingBooking hearingBooking = HearingBooking.builder()
             .type(CASE_MANAGEMENT)
-            .startDate(LocalDateTime.now())
+            .startDate(now())
             .caseManagementOrderId(removedOrderId)
             .build();
 
@@ -96,7 +95,7 @@ public class RemoveOrderControllerMidEventTest extends AbstractControllerTest {
             "orderToBeRemoved", mapper.convertValue(caseManagementOrder.getOrder(),
                 new TypeReference<Map<String, Object>>() {}),
             "orderTitleToBeRemoved", "Case management order",
-            "unlinkedHearing", hearingBooking.toLabel()
+            "hearingToUnlink", hearingBooking.toLabel()
         );
 
         assertThat(responseData).containsAllEntriesOf(extractedFields);

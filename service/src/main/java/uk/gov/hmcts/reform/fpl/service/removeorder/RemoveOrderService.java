@@ -7,14 +7,13 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static java.lang.String.format;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 
 @Service
@@ -38,31 +37,19 @@ public class RemoveOrderService {
     }
 
     public void populateSelectedOrderFields(CaseData caseData,
-                                            Map<String, Object> data,
+                                            CaseDetailsMap data,
                                             UUID removedOrderId,
                                             RemovableOrder removableOrder) {
-        orderRemovalActions
-            .getActions()
-            .stream()
-            .filter(orderRemovalAction -> orderRemovalAction.isAccepted(removableOrder))
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException(
-                format("Action not found for order %s", removedOrderId)))
+        orderRemovalActions.getAction(removedOrderId, removableOrder)
             .populateCaseFields(caseData, data, removedOrderId, removableOrder);
     }
 
     public void removeOrderFromCase(CaseData caseData,
-                                    Map<String, Object> data,
+                                    CaseDetailsMap data,
                                     UUID removedOrderId,
                                     RemovableOrder removableOrder) {
-        orderRemovalActions
-            .getActions()
-            .stream()
-            .filter(orderRemovalAction -> orderRemovalAction.isAccepted(removableOrder))
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException(
-                format("Action not found for order %s", removedOrderId)))
-            .action(caseData, data, removedOrderId, removableOrder);
+        orderRemovalActions.getAction(removedOrderId, removableOrder)
+            .remove(caseData, data, removedOrderId, removableOrder);
     }
 
     public RemovableOrder getRemovedOrderByUUID(CaseData caseData, UUID removedOrderId) {

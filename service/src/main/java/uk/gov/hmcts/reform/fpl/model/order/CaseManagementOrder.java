@@ -52,9 +52,7 @@ public class CaseManagementOrder implements RemovableOrder {
         return APPROVED.equals(status);
     }
 
-    @JsonIgnore
     public String asLabel() {
         return "Case management order - " + formatLocalDateToString(dateIssued, "d MMMM yyyy");
     }
-
 }

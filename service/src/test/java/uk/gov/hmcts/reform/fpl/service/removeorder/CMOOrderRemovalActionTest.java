@@ -1,16 +1,16 @@
 package uk.gov.hmcts.reform.fpl.service.removeorder;
 
-import com.google.common.collect.Maps;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -22,9 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
-@ExtendWith(MockitoExtension.class)
 class CMOOrderRemovalActionTest {
 
     private static final UUID TO_REMOVE_ORDER_ID = UUID.randomUUID();
@@ -64,11 +64,14 @@ class CMOOrderRemovalActionTest {
                         .caseManagementOrderId(ANOTHER_CASE_MANAGEMENT_ORDER_ID)
                         .build())))
             .build();
-        Map<String, Object> data = Maps.newHashMap();
 
-        underTest.action(caseData, data, TO_REMOVE_ORDER_ID, CaseManagementOrder.builder().build());
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
+            .data(Map.of())
+            .build());
 
-        assertThat(data).isEqualTo(Map.of(
+        underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, CaseManagementOrder.builder().build());
+
+        assertThat(caseDetailsMap).isEqualTo(Map.of(
             "hearingDetails", List.of(
                 element(
                     HEARING_ID,
@@ -98,11 +101,14 @@ class CMOOrderRemovalActionTest {
             .hiddenCaseManagementOrders(null)
             .hearingDetails(null)
             .build();
-        Map<String, Object> data = Maps.newHashMap();
 
-        underTest.action(caseData, data, TO_REMOVE_ORDER_ID, CaseManagementOrder.builder().build());
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
+            .data(Map.of())
+            .build());
 
-        Map<String, List<?>> expectedData = Maps.newHashMap();
+        underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, CaseManagementOrder.builder().build());
+
+        Map<String, List<?>> expectedData = new HashMap<>();
         expectedData.put("hearingDetails", List.of());
         expectedData.put("hiddenCaseManagementOrders", List.of(
             element(TO_REMOVE_ORDER_ID, CaseManagementOrder.builder().removalReason(REASON).build())
@@ -111,7 +117,7 @@ class CMOOrderRemovalActionTest {
             element(ANOTHER_CASE_MANAGEMENT_ORDER_ID, CaseManagementOrder.builder().build()))
         );
 
-        assertThat(data).isEqualTo(expectedData);
+        assertThat(caseDetailsMap).isEqualTo(expectedData);
     }
 
     @Test
@@ -123,18 +129,21 @@ class CMOOrderRemovalActionTest {
                 CaseManagementOrder.builder().build())))
             .hearingDetails(null)
             .build();
-        Map<String, Object> data = Maps.newHashMap();
 
-        underTest.action(caseData, data, TO_REMOVE_ORDER_ID, CaseManagementOrder.builder().build());
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
+            .data(Map.of())
+            .build());
 
-        Map<String, List<?>> expectedData = Maps.newHashMap();
+        underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, CaseManagementOrder.builder().build());
+
+        Map<String, List<?>> expectedData = new HashMap<>();
         expectedData.put("hearingDetails", List.of());
         expectedData.put("hiddenCaseManagementOrders", List.of(
             element(ALREADY_REMOVED_ORDER_ID, CaseManagementOrder.builder().build()),
             element(TO_REMOVE_ORDER_ID, CaseManagementOrder.builder().removalReason(REASON).build())
         ));
 
-        assertThat(data).isEqualTo(expectedData);
+        assertThat(caseDetailsMap).isEqualTo(expectedData);
     }
 
     @Test
@@ -154,11 +163,14 @@ class CMOOrderRemovalActionTest {
                         .caseManagementOrderId(TO_REMOVE_ORDER_ID)
                         .build())))
             .build();
-        Map<String, Object> data = Maps.newHashMap();
 
-        underTest.action(caseData, data, TO_REMOVE_ORDER_ID, CaseManagementOrder.builder().build());
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
+            .data(Map.of())
+            .build());
 
-        assertThat(data).isEqualTo(Map.of(
+        underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, CaseManagementOrder.builder().build());
+
+        assertThat(caseDetailsMap).isEqualTo(Map.of(
             "hearingDetails", List.of(
                 element(
                     HEARING_ID,
@@ -185,10 +197,13 @@ class CMOOrderRemovalActionTest {
             .reasonToRemoveOrder(REASON)
             .sealedCMOs(newArrayList(element(TO_REMOVE_ORDER_ID, emptyCaseManagementOrder)))
             .build();
-        Map<String, Object> data = Maps.newHashMap();
+
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
+            .data(Map.of())
+            .build());
 
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-            () -> underTest.action(caseData, data, ALREADY_REMOVED_ORDER_ID, emptyCaseManagementOrder));
+            () -> underTest.remove(caseData, caseDetailsMap, ALREADY_REMOVED_ORDER_ID, emptyCaseManagementOrder));
 
         assertThat(exception.getMessage()).isEqualTo(
             format("Failed to find order matching id %s", ALREADY_REMOVED_ORDER_ID)
@@ -219,14 +234,16 @@ class CMOOrderRemovalActionTest {
                 element(UUID.randomUUID(), hearingToBeUnlinked)))
             .build();
 
-        Map<String, Object> data = Maps.newHashMap();
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
+            .data(Map.of())
+            .build());
 
-        underTest.populateCaseFields(caseData, data, TO_REMOVE_ORDER_ID, removedOrder);
+        underTest.populateCaseFields(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, removedOrder);
 
-        assertThat(data)
+        assertThat(caseDetailsMap)
             .extracting("orderToBeRemoved",
                 "orderTitleToBeRemoved",
-                "unlinkedHearing",
+                "hearingToUnlink",
                 "showRemoveCMOFieldsFlag")
             .containsExactly(orderDocument,
                 "Case management order",
@@ -255,10 +272,12 @@ class CMOOrderRemovalActionTest {
                         .build())))
             .build();
 
-        Map<String, Object> data = Maps.newHashMap();
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
+            .data(Map.of())
+            .build());
 
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-            () -> underTest.populateCaseFields(caseData, data, ALREADY_REMOVED_ORDER_ID, removedOrder));
+            () -> underTest.populateCaseFields(caseData, caseDetailsMap, ALREADY_REMOVED_ORDER_ID, removedOrder));
 
         assertThat(exception.getMessage()).isEqualTo(
             format("Could not find hearing matching id %s", ALREADY_REMOVED_ORDER_ID)

@@ -13,16 +13,12 @@ public class CaseDetailsMap extends HashMap<String, Object> {
     }
 
     public CaseDetailsMap putIfNotEmpty(String key, Object value) {
-        updateOrRemoveIfEmpty(this, key, value);
-        return this;
-    }
-
-    public static void updateOrRemoveIfEmpty(Map<String, Object> map, String key, Object value) {
         if (ObjectUtils.isEmpty(value)) {
-            map.remove(key);
+            this.remove(key);
         } else {
-            map.put(key, value);
+            this.put(key, value);
         }
+        return this;
     }
 
     public static CaseDetailsMap caseDetailsMap(CaseDetails caseDetail) {

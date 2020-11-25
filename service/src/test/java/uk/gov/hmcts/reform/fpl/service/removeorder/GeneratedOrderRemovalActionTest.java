@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.removeorder;
 
-import com.google.common.collect.Maps;
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
 import java.util.Map;
@@ -21,10 +22,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
 
-class OtherOrderRemovalActionTest {
+class GeneratedOrderRemovalActionTest {
 
     private static final UUID TO_REMOVE_ORDER_ID = UUID.randomUUID();
     private static final UUID ALREADY_REMOVED_ORDER_ID = UUID.randomUUID();
@@ -34,7 +36,7 @@ class OtherOrderRemovalActionTest {
     private static final GeneratedOrderType NON_FINAL_ORDER = SUPERVISION_ORDER;
     private static final GeneratedOrderType FINAL_ORDER = EMERGENCY_PROTECTION_ORDER;
 
-    private final OtherOrderRemovalAction underTest = new OtherOrderRemovalAction();
+    private final GeneratedOrderRemovalAction underTest = new GeneratedOrderRemovalAction();
 
     @Test
     void isAcceptedIfGeneratedOrder() {
@@ -79,11 +81,13 @@ class OtherOrderRemovalActionTest {
             .orderCollection(newArrayList(element(TO_REMOVE_ORDER_ID, generatedOrder)))
             .build();
 
-        Map<String, Object> data = Maps.newHashMap();
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
+            .data(Map.of())
+            .build());
 
-        underTest.action(caseData, data, TO_REMOVE_ORDER_ID, generatedOrder);
+        underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, generatedOrder);
 
-        assertThat(data).isEqualTo(Map.of(
+        assertThat(caseDetailsMap).isEqualTo(Map.of(
             "children1", List.of(
                  element(CHILD_ONE_ID, Child.builder()
                      .finalOrderIssued("Yes")
@@ -139,10 +143,12 @@ class OtherOrderRemovalActionTest {
             .orderCollection(newArrayList(element(TO_REMOVE_ORDER_ID, generatedOrder)))
             .build();
 
-        Map<String, Object> data = Maps.newHashMap();
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
+            .data(Map.of())
+            .build());
 
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-            () -> underTest.action(caseData, data, ALREADY_REMOVED_ORDER_ID, generatedOrder));
+            () -> underTest.remove(caseData, caseDetailsMap, ALREADY_REMOVED_ORDER_ID, generatedOrder));
 
         assertThat(exception.getMessage()).isEqualTo(
             format("Failed to find order matching id %s", ALREADY_REMOVED_ORDER_ID)
@@ -193,11 +199,13 @@ class OtherOrderRemovalActionTest {
             ))))
             .build();
 
-        Map<String, Object> data = Maps.newHashMap();
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
+            .data(Map.of())
+            .build());
 
-        underTest.action(caseData, data, TO_REMOVE_ORDER_ID, generatedOrder);
+        underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, generatedOrder);
 
-        assertThat(data).isEqualTo(Map.of(
+        assertThat(caseDetailsMap).isEqualTo(Map.of(
             "children1", List.of(
                 element(CHILD_ONE_ID, Child.builder()
                     .finalOrderIssued("Yes")
@@ -274,11 +282,14 @@ class OtherOrderRemovalActionTest {
             .orderCollection(newArrayList(element(TO_REMOVE_ORDER_ID, generatedOrder)))
             .build();
 
-        Map<String, Object> data = Maps.newHashMap();
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
+            .data(Map.of())
+            .build());
 
-        underTest.action(caseData, data, TO_REMOVE_ORDER_ID, generatedOrder);
 
-        assertThat(data).isEqualTo(Map.of(
+        underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, generatedOrder);
+
+        assertThat(caseDetailsMap).isEqualTo(Map.of(
             "children1", List.of(
                 element(CHILD_ONE_ID, Child.builder()
                     .finalOrderIssued(null)
@@ -340,11 +351,13 @@ class OtherOrderRemovalActionTest {
             .orderCollection(newArrayList(element(TO_REMOVE_ORDER_ID, generatedOrder)))
             .build();
 
-        Map<String, Object> data = Maps.newHashMap();
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
+            .data(Map.of())
+            .build());
 
-        underTest.action(caseData, data, TO_REMOVE_ORDER_ID, generatedOrder);
+        underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, generatedOrder);
 
-        assertThat(data).isEqualTo(Map.of(
+        assertThat(caseDetailsMap).isEqualTo(Map.of(
             "children1", List.of(
                 element(CHILD_ONE_ID, Child.builder()
                     .finalOrderIssued("Yes")
@@ -388,11 +401,13 @@ class OtherOrderRemovalActionTest {
             .orderCollection(newArrayList(element(TO_REMOVE_ORDER_ID, generatedOrder)))
             .build();
 
-        Map<String, Object> data = Maps.newHashMap();
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
+            .data(Map.of())
+            .build());
 
-        underTest.populateCaseFields(caseData, data, TO_REMOVE_ORDER_ID, generatedOrder);
+        underTest.populateCaseFields(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, generatedOrder);
 
-        assertThat(data)
+        assertThat(caseDetailsMap)
             .extracting("orderToBeRemoved",
                 "orderTitleToBeRemoved",
                 "orderIssuedDateToBeRemoved",

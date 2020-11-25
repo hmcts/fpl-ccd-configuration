@@ -6,16 +6,15 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.updateOrRemoveIfEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Component
@@ -27,7 +26,7 @@ public class CMOOrderRemovalAction implements OrderRemovalAction {
     }
 
     @Override
-    public void action(CaseData caseData, Map<String, Object> data, UUID removedOrderId,
+    public void remove(CaseData caseData, CaseDetailsMap data, UUID removedOrderId,
                        RemovableOrder removableOrder) {
 
         CaseManagementOrder caseManagementOrder = (CaseManagementOrder) removableOrder;
@@ -44,13 +43,13 @@ public class CMOOrderRemovalAction implements OrderRemovalAction {
         hiddenCMOs.add(element(removedOrderId, caseManagementOrder));
 
         data.put("hiddenCaseManagementOrders", hiddenCMOs);
-        updateOrRemoveIfEmpty(data,"sealedCMOs", sealedCMOs);
+        data.putIfNotEmpty("sealedCMOs", sealedCMOs);
         data.put("hearingDetails", removeHearingLinkedToCMO(caseData.getHearingDetails(), removedOrderId));
     }
 
     @Override
     public void populateCaseFields(CaseData caseData,
-                                   Map<String, Object> data,
+                                   CaseDetailsMap data,
                                    UUID removableOrderId,
                                    RemovableOrder removableOrder) {
         CaseManagementOrder caseManagementOrder = (CaseManagementOrder) removableOrder;
@@ -60,7 +59,7 @@ public class CMOOrderRemovalAction implements OrderRemovalAction {
 
         data.put("orderToBeRemoved", caseManagementOrder.getOrder());
         data.put("orderTitleToBeRemoved", "Case management order");
-        data.put("unlinkedHearing", hearingBooking.getValue().toLabel());
+        data.put("hearingToUnlink", hearingBooking.getValue().toLabel());
         data.put("showRemoveCMOFieldsFlag", YES.getValue());
     }
 

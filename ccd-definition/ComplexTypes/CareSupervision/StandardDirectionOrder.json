@@ -66,13 +66,5 @@
     "FieldType": "JudgeAndLegalAdvisor",
     "ElementLabel": "Judge and Justices' Legal Adviser",
     "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "StandardDirectionOrder",
-    "ListElementCode": "removalReason",
-    "FieldType": "TextArea",
-    "ElementLabel": "Reason for removal",
-    "SecurityClassification": "Public"
   }
 ]

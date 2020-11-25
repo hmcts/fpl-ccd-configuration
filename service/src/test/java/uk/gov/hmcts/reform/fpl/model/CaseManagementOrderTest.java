@@ -23,7 +23,7 @@ class CaseManagementOrderTest {
 
     @ParameterizedTest
     @EnumSource(value = CMOStatus.class, names = {"SEND_TO_JUDGE", "RETURNED", "DRAFT"})
-    void shouldReturnTrueIfCaseManagementOrderStatusIsNotApproved(CMOStatus cmoStatus) {
+    void shouldReturnFalseIfCaseManagementOrderStatusIsNotApproved(CMOStatus cmoStatus) {
         CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder().status(cmoStatus).build();
         assertThat(caseManagementOrder.isRemovable()).isFalse();
     }
