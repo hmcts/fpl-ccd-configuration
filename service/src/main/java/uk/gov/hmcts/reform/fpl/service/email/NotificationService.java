@@ -31,16 +31,6 @@ public class NotificationService {
         this.environment = environment;
     }
 
-    // TODO Remove
-    public void sendEmail(String templateId, String email, Map<String, Object> parameters, String reference) {
-        log.debug("Sending email (with template id: {}) to {}", templateId, maskEmail(email));
-        try {
-            notificationClient.sendEmail(templateId, email, parameters, environment + "/" + reference);
-        } catch (NotificationClientException e) {
-            log.error("Failed to send email (with template id: {}) to {}", templateId, maskEmail(email), e);
-        }
-    }
-
     public void sendEmail(String templateId, String recipient, NotifyData data, String reference) {
         Map<String, Object> personalisation = mapper.convertValue(data, new TypeReference<>() {
         });
