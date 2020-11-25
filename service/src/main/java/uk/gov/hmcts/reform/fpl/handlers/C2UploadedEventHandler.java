@@ -47,12 +47,14 @@ public class C2UploadedEventHandler {
         CaseData caseData = event.getCaseData();
 
         if (caseData.hasAllocatedJudgeEmail()) {
-
             NotifyData notifyData = c2UploadedEmailContentProvider.getNotifyDataForAllocatedJudge(caseData);
             String recipient = caseData.getAllocatedJudge().getJudgeEmailAddress();
 
-            notificationService
-                .sendEmail(C2_UPLOAD_NOTIFICATION_TEMPLATE_JUDGE, recipient, notifyData, caseData.getId());
+            notificationService.sendEmail(
+                C2_UPLOAD_NOTIFICATION_TEMPLATE_JUDGE,
+                recipient,
+                notifyData,
+                caseData.getId());
         }
     }
 }

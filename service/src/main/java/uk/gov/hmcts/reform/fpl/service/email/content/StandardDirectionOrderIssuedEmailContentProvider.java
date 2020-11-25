@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForSDO;
 import uk.gov.hmcts.reform.fpl.model.notify.sdo.CTSCTemplateForSDO;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.StandardDirectionOrderContent;
@@ -24,30 +23,12 @@ public class StandardDirectionOrderIssuedEmailContentProvider extends StandardDi
     @Value("${manage-case.ui.base.url}")
     private String xuiBaseUrl;
 
-    public AllocatedJudgeTemplateForSDO buildNotificationParametersForAllocatedJudge(CaseData caseData) {
-
-        return AllocatedJudgeTemplateForSDO.builder()
-            .familyManCaseNumber(getFamilyManCaseNumber(caseData))
-            .leadRespondentsName(getLeadRespondentsName(caseData))
-            .hearingDate(getHearingDate(caseData))
-            .caseUrl(getCaseUrl(caseData.getId()))
-            .callout(buildCallout(caseData))
-            .judgeTitle(caseData.getStandardDirectionOrder()
-                .getJudgeAndLegalAdvisor()
-                .getJudgeOrMagistrateTitle())
-            .judgeName(caseData.getStandardDirectionOrder()
-                .getJudgeAndLegalAdvisor()
-                .getJudgeName())
-            .build();
-
-    }
-
     public CTSCTemplateForSDO buildNotificationParametersForCTSC(CaseData caseData) {
 
         HearingBooking hearing = caseData.getFirstHearing().orElseThrow(NoHearingBookingException::new);
 
         CTSCTemplateForSDO ctscTemplateForSDO = new CTSCTemplateForSDO();
-        ctscTemplateForSDO.setRespondentLastName(getFirstRespondentLastName(caseData));
+        ctscTemplateForSDO.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
         ctscTemplateForSDO.setCallout(buildCallout(caseData));
         ctscTemplateForSDO.setCourtName(caseDataExtractionService.getCourtName(caseData.getCaseLocalAuthority()));
         ctscTemplateForSDO.setHearingNeedsPresent(getHearingNeedsPresent(hearing));

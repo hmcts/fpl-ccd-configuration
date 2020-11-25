@@ -174,8 +174,7 @@ class C2UploadedEventHandlerTest {
     void shouldNotNotifyAllocatedJudgeOnC2UploadWhenAllocatedJudgeDoesNotExist() {
         CaseData caseData = CaseData.builder().build();
 
-        c2UploadedEventHandler.notifyAllocatedJudge(
-            new C2UploadedEvent(caseData, c2DocumentBundle));
+        c2UploadedEventHandler.notifyAllocatedJudge(new C2UploadedEvent(caseData, c2DocumentBundle));
 
         verifyNoInteractions(c2UploadedEmailContentProvider, notificationService);
     }

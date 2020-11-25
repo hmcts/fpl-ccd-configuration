@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForSDO;
 import uk.gov.hmcts.reform.fpl.model.notify.sdo.CTSCTemplateForSDO;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
@@ -27,15 +26,6 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
     private static final String ORDERS = "OrdersTab";
 
     @Test
-    void shouldReturnNotifyDataForJudgeWithValidSDODetails() {
-        AllocatedJudgeTemplateForSDO expectedData = allocatedJudgeSDOTemplateParameters();
-        AllocatedJudgeTemplateForSDO actualData = standardDirectionOrderIssuedEmailContentProvider
-            .buildNotificationParametersForAllocatedJudge(populatedCaseData());
-
-        assertThat(actualData).usingRecursiveComparison().isEqualTo(expectedData);
-    }
-
-    @Test
     void shouldReturnNotifyDataForCTSCWithValidSDODetails() {
         CTSCTemplateForSDO expectedData = ctscSDOTemplateParameters();
         CTSCTemplateForSDO actualData = standardDirectionOrderIssuedEmailContentProvider
@@ -51,18 +41,6 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
             .buildNotificationParametersForCTSC(caseData());
 
         assertThat(actualData).usingRecursiveComparison().isEqualTo(expectedData);
-    }
-
-    private AllocatedJudgeTemplateForSDO allocatedJudgeSDOTemplateParameters() {
-        return AllocatedJudgeTemplateForSDO.builder()
-            .familyManCaseNumber("12345,")
-            .leadRespondentsName("Smith")
-            .hearingDate("1 January 2020")
-            .caseUrl(caseUrl(CASE_REFERENCE))
-            .judgeTitle("Her Honour Judge")
-            .judgeName("Byrne")
-            .callout("^Smith, 12345, hearing 1 Jan 2020")
-            .build();
     }
 
     private CTSCTemplateForSDO ctscSDOTemplateParameters() {

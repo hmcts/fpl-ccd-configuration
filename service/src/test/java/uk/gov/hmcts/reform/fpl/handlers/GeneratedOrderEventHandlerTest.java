@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
@@ -132,13 +131,10 @@ class GeneratedOrderEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyAllocatedJudgeOnOrderIssuedAndEnabled() {
+    void shouldNotifyAllocatedJudgeOnOrderIssued() {
         JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .judgeEmailAddress("judge@gmail.com")
             .build();
-
-        given(featureToggleService.isAllocatedJudgeNotificationEnabled(AllocatedJudgeNotificationType.GENERATED_ORDER))
-            .willReturn(true);
 
         given(generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData))
             .willReturn(expectedJudgeAndLegalAdvisor);
@@ -159,34 +155,8 @@ class GeneratedOrderEventHandlerTest {
     }
 
     @Test
-    void shouldNotNotifyAllocatedJudgeOnOrderIssuedAndDisabled() {
-        JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
-            .judgeEmailAddress("judge@gmail.com")
-            .build();
-
-        given(featureToggleService.isAllocatedJudgeNotificationEnabled(AllocatedJudgeNotificationType.GENERATED_ORDER))
-            .willReturn(false);
-
-        given(generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData))
-            .willReturn(expectedJudgeAndLegalAdvisor);
-
-        final AllocatedJudgeTemplateForGeneratedOrder expectedParameters = getOrderIssuedAllocatedJudgeParameters();
-
-        given(orderIssuedEmailContentProvider.buildAllocatedJudgeOrderIssuedNotification(caseData))
-            .willReturn(expectedParameters);
-
-        generatedOrderEventHandler.notifyAllocatedJudge(new GeneratedOrderEvent(caseData,
-            DOCUMENT_URL, DOCUMENT_CONTENTS));
-
-        verifyNoInteractions(notificationService);
-    }
-
-    @Test
     void shouldNotNotifyAllocatedJudgeOnOrderIssuedWithNoJudge() {
         JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder().build();
-
-        given(featureToggleService.isAllocatedJudgeNotificationEnabled(AllocatedJudgeNotificationType.GENERATED_ORDER))
-            .willReturn(true);
 
         given(generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData))
             .willReturn(expectedJudgeAndLegalAdvisor);
