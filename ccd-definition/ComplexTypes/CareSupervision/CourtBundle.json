@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CourtBundle",
-    "ListElementCode": "hearingLabel",
+    "ListElementCode": "hearing",
     "FieldType": "Text",
     "ElementLabel": "Court bundle for:",
     "SecurityClassification": "Public"
@@ -18,7 +18,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CourtBundle",
-    "ListElementCode": "document",
+    "ListElementCode": "documentRedacted",
     "FieldType": "Document",
     "ElementLabel": "Attach redacted court bundle",
     "SecurityClassification": "Public"

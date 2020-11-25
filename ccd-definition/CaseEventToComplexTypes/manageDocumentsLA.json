@@ -46,5 +46,32 @@
     "FieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY",
     "EventElementLabel": "Upload document"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "manageDocumentsCourtBundle",
+    "ListElementCode": "hearing",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "manageDocumentsCourtBundle",
+    "ListElementCode": "document",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "manageDocumentsCourtBundle",
+    "ListElementCode": "documentRedacted",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "OPTIONAL"
   }
 ]

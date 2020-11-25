@@ -40,5 +40,30 @@
     "FieldType": "CourtBundle",
     "Label": " ",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageDocumentsCourtBundleHearingList",
+    "FieldType": "DynamicList",
+    "Label": "Which hearing?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "courtBundleList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "CourtBundle",
+    "Label": "Court bundle",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "courtBundleTabHeading",
+    "FieldType": "Label",
+    "Label": "## Court bundle",
+    "SecurityClassification": "Public"
   }
 ]

@@ -436,10 +436,10 @@ public class CaseData {
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocumentsLA;
     private final List<Element<SupportingEvidenceBundle>> c2SupportingDocuments;
     private final Object manageDocumentsHearingList;
+    private final Object manageDocumentsCourtBundleHearingList;
     private final Object manageDocumentsSupportingC2List;
 
-    private final DocumentReference courtBundleTemp;
-    private final DocumentReference courtBundleRedactedTemp;
+    private final CourtBundle manageDocumentsCourtBundle;
     private final List<Element<CourtBundle>> courtBundleList;
 
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceDocumentsTemp() {

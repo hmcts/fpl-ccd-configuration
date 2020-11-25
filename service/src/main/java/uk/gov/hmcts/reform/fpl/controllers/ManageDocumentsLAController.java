@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.service.SupportingEvidenceValidatorService;
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentLAService.COURT_BUNDLE_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentLAService.FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_LA_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentLAService.MANAGE_DOCUMENTS_COURT_BUNDLE_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.C2_DOCUMENTS_COLLECTION_KEY;
@@ -76,7 +77,7 @@ public class ManageDocumentsLAController extends CallbackController {
                 supportingEvidence = manageDocumentService.getC2SupportingEvidenceBundle(caseData);
                 break;
             case COURT_BUNDLE:
-                System.out.println("Court bundle");
+                caseDetails.getData().putAll(manageDocumentLAService.initialiseCourtBundleFields(caseData));
                 break;
             case APPLICATION_DOCUMENTS:
                 System.out.println("Application");
@@ -137,6 +138,9 @@ public class ManageDocumentsLAController extends CallbackController {
                     .buildFinalC2SupportingDocuments(caseData);
 
                 caseDetails.getData().put(C2_DOCUMENTS_COLLECTION_KEY, updatedC2Documents);
+                break;
+            case COURT_BUNDLE:
+                caseDetails.getData().put(COURT_BUNDLE_LIST_KEY, manageDocumentLAService.buildCourtBundleList(caseData));
                 break;
         }
 
