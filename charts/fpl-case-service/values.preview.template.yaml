@@ -61,6 +61,7 @@ xui-webapp:
       SERVICES_CCD_DATA_STORE_API: http://${SERVICE_NAME}-ccd-data-store-api
       SERVICES_TERMS_AND_CONDITIONS: http://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal
       JURISDICTIONS: PUBLICLAW
+      LAUNCH_DARKLY_CLIENT_ID: 5e21bc1a8fd1c908894bf7e7
 
 ccd:
   ccd:
