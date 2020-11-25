@@ -561,7 +561,19 @@ Scenario('local authority adds multiple application documents', async ({I, caseV
 
   await I.seeCheckAnswersAndCompleteEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.addApplicationDocuments);
+
   caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
+  I.seeInTab(['Documents 1', 'Type of document'], 'Threshold');
+  I.seeInTab(['Documents 1', 'File'], 'mockFile.pdf');
+
+  I.seeInTab(['Documents 2', 'Type of document'], 'SWET');
+  I.seeInTab(['Documents 2', 'File'], 'mockFile.pdf');
+
+  I.seeInTab(['Documents 3', 'Type of document'], 'Other');
+  I.seeInTab(['Documents 3', 'File'], 'mockFile.pdf');
+  I.seeInTab(['Documents 3', 'Uploaded by'], 'kurt@swansea.gov.uk');
+
+
 });
 
 Scenario('local authority tries to submit without giving consent', async ({I, caseViewPage, submitApplicationEventPage}) => {
