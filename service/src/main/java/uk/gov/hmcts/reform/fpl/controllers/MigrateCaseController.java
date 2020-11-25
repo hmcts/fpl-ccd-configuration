@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
@@ -33,13 +32,6 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         Object migrationId = getMigrationId(caseDetails);
         String familyManCaseNumber = caseData.getFamilyManCaseNumber();
-
-        if (isCorrectCase(migrationId, familyManCaseNumber, "FPLA-2429", "CF20C50024")) {
-            log.info("Removing others from case reference {}", caseDetails.getId());
-            Others others = caseData.getOthers();
-            caseDetails.getData().put("others", nullFirstOther(others));
-            caseDetails.getData().remove(MIGRATION_ID_KEY);
-        }
 
         if (isCorrectCase(migrationId, familyManCaseNumber, "FPLA-2450", "CF20C50014")) {
             log.info("Removing c2 document bundle from case reference {}", caseDetails.getId());
@@ -64,9 +56,5 @@ public class MigrateCaseController extends CallbackController {
 
     private Object getMigrationId(CaseDetails caseDetails) {
         return caseDetails.getData().get(MIGRATION_ID_KEY);
-    }
-
-    private Others nullFirstOther(Others others) {
-        return others.toBuilder().firstOther(null).build();
     }
 }
