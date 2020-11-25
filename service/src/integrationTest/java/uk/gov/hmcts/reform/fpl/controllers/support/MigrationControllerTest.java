@@ -22,8 +22,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @OverrideAutoConfiguration(enabled = true)
 public class MigrationControllerTest extends AbstractControllerTest {
 
-    private final Element<C2DocumentBundle> firstC2 = element(C2DocumentBundle.builder().author("first author").build());
-    private final Element<C2DocumentBundle> secondC2 = element(C2DocumentBundle.builder().author("second author").build());
+    private final Element<C2DocumentBundle> firstC2 = element(buildC2("first author"));
+    private final Element<C2DocumentBundle> secondC2 = element(buildC2("second author"));
+
     private String familyManCaseNumber;
     private String migrationId;
 
@@ -72,12 +73,18 @@ public class MigrationControllerTest extends AbstractControllerTest {
     }
 
     @SafeVarargs
-    private CaseDetails caseDetails(String familyManCaseNumber, String migrationId, Element<C2DocumentBundle> ...c2s) {
+    private CaseDetails caseDetails(String familyManCaseNumber, String migrationId, Element<C2DocumentBundle>... c2s) {
         CaseDetails caseDetails = asCaseDetails(CaseData.builder()
             .familyManCaseNumber(familyManCaseNumber)
             .c2DocumentBundle(List.of(c2s))
             .build());
         caseDetails.getData().put("migrationId", migrationId);
         return caseDetails;
+    }
+
+    private C2DocumentBundle buildC2(String author) {
+        return C2DocumentBundle.builder()
+            .author(author)
+            .build();
     }
 }
