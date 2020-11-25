@@ -3,12 +3,11 @@ package uk.gov.hmcts.reform.fpl.service.removeorder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.fpl.exceptions.removeorder.RemovableOrderActionNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 
 import java.util.UUID;
 import java.util.stream.Stream;
-
-import static java.lang.String.format;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -21,7 +20,7 @@ public class OrderRemovalActions {
         return getActions()
             .filter(orderRemovalAction -> orderRemovalAction.isAccepted(removableOrder))
             .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException(format("Action not found for order %s", removedOrderId)));
+            .orElseThrow(() -> new RemovableOrderActionNotFoundException(removedOrderId));
     }
 
     private Stream<OrderRemovalAction> getActions() {

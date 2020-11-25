@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.exceptions.removeorder.RemovableOrderActionNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
@@ -50,12 +51,13 @@ class OrderRemovalActionsTest {
     void shouldThrowAnExceptionWhenActionTypeFailsToMatchToRemovableOrder() {
         when(cmoOrderRemovalAction.isAccepted(GENERATED_ORDER)).thenReturn(false);
 
-        IllegalArgumentException actualException = assertThrows(IllegalArgumentException.class,
+        RemovableOrderActionNotFoundException actualException
+            = assertThrows(RemovableOrderActionNotFoundException.class,
             () -> orderRemovalActions.getAction(ORDER_ID, GENERATED_ORDER)
         );
 
         assertThat(actualException.getMessage()).isEqualTo(
-            format("Action not found for order %s", ORDER_ID)
+            format("Removable order action not found for order %s", ORDER_ID)
         );
     }
 }
