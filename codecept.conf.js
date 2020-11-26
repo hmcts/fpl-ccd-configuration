@@ -7,6 +7,10 @@ exports.config = {
       chunks: 3,
     },
   },
+  rerun: {
+    minSuccess: 1,
+    maxReruns: 3,
+  },
   helpers: {
     Puppeteer: {
       show: process.env.SHOW_BROWSER_WINDOW || false,
