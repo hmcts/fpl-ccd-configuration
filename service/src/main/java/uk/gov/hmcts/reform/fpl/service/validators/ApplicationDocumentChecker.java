@@ -25,7 +25,7 @@ public class ApplicationDocumentChecker implements EventChecker {
         final List<Element<ApplicationDocument>> applicationDocuments = caseData.getDocuments();
         final String documentsToFollow = caseData.getDocumentsToFollow();
 
-        if(!isEmpty(documentsToFollow)) {
+        if (!isEmpty(documentsToFollow)) {
             return anyNonEmpty(documentsToFollow);
         } else if (!isEmpty(applicationDocuments)) {
             ApplicationDocument anyDocument = applicationDocuments.stream().filter(Objects::nonNull).findAny()

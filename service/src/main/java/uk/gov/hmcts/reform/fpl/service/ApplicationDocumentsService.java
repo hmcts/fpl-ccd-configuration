@@ -74,16 +74,17 @@ public class ApplicationDocumentsService {
     }
 
     private Optional<Element<ApplicationDocument>> getDocumentBeforeFromID(UUID documentID,
-                                                                           List<Element<ApplicationDocument>> previousDocuments) {
+                                             List<Element<ApplicationDocument>> previousDocuments) {
         return Optional.ofNullable(previousDocuments.stream()
             .filter((previousDocument)
-            -> previousDocument.getId()
+                -> previousDocument.getId()
             .equals(documentID))
             .findAny()
             .orElse(null));
     }
 
-    private Element<ApplicationDocument> setUpdatedByAndDateAndTimeOnDocumentToCurrent(Element<ApplicationDocument> document) {
+    private Element<ApplicationDocument> setUpdatedByAndDateAndTimeOnDocumentToCurrent(
+        Element<ApplicationDocument> document) {
         String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
 
         document.getValue().setDateTimeUploaded(time.now());

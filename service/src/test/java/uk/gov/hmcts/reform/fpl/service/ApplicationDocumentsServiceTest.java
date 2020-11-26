@@ -71,8 +71,8 @@ class ApplicationDocumentsServiceTest {
         Map<String, Object> map = applicationDocumentsService.updateCaseDocuments(documents, previousDocuments);
 
         assertThat(map.get("documents")).isEqualToComparingOnlyGivenFields(Document.builder()
-        .uploadedBy(HMCTS_USER)
-        .dateTimeUploaded(time.now()));
+            .uploadedBy(HMCTS_USER)
+            .dateTimeUploaded(time.now()));
     }
 
     @Test
