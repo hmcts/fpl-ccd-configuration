@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,58 +39,55 @@ public class ApplicationDocumentsService {
     public List<Element<ApplicationDocument>> setUpdatedByAndDateAndTimeOnDocuments(
         List<Element<ApplicationDocument>> currentDocuments,
         List<Element<ApplicationDocument>> previousDocuments) {
-        String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
 
         if (isNull(previousDocuments) && currentDocuments.size() > 0) {
-            // this is for very first scenario
-            //bug needs fixed here as only adds to last element
-            currentDocuments.get(currentDocuments.size() - 1).getValue().setDateTimeUploaded(time.now());
-            currentDocuments.get(currentDocuments.size() - 1).getValue().setUploadedBy(uploadedBy);
+            currentDocuments.stream().forEach(this::setUpdatedByAndDateAndTimeOnDocumentToCurrent);
             return currentDocuments;
         } else {
-
-            //An old document which have not been changed
-            List<Element<ApplicationDocument>> currentDocs = currentDocuments.stream()
-                .map(currentDoc -> {
-                    Optional<Element<ApplicationDocument>> previousDoc = getMetaDataBasedOnID(currentDoc.getId(),
+            List<Element<ApplicationDocument>> documents = currentDocuments.stream()
+                .map(document -> {
+                    Optional<Element<ApplicationDocument>> documentBefore = getDocumentBeforeFromID(document.getId(),
                         previousDocuments);
 
-                    if (previousDoc.isPresent()) {
-                        Element<ApplicationDocument> oldDocument = previousDoc.get();
+                    if (documentBefore.isPresent()) {
+                        Element<ApplicationDocument> oldDocument = documentBefore.get();
 
-
-                        if (oldDocument.getId().equals(currentDoc.getId())) {
-                            //id's are same so element modified potentially
-                            if (oldDocument.getValue().getDocument().equals(currentDoc.getValue().getDocument())) {
-                                // docs wasn't modified so keep persist as old author
-                                currentDoc.getValue().setDateTimeUploaded(oldDocument.getValue().getDateTimeUploaded());
-                                currentDoc.getValue().setUploadedBy(oldDocument.getValue().getUploadedBy());
+                        if (oldDocument.getId().equals(document.getId())) {
+                            if (oldDocument.getValue().getDocument().equals(document.getValue().getDocument())) {
+                                // Document wasn't modified so persist old values
+                                document.getValue().setDateTimeUploaded(oldDocument.getValue().getDateTimeUploaded());
+                                document.getValue().setUploadedBy(oldDocument.getValue().getUploadedBy());
                             } else {
-                                //ids same but has been modified so update author
-                                currentDoc.getValue().setDateTimeUploaded(LocalDateTime.now());
-                                currentDoc.getValue().setUploadedBy(uploadedBy);
+                                // Document was modified so updated
+                                setUpdatedByAndDateAndTimeOnDocumentToCurrent(document);
                             }
                         }
                     } else {
-                        //previous doc doesn't exist therefore new one has been added
-                        currentDoc.getValue().setDateTimeUploaded(LocalDateTime.now());
-                        currentDoc.getValue().setUploadedBy(uploadedBy);
+                        // New document was added
+                        setUpdatedByAndDateAndTimeOnDocumentToCurrent(document);
                     }
-
-                    return currentDoc;
+                    return document;
                 }).collect(Collectors.toList());
 
-
-            return currentDocs;
-
-
+            return documents;
         }
     }
 
-    private Optional<Element<ApplicationDocument>> getMetaDataBasedOnID(UUID documentID,
-        List<Element<ApplicationDocument>> previousDocuments) {
-        return Optional.ofNullable(previousDocuments.stream().filter((previousDocument)
+    private Optional<Element<ApplicationDocument>> getDocumentBeforeFromID(UUID documentID,
+                                                                           List<Element<ApplicationDocument>> previousDocuments) {
+        return Optional.ofNullable(previousDocuments.stream()
+            .filter((previousDocument)
             -> previousDocument.getId()
-            .equals(documentID)).findAny().orElse(null));
+            .equals(documentID))
+            .findAny()
+            .orElse(null));
+    }
+
+    private Element<ApplicationDocument> setUpdatedByAndDateAndTimeOnDocumentToCurrent(Element<ApplicationDocument> document) {
+        String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
+
+        document.getValue().setDateTimeUploaded(time.now());
+        document.getValue().setUploadedBy(uploadedBy);
+        return document;
     }
 }
