@@ -53,5 +53,21 @@ public class SDORemovalAction implements OrderRemovalAction {
 
         data.put("hiddenStandardDirectionOrders", hiddenSDOs);
         data.put("state", GATEKEEPING);
+        clearDirectionsForSDO(data);
+    }
+
+    private void clearDirectionsForSDO(CaseDetailsMap data) {
+        data.remove("allParties");
+        data.remove("allPartiesCustom");
+        data.remove("localAuthorityDirections");
+        data.remove("localAuthorityDirectionsCustom");
+        data.remove("courtDirections");
+        data.remove("courtDirectionsCustom");
+        data.remove("cafcassDirections");
+        data.remove("cafcassDirectionsCustom");
+        data.remove("otherPartiesDirections");
+        data.remove("otherPartiesDirectionsCustom");
+        data.remove("respondentDirections");
+        data.remove("respondentDirectionsCustom");
     }
 }

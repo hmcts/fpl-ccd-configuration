@@ -11,12 +11,14 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.service.removeorder.RemoveOrderService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
@@ -85,5 +87,20 @@ public class RemoveOrderController extends CallbackController {
         );
 
         return respond(caseDetailsMap);
+    }
+
+    @PostMapping("/submitted")
+    public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
+        CaseData caseData = getCaseData(callbackRequest.getCaseDetails());
+        CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
+
+        if (isRemovingNewSDO(caseData, caseDataBefore)) {
+            publishEvent(new PopulateStandardDirectionsEvent(callbackRequest));
+        }
+    }
+
+    private boolean isRemovingNewSDO(CaseData caseData, CaseData caseDataBefore) {
+        return !Objects.equals(caseData.getHiddenStandardDirectionOrders(),
+            caseDataBefore.getHiddenStandardDirectionOrders());
     }
 }

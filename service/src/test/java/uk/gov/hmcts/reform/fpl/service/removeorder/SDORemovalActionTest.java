@@ -118,6 +118,56 @@ class SDORemovalActionTest {
     }
 
     @Test
+    void shouldRemoveAllDirectionsWhenRemovingSDO() {
+        StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeTitle(HIS_HONOUR_JUDGE)
+                .judgeLastName("Watson")
+                .build())
+            .orderStatus(SEALED)
+            .build();
+
+        NoticeOfProceedings noticeOfProceedings = NoticeOfProceedings.builder().build();
+
+        CaseData caseData = CaseData.builder()
+            .reasonToRemoveOrder(REASON)
+            .standardDirectionOrder(standardDirectionOrder)
+            .noticeOfProceedings(noticeOfProceedings)
+            .build();
+
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
+            .data(Map.of(
+                "allParties", List.of(),
+                "allPartiesCustom", List.of(),
+                "localAuthorityDirections", List.of(),
+                "localAuthorityDirectionsCustom", List.of(),
+                "courtDirections", List.of(),
+                "courtDirectionsCustom", List.of(),
+                "cafcassDirections", List.of(),
+                "otherPartiesDirections", List.of(),
+                "otherPartiesDirectionsCustom", List.of(),
+                "respondentDirections", List.of()))
+            .build());
+
+        when(identityService.generateId()).thenReturn(SDO_ID);
+        underTest.remove(caseData, caseDetailsMap, SDO_ID, standardDirectionOrder);
+
+        StandardDirectionOrder expectedSDO = StandardDirectionOrder.builder()
+            .orderStatus(SEALED)
+            .removalReason(REASON)
+            .build();
+
+        assertThat(caseDetailsMap)
+            .extracting("hiddenStandardDirectionOrders", "state")
+            .containsExactly(List.of(element(SDO_ID, expectedSDO)), GATEKEEPING);
+
+        assertThat(caseDetailsMap).doesNotContainKeys(
+            "allParties", "allPartiesCustom","localAuthorityDirections", "localAuthorityDirectionsCustom",
+            "courtDirections", "courtDirectionsCustom", "cafcassDirections", "otherPartiesDirections",
+            "otherPartiesDirectionsCustom", "respondentDirections");
+    }
+
+    @Test
     void shouldPersistPreviouslyRemovedSDO() {
         StandardDirectionOrder previouslyRemovedSDO = StandardDirectionOrder.builder().build();
 
