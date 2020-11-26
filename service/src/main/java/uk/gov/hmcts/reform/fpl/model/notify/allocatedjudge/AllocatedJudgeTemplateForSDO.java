@@ -1,3 +1,4 @@
+
 package uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge;
 
 import lombok.Data;

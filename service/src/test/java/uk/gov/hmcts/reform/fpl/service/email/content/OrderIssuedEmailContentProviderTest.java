@@ -71,7 +71,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
         NotifyData actualParameters = orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(
             caseData, documentContents, NOTICE_OF_PLACEMENT_ORDER);
 
-        assertThat(actualParameters).isEqualTo(expectedParameters);
+        assertThat(actualParameters).usingRecursiveComparison().isEqualTo(expectedParameters);
     }
 
     @Test
@@ -98,7 +98,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
 
         AllocatedJudgeTemplateForGeneratedOrder expectedParameters = getExpectedAllocatedJudgeParameters();
 
-        assertThat(actualParameters).isEqualToComparingFieldByField(expectedParameters);
+        assertThat(actualParameters).usingRecursiveComparison().isEqualTo(expectedParameters);
     }
 
     private static CaseData createCase() {
