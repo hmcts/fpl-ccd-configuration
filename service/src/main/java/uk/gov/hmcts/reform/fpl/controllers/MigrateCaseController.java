@@ -47,12 +47,6 @@ public class MigrateCaseController extends CallbackController {
         return expectedMigrationId.equals(migrationId) && expectedFamilyManCaseNumber.equals(familyManCaseNumber);
     }
 
-    private List<Element<C2DocumentBundle>> removeC2Document(List<Element<C2DocumentBundle>> documentBundle) {
-        // remove latest bundle (will be the last one added)
-        documentBundle.remove(documentBundle.size() - 1);
-        return documentBundle;
-    }
-
     private Object getMigrationId(CaseDetails caseDetails) {
         return caseDetails.getData().get(MIGRATION_ID_KEY);
     }
