@@ -69,7 +69,6 @@ xui-webapp:
       REDISCLOUD_URL: dummy
       FEATURE_APP_INSIGHTS_ENABLED: false
       FEATURE_SECURE_COOKIE_ENABLED: false
-      DEBUG: xuiNode:*
     keyVaults:
       rpx:
         secrets:
