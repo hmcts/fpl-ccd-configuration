@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotification
 import java.util.List;
 import java.util.Set;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -44,6 +45,7 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParameters;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
+import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {GeneratedOrderEventHandler.class, InboxLookupService.class, LookupTestConfig.class,
@@ -106,28 +108,28 @@ class GeneratedOrderEventHandlerTest {
             DOCUMENT_CONTENTS));
 
         verify(notificationService).sendEmail(
-            ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN,
-            COURT_EMAIL_ADDRESS,
-            getExpectedParameters(BLANK_ORDER.getLabel(), true),
-            caseData.getId());
+            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+            eq(COURT_EMAIL_ADDRESS),
+            eqJson(getExpectedParameters(BLANK_ORDER.getLabel(), true)),
+            eq(caseData.getId()));
 
         verify(notificationService).sendEmail(
-            ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES,
-            "barney@rubble.com",
-            getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true),
-            caseData.getId());
+            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES),
+            eq("barney@rubble.com"),
+            eqJson(getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true)),
+            eq(caseData.getId()));
 
         verify(notificationService).sendEmail(
-            ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES,
-            Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            getExpectedParameters(BLANK_ORDER.getLabel(), true),
-            caseData.getId().toString());
+            eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
+            eq(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS)),
+            eqJson(getExpectedParameters(BLANK_ORDER.getLabel(), true)),
+            eq(caseData.getId().toString()));
 
         verify(notificationService).sendEmail(
-            ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES,
-            "fred@flinstone.com",
-            getExpectedParameters(BLANK_ORDER.getLabel(), true),
-            caseData.getId());
+            eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
+            eq("fred@flinstone.com"),
+            eqJson(getExpectedParameters(BLANK_ORDER.getLabel(), true)),
+            eq(caseData.getId()));
     }
 
     @Test

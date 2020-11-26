@@ -42,6 +42,7 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParameters;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
+import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {CaseManagementOrderIssuedEventHandler.class, LookupTestConfig.class,
@@ -104,7 +105,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
         verify(notificationService).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
             eq(COURT_EMAIL_ADDRESS),
-            eq(getExpectedParameters(CMO.getLabel(), true)),
+            eqJson(getExpectedParameters(CMO.getLabel(), true)),
             eq(caseData.getId()));
     }
 
@@ -125,7 +126,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
         verify(notificationService).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
             eq(CTSC_INBOX),
-            eq(getExpectedParameters(CMO.getLabel(), true)),
+            eqJson(getExpectedParameters(CMO.getLabel(), true)),
             eq(caseData.getId()));
     }
 
