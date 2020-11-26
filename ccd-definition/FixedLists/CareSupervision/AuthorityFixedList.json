@@ -3,7 +3,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "BIR",
-    "ListElement": "Birmingham",
+    "ListElement": "Birmingham Children's Trust",
     "DisplayOrder": 1
   },
   {
@@ -261,9 +261,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "SOL",
+    "ListElement": "Solihull Metropolitan Borough Council",
+    "DisplayOrder": 71
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "SOC",
     "ListElement": "Somerset County Council",
-    "DisplayOrder": 71
+    "DisplayOrder": 72
   },
   {
     "LiveFrom": "01/01/2017",
@@ -292,6 +299,13 @@
     "ListElementCode": "SOT",
     "ListElement": "Stockton-on-Tees Borough Council",
     "DisplayOrder": 82
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "STO",
+    "ListElement": "Stoke on Trent City Council",
+    "DisplayOrder": 83
   },
   {
     "LiveFrom": "01/01/2017",
