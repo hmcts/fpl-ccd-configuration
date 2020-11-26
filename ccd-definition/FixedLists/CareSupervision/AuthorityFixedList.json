@@ -37,58 +37,65 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "CER",
+    "ListElement": "Ceredigion County Council",
+    "DisplayOrder": 6
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "CEB",
     "ListElement": "Cheshire East Borough Council",
-    "DisplayOrder": 6
+    "DisplayOrder": 7
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "CCC",
     "ListElement": "Coventry City Council",
-    "DisplayOrder": 7
+    "DisplayOrder": 8
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "DBC",
     "ListElement": "Darlington Borough Council",
-    "DisplayOrder": 8
+    "DisplayOrder": 9
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "DER",
     "ListElement": "Derby City Council",
-    "DisplayOrder": 9
+    "DisplayOrder": 10
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "DSC",
     "ListElement": "Derbyshire County Council",
-    "DisplayOrder": 10
+    "DisplayOrder": 11
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "DMC",
     "ListElement": "Dudley Metropolitan Borough Council",
-    "DisplayOrder": 11
+    "DisplayOrder": 12
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "DCC",
     "ListElement": "Durham County Council",
-    "DisplayOrder": 12
+    "DisplayOrder": 13
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "ERY",
     "ListElement": "East Riding of Yorkshire Council",
-    "DisplayOrder": 13
+    "DisplayOrder": 14
   },
   {
     "LiveFrom": "01/01/2017",
