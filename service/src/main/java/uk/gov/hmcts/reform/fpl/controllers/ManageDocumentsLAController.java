@@ -22,9 +22,10 @@ import uk.gov.hmcts.reform.fpl.service.SupportingEvidenceValidatorService;
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentLAService.COURT_BUNDLE_HEARING_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentLAService.COURT_BUNDLE_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentLAService.COURT_BUNDLE_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentLAService.FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_LA_KEY;
-import static uk.gov.hmcts.reform.fpl.service.ManageDocumentLAService.MANAGE_DOCUMENTS_COURT_BUNDLE_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.C2_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.C2_SUPPORTING_DOCUMENTS_COLLECTION;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
@@ -140,13 +141,15 @@ public class ManageDocumentsLAController extends CallbackController {
                 caseDetails.getData().put(C2_DOCUMENTS_COLLECTION_KEY, updatedC2Documents);
                 break;
             case COURT_BUNDLE:
-                caseDetails.getData().put(COURT_BUNDLE_LIST_KEY, manageDocumentLAService.buildCourtBundleList(caseData));
+                caseDetails.getData().put(COURT_BUNDLE_LIST_KEY,
+                    manageDocumentLAService.buildCourtBundleList(caseData));
                 break;
         }
 
         removeTemporaryFields(caseDetails, TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, MANAGE_DOCUMENT_KEY,
             C2_SUPPORTING_DOCUMENTS_COLLECTION, SUPPORTING_C2_LABEL, MANAGE_DOCUMENTS_HEARING_LIST_KEY,
-            SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENTS_HEARING_LABEL_KEY, MANAGE_DOCUMENTS_COURT_BUNDLE_HEARING_LIST_KEY);
+            SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENTS_HEARING_LABEL_KEY, COURT_BUNDLE_HEARING_LIST_KEY,
+            COURT_BUNDLE_KEY);
 
         return respond(caseDetails);
     }

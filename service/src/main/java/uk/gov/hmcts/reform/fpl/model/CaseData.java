@@ -436,8 +436,8 @@ public class CaseData {
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocumentsLA;
     private final List<Element<SupportingEvidenceBundle>> c2SupportingDocuments;
     private final Object manageDocumentsHearingList;
-    private final Object manageDocumentsCourtBundleHearingList;
     private final Object manageDocumentsSupportingC2List;
+    private final Object courtBundleHearingList;
 
     private final CourtBundle manageDocumentsCourtBundle;
     private final List<Element<CourtBundle>> courtBundleList;
