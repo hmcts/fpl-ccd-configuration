@@ -89,7 +89,7 @@ Scenario('HMCTS super user removes a sdo from a case', async ({I, caseViewPage, 
   I.seeEventSubmissionConfirmation(config.superUserActions.removeOrder);
 
   caseViewPage.selectTab(caseViewPage.tabs.orders);
-  const removeSDO = 'Removed gatekeeping order';
+  const removeSDO = 'Removed gatekeeping orders 1';
 
   I.seeInTab([removeSDO, 'File'], 'sdo.pdf');
   I.seeInTab([removeSDO, 'Date of issue'], '28 April 2020');

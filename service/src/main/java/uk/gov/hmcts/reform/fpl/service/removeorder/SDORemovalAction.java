@@ -1,18 +1,26 @@
 package uk.gov.hmcts.reform.fpl.service.removeorder;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
+import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
+import java.util.List;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Component
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class SDORemovalAction implements OrderRemovalAction {
+    private final IdentityService identityService;
 
     @Override
     public boolean isAccepted(RemovableOrder removableOrder) {
@@ -39,7 +47,11 @@ public class SDORemovalAction implements OrderRemovalAction {
         data.remove("standardDirectionOrder");
         data.remove("noticeOfProceedingsBundle");
 
-        data.put("hiddenStandardDirectionOrder", standardDirectionOrder);
+        List<Element<StandardDirectionOrder>> hiddenSDOs = caseData.getHiddenStandardDirectionOrders();
+
+        hiddenSDOs.add(element(identityService.generateId(), standardDirectionOrder));
+
+        data.put("hiddenStandardDirectionOrders", hiddenSDOs);
         data.put("state", GATEKEEPING);
     }
 }

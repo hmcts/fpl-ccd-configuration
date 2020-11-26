@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.service.IdentityService;
 
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
@@ -43,6 +46,9 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
 public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTest {
     private static final String REASON = "The order was removed because the order was removed";
     private static final UUID SDO_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
+
+    @MockBean
+    private IdentityService identityService;
 
     private Element<GeneratedOrder> selectedOrder;
 
@@ -80,7 +86,8 @@ public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTe
                 "orderIssuedDateToBeRemoved", "dummy data",
                 "orderDateToBeRemoved", "dummy data",
                 "hearingToUnlink", "dummy data",
-                "showRemoveCMOFieldsFlag", "dummy data"
+                "showRemoveCMOFieldsFlag", "dummy data",
+                "showRemoveSDOWarningFlag", "dummy data"
             )
         );
 
@@ -94,7 +101,8 @@ public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTe
             "orderIssuedDateToBeRemoved",
             "orderDateToBeRemoved",
             "hearingToUnlink",
-            "showRemoveCMOFieldsFlag"
+            "showRemoveCMOFieldsFlag",
+            "showRemoveSDOWarningFlag"
         );
     }
 
@@ -236,10 +244,12 @@ public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTe
             .removalReason(REASON)
             .build();
 
+        when(identityService.generateId()).thenReturn(SDO_ID);
+
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
         CaseData responseData = extractCaseData(response);
 
-        assertThat(responseData.getHiddenStandardDirectionOrder()).isEqualTo(expectedSDO);
+        assertThat(responseData.getHiddenStandardDirectionOrders()).isEqualTo(List.of(element(SDO_ID, expectedSDO)));
         assertThat(responseData.getState()).isEqualTo(GATEKEEPING);
         assertNull(responseData.getNoticeOfProceedingsBundle());
     }

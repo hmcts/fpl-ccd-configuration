@@ -148,7 +148,11 @@ public class CaseData {
 
     private final List<Element<Placement>> placements;
     private final StandardDirectionOrder standardDirectionOrder;
-    private final StandardDirectionOrder hiddenStandardDirectionOrder;
+    private final List<Element<StandardDirectionOrder>> hiddenStandardDirectionOrders;
+
+    public List<Element<StandardDirectionOrder>> getHiddenStandardDirectionOrders() {
+        return defaultIfNull(hiddenStandardDirectionOrders, new ArrayList<>());
+    }
 
     private SDORoute sdoRouter;
     private final DocumentReference preparedSDO;

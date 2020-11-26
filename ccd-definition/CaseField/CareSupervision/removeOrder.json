@@ -112,9 +112,10 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "hiddenStandardDirectionOrder",
-    "Label": "Removed gatekeeping order",
-    "FieldType": "StandardDirectionOrder",
+    "ID": "hiddenStandardDirectionOrders",
+    "Label": "Removed gatekeeping orders",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "StandardDirectionOrder",
     "SecurityClassification": "Public",
     "Searchable": "N"
   }
