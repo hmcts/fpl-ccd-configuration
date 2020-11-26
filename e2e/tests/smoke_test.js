@@ -1,7 +1,7 @@
 /* global process */
 const config = require('../config');
 
-Feature('Smoke tests @smoke-tests');
+Feature('Smoke tests @smoke-tests @failure');
 
 Scenario('Sign in as local authority and create a case', async ({I, caseListPage}) => {
   await I.goToPage(process.env.URL || 'http://localhost:3333');

@@ -350,7 +350,7 @@ Scenario('HMCTS admin vacates and re-lists a hearing', async ({I, caseViewPage, 
   I.seeInTab(['Further evidence documents 2', 'Hearing'], 'Case management hearing, 1 January 2060');
 });
 
-Scenario('HMCTS admin cancels and re-lists hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
+Scenario('HMCTS admin cancels and re-lists hearing @failure', async ({I, caseViewPage, manageHearingsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   await manageHearingsEventPage.selectVacateHearing('Case management hearing, 1 January 2060');
   await I.goToNextPage();
@@ -394,7 +394,7 @@ Scenario('HMCTS admin cancels and re-lists hearing', async ({I, caseViewPage, ma
   I.seeInTab(['Further evidence documents 2', 'Hearing'], 'Case management hearing, 11 January 2060');
 });
 
-Scenario('HMCTS admin adds past hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
+Scenario('HMCTS admin adds past hearing @failure', async ({I, caseViewPage, manageHearingsEventPage}) => {
   hearingStartDate = moment().subtract(5,'m').toDate();
   hearingEndDate = moment(hearingStartDate).subtract(5,'m').toDate();
 
@@ -433,7 +433,7 @@ Scenario('HMCTS admin adds past hearing', async ({I, caseViewPage, manageHearing
   I.seeInTab(['Hearing 3', 'Notice of hearing'], `Notice_of_hearing_${dateFormat(submittedAt, 'ddmmmm')}.pdf`);
 });
 
-Scenario('HMCTS admin share case with representatives', async ({I, caseViewPage, enterRepresentativesEventPage}) => {
+Scenario('HMCTS admin share case with representatives @failure', async ({I, caseViewPage, enterRepresentativesEventPage}) => {
   const representative1 = representatives.servedByDigitalService;
   const representative2 = representatives.servedByPost;
 
