@@ -4,7 +4,7 @@ exports.config = {
   output: './output',
   multiple: {
     parallel: {
-      chunks: parseInt(process.env.PARALLEL_CHUNKS || '5'),
+      chunks: 3,
     },
   },
   helpers: {
