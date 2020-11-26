@@ -43,7 +43,7 @@ public class RemoveOrderService {
                                             CaseDetailsMap data,
                                             UUID removedOrderId,
                                             RemovableOrder removableOrder) {
-        orderRemovalActions.getAction(removedOrderId, removableOrder)
+        orderRemovalActions.getAction(removableOrder)
             .populateCaseFields(caseData, data, removedOrderId, removableOrder);
     }
 
@@ -51,7 +51,7 @@ public class RemoveOrderService {
                                     CaseDetailsMap data,
                                     UUID removedOrderId,
                                     RemovableOrder removableOrder) {
-        orderRemovalActions.getAction(removedOrderId, removableOrder)
+        orderRemovalActions.getAction(removableOrder)
             .remove(caseData, data, removedOrderId, removableOrder);
     }
 

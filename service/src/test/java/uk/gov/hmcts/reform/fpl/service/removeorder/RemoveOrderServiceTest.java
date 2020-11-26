@@ -127,7 +127,7 @@ class RemoveOrderServiceTest {
 
     @Test
     void shouldUseGeneratedOrderRemovalActionWhenRemovingGeneratedOrder() {
-        when(orderRemovalActions.getAction(REMOVED_UUID, removableOrder)).thenReturn(generatedOrderRemovalAction);
+        when(orderRemovalActions.getAction(removableOrder)).thenReturn(generatedOrderRemovalAction);
 
         underTest.removeOrderFromCase(caseData, data, REMOVED_UUID, removableOrder);
 
@@ -138,7 +138,7 @@ class RemoveOrderServiceTest {
 
     @Test
     void shouldUseCMORemovalActionWhenRemovingCMO() {
-        when(orderRemovalActions.getAction(REMOVED_UUID, removableOrder)).thenReturn(cmoOrderRemovalAction);
+        when(orderRemovalActions.getAction(removableOrder)).thenReturn(cmoOrderRemovalAction);
 
         underTest.removeOrderFromCase(caseData, data, REMOVED_UUID, removableOrder);
 
@@ -149,7 +149,7 @@ class RemoveOrderServiceTest {
 
     @Test
     void shouldUseSDORemovalActionWhenRemovingSDO() {
-        when(orderRemovalActions.getAction(REMOVED_UUID, removableOrder)).thenReturn(sdoRemovalAction);
+        when(orderRemovalActions.getAction(removableOrder)).thenReturn(sdoRemovalAction);
 
         underTest.removeOrderFromCase(caseData, data, REMOVED_UUID, removableOrder);
 
@@ -160,7 +160,7 @@ class RemoveOrderServiceTest {
 
     @Test
     void shouldUseGeneratedOrderPopulateCaseFieldActionWhenPopulatingCaseFieldsForGeneratedOrder() {
-        when(orderRemovalActions.getAction(REMOVED_UUID, removableOrder)).thenReturn(generatedOrderRemovalAction);
+        when(orderRemovalActions.getAction(removableOrder)).thenReturn(generatedOrderRemovalAction);
 
         underTest.populateSelectedOrderFields(caseData, data, REMOVED_UUID, removableOrder);
 
@@ -171,7 +171,7 @@ class RemoveOrderServiceTest {
 
     @Test
     void shouldUseCMOPopulateCaseFieldActionWhenPopulatingCaseFieldsForCMO() {
-        when(orderRemovalActions.getAction(REMOVED_UUID, removableOrder)).thenReturn(cmoOrderRemovalAction);
+        when(orderRemovalActions.getAction(removableOrder)).thenReturn(cmoOrderRemovalAction);
 
         underTest.populateSelectedOrderFields(caseData, data, REMOVED_UUID, removableOrder);
 
@@ -182,7 +182,7 @@ class RemoveOrderServiceTest {
 
     @Test
     void shouldUseSDOPopulateCaseFieldActionWhenPopulatingCaseFieldsForSDO() {
-        when(orderRemovalActions.getAction(REMOVED_UUID, removableOrder)).thenReturn(sdoRemovalAction);
+        when(orderRemovalActions.getAction(removableOrder)).thenReturn(sdoRemovalAction);
 
         underTest.populateSelectedOrderFields(caseData, data, REMOVED_UUID, removableOrder);
 

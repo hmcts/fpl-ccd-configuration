@@ -10,8 +10,6 @@ import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
-import java.util.UUID;
-
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -31,7 +29,6 @@ class OrderRemovalActionsTest {
     @InjectMocks
     private OrderRemovalActions orderRemovalActions;
 
-    private static final UUID ORDER_ID = UUID.randomUUID();
     private static final CaseManagementOrder CASE_MANAGEMENT_ORDER = CaseManagementOrder.builder().build();
     private static final GeneratedOrder GENERATED_ORDER = GeneratedOrder.builder().build();
     private static final StandardDirectionOrder STANDARD_DIRECTION_ORDER = StandardDirectionOrder.builder().build();
@@ -40,7 +37,7 @@ class OrderRemovalActionsTest {
     void shouldReturnGeneratedOrderActionWhenGettingActionForGeneratedOrder() {
         when(cmoOrderRemovalAction.isAccepted(CASE_MANAGEMENT_ORDER)).thenReturn(true);
 
-        assertThat(orderRemovalActions.getAction(ORDER_ID, CASE_MANAGEMENT_ORDER))
+        assertThat(orderRemovalActions.getAction(CASE_MANAGEMENT_ORDER))
             .isEqualTo(cmoOrderRemovalAction);
     }
 
@@ -48,7 +45,7 @@ class OrderRemovalActionsTest {
     void shouldReturnCMOActionWhenGettingActionForCMO() {
         when(generatedOrderRemovalAction.isAccepted(GENERATED_ORDER)).thenReturn(true);
 
-        assertThat(orderRemovalActions.getAction(ORDER_ID, GENERATED_ORDER))
+        assertThat(orderRemovalActions.getAction(GENERATED_ORDER))
             .isEqualTo(generatedOrderRemovalAction);
     }
 
@@ -56,7 +53,7 @@ class OrderRemovalActionsTest {
     void shouldReturnSDOActionWhenGettingActionForSDO() {
         when(sdoRemovalAction.isAccepted(STANDARD_DIRECTION_ORDER)).thenReturn(true);
 
-        assertThat(orderRemovalActions.getAction(ORDER_ID, STANDARD_DIRECTION_ORDER))
+        assertThat(orderRemovalActions.getAction(STANDARD_DIRECTION_ORDER))
             .isEqualTo(sdoRemovalAction);
     }
 
@@ -66,11 +63,11 @@ class OrderRemovalActionsTest {
 
         RemovableOrderActionNotFoundException actualException
             = assertThrows(RemovableOrderActionNotFoundException.class,
-            () -> orderRemovalActions.getAction(ORDER_ID, GENERATED_ORDER)
+            () -> orderRemovalActions.getAction(GENERATED_ORDER)
         );
 
         assertThat(actualException.getMessage()).isEqualTo(
-            format("Removable order action not found for order %s", ORDER_ID)
+            format("Removable order action %s not found", cmoOrderRemovalAction.getClass().getSimpleName())
         );
     }
 }

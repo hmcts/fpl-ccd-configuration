@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.exceptions.removeorder.RemovableOrderActionNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 
-import java.util.UUID;
 import java.util.stream.Stream;
 
 @Component
@@ -16,12 +15,12 @@ public class OrderRemovalActions {
     private final GeneratedOrderRemovalAction generatedOrderRemovalAction;
     private final SDORemovalAction sdoOrderRemovalAction;
 
-    public OrderRemovalAction getAction(UUID removedOrderId,
-                                        RemovableOrder removableOrder) {
+    public OrderRemovalAction getAction(RemovableOrder removableOrder) {
         return getActions()
             .filter(orderRemovalAction -> orderRemovalAction.isAccepted(removableOrder))
             .findFirst()
-            .orElseThrow(() -> new RemovableOrderActionNotFoundException(removedOrderId));
+            .orElseThrow(() -> new RemovableOrderActionNotFoundException(cmoOrderRemovalAction.getClass()
+                .getSimpleName()));
     }
 
     private Stream<OrderRemovalAction> getActions() {
