@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
@@ -65,6 +66,8 @@ class GeneratedOrderRemovalActionTest {
                     .build())
             )
         );
+
+        generatedOrder.toBuilder().judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build()).build();
 
         CaseData caseData = CaseData.builder()
             .reasonToRemoveOrder(REASON)

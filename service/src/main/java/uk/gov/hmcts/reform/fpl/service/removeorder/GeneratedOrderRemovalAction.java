@@ -29,6 +29,7 @@ public class GeneratedOrderRemovalAction implements OrderRemovalAction {
                        RemovableOrder removableOrder) {
 
         GeneratedOrder generatedRemovableOrder = (GeneratedOrder) removableOrder;
+        ((GeneratedOrder) removableOrder).toBuilder().judgeAndLegalAdvisor(null).build();
 
         List<Element<GeneratedOrder>> generatedOrders = caseData.getOrderCollection();
         boolean removed = generatedOrders.remove(element(removedOrderId, generatedRemovableOrder));
