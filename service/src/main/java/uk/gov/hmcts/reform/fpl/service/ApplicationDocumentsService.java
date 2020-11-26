@@ -36,7 +36,7 @@ public class ApplicationDocumentsService {
         return updatedCaseData;
     }
 
-    public List<Element<ApplicationDocument>> setUpdatedByAndDateAndTimeOnDocuments(
+    private List<Element<ApplicationDocument>> setUpdatedByAndDateAndTimeOnDocuments(
         List<Element<ApplicationDocument>> currentDocuments,
         List<Element<ApplicationDocument>> previousDocuments) {
 
