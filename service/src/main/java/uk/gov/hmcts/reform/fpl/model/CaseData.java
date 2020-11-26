@@ -148,6 +148,8 @@ public class CaseData {
 
     private final List<Element<Placement>> placements;
     private final StandardDirectionOrder standardDirectionOrder;
+    private final StandardDirectionOrder hiddenStandardDirectionOrder;
+
     private SDORoute sdoRouter;
     private final DocumentReference preparedSDO;
     private final DocumentReference replacementSDO;

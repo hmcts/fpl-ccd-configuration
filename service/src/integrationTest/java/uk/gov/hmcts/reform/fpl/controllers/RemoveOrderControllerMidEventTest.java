@@ -9,6 +9,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -22,13 +23,14 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(RemoveOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
 public class RemoveOrderControllerMidEventTest extends AbstractControllerTest {
-
+    private static final UUID SDO_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
     private Element<GeneratedOrder> selectedOrder;
 
     RemoveOrderControllerMidEventTest() {
@@ -96,6 +98,40 @@ public class RemoveOrderControllerMidEventTest extends AbstractControllerTest {
                 new TypeReference<Map<String, Object>>() {}),
             "orderTitleToBeRemoved", "Case management order",
             "hearingToUnlink", hearingBooking.toLabel()
+        );
+
+        assertThat(responseData).containsAllEntriesOf(extractedFields);
+    }
+
+    @Test
+    void shouldExtractSelectedStandardDirectionOrderFields() {
+        DocumentReference documentReference = DocumentReference.builder().build();
+
+        StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
+            .orderDoc(documentReference)
+            .build();
+
+        DynamicList dynamicList = DynamicList.builder()
+            .value(DynamicListElement.builder()
+                .code(SDO_ID)
+                .label("Gatekeeping order - 12 March 1234")
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .standardDirectionOrder(standardDirectionOrder)
+            .removableOrderList(dynamicList)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
+
+        Map<String, Object> responseData = response.getData();
+
+        Map<String, Object> extractedFields = Map.of(
+            "orderToBeRemoved", mapper.convertValue(standardDirectionOrder.getOrderDoc(),
+                new TypeReference<Map<String, Object>>() {}),
+            "orderTitleToBeRemoved", "Gatekeeping order",
+            "showRemoveSDOWarningFlag", YES.getValue()
         );
 
         assertThat(responseData).containsAllEntriesOf(extractedFields);

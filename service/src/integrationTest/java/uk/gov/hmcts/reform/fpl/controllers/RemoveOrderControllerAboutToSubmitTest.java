@@ -12,7 +12,10 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
@@ -27,6 +30,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
 
@@ -35,6 +42,7 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
 @OverrideAutoConfiguration(enabled = true)
 public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTest {
     private static final String REASON = "The order was removed because the order was removed";
+    private static final UUID SDO_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
 
     private Element<GeneratedOrder> selectedOrder;
 
@@ -201,6 +209,39 @@ public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTe
 
         assertThat(hiddenCMOs).hasSize(1).first().isEqualTo(caseManagementOrder1);
         assertNull(unlinkedHearing.getCaseManagementOrderId());
+    }
+
+    @Test
+    void shouldRemoveSDONoticeOfProceedingsAndSetStateToGatekeepingWhenRemovingASealedSDO() {
+        StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeTitle(HIS_HONOUR_JUDGE)
+                .judgeLastName("Watson")
+                .build())
+            .orderStatus(SEALED)
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .state(CASE_MANAGEMENT)
+            .reasonToRemoveOrder(REASON)
+            .standardDirectionOrder(standardDirectionOrder)
+            .noticeOfProceedingsBundle(List.of(element(DocumentBundle.builder().build())))
+            .removableOrderList(DynamicList.builder()
+                .value(buildListElement(SDO_ID, "Gatekeeping order - 15 June 2020"))
+                .build())
+            .build();
+
+        StandardDirectionOrder expectedSDO = StandardDirectionOrder.builder()
+            .orderStatus(SEALED)
+            .removalReason(REASON)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
+        CaseData responseData = extractCaseData(response);
+
+        assertThat(responseData.getHiddenStandardDirectionOrder()).isEqualTo(expectedSDO);
+        assertThat(responseData.getState()).isEqualTo(GATEKEEPING);
+        assertNull(responseData.getNoticeOfProceedingsBundle());
     }
 
     private CaseData buildCaseData(Element<GeneratedOrder> order) {

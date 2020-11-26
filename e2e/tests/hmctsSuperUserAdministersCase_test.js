@@ -72,6 +72,30 @@ Scenario('HMCTS super user removes a cmo from a case', async ({I, caseViewPage, 
   I.seeInTab([sealedCMO, 'Reason for removal'], 'Entered incorrect order');
 });
 
+Scenario('HMCTS super user removes a sdo from a case', async ({I, caseViewPage, removeOrderEventPage}) => {
+  const newCaseId = await I.submitNewCaseWithData(finalHearingCaseData);
+
+  await I.signIn(config.hmctsSuperUser);
+  await I.navigateToCaseDetailsAs(config.hmctsSuperUser, newCaseId);
+
+  await caseViewPage.goToNewActions(config.superUserActions.removeOrder);
+
+  let order = finalHearingCaseData.caseData.standardDirectionOrder;
+  const labelToSelect = 'Gatekeeping order - ' + moment(order.dateOfIssue).format('D MMMM YYYY');
+  removeOrderEventPage.selectOrderToRemove(labelToSelect);
+  await I.goToNextPage();
+  removeOrderEventPage.addRemoveOrderReason('Entered incorrect order');
+  await I.completeEvent('Submit');
+  I.seeEventSubmissionConfirmation(config.superUserActions.removeOrder);
+
+  caseViewPage.selectTab(caseViewPage.tabs.orders);
+  const removeSDO = 'Removed gatekeeping order';
+
+  I.seeInTab([removeSDO, 'File'], 'sdo.pdf');
+  I.seeInTab([removeSDO, 'Date of issue'], '28 April 2020');
+  I.seeInTab([removeSDO, 'Reason for removal'], 'Entered incorrect order');
+});
+
 Scenario('HMCTS super user changes state from case management to final hearing', async ({I, caseViewPage, changeCaseStateEventPage}) => {
   const newCaseId = await I.submitNewCaseWithData(caseManagementCaseData);
   await I.navigateToCaseDetailsAs(config.hmctsSuperUser, newCaseId);

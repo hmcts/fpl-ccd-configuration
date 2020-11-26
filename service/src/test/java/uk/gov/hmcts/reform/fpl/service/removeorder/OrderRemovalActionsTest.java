@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.exceptions.removeorder.RemovableOrderActionNotFoundException;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
@@ -24,12 +25,16 @@ class OrderRemovalActionsTest {
     @Mock
     private GeneratedOrderRemovalAction generatedOrderRemovalAction;
 
+    @Mock
+    private SDORemovalAction sdoRemovalAction;
+
     @InjectMocks
     private OrderRemovalActions orderRemovalActions;
 
     private static final UUID ORDER_ID = UUID.randomUUID();
     private static final CaseManagementOrder CASE_MANAGEMENT_ORDER = CaseManagementOrder.builder().build();
     private static final GeneratedOrder GENERATED_ORDER = GeneratedOrder.builder().build();
+    private static final StandardDirectionOrder STANDARD_DIRECTION_ORDER = StandardDirectionOrder.builder().build();
 
     @Test
     void shouldReturnGeneratedOrderActionWhenGettingActionForGeneratedOrder() {
@@ -45,6 +50,14 @@ class OrderRemovalActionsTest {
 
         assertThat(orderRemovalActions.getAction(ORDER_ID, GENERATED_ORDER))
             .isEqualTo(generatedOrderRemovalAction);
+    }
+
+    @Test
+    void shouldReturnSDOActionWhenGettingActionForSDO() {
+        when(sdoRemovalAction.isAccepted(STANDARD_DIRECTION_ORDER)).thenReturn(true);
+
+        assertThat(orderRemovalActions.getAction(ORDER_ID, STANDARD_DIRECTION_ORDER))
+            .isEqualTo(sdoRemovalAction);
     }
 
     @Test

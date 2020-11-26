@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
@@ -31,6 +32,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
@@ -40,6 +42,7 @@ class RemoveOrderServiceTest {
 
     private static final LocalDate NOW = LocalDate.now();
     private static final java.util.UUID REMOVED_UUID = java.util.UUID.randomUUID();
+    private static final UUID SDO_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
 
     @Mock
     private OrderRemovalActions orderRemovalActions;
@@ -47,6 +50,8 @@ class RemoveOrderServiceTest {
     private GeneratedOrderRemovalAction generatedOrderRemovalAction;
     @Mock
     private CMOOrderRemovalAction cmoOrderRemovalAction;
+    @Mock
+    private SDORemovalAction sdoRemovalAction;
     @Mock
     private RemovableOrder removableOrder;
     @Mock
@@ -92,9 +97,14 @@ class RemoveOrderServiceTest {
 
         List<Element<CaseManagementOrder>> caseManagementOrders = buildCaseManagementOrders();
 
+        StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
+            .orderStatus(SEALED)
+            .build();
+
         CaseData caseData = CaseData.builder()
             .orderCollection(generatedOrders)
             .sealedCMOs(caseManagementOrders)
+            .standardDirectionOrder(standardDirectionOrder)
             .build();
 
         DynamicList listOfOrders = underTest.buildDynamicListOfOrders(caseData);
@@ -107,6 +117,8 @@ class RemoveOrderServiceTest {
                 buildListElement(generatedOrders.get(2).getId(), "order 3 - 17 August 2020"),
                 buildListElement(generatedOrders.get(3).getId(), "order 4 - 18 September 2020"),
                 buildListElement(caseManagementOrders.get(0).getId(), format("Case management order - %s",
+                    formatLocalDateToString(NOW, "d MMMM yyyy"))),
+                buildListElement(SDO_ID, format("Gatekeeping order - %s",
                     formatLocalDateToString(NOW, "d MMMM yyyy")))))
             .build();
 
@@ -121,7 +133,7 @@ class RemoveOrderServiceTest {
 
         verify(generatedOrderRemovalAction).remove(caseData, data, REMOVED_UUID, removableOrder);
         verifyNoMoreInteractions(generatedOrderRemovalAction);
-        verifyNoInteractions(cmoOrderRemovalAction);
+        verifyNoInteractions(cmoOrderRemovalAction, sdoRemovalAction);
     }
 
     @Test
@@ -132,7 +144,18 @@ class RemoveOrderServiceTest {
 
         verify(cmoOrderRemovalAction).remove(caseData, data, REMOVED_UUID, removableOrder);
         verifyNoMoreInteractions(cmoOrderRemovalAction);
-        verifyNoInteractions(generatedOrderRemovalAction);
+        verifyNoInteractions(generatedOrderRemovalAction, sdoRemovalAction);
+    }
+
+    @Test
+    void shouldUseSDORemovalActionWhenRemovingSDO() {
+        when(orderRemovalActions.getAction(REMOVED_UUID, removableOrder)).thenReturn(sdoRemovalAction);
+
+        underTest.removeOrderFromCase(caseData, data, REMOVED_UUID, removableOrder);
+
+        verify(sdoRemovalAction).remove(caseData, data, REMOVED_UUID, removableOrder);
+        verifyNoMoreInteractions(sdoRemovalAction);
+        verifyNoInteractions(generatedOrderRemovalAction, cmoOrderRemovalAction);
     }
 
     @Test
@@ -155,6 +178,17 @@ class RemoveOrderServiceTest {
         verify(cmoOrderRemovalAction).populateCaseFields(caseData, data, REMOVED_UUID, removableOrder);
         verifyNoMoreInteractions(cmoOrderRemovalAction);
         verifyNoInteractions(generatedOrderRemovalAction);
+    }
+
+    @Test
+    void shouldUseSDOPopulateCaseFieldActionWhenPopulatingCaseFieldsForSDO() {
+        when(orderRemovalActions.getAction(REMOVED_UUID, removableOrder)).thenReturn(sdoRemovalAction);
+
+        underTest.populateSelectedOrderFields(caseData, data, REMOVED_UUID, removableOrder);
+
+        verify(sdoRemovalAction).populateCaseFields(caseData, data, REMOVED_UUID, removableOrder);
+        verifyNoMoreInteractions(sdoRemovalAction);
+        verifyNoInteractions(generatedOrderRemovalAction, cmoOrderRemovalAction);
     }
 
     private DynamicListElement buildListElement(UUID id, String label) {

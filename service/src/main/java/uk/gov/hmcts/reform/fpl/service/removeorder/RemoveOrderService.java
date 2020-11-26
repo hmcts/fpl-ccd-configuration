@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.exceptions.removeorder.RemovableOrderNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
@@ -16,6 +17,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -65,6 +67,13 @@ public class RemoveOrderService {
         List<Element<? extends RemovableOrder>> orders = new ArrayList<>();
         orders.addAll(caseData.getOrderCollection());
         orders.addAll(caseData.getSealedCMOs());
+
+        if (caseData.getStandardDirectionOrder() != null) {
+            StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
+
+            orders.add(element(standardDirectionOrder.getUniqueCollectionId(), standardDirectionOrder));
+        }
+
         return orders;
     }
 }

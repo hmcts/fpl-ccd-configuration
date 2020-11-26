@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 public class OrderRemovalActions {
     private final CMOOrderRemovalAction cmoOrderRemovalAction;
     private final GeneratedOrderRemovalAction generatedOrderRemovalAction;
+    private final SDORemovalAction sdoOrderRemovalAction;
 
     public OrderRemovalAction getAction(UUID removedOrderId,
                                         RemovableOrder removableOrder) {
@@ -26,7 +27,8 @@ public class OrderRemovalActions {
     private Stream<OrderRemovalAction> getActions() {
         return Stream.of(
             cmoOrderRemovalAction,
-            generatedOrderRemovalAction
+            generatedOrderRemovalAction,
+            sdoOrderRemovalAction
         );
     }
 }
