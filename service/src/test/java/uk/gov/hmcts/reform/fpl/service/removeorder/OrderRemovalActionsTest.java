@@ -12,13 +12,13 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class OrderRemovalActionsTest {
     @Mock
-    private CMOOrderRemovalAction cmoOrderRemovalAction;
+    private CMORemovalAction cmoOrderRemovalAction;
 
     @Mock
     private GeneratedOrderRemovalAction generatedOrderRemovalAction;
@@ -61,13 +61,9 @@ class OrderRemovalActionsTest {
     void shouldThrowAnExceptionWhenActionTypeFailsToMatchToRemovableOrder() {
         when(cmoOrderRemovalAction.isAccepted(GENERATED_ORDER)).thenReturn(false);
 
-        RemovableOrderActionNotFoundException actualException
-            = assertThrows(RemovableOrderActionNotFoundException.class,
-            () -> orderRemovalActions.getAction(GENERATED_ORDER)
-        );
-
-        assertThat(actualException.getMessage()).isEqualTo(
-            format("Removable order action %s not found", cmoOrderRemovalAction.getClass().getSimpleName())
-        );
+        assertThatThrownBy(() -> orderRemovalActions.getAction(GENERATED_ORDER))
+            .isInstanceOf(RemovableOrderActionNotFoundException.class)
+            .hasMessage(format("Removable order action %s not found", cmoOrderRemovalAction.getClass()
+                .getSimpleName()));
     }
 }

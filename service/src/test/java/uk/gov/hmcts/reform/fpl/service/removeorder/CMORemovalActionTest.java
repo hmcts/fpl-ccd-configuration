@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.service.removeorder;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
+import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -16,16 +18,15 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
-class CMOOrderRemovalActionTest {
+class CMORemovalActionTest {
 
     private static final UUID TO_REMOVE_ORDER_ID = UUID.randomUUID();
     private static final UUID ALREADY_REMOVED_ORDER_ID = UUID.randomUUID();
@@ -35,7 +36,7 @@ class CMOOrderRemovalActionTest {
     private static final UUID HEARING_ID = UUID.randomUUID();
     private static final UUID ANOTHER_HEARING_ID = UUID.randomUUID();
 
-    private final CMOOrderRemovalAction underTest = new CMOOrderRemovalAction();
+    private final CMORemovalAction underTest = new CMORemovalAction();
 
     @Test
     void isAcceptedIfCaseManagementOrder() {
@@ -202,12 +203,10 @@ class CMOOrderRemovalActionTest {
             .data(Map.of())
             .build());
 
-        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-            () -> underTest.remove(caseData, caseDetailsMap, ALREADY_REMOVED_ORDER_ID, emptyCaseManagementOrder));
-
-        assertThat(exception.getMessage()).isEqualTo(
-            format("Failed to find order matching id %s", ALREADY_REMOVED_ORDER_ID)
-        );
+        assertThatThrownBy(() -> underTest.remove(caseData, caseDetailsMap, ALREADY_REMOVED_ORDER_ID,
+            emptyCaseManagementOrder))
+            .isInstanceOf(CMONotFoundException.class)
+            .hasMessage("Failed to find order matching id %s", ALREADY_REMOVED_ORDER_ID);
     }
 
     @Test
@@ -276,11 +275,9 @@ class CMOOrderRemovalActionTest {
             .data(Map.of())
             .build());
 
-        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-            () -> underTest.populateCaseFields(caseData, caseDetailsMap, ALREADY_REMOVED_ORDER_ID, removedOrder));
-
-        assertThat(exception.getMessage()).isEqualTo(
-            format("Could not find hearing matching id %s", ALREADY_REMOVED_ORDER_ID)
-        );
+        assertThatThrownBy(() -> underTest.populateCaseFields(caseData, caseDetailsMap, ALREADY_REMOVED_ORDER_ID,
+            removedOrder))
+            .isInstanceOf(HearingNotFoundException.class)
+            .hasMessage("Could not find hearing matching id %s", ALREADY_REMOVED_ORDER_ID);
     }
 }

@@ -49,7 +49,7 @@ class RemoveOrderServiceTest {
     @Mock
     private GeneratedOrderRemovalAction generatedOrderRemovalAction;
     @Mock
-    private CMOOrderRemovalAction cmoOrderRemovalAction;
+    private CMORemovalAction cmoRemovalAction;
     @Mock
     private SDORemovalAction sdoRemovalAction;
     @Mock
@@ -133,17 +133,17 @@ class RemoveOrderServiceTest {
 
         verify(generatedOrderRemovalAction).remove(caseData, data, REMOVED_UUID, removableOrder);
         verifyNoMoreInteractions(generatedOrderRemovalAction);
-        verifyNoInteractions(cmoOrderRemovalAction, sdoRemovalAction);
+        verifyNoInteractions(cmoRemovalAction, sdoRemovalAction);
     }
 
     @Test
     void shouldUseCMORemovalActionWhenRemovingCMO() {
-        when(orderRemovalActions.getAction(removableOrder)).thenReturn(cmoOrderRemovalAction);
+        when(orderRemovalActions.getAction(removableOrder)).thenReturn(cmoRemovalAction);
 
         underTest.removeOrderFromCase(caseData, data, REMOVED_UUID, removableOrder);
 
-        verify(cmoOrderRemovalAction).remove(caseData, data, REMOVED_UUID, removableOrder);
-        verifyNoMoreInteractions(cmoOrderRemovalAction);
+        verify(cmoRemovalAction).remove(caseData, data, REMOVED_UUID, removableOrder);
+        verifyNoMoreInteractions(cmoRemovalAction);
         verifyNoInteractions(generatedOrderRemovalAction, sdoRemovalAction);
     }
 
@@ -155,7 +155,7 @@ class RemoveOrderServiceTest {
 
         verify(sdoRemovalAction).remove(caseData, data, REMOVED_UUID, removableOrder);
         verifyNoMoreInteractions(sdoRemovalAction);
-        verifyNoInteractions(generatedOrderRemovalAction, cmoOrderRemovalAction);
+        verifyNoInteractions(generatedOrderRemovalAction, cmoRemovalAction);
     }
 
     @Test
@@ -166,18 +166,18 @@ class RemoveOrderServiceTest {
 
         verify(generatedOrderRemovalAction).populateCaseFields(caseData, data, REMOVED_UUID, removableOrder);
         verifyNoMoreInteractions(generatedOrderRemovalAction);
-        verifyNoInteractions(cmoOrderRemovalAction);
+        verifyNoInteractions(cmoRemovalAction, sdoRemovalAction);
     }
 
     @Test
     void shouldUseCMOPopulateCaseFieldActionWhenPopulatingCaseFieldsForCMO() {
-        when(orderRemovalActions.getAction(removableOrder)).thenReturn(cmoOrderRemovalAction);
+        when(orderRemovalActions.getAction(removableOrder)).thenReturn(cmoRemovalAction);
 
         underTest.populateSelectedOrderFields(caseData, data, REMOVED_UUID, removableOrder);
 
-        verify(cmoOrderRemovalAction).populateCaseFields(caseData, data, REMOVED_UUID, removableOrder);
-        verifyNoMoreInteractions(cmoOrderRemovalAction);
-        verifyNoInteractions(generatedOrderRemovalAction);
+        verify(cmoRemovalAction).populateCaseFields(caseData, data, REMOVED_UUID, removableOrder);
+        verifyNoMoreInteractions(cmoRemovalAction);
+        verifyNoInteractions(generatedOrderRemovalAction, sdoRemovalAction);
     }
 
     @Test
@@ -188,7 +188,7 @@ class RemoveOrderServiceTest {
 
         verify(sdoRemovalAction).populateCaseFields(caseData, data, REMOVED_UUID, removableOrder);
         verifyNoMoreInteractions(sdoRemovalAction);
-        verifyNoInteractions(generatedOrderRemovalAction, cmoOrderRemovalAction);
+        verifyNoInteractions(generatedOrderRemovalAction, cmoRemovalAction);
     }
 
     private DynamicListElement buildListElement(UUID id, String label) {

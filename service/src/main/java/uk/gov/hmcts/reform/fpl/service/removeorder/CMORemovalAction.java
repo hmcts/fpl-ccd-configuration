@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service.removeorder;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
+import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -18,7 +20,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Component
-public class CMOOrderRemovalAction implements OrderRemovalAction {
+public class CMORemovalAction implements OrderRemovalAction {
 
     @Override
     public boolean isAccepted(RemovableOrder removableOrder) {
@@ -34,7 +36,7 @@ public class CMOOrderRemovalAction implements OrderRemovalAction {
         List<Element<CaseManagementOrder>> sealedCMOs = caseData.getSealedCMOs();
         boolean removed = sealedCMOs.remove(element(removedOrderId, caseManagementOrder));
         if (!removed) {
-            throw new IllegalArgumentException(format("Failed to find order matching id %s", removedOrderId));
+            throw new CMONotFoundException(format("Failed to find order matching id %s", removedOrderId));
         }
 
         caseManagementOrder.setRemovalReason(caseData.getReasonToRemoveOrder());
@@ -85,7 +87,7 @@ public class CMOOrderRemovalAction implements OrderRemovalAction {
             .filter(hearingBookingElement ->
                 removedOrderId.equals(hearingBookingElement.getValue().getCaseManagementOrderId()))
             .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException(
+            .orElseThrow(() -> new HearingNotFoundException(
                 format("Could not find hearing matching id %s", removedOrderId)));
     }
 }
