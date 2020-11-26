@@ -99,7 +99,8 @@ class ManageDocumentServiceTest {
 
         ManageDocument expectedManageDocument = ManageDocument.builder().hasHearings(YES.getValue()).build();
 
-        Map<String, Object> listAndLabel = manageDocumentService.initialiseManageDocumentEvent(caseData);
+        Map<String, Object> listAndLabel = manageDocumentService.initialiseManageDocumentEvent(
+            caseData, MANAGE_DOCUMENT_KEY);
 
         assertThat(listAndLabel)
             .extracting(MANAGE_DOCUMENTS_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_KEY)
@@ -111,7 +112,8 @@ class ManageDocumentServiceTest {
         CaseData caseData = CaseData.builder().build();
         ManageDocument expectedManageDocument = ManageDocument.builder().hasHearings(NO.getValue()).build();
 
-        Map<String, Object> listAndLabel = manageDocumentService.initialiseManageDocumentEvent(caseData);
+        Map<String, Object> listAndLabel = manageDocumentService.initialiseManageDocumentEvent(
+            caseData, MANAGE_DOCUMENT_KEY);
 
         assertThat(listAndLabel)
             .extracting(MANAGE_DOCUMENTS_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_KEY)
@@ -136,7 +138,8 @@ class ManageDocumentServiceTest {
             .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
             .build();
 
-        Map<String, Object> listAndLabel = manageDocumentService.initialiseHearingListAndLabel(caseData);
+        Map<String, Object> listAndLabel = manageDocumentService.initialiseHearingListAndLabel(
+            caseData, caseData.getManageDocument().isDocumentRelatedToHearing());
 
         DynamicList expectedDynamicList = asDynamicList(hearingBookings, selectHearingId, HearingBooking::toLabel);
 
@@ -162,10 +165,11 @@ class ManageDocumentServiceTest {
             .build();
 
         final IllegalStateException exception = assertThrows(IllegalStateException.class,
-            () -> manageDocumentService.initialiseHearingListAndLabel(caseData));
+            () -> manageDocumentService.initialiseHearingListAndLabel(caseData,
+                caseData.getManageDocument().isDocumentRelatedToHearing()));
 
         assertThat(exception.getMessage()).isEqualTo(
-            String.format("Failed to find hearing with ID: %s", selectedHearingId)
+            String.format("Hearing booking with id %s not found", selectedHearingId)
         );
     }
 
@@ -431,7 +435,7 @@ class ManageDocumentServiceTest {
             () -> manageDocumentService.buildHearingFurtherEvidenceCollection(caseData, supportingEvidenceBundle));
 
         assertThat(exception.getMessage()).isEqualTo(
-            String.format("Failed to find hearing with ID: %s", selectedHearingId)
+            String.format("Hearing booking with id %s not found", selectedHearingId)
         );
     }
 

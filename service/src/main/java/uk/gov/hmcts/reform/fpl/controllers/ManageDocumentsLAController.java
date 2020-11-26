@@ -26,6 +26,7 @@ import static uk.gov.hmcts.reform.fpl.service.ManageDocumentLAService.COURT_BUND
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentLAService.COURT_BUNDLE_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentLAService.COURT_BUNDLE_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentLAService.FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_LA_KEY;
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentLAService.MANAGE_DOCUMENT_LA_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.C2_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.C2_SUPPORTING_DOCUMENTS_COLLECTION;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
@@ -52,7 +53,8 @@ public class ManageDocumentsLAController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().putAll(manageDocumentLAService.initialiseManageDocumentEvent(caseData));
+        caseDetails.getData().putAll(
+            manageDocumentService.initialiseManageDocumentEvent(caseData, MANAGE_DOCUMENT_LA_KEY));
 
         return respond(caseDetails);
     }
@@ -66,7 +68,8 @@ public class ManageDocumentsLAController extends CallbackController {
 
         switch (caseData.getManageDocumentLA().getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
-                caseDetails.getData().putAll(manageDocumentLAService.initialiseHearingListAndLabel(caseData));
+                caseDetails.getData().putAll(manageDocumentService.initialiseHearingListAndLabel(
+                    caseData, caseData.getManageDocumentLA().isDocumentRelatedToHearing()));
                 supportingEvidence = manageDocumentLAService.getFurtherEvidenceCollection(caseData);
                 break;
             case CORRESPONDENCE:
@@ -81,7 +84,7 @@ public class ManageDocumentsLAController extends CallbackController {
                 caseDetails.getData().putAll(manageDocumentLAService.initialiseCourtBundleFields(caseData));
                 break;
             case APPLICATION_DOCUMENTS:
-                System.out.println("Application");
+                System.out.println("Waiting for Toireasa PR");
                 break;
         }
 
@@ -143,6 +146,9 @@ public class ManageDocumentsLAController extends CallbackController {
             case COURT_BUNDLE:
                 caseDetails.getData().put(COURT_BUNDLE_LIST_KEY,
                     manageDocumentLAService.buildCourtBundleList(caseData));
+                break;
+            case APPLICATION_DOCUMENTS:
+                System.out.println("Waiting for Toireasa PR");
                 break;
         }
 

@@ -47,7 +47,8 @@ public class ManageDocumentsController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().putAll(manageDocumentService.initialiseManageDocumentEvent(caseData));
+        caseDetails.getData().putAll(
+            manageDocumentService.initialiseManageDocumentEvent(caseData, MANAGE_DOCUMENT_KEY));
 
         caseDetails.getData().remove("furtherEvidenceDocumentsTEMP");
 
@@ -63,7 +64,8 @@ public class ManageDocumentsController extends CallbackController {
 
         switch (caseData.getManageDocument().getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
-                caseDetails.getData().putAll(manageDocumentService.initialiseHearingListAndLabel(caseData));
+                caseDetails.getData().putAll(manageDocumentService.initialiseHearingListAndLabel(
+                    caseData, caseData.getManageDocument().isDocumentRelatedToHearing()));
                 supportingEvidence = manageDocumentService.getFurtherEvidenceCollection(caseData);
                 break;
             case CORRESPONDENCE:
@@ -121,7 +123,7 @@ public class ManageDocumentsController extends CallbackController {
                 List<Element<SupportingEvidenceBundle>> updatedCorrespondenceDocuments = manageDocumentService
                     .setDateTimeUploadedOnSupportingEvidence(caseData.getSupportingEvidenceDocumentsTemp(),
                         caseDataBefore.getCorrespondenceDocuments()
-                );
+                    );
 
                 caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, updatedCorrespondenceDocuments);
                 break;

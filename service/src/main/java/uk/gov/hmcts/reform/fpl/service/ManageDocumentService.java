@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
@@ -25,6 +26,7 @@ import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentLAService.COURT_BUNDLE_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
@@ -49,12 +51,14 @@ public class ManageDocumentService {
     public static final String SUPPORTING_C2_LABEL = "manageDocumentsSupportingC2Label";
     public static final String MANAGE_DOCUMENT_KEY = "manageDocument";
 
-    public Map<String, Object> initialiseManageDocumentEvent(CaseData caseData) {
+    public Map<String, Object> initialiseManageDocumentEvent(CaseData caseData, String caseFieldKey) {
         Map<String, Object> listAndLabel = new HashMap<>();
         String hasHearings;
 
         if (caseData.getHearingDetails() != null && !caseData.getHearingDetails().isEmpty()) {
             listAndLabel.put(MANAGE_DOCUMENTS_HEARING_LIST_KEY, caseData.buildDynamicHearingList());
+            listAndLabel.put(COURT_BUNDLE_HEARING_LIST_KEY, caseData.buildDynamicHearingList());
+
             hasHearings = YES.getValue();
         } else {
             hasHearings = NO.getValue();
@@ -66,20 +70,20 @@ public class ManageDocumentService {
             listAndLabel.put(SUPPORTING_C2_LIST_KEY, caseData.buildC2DocumentDynamicList());
         }
 
-        listAndLabel.put(MANAGE_DOCUMENT_KEY, manageDocument);
+        listAndLabel.put(caseFieldKey, manageDocument);
 
         return listAndLabel;
     }
 
-    public Map<String, Object> initialiseHearingListAndLabel(CaseData caseData) {
+    public Map<String, Object> initialiseHearingListAndLabel(CaseData caseData, boolean relatedToHearing) {
         Map<String, Object> listAndLabel = new HashMap<>();
 
-        if (caseData.getManageDocument().isDocumentRelatedToHearing()) {
+        if (relatedToHearing) {
             UUID selectedHearingCode = getDynamicListSelectedValue(caseData.getManageDocumentsHearingList(), mapper);
             Optional<Element<HearingBooking>> hearingBooking = caseData.findHearingBookingElement(selectedHearingCode);
 
             if (hearingBooking.isEmpty()) {
-                throw new IllegalStateException(formatHearingBookingExceptionMessage(selectedHearingCode));
+                throw new NoHearingBookingException(selectedHearingCode);
             }
 
             listAndLabel.put(MANAGE_DOCUMENTS_HEARING_LABEL_KEY, hearingBooking.get().getValue().toLabel());
@@ -158,7 +162,7 @@ public class ManageDocumentService {
         Optional<Element<HearingBooking>> hearingBooking = caseData.findHearingBookingElement(selectedHearingCode);
 
         if (hearingBooking.isEmpty()) {
-            throw new IllegalStateException(formatHearingBookingExceptionMessage(selectedHearingCode));
+            throw new NoHearingBookingException(selectedHearingCode);
         }
 
         if (caseData.documentBundleContainsHearingId(selectedHearingCode)) {
@@ -262,9 +266,5 @@ public class ManageDocumentService {
 
     public List<Element<SupportingEvidenceBundle>> getEmptySupportingEvidenceBundle() {
         return List.of(element(SupportingEvidenceBundle.builder().build()));
-    }
-
-    public String formatHearingBookingExceptionMessage(UUID hearingId) {
-        return String.format("Failed to find hearing with ID: %s", hearingId);
     }
 }
