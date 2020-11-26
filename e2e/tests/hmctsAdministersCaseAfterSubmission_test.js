@@ -465,7 +465,7 @@ Scenario('HMCTS admin share case with representatives @failure', async ({I, case
   I.see(caseId);
 });
 
-Scenario('HMCTS admin revoke case access from representative', async ({I, caseViewPage}) => {
+Scenario('HMCTS admin revoke case access from representative @failure', async ({I, caseViewPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.amendRepresentatives);
 
   await I.removeElementFromCollection('Representatives');
@@ -478,35 +478,35 @@ Scenario('HMCTS admin revoke case access from representative', async ({I, caseVi
   I.see('No cases found.');
 });
 
-Scenario('HMCTS admin creates blank order', async ({I, caseViewPage, createOrderEventPage}) => {
+Scenario('HMCTS admin creates blank order @failure', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, blankOrder);
 });
 
-Scenario('HMCTS admin creates interim supervision order', async ({I, caseViewPage, createOrderEventPage}) => {
+Scenario('HMCTS admin creates interim supervision order @failure', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, interimSuperVisionOrder);
 });
 
-Scenario('HMCTS admin creates final supervision order', async ({I, caseViewPage, createOrderEventPage}) => {
+Scenario('HMCTS admin creates final supervision order @failure', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, finalSuperVisionOrder);
 });
 
-Scenario('HMCTS admin creates emergency protection order', async ({I, caseViewPage, createOrderEventPage}) => {
+Scenario('HMCTS admin creates emergency protection order @failure', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, emergencyProtectionOrder);
 });
 
-Scenario('HMCTS admin creates interim care order', async ({I, caseViewPage, createOrderEventPage}) => {
+Scenario('HMCTS admin creates interim care order @failure', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, interimCareOrder);
 });
 
-Scenario('HMCTS admin uploads order', async ({I, caseViewPage, createOrderEventPage}) => {
+Scenario('HMCTS admin uploads order @failure', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, uploadedOrder);
 });
 
-Scenario('HMCTS admin creates final care order', async ({I, caseViewPage, createOrderEventPage}) => {
+Scenario('HMCTS admin creates final care order @failure', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, finalCareOrder);
 });
 
-Scenario('HMCTS admin creates discharge of care order', async ({I, caseViewPage, createOrderEventPage}) => {
+Scenario('HMCTS admin creates discharge of care order @failure', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, dischargeOfCareOrder);
 });
 
@@ -573,7 +573,7 @@ Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async 
   I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
 });
 
-Scenario('HMCTS admin adds a note to the case', async ({I, caseViewPage, addNoteEventPage}) => {
+Scenario('HMCTS admin adds a note to the case @failure', async ({I, caseViewPage, addNoteEventPage}) => {
   const note = 'Example note';
   await caseViewPage.goToNewActions(config.administrationActions.addNote);
   addNoteEventPage.addNote(note);
@@ -583,7 +583,7 @@ Scenario('HMCTS admin adds a note to the case', async ({I, caseViewPage, addNote
   I.seeInTab(['Note 1', 'Note'], note);
 });
 
-Scenario('HMCTS admin adds expert report log', async ({I, caseViewPage, addExpertReportEventPage}) => {
+Scenario('HMCTS admin adds expert report log @failure', async ({I, caseViewPage, addExpertReportEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.addExpertReportLog);
   addExpertReportEventPage.addExpertReportLog(expertReportLog[0]);
   await I.completeEvent('Save and continue');
@@ -595,7 +595,7 @@ Scenario('HMCTS admin adds expert report log', async ({I, caseViewPage, addExper
   I.seeInTab(['Report 1', 'Date approved'], '2 Apr 2020');
 });
 
-Scenario('HMCTS admin makes 26-week case extension', async ({I, caseViewPage, addExtend26WeekTimelineEventPage}) => {
+Scenario('HMCTS admin makes 26-week case extension @failure', async ({I, caseViewPage, addExtend26WeekTimelineEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.extend26WeekTimeline);
   addExtend26WeekTimelineEventPage.selectEightWeekExtensionTime();
   addExtend26WeekTimelineEventPage.selectTimetableForChildExtensionReason();
@@ -611,7 +611,7 @@ Scenario('HMCTS admin makes 26-week case extension', async ({I, caseViewPage, ad
   I.see('Comment');
 });
 
-Scenario('HMCTS admin closes the case', async ({I, caseViewPage, closeTheCaseEventPage}) => {
+Scenario('HMCTS admin closes the case @failure', async ({I, caseViewPage, closeTheCaseEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.closeTheCase);
   closeTheCaseEventPage.closeCase({day: 12, month: 3, year: 2020}, true, closeTheCaseEventPage.fields.radioGroup.partialReason.options.deprivation);
   await I.completeEvent('Submit');
