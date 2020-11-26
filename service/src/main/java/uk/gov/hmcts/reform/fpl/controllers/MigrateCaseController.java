@@ -31,15 +31,26 @@ public class MigrateCaseController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        Object migrationId = getMigrationId(caseDetails);
+        String familyManCaseNumber = caseData.getFamilyManCaseNumber();
 
         if ("ZW20C50003".equals(caseData.getFamilyManCaseNumber())) {
             log.info("Removing hearings from case reference {}", caseDetails.getId());
             caseDetails.getData().put("hearingDetails", removeHearings(caseData.getHearingDetails()));
         }
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .build();
+        return respond(caseDetails);
+    }
+
+    private boolean isCorrectCase(Object migrationId, String familyManCaseNumber, String expectedMigrationId,
+                                  String expectedFamilyManCaseNumber) {
+        return expectedMigrationId.equals(migrationId) && expectedFamilyManCaseNumber.equals(familyManCaseNumber);
+    }
+
+    private List<Element<C2DocumentBundle>> removeC2Document(List<Element<C2DocumentBundle>> documentBundle) {
+        // remove latest bundle (will be the last one added)
+        documentBundle.remove(documentBundle.size() - 1);
+        return documentBundle;
     }
 
     private Object getMigrationId(CaseDetails caseDetails) {
