@@ -19,13 +19,16 @@ import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
+import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
 import static uk.gov.hmcts.reform.fpl.enums.Event.COURT_SERVICES;
@@ -127,6 +130,8 @@ class EventCheckerTest {
     @ParameterizedTest
     @MethodSource("getEventsValidators")
     void shouldCheckEventIsAvailable(Event event, EventChecker validator) {
+        given(featureToggleService.isApplicationDocumentsEventEnabled()).willReturn(false);
+
         final boolean isAvailable = RandomUtils.nextBoolean();
 
         when(validator.isAvailable(caseData)).thenReturn(isAvailable);
@@ -137,13 +142,18 @@ class EventCheckerTest {
     }
 
     @ParameterizedTest
-    @MethodSource("getEventsValidators")
-    void shouldNotValidateDocumentEventWhenApplicationDocumentEventToggledOn(Event event, EventChecker validator) {
-        when(validator.validate(caseData)).thenReturn(emptyList());
+    @MethodSource("getEventsValidatorsWithApplicationDocumentsToggledOn")
+    void shouldNotValidateDocumentEventWhenApplicationEventToggledOn(Event event, EventChecker validator) {
+        given(featureToggleService.isApplicationDocumentsEventEnabled()).willReturn(true);
 
-        assertThat(eventsChecker.validate(event, caseData)).isEqualTo(emptyList());
+        final List<String> expectedErrors = List.of("Case name error");
+
+        when(validator.validate(caseData)).thenReturn(expectedErrors);
+
+        assertThat(eventsChecker.validate(event, caseData)).isEqualTo(expectedErrors);
 
         verify(validator).validate(caseData);
+        verify(documentsChecker, never()).validate(any());
     }
 
     @AfterEach
@@ -158,6 +168,7 @@ class EventCheckerTest {
                 organisationDetailsChecker,
                 allocationProposalChecker,
                 documentsChecker,
+                applicationDocumentChecker,
                 caseSubmissionChecker,
                 riskAndHarmChecker,
                 proceedingsChecker,
@@ -185,6 +196,26 @@ class EventCheckerTest {
                 Arguments.of(OTHERS, othersChecker),
                 Arguments.of(COURT_SERVICES, courtServiceChecker),
                 Arguments.of(FACTORS_AFFECTING_PARENTING, factorsAffectingParentingChecker));
+    }
+
+    private Stream<Arguments> getEventsValidatorsWithApplicationDocumentsToggledOn() {
+        return Stream.of(
+            Arguments.of(CASE_NAME, caseNameChecker),
+            Arguments.of(CHILDREN, childrenChecker),
+            Arguments.of(RESPONDENTS, respondentsChecker),
+            Arguments.of(HEARING_URGENCY, hearingUrgencyChecker),
+            Arguments.of(ORDERS_SOUGHT, ordersSoughtChecker),
+            Arguments.of(GROUNDS, groundsChecker),
+            Arguments.of(ORGANISATION_DETAILS, organisationDetailsChecker),
+            Arguments.of(ALLOCATION_PROPOSAL, allocationProposalChecker),
+            Arguments.of(APPLICATION_DOCUMENTS, applicationDocumentChecker),
+            Arguments.of(SUBMIT_APPLICATION, caseSubmissionChecker),
+            Arguments.of(RISK_AND_HARM, riskAndHarmChecker),
+            Arguments.of(OTHER_PROCEEDINGS, proceedingsChecker),
+            Arguments.of(INTERNATIONAL_ELEMENT, internationalElementChecker),
+            Arguments.of(OTHERS, othersChecker),
+            Arguments.of(COURT_SERVICES, courtServiceChecker),
+            Arguments.of(FACTORS_AFFECTING_PARENTING, factorsAffectingParentingChecker));
     }
 
 }

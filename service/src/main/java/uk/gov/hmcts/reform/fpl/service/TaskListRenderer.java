@@ -44,7 +44,8 @@ public class TaskListRenderer {
     private final String imagesBaseUrl;
     private final FeatureToggleService featureToggleService;
 
-    public TaskListRenderer(@Value("${resources.images.baseUrl}") String imagesBaseUrl, FeatureToggleService featureToggleService) {
+    public TaskListRenderer(@Value("${resources.images.baseUrl}") String imagesBaseUrl,
+                            FeatureToggleService featureToggleService) {
         this.imagesBaseUrl = imagesBaseUrl;
         this.featureToggleService = featureToggleService;
     }
@@ -80,7 +81,7 @@ public class TaskListRenderer {
         ));
 
         final TaskSection documents;
-        if(featureToggleService.isApplicationDocumentsEventEnabled()) {
+        if (featureToggleService.isApplicationDocumentsEventEnabled()) {
             documents = newSection("Add application documents",
                 of(tasks.get(APPLICATION_DOCUMENTS)))
                 .withHint("For example, SWET, social work chronology and care plan<br> In emergency cases, "

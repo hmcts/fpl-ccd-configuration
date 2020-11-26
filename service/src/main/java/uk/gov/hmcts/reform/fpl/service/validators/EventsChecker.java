@@ -85,7 +85,7 @@ public class EventsChecker {
     private FeatureToggleService featureToggleService;
 
     @Autowired
-    private ApplicationDocumentChecker supportingDocumentsChecker;
+    private ApplicationDocumentChecker applicationDocumentChecker;
 
     private final EnumMap<Event, EventChecker> eventCheckers = new EnumMap<>(Event.class);
 
@@ -99,22 +99,26 @@ public class EventsChecker {
         eventCheckers.put(GROUNDS, groundsChecker);
         eventCheckers.put(ORGANISATION_DETAILS, organisationDetailsChecker);
         eventCheckers.put(ALLOCATION_PROPOSAL, allocationProposalChecker);
-        eventCheckers.put(DOCUMENTS, documentsChecker);
         eventCheckers.put(RISK_AND_HARM, riskAndHarmChecker);
         eventCheckers.put(FACTORS_AFFECTING_PARENTING, factorsAffectingParentingChecker);
         eventCheckers.put(OTHER_PROCEEDINGS, proceedingsChecker);
         eventCheckers.put(INTERNATIONAL_ELEMENT, internationalElementChecker);
         eventCheckers.put(OTHERS, othersChecker);
         eventCheckers.put(COURT_SERVICES, courtServiceChecker);
-        eventCheckers.put(APPLICATION_DOCUMENTS, supportingDocumentsChecker);
         eventCheckers.put(SUBMIT_APPLICATION, caseSubmissionChecker);
+    }
 
+    private void addCheckersBasedOnToggle() {
+        if (featureToggleService.isApplicationDocumentsEventEnabled()) {
+            eventCheckers.put(APPLICATION_DOCUMENTS, applicationDocumentChecker);
+        } else {
+            eventCheckers.put(DOCUMENTS, documentsChecker);
+        }
     }
 
     public List<String> validate(Event event, CaseData caseData) {
-        if(featureToggleService.isApplicationDocumentsEventEnabled() && event.equals(Event.DOCUMENTS)) {
-            return emptyList();
-        } else return ofNullable(eventCheckers.get(event))
+        addCheckersBasedOnToggle();
+        return ofNullable(eventCheckers.get(event))
                 .map(validator -> validator.validate(caseData))
                 .orElse(emptyList());
     }
@@ -132,6 +136,7 @@ public class EventsChecker {
     }
 
     public boolean isAvailable(Event event, CaseData caseData) {
+        addCheckersBasedOnToggle();
         return ofNullable(eventCheckers.get(event))
                 .map(validator -> validator.isAvailable(caseData))
                 .orElse(true);
