@@ -66,6 +66,7 @@ xui-webapp:
       SERVICES_IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
       SERVICES_IDAM_LOGIN_URL: https://idam-web-public.aat.platform.hmcts.net
       FEATURE_REDIS_ENABLED: false
+      REDISCLOUD_URL: dummy
       FEATURE_APP_INSIGHTS_ENABLED: false
       FEATURE_SECURE_COOKIE_ENABLED: false
       DEBUG: xuiNode:*
