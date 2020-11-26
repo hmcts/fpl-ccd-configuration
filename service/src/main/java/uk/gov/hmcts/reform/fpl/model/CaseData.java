@@ -631,4 +631,5 @@ public class CaseData {
     private final State closedStateRadioList;
 
     private final List<Element<ApplicationDocument>> documents;
+    private final String documentsToFollow;
 }

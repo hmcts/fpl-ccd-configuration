@@ -23,17 +23,17 @@ public class ApplicationDocumentChecker implements EventChecker {
     @Override
     public boolean isStarted(CaseData caseData) {
         final List<Element<ApplicationDocument>> applicationDocuments = caseData.getDocuments();
+        final String documentsToFollow = caseData.getDocumentsToFollow();
 
-        if (isEmpty(applicationDocuments)) {
-            return false;
+        if(!isEmpty(documentsToFollow)) {
+            return anyNonEmpty(documentsToFollow);
+        } else if (!isEmpty(applicationDocuments)) {
+            ApplicationDocument anyDocument = applicationDocuments.stream().filter(Objects::nonNull).findAny()
+                .get().getValue();
+            return anyNonEmpty(anyDocument.getDocument());
         }
 
-        ApplicationDocument anyDocument = applicationDocuments.stream().filter(Objects::nonNull).findAny()
-            .get().getValue();
-
-        return anyNonEmpty(
-            anyDocument.getDocument(),
-            anyDocument.getDocumentType());
+        return false;
     }
 
     @Override
