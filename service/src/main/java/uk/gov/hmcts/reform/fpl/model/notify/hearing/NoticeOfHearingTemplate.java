@@ -1,12 +1,14 @@
 package uk.gov.hmcts.reform.fpl.model.notify.hearing;
 
-import lombok.Getter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
 
 import java.util.Map;
 
-@Getter
+@EqualsAndHashCode(callSuper = true)
+@Data
 @SuperBuilder
 public final class NoticeOfHearingTemplate extends BaseCaseNotifyData {
     private String hearingType;

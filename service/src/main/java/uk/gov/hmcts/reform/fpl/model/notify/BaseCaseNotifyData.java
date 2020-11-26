@@ -1,13 +1,9 @@
 package uk.gov.hmcts.reform.fpl.model.notify;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.Data;
 import lombok.experimental.SuperBuilder;
 
-@Getter
-@ToString
-@EqualsAndHashCode
+@Data
 @SuperBuilder(toBuilder = true)
 public class BaseCaseNotifyData implements NotifyData {
     private final String respondentLastName;

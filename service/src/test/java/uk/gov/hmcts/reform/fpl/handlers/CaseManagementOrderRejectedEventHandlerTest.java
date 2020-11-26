@@ -42,7 +42,7 @@ class CaseManagementOrderRejectedEventHandlerTest {
         CaseData caseData = caseData();
         CaseManagementOrder cmo = CaseManagementOrder.builder().build();
 
-        RejectedCMOTemplate expectedTemplate = new RejectedCMOTemplate();
+        RejectedCMOTemplate expectedTemplate = RejectedCMOTemplate.builder().build();
 
         given(inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))

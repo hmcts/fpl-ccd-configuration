@@ -26,19 +26,19 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
     @Test
     void shouldReturnExpectedMapWithValidCaseDetails() {
         List<String> ordersAndDirections = List.of("Emergency protection order", "Contact with any named person");
-        NotifyGatekeeperTemplate gatekeeperNotificationTemplate = new NotifyGatekeeperTemplate();
-
-        gatekeeperNotificationTemplate.setLocalAuthority(LOCAL_AUTHORITY_NAME);
-        gatekeeperNotificationTemplate.setDataPresent(YES.getValue());
-        gatekeeperNotificationTemplate.setFullStop(NO.getValue());
-        gatekeeperNotificationTemplate.setOrdersAndDirections(ordersAndDirections);
-        gatekeeperNotificationTemplate.setTimeFramePresent(YES.getValue());
-        gatekeeperNotificationTemplate.setTimeFrameValue("same day");
-        gatekeeperNotificationTemplate.setUrgentHearing(YES.getValue());
-        gatekeeperNotificationTemplate.setNonUrgentHearing(NO.getValue());
-        gatekeeperNotificationTemplate.setFirstRespondentName("Smith");
-        gatekeeperNotificationTemplate.setReference(CASE_REFERENCE);
-        gatekeeperNotificationTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
+        NotifyGatekeeperTemplate gatekeeperNotificationTemplate = NotifyGatekeeperTemplate.builder()
+            .localAuthority(LOCAL_AUTHORITY_NAME)
+            .dataPresent(YES.getValue())
+            .fullStop(NO.getValue())
+            .ordersAndDirections(ordersAndDirections)
+            .timeFramePresent(YES.getValue())
+            .timeFrameValue("same day")
+            .urgentHearing(YES.getValue())
+            .nonUrgentHearing(NO.getValue())
+            .firstRespondentName("Smith")
+            .reference(CASE_REFERENCE)
+            .caseUrl(caseUrl(CASE_REFERENCE))
+            .build();
 
         assertThat(gatekeeperEmailContentProvider.buildGatekeeperNotification(populatedCaseData()))
             .usingRecursiveComparison().isEqualTo(gatekeeperNotificationTemplate);
@@ -46,19 +46,19 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
 
     @Test
     void shouldReturnSuccessfullyWithIncompleteCaseDetails() {
-        NotifyGatekeeperTemplate gatekeeperNotificationTemplate = new NotifyGatekeeperTemplate();
-
-        gatekeeperNotificationTemplate.setLocalAuthority(LOCAL_AUTHORITY_NAME);
-        gatekeeperNotificationTemplate.setDataPresent(YES.getValue());
-        gatekeeperNotificationTemplate.setFullStop(NO.getValue());
-        gatekeeperNotificationTemplate.setOrdersAndDirections(List.of("Care order"));
-        gatekeeperNotificationTemplate.setTimeFramePresent(NO.getValue());
-        gatekeeperNotificationTemplate.setTimeFrameValue("");
-        gatekeeperNotificationTemplate.setUrgentHearing(NO.getValue());
-        gatekeeperNotificationTemplate.setNonUrgentHearing(NO.getValue());
-        gatekeeperNotificationTemplate.setFirstRespondentName("");
-        gatekeeperNotificationTemplate.setReference(CASE_REFERENCE);
-        gatekeeperNotificationTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
+        NotifyGatekeeperTemplate gatekeeperNotificationTemplate = NotifyGatekeeperTemplate.builder()
+            .localAuthority(LOCAL_AUTHORITY_NAME)
+            .dataPresent(YES.getValue())
+            .fullStop(NO.getValue())
+            .ordersAndDirections(List.of("Care order"))
+            .timeFramePresent(NO.getValue())
+            .timeFrameValue("")
+            .urgentHearing(NO.getValue())
+            .nonUrgentHearing(NO.getValue())
+            .firstRespondentName("")
+            .reference(CASE_REFERENCE)
+            .caseUrl(caseUrl(CASE_REFERENCE))
+            .build();
 
         CaseData caseData = CaseData.builder()
             .id(Long.valueOf(CASE_REFERENCE))
@@ -72,19 +72,19 @@ class GatekeeperEmailContentProviderTest extends AbstractEmailContentProviderTes
 
     @Test
     void shouldSetExpectedHearingTimeFramePropertiesWhenTimeFrameNotSameDay() {
-        NotifyGatekeeperTemplate gatekeeperNotificationTemplate = new NotifyGatekeeperTemplate();
-
-        gatekeeperNotificationTemplate.setLocalAuthority(LOCAL_AUTHORITY_NAME);
-        gatekeeperNotificationTemplate.setDataPresent(YES.getValue());
-        gatekeeperNotificationTemplate.setFullStop(NO.getValue());
-        gatekeeperNotificationTemplate.setOrdersAndDirections(List.of("Care order"));
-        gatekeeperNotificationTemplate.setTimeFramePresent(YES.getValue());
-        gatekeeperNotificationTemplate.setTimeFrameValue("two days");
-        gatekeeperNotificationTemplate.setUrgentHearing(NO.getValue());
-        gatekeeperNotificationTemplate.setNonUrgentHearing(YES.getValue());
-        gatekeeperNotificationTemplate.setFirstRespondentName("");
-        gatekeeperNotificationTemplate.setReference(CASE_REFERENCE);
-        gatekeeperNotificationTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
+        NotifyGatekeeperTemplate gatekeeperNotificationTemplate = NotifyGatekeeperTemplate.builder()
+            .localAuthority(LOCAL_AUTHORITY_NAME)
+            .dataPresent(YES.getValue())
+            .fullStop(NO.getValue())
+            .ordersAndDirections(List.of("Care order"))
+            .timeFramePresent(YES.getValue())
+            .timeFrameValue("two days")
+            .urgentHearing(NO.getValue())
+            .nonUrgentHearing(YES.getValue())
+            .firstRespondentName("")
+            .reference(CASE_REFERENCE)
+            .caseUrl(caseUrl(CASE_REFERENCE))
+            .build();
 
         CaseData caseData = CaseData.builder()
             .id(Long.valueOf(CASE_REFERENCE))

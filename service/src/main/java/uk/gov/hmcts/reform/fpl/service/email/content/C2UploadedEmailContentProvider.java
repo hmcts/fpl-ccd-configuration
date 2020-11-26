@@ -29,14 +29,13 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
     private static final String C2 = "C2Tab";
 
     public C2UploadedTemplate getNotifyData(final CaseData caseData, final DocumentReference latestC2) {
-        C2UploadedTemplate adminTemplateForC2 = new C2UploadedTemplate();
-        adminTemplateForC2.setCallout(buildCallout(caseData));
-        adminTemplateForC2.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
-        adminTemplateForC2.setCaseUrl(getCaseUrl(caseData.getId(), C2));
-        adminTemplateForC2.setDocumentUrl(concatUrlAndMostRecentUploadedDocumentPath(xuiBaseUrl,
-            latestC2.getBinaryUrl()));
-
-        return adminTemplateForC2;
+        return C2UploadedTemplate.builder()
+            .callout(buildCallout(caseData))
+            .respondentLastName(getFirstRespondentLastName(caseData.getRespondents1()))
+            .caseUrl(getCaseUrl(caseData.getId(), C2))
+            .documentUrl(concatUrlAndMostRecentUploadedDocumentPath(xuiBaseUrl,
+                latestC2.getBinaryUrl()))
+            .build();
     }
 
     public AllocatedJudgeTemplateForC2 getNotifyDataForAllocatedJudge(final CaseData caseData) {

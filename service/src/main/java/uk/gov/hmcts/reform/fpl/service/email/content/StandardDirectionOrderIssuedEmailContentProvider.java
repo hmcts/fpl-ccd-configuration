@@ -27,17 +27,16 @@ public class StandardDirectionOrderIssuedEmailContentProvider extends StandardDi
 
         HearingBooking hearing = caseData.getFirstHearing().orElseThrow(NoHearingBookingException::new);
 
-        CTSCTemplateForSDO ctscTemplateForSDO = new CTSCTemplateForSDO();
-        ctscTemplateForSDO.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
-        ctscTemplateForSDO.setCallout(buildCallout(caseData));
-        ctscTemplateForSDO.setCourtName(caseDataExtractionService.getCourtName(caseData.getCaseLocalAuthority()));
-        ctscTemplateForSDO.setHearingNeedsPresent(getHearingNeedsPresent(hearing));
-        ctscTemplateForSDO.setHearingNeeds(hearing.buildHearingNeedsList());
-        ctscTemplateForSDO.setCaseUrl(getCaseUrl(caseData.getId(), "OrdersTab"));
-        ctscTemplateForSDO.setDocumentLink(concatUrlAndMostRecentUploadedDocumentPath(xuiBaseUrl,
-            caseData.getStandardDirectionOrder().getOrderDoc().getBinaryUrl()));
-
-        return ctscTemplateForSDO;
+        return CTSCTemplateForSDO.builder()
+            .respondentLastName(getFirstRespondentLastName(caseData.getRespondents1()))
+            .callout(buildCallout(caseData))
+            .courtName(caseDataExtractionService.getCourtName(caseData.getCaseLocalAuthority()))
+            .hearingNeedsPresent(getHearingNeedsPresent(hearing))
+            .hearingNeeds(hearing.buildHearingNeedsList())
+            .caseUrl(getCaseUrl(caseData.getId(), "OrdersTab"))
+            .documentLink(concatUrlAndMostRecentUploadedDocumentPath(xuiBaseUrl,
+                caseData.getStandardDirectionOrder().getOrderDoc().getBinaryUrl()))
+            .build();
     }
 
     private String getHearingNeedsPresent(HearingBooking hearingBooking) {

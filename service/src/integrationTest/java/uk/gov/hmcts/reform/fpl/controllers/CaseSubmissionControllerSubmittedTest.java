@@ -380,9 +380,9 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         SubmitCaseHmctsTemplate submitCaseHmctsTemplate;
 
         if (completed) {
-            submitCaseHmctsTemplate = getCompleteParameters(new SubmitCaseHmctsTemplate());
+            submitCaseHmctsTemplate = getCompleteParameters(SubmitCaseHmctsTemplate.builder().build());
         } else {
-            submitCaseHmctsTemplate = getIncompleteParameters(new SubmitCaseHmctsTemplate());
+            submitCaseHmctsTemplate = getIncompleteParameters(SubmitCaseHmctsTemplate.builder().build());
         }
 
         submitCaseHmctsTemplate.setCourt(DEFAULT_LA_COURT);
@@ -393,9 +393,9 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         SubmitCaseCafcassTemplate submitCaseCafcassTemplate;
 
         if (completed) {
-            submitCaseCafcassTemplate = getCompleteParameters(new SubmitCaseCafcassTemplate());
+            submitCaseCafcassTemplate = getCompleteParameters(SubmitCaseCafcassTemplate.builder().build());
         } else {
-            submitCaseCafcassTemplate = getIncompleteParameters(new SubmitCaseCafcassTemplate());
+            submitCaseCafcassTemplate = getIncompleteParameters(SubmitCaseCafcassTemplate.builder().build());
         }
 
         submitCaseCafcassTemplate.setCafcass(DEFAULT_CAFCASS_COURT);

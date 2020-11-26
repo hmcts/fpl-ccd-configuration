@@ -94,13 +94,11 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
     }
 
     private C2UploadedTemplate getC2UploadedTemplateParameters() {
-        C2UploadedTemplate c2UploadedTemplate = new C2UploadedTemplate();
-
-        c2UploadedTemplate.setCallout(format("Smith, %s", CASE_REFERENCE));
-        c2UploadedTemplate.setRespondentLastName("Smith");
-        c2UploadedTemplate.setCaseUrl(caseUrl(CASE_REFERENCE, C2));
-        c2UploadedTemplate.setDocumentUrl("http://fake-url/documents/b28f859b-7521-4c84-9057-47e56afd773f/binary");
-
-        return c2UploadedTemplate;
+        return C2UploadedTemplate.builder()
+            .callout(format("Smith, %s", CASE_REFERENCE))
+            .respondentLastName("Smith")
+            .caseUrl(caseUrl(CASE_REFERENCE, C2))
+            .documentUrl("http://fake-url/documents/b28f859b-7521-4c84-9057-47e56afd773f/binary")
+            .build();
     }
 }

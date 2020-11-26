@@ -70,7 +70,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
     @Autowired
     private CaseManagementOrderIssuedEventHandler caseManagementOrderIssuedEventHandler;
 
-    private final IssuedCMOTemplate issuedCMOTemplate = new IssuedCMOTemplate();
+    private final IssuedCMOTemplate issuedCMOTemplate = IssuedCMOTemplate.builder().build();
 
     @BeforeEach
     void init() {

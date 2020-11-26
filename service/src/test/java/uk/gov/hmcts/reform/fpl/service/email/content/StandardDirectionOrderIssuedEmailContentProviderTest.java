@@ -44,28 +44,26 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
     }
 
     private CTSCTemplateForSDO ctscSDOTemplateParameters() {
-        CTSCTemplateForSDO ctscTemplateForSDO = new CTSCTemplateForSDO();
-        ctscTemplateForSDO.setDocumentLink("http://fake-url/documents/be17a76e-38ed-4448-8b83-45de1aa93f55/binary");
-        ctscTemplateForSDO.setHearingNeeds(List.of("Intermediary"));
-        ctscTemplateForSDO.setHearingNeedsPresent("Yes");
-        ctscTemplateForSDO.setCourtName(COURT_NAME);
-        ctscTemplateForSDO.setCallout("^Smith, 12345, hearing 1 Jan 2020");
-        ctscTemplateForSDO.setRespondentLastName("Smith");
-        ctscTemplateForSDO.setCaseUrl(caseUrl(CASE_REFERENCE, ORDERS));
-
-        return ctscTemplateForSDO;
+        return CTSCTemplateForSDO.builder()
+            .documentLink("http://fake-url/documents/be17a76e-38ed-4448-8b83-45de1aa93f55/binary")
+            .hearingNeeds(List.of("Intermediary"))
+            .hearingNeedsPresent("Yes")
+            .courtName(COURT_NAME)
+            .callout("^Smith, 12345, hearing 1 Jan 2020")
+            .respondentLastName("Smith")
+            .caseUrl(caseUrl(CASE_REFERENCE, ORDERS))
+            .build();
     }
 
     private CTSCTemplateForSDO ctscSDOTemplateParametersWithNoneSelected() {
-        CTSCTemplateForSDO ctscTemplateForSDO = new CTSCTemplateForSDO();
-        ctscTemplateForSDO.setDocumentLink("http://fake-url/documents/be17a76e-38ed-4448-8b83-45de1aa93f55/binary");
-        ctscTemplateForSDO.setHearingNeedsPresent("No");
-        ctscTemplateForSDO.setHearingNeeds(List.of());
-        ctscTemplateForSDO.setCourtName(COURT_NAME);
-        ctscTemplateForSDO.setCallout("^Smith, 12345L, hearing 1 Jan 2020");
-        ctscTemplateForSDO.setRespondentLastName("Smith");
-        ctscTemplateForSDO.setCaseUrl(caseUrl(CASE_REFERENCE, ORDERS));
-
-        return ctscTemplateForSDO;
+        return CTSCTemplateForSDO.builder()
+            .documentLink("http://fake-url/documents/be17a76e-38ed-4448-8b83-45de1aa93f55/binary")
+            .hearingNeeds(List.of())
+            .hearingNeedsPresent("No")
+            .courtName(COURT_NAME)
+            .callout("^Smith, 12345L, hearing 1 Jan 2020")
+            .respondentLastName("Smith")
+            .caseUrl(caseUrl(CASE_REFERENCE, ORDERS))
+            .build();
     }
 }

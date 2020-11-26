@@ -46,22 +46,23 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
         List<String> ordersAndDirections = ImmutableList.of("Emergency protection order",
             "Contact with any named person");
 
-        SubmitCaseCafcassTemplate cafcassSubmissionTemplate = new SubmitCaseCafcassTemplate();
-        cafcassSubmissionTemplate.setCafcass(CAFCASS_NAME);
-        cafcassSubmissionTemplate.setLocalAuthority(LOCAL_AUTHORITY_NAME);
-        cafcassSubmissionTemplate.setDataPresent(YES.getValue());
-        cafcassSubmissionTemplate.setFullStop(NO.getValue());
-        cafcassSubmissionTemplate.setOrdersAndDirections(ordersAndDirections);
-        cafcassSubmissionTemplate.setTimeFramePresent(YES.getValue());
-        cafcassSubmissionTemplate.setTimeFrameValue("same day");
-        cafcassSubmissionTemplate.setUrgentHearing(YES.getValue());
-        cafcassSubmissionTemplate.setNonUrgentHearing(NO.getValue());
-        cafcassSubmissionTemplate.setFirstRespondentName("Smith");
-        cafcassSubmissionTemplate.setReference(CASE_REFERENCE);
-        cafcassSubmissionTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
-        cafcassSubmissionTemplate.setDocumentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
-            .map(JSONObject::toMap)
-            .orElse(null));
+        SubmitCaseCafcassTemplate cafcassSubmissionTemplate = SubmitCaseCafcassTemplate.builder()
+            .cafcass(CAFCASS_NAME)
+            .localAuthority(LOCAL_AUTHORITY_NAME)
+            .dataPresent(YES.getValue())
+            .fullStop(NO.getValue())
+            .ordersAndDirections(ordersAndDirections)
+            .timeFramePresent(YES.getValue())
+            .timeFrameValue("same day")
+            .urgentHearing(YES.getValue())
+            .nonUrgentHearing(NO.getValue())
+            .firstRespondentName("Smith")
+            .reference(CASE_REFERENCE)
+            .caseUrl(caseUrl(CASE_REFERENCE))
+            .documentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
+                .map(JSONObject::toMap)
+                .orElse(null))
+            .build();
 
         CaseData caseData = populatedCaseData(Map.of("applicationBinaryUrl", applicationDocument.getBinaryUrl()));
 
@@ -71,21 +72,23 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     @Test
     void shouldReturnIncompletedNotifyData() {
-        SubmitCaseCafcassTemplate cafcassSubmissionTemplate = new SubmitCaseCafcassTemplate();
-        cafcassSubmissionTemplate.setCafcass(CAFCASS_NAME);
-        cafcassSubmissionTemplate.setLocalAuthority(LOCAL_AUTHORITY_NAME);
-        cafcassSubmissionTemplate.setDataPresent(YES.getValue());
-        cafcassSubmissionTemplate.setFullStop(NO.getValue());
-        cafcassSubmissionTemplate.setOrdersAndDirections(List.of("Care order"));
-        cafcassSubmissionTemplate.setTimeFramePresent(NO.getValue());
-        cafcassSubmissionTemplate.setTimeFrameValue("");
-        cafcassSubmissionTemplate.setUrgentHearing(NO.getValue());
-        cafcassSubmissionTemplate.setNonUrgentHearing(NO.getValue());
-        cafcassSubmissionTemplate.setFirstRespondentName("");
-        cafcassSubmissionTemplate.setReference(CASE_REFERENCE);
-        cafcassSubmissionTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
-        cafcassSubmissionTemplate.setDocumentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
-            .map(JSONObject::toMap).orElse(null));
+        SubmitCaseCafcassTemplate cafcassSubmissionTemplate = SubmitCaseCafcassTemplate.builder()
+            .cafcass(CAFCASS_NAME)
+            .localAuthority(LOCAL_AUTHORITY_NAME)
+            .dataPresent(YES.getValue())
+            .fullStop(NO.getValue())
+            .ordersAndDirections(List.of("Care order"))
+            .timeFramePresent(NO.getValue())
+            .timeFrameValue("")
+            .urgentHearing(NO.getValue())
+            .nonUrgentHearing(NO.getValue())
+            .firstRespondentName("")
+            .reference(CASE_REFERENCE)
+            .caseUrl(caseUrl(CASE_REFERENCE))
+            .documentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
+                .map(JSONObject::toMap)
+                .orElse(null))
+            .build();
 
         assertThat(cafcassEmailContentProvider.buildCafcassSubmissionNotification(buildCaseData(applicationDocument)))
             .usingRecursiveComparison().isEqualTo(cafcassSubmissionTemplate);

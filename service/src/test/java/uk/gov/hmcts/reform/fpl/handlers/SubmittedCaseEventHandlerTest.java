@@ -72,7 +72,7 @@ class SubmittedCaseEventHandlerTest {
         final String expectedEmail = "test@test.com";
         final CaseData caseData = caseData();
         final CaseData caseDataBefore = caseData();
-        final SubmitCaseHmctsTemplate expectedTemplate = new SubmitCaseHmctsTemplate();
+        final SubmitCaseHmctsTemplate expectedTemplate = SubmitCaseHmctsTemplate.builder().build();
         final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(caseData, caseDataBefore);
 
         when(adminNotificationHandler.getHmctsAdminEmail(caseData)).thenReturn(expectedEmail);
@@ -95,7 +95,7 @@ class SubmittedCaseEventHandlerTest {
         final CaseData caseDataBefore = caseData();
         final CafcassLookupConfiguration.Cafcass cafcass =
             new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, expectedEmail);
-        final SubmitCaseCafcassTemplate expectedTemplate = new SubmitCaseCafcassTemplate();
+        final SubmitCaseCafcassTemplate expectedTemplate = SubmitCaseCafcassTemplate.builder().build();
         final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(caseData, caseDataBefore);
         when(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE)).thenReturn(cafcass);
         when(cafcassEmailContentProvider.buildCafcassSubmissionNotification(any(CaseData.class)))

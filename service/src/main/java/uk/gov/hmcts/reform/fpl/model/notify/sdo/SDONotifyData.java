@@ -1,15 +1,13 @@
 package uk.gov.hmcts.reform.fpl.model.notify.sdo;
 
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.Data;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 
 import java.util.Map;
 
-@Getter
+@Data
 @Builder
-@EqualsAndHashCode
 public class SDONotifyData implements NotifyData {
     private final String familyManCaseNumber;
     private final String leadRespondentsName;

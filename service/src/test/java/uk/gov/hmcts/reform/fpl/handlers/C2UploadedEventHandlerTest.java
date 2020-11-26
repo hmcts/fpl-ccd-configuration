@@ -193,13 +193,11 @@ class C2UploadedEventHandlerTest {
         String fileContent = new String(Base64.encodeBase64(DOCUMENT_CONTENT), ISO_8859_1);
         JSONObject jsonFileObject = new JSONObject().put("file", fileContent);
 
-        C2UploadedTemplate uploadC2Template = new C2UploadedTemplate();
-
-        uploadC2Template.setCallout(subjectLine);
-        uploadC2Template.setRespondentLastName("Smith");
-        uploadC2Template.setCaseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345#C2Tab");
-        uploadC2Template.setDocumentLink(jsonFileObject.toMap());
-
-        return uploadC2Template;
+        return C2UploadedTemplate.builder()
+            .callout(subjectLine)
+            .respondentLastName("Smith")
+            .caseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345#C2Tab")
+            .documentLink(jsonFileObject.toMap())
+            .build();
     }
 }

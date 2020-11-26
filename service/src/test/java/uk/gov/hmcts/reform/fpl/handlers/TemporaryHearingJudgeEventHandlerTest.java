@@ -74,14 +74,12 @@ class TemporaryHearingJudgeEventHandlerTest {
     }
 
     private TemporaryHearingJudgeTemplate getExpectedNotificationParameters() {
-        TemporaryHearingJudgeTemplate allocatedJudgeTemplate = new TemporaryHearingJudgeTemplate();
-
-        allocatedJudgeTemplate.setJudgeTitle(HER_HONOUR_JUDGE.getLabel());
-        allocatedJudgeTemplate.setJudgeName(JUDGE_NAME);
-        allocatedJudgeTemplate.setCaseUrl("http://fake-url/cases/case-details/12345");
-        allocatedJudgeTemplate.setCallout("Davidson, 123, hearing 1st Jan 2020");
-        allocatedJudgeTemplate.setHearingType(CASE_MANAGEMENT.getLabel());
-
-        return allocatedJudgeTemplate;
+        return TemporaryHearingJudgeTemplate.builder()
+            .judgeTitle(HER_HONOUR_JUDGE.getLabel())
+            .judgeName(JUDGE_NAME)
+            .caseUrl("http://fake-url/cases/case-details/12345")
+            .callout("Davidson, 123, hearing 1st Jan 2020")
+            .hearingType(CASE_MANAGEMENT.getLabel())
+            .build();
     }
 }

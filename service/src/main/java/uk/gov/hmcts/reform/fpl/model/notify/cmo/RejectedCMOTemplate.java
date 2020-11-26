@@ -1,14 +1,12 @@
 package uk.gov.hmcts.reform.fpl.model.notify.cmo;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import uk.gov.hmcts.reform.fpl.model.notify.SharedNotifyTemplate;
 
-@Getter
-@Setter
+@SuperBuilder
 public class RejectedCMOTemplate extends SharedNotifyTemplate {
-    private String respondentLastName;
-    private String familyManCaseNumber;
-    private String hearing;
-    private String requestedChanges;
+    private final String respondentLastName;
+    private final String familyManCaseNumber;
+    private final String hearing;
+    private final String requestedChanges;
 }

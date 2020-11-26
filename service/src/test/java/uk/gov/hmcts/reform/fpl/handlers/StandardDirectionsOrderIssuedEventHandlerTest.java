@@ -149,6 +149,6 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
     }
 
     private CTSCTemplateForSDO getCTSCTemplateForSDO() {
-        return new CTSCTemplateForSDO();
+        return CTSCTemplateForSDO.builder().build();
     }
 }
