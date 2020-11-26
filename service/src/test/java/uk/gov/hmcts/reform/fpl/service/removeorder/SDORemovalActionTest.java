@@ -98,8 +98,7 @@ class SDORemovalActionTest {
             .extracting("hiddenStandardDirectionOrder", "state")
             .containsExactly(expectedSDO, GATEKEEPING);
 
-        assertThat(caseDetailsMap).doesNotContainKey("standardDirectionOrder");
-        assertThat(caseDetailsMap).doesNotContainKey("noticeOfProceedings");
-        assertThat(caseDetailsMap).doesNotContainKey("showRemoveSDOWarningFlag");
+        assertThat(caseDetailsMap).doesNotContainKeys(
+            "standardDirectionOrder", "noticeOfProceedings","showRemoveSDOWarningFlag");
     }
 }
