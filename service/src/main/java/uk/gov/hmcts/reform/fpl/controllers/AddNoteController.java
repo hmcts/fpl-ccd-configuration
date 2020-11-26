@@ -23,6 +23,7 @@ import java.util.List;
 @RequestMapping("/callback/add-note")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AddNoteController extends CallbackController {
+    // Dummy
     private final CaseNoteService service;
     private final RequestData requestData;
 
