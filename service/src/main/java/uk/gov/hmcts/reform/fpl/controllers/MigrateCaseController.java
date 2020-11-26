@@ -34,7 +34,7 @@ public class MigrateCaseController extends CallbackController {
         Object migrationId = getMigrationId(caseDetails);
         String familyManCaseNumber = caseData.getFamilyManCaseNumber();
 
-        if ("ZW20C50003".equals(caseData.getFamilyManCaseNumber())) {
+        if (isCorrectCase(migrationId, familyManCaseNumber)) {
             log.info("Removing hearings from case reference {}", caseDetails.getId());
             caseDetails.getData().put("hearingDetails", removeHearings(caseData.getHearingDetails()));
         }
@@ -42,9 +42,8 @@ public class MigrateCaseController extends CallbackController {
         return respond(caseDetails);
     }
 
-    private boolean isCorrectCase(Object migrationId, String familyManCaseNumber, String expectedMigrationId,
-                                  String expectedFamilyManCaseNumber) {
-        return expectedMigrationId.equals(migrationId) && expectedFamilyManCaseNumber.equals(familyManCaseNumber);
+    private boolean isCorrectCase(Object migrationId, String familyManCaseNumber) {
+        return "FPLA-2437".equals(migrationId) && "ZW20C50003".equals(familyManCaseNumber);
     }
 
     private Object getMigrationId(CaseDetails caseDetails) {
@@ -56,7 +55,9 @@ public class MigrateCaseController extends CallbackController {
             assertHearingDate(hearings.get(i).getValue());
             log.info("hearing {} has correct date", i);
         }
+        log.info("Removing hearing 3");
         hearings.remove(2);
+        log.info("Removing hearing 1");
         hearings.remove(0);
         return hearings;
     }
