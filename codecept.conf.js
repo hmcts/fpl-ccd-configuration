@@ -117,7 +117,8 @@ exports.config = {
       'codeceptjs-cli-reporter': {
         stdout: '-',
         options: {
-          steps: false,
+          verbose: true,
+          steps: true,
         },
       },
       'mocha-junit-reporter': {
