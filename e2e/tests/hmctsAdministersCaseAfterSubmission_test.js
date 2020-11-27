@@ -23,7 +23,7 @@ let submittedAt;
 let hearingStartDate;
 let hearingEndDate;
 
-Feature('Case administration after submission');
+Feature('Case administration after submission').retry(2);
 
 BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
@@ -162,6 +162,7 @@ Scenario('HMCTS admin edits supporting evidence document on C2 application', asy
 });
 
 Scenario('HMCTS admin manages hearings', async ({I, caseViewPage, manageHearingsEventPage}) => {
+  I.wait(10);
   hearingStartDate = moment().add(5,'m').toDate();
   hearingEndDate = moment(hearingStartDate).add(5,'m').toDate();
 
@@ -278,6 +279,9 @@ Scenario('HMCTS admin uploads further hearing evidence documents', async ({I, ca
   I.seeInTab(['Further evidence documents 2', 'Documents 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
   I.seeInTab(['Further evidence documents 2', 'Documents 1', 'File'], 'mockFile.txt');
   I.seeTextInTab(['Further evidence documents 2', 'Documents 1', 'Uploaded by']);
+
+  I.wait(10);
+
 }).retry(1); // async send letters call in submitted of previous event
 
 

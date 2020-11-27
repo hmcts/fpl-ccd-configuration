@@ -102,6 +102,7 @@ Scenario('Gatekeeper drafts standard directions', async ({I, caseViewPage, draft
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   I.seeInTab(['Gatekeeping order', 'File'], 'draft-standard-directions-order.pdf');
   I.seeInTab(['Gatekeeping order', 'Date of issue'], dateFormat(today, 'd mmmm yyyy'));
+  I.wait(10);
 }).retry(1); // Send letter is async for the hearing details event, if things are running slow then a data altered outside of transaction error may be raised at the end of this scenario.
 
 Scenario('Gatekeeper submits final version of standard directions', async ({I, caseViewPage, draftStandardDirectionsEventPage}) => {
@@ -136,4 +137,4 @@ Scenario('Gatekeeper submits final version of standard directions', async ({I, c
     config.applicationActions.enterAllocationDecision,
     config.administrationActions.draftStandardDirections,
   ]);
-});
+}).retry(2);
