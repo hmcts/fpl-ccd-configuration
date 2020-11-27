@@ -6,11 +6,9 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
-import java.util.Objects;
 
 import static java.util.Collections.emptyList;
 import static org.springframework.util.ObjectUtils.isEmpty;
-import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyNonEmpty;
 
 @Service
 public class ApplicationDocumentChecker implements EventChecker {
@@ -25,12 +23,8 @@ public class ApplicationDocumentChecker implements EventChecker {
         final List<Element<ApplicationDocument>> applicationDocuments = caseData.getDocuments();
         final String documentsToFollow = caseData.getDocumentsToFollow();
 
-        if (!isEmpty(documentsToFollow)) {
-            return anyNonEmpty(documentsToFollow);
-        } else if (!isEmpty(applicationDocuments)) {
-            ApplicationDocument anyDocument = applicationDocuments.stream().filter(Objects::nonNull).findAny()
-                .get().getValue();
-            return anyNonEmpty(anyDocument.getDocument());
+        if (!isEmpty(documentsToFollow) || !isEmpty(applicationDocuments)) {
+            return true;
         }
 
         return false;
