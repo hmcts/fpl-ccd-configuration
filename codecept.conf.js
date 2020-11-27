@@ -5,7 +5,7 @@ exports.config = {
   multiple: {
     parallel: {
       chunks: 5,
-    },
+    }
   },
   helpers: {
     Puppeteer: {
@@ -113,8 +113,7 @@ exports.config = {
       'codeceptjs-cli-reporter': {
         stdout: '-',
         options: {
-          verbose: true,
-          steps: true,
+          steps: false,
         },
       },
       'mocha-junit-reporter': {
