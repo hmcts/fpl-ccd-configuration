@@ -17,7 +17,7 @@
     "TabID": "CourtBundleTab",
     "TabLabel": "Court bundle",
     "TabDisplayOrder": 16,
-    "CaseFieldID": "manageDocumentsLink",
+    "CaseFieldID": "manageDocumentsLALink",
     "TabFieldDisplayOrder": 2
   },
   {
