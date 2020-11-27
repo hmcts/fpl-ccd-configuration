@@ -350,7 +350,7 @@ Scenario('HMCTS admin vacates and re-lists a hearing', async ({I, caseViewPage, 
   I.seeInTab(['Further evidence documents 2', 'Hearing'], 'Case management hearing, 1 January 2060');
 });
 
-Scenario('HMCTS admin cancels and re-lists hearing @failure', async ({I, caseViewPage, manageHearingsEventPage}) => {
+Scenario('HMCTS admin cancels and re-lists hearing @failure @debug-failure', async ({I, caseViewPage, manageHearingsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   await manageHearingsEventPage.selectVacateHearing('Case management hearing, 1 January 2060');
   await I.goToNextPage();
@@ -394,7 +394,7 @@ Scenario('HMCTS admin cancels and re-lists hearing @failure', async ({I, caseVie
   I.seeInTab(['Further evidence documents 2', 'Hearing'], 'Case management hearing, 11 January 2060');
 });
 
-Scenario('HMCTS admin adds past hearing @failure', async ({I, caseViewPage, manageHearingsEventPage}) => {
+Scenario('HMCTS admin adds past hearing @failure @debug-failure', async ({I, caseViewPage, manageHearingsEventPage}) => {
   hearingStartDate = moment().subtract(5,'m').toDate();
   hearingEndDate = moment(hearingStartDate).subtract(5,'m').toDate();
 
@@ -433,7 +433,7 @@ Scenario('HMCTS admin adds past hearing @failure', async ({I, caseViewPage, mana
   I.seeInTab(['Hearing 3', 'Notice of hearing'], `Notice_of_hearing_${dateFormat(submittedAt, 'ddmmmm')}.pdf`);
 });
 
-Scenario('HMCTS admin share case with representatives @failure', async ({I, caseViewPage, enterRepresentativesEventPage}) => {
+Scenario('HMCTS admin share case with representatives @failure @debug-failure', async ({I, caseViewPage, enterRepresentativesEventPage}) => {
   const representative1 = representatives.servedByDigitalService;
   const representative2 = representatives.servedByPost;
 
@@ -465,7 +465,7 @@ Scenario('HMCTS admin share case with representatives @failure', async ({I, case
   I.see(caseId);
 });
 
-Scenario('HMCTS admin revoke case access from representative @failure', async ({I, caseViewPage}) => {
+Scenario('HMCTS admin revoke case access from representative @failure @debug-failure', async ({I, caseViewPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.amendRepresentatives);
 
   await I.removeElementFromCollection('Representatives');
@@ -478,35 +478,35 @@ Scenario('HMCTS admin revoke case access from representative @failure', async ({
   I.see('No cases found.');
 });
 
-Scenario('HMCTS admin creates blank order @failure', async ({I, caseViewPage, createOrderEventPage}) => {
+Scenario('HMCTS admin creates blank order @failure @debug-failure', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, blankOrder);
 });
 
-Scenario('HMCTS admin creates interim supervision order @failure', async ({I, caseViewPage, createOrderEventPage}) => {
+Scenario('HMCTS admin creates interim supervision order @failure @debug-failure', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, interimSuperVisionOrder);
 });
 
-Scenario('HMCTS admin creates final supervision order @failure', async ({I, caseViewPage, createOrderEventPage}) => {
+Scenario('HMCTS admin creates final supervision order @failure @debug-failure', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, finalSuperVisionOrder);
 });
 
-Scenario('HMCTS admin creates emergency protection order @failure', async ({I, caseViewPage, createOrderEventPage}) => {
+Scenario('HMCTS admin creates emergency protection order @failure @debug-failure', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, emergencyProtectionOrder);
 });
 
-Scenario('HMCTS admin creates interim care order @failure', async ({I, caseViewPage, createOrderEventPage}) => {
+Scenario('HMCTS admin creates interim care order @failure @debug-failure', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, interimCareOrder);
 });
 
-Scenario('HMCTS admin uploads order @failure', async ({I, caseViewPage, createOrderEventPage}) => {
+Scenario('HMCTS admin uploads order @failure @debug-failure', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, uploadedOrder);
 });
 
-Scenario('HMCTS admin creates final care order @failure', async ({I, caseViewPage, createOrderEventPage}) => {
+Scenario('HMCTS admin creates final care order @failure @debug-failure', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, finalCareOrder);
 });
 
-Scenario('HMCTS admin creates discharge of care order @failure', async ({I, caseViewPage, createOrderEventPage}) => {
+Scenario('HMCTS admin creates discharge of care order @failure @debug-failure', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, dischargeOfCareOrder);
 });
 
