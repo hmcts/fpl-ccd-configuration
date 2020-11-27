@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.removeorder;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.fpl.exceptions.removeorder.RemovableOrderNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -12,7 +13,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static java.lang.String.format;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Component
@@ -29,13 +29,13 @@ public class GeneratedOrderRemovalAction implements OrderRemovalAction {
                        RemovableOrder removableOrder) {
 
         GeneratedOrder generatedRemovableOrder = (GeneratedOrder) removableOrder;
-        ((GeneratedOrder) removableOrder).toBuilder().judgeAndLegalAdvisor(null).build();
+        generatedRemovableOrder.setJudgeAndLegalAdvisor(null);
 
         List<Element<GeneratedOrder>> generatedOrders = caseData.getOrderCollection();
         boolean removed = generatedOrders.remove(element(removedOrderId, generatedRemovableOrder));
 
         if (!removed) {
-            throw new IllegalArgumentException(format("Failed to find order matching id %s", removedOrderId));
+            throw new RemovableOrderNotFoundException(removedOrderId);
         }
 
         generatedRemovableOrder.setRemovalReason(caseData.getReasonToRemoveOrder());

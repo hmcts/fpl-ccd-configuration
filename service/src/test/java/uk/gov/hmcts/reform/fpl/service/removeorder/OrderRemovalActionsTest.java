@@ -63,7 +63,7 @@ class OrderRemovalActionsTest {
 
         assertThatThrownBy(() -> orderRemovalActions.getAction(GENERATED_ORDER))
             .isInstanceOf(RemovableOrderActionNotFoundException.class)
-            .hasMessage(format("Removable order action %s not found", cmoOrderRemovalAction.getClass()
+            .hasMessage(format("Removable order action for order of type %s not found", GENERATED_ORDER.getClass()
                 .getSimpleName()));
     }
 }

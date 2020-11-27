@@ -7,27 +7,34 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
-import uk.gov.hmcts.reform.fpl.handlers.PopulateStandardDirectionsHandler;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
+import static java.lang.Long.parseLong;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(RemoveOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
 class RemoveOrderControllerSubmittedEvent extends AbstractControllerTest {
+    private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
+    private static final String CASE_ID = "12345";
+
     @MockBean
-    private PopulateStandardDirectionsHandler populateStandardDirectionsHandler;
+    private CoreCaseDataService coreCaseDataService;
 
     RemoveOrderControllerSubmittedEvent() {
         super("remove-order");
@@ -40,7 +47,11 @@ class RemoveOrderControllerSubmittedEvent extends AbstractControllerTest {
         List<Element<StandardDirectionOrder>> hiddenSDOs = new ArrayList<>();
         hiddenSDOs.add(element(previousSDO));
 
-        CaseDetails caseDetails = CaseDetails.builder().data(
+        CaseDetails caseDetails = CaseDetails.builder()
+            .jurisdiction(JURISDICTION)
+            .caseTypeId(CASE_TYPE)
+            .id(parseLong(CASE_ID))
+            .data(
             Map.of("hiddenStandardDirectionOrders", hiddenSDOs)).build();
 
         CaseDetails caseDetailsBefore = CaseDetails.builder().data(Map.of()).build();
@@ -52,8 +63,12 @@ class RemoveOrderControllerSubmittedEvent extends AbstractControllerTest {
 
         postSubmittedEvent(callbackRequest);
 
-        verify(populateStandardDirectionsHandler).populateStandardDirections(any(
-            PopulateStandardDirectionsEvent.class));
+        verify(coreCaseDataService, timeout(ASYNC_METHOD_CALL_TIMEOUT)).triggerEvent(
+            eq(JURISDICTION),
+            eq(CASE_TYPE),
+            eq(12345L),
+            eq("populateSDO"),
+            anyMap());
     }
 
     @Test
@@ -69,6 +84,9 @@ class RemoveOrderControllerSubmittedEvent extends AbstractControllerTest {
         hiddenSDOs.add(newSDO);
 
         CaseDetails caseDetails = CaseDetails.builder()
+            .jurisdiction(JURISDICTION)
+            .caseTypeId(CASE_TYPE)
+            .id(parseLong(CASE_ID))
             .data(Map.of(
                 "hiddenStandardDirectionOrders", hiddenSDOs
             ))
@@ -87,8 +105,12 @@ class RemoveOrderControllerSubmittedEvent extends AbstractControllerTest {
 
         postSubmittedEvent(callbackRequest);
 
-        verify(populateStandardDirectionsHandler).populateStandardDirections(any(
-            PopulateStandardDirectionsEvent.class));
+        verify(coreCaseDataService, timeout(ASYNC_METHOD_CALL_TIMEOUT)).triggerEvent(
+            eq(JURISDICTION),
+            eq(CASE_TYPE),
+            eq(12345L),
+            eq("populateSDO"),
+            anyMap());
     }
 
     @Test
@@ -118,7 +140,6 @@ class RemoveOrderControllerSubmittedEvent extends AbstractControllerTest {
 
         postSubmittedEvent(callbackRequest);
 
-        verify(populateStandardDirectionsHandler, never()).populateStandardDirections(any(
-            PopulateStandardDirectionsEvent.class));
+        verifyNoMoreInteractions(coreCaseDataService);
     }
 }

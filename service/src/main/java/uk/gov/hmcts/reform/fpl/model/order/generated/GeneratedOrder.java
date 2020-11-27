@@ -33,7 +33,7 @@ public class GeneratedOrder implements RemovableOrder {
     private final DocumentReference document;
     private final String dateOfIssue;
     private final String date;
-    private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
+    private JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final FurtherDirections furtherDirections;
     private final String expiryDate;
     private final String courtName;

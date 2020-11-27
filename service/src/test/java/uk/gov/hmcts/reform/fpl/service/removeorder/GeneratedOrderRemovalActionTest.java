@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.removeorder;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
+import uk.gov.hmcts.reform.fpl.exceptions.removeorder.RemovableOrderNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -17,9 +18,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
@@ -67,7 +67,8 @@ class GeneratedOrderRemovalActionTest {
             )
         );
 
-        generatedOrder.toBuilder().judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build()).build();
+        JudgeAndLegalAdvisor emptyJudge = JudgeAndLegalAdvisor.builder().build();
+        generatedOrder = generatedOrder.toBuilder().judgeAndLegalAdvisor(emptyJudge).build();
 
         CaseData caseData = CaseData.builder()
             .reasonToRemoveOrder(REASON)
@@ -150,12 +151,10 @@ class GeneratedOrderRemovalActionTest {
             .data(Map.of())
             .build());
 
-        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-            () -> underTest.remove(caseData, caseDetailsMap, ALREADY_REMOVED_ORDER_ID, generatedOrder));
-
-        assertThat(exception.getMessage()).isEqualTo(
-            format("Failed to find order matching id %s", ALREADY_REMOVED_ORDER_ID)
-        );
+        assertThatThrownBy(() -> underTest.remove(caseData, caseDetailsMap, ALREADY_REMOVED_ORDER_ID,
+            generatedOrder))
+            .isInstanceOf(RemovableOrderNotFoundException.class)
+            .hasMessage("Removable order with id %s not found", ALREADY_REMOVED_ORDER_ID);
     }
 
     @Test

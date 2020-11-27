@@ -5,7 +5,7 @@ public class RemovableOrderActionNotFoundException extends IllegalStateException
         super("Removable order action not found");
     }
 
-    public RemovableOrderActionNotFoundException(String orderRemovalAction) {
-        super(String.format("Removable order action %s not found", orderRemovalAction));
+    public RemovableOrderActionNotFoundException(String orderType) {
+        super(String.format("Removable order action for order of type %s not found", orderType));
     }
 }

@@ -33,6 +33,24 @@ class StandardDirectionOrderTest {
     }
 
     @Test
+    void shouldReturnTrueWhenOrderIsRemovable() {
+        StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
+            .orderStatus(SEALED)
+            .build();
+
+        assertThat(standardDirectionOrder.isSealed()).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenOrderIsNotRemovable() {
+        StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
+            .orderStatus(DRAFT)
+            .build();
+
+        assertThat(standardDirectionOrder.isSealed()).isFalse();
+    }
+
+    @Test
     void shouldSetDirectionsToAnEmptyList() {
         StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
             .directions(List.of(element(Direction.builder()

@@ -19,7 +19,7 @@ public class OrderRemovalActions {
         return getActions()
             .filter(orderRemovalAction -> orderRemovalAction.isAccepted(removableOrder))
             .findFirst()
-            .orElseThrow(() -> new RemovableOrderActionNotFoundException(cmoRemovalAction.getClass()
+            .orElseThrow(() -> new RemovableOrderActionNotFoundException(removableOrder.getClass()
                 .getSimpleName()));
     }
 

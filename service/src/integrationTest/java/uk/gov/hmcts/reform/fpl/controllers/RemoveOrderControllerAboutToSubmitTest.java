@@ -221,6 +221,8 @@ public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTe
 
     @Test
     void shouldRemoveSDONoticeOfProceedingsAndSetStateToGatekeepingWhenRemovingASealedSDO() {
+        UUID newSDOId = UUID.randomUUID();
+
         StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeTitle(HIS_HONOUR_JUDGE)
@@ -244,12 +246,12 @@ public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTe
             .removalReason(REASON)
             .build();
 
-        when(identityService.generateId()).thenReturn(SDO_ID);
+        when(identityService.generateId()).thenReturn(newSDOId);
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
         CaseData responseData = extractCaseData(response);
 
-        assertThat(responseData.getHiddenStandardDirectionOrders()).isEqualTo(List.of(element(SDO_ID, expectedSDO)));
+        assertThat(responseData.getHiddenStandardDirectionOrders()).isEqualTo(List.of(element(newSDOId, expectedSDO)));
         assertThat(responseData.getState()).isEqualTo(GATEKEEPING);
         assertNull(responseData.getNoticeOfProceedingsBundle());
     }
