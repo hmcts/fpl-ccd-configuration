@@ -4,12 +4,8 @@ exports.config = {
   output: './output',
   multiple: {
     parallel: {
-      chunks: 3,
+      chunks: 5,
     },
-  },
-  rerun: {
-    minSuccess: 1,
-    maxReruns: 3,
   },
   helpers: {
     Puppeteer: {
