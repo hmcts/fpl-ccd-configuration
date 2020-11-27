@@ -62,7 +62,8 @@ public class ApplicationDocumentsService {
         }
     }
 
-    private void handleExistingDocuments(Element<ApplicationDocument> documentBefore, Element<ApplicationDocument> document) {
+    private void handleExistingDocuments(Element<ApplicationDocument> documentBefore,
+                                         Element<ApplicationDocument> document) {
         if (documentBefore.getId().equals(document.getId())) {
             if (documentBefore.getValue().getDocument().equals(document.getValue().getDocument())) {
                 // Document wasn't modified so persist old values
