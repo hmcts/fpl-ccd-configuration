@@ -1,17 +1,15 @@
 package uk.gov.hmcts.reform.fpl.model.notify.cmo;
 
 import lombok.Data;
-import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 
-@Accessors(chain = true)
 @Data
 @SuperBuilder
 public class DraftCMOUploadedTemplate implements NotifyData {
-    private String judgeTitle;
-    private String judgeName;
-    private String subjectLineWithHearingDate;
-    private String respondentLastName;
-    private String caseUrl;
+    private final String judgeTitle;
+    private final String judgeName;
+    private final String subjectLineWithHearingDate;
+    private final String respondentLastName;
+    private final String caseUrl;
 }

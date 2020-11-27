@@ -6,8 +6,8 @@ import lombok.experimental.SuperBuilder;
 import uk.gov.hmcts.reform.fpl.model.notify.SharedNotifyTemplate;
 
 @EqualsAndHashCode(callSuper = true)
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @Data
 public final class SubmitCaseCafcassTemplate extends SharedNotifyTemplate {
-    String cafcass;
+    private String cafcass;
 }

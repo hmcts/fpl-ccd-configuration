@@ -91,7 +91,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
     void shouldNotifyLocalAuthorityOfIssuedSDOAndNoticeOfProceedingsWhenSDOIssued() {
         final SDONotifyData expectedParameters = getStandardDirectionTemplateParameters();
         CaseData caseData = caseData();
-        given(localAuthorityEmailContentProvider.buildLocalAuthorityStandardDirectionOrderIssuedNotification(caseData))
+        given(localAuthorityEmailContentProvider.buildStandardDirectionOrderIssuedNotification(caseData))
             .willReturn(expectedParameters);
 
         given(inboxLookupService.getRecipients(

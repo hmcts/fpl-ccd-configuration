@@ -51,7 +51,7 @@ public class StandardDirectionsOrderIssuedEventHandler {
         CaseData caseData = event.getCaseData();
 
         NotifyData notifyData = localAuthorityEmailContentProvider
-            .buildLocalAuthorityStandardDirectionOrderIssuedNotification(caseData);
+            .buildStandardDirectionOrderIssuedNotification(caseData);
 
         Collection<String> emails = inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()

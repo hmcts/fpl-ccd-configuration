@@ -33,7 +33,7 @@ class LocalAuthorityEmailContentProviderTest extends AbstractEmailContentProvide
             .build();
 
         NotifyData actualData = localAuthorityEmailContentProvider
-            .buildLocalAuthorityStandardDirectionOrderIssuedNotification(populatedCaseData());
+            .buildStandardDirectionOrderIssuedNotification(populatedCaseData());
 
         assertThat(actualData).usingRecursiveComparison().isEqualTo(expectedData);
     }
@@ -52,7 +52,7 @@ class LocalAuthorityEmailContentProviderTest extends AbstractEmailContentProvide
             .build();
 
         SDONotifyData actualData = localAuthorityEmailContentProvider
-            .buildLocalAuthorityStandardDirectionOrderIssuedNotification(getCaseData());
+            .buildStandardDirectionOrderIssuedNotification(getCaseData());
 
         assertThat(actualData).usingRecursiveComparison().isEqualTo(expectedData);
     }

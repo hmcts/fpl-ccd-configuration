@@ -17,7 +17,7 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 public class LocalAuthorityEmailContentProvider extends StandardDirectionOrderContent {
     private final LocalAuthorityNameLookupConfiguration config;
 
-    public SDONotifyData buildLocalAuthorityStandardDirectionOrderIssuedNotification(CaseData caseData) {
+    public SDONotifyData buildStandardDirectionOrderIssuedNotification(CaseData caseData) {
         return SDONotifyData.builder()
             .title(config.getLocalAuthorityName(caseData.getCaseLocalAuthority()))
             .familyManCaseNumber(getFamilyManCaseNumber(caseData))

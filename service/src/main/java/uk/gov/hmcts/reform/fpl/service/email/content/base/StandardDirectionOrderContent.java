@@ -15,7 +15,7 @@ public abstract class StandardDirectionOrderContent extends AbstractEmailContent
     }
 
     protected String getLeadRespondentsName(CaseData caseData) {
-        return getFirstRespondentLastName(caseData);
+        return getFirstRespondentLastName(caseData.getAllRespondents());
     }
 
     protected String getHearingDate(CaseData data) {

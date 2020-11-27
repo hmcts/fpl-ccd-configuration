@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.fpl.exceptions.DocumentException;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
@@ -25,10 +24,6 @@ public abstract class AbstractEmailContentProvider {
 
     public String getCaseUrl(Long caseId) {
         return caseUrlService.getCaseUrl(caseId);
-    }
-
-    public String getCaseUrl(CaseData caseData) {
-        return caseUrlService.getCaseUrl(caseData.getId());
     }
 
     public String getCaseUrl(Long caseId, String tab) {
