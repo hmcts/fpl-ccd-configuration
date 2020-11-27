@@ -1,11 +1,14 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -80,6 +83,8 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     private static final Long CASE_ID = nextLong();
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 
+    @Autowired
+    protected ObjectMapper mapper;
 
     @MockBean
     private PaymentService paymentService;
@@ -104,8 +109,13 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
     @Test
     void shouldBuildNotificationTemplatesWithCompleteValues() {
-        Map<String, Object> expectedHmctsParameters = getExpectedHmctsParameters(true);
-        Map<String, Object> completeCafcassParameters = getExpectedCafcassParameters(true);
+        Map<String, Object> expectedHmctsParameters = mapper.convertValue(
+            getExpectedHmctsParameters(true), new TypeReference<>() {
+            });
+
+        Map<String, Object> completeCafcassParameters = mapper.convertValue(
+            getExpectedCafcassParameters(true), new TypeReference<>() {
+            });
 
         CaseDetails caseDetails = populatedCaseDetails(Map.of("id", CASE_ID));
         caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
@@ -138,7 +148,9 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
         postSubmittedEvent(callbackRequest);
 
-        Map<String, Object> expectedIncompleteHmctsParameters = getExpectedHmctsParameters(false);
+        Map<String, Object> expectedIncompleteHmctsParameters = mapper.convertValue(
+            getExpectedHmctsParameters(false), new TypeReference<>() {
+            });
 
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
@@ -165,7 +177,9 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
         postSubmittedEvent(callbackRequest);
 
-        Map<String, Object> expectedIncompleteHmctsParameters = getExpectedHmctsParameters(false);
+        Map<String, Object> expectedIncompleteHmctsParameters = mapper.convertValue(
+            getExpectedHmctsParameters(false), new TypeReference<>() {
+            });
 
         checkUntil(() ->
             verify(notificationClient).sendEmail(
@@ -376,7 +390,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
             ))).build();
     }
 
-    private Map<String, Object> getExpectedHmctsParameters(boolean completed) {
+    private SubmitCaseHmctsTemplate getExpectedHmctsParameters(boolean completed) {
         SubmitCaseHmctsTemplate submitCaseHmctsTemplate;
 
         if (completed) {
@@ -386,7 +400,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         }
 
         submitCaseHmctsTemplate.setCourt(DEFAULT_LA_COURT);
-        return submitCaseHmctsTemplate.toMap(mapper);
+        return submitCaseHmctsTemplate;
     }
 
     private Map<String, Object> getExpectedCafcassParameters(boolean completed) {
@@ -399,7 +413,8 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         }
 
         submitCaseCafcassTemplate.setCafcass(DEFAULT_CAFCASS_COURT);
-        return submitCaseCafcassTemplate.toMap(mapper);
+        return mapper.convertValue(submitCaseCafcassTemplate, new TypeReference<>() {
+        });
     }
 
     private <T extends SharedNotifyTemplate> T getCompleteParameters(T template) {
