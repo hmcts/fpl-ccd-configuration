@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.ApplicationDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.ManageDocumentLAService;
 import uk.gov.hmcts.reform.fpl.service.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.SupportingEvidenceValidatorService;
@@ -47,6 +48,7 @@ public class ManageDocumentsLAController extends CallbackController {
     private final ManageDocumentLAService manageDocumentLAService;
     private final ManageDocumentService manageDocumentService;
     private final SupportingEvidenceValidatorService supportingEvidenceValidatorService;
+    private final ApplicationDocumentsService applicationDocumentsService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
@@ -83,8 +85,7 @@ public class ManageDocumentsLAController extends CallbackController {
             case COURT_BUNDLE:
                 caseDetails.getData().putAll(manageDocumentLAService.initialiseCourtBundleFields(caseData));
                 break;
-            case APPLICATION_DOCUMENTS:
-                System.out.println("Waiting for Toireasa PR");
+            case APPLICATION:
                 break;
         }
 
@@ -147,8 +148,9 @@ public class ManageDocumentsLAController extends CallbackController {
                 caseDetails.getData().put(COURT_BUNDLE_LIST_KEY,
                     manageDocumentLAService.buildCourtBundleList(caseData));
                 break;
-            case APPLICATION_DOCUMENTS:
-                System.out.println("Waiting for Toireasa PR");
+            case APPLICATION:
+                caseDetails.getData().putAll(applicationDocumentsService.updateCaseDocuments(caseData.getDocuments(),
+                    caseDataBefore.getDocuments()));
                 break;
         }
 

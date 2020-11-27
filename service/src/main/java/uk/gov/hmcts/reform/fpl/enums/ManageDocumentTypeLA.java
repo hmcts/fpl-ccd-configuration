@@ -10,7 +10,7 @@ public enum ManageDocumentTypeLA {
     CORRESPONDENCE("Correspondence"),
     C2("C2 supporting documents"),
     COURT_BUNDLE("Court bundle"),
-    APPLICATION_DOCUMENTS("Application documents");
+    APPLICATION("Application documents");
 
     private final String label;
 }
