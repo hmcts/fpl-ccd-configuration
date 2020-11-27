@@ -32,7 +32,7 @@ public class UploadDocumentsController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
 
-        caseDetails.getData().remove("showMetaFields");
+        caseDetails.getData().remove("showCreatedByAndDateTimeUploadedFlag");
 
         return respond(caseDetails);
     }
@@ -61,7 +61,7 @@ public class UploadDocumentsController extends CallbackController {
         caseDetails.getData().putAll(applicationDocumentsService.updateCaseDocuments(caseData.getDocuments(),
             caseDataBefore.getDocuments()));
 
-        caseDetails.getData().put("showMetaFields", YES);
+        caseDetails.getData().put("showCreatedByAndDateTimeUploadedFlag", YES);
 
         return respond(caseDetails);
     }
