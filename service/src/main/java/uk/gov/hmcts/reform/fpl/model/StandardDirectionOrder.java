@@ -56,7 +56,7 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder {
     }
 
     @JsonIgnore
-    public UUID getUniqueCollectionId() {
+    public UUID getCollectionId() {
         return UUID.fromString("11111111-1111-1111-1111-111111111111");
     }
 

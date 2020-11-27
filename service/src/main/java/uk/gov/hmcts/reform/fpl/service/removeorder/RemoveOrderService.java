@@ -71,7 +71,7 @@ public class RemoveOrderService {
         if (caseData.getStandardDirectionOrder() != null) {
             StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
 
-            orders.add(element(standardDirectionOrder.getUniqueCollectionId(), standardDirectionOrder));
+            orders.add(element(standardDirectionOrder.getCollectionId(), standardDirectionOrder));
         }
 
         return orders;
