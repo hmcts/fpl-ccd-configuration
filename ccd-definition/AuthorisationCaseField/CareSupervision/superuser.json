@@ -117,7 +117,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hiddenStandardDirectionOrders",
     "UserRole": "caseworker-publiclaw-superuser",
-    "CRUD": "CRUD"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
