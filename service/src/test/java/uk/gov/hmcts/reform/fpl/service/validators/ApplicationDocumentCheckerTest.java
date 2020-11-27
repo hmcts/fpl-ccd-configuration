@@ -57,6 +57,15 @@ class ApplicationDocumentCheckerTest {
         assertThat(isStarted).isTrue();
     }
 
+    @Test
+    void shouldReturnFalseIfNothingHasBeenEnteredIntoEvent() {
+        final CaseData caseData = CaseData.builder().build();
+
+        final boolean isStarted = applicationDocumentChecker.isStarted(caseData);
+
+        assertThat(isStarted).isFalse();
+    }
+
     private static List<Element<ApplicationDocument>> documents() {
         return List.of(element(ApplicationDocument.builder()
             .documentType(DocumentType.THRESHOLD)
