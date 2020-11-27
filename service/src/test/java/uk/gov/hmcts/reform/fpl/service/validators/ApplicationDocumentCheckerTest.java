@@ -34,6 +34,29 @@ class ApplicationDocumentCheckerTest {
         assertThat(isCompleted).isFalse();
     }
 
+    @Test
+    void shouldReturnTrueIfDocumentsToFollowFieldIsAdded() {
+        final CaseData caseData = CaseData.builder()
+            .documents(documents())
+            .documentsToFollow("Document to follow")
+            .build();
+
+        final boolean isStarted = applicationDocumentChecker.isStarted(caseData);
+
+        assertThat(isStarted).isTrue();
+    }
+
+    @Test
+    void shouldReturnTrueIfDocumentIsAdded() {
+        final CaseData caseData = CaseData.builder()
+            .documents(documents())
+            .build();
+
+        final boolean isStarted = applicationDocumentChecker.isStarted(caseData);
+
+        assertThat(isStarted).isTrue();
+    }
+
     private static List<Element<ApplicationDocument>> documents() {
         return List.of(element(ApplicationDocument.builder()
             .documentType(DocumentType.THRESHOLD)
