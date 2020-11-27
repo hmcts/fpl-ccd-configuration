@@ -11,23 +11,23 @@ import java.util.stream.Stream;
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class OrderRemovalActions {
-    private final CMORemovalAction cmoOrderRemovalAction;
+    private final CMORemovalAction cmoRemovalAction;
     private final GeneratedOrderRemovalAction generatedOrderRemovalAction;
-    private final SDORemovalAction sdoOrderRemovalAction;
+    private final SDORemovalAction sdoRemovalAction;
 
     public OrderRemovalAction getAction(RemovableOrder removableOrder) {
         return getActions()
             .filter(orderRemovalAction -> orderRemovalAction.isAccepted(removableOrder))
             .findFirst()
-            .orElseThrow(() -> new RemovableOrderActionNotFoundException(cmoOrderRemovalAction.getClass()
+            .orElseThrow(() -> new RemovableOrderActionNotFoundException(cmoRemovalAction.getClass()
                 .getSimpleName()));
     }
 
     private Stream<OrderRemovalAction> getActions() {
         return Stream.of(
-            cmoOrderRemovalAction,
+            cmoRemovalAction,
             generatedOrderRemovalAction,
-            sdoOrderRemovalAction
+            sdoRemovalAction
         );
     }
 }
