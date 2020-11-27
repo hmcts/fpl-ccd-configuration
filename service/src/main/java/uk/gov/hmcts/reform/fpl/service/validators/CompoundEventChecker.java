@@ -18,6 +18,7 @@ public abstract class CompoundEventChecker implements EventChecker {
     public List<String> validate(CaseData caseData, List<Event> events) {
         return events.stream()
                 .flatMap(event -> {
+
                     List<String> groupErrors = new ArrayList<>();
                     List<String> errors = eventChecker.validate(event, caseData);
 

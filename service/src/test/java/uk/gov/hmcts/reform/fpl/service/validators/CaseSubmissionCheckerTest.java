@@ -7,12 +7,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -33,6 +35,9 @@ class CaseSubmissionCheckerTest {
     @Mock
     private EventsChecker eventsChecker;
 
+    @Mock
+    private FeatureToggleService featureToggleService;
+
     @InjectMocks
     private CaseSubmissionChecker caseSubmissionValidator;
 
@@ -40,6 +45,8 @@ class CaseSubmissionCheckerTest {
 
     @Test
     void shouldReportGroupedErrorsForAllRelevantEvents() {
+        given(featureToggleService.isApplicationDocumentsEventEnabled()).willReturn(false);
+
         final List<String> caseNameErrors = List.of("Case name error");
         final List<String> ordersNeededErrors = List.of("Orders needed error 1", "Orders needed error 2");
         final List<String> hearingNeededErrors = List.of("Hearing needed error");
@@ -142,6 +149,57 @@ class CaseSubmissionCheckerTest {
 
         assertThat(errors).isEmpty();
         assertThat(isAvailable).isTrue();
+    }
+
+    @Test
+    void shouldNotReportDocumentErrorsForDocumentEventWhenApplicationDocumentEventEnabled() {
+        given(featureToggleService.isApplicationDocumentsEventEnabled()).willReturn(true);
+
+        final List<String> caseNameErrors = List.of("Case name error");
+        final List<String> ordersNeededErrors = List.of("Orders needed error 1", "Orders needed error 2");
+        final List<String> hearingNeededErrors = List.of("Hearing needed error");
+        final List<String> groundsErrors = List.of("Grounds for application error");
+        final List<String> applicantErrors = List.of("Applicant error 1", "Applicant error 2");
+        final List<String> childrenErrors = List.of("Children error");
+        final List<String> respondentsErrors = List.of("Respondent error 1", "Respondent error 2");
+        final List<String> allocationProposalErrors = List.of("Allocation proposal error");
+
+        when(eventsChecker.validate(any(), any())).thenReturn(List.of("Error not included"));
+        when(eventsChecker.validate(CASE_NAME, caseData)).thenReturn(caseNameErrors);
+        when(eventsChecker.validate(DOCUMENTS, caseData)).thenReturn(emptyList());
+        when(eventsChecker.validate(ORDERS_SOUGHT, caseData)).thenReturn(ordersNeededErrors);
+        when(eventsChecker.validate(HEARING_URGENCY, caseData)).thenReturn(hearingNeededErrors);
+        when(eventsChecker.validate(GROUNDS, caseData)).thenReturn(groundsErrors);
+        when(eventsChecker.validate(ORGANISATION_DETAILS, caseData)).thenReturn(applicantErrors);
+        when(eventsChecker.validate(CHILDREN, caseData)).thenReturn(childrenErrors);
+        when(eventsChecker.validate(RESPONDENTS, caseData)).thenReturn(respondentsErrors);
+        when(eventsChecker.validate(ALLOCATION_PROPOSAL, caseData)).thenReturn(allocationProposalErrors);
+
+        final List<String> errors = caseSubmissionValidator.validate(caseData);
+        final boolean isAvailable = caseSubmissionValidator.isAvailable(caseData);
+
+        assertThat(errors).containsExactly(
+            "In the change case name section:",
+            "• Case name error",
+            "In the orders and directions sought section:",
+            "• Orders needed error 1",
+            "• Orders needed error 2",
+            "In the hearing urgency section:",
+            "• Hearing needed error",
+            "In the grounds for the application section:",
+            "• Grounds for application error",
+            "In the your organisation's details section:",
+            "• Applicant error 1",
+            "• Applicant error 2",
+            "In the child's details section:",
+            "• Children error",
+            "In the respondents' details section:",
+            "• Respondent error 1",
+            "• Respondent error 2",
+            "In the allocation proposal section:",
+            "• Allocation proposal error"
+        );
+        assertThat(isAvailable).isFalse();
     }
 
     @AfterEach

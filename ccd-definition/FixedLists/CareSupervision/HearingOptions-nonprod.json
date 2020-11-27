@@ -1,9 +1,0 @@
-[
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingOptions",
-    "ListElementCode": "VACATE_HEARING",
-    "ListElement": "Vacate a hearing - the hearing was stopped before its listed date",
-    "DisplayOrder": 3
-  }
-]

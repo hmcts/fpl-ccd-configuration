@@ -12,7 +12,7 @@ exports.config = {
       show: process.env.SHOW_BROWSER_WINDOW || false,
       restart: false,
       keepCookies: true,
-      waitForTimeout: 20000,
+      waitForTimeout: parseInt(process.env.WAIT_FOR_TIMEOUT || '20000'),
       chrome: {
         ignoreHTTPSErrors: true,
         args: process.env.PROXY_SERVER ? [
@@ -84,6 +84,7 @@ exports.config = {
     manageDocumentsEventPage: './e2e/pages/events/manageDocumentsEvent.page.js',
     changeCaseStateEventPage: './e2e/pages/events/changeCaseStateEvent.page.js',
     manageLegalRepresentativesEventPage: './e2e/pages/events/manageLegalRepresentativesEvent.page.js',
+    addApplicationDocumentsEventPage: './e2e/pages/events/addApplicationDocumentsEvent.page.js',
   },
   plugins: {
     autoDelay: {

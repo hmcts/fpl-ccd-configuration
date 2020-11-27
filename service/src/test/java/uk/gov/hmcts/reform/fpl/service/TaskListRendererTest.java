@@ -3,15 +3,19 @@ package uk.gov.hmcts.reform.fpl.service;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
+import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
 import static uk.gov.hmcts.reform.fpl.enums.Event.COURT_SERVICES;
@@ -41,31 +45,50 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 })
 class TaskListRendererTest {
 
-    private static final List<Task> TASKS_TO_RENDER = List.of(
-        task(CASE_NAME, COMPLETED),
-        task(ORDERS_SOUGHT, IN_PROGRESS),
-        task(HEARING_URGENCY, COMPLETED),
-        task(GROUNDS, COMPLETED),
-        task(RISK_AND_HARM, IN_PROGRESS),
-        task(FACTORS_AFFECTING_PARENTING, COMPLETED),
-        task(DOCUMENTS, COMPLETED),
-        task(ORGANISATION_DETAILS, COMPLETED),
-        task(CHILDREN, COMPLETED),
-        task(RESPONDENTS, IN_PROGRESS),
-        task(ALLOCATION_PROPOSAL, COMPLETED),
-        task(OTHER_PROCEEDINGS, NOT_STARTED),
-        task(INTERNATIONAL_ELEMENT, IN_PROGRESS),
-        task(OTHERS, NOT_STARTED),
-        task(COURT_SERVICES, IN_PROGRESS),
-        task(SUBMIT_APPLICATION, NOT_AVAILABLE));
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     @Autowired
     private TaskListRenderer taskListRenderer;
 
+    private List<Task> getTasks(Event event) {
+        return List.of(
+            task(CASE_NAME, COMPLETED),
+            task(ORDERS_SOUGHT, IN_PROGRESS),
+            task(HEARING_URGENCY, COMPLETED),
+            task(GROUNDS, COMPLETED),
+            task(RISK_AND_HARM, IN_PROGRESS),
+            task(FACTORS_AFFECTING_PARENTING, COMPLETED),
+            task(event, COMPLETED),
+            task(ORGANISATION_DETAILS, COMPLETED),
+            task(CHILDREN, COMPLETED),
+            task(RESPONDENTS, IN_PROGRESS),
+            task(ALLOCATION_PROPOSAL, COMPLETED),
+            task(OTHER_PROCEEDINGS, NOT_STARTED),
+            task(INTERNATIONAL_ELEMENT, IN_PROGRESS),
+            task(OTHERS, NOT_STARTED),
+            task(COURT_SERVICES, IN_PROGRESS),
+            task(SUBMIT_APPLICATION, NOT_AVAILABLE));
+    }
+
     @Test
-    void shouldRenderTaskList() {
+    void shouldRenderTaskListWhenApplicationDocumentsIsToggledOff() {
+        given(featureToggleService.isApplicationDocumentsEventEnabled()).willReturn(false);
+
         final String expectedTaskList = readString("task-list/expected-task-list.md").trim();
 
-        assertThat(taskListRenderer.render(TASKS_TO_RENDER)).isEqualTo(expectedTaskList);
+        assertThat(taskListRenderer.render(getTasks(DOCUMENTS))).isEqualTo(expectedTaskList);
+    }
+
+    @Test
+    void shouldRenderTaskListWhenApplicationDocumentsIsToggledOn() {
+        given(featureToggleService.isApplicationDocumentsEventEnabled()).willReturn(true);
+
+        final String expectedTaskList = readString("task-list/expected-task-list-when-application-documents-enabled.md")
+            .trim();
+
+        System.out.println(taskListRenderer.render(getTasks(APPLICATION_DOCUMENTS)));
+
+        assertThat(taskListRenderer.render(getTasks(APPLICATION_DOCUMENTS))).isEqualTo(expectedTaskList);
     }
 }

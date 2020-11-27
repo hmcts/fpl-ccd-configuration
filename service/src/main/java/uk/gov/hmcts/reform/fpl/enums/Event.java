@@ -20,6 +20,7 @@ public enum Event {
     GROUNDS("enterGrounds", "Grounds for the application", List.of(OPEN, RETURNED)),
     RISK_AND_HARM("enterRiskHarm", "Risk and harm to children", List.of(OPEN, RETURNED)),
     FACTORS_AFFECTING_PARENTING("enterParentingFactors", "Factors affecting parenting", List.of(OPEN, RETURNED)),
+    ////TO DO remove when toggling on FPLA-768
     DOCUMENTS("uploadDocuments", "Upload documents",
         List.of(OPEN, SUBMITTED, GATEKEEPING, CASE_MANAGEMENT, RETURNED)),
     ORGANISATION_DETAILS("enterApplicant", "Your organisation's details", List.of(OPEN, RETURNED)),
@@ -31,7 +32,8 @@ public enum Event {
     OTHERS("enterOthers", "Other people in the case", List.of(OPEN, RETURNED)),
     COURT_SERVICES("attendingHearing", "Court services needed", List.of(OPEN, RETURNED)),
     SUBMIT_APPLICATION("submitApplication", "Submit application", List.of(OPEN, RETURNED)),
-    CASE_NAME("changeCaseName", "Change case name", List.of(OPEN, RETURNED));
+    CASE_NAME("changeCaseName", "Change case name", List.of(OPEN, RETURNED)),
+    APPLICATION_DOCUMENTS("uploadApplicationDocuments", "Upload documents", List.of(OPEN));
 
     private final String id;
     private String name;

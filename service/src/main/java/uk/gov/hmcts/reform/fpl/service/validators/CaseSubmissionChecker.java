@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.validators;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -18,6 +20,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.ORGANISATION_DETAILS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
 
 @Service
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class CaseSubmissionChecker extends CompoundEventChecker {
 
     private static final List<Event> REQUIRED_EVENTS = List.of(

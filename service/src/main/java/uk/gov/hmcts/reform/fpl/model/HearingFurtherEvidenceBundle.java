@@ -9,6 +9,6 @@ import java.util.List;
 @Data
 @Builder(toBuilder = true)
 public class HearingFurtherEvidenceBundle {
-    private final String hearingName;
+    private String hearingName;
     private List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle;
 }

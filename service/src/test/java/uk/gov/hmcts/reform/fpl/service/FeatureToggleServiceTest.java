@@ -25,11 +25,6 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.C2_APPLICATION;
-import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.CMO;
-import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.GENERATED_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.NOTICE_OF_PROCEEDINGS;
-import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.SDO;
 import static uk.gov.hmcts.reform.fpl.utils.matchers.LDUserMatcher.ldUser;
 
 class FeatureToggleServiceTest {
@@ -84,67 +79,6 @@ class FeatureToggleServiceTest {
     }
 
     @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForAllocatedJudgeNotificationCMO(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isAllocatedJudgeNotificationEnabled(CMO)).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("judge-notification"),
-            ldUser(ENVIRONMENT).build(),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForAllocatedJudgeNotificationSDO(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isAllocatedJudgeNotificationEnabled(SDO)).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("judge-notification"),
-            ldUser(ENVIRONMENT).build(),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForAllocatedJudgeNotificationNoticeOfProceedings(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isAllocatedJudgeNotificationEnabled(NOTICE_OF_PROCEEDINGS))
-            .isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("judge-notification"),
-            ldUser(ENVIRONMENT).build(),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForAllocatedJudgeNotificationGeneratedOrder(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isAllocatedJudgeNotificationEnabled(GENERATED_ORDER)).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("judge-notification"),
-            ldUser(ENVIRONMENT).build(),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForAllocatedJudgeNotificationC2Application(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isAllocatedJudgeNotificationEnabled(C2_APPLICATION)).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("judge-notification"),
-            ldUser(ENVIRONMENT).build(),
-            eq(false));
-    }
-
-    @ParameterizedTest
     @MethodSource("userAttributesTestSource")
     void shouldNotAccumulateAttributesBetweenRequests(Runnable functionToTest, Runnable accumulateFunction,
                                                       List<UserAttribute> attributes) {
@@ -191,16 +125,24 @@ class FeatureToggleServiceTest {
             eq(false));
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForIsApplicationDocumentsEventEnabled(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isApplicationDocumentsEventEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("application-documents-event"),
+            ldUser(ENVIRONMENT).build(),
+            eq(false));
+    }
+
     private static Stream<Arguments> userAttributesTestSource() {
         return Stream.of(
             Arguments.of(
                 (Runnable) () -> service.isCtscReportEnabled(),
                 (Runnable) () -> service.isCtscEnabled("test name"),
                 buildAttributes("report")),
-            Arguments.of(
-                (Runnable) () -> service.isAllocatedJudgeNotificationEnabled(SDO),
-                (Runnable) () -> service.isCtscReportEnabled(),
-                buildAttributes("allocatedJudgeNotificationType")),
             Arguments.of(
                 (Runnable) () -> service.isCtscEnabled("test name"),
                 (Runnable) () -> service.isCtscReportEnabled(),

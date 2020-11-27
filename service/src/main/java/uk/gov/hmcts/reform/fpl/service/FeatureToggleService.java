@@ -6,7 +6,6 @@ import com.launchdarkly.sdk.server.LDClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType;
 
 import java.util.Map;
 
@@ -37,13 +36,6 @@ public class FeatureToggleService {
             createLDUser(Map.of("report", LDValue.of(true))), false);
     }
 
-    public boolean isAllocatedJudgeNotificationEnabled(AllocatedJudgeNotificationType allocatedJudgeNotificationType) {
-        LDUser launchDarklyUser = createLDUser(Map.of("allocatedJudgeNotificationType",
-            LDValue.of(allocatedJudgeNotificationType.getValue())));
-
-        return ldClient.boolVariation("judge-notification", launchDarklyUser, false);
-    }
-
     public boolean isCaseUserBulkAssignmentEnabled() {
         return ldClient.boolVariation("case-user-assignment", createLDUser(), true);
     }
@@ -69,6 +61,10 @@ public class FeatureToggleService {
 
     public boolean isAddHearingsInPastEnabled() {
         return ldClient.boolVariation("add-hearings-in-past", createLDUser(), false);
+    }
+
+    public boolean isApplicationDocumentsEventEnabled() {
+        return ldClient.boolVariation("application-documents-event", createLDUser(), false);
     }
 
     private LDUser createLDUser() {

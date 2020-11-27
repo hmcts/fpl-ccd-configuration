@@ -9,11 +9,13 @@ module.exports = {
       addNewHearing: '#hearingOption-NEW_HEARING',
       editHearing: '#hearingOption-EDIT_HEARING',
       adjournHearing: '#hearingOption-ADJOURN_HEARING',
-      vacatedHearing: '#hearingOption-VACATE_HEARING',
+      vacateHearing: '#hearingOption-VACATE_HEARING',
+      reListHearing: '#hearingOption-RE_LIST_HEARING',
     },
     hearingDateList: '#hearingDateList',
     pastAndTodayHearingDateList: '#pastAndTodayHearingDateList',
     futureAndTodayHearingDateList: '#futureAndTodayHearingDateList',
+    toReListHearingDateList: '#toReListHearingDateList',
     hearingType: {
       final: '#hearingType-CASE_MANAGEMENT',
     },
@@ -50,8 +52,13 @@ module.exports = {
   },
 
   selectVacateHearing(hearing) {
-    I.click(this.fields.hearingOptions.vacatedHearing);
+    I.click(this.fields.hearingOptions.vacateHearing);
     I.selectOption(this.fields.futureAndTodayHearingDateList, hearing);
+  },
+
+  selectReListHearing(hearing) {
+    I.click(this.fields.hearingOptions.reListHearing);
+    I.selectOption(this.fields.toReListHearingDateList, hearing);
   },
 
   selectCancellationReasonType(type){
@@ -92,12 +99,15 @@ module.exports = {
     }
   },
 
-  async enterJudgeAndLegalAdvisorDetails(hearingDetails) {
+  async enterJudgeDetails(hearingDetails) {
     judgeAndLegalAdvisor.useAlternateJudge();
     judgeAndLegalAdvisor.selectJudgeTitle();
     judgeAndLegalAdvisor.enterJudgeLastName(hearingDetails.judgeAndLegalAdvisor.judgeLastName);
-    judgeAndLegalAdvisor.enterLegalAdvisorName(hearingDetails.judgeAndLegalAdvisor.legalAdvisorName);
     judgeAndLegalAdvisor.enterJudgeEmailAddress(hearingDetails.judgeAndLegalAdvisor.judgeEmail);
+  },
+
+  async enterLegalAdvisorName(legalAdvisorName) {
+    judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName);
   },
 
   async enterJudgeName(name) {
