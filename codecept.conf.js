@@ -4,7 +4,7 @@ exports.config = {
   output: './output',
   multiple: {
     parallel: {
-      chunks: 1,
+      chunks: 3,
     },
   },
   rerun: {

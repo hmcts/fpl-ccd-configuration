@@ -8,7 +8,7 @@ const gatekeepingNoHearingDetails = require('../fixtures/caseData/gatekeepingNoH
 let caseId;
 let submittedAt;
 
-Feature('Gatekeeper Case administration after gatekeeping @failure');
+Feature('Gatekeeper Case administration after gatekeeping @failure @debug-failure');
 
 BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData(gatekeepingNoHearingDetails);
