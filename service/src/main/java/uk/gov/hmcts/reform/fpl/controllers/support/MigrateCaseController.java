@@ -38,6 +38,7 @@ public class MigrateCaseController extends CallbackController {
         if (isCorrectCase(migrationId, familyManCaseNumber)) {
             log.info("Removing hearings from case reference {}", caseDetails.getId());
             caseDetails.getData().put("hearingDetails", removeHearings(caseData.getHearingDetails()));
+            caseDetails.getData().remove(MIGRATION_ID_KEY);
         }
 
         return respond(caseDetails);
