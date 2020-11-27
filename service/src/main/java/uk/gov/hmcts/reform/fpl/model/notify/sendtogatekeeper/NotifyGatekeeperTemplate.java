@@ -9,22 +9,20 @@ import uk.gov.hmcts.reform.fpl.model.notify.SharedNotifyTemplate;
 @Data
 @SuperBuilder
 public final class NotifyGatekeeperTemplate extends SharedNotifyTemplate {
-    public NotifyGatekeeperTemplate duplicate() {
-        NotifyGatekeeperTemplate clone = NotifyGatekeeperTemplate.builder().build();
-
-        clone.setLocalAuthority(this.getLocalAuthority());
-        clone.setOrdersAndDirections(this.getOrdersAndDirections());
-        clone.setDataPresent(this.getDataPresent());
-        clone.setFullStop(this.getFullStop());
-        clone.setTimeFramePresent(this.getTimeFramePresent());
-        clone.setTimeFrameValue(this.getTimeFrameValue());
-        clone.setUrgentHearing(this.getUrgentHearing());
-        clone.setNonUrgentHearing(this.getNonUrgentHearing());
-        clone.setFirstRespondentName(this.getFirstRespondentName());
-        clone.setReference(this.getReference());
-        clone.setCaseUrl(this.getCaseUrl());
-
-        return clone;
+    public SharedNotifyTemplate duplicate() {
+        return SharedNotifyTemplate.builder()
+            .localAuthority(this.getLocalAuthority())
+            .ordersAndDirections(this.getOrdersAndDirections())
+            .dataPresent(this.getDataPresent())
+            .fullStop(this.getFullStop())
+            .timeFramePresent(this.getTimeFramePresent())
+            .timeFrameValue(this.getTimeFrameValue())
+            .urgentHearing(this.getUrgentHearing())
+            .nonUrgentHearing(this.getNonUrgentHearing())
+            .firstRespondentName(this.getFirstRespondentName())
+            .reference(this.getReference())
+            .caseUrl(this.getCaseUrl())
+            .build();
     }
 }
 
