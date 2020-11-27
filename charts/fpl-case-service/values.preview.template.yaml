@@ -69,6 +69,11 @@ xui-webapp:
       REDISCLOUD_URL: dummy
       FEATURE_APP_INSIGHTS_ENABLED: false
       FEATURE_SECURE_COOKIE_ENABLED: false
+    keyVaults:
+      rpx:
+        secrets:
+          - mc-s2s-client-secret
+          - mc-idam-client-secret
 
 ccd:
   ccd:
