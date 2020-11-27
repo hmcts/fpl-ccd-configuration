@@ -50,11 +50,10 @@ public class UploadDocumentsAboutToSubmitControllerTest extends AbstractControll
     private static final LocalDate date = LocalDate.of(2021,10, 13);
 
     @BeforeEach
-    void init (){
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
-
+    void init() {
         Map<String, Object> updatedCaseData = new HashMap<>();
+
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         List<Element<ApplicationDocument>> updatedDocuments = caseData.getDocuments();
         updatedDocuments.get(0).getValue().setUploadedBy(USER);
@@ -62,7 +61,10 @@ public class UploadDocumentsAboutToSubmitControllerTest extends AbstractControll
             LocalTime.of(13, 30)));
         updatedCaseData.put("documents", updatedDocuments);
 
-        given(applicationDocumentsService.updateCaseDocuments(caseData.getDocuments(), caseDataBefore.getDocuments())).willReturn(updatedCaseData);
+        CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
+
+        given(applicationDocumentsService.updateCaseDocuments(caseData.getDocuments(), caseDataBefore.getDocuments()))
+            .willReturn(updatedCaseData);
     }
 
     @Test
