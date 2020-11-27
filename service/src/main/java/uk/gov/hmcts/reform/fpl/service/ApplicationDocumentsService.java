@@ -44,20 +44,22 @@ public class ApplicationDocumentsService {
             currentDocuments.forEach(this::setUpdatedByAndDateAndTimeOnDocumentToCurrent);
             return currentDocuments;
         }
-            return currentDocuments.stream()
-                .map(document -> {
-                    Optional<Element<ApplicationDocument>> documentBefore = findElement(document.getId(), previousDocuments);
 
-                    if (documentBefore.isPresent()) {
-                        Element<ApplicationDocument> oldDocument = documentBefore.get();
-                        handleExistingDocuments(document, oldDocument);
+        return currentDocuments.stream()
+            .map(document -> {
+                Optional<Element<ApplicationDocument>> documentBefore = findElement(document.getId(),
+                    previousDocuments);
 
-                    } else {
-                        // New document was added
-                        setUpdatedByAndDateAndTimeOnDocumentToCurrent(document);
-                    }
-                    return document;
-                }).collect(Collectors.toList());
+                if (documentBefore.isPresent()) {
+                    Element<ApplicationDocument> oldDocument = documentBefore.get();
+                    handleExistingDocuments(document, oldDocument);
+
+                } else {
+                    // New document was added
+                    setUpdatedByAndDateAndTimeOnDocumentToCurrent(document);
+                }
+                return document;
+            }).collect(Collectors.toList());
     }
 
     private void handleExistingDocuments(Element<ApplicationDocument> document,

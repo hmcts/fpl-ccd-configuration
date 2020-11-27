@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -15,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ApplicationDocumentsService;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -34,10 +32,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 public class UploadDocumentsAboutToSubmitControllerTest extends AbstractControllerTest {
     @MockBean
     private ApplicationDocumentsService applicationDocumentsService;
-
-    @Autowired
-    private static Time time;
-
 
     UploadDocumentsAboutToSubmitControllerTest() {
         super("upload-documents");
@@ -58,11 +52,12 @@ public class UploadDocumentsAboutToSubmitControllerTest extends AbstractControll
         updatedDocuments.get(0).getValue().setUploadedBy(USER);
         updatedDocuments.get(0).getValue().setDateTimeUploaded(LocalDateTime.of(date,
             LocalTime.of(13, 30)));
-        updatedCaseData.put("documents", updatedDocuments);
+        updatedCaseData.put("applicationDocuments", updatedDocuments);
 
         CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
 
-        given(applicationDocumentsService.updateCaseDocuments(caseData.getApplicationDocuments(), caseDataBefore.getApplicationDocuments()))
+        given(applicationDocumentsService.updateCaseDocuments(caseData.getApplicationDocuments(),
+            caseDataBefore.getApplicationDocuments()))
             .willReturn(updatedCaseData);
     }
 
@@ -75,7 +70,8 @@ public class UploadDocumentsAboutToSubmitControllerTest extends AbstractControll
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
 
-        assertThat(callbackResponse.getData().get("documents")).isEqualToComparingOnlyGivenFields(Document.builder()
+        assertThat(callbackResponse.getData().get("applicationDocuments")).isEqualToComparingOnlyGivenFields(
+            Document.builder()
             .uploadedBy(USER)
             .dateTimeUploaded(LocalDateTime.of(date,
                 LocalTime.of(13, 30))));
