@@ -65,12 +65,12 @@ class ApplicationDocumentsServiceTest {
     void shouldSetUploadedByAndDateTimeOnNewCaseDocument() {
         CaseData caseData = caseData();
 
-        List<Element<ApplicationDocument>> previousDocuments = emptyCaseData().getDocuments();
-        List<Element<ApplicationDocument>> documents = caseData.getDocuments();
+        List<Element<ApplicationDocument>> previousDocuments = emptyCaseData().getApplicationDocuments();
+        List<Element<ApplicationDocument>> documents = caseData.getApplicationDocuments();
 
         Map<String, Object> map = applicationDocumentsService.updateCaseDocuments(documents, previousDocuments);
 
-        assertThat(map.get("documents")).isEqualToComparingOnlyGivenFields(Document.builder()
+        assertThat(map.get("applicationDocuments")).isEqualToComparingOnlyGivenFields(Document.builder()
             .uploadedBy(HMCTS_USER)
             .dateTimeUploaded(time.now()));
     }
@@ -91,7 +91,7 @@ class ApplicationDocumentsServiceTest {
 
         Map<String, Object> map = applicationDocumentsService.updateCaseDocuments(currentDocuments, previousDocuments);
 
-        assertThat(map.get("documents")).isEqualToComparingOnlyGivenFields(Document.builder()
+        assertThat(map.get("applicationDocuments")).isEqualToComparingOnlyGivenFields(Document.builder()
             .uploadedBy(HMCTS_USER)
             .dateTimeUploaded(time.now()));
     }
@@ -110,7 +110,7 @@ class ApplicationDocumentsServiceTest {
 
         Map<String, Object> map = applicationDocumentsService.updateCaseDocuments(currentDocuments, previousDocuments);
 
-        assertThat(map.get("documents")).isEqualToComparingOnlyGivenFields(Document.builder()
+        assertThat(map.get("applicationDocuments")).isEqualToComparingOnlyGivenFields(Document.builder()
             .uploadedBy(LA_USER)
             .dateTimeUploaded(PAST_DATE));
     }
@@ -133,7 +133,7 @@ class ApplicationDocumentsServiceTest {
         Map<String, Object> map = applicationDocumentsService.updateCaseDocuments(currentDocuments, previousDocuments);
         CaseData caseData = mapper.convertValue(map, CaseData.class);
 
-        assertThat(caseData.getDocuments().get(0).getValue()).isEqualTo(firstDocument);
+        assertThat(caseData.getApplicationDocuments().get(0).getValue()).isEqualTo(firstDocument);
     }
 
     private ApplicationDocument buildApplicationDocument(LocalDateTime time) {

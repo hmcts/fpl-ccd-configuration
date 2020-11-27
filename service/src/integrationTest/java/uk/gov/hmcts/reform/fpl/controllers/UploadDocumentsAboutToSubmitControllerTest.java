@@ -26,7 +26,6 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @ActiveProfiles("integration-test")
@@ -55,7 +54,7 @@ public class UploadDocumentsAboutToSubmitControllerTest extends AbstractControll
 
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<ApplicationDocument>> updatedDocuments = caseData.getDocuments();
+        List<Element<ApplicationDocument>> updatedDocuments = caseData.getApplicationDocuments();
         updatedDocuments.get(0).getValue().setUploadedBy(USER);
         updatedDocuments.get(0).getValue().setDateTimeUploaded(LocalDateTime.of(date,
             LocalTime.of(13, 30)));
@@ -63,24 +62,8 @@ public class UploadDocumentsAboutToSubmitControllerTest extends AbstractControll
 
         CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
 
-        given(applicationDocumentsService.updateCaseDocuments(caseData.getDocuments(), caseDataBefore.getDocuments()))
+        given(applicationDocumentsService.updateCaseDocuments(caseData.getApplicationDocuments(), caseDataBefore.getApplicationDocuments()))
             .willReturn(updatedCaseData);
-    }
-
-    @Test
-    void shouldSetShowCreatedByAndDateTimeUploadedFlagToYes() {
-        CaseDetails caseDetails = callbackRequest().getCaseDetails();
-
-        CaseDetails caseDetailsBefore = callbackRequest().getCaseDetailsBefore();
-
-        CallbackRequest callbackRequest = CallbackRequest.builder()
-            .caseDetails(caseDetails)
-            .caseDetailsBefore(caseDetailsBefore)
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
-
-        assertThat(callbackResponse.getData().get("showCreatedByAndDateTimeUploadedFlag").equals(YES));
     }
 
     @Test

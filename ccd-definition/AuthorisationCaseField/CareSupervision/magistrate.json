@@ -1136,14 +1136,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "documents",
+    "CaseFieldID": "applicationDocuments",
     "UserRole": "caseworker-publiclaw-magistrate",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "documentsToFollow",
+    "CaseFieldID": "applicationDocumentsToFollowReason",
     "UserRole": "caseworker-publiclaw-magistrate",
     "CRUD": "R"
   }

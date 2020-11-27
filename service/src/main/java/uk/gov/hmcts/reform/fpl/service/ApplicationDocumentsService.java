@@ -12,10 +12,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static io.jsonwebtoken.lang.Collections.isEmpty;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -29,11 +29,11 @@ public class ApplicationDocumentsService {
         List<Element<ApplicationDocument>> updatedDocuments = setUpdatedByAndDateAndTimeOnDocuments(
              currentDocuments, previousDocuments);
 
-        Map<String, Object> updatedCaseData = new HashMap<>();
+        Map<String, Object> data = new HashMap<>();
 
-        updatedCaseData.put("documents", updatedDocuments);
+        data.put("applicationDocuments", updatedDocuments);
 
-        return updatedCaseData;
+        return data;
     }
 
     private List<Element<ApplicationDocument>> setUpdatedByAndDateAndTimeOnDocuments(
@@ -41,17 +41,16 @@ public class ApplicationDocumentsService {
         List<Element<ApplicationDocument>> previousDocuments) {
 
         if (isEmpty(previousDocuments) && !isEmpty(currentDocuments)) {
-            currentDocuments.stream().forEach(this::setUpdatedByAndDateAndTimeOnDocumentToCurrent);
+            currentDocuments.forEach(this::setUpdatedByAndDateAndTimeOnDocumentToCurrent);
             return currentDocuments;
-        } else {
+        }
             return currentDocuments.stream()
                 .map(document -> {
-                    Optional<Element<ApplicationDocument>> documentBefore = getDocumentBeforeFromID(document.getId(),
-                        previousDocuments);
+                    Optional<Element<ApplicationDocument>> documentBefore = findElement(document.getId(), previousDocuments);
 
                     if (documentBefore.isPresent()) {
                         Element<ApplicationDocument> oldDocument = documentBefore.get();
-                        handleExistingDocuments(oldDocument, document);
+                        handleExistingDocuments(document, oldDocument);
 
                     } else {
                         // New document was added
@@ -59,11 +58,10 @@ public class ApplicationDocumentsService {
                     }
                     return document;
                 }).collect(Collectors.toList());
-        }
     }
 
-    private void handleExistingDocuments(Element<ApplicationDocument> documentBefore,
-                                         Element<ApplicationDocument> document) {
+    private void handleExistingDocuments(Element<ApplicationDocument> document,
+                                         Element<ApplicationDocument> documentBefore) {
         if (documentBefore.getId().equals(document.getId())) {
             if (documentBefore.getValue().getDocument().equals(document.getValue().getDocument())) {
                 // Document wasn't modified so persist old values
@@ -74,15 +72,6 @@ public class ApplicationDocumentsService {
                 setUpdatedByAndDateAndTimeOnDocumentToCurrent(document);
             }
         }
-    }
-
-    private Optional<Element<ApplicationDocument>> getDocumentBeforeFromID(UUID documentID,
-                                             List<Element<ApplicationDocument>> previousDocuments) {
-        return Optional.ofNullable(previousDocuments.stream()
-            .filter(previousDocument -> previousDocument.getId()
-            .equals(documentID))
-            .findAny()
-            .orElse(null));
     }
 
     private Element<ApplicationDocument> setUpdatedByAndDateAndTimeOnDocumentToCurrent(

@@ -17,8 +17,6 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentsService;
 
 import java.util.List;
 
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-
 @Api
 @RestController
 @RequestMapping("/callback/upload-documents")
@@ -27,15 +25,6 @@ public class UploadDocumentsController extends CallbackController {
     private final DocumentsValidatorService documentsValidatorService;
     private final UploadDocumentsService uploadDocumentsService;
     private final ApplicationDocumentsService applicationDocumentsService;
-
-    @PostMapping("/about-to-start")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
-        CaseDetails caseDetails = callbackrequest.getCaseDetails();
-
-        caseDetails.getData().remove("showCreatedByAndDateTimeUploadedFlag");
-
-        return respond(caseDetails);
-    }
 
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
@@ -58,10 +47,8 @@ public class UploadDocumentsController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         CaseData caseDataBefore = getCaseDataBefore(callbackrequest);
-        caseDetails.getData().putAll(applicationDocumentsService.updateCaseDocuments(caseData.getDocuments(),
-            caseDataBefore.getDocuments()));
-
-        caseDetails.getData().put("showCreatedByAndDateTimeUploadedFlag", YES);
+        caseDetails.getData().putAll(applicationDocumentsService.updateCaseDocuments(caseData.getApplicationDocuments(),
+            caseDataBefore.getApplicationDocuments()));
 
         return respond(caseDetails);
     }

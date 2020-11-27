@@ -6,9 +6,9 @@
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
-    "CaseFieldID": "documents",
+    "CaseFieldID": "applicationDocuments",
     "TabFieldDisplayOrder": 26,
-    "FieldShowCondition": "documents !=\"\""
+    "FieldShowCondition": "applicationDocuments !=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -17,9 +17,9 @@
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
-    "CaseFieldID": "documentsToFollow",
+    "CaseFieldID": "applicationDocumentsToFollowReason",
     "TabFieldDisplayOrder": 27,
-    "FieldShowCondition": "documentsToFollow !=\"\""
+    "FieldShowCondition": "applicationDocumentsToFollowReason !=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -29,7 +29,7 @@
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
     "CaseFieldID": "documentsLink",
-    "FieldShowCondition": "documents!=\"\"",
+    "FieldShowCondition": "applicationDocuments!=\"\"",
     "TabFieldDisplayOrder": 28
   }
 ]
