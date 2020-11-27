@@ -39,9 +39,7 @@ public class ManageDocumentLAService {
             if (!bundles.isEmpty()) {
                 UUID selectedHearingId = getDynamicListSelectedValue(caseData.getManageDocumentsHearingList(), mapper);
 
-                Optional<Element<HearingFurtherEvidenceBundle>> bundle = findElement(
-                    selectedHearingId, bundles
-                );
+                Optional<Element<HearingFurtherEvidenceBundle>> bundle = findElement(selectedHearingId, bundles);
 
                 if (bundle.isPresent()) {
                     return bundle.get().getValue().getSupportingEvidenceBundle();
@@ -64,8 +62,7 @@ public class ManageDocumentLAService {
     public List<Element<CourtBundle>> buildCourtBundleList(CaseData caseData) {
         List<Element<CourtBundle>> courtBundleList = caseData.getCourtBundleList();
 
-        UUID selectedHearingId = getDynamicListSelectedValue(caseData.getCourtBundleHearingList(),
-            mapper);
+        UUID selectedHearingId = getDynamicListSelectedValue(caseData.getCourtBundleHearingList(), mapper);
 
         if (courtBundleList == null || courtBundleList.isEmpty()) {
             return List.of(element(selectedHearingId, caseData.getManageDocumentsCourtBundle()));
