@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static java.util.Objects.isNull;
+import static io.jsonwebtoken.lang.Collections.isEmpty;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -40,44 +40,45 @@ public class ApplicationDocumentsService {
         List<Element<ApplicationDocument>> currentDocuments,
         List<Element<ApplicationDocument>> previousDocuments) {
 
-        if (isNull(previousDocuments) && currentDocuments.size() > 0) {
+        if (isEmpty(previousDocuments) && !isEmpty(currentDocuments)) {
             currentDocuments.stream().forEach(this::setUpdatedByAndDateAndTimeOnDocumentToCurrent);
             return currentDocuments;
         } else {
-            List<Element<ApplicationDocument>> documents = currentDocuments.stream()
+            return currentDocuments.stream()
                 .map(document -> {
                     Optional<Element<ApplicationDocument>> documentBefore = getDocumentBeforeFromID(document.getId(),
                         previousDocuments);
 
                     if (documentBefore.isPresent()) {
                         Element<ApplicationDocument> oldDocument = documentBefore.get();
+                        handleExistingDocuments(oldDocument, document);
 
-                        if (oldDocument.getId().equals(document.getId())) {
-                            if (oldDocument.getValue().getDocument().equals(document.getValue().getDocument())) {
-                                // Document wasn't modified so persist old values
-                                document.getValue().setDateTimeUploaded(oldDocument.getValue().getDateTimeUploaded());
-                                document.getValue().setUploadedBy(oldDocument.getValue().getUploadedBy());
-                            } else {
-                                // Document was modified so updated
-                                setUpdatedByAndDateAndTimeOnDocumentToCurrent(document);
-                            }
-                        }
                     } else {
                         // New document was added
                         setUpdatedByAndDateAndTimeOnDocumentToCurrent(document);
                     }
                     return document;
                 }).collect(Collectors.toList());
+        }
+    }
 
-            return documents;
+    private void handleExistingDocuments(Element<ApplicationDocument> documentBefore, Element<ApplicationDocument> document) {
+        if (documentBefore.getId().equals(document.getId())) {
+            if (documentBefore.getValue().getDocument().equals(document.getValue().getDocument())) {
+                // Document wasn't modified so persist old values
+                document.getValue().setDateTimeUploaded(documentBefore.getValue().getDateTimeUploaded());
+                document.getValue().setUploadedBy(documentBefore.getValue().getUploadedBy());
+            } else {
+                // Document was modified so update
+                setUpdatedByAndDateAndTimeOnDocumentToCurrent(document);
+            }
         }
     }
 
     private Optional<Element<ApplicationDocument>> getDocumentBeforeFromID(UUID documentID,
                                              List<Element<ApplicationDocument>> previousDocuments) {
         return Optional.ofNullable(previousDocuments.stream()
-            .filter((previousDocument)
-                -> previousDocument.getId()
+            .filter(previousDocument -> previousDocument.getId()
             .equals(documentID))
             .findAny()
             .orElse(null));
