@@ -50,6 +50,8 @@
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
     "FieldShowCondition": "manageDocument.type=\"FURTHER_EVIDENCE_DOCUMENTS\"",
+    "PageShowCondition": "supportingEvidenceDocumentsTemp!=\"\"",
+    "Comment": "PageShowCondition condition added to force redirect to first page when page refreshed",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documents/validate-supporting-evidence/mid-event"
   },
   {
