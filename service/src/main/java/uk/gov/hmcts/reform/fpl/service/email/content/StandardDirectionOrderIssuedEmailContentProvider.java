@@ -7,12 +7,9 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForSDO;
 import uk.gov.hmcts.reform.fpl.model.notify.sdo.CTSCTemplateForSDO;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.StandardDirectionOrderContent;
-
-import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked.NONE;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.concatUrlAndMostRecentUploadedDocumentPath;
@@ -25,25 +22,6 @@ public class StandardDirectionOrderIssuedEmailContentProvider extends StandardDi
     private final CaseDataExtractionService caseDataExtractionService;
     @Value("${manage-case.ui.base.url}")
     private String xuiBaseUrl;
-
-    public AllocatedJudgeTemplateForSDO buildNotificationParametersForAllocatedJudge(CaseData caseData) {
-        Map<String, Object> commonSDOParameters = super.getSDOPersonalisationBuilder(caseData).build();
-
-        AllocatedJudgeTemplateForSDO allocatedJudgeTemplate = new AllocatedJudgeTemplateForSDO();
-        allocatedJudgeTemplate.setFamilyManCaseNumber(commonSDOParameters.get("familyManCaseNumber").toString());
-        allocatedJudgeTemplate.setLeadRespondentsName(commonSDOParameters.get("leadRespondentsName").toString());
-        allocatedJudgeTemplate.setHearingDate(commonSDOParameters.get("hearingDate").toString());
-        allocatedJudgeTemplate.setCaseUrl(commonSDOParameters.get("caseUrl").toString());
-        allocatedJudgeTemplate.setCallout(buildCallout(caseData));
-        allocatedJudgeTemplate.setJudgeTitle(caseData.getStandardDirectionOrder()
-            .getJudgeAndLegalAdvisor()
-            .getJudgeOrMagistrateTitle());
-        allocatedJudgeTemplate.setJudgeName(caseData.getStandardDirectionOrder()
-            .getJudgeAndLegalAdvisor()
-            .getJudgeName());
-
-        return allocatedJudgeTemplate;
-    }
 
     public CTSCTemplateForSDO buildNotificationParametersForCTSC(CaseData caseData) {
 

@@ -9,11 +9,13 @@ module.exports = {
       addNewHearing: '#hearingOption-NEW_HEARING',
       editHearing: '#hearingOption-EDIT_HEARING',
       adjournHearing: '#hearingOption-ADJOURN_HEARING',
-      vacatedHearing: '#hearingOption-VACATE_HEARING',
+      vacateHearing: '#hearingOption-VACATE_HEARING',
+      reListHearing: '#hearingOption-RE_LIST_HEARING',
     },
     hearingDateList: '#hearingDateList',
     pastAndTodayHearingDateList: '#pastAndTodayHearingDateList',
     futureAndTodayHearingDateList: '#futureAndTodayHearingDateList',
+    toReListHearingDateList: '#toReListHearingDateList',
     hearingType: {
       final: '#hearingType-CASE_MANAGEMENT',
     },
@@ -27,6 +29,12 @@ module.exports = {
     sendNotice: '#sendNoticeOfHearing-Yes',
     dontSendNotice: '#sendNoticeOfHearing-No',
     noticeNotes: '#noticeOfHearingNotes',
+    confirmHearingDate: {
+      hearingDateCorrect: '#confirmHearingDate-Yes',
+      hearingDateIncorrect: '#confirmHearingDate-No',
+    },
+    correctedStartDate: '#hearingStartDateConfirmation',
+    correctedEndDate: '#hearingEndDateConfirmation',
   },
 
   async selectAddNewHearing() {
@@ -44,8 +52,13 @@ module.exports = {
   },
 
   selectVacateHearing(hearing) {
-    I.click(this.fields.hearingOptions.vacatedHearing);
+    I.click(this.fields.hearingOptions.vacateHearing);
     I.selectOption(this.fields.futureAndTodayHearingDateList, hearing);
+  },
+
+  selectReListHearing(hearing) {
+    I.click(this.fields.hearingOptions.reListHearing);
+    I.selectOption(this.fields.toReListHearingDateList, hearing);
   },
 
   selectCancellationReasonType(type){
@@ -86,12 +99,15 @@ module.exports = {
     }
   },
 
-  async enterJudgeAndLegalAdvisorDetails(hearingDetails) {
+  async enterJudgeDetails(hearingDetails) {
     judgeAndLegalAdvisor.useAlternateJudge();
     judgeAndLegalAdvisor.selectJudgeTitle();
     judgeAndLegalAdvisor.enterJudgeLastName(hearingDetails.judgeAndLegalAdvisor.judgeLastName);
-    judgeAndLegalAdvisor.enterLegalAdvisorName(hearingDetails.judgeAndLegalAdvisor.legalAdvisorName);
     judgeAndLegalAdvisor.enterJudgeEmailAddress(hearingDetails.judgeAndLegalAdvisor.judgeEmail);
+  },
+
+  async enterLegalAdvisorName(legalAdvisorName) {
+    judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName);
   },
 
   async enterJudgeName(name) {
@@ -109,6 +125,15 @@ module.exports = {
 
   async dontSendNoticeOfHearing() {
     I.click(this.fields.dontSendNotice);
+  },
+
+  selectHearingDateIncorrect() {
+    I.click(this.fields.confirmHearingDate.hearingDateIncorrect);
+  },
+
+  enterCorrectedHearingDate(hearingDetails) {
+    I.fillDateAndTime(hearingDetails.startDate, this.fields.correctedStartDate);
+    I.fillDateAndTime(hearingDetails.endDate, this.fields.correctedEndDate);
   },
 
 };

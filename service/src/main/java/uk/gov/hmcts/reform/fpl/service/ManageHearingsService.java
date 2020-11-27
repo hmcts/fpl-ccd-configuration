@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -25,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,19 +34,27 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
-import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.VACATE_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingReListOption.RE_LIST_LATER;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED_AND_RE_LISTED;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED_TO_BE_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_AND_RE_LISTED;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
@@ -72,22 +82,38 @@ public class ManageHearingsService {
     public static final String HAS_HEARINGS_TO_ADJOURN = "hasHearingsToAdjourn";
     public static final String HAS_HEARINGS_TO_VACATE = "hasHearingsToVacate";
     public static final String HAS_FUTURE_HEARING_FLAG = "hasFutureHearingDateFlag";
+    public static final String HAS_HEARING_TO_RE_LIST = "hasHearingsToReList";
     public static final String HEARING_DATE_LIST = "hearingDateList";
     public static final String PAST_HEARING_LIST = "pastAndTodayHearingDateList";
     public static final String FUTURE_HEARING_LIST = "futureAndTodayHearingDateList";
+    public static final String TO_RE_LIST_HEARING_LIST = "toReListHearingDateList";
     public static final String HAS_EXISTING_HEARINGS_FLAG = "hasExistingHearings";
+    public static final String HEARING_START_DATE = "hearingStartDate";
+    public static final String HEARING_END_DATE = "hearingEndDate";
+    public static final String HEARING_START_DATE_LABEL = "hearingStartDateLabel";
+    public static final String HEARING_END_DATE_LABEL = "hearingEndDateLabel";
+    public static final String START_DATE_FLAG = "startDateFlag";
+    public static final String END_DATE_FLAG = "endDateFlag";
+    public static final String SHOW_PAST_HEARINGS_PAGE = "showConfirmPastHearingDatesPage";
+    public static final String TO_RE_LIST_HEARING_LABEL = "toReListHearingsLabel";
 
-    public Map<String, Object> populatePastAndFutureHearingLists(CaseData caseData) {
+    public Map<String, Object> populateHearingLists(CaseData caseData) {
+
         List<Element<HearingBooking>> futureHearings = caseData.getFutureHearings();
         List<Element<HearingBooking>> pastAndTodayHearings = caseData.getPastAndTodayHearings();
         List<Element<HearingBooking>> futureAndTodayHearing = caseData.getFutureAndTodayHearings();
+        List<Element<HearingBooking>> toBeReListedHearings = caseData.getToBeReListedHearings();
 
         Map<String, Object> listAndLabel = new HashMap<>(Map.of(
             HEARING_DATE_LIST, asDynamicList(futureHearings),
             PAST_HEARING_LIST, asDynamicList(pastAndTodayHearings),
             FUTURE_HEARING_LIST, asDynamicList(futureAndTodayHearing),
-            HAS_EXISTING_HEARINGS_FLAG, YES.getValue()
+            TO_RE_LIST_HEARING_LIST, asDynamicList(toBeReListedHearings)
         ));
+
+        if (isNotEmpty(caseData.getHearingDetails()) || isNotEmpty(caseData.getToBeReListedHearings())) {
+            listAndLabel.put(HAS_EXISTING_HEARINGS_FLAG, YES.getValue());
+        }
 
         if (isNotEmpty(futureHearings)) {
             listAndLabel.put(HAS_FUTURE_HEARING_FLAG, YES.getValue());
@@ -101,11 +127,12 @@ public class ManageHearingsService {
             listAndLabel.put(HAS_HEARINGS_TO_VACATE, YES.getValue());
         }
 
-        return listAndLabel;
-    }
+        if (isNotEmpty(toBeReListedHearings)) {
+            listAndLabel.put(HAS_HEARING_TO_RE_LIST, YES.getValue());
+            listAndLabel.put(TO_RE_LIST_HEARING_LABEL, hearingLabels(toBeReListedHearings));
+        }
 
-    public UUID getSelectedHearingId(Object dynamicList) {
-        return getDynamicListSelectedValue(dynamicList, mapper);
+        return listAndLabel;
     }
 
     public DynamicList asDynamicList(List<Element<HearingBooking>> hearingBooking) {
@@ -125,31 +152,43 @@ public class ManageHearingsService {
     }
 
     public void adjournHearing(CaseData caseData, UUID hearingToBeAdjourned) {
-        cancelHearing(caseData, hearingToBeAdjourned, ADJOURNED);
+        final HearingReListOption reListOption = caseData.getHearingReListOption();
+        final HearingStatus hearingStatus = RE_LIST_LATER == reListOption ? ADJOURNED_TO_BE_RE_LISTED : ADJOURNED;
+
+        cancelHearing(caseData, hearingToBeAdjourned, hearingStatus);
     }
 
     public void vacateHearing(CaseData caseData, UUID hearingToBeVacated) {
-        cancelHearing(caseData, hearingToBeVacated, VACATED);
+        final HearingReListOption reListOption = caseData.getHearingReListOption();
+        final HearingStatus hearingStatus = RE_LIST_LATER == reListOption ? VACATED_TO_BE_RE_LISTED : VACATED;
+
+        cancelHearing(caseData, hearingToBeVacated, hearingStatus);
     }
 
-    public HearingVenue getPreviousHearingVenue(CaseData caseData) {
-        List<HearingBooking> hearingsList = unwrapElements(caseData.getHearingDetails());
+    public UUID reListHearing(CaseData caseData, UUID cancelledHearingId, HearingBooking newHearing) {
+        Element<HearingBooking> cancelledHearing =
+            findElement(cancelledHearingId, caseData.getCancelledHearingDetails())
+                .orElseThrow(() -> new NoHearingBookingException(cancelledHearingId));
 
-        HearingBooking previousHearingBooking;
-        if (hearingsList.stream().anyMatch(hearing -> hearing.getStartDate().isBefore(time.now()))) {
-            previousHearingBooking = hearingsList.stream()
-                .filter(hearing -> hearing.getStartDate().isBefore(time.now()))
-                .max(comparing(HearingBooking::getStartDate))
-                .orElseThrow(NoHearingBookingException::new);
-        } else {
-            previousHearingBooking = caseData.getMostUrgentHearingBookingAfter(time.now());
-        }
+        HearingStatus newHearingStatus = cancelledHearing.getValue().isAdjourned()
+            ? ADJOURNED_AND_RE_LISTED : VACATED_AND_RE_LISTED;
 
-        return hearingVenueLookUpService.getHearingVenue(previousHearingBooking);
+        cancelledHearing.getValue().setStatus(newHearingStatus);
+
+        Element<HearingBooking> reListedBooking = reList(caseData, newHearing);
+
+        reassignDocumentsBundle(caseData, cancelledHearing, reListedBooking);
+
+        return reListedBooking.getId();
     }
 
     public Map<String, Object> populatePreviousVenueFields(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
+
+        if (isEmpty(caseData.getHearingDetails())) {
+            return data;
+        }
+
         HearingVenue previousHearingVenue = getPreviousHearingVenue(caseData);
 
         Address customAddress = "OTHER".equals(previousHearingVenue.getHearingVenueId())
@@ -189,8 +228,8 @@ public class ManageHearingsService {
         }
 
         caseFields.put("hearingType", hearingBooking.getType());
-        caseFields.put("hearingStartDate", hearingBooking.getStartDate());
-        caseFields.put("hearingEndDate", hearingBooking.getEndDate());
+        caseFields.put(HEARING_START_DATE, hearingBooking.getStartDate());
+        caseFields.put(HEARING_END_DATE, hearingBooking.getEndDate());
         caseFields.put("judgeAndLegalAdvisor", judgeAndLegalAdvisor);
 
         if (hearingBooking.getPreviousHearingVenue() == null
@@ -250,14 +289,35 @@ public class ManageHearingsService {
         }
     }
 
+    public Object getHearingsDynamicList(CaseData caseData) {
+        switch (caseData.getHearingOption()) {
+            case VACATE_HEARING:
+                return caseData.getFutureAndTodayHearingDateList();
+            case ADJOURN_HEARING:
+                return caseData.getPastAndTodayHearingDateList();
+            case RE_LIST_HEARING:
+                return caseData.getToReListHearingDateList();
+            case EDIT_HEARING:
+                return caseData.getHearingDateList();
+            default:
+                return null;
+        }
+    }
+
+    public UUID getSelectedHearingId(CaseData caseData) {
+        return ofNullable(getHearingsDynamicList(caseData))
+            .map(dynamicList -> getDynamicListSelectedValue(dynamicList, mapper))
+            .orElse(null);
+    }
+
     public Set<String> caseFieldsToBeRemoved() {
         return Set.of(
             "hearingType",
             "hearingTypeDetails",
             "hearingVenue",
             "hearingVenueCustom",
-            "hearingStartDate",
-            "hearingEndDate",
+            HEARING_START_DATE,
+            HEARING_END_DATE,
             "sendNoticeOfHearing",
             "judgeAndLegalAdvisor",
             "noticeOfHearingNotes",
@@ -271,25 +331,79 @@ public class ManageHearingsService {
             HAS_HEARINGS_TO_ADJOURN,
             HAS_HEARINGS_TO_VACATE,
             HAS_EXISTING_HEARINGS_FLAG,
-            HAS_FUTURE_HEARING_FLAG);
+            HAS_FUTURE_HEARING_FLAG,
+            "hearingReListOption",
+            HEARING_START_DATE_LABEL,
+            "showConfirmPastHearingDatesPage",
+            HEARING_END_DATE_LABEL,
+            "confirmHearingDate",
+            "hearingStartDateConfirmation",
+            "hearingEndDateConfirmation",
+            START_DATE_FLAG,
+            END_DATE_FLAG);
     }
 
-    public Object getSelectedDynamicListType(CaseData caseData) {
-        if (VACATE_HEARING == caseData.getHearingOption()) {
-            return caseData.getFutureAndTodayHearingDateList();
+    public HearingVenue getPreviousHearingVenue(CaseData caseData) {
+        List<HearingBooking> hearingsList = unwrapElements(caseData.getHearingDetails());
+
+        HearingBooking previousHearingBooking;
+        if (hearingsList.stream().anyMatch(hearing -> hearing.getStartDate().isBefore(time.now()))) {
+            previousHearingBooking = hearingsList.stream()
+                .filter(hearing -> hearing.getStartDate().isBefore(time.now()))
+                .max(comparing(HearingBooking::getStartDate))
+                .orElseThrow(NoHearingBookingException::new);
+        } else {
+            previousHearingBooking = caseData.getMostUrgentHearingBookingAfter(time.now());
         }
 
-        return caseData.getPastAndTodayHearingDateList();
+        return hearingVenueLookUpService.getHearingVenue(previousHearingBooking);
+    }
+
+    public Map<String, Object> populateFieldsWhenPastHearingDateAdded(LocalDateTime hearingStartDate,
+                                                                      LocalDateTime hearingEndDate) {
+        Map<String, Object> data = new HashMap<>();
+        LocalDateTime currentDateTime = LocalDateTime.now();
+
+        data.put(SHOW_PAST_HEARINGS_PAGE, NO.getValue());
+
+        if (hearingStartDate.isBefore(currentDateTime)) {
+            data.put(HEARING_START_DATE_LABEL, formatLocalDateTimeBaseUsingFormat(hearingStartDate, DATE_TIME));
+            data.put(START_DATE_FLAG, YES.getValue());
+            data.put(SHOW_PAST_HEARINGS_PAGE, YES.getValue());
+        }
+        if (hearingEndDate.isBefore(currentDateTime)) {
+            data.put(HEARING_END_DATE_LABEL, formatLocalDateTimeBaseUsingFormat(hearingEndDate, DATE_TIME));
+            data.put(END_DATE_FLAG, YES.getValue());
+            data.put(SHOW_PAST_HEARINGS_PAGE, YES.getValue());
+        }
+
+        return data;
+    }
+
+    public Map<String, Object> updateHearingDates(CaseData caseData) {
+        Map<String, Object> data = new HashMap<>();
+
+        if (isNotEmpty(caseData.getHearingEndDateConfirmation()) && isNotEmpty(caseData
+            .getHearingStartDateConfirmation())) {
+            data.put(HEARING_START_DATE, caseData.getHearingStartDateConfirmation());
+            data.put(HEARING_END_DATE, caseData.getHearingEndDateConfirmation());
+        } else if (isNotEmpty(caseData.getHearingStartDateConfirmation())) {
+            data.put(HEARING_START_DATE, caseData.getHearingStartDateConfirmation());
+        } else if (isNotEmpty(caseData.getHearingEndDateConfirmation())) {
+            data.put(HEARING_END_DATE, caseData.getHearingEndDateConfirmation());
+        }
+
+        return data;
     }
 
     private UUID cancelAndReListHearing(CaseData caseData,
                                         UUID hearingId,
                                         HearingBooking hearingToBeReListed,
                                         HearingStatus hearingStatus) {
-        Element<HearingBooking> vacatedBooking = cancelHearing(caseData, hearingId, hearingStatus);
+        Element<HearingBooking> cancelledBooking = cancelHearing(caseData, hearingId, hearingStatus);
         Element<HearingBooking> reListedBooking = reList(caseData, hearingToBeReListed);
 
-        reassignDocumentsBundle(caseData, vacatedBooking, reListedBooking);
+        reassignDocumentsBundle(caseData, cancelledBooking, reListedBooking);
         return reListedBooking.getId();
     }
 
@@ -363,18 +477,28 @@ public class ManageHearingsService {
         caseData.addCancelledHearingBooking(cancelledHearing);
         caseData.removeHearingDetails(originalHearingBooking);
 
+        updateDocumentsBundleName(caseData, cancelledHearing);
+
         return cancelledHearing;
     }
 
     private String getCancellationReason(CaseData caseData, HearingStatus hearingStatus) {
         if (caseData.getVacatedReason() != null
-            && VACATED.equals(hearingStatus) || VACATED_AND_RE_LISTED.equals(hearingStatus)) {
+            && VACATED.equals(hearingStatus) || VACATED_AND_RE_LISTED.equals(hearingStatus)
+            || VACATED_TO_BE_RE_LISTED.equals(hearingStatus)) {
             return caseData.getVacatedReason().getReason();
-        } else if (ADJOURNED.equals(hearingStatus) || ADJOURNED_AND_RE_LISTED.equals(hearingStatus)) {
+        } else if (ADJOURNED.equals(hearingStatus) || ADJOURNED_AND_RE_LISTED.equals(hearingStatus)
+            || ADJOURNED_TO_BE_RE_LISTED.equals(hearingStatus)) {
             return caseData.getAdjournmentReason().getReason();
         }
 
         return null;
+    }
+
+    private void updateDocumentsBundleName(CaseData caseData, Element<HearingBooking> hearing) {
+        findElement(hearing.getId(), caseData.getHearingFurtherEvidenceDocuments())
+            .map(Element::getValue)
+            .ifPresent(bundle -> bundle.setHearingName(hearing.getValue().toLabel()));
     }
 
     private void reassignDocumentsBundle(CaseData caseData,
@@ -390,5 +514,12 @@ public class ManageHearingsService {
                 caseData.getHearingFurtherEvidenceDocuments().remove(sourceHearingBundle);
                 caseData.getHearingFurtherEvidenceDocuments().add(targetHearingBundle);
             });
+    }
+
+    private static String hearingLabels(List<Element<HearingBooking>> hearings) {
+        return hearings.stream()
+            .map(Element::getValue)
+            .map(HearingBooking::toLabel)
+            .collect(Collectors.joining("\n"));
     }
 }

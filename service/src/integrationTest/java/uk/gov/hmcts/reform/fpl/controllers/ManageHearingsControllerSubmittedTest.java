@@ -3,11 +3,8 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
@@ -59,10 +56,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
-@ActiveProfiles("integration-test")
-@WebMvcTest(ManageHearingsController.class)
-@OverrideAutoConfiguration(enabled = true)
-class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
+class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest {
 
     private static final String CASE_ID = "12345";
     private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
@@ -153,7 +147,7 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldTriggerNewHearingsAddedEventForNewHearingWhenNoticeOfHearingPresent()
+    void shouldTriggerSendNoticeOfHearingEventForNewHearingWhenNoticeOfHearingPresent()
         throws NotificationClientException {
         Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
             .type(CASE_MANAGEMENT)
@@ -187,8 +181,6 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
 
         postSubmittedEvent(callbackRequest);
 
-        verifyNoInteractions(coreCaseDataService);
-
         verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(NOTICE_OF_NEW_HEARING),
             eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
@@ -208,7 +200,6 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
             eq(NOTIFICATION_REFERENCE));
     }
 
-
     @Test
     void shouldTriggerTemporaryHearingJudgeEventWhenCreatingANewHearingWithTemporaryJudgeAllocated()
         throws NotificationClientException {
@@ -220,6 +211,7 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
                 .judgeLastName("Davidson")
                 .judgeTitle(HER_HONOUR_JUDGE)
                 .build())
+            .hearingJudgeLabel("Her Honour Judge Davidson")
             .build());
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
@@ -257,6 +249,7 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
                 .judgeLastName("Davidson")
                 .judgeTitle(HER_HONOUR_JUDGE)
                 .build())
+            .hearingJudgeLabel("Her Honour Judge Davidson")
             .build());
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
@@ -284,7 +277,7 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldNotTriggerTemporaryHearingJudgeEventWhenUsingAllocatedJudge() throws NotificationClientException {
+    void shouldNotTriggerTemporaryHearingJudgeEventWhenUsingAllocatedJudge() {
         Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
             .type(CASE_MANAGEMENT)
             .startDate(LocalDateTime.of(2050, 5, 20, 13, 00))
@@ -320,7 +313,7 @@ class ManageHearingsControllerSubmittedTest extends AbstractControllerTest {
     @ParameterizedTest
     @EnumSource(value = HearingOptions.class, names = {"EDIT_HEARING", "ADJOURN_HEARING", "VACATE_HEARING"})
     void shouldNotTriggerTemporaryHearingJudgeEventWhenAdjourningOrVacatingAHearingWithoutReListing(
-        HearingOptions hearingOption) throws NotificationClientException {
+        HearingOptions hearingOption) {
         Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
             .type(CASE_MANAGEMENT)
             .startDate(LocalDateTime.of(2050, 5, 20, 13, 00))

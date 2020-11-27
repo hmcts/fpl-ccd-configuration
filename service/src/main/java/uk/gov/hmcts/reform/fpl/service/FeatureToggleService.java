@@ -6,7 +6,6 @@ import com.launchdarkly.sdk.server.LDClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType;
 
 import java.util.Map;
 
@@ -37,19 +36,8 @@ public class FeatureToggleService {
             createLDUser(Map.of("report", LDValue.of(true))), false);
     }
 
-    public boolean isAllocatedJudgeNotificationEnabled(AllocatedJudgeNotificationType allocatedJudgeNotificationType) {
-        LDUser launchDarklyUser = createLDUser(Map.of("allocatedJudgeNotificationType",
-            LDValue.of(allocatedJudgeNotificationType.getValue())));
-
-        return ldClient.boolVariation("judge-notification", launchDarklyUser, false);
-    }
-
     public boolean isCaseUserBulkAssignmentEnabled() {
         return ldClient.boolVariation("case-user-assignment", createLDUser(), true);
-    }
-
-    public boolean isNewCaseStateModelEnabled() {
-        return ldClient.boolVariation("new-case-state-model", createLDUser(), false);
     }
 
     public boolean isAllowCaseCreationForUsersNotOnboardedToMOEnabled(String localAuthorityName) {
@@ -65,6 +53,14 @@ public class FeatureToggleService {
     public boolean isSendLAEmailsToSolicitorEnabled(String localAuthorityName) {
         return ldClient.boolVariation("send-la-emails-to-solicitor",
             createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
+    }
+
+    public boolean isUploadDraftCMOEnabled() {
+        return ldClient.boolVariation("upload-draft-cmo", createLDUser(), false);
+    }
+
+    public boolean isAddHearingsInPastEnabled() {
+        return ldClient.boolVariation("add-hearings-in-past", createLDUser(), false);
     }
 
     public boolean isApplicationDocumentsEventEnabled() {

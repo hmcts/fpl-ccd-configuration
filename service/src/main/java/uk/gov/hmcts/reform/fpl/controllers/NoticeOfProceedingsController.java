@@ -11,19 +11,15 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
-import uk.gov.hmcts.reform.fpl.events.NoticeOfProceedingsIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
 
 import java.util.List;
 import javax.validation.constraints.NotNull;
-
-import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.NOTICE_OF_PROCEEDINGS;
 
 @Api
 @RestController
@@ -32,7 +28,6 @@ import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.NOTIC
 public class NoticeOfProceedingsController extends CallbackController {
     private final ValidateGroupService eventValidationService;
     private final NoticeOfProceedingsService noticeOfProceedingsService;
-    private final FeatureToggleService featureToggleService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -75,8 +70,6 @@ public class NoticeOfProceedingsController extends CallbackController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        if (featureToggleService.isAllocatedJudgeNotificationEnabled(NOTICE_OF_PROCEEDINGS)) {
-            publishEvent(new NoticeOfProceedingsIssuedEvent(getCaseData(callbackRequest)));
-        }
+
     }
 }

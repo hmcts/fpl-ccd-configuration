@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import java.time.format.FormatStyle;
 
 import static java.util.Objects.isNull;
-import static org.apache.commons.lang.StringUtils.capitalize;
+import static org.apache.commons.lang3.StringUtils.capitalize;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCallout;
 

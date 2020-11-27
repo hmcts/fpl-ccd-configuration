@@ -554,17 +554,10 @@ public class CaseData {
     }
 
     @JsonIgnore
-    public List<Element<HearingBooking>> getAllHearings() {
-        List<Element<HearingBooking>> allHearings = new ArrayList<>();
-        if (isNotEmpty(getHearingDetails())) {
-            allHearings.addAll(getHearingDetails());
-        }
-
-        if (isNotEmpty(getCancelledHearingDetails())) {
-            allHearings.addAll(getCancelledHearingDetails());
-        }
-
-        return allHearings;
+    public List<Element<HearingBooking>> getToBeReListedHearings() {
+        return defaultIfNull(cancelledHearingDetails, new ArrayList<Element<HearingBooking>>()).stream()
+            .filter(hearingBooking -> hearingBooking.getValue().isToBeReListed())
+            .collect(toList());
     }
 
     private final Object cmoToReviewList;
@@ -612,6 +605,7 @@ public class CaseData {
     private final Object hearingDateList;
     private final Object pastAndTodayHearingDateList;
     private final Object futureAndTodayHearingDateList;
+    private final Object toReListHearingDateList;
     private final String hasExistingHearings;
     private final UUID selectedHearingId;
 
@@ -629,6 +623,14 @@ public class CaseData {
     private final HearingCancellationReason vacatedReason;
     private final List<ProceedingType> proceedingType;
     private final State closedStateRadioList;
+
+    private final LocalDateTime hearingEndDateConfirmation;
+    private final LocalDateTime hearingStartDateConfirmation;
+
+    @JsonIgnore
+    public boolean isHearingDateInPast() {
+        return hearingEndDate.isBefore(LocalDateTime.now()) || hearingStartDate.isBefore(LocalDateTime.now());
+    }
 
     private final List<Element<ApplicationDocument>> documents;
     private final String documentsToFollow;

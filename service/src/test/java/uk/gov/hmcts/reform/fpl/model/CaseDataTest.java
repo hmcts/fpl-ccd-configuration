@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.model;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -24,6 +23,12 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED_AND_RE_LISTED;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED_TO_BE_RE_LISTED;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_AND_RE_LISTED;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
@@ -41,6 +46,7 @@ class CaseDataTest {
     private final Time time = new FixedTimeConfiguration().stoppedTime();
     private final UUID cmoID = randomUUID();
     private final LocalDateTime futureDate = time.now().plusDays(1);
+    private final LocalDateTime pastDate = time.now().minusDays(1);
 
     @Test
     void shouldGetAllOthersWhenFirstAndAdditionalOthersExist() {
@@ -302,6 +308,54 @@ class CaseDataTest {
         boolean hearingBookingInFuture = caseData.hasFutureHearing(hearingBooking);
 
         assertThat(hearingBookingInFuture).isFalse();
+    }
+
+    @Test
+    void shouldReturnTrueWhenStartDateIsInThePast() {
+        CaseData caseData = CaseData.builder()
+            .hearingStartDate(pastDate)
+            .hearingEndDate(futureDate)
+            .build();
+
+        boolean hearingInPast = caseData.isHearingDateInPast();
+
+        assertThat(hearingInPast).isTrue();
+    }
+
+    @Test
+    void shouldReturnTrueWhenEndHearingDateIsInThePast() {
+        CaseData caseData = CaseData.builder()
+            .hearingStartDate(futureDate)
+            .hearingEndDate(pastDate)
+            .build();
+
+        boolean hearingInPast = caseData.isHearingDateInPast();
+
+        assertThat(hearingInPast).isTrue();
+    }
+
+    @Test
+    void shouldReturnTrueWhenHearingDateIsInThePast() {
+        CaseData caseData = CaseData.builder()
+            .hearingStartDate(futureDate)
+            .hearingEndDate(pastDate)
+            .build();
+
+        boolean hearingInPast = caseData.isHearingDateInPast();
+
+        assertThat(hearingInPast).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenHearingDateIsTheFuture() {
+        CaseData caseData = CaseData.builder()
+            .hearingStartDate(futureDate)
+            .hearingEndDate(futureDate)
+            .build();
+
+        boolean hearingInPast = caseData.isHearingDateInPast();
+
+        assertThat(hearingInPast).isFalse();
     }
 
     @Test
@@ -634,6 +688,67 @@ class CaseDataTest {
     }
 
     @Nested
+    class ToBeReListedHearings {
+
+        @Test
+        void shouldReturnOnlyHearingsToBeReListed() {
+            Element<HearingBooking> hearing1 = element(HearingBooking.builder()
+                .status(ADJOURNED)
+                .build());
+
+            Element<HearingBooking> hearing2 = element(HearingBooking.builder()
+                .status(ADJOURNED_TO_BE_RE_LISTED)
+                .build());
+
+            Element<HearingBooking> hearing3 = element(HearingBooking.builder()
+                .status(ADJOURNED_AND_RE_LISTED)
+                .build());
+
+            Element<HearingBooking> hearing4 = element(HearingBooking.builder()
+                .status(VACATED)
+                .build());
+
+            Element<HearingBooking> hearing5 = element(HearingBooking.builder()
+                .status(VACATED_TO_BE_RE_LISTED)
+                .build());
+
+            Element<HearingBooking> hearing6 = element(HearingBooking.builder()
+                .status(VACATED_AND_RE_LISTED)
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .cancelledHearingDetails(List.of(hearing1, hearing2, hearing3, hearing4, hearing5, hearing6))
+                .build();
+
+            assertThat(caseData.getToBeReListedHearings()).containsExactly(hearing2, hearing5);
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenNoHearingsToBeReListed() {
+            Element<HearingBooking> hearing1 = element(HearingBooking.builder()
+                .status(ADJOURNED)
+                .build());
+
+            Element<HearingBooking> hearing2 = element(HearingBooking.builder()
+                .status(VACATED_AND_RE_LISTED)
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .cancelledHearingDetails(List.of(hearing1, hearing2))
+                .build();
+
+            assertThat(caseData.getToBeReListedHearings()).isEmpty();
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenNoCancelledHearings() {
+            CaseData caseData = CaseData.builder().build();
+
+            assertThat(caseData.getToBeReListedHearings()).isEmpty();
+        }
+    }
+
+    @Nested
     class AddHearingBooking {
 
         @Test
@@ -675,7 +790,7 @@ class CaseDataTest {
         @Test
         void shouldAddFirstAdjournedOrVacatedHearingBooking() {
             Element<HearingBooking> firstAdjournedBooking = element(HearingBooking.builder()
-                .status(HearingStatus.ADJOURNED)
+                .status(ADJOURNED)
                 .build());
 
             CaseData caseData = CaseData.builder()
@@ -690,7 +805,7 @@ class CaseDataTest {
         void shouldAddNewAdjournedHearingBooking() {
             Element<HearingBooking> existingAdjournedHearingBooking = element(HearingBooking.builder()
                 .startDate(LocalDateTime.now().minusDays(1))
-                .status(HearingStatus.ADJOURNED)
+                .status(ADJOURNED)
                 .build());
 
             Element<HearingBooking> newAdjournedHearingBooking = element(HearingBooking.builder()

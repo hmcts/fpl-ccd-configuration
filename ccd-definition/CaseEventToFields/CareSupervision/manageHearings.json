@@ -16,18 +16,6 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageHearings",
-    "CaseFieldID": "hearingOption",
-    "PageFieldDisplayOrder": 2,
-    "DisplayContext": "MANDATORY",
-    "PageID": "SelectHearingOption",
-    "ShowSummaryChangeOption": "N",
-    "PageDisplayOrder": 1,
-    "PageShowCondition": "hasExistingHearings=\"Yes\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "manageHearings",
     "CaseFieldID": "firstHearingFlag",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
@@ -71,6 +59,42 @@
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 1,
     "FieldShowCondition": "hearingOption=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageHearings",
+    "CaseFieldID": "hasHearingsToReList",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": "SelectHearingOption",
+    "ShowSummaryChangeOption": "Y",
+    "PageDisplayOrder": 1,
+    "FieldShowCondition": "hearingOption=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageHearings",
+    "CaseFieldID": "toReListHearingsLabel",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "ShowSummaryChangeOption": "N",
+    "PageID": "SelectHearingOption",
+    "PageDisplayOrder": 1,
+    "FieldShowCondition": "hasHearingsToReList=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageHearings",
+    "CaseFieldID": "hearingOption",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY",
+    "PageID": "SelectHearingOption",
+    "ShowSummaryChangeOption": "N",
+    "PageDisplayOrder": 1,
+    "PageShowCondition": "hasExistingHearings=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -124,10 +148,47 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageHearings",
-    "CaseFieldID": "pastAndTodayHearingDateListInfo",
+    "CaseFieldID": "noHearingsToVacateLabel",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "READONLY",
+    "PageID": "SelectHearingOption",
+    "ShowSummaryChangeOption": "Y",
+    "PageDisplayOrder": 1,
+    "FieldShowCondition": "hearingOption=\"VACATE_HEARING\" AND hasHearingsToVacate=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageHearings",
+    "CaseFieldID": "noHearingsToReListLabel",
     "PageFieldDisplayOrder": 4,
     "DisplayContext": "READONLY",
-    "FieldShowCondition": "hearingOption=\"ADJOURN_HEARING\" AND hasHearingsToAdjourn=\"Yes\"",
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "hearingOption=\"RE_LIST_HEARING\" AND hasHearingsToReList=\"\"",
+    "PageID": "SelectHearingOption",
+    "PageDisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageHearings",
+    "CaseFieldID": "toReListHearingDateList",
+    "PageFieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "hearingOption=\"RE_LIST_HEARING\" AND hasHearingsToReList=\"Yes\"",
+    "PageID": "SelectHearingOption",
+    "PageDisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageHearings",
+    "CaseFieldID": "futureAndTodayHearingDateList",
+    "PageFieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY",
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "hearingOption=\"VACATE_HEARING\" AND hasHearingsToVacate=\"Yes\"",
     "PageID": "SelectHearingOption",
     "PageDisplayOrder": 1
   },
@@ -159,12 +220,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageHearings",
-    "CaseFieldID": "hearingReListHint",
-    "PageFieldDisplayOrder": 2,
-    "DisplayContext": "READONLY",
-    "PageID": "SelectReListOption",
-    "PageDisplayOrder": 3,
-    "FieldShowCondition": "hearingReListOption=\"RE_LIST_LATER\" OR hearingReListOption=\"NONE\""
+    "CaseFieldID": "vacatedReason",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY",
+    "ShowSummaryChangeOption": "Y",
+    "PageID": "SelectVacatedReason",
+    "PageDisplayOrder": 4,
+    "PageShowCondition": "hearingOption=\"VACATE_HEARING\" AND hearingReListOption!=\"NONE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -177,7 +239,7 @@
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 5,
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-hearings/validate-hearing-dates/mid-event",
-    "PageShowCondition": "hearingOption=\"NEW_HEARING\" OR hearingOption=\"EDIT_HEARING\" OR hearingOption=\"\" OR hearingReListOption=\"RE_LIST_NOW\""
+    "PageShowCondition": "hearingOption=\"NEW_HEARING\" OR hearingOption=\"EDIT_HEARING\" OR hearingOption=\"RE_LIST_HEARING\" OR hearingOption=\"\" OR hearingReListOption=\"RE_LIST_NOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -254,13 +316,121 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageHearings",
+    "CaseFieldID": "showConfirmPastHearingDatesPage",
+    "PageFieldDisplayOrder": 7,
+    "DisplayContext": "READONLY",
+    "PageID": "EnterHearingDetails",
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "hearingStartDate=\"DO_NOT_SHOW\"",
+    "PageDisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageHearings",
+    "CaseFieldID": "startDateFlag",
+    "PageFieldDisplayOrder": 8,
+    "DisplayContext": "READONLY",
+    "PageID": "EnterHearingDetails",
+    "ShowSummaryChangeOption": "N",
+    "FieldShowCondition": "hearingStartDate=\"DO_NOT_SHOW\"",
+    "PageDisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageHearings",
+    "CaseFieldID": "endDateFlag",
+    "PageFieldDisplayOrder": 9,
+    "DisplayContext": "READONLY",
+    "PageID": "EnterHearingDetails",
+    "ShowSummaryChangeOption": "N",
+    "FieldShowCondition": "hearingStartDate=\"DO_NOT_SHOW\"",
+    "PageDisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageHearings",
+    "CaseFieldID": "confirmHearingDateLabel",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": "ConfirmHearingDetails",
+    "ShowSummaryChangeOption": "N",
+    "PageDisplayOrder": 6,
+    "PageShowCondition": "showConfirmPastHearingDatesPage=\"Yes\"",
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-hearings/hearing-in-past/mid-event"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageHearings",
+    "CaseFieldID": "hearingStartDateLabel",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "PageID": "ConfirmHearingDetails",
+    "ShowSummaryChangeOption": "N",
+    "PageDisplayOrder": 6,
+    "FieldShowCondition": "startDateFlag=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageHearings",
+    "CaseFieldID": "hearingEndDateLabel",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "READONLY",
+    "PageID": "ConfirmHearingDetails",
+    "ShowSummaryChangeOption": "N",
+    "PageDisplayOrder": 6,
+    "FieldShowCondition": "endDateFlag=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageHearings",
+    "CaseFieldID": "confirmHearingDate",
+    "PageFieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "PageID": "ConfirmHearingDetails",
+    "ShowSummaryChangeOption": "N",
+    "PageDisplayOrder": 6
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageHearings",
+    "CaseFieldID": "hearingEndDateConfirmation",
+    "PageFieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY",
+    "PageID": "ConfirmHearingDetails",
+    "ShowSummaryChangeOption": "N",
+    "PageDisplayOrder": 6,
+    "FieldShowCondition": "confirmHearingDate = \"No\" AND endDateFlag=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageHearings",
+    "CaseFieldID": "hearingStartDateConfirmation",
+    "PageFieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY",
+    "PageID": "ConfirmHearingDetails",
+    "ShowSummaryChangeOption": "N",
+    "PageDisplayOrder": 6,
+    "FieldShowCondition": "confirmHearingDate = \"No\" AND startDateFlag=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageHearings",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "COMPLEX",
     "PageID": "JudgeInformation",
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "ShowSummaryChangeOption": "Y",
-    "PageShowCondition": "hearingOption=\"NEW_HEARING\" OR hearingOption=\"EDIT_HEARING\" OR hearingOption=\"\" OR hearingReListOption=\"RE_LIST_NOW\""
+    "PageShowCondition": "hearingOption=\"NEW_HEARING\" OR hearingOption=\"EDIT_HEARING\" OR hearingOption=\"RE_LIST_HEARING\" OR hearingOption=\"\" OR hearingReListOption=\"RE_LIST_NOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -271,8 +441,8 @@
     "DisplayContext": "MANDATORY",
     "PageID": "SendNoticeOfHearing",
     "ShowSummaryChangeOption": "Y",
-    "PageDisplayOrder": 7,
-    "PageShowCondition": "hearingOption=\"NEW_HEARING\" OR hearingOption=\"EDIT_HEARING\" OR hearingOption=\"\" OR hearingReListOption=\"RE_LIST_NOW\""
+    "PageDisplayOrder": 8,
+    "PageShowCondition": "hearingOption=\"NEW_HEARING\" OR hearingOption=\"EDIT_HEARING\" OR hearingOption=\"RE_LIST_HEARING\" OR hearingOption=\"\" OR hearingReListOption=\"RE_LIST_NOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -283,7 +453,7 @@
     "DisplayContext": "OPTIONAL",
     "PageID": "SendNoticeOfHearing",
     "ShowSummaryChangeOption": "Y",
-    "PageDisplayOrder": 7,
+    "PageDisplayOrder": 8,
     "FieldShowCondition": "sendNoticeOfHearing=\"Yes\""
   }
 ]
