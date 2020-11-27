@@ -5,7 +5,7 @@ const caseManagementCaseData = require('../fixtures/caseData/prepareForHearing.j
 const closedCaseData = require('../fixtures/caseData/closedCase.json');
 const orderFunctions = require('../helpers/generated_order_helper');
 const blankOrder = require('../fixtures/orders/blankOrder.js');
-const finalHearingCaseData = require('../fixtures/caseData/finalHearing.json');
+const finalHearingCaseData = require('../fixtures/caseData/finalHearingWithMultipleOrders.json');
 const moment = require('moment');
 
 Feature('Case administration by super user');
