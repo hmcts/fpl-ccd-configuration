@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service.job;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -98,6 +101,23 @@ class UpcomingHearingsContentProviderTest {
             .build();
 
         UpcomingHearingNotifyData actualParams = contentProvider.buildParameters(hearingDate, List.of(case1, case2));
+
+        assertThat(actualParams).isEqualTo(expectedParams);
+    }
+
+    @Test
+    void shouldSerializeUpcomingHearingsEmailParameters() {
+        LocalDate hearingDate = LocalDate.of(2020, JANUARY, 9);
+        CaseDetails case1 = buildCase(CASE_1_ID, CASE_1_NUMBER, CASE_1_NAME);
+
+        Map<String, Object> expectedParams = ImmutableMap.of(
+            "hearing_date", "9 January 2020",
+            "cases", String.format("%s %s %s", CASE_1_NUMBER, CASE_1_NAME, CASE_1_URL));
+
+        ObjectMapper mapper = new ObjectMapper();
+        UpcomingHearingNotifyData template = contentProvider.buildParameters(hearingDate, List.of(case1));
+        Map<String, Object> actualParams = mapper.convertValue(template, new TypeReference<>() {
+        });
 
         assertThat(actualParams).isEqualTo(expectedParams);
     }
