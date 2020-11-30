@@ -63,7 +63,8 @@
     "CaseFieldID": "manageDocumentsCourtBundle",
     "ListElementCode": "document",
     "FieldDisplayOrder": 2,
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Attach court bundle"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -72,7 +73,8 @@
     "CaseFieldID": "manageDocumentsCourtBundle",
     "ListElementCode": "documentRedacted",
     "FieldDisplayOrder": 3,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "OPTIONAL",
+    "EventElementLabel": "Attach redacted court bundle"
   },
   {
     "LiveFrom": "01/01/2017",

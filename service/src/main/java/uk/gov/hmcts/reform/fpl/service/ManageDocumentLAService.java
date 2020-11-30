@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
@@ -79,13 +80,17 @@ public class ManageDocumentLAService {
     }
 
     private Object initialiseCourtBundleHearingList(CaseData caseData) {
-        UUID selectedHearingId = getDynamicListSelectedValue(caseData.getCourtBundleHearingList(), mapper);
-        Optional<Element<HearingBooking>> hearingBooking = caseData.findHearingBookingElement(selectedHearingId);
+        if (caseData.getCourtBundleHearingList() != null) {
+            UUID selectedHearingId = getDynamicListSelectedValue(caseData.getCourtBundleHearingList(), mapper);
+            Optional<Element<HearingBooking>> hearingBooking = caseData.findHearingBookingElement(selectedHearingId);
 
-        if (hearingBooking.isEmpty()) {
-            throw new NoHearingBookingException(selectedHearingId);
+            if (hearingBooking.isEmpty()) {
+                throw new NoHearingBookingException(selectedHearingId);
+            }
+            return caseData.buildDynamicHearingList(selectedHearingId);
+        } else {
+            throw new HearingNotFoundException("There are no hearings to attach court bundles to");
         }
-        return caseData.buildDynamicHearingList(selectedHearingId);
     }
 
     //This method breaks when clicking previous and trying to continue for court bundle. Page will hang, not sure why

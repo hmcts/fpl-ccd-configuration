@@ -15,6 +15,9 @@ module.exports = {
       no: '#manageDocumentLA_relatedToHearing-No',
     },
     hearingList: '#manageDocumentsHearingList',
+    courtBundleHearingList: '#courtBundleHearingList',
+    courtBundleDocument: '#manageDocumentsCourtBundle_document',
+    courtBundleDocumentRedacted: '#manageDocumentsCourtBundle_documentRedacted',
     c2DocumentsList: '#manageDocumentsSupportingC2List',
     supportingDocumentsCollectionId: '#supportingEvidenceDocumentsTemp',
     supportingDocuments: function(index) {
@@ -32,6 +35,20 @@ module.exports = {
 
   async selectC2SupportingDocuments() {
     I.click(this.fields.documentType.c2);
+  },
+
+  async selectCourtBundle() {
+    I.click(this.fields.documentType.courtBundle);
+  },
+
+  async selectCourtBundleHearing(hearingDate) {
+    I.waitForElement(this.fields.courtBundleHearingList);
+    I.selectOption(this.fields.courtBundleHearingList, `Case management hearing, ${hearingDate}`);
+  },
+
+  async attachCourtBundle(document) {
+    I.attachFile(this.fields.courtBundleDocument, document);
+    I.attachFile(this.fields.courtBundleDocumentRedacted, document);
   },
 
   async selectFurtherEvidenceIsRelatedToHearing() {

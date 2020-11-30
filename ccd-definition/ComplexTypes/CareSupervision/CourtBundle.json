@@ -4,7 +4,7 @@
     "ID": "CourtBundle",
     "ListElementCode": "hearing",
     "FieldType": "Text",
-    "ElementLabel": "Court bundle for:",
+    "ElementLabel": "Court bundle for",
     "SecurityClassification": "Public"
   },
   {
@@ -12,7 +12,7 @@
     "ID": "CourtBundle",
     "ListElementCode": "document",
     "FieldType": "Document",
-    "ElementLabel": "Attach court bundle",
+    "ElementLabel": "Court bundle",
     "SecurityClassification": "Public"
   },
   {
@@ -20,7 +20,7 @@
     "ID": "CourtBundle",
     "ListElementCode": "documentRedacted",
     "FieldType": "Document",
-    "ElementLabel": "Attach redacted court bundle",
+    "ElementLabel": "Redacted court bundle",
     "SecurityClassification": "Public"
   },
   {

@@ -5,11 +5,18 @@ const placementHelper = require('../helpers/placement_helper.js');
 const uploadDocumentsHelper = require('../helpers/upload_case_documents_helper.js');
 const mandatoryWithMultipleChildren = require('../fixtures/caseData/mandatoryWithMultipleChildren.json');
 const supportingEvidenceDocuments = require('../fixtures/supportingEvidenceDocuments.js');
+const hearingDetails = require('../fixtures/hearingTypeDetails.js');
+const moment = require('moment');
 
 const dateFormat = require('dateformat');
+const dateToString = require('../helpers/date_to_string_helper');
+const formatHearingDate = hearingDate => formatDate(hearingDate, 'd mmmm yyyy');
+const formatDate = (date, format) => dateFormat(date instanceof Date ? date : dateToString(date), format);
 
 let caseId;
 let submittedAt;
+let hearingStartDate;
+let hearingEndDate;
 
 Feature('Case maintenance after submission');
 
@@ -74,6 +81,55 @@ Scenario('local authority adds further evidence documents and correspondence', a
   I.seeInTab(['Local authority correspondence documents 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
   I.seeInTab(['Local authority correspondence documents 1', 'File'], 'mockFile.txt');
   I.seeTextInTab(['Local authority correspondence documents 1', 'Uploaded by']);
+});
+
+Scenario('local authority manages documents after admin adds hearing and C2', async ({I, caseViewPage, manageDocumentsLAEventPage, manageHearingsEventPage}) => {
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  hearingStartDate = moment().add(5, 'm').toDate();
+  hearingEndDate = moment(hearingStartDate).add(5, 'm').toDate();
+
+  await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
+  await manageHearingsEventPage.enterHearingDetails({startDate: hearingStartDate, endDate: hearingEndDate});
+  await manageHearingsEventPage.enterVenue(hearingDetails[0]);
+  await I.goToNextPage();
+  await manageHearingsEventPage.enterJudgeDetails(hearingDetails[0]);
+  await manageHearingsEventPage.enterLegalAdvisorName(hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
+  await I.goToNextPage();
+  await manageHearingsEventPage.sendNoticeOfHearingWithNotes(hearingDetails[0].additionalNotes);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageHearings);
+
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
+  await manageDocumentsLAEventPage.selectFurtherEvidence();
+  await manageDocumentsLAEventPage.selectFurtherEvidenceIsRelatedToHearing();
+  await manageDocumentsLAEventPage.selectHearing(formatHearingDate(hearingStartDate));
+  await I.goToNextPage();
+  await manageDocumentsLAEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[0]);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.manageDocumentsLA);
+
+  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  I.seeInTab(['Further evidence documents for hearings 1', 'Hearing'], `Case management hearing, ${formatHearingDate(hearingStartDate)}`);
+  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Document name'], 'Email to say evidence will be late');
+  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Notes'], 'Evidence will be late');
+  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
+  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
+  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'File'], 'mockFile.txt');
+  I.seeTextInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Uploaded by']);
+
+  await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
+  await manageDocumentsLAEventPage.selectCourtBundle();
+  await manageDocumentsLAEventPage.selectCourtBundleHearing(formatHearingDate(hearingStartDate));
+  await I.goToNextPage();
+  await manageDocumentsLAEventPage.attachCourtBundle(config.testFile);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.manageDocumentsLA);
+
+  caseViewPage.selectTab(caseViewPage.tabs.courtBundle);
+  I.seeInTab(['Court bundle 1', 'Court bundle for'], `Case management hearing, ${formatHearingDate(hearingStartDate)}`);
+  I.seeInTab(['Court bundle 1', 'Court bundle'], 'mockFile.txt');
+  I.seeInTab(['Court bundle 1', 'Redacted court bundle'], 'mockFile.txt');
 });
 
 Scenario('local authority uploads documents when SWET not required', async ({I, caseViewPage, uploadDocumentsEventPage}) => {
@@ -179,5 +235,6 @@ Scenario('local authority upload placement application', async ({I, caseViewPage
 
   await placementHelper.assertCafcassCannotSeePlacementOrder(I, caseViewPage, caseId);
 });
+
 
 

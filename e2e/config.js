@@ -119,7 +119,6 @@ module.exports = {
     amendOtherProceedings: 'Other proceedings',
     amendAttendingHearing: 'Attending the hearing',
     amendRepresentatives: 'Manage representatives',
-    addHearingBookingDetails: 'Add hearing details',
     manageHearings: 'Manage hearings',
     createNoticeOfProceedings: 'Create notice of proceedings',
     addStatementOfService: 'Add statement of service (c9)',
