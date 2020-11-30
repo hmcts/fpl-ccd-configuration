@@ -36,5 +36,25 @@
     "EventElementLabel": "Upload a file",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadApplicationDocuments",
+    "CaseEventID": "uploadApplicationDocuments",
+    "CaseFieldID": "applicationDocuments",
+    "ListElementCode": "dateTimeUploaded",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "OPTIONAL",
+    "FieldShowCondition": "applicationDocuments=\"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadApplicationDocuments",
+    "CaseEventID": "uploadApplicationDocuments",
+    "CaseFieldID": "applicationDocuments",
+    "ListElementCode": "uploadedBy",
+    "FieldDisplayOrder": 6,
+    "DisplayContext": "OPTIONAL",
+    "FieldShowCondition": "applicationDocuments=\"DO NOT SHOW\""
   }
 ]
