@@ -19,7 +19,7 @@ BeforeSuite(async ({I}) => {
   today = new Date();
 });
 
-Scenario('Local authority sends agreed CMOs to judge @failure', async ({I, caseViewPage, uploadCaseManagementOrderEventPage}) => {
+Scenario('Local authority sends agreed CMOs to judge', async ({I, caseViewPage, uploadCaseManagementOrderEventPage}) => {
   const supportingDocs = {name: 'case summary', notes: 'this is the case summary', file: config.testFile, fileName: 'mockFile.txt'};
 
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
