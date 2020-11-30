@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.controllers;
+package uk.gov.hmcts.reform.fpl.controllers.support;
 
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
@@ -11,10 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Api
@@ -33,27 +35,38 @@ public class MigrateCaseController extends CallbackController {
         Object migrationId = getMigrationId(caseDetails);
         String familyManCaseNumber = caseData.getFamilyManCaseNumber();
 
-        if (isCorrectCase(migrationId, familyManCaseNumber, "FPLA-2450", "CF20C50014")) {
-            log.info("Removing c2 document bundle from case reference {}", caseDetails.getId());
-            caseDetails.getData().put("c2DocumentBundle", removeC2Document(caseData.getC2DocumentBundle()));
+        if (isCorrectCase(migrationId, familyManCaseNumber)) {
+            log.info("Removing hearings from case reference {}", caseDetails.getId());
+            caseDetails.getData().put("hearingDetails", removeHearings(caseData.getHearingDetails()));
             caseDetails.getData().remove(MIGRATION_ID_KEY);
         }
 
         return respond(caseDetails);
     }
 
-    private boolean isCorrectCase(Object migrationId, String familyManCaseNumber, String expectedMigrationId,
-                                  String expectedFamilyManCaseNumber) {
-        return expectedMigrationId.equals(migrationId) && expectedFamilyManCaseNumber.equals(familyManCaseNumber);
-    }
-
-    private List<Element<C2DocumentBundle>> removeC2Document(List<Element<C2DocumentBundle>> documentBundle) {
-        // remove latest bundle (will be the last one added)
-        documentBundle.remove(documentBundle.size() - 1);
-        return documentBundle;
+    private boolean isCorrectCase(Object migrationId, String familyManCaseNumber) {
+        return "FPLA-2437".equals(migrationId) && "ZW20C50003".equals(familyManCaseNumber);
     }
 
     private Object getMigrationId(CaseDetails caseDetails) {
         return caseDetails.getData().get(MIGRATION_ID_KEY);
+    }
+
+    private List<Element<HearingBooking>> removeHearings(List<Element<HearingBooking>> hearings) {
+        for (int i = 0; i < 3; i++) {
+            assertHearingDate(hearings.get(i).getValue());
+            log.info("hearing {} has correct date", i);
+        }
+        log.info("Removing hearing 3");
+        hearings.remove(2);
+        log.info("Removing hearing 1");
+        hearings.remove(0);
+        return hearings;
+    }
+
+    private void assertHearingDate(HearingBooking hearing) {
+        if (!LocalDate.of(2020, 11, 10).isEqual(hearing.getStartDate().toLocalDate())) {
+            throw new IllegalArgumentException(String.format("Invalid hearing date %s", hearing.getStartDate()));
+        }
     }
 }
