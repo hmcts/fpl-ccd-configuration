@@ -19,7 +19,7 @@ BeforeSuite(async ({I}) => {
   today = new Date();
 });
 
-Scenario('Local authority sends agreed CMOs to judge @failure @debug-failure', async ({I, caseViewPage, uploadCaseManagementOrderEventPage}) => {
+Scenario('Local authority sends agreed CMOs to judge @failure', async ({I, caseViewPage, uploadCaseManagementOrderEventPage}) => {
   const supportingDocs = {name: 'case summary', notes: 'this is the case summary', file: config.testFile, fileName: 'mockFile.txt'};
 
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
@@ -39,7 +39,7 @@ Scenario('Local authority sends agreed CMOs to judge @failure @debug-failure', a
   I.seeInTab(['Further evidence documents 1', 'Documents 1', 'File'], supportingDocs.fileName);
 });
 
-Scenario('Judge makes changes to agreed CMO and seals @failure @debug-failure', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
+Scenario('Judge makes changes to agreed CMO and seals @failure', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.reviewAgreedCmo);
   reviewAgreedCaseManagementOrderEventPage.selectCMOToReview('1 March 2020');
@@ -53,7 +53,7 @@ Scenario('Judge makes changes to agreed CMO and seals @failure @debug-failure', 
   assertSealedCMO(I, '1', '1 March 2020');
 });
 
-Scenario('Judge sends agreed CMO back to the local authority @failure @debug-failure', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
+Scenario('Judge sends agreed CMO back to the local authority @failure', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   await I.startEventViaHyperlink(linkLabel);
@@ -66,7 +66,7 @@ Scenario('Judge sends agreed CMO back to the local authority @failure @debug-fai
   assertDraftCMO(I, '1', '1 January 2020', returnedStatus);
 });
 
-Scenario('Local authority makes changes requested by the judge @failure @debug-failure', async ({I, caseViewPage, uploadCaseManagementOrderEventPage}) => {
+Scenario('Local authority makes changes requested by the judge @failure', async ({I, caseViewPage, uploadCaseManagementOrderEventPage}) => {
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   assertDraftCMO(I, '1', '1 January 2020', returnedStatus);
@@ -76,7 +76,7 @@ Scenario('Local authority makes changes requested by the judge @failure @debug-f
   I.dontSee(linkLabel);
 });
 
-Scenario('Judge seals and sends the agreed CMO to parties @failure @debug-failure', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
+Scenario('Judge seals and sends the agreed CMO to parties @failure', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.reviewAgreedCmo);
   reviewAgreedCaseManagementOrderEventPage.selectSealCmo();
