@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.service.SupportingEvidenceValidatorService;
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.gov.hmcts.reform.fpl.service.ManageDocumentLAService.CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentLAService.COURT_BUNDLE_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentLAService.COURT_BUNDLE_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentLAService.COURT_BUNDLE_LIST_KEY;
@@ -136,7 +137,7 @@ public class ManageDocumentsLAController extends CallbackController {
                         caseDataBefore.getCorrespondenceDocumentsLA()
                     );
 
-                caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, updatedCorrespondenceDocuments);
+                caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY, updatedCorrespondenceDocuments);
                 break;
             case C2:
                 List<Element<C2DocumentBundle>> updatedC2Documents = manageDocumentService

@@ -32,6 +32,7 @@ public class ManageDocumentLAService {
     public static final String FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_LA_KEY = "furtherEvidenceDocumentsLA";
     public static final String COURT_BUNDLE_KEY = "manageDocumentsCourtBundle";
     public static final String COURT_BUNDLE_LIST_KEY = "courtBundleList";
+    public static final String CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY = "correspondenceDocumentsLA";
 
     public List<Element<SupportingEvidenceBundle>> getFurtherEvidenceCollection(CaseData caseData) {
         if (caseData.getManageDocumentLA().isDocumentRelatedToHearing()) {

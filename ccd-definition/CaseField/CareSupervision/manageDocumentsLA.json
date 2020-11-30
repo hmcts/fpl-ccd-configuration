@@ -30,7 +30,7 @@
     "ID": "correspondenceDocumentsLA",
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
-    "Label": "Correspondence document",
+    "Label": "Local authority correspondence documents",
     "SecurityClassification": "Public"
   },
   {

@@ -47,7 +47,7 @@
     "ID": "correspondenceDocuments",
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
-    "Label": "Correspondence document",
+    "Label": "HMCTS correspondence documents",
     "SecurityClassification": "Public"
   },
   {

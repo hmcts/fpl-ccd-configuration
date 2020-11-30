@@ -68,12 +68,12 @@ Scenario('local authority adds further evidence documents and correspondence', a
   I.seeTextInTab(['Local authority further evidence documents 2', 'Uploaded by']);
 
   caseViewPage.selectTab(caseViewPage.tabs.correspondence);
-  I.seeInTab(['Correspondence document 1', 'Document name'], 'Correspondence document');
-  I.seeInTab(['Correspondence document 1', 'Notes'], 'Test notes');
-  I.seeInTab(['Correspondence document 1', 'Date and time received'], '2 Feb 2020, 11:00:00 AM');
-  I.seeInTab(['Correspondence document 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeInTab(['Correspondence document 1', 'File'], 'mockFile.txt');
-  I.seeTextInTab(['Correspondence document 1', 'Uploaded by']);
+  I.seeInTab(['Local authority correspondence documents 1', 'Document name'], 'Correspondence document');
+  I.seeInTab(['Local authority correspondence documents 1', 'Notes'], 'Test notes');
+  I.seeInTab(['Local authority correspondence documents 1', 'Date and time received'], '2 Feb 2020, 11:00:00 AM');
+  I.seeInTab(['Local authority correspondence documents 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
+  I.seeInTab(['Local authority correspondence documents 1', 'File'], 'mockFile.txt');
+  I.seeTextInTab(['Local authority correspondence documents 1', 'Uploaded by']);
 });
 
 Scenario('local authority uploads documents when SWET not required', async ({I, caseViewPage, uploadDocumentsEventPage}) => {
