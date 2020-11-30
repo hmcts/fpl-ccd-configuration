@@ -4,13 +4,15 @@ const supportingDocumentsFragment = require('../../fragments/supportingDocuments
 module.exports = {
   fields: {
     documentType: {
-      furtherEvidence: '#manageDocument_type-FURTHER_EVIDENCE_DOCUMENTS',
-      correspondence: '#manageDocument_type-CORRESPONDENCE',
-      c2: '#manageDocument_type-C2',
+      furtherEvidence: '#manageDocumentLA_type-FURTHER_EVIDENCE_DOCUMENTS',
+      correspondence: '#manageDocumentLA_type-CORRESPONDENCE',
+      c2: '#manageDocumentLA_type-C2',
+      application: '#manageDocumentLA_type-APPLICATION',
+      courtBundle: '#manageDocumentLA_type-COURT_BUNDLE',
     },
     relatedToHearing: {
-      yes: '#manageDocument_relatedToHearing-Yes',
-      no: '#manageDocument_relatedToHearing-No',
+      yes: '#manageDocumentLA_relatedToHearing-Yes',
+      no: '#manageDocumentLA_relatedToHearing-No',
     },
     hearingList: '#manageDocumentsHearingList',
     c2DocumentsList: '#manageDocumentsSupportingC2List',

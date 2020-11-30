@@ -4,8 +4,12 @@ const legalRepresentatives = require('../fixtures/legalRepresentatives.js');
 const placementHelper = require('../helpers/placement_helper.js');
 const uploadDocumentsHelper = require('../helpers/upload_case_documents_helper.js');
 const mandatoryWithMultipleChildren = require('../fixtures/caseData/mandatoryWithMultipleChildren.json');
+const supportingEvidenceDocuments = require('../fixtures/supportingEvidenceDocuments.js');
+
+const dateFormat = require('dateformat');
 
 let caseId;
+let submittedAt;
 
 Feature('Case maintenance after submission');
 
@@ -32,13 +36,44 @@ Scenario('local authority add an external barrister as a legal representative fo
   I.seeInTab(['LA Legal representatives 1', 'Phone number'], legalRepresentatives.barrister.telephone);
 });
 
-Scenario('local authority uploads documents', async ({I, caseViewPage, uploadDocumentsEventPage}) => {
-  await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
-  uploadDocumentsHelper.uploadCaseDocuments(uploadDocumentsEventPage);
+Scenario('local authority adds further evidence documents and correspondence', async ({I, caseViewPage, manageDocumentsLAEventPage}) => {
+  await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
+  await manageDocumentsLAEventPage.selectFurtherEvidence();
+  await I.goToNextPage();
+  await manageDocumentsLAEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[0]);
+  await I.addAnotherElementToCollection();
+  await manageDocumentsLAEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[1]);
   await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
+  I.seeEventSubmissionConfirmation(config.applicationActions.manageDocumentsLA);
+
+  await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
+  await manageDocumentsLAEventPage.selectCorrespondence();
+  await I.goToNextPage();
+  await manageDocumentsLAEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[2]);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.manageDocumentsLA);
+
   caseViewPage.selectTab(caseViewPage.tabs.documents);
-  uploadDocumentsHelper.assertCaseDocuments(I);
+  I.seeInTab(['Local authority further evidence documents 1', 'Document name'], 'Email to say evidence will be late');
+  I.seeInTab(['Local authority further evidence documents 1', 'Notes'], 'Evidence will be late');
+  I.seeInTab(['Local authority further evidence documents 1', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
+  I.seeInTab(['Local authority further evidence documents 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
+  I.seeInTab(['Local authority further evidence documents 1', 'File'], 'mockFile.txt');
+  I.seeTextInTab(['Local authority further evidence documents 1', 'Uploaded by']);
+  I.seeInTab(['Local authority further evidence documents 2', 'Document name'], 'Email with evidence attached');
+  I.seeInTab(['Local authority further evidence documents 2', 'Notes'], 'Case evidence included');
+  I.seeInTab(['Local authority further evidence documents 2', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
+  I.seeInTab(['Local authority further evidence documents 2', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
+  I.seeInTab(['Local authority further evidence documents 2', 'File'], 'mockFile.txt');
+  I.seeTextInTab(['Local authority further evidence documents 2', 'Uploaded by']);
+
+  caseViewPage.selectTab(caseViewPage.tabs.correspondence);
+  I.seeInTab(['Correspondence document 1', 'Document name'], 'Correspondence document');
+  I.seeInTab(['Correspondence document 1', 'Notes'], 'Test notes');
+  I.seeInTab(['Correspondence document 1', 'Date and time received'], '2 Feb 2020, 11:00:00 AM');
+  I.seeInTab(['Correspondence document 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
+  I.seeInTab(['Correspondence document 1', 'File'], 'mockFile.txt');
+  I.seeTextInTab(['Correspondence document 1', 'Uploaded by']);
 });
 
 Scenario('local authority uploads documents when SWET not required', async ({I, caseViewPage, uploadDocumentsEventPage}) => {

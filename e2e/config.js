@@ -106,6 +106,7 @@ module.exports = {
     extend26WeekTimeline: 'Extend 26-week timeline',
     manageLegalRepresentatives: 'Manage legal representatives',
     addApplicationDocuments: 'Application documents',
+    manageDocumentsLA: 'Manage documents',
   },
   administrationActions: {
     addFamilyManCaseNumber: 'Add case number',

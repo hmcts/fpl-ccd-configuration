@@ -146,7 +146,7 @@ Scenario('HMCTS admin uploads C2 documents to the case', async ({I, caseViewPage
 Scenario('HMCTS admin edits supporting evidence document on C2 application', async({I, caseViewPage, manageDocumentsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
   await manageDocumentsEventPage.selectC2SupportingDocuments();
-  await manageDocumentsEventPage.select2FromDropdown();
+  await manageDocumentsEventPage.selectC2FromDropdown();
   await I.goToNextPage();
   await manageDocumentsEventPage.enterDocumentName('Updated document name');
   await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
