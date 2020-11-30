@@ -48,7 +48,7 @@ Scenario('local authority changes case name @create-case-with-mandatory-sections
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
   caseViewPage.checkTaskIsCompleted(config.applicationActions.changeCaseName);
-  caseViewPage.checkTaskIsAvailable(config.applicationActions.changeCaseName);
+  await caseViewPage.checkTaskIsAvailable(config.applicationActions.changeCaseName);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
@@ -89,7 +89,7 @@ Scenario('local authority enters orders and directions @create-case-with-mandato
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
   caseViewPage.checkTaskIsCompleted(config.applicationActions.enterOrdersAndDirectionsNeeded);
-  caseViewPage.checkTaskIsAvailable(config.applicationActions.enterOrdersAndDirectionsNeeded);
+  await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterOrdersAndDirectionsNeeded);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
@@ -112,7 +112,7 @@ Scenario('local authority enters hearing @create-case-with-mandatory-sections-on
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
   caseViewPage.checkTaskIsCompleted(config.applicationActions.enterHearingNeeded);
-  caseViewPage.checkTaskIsAvailable(config.applicationActions.enterHearingNeeded);
+  await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterHearingNeeded);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
@@ -199,7 +199,7 @@ Scenario('local authority enters children @create-case-with-mandatory-sections-o
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
   caseViewPage.checkTaskIsCompleted(config.applicationActions.enterChildren);
-  caseViewPage.checkTaskIsAvailable(config.applicationActions.enterChildren);
+  await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterChildren);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
@@ -256,7 +256,7 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
   caseViewPage.checkTaskIsCompleted(config.applicationActions.enterRespondents);
-  caseViewPage.checkTaskIsAvailable(config.applicationActions.enterRespondents);
+  await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterRespondents);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
@@ -290,7 +290,7 @@ Scenario('local authority enters applicant @create-case-with-mandatory-sections-
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
   caseViewPage.checkTaskIsCompleted(config.applicationActions.enterApplicant);
-  caseViewPage.checkTaskIsAvailable(config.applicationActions.enterApplicant);
+  await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterApplicant);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
@@ -345,7 +345,7 @@ Scenario('local authority enters others to be given notice', async ({I, caseView
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
   caseViewPage.checkTaskIsInProgress(config.applicationActions.enterOthers);
-  caseViewPage.checkTaskIsAvailable(config.applicationActions.enterOthers);
+  await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterOthers);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
@@ -359,7 +359,7 @@ Scenario('local authority enters grounds for non EPO application @create-case-wi
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
   caseViewPage.checkTaskIsInProgress(config.applicationActions.enterGrounds);
-  caseViewPage.checkTaskIsAvailable(config.applicationActions.enterGrounds);
+  await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterGrounds);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
@@ -378,8 +378,8 @@ Scenario('local authority enters grounds for EPO application @create-case-with-m
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
   caseViewPage.checkTaskIsCompleted(config.applicationActions.enterGrounds);
   caseViewPage.checkTaskIsCompleted(config.applicationActions.enterOrdersAndDirectionsNeeded);
-  caseViewPage.checkTaskIsAvailable(config.applicationActions.enterGrounds);
-  caseViewPage.checkTaskIsAvailable(config.applicationActions.enterOrdersAndDirectionsNeeded);
+  await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterGrounds);
+  await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterOrdersAndDirectionsNeeded);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
@@ -401,7 +401,7 @@ Scenario('local authority enters risk and harm to children', async ({I, caseView
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
   caseViewPage.checkTaskIsInProgress(config.applicationActions.enterRiskAndHarmToChildren);
-  caseViewPage.checkTaskIsAvailable(config.applicationActions.enterRiskAndHarmToChildren);
+  await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterRiskAndHarmToChildren);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
@@ -422,7 +422,7 @@ Scenario('local authority enters factors affecting parenting', async ({I, caseVi
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
   caseViewPage.checkTaskIsInProgress(config.applicationActions.enterFactorsAffectingParenting);
-  caseViewPage.checkTaskIsAvailable(config.applicationActions.enterFactorsAffectingParenting);
+  await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterFactorsAffectingParenting);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
@@ -445,7 +445,7 @@ Scenario('local authority enters international element', async ({I, caseViewPage
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
   caseViewPage.checkTaskIsInProgress(config.applicationActions.enterInternationalElement);
-  caseViewPage.checkTaskIsAvailable(config.applicationActions.enterInternationalElement);
+  await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterInternationalElement);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
@@ -481,7 +481,7 @@ Scenario('local authority enters other proceedings', async ({I, caseViewPage, en
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
   caseViewPage.checkTaskIsInProgress(config.applicationActions.enterOtherProceedings);
-  caseViewPage.checkTaskIsAvailable(config.applicationActions.enterOtherProceedings);
+  await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterOtherProceedings);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
@@ -494,7 +494,7 @@ Scenario('local authority enters allocation proposal @create-case-with-mandatory
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
   caseViewPage.checkTaskIsCompleted(config.applicationActions.enterAllocationProposal);
-  caseViewPage.checkTaskIsAvailable(config.applicationActions.enterAllocationProposal);
+  await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterAllocationProposal);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
@@ -522,7 +522,7 @@ Scenario('local authority enters attending hearing', async ({I, caseViewPage, en
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
   caseViewPage.checkTaskIsInProgress(config.applicationActions.enterAttendingHearing);
-  caseViewPage.checkTaskIsAvailable(config.applicationActions.enterAttendingHearing);
+  await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterAttendingHearing);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
@@ -536,7 +536,7 @@ Scenario('local authority uploads documents @create-case-with-mandatory-sections
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
   caseViewPage.checkTaskIsCompleted(config.applicationActions.uploadDocuments);
-  caseViewPage.checkTaskIsAvailable(config.applicationActions.uploadDocuments);
+  await caseViewPage.checkTaskIsAvailable(config.applicationActions.uploadDocuments);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.submitCase);
 });
 
