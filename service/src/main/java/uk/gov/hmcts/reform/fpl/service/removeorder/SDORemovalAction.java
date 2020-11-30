@@ -41,8 +41,10 @@ public class SDORemovalAction implements OrderRemovalAction {
     public void remove(CaseData caseData, CaseDetailsMap data, UUID removedOrderId, RemovableOrder removableOrder) {
         StandardDirectionOrder standardDirectionOrder = (StandardDirectionOrder) removableOrder;
 
-        standardDirectionOrder.setRemovalReason(caseData.getReasonToRemoveOrder());
-        standardDirectionOrder = standardDirectionOrder.toBuilder().judgeAndLegalAdvisor(null).build();
+        standardDirectionOrder = standardDirectionOrder.toBuilder()
+            .removalReason(caseData.getReasonToRemoveOrder())
+            .judgeAndLegalAdvisor(null)
+            .build();
 
         data.remove("standardDirectionOrder");
         data.remove("noticeOfProceedingsBundle");
