@@ -70,9 +70,8 @@ class ApplicationDocumentsServiceTest {
 
         Map<String, Object> map = applicationDocumentsService.updateCaseDocuments(documents, previousDocuments);
 
-        assertThat(map.get("applicationDocuments")).isEqualToComparingOnlyGivenFields(Document.builder()
-            .uploadedBy(HMCTS_USER)
-            .dateTimeUploaded(time.now()));
+        assertThat(map.get("applicationDocuments")).isEqualToComparingOnlyGivenFields(buildDocument(HMCTS_USER,
+            time.now()));
     }
 
     @Test
@@ -91,9 +90,8 @@ class ApplicationDocumentsServiceTest {
 
         Map<String, Object> map = applicationDocumentsService.updateCaseDocuments(currentDocuments, previousDocuments);
 
-        assertThat(map.get("applicationDocuments")).isEqualToComparingOnlyGivenFields(Document.builder()
-            .uploadedBy(HMCTS_USER)
-            .dateTimeUploaded(time.now()));
+        assertThat(map.get("applicationDocuments")).isEqualToComparingOnlyGivenFields(buildDocument(HMCTS_USER,
+            time.now()));
     }
 
     @Test
@@ -110,9 +108,8 @@ class ApplicationDocumentsServiceTest {
 
         Map<String, Object> map = applicationDocumentsService.updateCaseDocuments(currentDocuments, previousDocuments);
 
-        assertThat(map.get("applicationDocuments")).isEqualToComparingOnlyGivenFields(Document.builder()
-            .uploadedBy(LA_USER)
-            .dateTimeUploaded(PAST_DATE));
+        assertThat(map.get("applicationDocuments")).isEqualToComparingOnlyGivenFields(buildDocument(LA_USER,
+            PAST_DATE));
     }
 
     @Test
@@ -146,6 +143,13 @@ class ApplicationDocumentsServiceTest {
     private DocumentReference buildDocumentReference(String filename) {
         return DocumentReference.builder()
             .filename(filename)
+            .build();
+    }
+
+    private Document buildDocument(String uploadedBy, LocalDateTime timeOfUpload) {
+        return Document.builder()
+            .uploadedBy(uploadedBy)
+            .dateTimeUploaded(timeOfUpload)
             .build();
     }
 }
