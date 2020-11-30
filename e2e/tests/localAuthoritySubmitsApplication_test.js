@@ -449,7 +449,7 @@ Scenario('local authority enters international element', async ({I, caseViewPage
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
-Scenario('local authority enters other proceedings @failure', async ({I, caseViewPage, enterOtherProceedingsEventPage}) => {
+Scenario('local authority enters other proceedings', async ({I, caseViewPage, enterOtherProceedingsEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterOtherProceedings);
   enterOtherProceedingsEventPage.selectNoForProceeding();
   enterOtherProceedingsEventPage.selectYesForProceeding();
