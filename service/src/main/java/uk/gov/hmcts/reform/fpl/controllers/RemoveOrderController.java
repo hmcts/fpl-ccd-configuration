@@ -13,10 +13,13 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
+import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.removeorder.RemoveOrderService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -97,10 +100,35 @@ public class RemoveOrderController extends CallbackController {
         if (isRemovingNewSDO(caseData, caseDataBefore)) {
             publishEvent(new PopulateStandardDirectionsEvent(callbackRequest));
         }
+
+        /*CaseManagementOrder removedCMO = getRemovedCMO(previousData.getSealedCMOs(), caseData.getSealedCMOs());
+
+        if (removedCMO != null) {
+            publishEvent(new CMORemovedEvent(caseData, removedCMO.getRemovalReason()));
+        } else if (isSDORemoved(previousData, caseData)) {
+            publishEvent(new StandardDirectionsOrderRemovedEvent(caseData, null));
+            // TODO: set sdo removalReason
+        }
+        */
     }
 
     private boolean isRemovingNewSDO(CaseData caseData, CaseData caseDataBefore) {
         return !Objects.equals(caseData.getHiddenStandardDirectionOrders(),
             caseDataBefore.getHiddenStandardDirectionOrders());
+    }
+
+    // TODO: edit / remove
+    private boolean isSDORemoved(CaseData previousData, CaseData caseData) {
+        return previousData.getStandardDirectionOrder() != null && caseData.getStandardDirectionOrder() == null;
+    }
+
+    private CaseManagementOrder getRemovedCMO(
+        List<Element<CaseManagementOrder>> previousSealedCMOs,
+        List<Element<CaseManagementOrder>> newSealedCMOs
+    ) {
+        return previousSealedCMOs.stream()
+            .filter(element -> !newSealedCMOs.contains(element))
+            .findFirst()
+            .map(Element::getValue).orElse(null);
     }
 }
