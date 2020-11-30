@@ -47,8 +47,8 @@ public class UploadDocumentsController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         CaseData caseDataBefore = getCaseDataBefore(callbackrequest);
-        caseDetails.getData().putAll(applicationDocumentsService.updateApplicationDocuments(caseData
-                .getApplicationDocuments(),
+        caseDetails.getData().putAll(applicationDocumentsService.updateApplicationDocuments(
+            caseData.getApplicationDocuments(),
             caseDataBefore.getApplicationDocuments()));
 
         return respond(caseDetails);

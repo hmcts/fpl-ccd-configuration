@@ -5,6 +5,7 @@
     "ID": "documentsLink",
     "FieldType": "Label",
     "Label": "[Make changes to documents](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/uploadApplicationDocuments)",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]

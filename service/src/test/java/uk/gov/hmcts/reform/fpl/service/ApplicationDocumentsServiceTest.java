@@ -61,7 +61,7 @@ class ApplicationDocumentsServiceTest {
     }
 
     @Test
-    void shouldSetUploadedByAndDateTimeOnNewCaseDocument() {
+    void shouldSetUploadedByAndDateTimeOnNewApplicationDocument() {
         CaseData caseData = caseData();
 
         List<Element<ApplicationDocument>> previousDocuments = emptyCaseData().getApplicationDocuments();
@@ -78,7 +78,7 @@ class ApplicationDocumentsServiceTest {
     }
 
     @Test
-    void shouldUpdateUploadedByAndDateTimeOnOldCaseDocumentWhenModified() {
+    void shouldUpdateUploadedByAndDateTimeOnOldApplicationDocumentWhenModified() {
         ApplicationDocument document = buildApplicationDocument(PAST_DATE);
         List<Element<ApplicationDocument>> previousDocuments = List.of(element(document));
 
@@ -87,9 +87,9 @@ class ApplicationDocumentsServiceTest {
         ApplicationDocument updatedDocument = ApplicationDocument.builder()
             .document(buildDocumentReference(NEW_FILENAME)).build();
 
-        List<Element<ApplicationDocument>> currentDocuments = List.of(Element.<ApplicationDocument>builder()
-            .id(previousDocumentId)
-            .value(updatedDocument).build());
+        List<Element<ApplicationDocument>> currentDocuments = List.of(buildApplicationDocumentElement(
+            previousDocumentId,
+            updatedDocument));
 
         Map<String, Object> map = applicationDocumentsService.updateApplicationDocuments(currentDocuments,
             previousDocuments);
@@ -102,16 +102,14 @@ class ApplicationDocumentsServiceTest {
     }
 
     @Test
-    void shouldNotUpdateUploadedByAndDateTimeOnOldCaseDocumentWhenNotModified() {
+    void shouldNotUpdateUploadedByAndDateTimeOnOldApplicationDocumentWhenNotModified() {
         ApplicationDocument document = buildApplicationDocument(PAST_DATE);
 
-        List<Element<ApplicationDocument>> currentDocuments = List.of(Element.<ApplicationDocument>builder()
-            .id(DOCUMENT_ID)
-            .value(document).build());
+        List<Element<ApplicationDocument>> currentDocuments = List.of(buildApplicationDocumentElement(DOCUMENT_ID,
+            document));
 
-        List<Element<ApplicationDocument>> previousDocuments = List.of(Element.<ApplicationDocument>builder()
-            .id(DOCUMENT_ID)
-            .value(document).build());
+        List<Element<ApplicationDocument>> previousDocuments = List.of(buildApplicationDocumentElement(DOCUMENT_ID,
+            document));
 
         Map<String, Object> map = applicationDocumentsService.updateApplicationDocuments(currentDocuments,
             previousDocuments);
@@ -130,13 +128,11 @@ class ApplicationDocumentsServiceTest {
         ApplicationDocument secondDocument = ApplicationDocument.builder()
             .document(buildDocumentReference(NEW_FILENAME)).build();
 
-        List<Element<ApplicationDocument>> currentDocuments = List.of(Element.<ApplicationDocument>builder()
-            .id(DOCUMENT_ID).value(firstDocument).build(),
-            element(secondDocument));
+        List<Element<ApplicationDocument>> currentDocuments = List.of(buildApplicationDocumentElement(DOCUMENT_ID,
+            firstDocument), buildApplicationDocumentElement(UUID.randomUUID(), secondDocument));
 
-        List<Element<ApplicationDocument>> previousDocuments = List.of(Element.<ApplicationDocument>builder()
-            .id(DOCUMENT_ID)
-            .value(firstDocument).build());
+        List<Element<ApplicationDocument>> previousDocuments = List.of(buildApplicationDocumentElement(DOCUMENT_ID,
+            firstDocument));
 
         Map<String, Object> map = applicationDocumentsService.updateApplicationDocuments(currentDocuments,
             previousDocuments);
@@ -150,6 +146,12 @@ class ApplicationDocumentsServiceTest {
             .document(buildDocumentReference(OLD_FILENAME))
             .uploadedBy(LA_USER)
             .dateTimeUploaded(time).build();
+    }
+
+    private Element<ApplicationDocument> buildApplicationDocumentElement(UUID id, ApplicationDocument document) {
+        return Element.<ApplicationDocument>builder()
+            .id(id)
+            .value(document).build();
     }
 
     private DocumentReference buildDocumentReference(String filename) {
