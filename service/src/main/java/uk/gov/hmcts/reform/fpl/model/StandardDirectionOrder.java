@@ -31,7 +31,7 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder {
     private final String hearingDate;
     private final String dateOfIssue;
     private final OrderStatus orderStatus;
-    private JudgeAndLegalAdvisor judgeAndLegalAdvisor;
+    private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final LocalDate dateOfUpload;
     private final String uploader;
     private List<Element<Direction>> directions;

@@ -68,7 +68,7 @@ class GeneratedOrderRemovalActionTest {
         );
 
         JudgeAndLegalAdvisor emptyJudge = JudgeAndLegalAdvisor.builder().build();
-        generatedOrder = generatedOrder.toBuilder().judgeAndLegalAdvisor(emptyJudge).build();
+        GeneratedOrder order = generatedOrder.toBuilder().judgeAndLegalAdvisor(emptyJudge).build();
 
         CaseData caseData = CaseData.builder()
             .reasonToRemoveOrder(REASON)
@@ -82,14 +82,14 @@ class GeneratedOrderRemovalActionTest {
                     .finalOrderIssuedType("Some type")
                     .build())
             ))
-            .orderCollection(newArrayList(element(TO_REMOVE_ORDER_ID, generatedOrder)))
+            .orderCollection(newArrayList(element(TO_REMOVE_ORDER_ID, order)))
             .build();
 
         CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
             .data(Map.of())
             .build());
 
-        underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, generatedOrder);
+        underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, order);
 
         assertThat(caseDetailsMap).isEqualTo(Map.of(
             "children1", List.of(

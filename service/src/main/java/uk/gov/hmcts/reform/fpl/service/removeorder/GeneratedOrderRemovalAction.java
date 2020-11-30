@@ -29,7 +29,6 @@ public class GeneratedOrderRemovalAction implements OrderRemovalAction {
                        RemovableOrder removableOrder) {
 
         GeneratedOrder generatedRemovableOrder = (GeneratedOrder) removableOrder;
-        generatedRemovableOrder.setJudgeAndLegalAdvisor(null);
 
         List<Element<GeneratedOrder>> generatedOrders = caseData.getOrderCollection();
         boolean removed = generatedOrders.remove(element(removedOrderId, generatedRemovableOrder));
@@ -38,7 +37,10 @@ public class GeneratedOrderRemovalAction implements OrderRemovalAction {
             throw new RemovableOrderNotFoundException(removedOrderId);
         }
 
-        generatedRemovableOrder.setRemovalReason(caseData.getReasonToRemoveOrder());
+        generatedRemovableOrder = generatedRemovableOrder.toBuilder()
+            .judgeAndLegalAdvisor(null)
+            .removalReason(caseData.getReasonToRemoveOrder())
+            .build();
 
         List<Element<GeneratedOrder>> hiddenGeneratedOrders = caseData.getHiddenOrders();
         hiddenGeneratedOrders.add(element(removedOrderId, generatedRemovableOrder));
