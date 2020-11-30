@@ -45,21 +45,11 @@ public class UploadDocumentsAboutToSubmitControllerTest extends AbstractControll
 
     @BeforeEach
     void init() {
-        Map<String, Object> updatedCaseData = new HashMap<>();
-
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
-        List<Element<ApplicationDocument>> updatedDocuments = caseData.getApplicationDocuments();
-        updatedDocuments.get(0).getValue().setUploadedBy(USER);
-        updatedDocuments.get(0).getValue().setDateTimeUploaded(LocalDateTime.of(date,
-            LocalTime.of(13, 30)));
-        updatedCaseData.put("applicationDocuments", updatedDocuments);
-
         CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
 
-        given(applicationDocumentsService.updateCaseDocuments(caseData.getApplicationDocuments(),
-            caseDataBefore.getApplicationDocuments()))
-            .willReturn(updatedCaseData);
+        given(applicationDocumentsService.updateApplicationDocuments(caseData.getApplicationDocuments(), caseDataBefore.getApplicationDocuments() ))
+            .willReturn(getUpdatedCaseData());
     }
 
     @Test
@@ -71,14 +61,30 @@ public class UploadDocumentsAboutToSubmitControllerTest extends AbstractControll
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
 
-        System.out.println(callbackResponse.getData().get("applicationDocuments"));
-
-        assertThat(callbackResponse.getData().get("applicationDocuments")).isEqualToComparingOnlyGivenFields(
-            ApplicationDocument.builder()
-                .documentType(THRESHOLD)
-                .document(getExpectedDocumentReference())
+        ApplicationDocument expectedDocument = ApplicationDocument.builder()
+            .documentType(THRESHOLD)
+            .document(getExpectedDocumentReference())
             .uploadedBy(USER)
-            .dateTimeUploaded(LocalDateTime.of(date, LocalTime.of(13, 30))));
+            .dateTimeUploaded(LocalDateTime.of(date, LocalTime.of(13, 30)))
+            .build();
+
+        CaseData responseCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        ApplicationDocument actualDocument = responseCaseData.getApplicationDocuments().get(0).getValue();
+
+        assertThat(actualDocument).isEqualTo(expectedDocument);
+    }
+
+    private Map<String, Object> getUpdatedCaseData() {
+        Map<String, Object> updatedCaseData = new HashMap<>();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        List<Element<ApplicationDocument>> updatedDocuments = caseData.getApplicationDocuments();
+        updatedDocuments.get(0).getValue().setUploadedBy(USER);
+        updatedDocuments.get(0).getValue().setDateTimeUploaded(LocalDateTime.of(date,
+            LocalTime.of(13, 30)));
+        updatedCaseData.put("applicationDocuments", updatedDocuments);
+
+        return updatedCaseData;
     }
 
     private DocumentReference getExpectedDocumentReference() {

@@ -24,8 +24,8 @@ public class ApplicationDocumentsService {
     private final Time time;
     private final DocumentUploadHelper documentUploadHelper;
 
-    public Map<String, Object> updateCaseDocuments(List<Element<ApplicationDocument>> currentDocuments,
-                                                   List<Element<ApplicationDocument>> previousDocuments) {
+    public Map<String, Object> updateApplicationDocuments(List<Element<ApplicationDocument>> currentDocuments,
+                                                          List<Element<ApplicationDocument>> previousDocuments) {
         List<Element<ApplicationDocument>> updatedDocuments = setUpdatedByAndDateAndTimeOnDocuments(
              currentDocuments, previousDocuments);
 
@@ -76,12 +76,11 @@ public class ApplicationDocumentsService {
         }
     }
 
-    private Element<ApplicationDocument> setUpdatedByAndDateAndTimeOnDocumentToCurrent(
+    private void setUpdatedByAndDateAndTimeOnDocumentToCurrent(
         Element<ApplicationDocument> document) {
         String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
 
         document.getValue().setDateTimeUploaded(time.now());
         document.getValue().setUploadedBy(uploadedBy);
-        return document;
     }
 }

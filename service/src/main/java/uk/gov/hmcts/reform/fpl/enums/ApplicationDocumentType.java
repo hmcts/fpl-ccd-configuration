@@ -20,6 +20,4 @@ public enum ApplicationDocumentType {
     public String getLabel() {
         return label;
     }
-
-
 }

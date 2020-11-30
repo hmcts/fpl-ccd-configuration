@@ -22,7 +22,7 @@ class ApplicationDocumentCheckerTest {
     private ApplicationDocumentChecker applicationDocumentChecker;
 
     @Test
-    void shouldReturnEmptyErrorsAndNonCompletedStateForOptionalEvent() {
+    void shouldReturnNoErrorsAndUncompleteStateWhenApplicationDocumentsIsStarted() {
         final CaseData caseData = CaseData.builder()
                 .applicationDocuments(documents())
                 .build();
@@ -35,7 +35,7 @@ class ApplicationDocumentCheckerTest {
     }
 
     @Test
-    void shouldReturnTrueIfDocumentsToFollowFieldIsAdded() {
+    void shouldSetIsStartedToTrueWhenDocumentsToFollowFieldAdded() {
         final CaseData caseData = CaseData.builder()
             .applicationDocuments(documents())
             .applicationDocumentsToFollowReason("Document to follow")
@@ -47,7 +47,7 @@ class ApplicationDocumentCheckerTest {
     }
 
     @Test
-    void shouldReturnTrueIfDocumentIsAdded() {
+    void shouldSetIsStartedToTrueWhenApplicationDocumentsAdded() {
         final CaseData caseData = CaseData.builder()
             .applicationDocuments(documents())
             .build();
@@ -58,7 +58,7 @@ class ApplicationDocumentCheckerTest {
     }
 
     @Test
-    void shouldReturnFalseIfNothingHasBeenEnteredIntoEvent() {
+    void shouldReturnFalseIfNothingHasBeenEnteredIntoApplicationDocumentEvent() {
         final CaseData caseData = CaseData.builder().build();
 
         final boolean isStarted = applicationDocumentChecker.isStarted(caseData);
