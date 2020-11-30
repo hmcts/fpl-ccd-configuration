@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.Document;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ApplicationDocumentsService;
 
@@ -24,6 +24,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.THRESHOLD;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @ActiveProfiles("integration-test")
@@ -70,10 +71,21 @@ public class UploadDocumentsAboutToSubmitControllerTest extends AbstractControll
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
 
+        System.out.println(callbackResponse.getData().get("applicationDocuments"));
+
         assertThat(callbackResponse.getData().get("applicationDocuments")).isEqualToComparingOnlyGivenFields(
-            Document.builder()
+            ApplicationDocument.builder()
+                .documentType(THRESHOLD)
+                .document(getExpectedDocumentReference())
             .uploadedBy(USER)
-            .dateTimeUploaded(LocalDateTime.of(date,
-                LocalTime.of(13, 30))));
+            .dateTimeUploaded(LocalDateTime.of(date, LocalTime.of(13, 30))));
+    }
+
+    private DocumentReference getExpectedDocumentReference() {
+        return DocumentReference.builder()
+            .filename("solicitor-role-tech.docx")
+            .binaryUrl("http://dm-store:8080/documents/17dfcfa7-13a3-4257-8582-3b85a756160b/binary")
+            .url("http://dm-store:8080/documents/17dfcfa7-13a3-4257-8582-3b85a756160b")
+            .build();
     }
 }

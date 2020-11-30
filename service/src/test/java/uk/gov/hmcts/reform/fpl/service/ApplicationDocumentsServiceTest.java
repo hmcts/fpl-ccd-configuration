@@ -11,7 +11,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -146,8 +145,8 @@ class ApplicationDocumentsServiceTest {
             .build();
     }
 
-    private Document buildDocument(String uploadedBy, LocalDateTime timeOfUpload) {
-        return Document.builder()
+    private ApplicationDocument buildDocument(String uploadedBy, LocalDateTime timeOfUpload) {
+        return ApplicationDocument.builder()
             .uploadedBy(uploadedBy)
             .dateTimeUploaded(timeOfUpload)
             .build();
