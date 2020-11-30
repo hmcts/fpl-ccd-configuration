@@ -30,6 +30,7 @@ module.exports = {
   caseTitle: '.case-title .markdown',
 
   async goToNewActions(actionSelected) {
+    I.refreshPage();
     I.waitForElement(this.actionsDropdown);
     const currentUrl = await I.grabCurrentUrl();
     await I.retryUntilExists(async () => {
