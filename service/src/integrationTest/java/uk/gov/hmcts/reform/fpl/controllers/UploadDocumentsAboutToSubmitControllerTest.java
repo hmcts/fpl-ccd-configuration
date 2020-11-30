@@ -48,7 +48,8 @@ public class UploadDocumentsAboutToSubmitControllerTest extends AbstractControll
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
 
-        given(applicationDocumentsService.updateApplicationDocuments(caseData.getApplicationDocuments(), caseDataBefore.getApplicationDocuments() ))
+        given(applicationDocumentsService.updateApplicationDocuments(caseData.getApplicationDocuments(),
+            caseDataBefore.getApplicationDocuments()))
             .willReturn(getUpdatedCaseData());
     }
 
