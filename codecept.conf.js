@@ -12,7 +12,7 @@ exports.config = {
       show: process.env.SHOW_BROWSER_WINDOW || false,
       restart: false,
       keepCookies: true,
-      waitForTimeout: parseInt(process.env.WAIT_FOR_TIMEOUT || '20000'),
+      waitForTimeout: parseInt(process.env.WAIT_FOR_TIMEOUT || '60000'),
       chrome: {
         ignoreHTTPSErrors: true,
         args: process.env.PROXY_SERVER ? [
@@ -86,6 +86,9 @@ exports.config = {
     manageLegalRepresentativesEventPage: './e2e/pages/events/manageLegalRepresentativesEvent.page.js',
   },
   plugins: {
+//    "stepByStepReport": {
+//       "enabled": true
+//    },
     autoDelay: {
       enabled: true,
       methods: [
