@@ -87,8 +87,6 @@ class TaskListRendererTest {
         final String expectedTaskList = readString("task-list/expected-task-list-when-application-documents-enabled.md")
             .trim();
 
-        System.out.println(taskListRenderer.render(getTasks(APPLICATION_DOCUMENTS)));
-
         assertThat(taskListRenderer.render(getTasks(APPLICATION_DOCUMENTS))).isEqualTo(expectedTaskList);
     }
 }

@@ -20,14 +20,11 @@ public class ApplicationDocumentChecker implements EventChecker {
 
     @Override
     public boolean isStarted(CaseData caseData) {
-        final List<Element<ApplicationDocument>> applicationDocuments = caseData.getDocuments();
-        final String documentsToFollow = caseData.getDocumentsToFollow();
+        final List<Element<ApplicationDocument>> applicationDocuments = caseData.getApplicationDocuments();
+        final String reason = caseData.getApplicationDocumentsToFollowReason();
 
-        if (!isEmpty(documentsToFollow) || !isEmpty(applicationDocuments)) {
-            return true;
-        }
+        return !isEmpty(reason) || !isEmpty(applicationDocuments);
 
-        return false;
     }
 
     @Override

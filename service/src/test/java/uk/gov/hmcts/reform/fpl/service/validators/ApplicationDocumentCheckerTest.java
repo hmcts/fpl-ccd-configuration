@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.fpl.enums.DocumentType;
+import uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -22,9 +22,9 @@ class ApplicationDocumentCheckerTest {
     private ApplicationDocumentChecker applicationDocumentChecker;
 
     @Test
-    void shouldReturnEmptyErrorsAndNonCompletedStateForOptionalEvent() {
+    void shouldReturnNoErrorsAndUncompleteStateWhenApplicationDocumentsIsStarted() {
         final CaseData caseData = CaseData.builder()
-                .documents(documents())
+                .applicationDocuments(documents())
                 .build();
 
         final List<String> errors = applicationDocumentChecker.validate(caseData);
@@ -35,10 +35,10 @@ class ApplicationDocumentCheckerTest {
     }
 
     @Test
-    void shouldReturnTrueIfDocumentsToFollowFieldIsAdded() {
+    void shouldSetIsStartedToTrueWhenDocumentsToFollowFieldAdded() {
         final CaseData caseData = CaseData.builder()
-            .documents(documents())
-            .documentsToFollow("Document to follow")
+            .applicationDocuments(documents())
+            .applicationDocumentsToFollowReason("Document to follow")
             .build();
 
         final boolean isStarted = applicationDocumentChecker.isStarted(caseData);
@@ -47,9 +47,9 @@ class ApplicationDocumentCheckerTest {
     }
 
     @Test
-    void shouldReturnTrueIfDocumentIsAdded() {
+    void shouldSetIsStartedToTrueWhenApplicationDocumentsAdded() {
         final CaseData caseData = CaseData.builder()
-            .documents(documents())
+            .applicationDocuments(documents())
             .build();
 
         final boolean isStarted = applicationDocumentChecker.isStarted(caseData);
@@ -58,7 +58,7 @@ class ApplicationDocumentCheckerTest {
     }
 
     @Test
-    void shouldReturnFalseIfNothingHasBeenEnteredIntoEvent() {
+    void shouldReturnFalseIfNothingHasBeenEnteredIntoApplicationDocumentEvent() {
         final CaseData caseData = CaseData.builder().build();
 
         final boolean isStarted = applicationDocumentChecker.isStarted(caseData);
@@ -68,7 +68,7 @@ class ApplicationDocumentCheckerTest {
 
     private static List<Element<ApplicationDocument>> documents() {
         return List.of(element(ApplicationDocument.builder()
-            .documentType(DocumentType.THRESHOLD)
+            .documentType(ApplicationDocumentType.THRESHOLD)
             .document(DocumentReference.builder().build())
             .build()));
     }

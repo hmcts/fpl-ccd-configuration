@@ -3,10 +3,10 @@ const {I} = inject();
 module.exports = {
   fields: function (index) {
     return {
-      documentType: `#documents_${index}_documentType`,
-      document: `#documents_${index}_document`,
-      includedInSWET: `#documents_${index}_includedInSWET`,
-      documentName: `#documents_${index}_documentName`,
+      documentType: `#applicationDocuments_${index}_documentType`,
+      document: `#applicationDocuments_${index}_document`,
+      includedInSWET: `#applicationDocuments_${index}_includedInSWET`,
+      documentName: `#applicationDocuments_${index}_documentName`,
     };
   },
 

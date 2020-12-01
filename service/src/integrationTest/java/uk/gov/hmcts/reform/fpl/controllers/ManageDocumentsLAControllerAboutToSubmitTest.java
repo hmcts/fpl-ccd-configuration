@@ -105,6 +105,26 @@ public class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractContro
     }
 
     @Test
+    void shouldPopulateFurtherEvidenceDocumentsCollection() {
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
+
+        Map<String, Object> data = new HashMap<>(Map.of(
+            TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, furtherEvidenceBundle,
+            MANAGE_DOCUMENT_LA_KEY, buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, NO.getValue())));
+
+        CallbackRequest callbackRequest = CallbackRequest.builder()
+            .caseDetailsBefore(buildCaseDetails(Map.of()))
+            .caseDetails(buildCaseDetails(data))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        assertThat(caseData.getFurtherEvidenceDocumentsLA()).isEqualTo(furtherEvidenceBundle);
+        assertExpectedFieldsAreRemoved(caseData);
+    }
+
+    @Test
     void shouldPopulateCourtBundleCollection() {
         UUID hearingId = UUID.randomUUID();
         HearingBooking hearingBooking = buildFinalHearingBooking();
@@ -130,26 +150,6 @@ public class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractContro
         assertThat(caseData.getCourtBundleList().get(0).getValue()).isEqualTo(courtBundle);
         assertThat(caseData.getCourtBundleList().get(0).getId()).isEqualTo(hearingId);
 
-        assertExpectedFieldsAreRemoved(caseData);
-    }
-
-    @Test
-    void shouldPopulateFurtherDocumentsCollection() {
-        List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
-
-        Map<String, Object> data = new HashMap<>(Map.of(
-            TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, furtherEvidenceBundle,
-            MANAGE_DOCUMENT_LA_KEY, buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, NO.getValue())));
-
-        CallbackRequest callbackRequest = CallbackRequest.builder()
-            .caseDetailsBefore(buildCaseDetails(Map.of()))
-            .caseDetails(buildCaseDetails(data))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-
-        assertThat(caseData.getFurtherEvidenceDocumentsLA()).isEqualTo(furtherEvidenceBundle);
         assertExpectedFieldsAreRemoved(caseData);
     }
 

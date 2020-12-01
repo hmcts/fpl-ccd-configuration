@@ -274,6 +274,108 @@
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
+    "CaseFieldID": "supportingDocumentsHeadingLabel",
+    "FieldShowCondition": "documents_socialWorkChronology_document!=\"\" OR documents_socialWorkStatement_document!=\"\" OR documents_socialWorkAssessment_document!=\"\" OR documents_socialWorkCarePlan_document!=\"\" OR documents_socialWorkEvidenceTemplate_document!=\"\" OR documents_threshold_document!=\"\" OR documents_checklist_document!=\"\" OR documents_socialWorkOther!=\"\"",
+    "TabFieldDisplayOrder": 26
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View application",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "documentsSubHeadingLabel",
+    "FieldShowCondition": "documents_socialWorkChronology_document!=\"\" OR documents_socialWorkStatement_document!=\"\" OR documents_socialWorkAssessment_document!=\"\" OR documents_socialWorkCarePlan_document!=\"\" OR documents_socialWorkEvidenceTemplate_document!=\"\" OR documents_threshold_document!=\"\" OR documents_checklist_document!=\"\" OR documents_socialWorkOther!=\"\"",
+    "TabFieldDisplayOrder": 27
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View application",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "documents_socialWorkChronology_document",
+    "TabFieldDisplayOrder": 28
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View application",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "documents_socialWorkStatement_document",
+    "TabFieldDisplayOrder": 29
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View application",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "documents_socialWorkAssessment_document",
+    "TabFieldDisplayOrder": 30
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View application",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "documents_socialWorkCarePlan_document",
+    "TabFieldDisplayOrder": 31
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View application",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "documents_socialWorkEvidenceTemplate_document",
+    "TabFieldDisplayOrder": 32
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View application",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "documents_threshold_document",
+    "TabFieldDisplayOrder": 33
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View application",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "documents_checklist_document",
+    "TabFieldDisplayOrder": 34
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View application",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "documents_socialWorkOther",
+    "TabFieldDisplayOrder": 35
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View application",
+    "TabDisplayOrder": 1,
     "CaseFieldID": "informationAboutThePartiesHeadingLabel",
     "FieldShowCondition": "children1!=\"\" OR respondents1!=\"\" OR others!=\"\" OR applicants!=\"\" OR solicitor!=\"\"",
     "TabFieldDisplayOrder": 37

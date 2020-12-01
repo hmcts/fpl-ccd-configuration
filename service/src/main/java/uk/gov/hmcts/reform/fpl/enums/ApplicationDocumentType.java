@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.enums;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public enum DocumentType {
+public enum ApplicationDocumentType {
 
     THRESHOLD("Threshold"),
     SWET("SWET"),
@@ -20,6 +20,4 @@ public enum DocumentType {
     public String getLabel() {
         return label;
     }
-
-
 }

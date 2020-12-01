@@ -11,7 +11,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -62,21 +61,24 @@ class ApplicationDocumentsServiceTest {
     }
 
     @Test
-    void shouldSetUploadedByAndDateTimeOnNewCaseDocument() {
+    void shouldSetUploadedByAndDateTimeOnNewApplicationDocument() {
         CaseData caseData = caseData();
 
-        List<Element<ApplicationDocument>> previousDocuments = emptyCaseData().getDocuments();
-        List<Element<ApplicationDocument>> documents = caseData.getDocuments();
+        List<Element<ApplicationDocument>> previousDocuments = emptyCaseData().getApplicationDocuments();
+        List<Element<ApplicationDocument>> documents = caseData.getApplicationDocuments();
 
-        Map<String, Object> map = applicationDocumentsService.updateCaseDocuments(documents, previousDocuments);
+        Map<String, Object> map = applicationDocumentsService.updateApplicationDocuments(documents, previousDocuments);
+        CaseData actualCaseData = mapper.convertValue(map, CaseData.class);
 
-        assertThat(map.get("documents")).isEqualToComparingOnlyGivenFields(Document.builder()
-            .uploadedBy(HMCTS_USER)
-            .dateTimeUploaded(time.now()));
+        ApplicationDocument actualDocument = actualCaseData.getApplicationDocuments().get(0).getValue();
+        ApplicationDocument expectedDocument = buildExpectedDocument(caseData.getApplicationDocuments(), HMCTS_USER,
+            time.now());
+
+        assertThat(actualDocument).isEqualTo(expectedDocument);
     }
 
     @Test
-    void shouldUpdateUploadedByAndDateTimeOnOldCaseDocumentWhenModified() {
+    void shouldUpdateUploadedByAndDateTimeOnOldApplicationDocumentWhenModified() {
         ApplicationDocument document = buildApplicationDocument(PAST_DATE);
         List<Element<ApplicationDocument>> previousDocuments = List.of(element(document));
 
@@ -85,34 +87,38 @@ class ApplicationDocumentsServiceTest {
         ApplicationDocument updatedDocument = ApplicationDocument.builder()
             .document(buildDocumentReference(NEW_FILENAME)).build();
 
-        List<Element<ApplicationDocument>> currentDocuments = List.of(Element.<ApplicationDocument>builder()
-            .id(previousDocumentId)
-            .value(updatedDocument).build());
+        List<Element<ApplicationDocument>> currentDocuments = List.of(buildApplicationDocumentElement(
+            previousDocumentId,
+            updatedDocument));
 
-        Map<String, Object> map = applicationDocumentsService.updateCaseDocuments(currentDocuments, previousDocuments);
+        Map<String, Object> map = applicationDocumentsService.updateApplicationDocuments(currentDocuments,
+            previousDocuments);
+        CaseData actualCaseData = mapper.convertValue(map, CaseData.class);
 
-        assertThat(map.get("documents")).isEqualToComparingOnlyGivenFields(Document.builder()
-            .uploadedBy(HMCTS_USER)
-            .dateTimeUploaded(time.now()));
+        ApplicationDocument actualDocument = actualCaseData.getApplicationDocuments().get(0).getValue();
+        ApplicationDocument expectedDocument = buildExpectedDocument(currentDocuments, HMCTS_USER, time.now());
+
+        assertThat(actualDocument).isEqualTo(expectedDocument);
     }
 
     @Test
-    void shouldNotUpdateUploadedByAndDateTimeOnOldCaseDocumentWhenNotModified() {
+    void shouldNotUpdateUploadedByAndDateTimeOnOldApplicationDocumentWhenNotModified() {
         ApplicationDocument document = buildApplicationDocument(PAST_DATE);
 
-        List<Element<ApplicationDocument>> currentDocuments = List.of(Element.<ApplicationDocument>builder()
-            .id(DOCUMENT_ID)
-            .value(document).build());
+        List<Element<ApplicationDocument>> currentDocuments = List.of(buildApplicationDocumentElement(DOCUMENT_ID,
+            document));
 
-        List<Element<ApplicationDocument>> previousDocuments = List.of(Element.<ApplicationDocument>builder()
-            .id(DOCUMENT_ID)
-            .value(document).build());
+        List<Element<ApplicationDocument>> previousDocuments = List.of(buildApplicationDocumentElement(DOCUMENT_ID,
+            document));
 
-        Map<String, Object> map = applicationDocumentsService.updateCaseDocuments(currentDocuments, previousDocuments);
+        Map<String, Object> map = applicationDocumentsService.updateApplicationDocuments(currentDocuments,
+            previousDocuments);
+        CaseData actualCaseData = mapper.convertValue(map, CaseData.class);
 
-        assertThat(map.get("documents")).isEqualToComparingOnlyGivenFields(Document.builder()
-            .uploadedBy(LA_USER)
-            .dateTimeUploaded(PAST_DATE));
+        ApplicationDocument actualDocument = actualCaseData.getApplicationDocuments().get(0).getValue();
+        ApplicationDocument expectedDocument = buildExpectedDocument(currentDocuments, LA_USER, PAST_DATE);
+
+        assertThat(actualDocument).isEqualTo(expectedDocument);
     }
 
     @Test
@@ -122,18 +128,17 @@ class ApplicationDocumentsServiceTest {
         ApplicationDocument secondDocument = ApplicationDocument.builder()
             .document(buildDocumentReference(NEW_FILENAME)).build();
 
-        List<Element<ApplicationDocument>> currentDocuments = List.of(Element.<ApplicationDocument>builder()
-            .id(DOCUMENT_ID).value(firstDocument).build(),
-            element(secondDocument));
+        List<Element<ApplicationDocument>> currentDocuments = List.of(buildApplicationDocumentElement(DOCUMENT_ID,
+            firstDocument), buildApplicationDocumentElement(UUID.randomUUID(), secondDocument));
 
-        List<Element<ApplicationDocument>> previousDocuments = List.of(Element.<ApplicationDocument>builder()
-            .id(DOCUMENT_ID)
-            .value(firstDocument).build());
+        List<Element<ApplicationDocument>> previousDocuments = List.of(buildApplicationDocumentElement(DOCUMENT_ID,
+            firstDocument));
 
-        Map<String, Object> map = applicationDocumentsService.updateCaseDocuments(currentDocuments, previousDocuments);
+        Map<String, Object> map = applicationDocumentsService.updateApplicationDocuments(currentDocuments,
+            previousDocuments);
         CaseData caseData = mapper.convertValue(map, CaseData.class);
 
-        assertThat(caseData.getDocuments().get(0).getValue()).isEqualTo(firstDocument);
+        assertThat(caseData.getApplicationDocuments().get(0).getValue()).isEqualTo(firstDocument);
     }
 
     private ApplicationDocument buildApplicationDocument(LocalDateTime time) {
@@ -143,9 +148,24 @@ class ApplicationDocumentsServiceTest {
             .dateTimeUploaded(time).build();
     }
 
+    private Element<ApplicationDocument> buildApplicationDocumentElement(UUID id, ApplicationDocument document) {
+        return Element.<ApplicationDocument>builder()
+            .id(id)
+            .value(document).build();
+    }
+
     private DocumentReference buildDocumentReference(String filename) {
         return DocumentReference.builder()
             .filename(filename)
             .build();
+    }
+
+    private ApplicationDocument buildExpectedDocument(List<Element<ApplicationDocument>> documents, String uploadedBy,
+                                                      LocalDateTime dateTimeUploaded) {
+        ApplicationDocument expectedDocument = documents.get(0).getValue();
+        expectedDocument.setUploadedBy(uploadedBy);
+        expectedDocument.setDateTimeUploaded(dateTimeUploaded);
+
+        return expectedDocument;
     }
 }

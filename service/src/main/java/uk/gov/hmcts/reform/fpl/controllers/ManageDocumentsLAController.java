@@ -148,8 +148,8 @@ public class ManageDocumentsLAController extends CallbackController {
                     manageDocumentLAService.buildCourtBundleList(caseData));
                 break;
             case APPLICATION:
-                caseDetails.getData().putAll(applicationDocumentsService.updateCaseDocuments(caseData.getDocuments(),
-                    caseDataBefore.getDocuments()));
+                caseDetails.getData().putAll(applicationDocumentsService.updateApplicationDocuments(
+                    caseData.getApplicationDocuments(), caseDataBefore.getApplicationDocuments()));
                 break;
         }
 
