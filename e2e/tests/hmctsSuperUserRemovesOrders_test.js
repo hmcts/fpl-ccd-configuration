@@ -1,6 +1,6 @@
 const config = require('../config.js');
 
-const finalHearingCaseData = requ/fixtures/caseData/finalHearingWithMultipleOrders.json');
+const finalHearingCaseData = require('../fixtures/caseData/finalHearingWithMultipleOrders.json');
 const moment = require('moment');
 
 Feature('HMCTS super user removes orders');
