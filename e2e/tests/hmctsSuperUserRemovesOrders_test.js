@@ -1,8 +1,6 @@
 const config = require('../config.js');
 
-const orderFunctions = require('../helpers/generated_order_helper');
-const blankOrder = require('../fixtures/orders/blankOrder.js');
-const finalHearingCaseData = require('../fixtures/caseData/finalHearingWithMultipleOrders.json');
+const finalHearingCaseData = requ/fixtures/caseData/finalHearingWithMultipleOrders.json');
 const moment = require('moment');
 
 Feature('HMCTS super user removes orders');
@@ -25,12 +23,15 @@ Scenario('HMCTS super user removes a generated order from a case', async ({I, ca
   removeOrderEventPage.addRemoveOrderReason('Entered incorrect order');
   await I.completeEvent('Submit');
   I.seeEventSubmissionConfirmation(config.superUserActions.removeOrder);
-  const issuedDate = new Date(2020, 4, 26, 14, 33);
-  order = {
-    ...blankOrder,
-    document: 'Blank order (C21).pdf',
-  };
-  await orderFunctions.assertOrder(I, caseViewPage, order, issuedDate, false, true);
+  caseViewPage.selectTab(caseViewPage.tabs.orders);
+
+  const generatedOrders = 'Other removed orders 1';
+
+  I.seeInTab([generatedOrders, 'Order title'], 'Example Order Title');
+  I.seeInTab([generatedOrders, 'Order document'], 'Blank order (C21).pdf');
+  I.seeInTab([generatedOrders, 'Starts on'], '26 May 2020');
+  I.seeInTab([generatedOrders, 'Date and time of upload'], '2:33pm, 26 May 2020');
+  I.seeInTab([generatedOrders, 'Reason for removal'], 'Entered incorrect order');
 });
 
 Scenario('HMCTS super user removes a cmo from a case', async ({I, caseViewPage, removeOrderEventPage}) => {
