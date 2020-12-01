@@ -279,6 +279,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
     @Test
     void shouldAttemptGrantAccessToAllLocalAuthorityUsersWhenGrantAccessFailsForSomeOfThem() {
         given(featureToggleService.isCaseUserBulkAssignmentEnabled()).willReturn(false);
+        given(featureToggleService.isApplicationDocumentsEventEnabled()).willReturn(false);
         doThrow(RuntimeException.class)
             .doNothing()
             .when(caseUserApi).updateCaseRolesForUser(any(), any(), any(), eq(LA_NOT_IN_PRD_USER_1_ID), any());
