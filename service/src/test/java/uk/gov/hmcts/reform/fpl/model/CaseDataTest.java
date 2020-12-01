@@ -874,6 +874,38 @@ class CaseDataTest {
         }
     }
 
+    @Nested
+    class GetHearingLinkedToUUID {
+        @Test
+        void shouldReturnTrueWhenHearingBookingCaseManagementOrderIdCanBeMatched() {
+            UUID hearingId = UUID.randomUUID();
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(List.of(
+                    element(HearingBooking.builder()
+                        .caseManagementOrderId(hearingId)
+                        .build())
+                )).build();
+
+            assertThat(caseData.getHearingLinkedToCMO(hearingId).isPresent());
+        }
+
+        @Test
+        void shouldReturnFalseWhenHearingBookingCaseManagementOrderIdCannotBeMatched() {
+            UUID hearingId = UUID.randomUUID();
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(List.of(
+                    element(HearingBooking.builder()
+                        .caseManagementOrderId(UUID.randomUUID())
+                        .build())
+                )).build();
+
+            assertThat(caseData.getHearingLinkedToCMO(hearingId).isEmpty());
+        }
+    }
+
+
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {
         return C2DocumentBundle.builder().uploadedDateTime(dateTime.toString()).build();
     }

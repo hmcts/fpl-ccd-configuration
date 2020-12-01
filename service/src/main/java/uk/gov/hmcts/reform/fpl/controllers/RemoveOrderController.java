@@ -14,9 +14,11 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
+import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.removeorder.RemoveOrderService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -33,6 +35,9 @@ public class RemoveOrderController extends CallbackController {
     private static final String REMOVABLE_ORDER_LIST_KEY = "removableOrderList";
     private final ObjectMapper mapper;
     private final RemoveOrderService service;
+
+    public static final String CMO_ERROR_MESSAGE = "Email DCD-SSCSServiceDesk@HMCTS.NET to remove the order. Include"
+        + " ref %s in the subject, and add the type of order and the hearing it relates to in the email message.";
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
@@ -53,6 +58,11 @@ public class RemoveOrderController extends CallbackController {
         // When dynamic lists are fixed this can be moved into the below method
         UUID removedOrderId = getDynamicListSelectedValue(caseData.getRemovableOrderList(), mapper);
         RemovableOrder removableOrder = service.getRemovedOrderByUUID(caseData, removedOrderId);
+
+        if (removableOrder instanceof CaseManagementOrder
+            && caseData.getHearingLinkedToCMO(removedOrderId).isEmpty()) {
+            return respond(caseDetailsMap, List.of(String.format(CMO_ERROR_MESSAGE, removedOrderId)));
+        }
 
         service.populateSelectedOrderFields(caseData, caseDetailsMap, removedOrderId, removableOrder);
 
