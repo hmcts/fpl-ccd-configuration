@@ -345,7 +345,7 @@ class RemoveOrderControllerSubmittedEvent extends AbstractControllerTest {
             .respondentLastName(RESPONDENT_LAST_NAME)
             .returnedNote(REMOVAL_REASON)
             .build();
-        return orderRemovalTemplate.toMap(mapper);
+        return mapper.convertValue(orderRemovalTemplate, new TypeReference<>() {});
     }
 
     private GeneratedOrder buildBlankOrder() {
