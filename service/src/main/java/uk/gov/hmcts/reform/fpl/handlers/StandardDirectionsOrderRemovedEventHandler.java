@@ -42,8 +42,8 @@ public class StandardDirectionsOrderRemovedEventHandler {
     private List<String> getDistinctGatekeeperEmails(List<Element<EmailAddress>> emailCollection) {
         return unwrapElements(emailCollection)
             .stream()
-            .distinct()
             .map(EmailAddress::getEmail)
+            .distinct()
             .collect(Collectors.toList());
     }
 }

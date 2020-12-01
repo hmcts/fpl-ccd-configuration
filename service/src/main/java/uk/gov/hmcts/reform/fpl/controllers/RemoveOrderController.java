@@ -101,45 +101,42 @@ public class RemoveOrderController extends CallbackController {
         CaseData caseData = getCaseData(callbackRequest.getCaseDetails());
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
-        if (isRemovingNewSDO(caseData, caseDataBefore)) {
-            Optional<StandardDirectionOrder> removedSDO = getRemovedSDO(caseData, caseDataBefore);
+        Optional<StandardDirectionOrder> removedSDO = getRemovedSDO(caseData, caseDataBefore);
+        Optional<CaseManagementOrder> removedCMO = getRemovedCMO(caseData, caseDataBefore);
+
+        if (removedSDO.isPresent()) {
             publishEvent(new PopulateStandardDirectionsEvent(callbackRequest));
             publishEvent(new StandardDirectionsOrderRemovedEvent(
                 caseData, removedSDO.map(StandardDirectionOrder::getRemovalReason).orElse(null)));
-        } else if (isRemovingNewCMO(caseData, caseDataBefore)) {
-            Optional<CaseManagementOrder> removedCMO = getRemovedCMO(caseData, caseDataBefore);
+        } else if (removedCMO.isPresent()) {
             publishEvent(
                 new CMORemovedEvent(caseData, removedCMO.map(CaseManagementOrder::getRemovalReason).orElse(null)));
         }
-    }
-
-    private boolean isRemovingNewSDO(CaseData caseData, CaseData caseDataBefore) {
-        return !Objects.equals(caseData.getHiddenStandardDirectionOrders(),
-            caseDataBefore.getHiddenStandardDirectionOrders());
     }
 
     private Optional<StandardDirectionOrder> getRemovedSDO(CaseData caseData, CaseData caseDataBefore) {
         List<Element<StandardDirectionOrder>> hiddenSDOs = caseData.getHiddenStandardDirectionOrders();
         List<Element<StandardDirectionOrder>> previousHiddenSDOs = caseDataBefore.getHiddenStandardDirectionOrders();
 
-        return hiddenSDOs.stream()
-            .filter(removedSDO -> !previousHiddenSDOs.contains(removedSDO))
-            .findFirst()
-            .map(Element::getValue);
-    }
-
-    private boolean isRemovingNewCMO(CaseData caseData, CaseData caseDataBefore) {
-        return !Objects.equals(caseData.getHiddenCaseManagementOrders(),
-            caseDataBefore.getHiddenCaseManagementOrders());
+        if (!Objects.equals(hiddenSDOs, previousHiddenSDOs)) {
+            return hiddenSDOs.stream()
+                .filter(removedSDO -> !previousHiddenSDOs.contains(removedSDO))
+                .findFirst()
+                .map(Element::getValue);
+        }
+        return Optional.empty();
     }
 
     private Optional<CaseManagementOrder> getRemovedCMO(CaseData caseData, CaseData caseDataBefore) {
         List<Element<CaseManagementOrder>> hiddenCMOs = caseData.getHiddenCMOs();
         List<Element<CaseManagementOrder>> previousHiddenCMOs = caseDataBefore.getHiddenCMOs();
 
-        return hiddenCMOs.stream()
-            .filter(removedCMO -> !previousHiddenCMOs.contains(removedCMO))
-            .findFirst()
-            .map(Element::getValue);
+        if (!Objects.equals(hiddenCMOs, previousHiddenCMOs)) {
+            return hiddenCMOs.stream()
+                .filter(removedCMO -> !previousHiddenCMOs.contains(removedCMO))
+                .findFirst()
+                .map(Element::getValue);
+        }
+        return Optional.empty();
     }
 }

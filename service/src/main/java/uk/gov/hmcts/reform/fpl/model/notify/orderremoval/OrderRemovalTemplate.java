@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.fpl.model.notify.orderremoval;
 
+import lombok.Builder;
 import lombok.Data;
-import lombok.experimental.SuperBuilder;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 
-@SuperBuilder
+@Builder
 @Data
 public class OrderRemovalTemplate implements NotifyData {
     private String caseReference;
