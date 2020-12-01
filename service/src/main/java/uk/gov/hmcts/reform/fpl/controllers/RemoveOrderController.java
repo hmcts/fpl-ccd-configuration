@@ -12,7 +12,10 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
+import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderRemovedEvent;
+import uk.gov.hmcts.reform.fpl.events.cmo.CMORemovedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
@@ -98,18 +101,13 @@ public class RemoveOrderController extends CallbackController {
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
         if (isRemovingNewSDO(caseData, caseDataBefore)) {
+            StandardDirectionOrder removedSDO = getRemovedSDO(caseData, caseDataBefore);
             publishEvent(new PopulateStandardDirectionsEvent(callbackRequest));
-        }
-
-        /*CaseManagementOrder removedCMO = getRemovedCMO(previousData.getSealedCMOs(), caseData.getSealedCMOs());
-
-        if (removedCMO != null) {
+            publishEvent(new StandardDirectionsOrderRemovedEvent(caseData, removedSDO.getRemovalReason()));
+        } else if (isRemovingNewCMO(caseData, caseDataBefore)) {
+            CaseManagementOrder removedCMO = getRemovedCMO(caseData, caseDataBefore);
             publishEvent(new CMORemovedEvent(caseData, removedCMO.getRemovalReason()));
-        } else if (isSDORemoved(previousData, caseData)) {
-            publishEvent(new StandardDirectionsOrderRemovedEvent(caseData, null));
-            // TODO: set sdo removalReason
         }
-        */
     }
 
     private boolean isRemovingNewSDO(CaseData caseData, CaseData caseDataBefore) {
@@ -117,17 +115,27 @@ public class RemoveOrderController extends CallbackController {
             caseDataBefore.getHiddenStandardDirectionOrders());
     }
 
-    // TODO: edit / remove
-    private boolean isSDORemoved(CaseData previousData, CaseData caseData) {
-        return previousData.getStandardDirectionOrder() != null && caseData.getStandardDirectionOrder() == null;
+    private StandardDirectionOrder getRemovedSDO(CaseData caseData, CaseData caseDataBefore) {
+        List<Element<StandardDirectionOrder>> hiddenSDOs = caseData.getHiddenStandardDirectionOrders();
+        List<Element<StandardDirectionOrder>> previousHiddenSDOs = caseDataBefore.getHiddenStandardDirectionOrders();
+
+        return hiddenSDOs.stream()
+            .filter(removedSDO -> !previousHiddenSDOs.contains(removedSDO))
+            .findFirst()
+            .map(Element::getValue).orElse(null);
     }
 
-    private CaseManagementOrder getRemovedCMO(
-        List<Element<CaseManagementOrder>> previousSealedCMOs,
-        List<Element<CaseManagementOrder>> newSealedCMOs
-    ) {
-        return previousSealedCMOs.stream()
-            .filter(element -> !newSealedCMOs.contains(element))
+    private boolean isRemovingNewCMO(CaseData caseData, CaseData caseDataBefore) {
+        return !Objects.equals(caseData.getHiddenCaseManagementOrders(),
+            caseDataBefore.getHiddenCaseManagementOrders());
+    }
+
+    private CaseManagementOrder getRemovedCMO(CaseData caseData, CaseData caseDataBefore) {
+        List<Element<CaseManagementOrder>> hiddenCMOs = caseData.getHiddenCMOs();
+        List<Element<CaseManagementOrder>> previousHiddenCMOs = caseDataBefore.getHiddenCMOs();
+
+        return hiddenCMOs.stream()
+            .filter(removedCMO -> !previousHiddenCMOs.contains(removedCMO))
             .findFirst()
             .map(Element::getValue).orElse(null);
     }
