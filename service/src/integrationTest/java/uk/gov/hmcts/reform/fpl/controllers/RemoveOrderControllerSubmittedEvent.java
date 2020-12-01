@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -345,7 +346,8 @@ class RemoveOrderControllerSubmittedEvent extends AbstractControllerTest {
             .respondentLastName(RESPONDENT_LAST_NAME)
             .returnedNote(REMOVAL_REASON)
             .build();
-        return mapper.convertValue(orderRemovalTemplate, new TypeReference<>() {});
+        return mapper.convertValue(orderRemovalTemplate, new TypeReference<>() {
+        });
     }
 
     private GeneratedOrder buildBlankOrder() {
