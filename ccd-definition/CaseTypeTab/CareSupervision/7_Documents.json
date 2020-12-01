@@ -193,7 +193,7 @@
     "TabDisplayOrder": 7,
     "CaseFieldID": "courtBundle",
     "TabFieldDisplayOrder": 18,
-    "Comment": "Needs migrating after toggle - must be added to courtBundleList"
+    "Comment": "Needs migrating - must be added to courtBundleList"
   },
   {
     "LiveFrom": "01/01/2017",

@@ -35,6 +35,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeLA.C2;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeLA.CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeLA.COURT_BUNDLE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeLA.FURTHER_EVIDENCE_DOCUMENTS;
@@ -192,7 +193,7 @@ public class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractContro
             "c2DocumentBundle", c2DocumentBundleList,
             "manageDocumentsSupportingC2List", expectedC2DocumentsDynamicList,
             "c2SupportingDocuments", supportingEvidenceBundle,
-            MANAGE_DOCUMENT_LA_KEY, buildManagementDocument(ManageDocumentTypeLA.C2)));
+            MANAGE_DOCUMENT_LA_KEY, buildManagementDocument(C2)));
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetailsBefore(buildCaseDetails(Map.of()))

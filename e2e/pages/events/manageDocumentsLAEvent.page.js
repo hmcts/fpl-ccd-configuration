@@ -106,6 +106,12 @@ module.exports = {
   async uploadSupportingEvidenceDocument(supportingEvidenceDocument) {
     await this.enterDocumentName(supportingEvidenceDocument.name);
     await this.enterDocumentNotes(supportingEvidenceDocument.notes);
+    await this.uploadDocument(supportingEvidenceDocument.document);
+  },
+
+  async uploadCorrespondenceDocuments(supportingEvidenceDocument) {
+    await this.enterDocumentName(supportingEvidenceDocument.name);
+    await this.enterDocumentNotes(supportingEvidenceDocument.notes);
     await this.enterDateAndTimeReceived(supportingEvidenceDocument.date);
     await this.uploadDocument(supportingEvidenceDocument.document);
   },

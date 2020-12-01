@@ -2,7 +2,6 @@ const config = require('../config.js');
 const recipients = require('../fixtures/recipients.js');
 const legalRepresentatives = require('../fixtures/legalRepresentatives.js');
 const placementHelper = require('../helpers/placement_helper.js');
-const uploadDocumentsHelper = require('../helpers/upload_case_documents_helper.js');
 const manageDocumentsForLAHelper = require('../helpers/manage_documents_for_LA_helper.js');
 const mandatoryWithMultipleChildren = require('../fixtures/caseData/mandatoryWithMultipleChildren.json');
 const supportingEvidenceDocuments = require('../fixtures/supportingEvidenceDocuments.js');
@@ -55,34 +54,32 @@ Scenario('local authority adds further evidence and correspondence documents', a
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
   await manageDocumentsLAEventPage.selectCorrespondence();
   await I.goToNextPage();
-  await manageDocumentsLAEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[2]);
+  await manageDocumentsLAEventPage.uploadCorrespondenceDocuments(supportingEvidenceDocuments[2]);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.manageDocumentsLA);
 
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.seeInTab(['Local authority further evidence documents 1', 'Document name'], 'Email to say evidence will be late');
   I.seeInTab(['Local authority further evidence documents 1', 'Notes'], 'Evidence will be late');
-  I.seeInTab(['Local authority further evidence documents 1', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
   I.seeInTab(['Local authority further evidence documents 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
   I.seeInTab(['Local authority further evidence documents 1', 'File'], 'mockFile.txt');
   I.seeTextInTab(['Local authority further evidence documents 1', 'Uploaded by']);
   I.seeInTab(['Local authority further evidence documents 2', 'Document name'], 'Email with evidence attached');
   I.seeInTab(['Local authority further evidence documents 2', 'Notes'], 'Case evidence included');
-  I.seeInTab(['Local authority further evidence documents 2', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
   I.seeInTab(['Local authority further evidence documents 2', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
   I.seeInTab(['Local authority further evidence documents 2', 'File'], 'mockFile.txt');
   I.seeTextInTab(['Local authority further evidence documents 2', 'Uploaded by']);
 
   caseViewPage.selectTab(caseViewPage.tabs.correspondence);
-  I.seeInTab(['Local authority correspondence documents 1', 'Document name'], 'Correspondence document');
-  I.seeInTab(['Local authority correspondence documents 1', 'Notes'], 'Test notes');
-  I.seeInTab(['Local authority correspondence documents 1', 'Date and time received'], '2 Feb 2020, 11:00:00 AM');
-  I.seeInTab(['Local authority correspondence documents 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeInTab(['Local authority correspondence documents 1', 'File'], 'mockFile.txt');
-  I.seeTextInTab(['Local authority correspondence documents 1', 'Uploaded by']);
+  I.seeInTab(['Correspondence uploaded by local authority 1', 'Document name'], 'Correspondence document');
+  I.seeInTab(['Correspondence uploaded by local authority 1', 'Notes'], 'Test notes');
+  I.seeInTab(['Correspondence uploaded by local authority 1', 'Date and time received'], '2 Feb 2020, 11:00:00 AM');
+  I.seeInTab(['Correspondence uploaded by local authority 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
+  I.seeInTab(['Correspondence uploaded by local authority 1', 'File'], 'mockFile.txt');
+  I.seeTextInTab(['Correspondence uploaded by local authority 1', 'Uploaded by']);
 });
 
-Scenario('local authority adds hearing related documents', async ({I, caseViewPage, manageDocumentsLAEventPage, manageHearingsEventPage}) => {
+Scenario('local authority adds hearing evidence and court bundle', async ({I, caseViewPage, manageDocumentsLAEventPage, manageHearingsEventPage}) => {
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   hearingStartDate = moment().add(5, 'm').toDate();
   await manageDocumentsForLAHelper.createHearing(I, caseViewPage, manageHearingsEventPage);
@@ -102,7 +99,6 @@ Scenario('local authority adds hearing related documents', async ({I, caseViewPa
   I.seeInTab(['Further evidence documents for hearings 1', 'Hearing'], `Case management hearing, ${formatHearingDate(hearingStartDate)}`);
   I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Document name'], 'Email to say evidence will be late');
   I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Notes'], 'Evidence will be late');
-  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
   I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
   I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'File'], 'mockFile.txt');
   I.seeTextInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Uploaded by']);
@@ -134,24 +130,6 @@ Scenario('local authority adds C2 supporting documents', async ({I, caseViewPage
   I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'Document name'], 'C2 supporting document');
   I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'Notes'], 'Supports the C2 application');
   I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'File'], 'mockFile.txt');
-});
-
-Scenario('local authority uploads documents when SWET not required', async ({I, caseViewPage, uploadDocumentsEventPage}) => {
-  await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
-  uploadDocumentsHelper.uploadCaseDocuments(uploadDocumentsEventPage, false);
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
-  caseViewPage.selectTab(caseViewPage.tabs.documents);
-  uploadDocumentsHelper.assertCaseDocuments(I, false);
-});
-
-Scenario('local authority uploads court bundle', async ({I, caseViewPage, uploadDocumentsEventPage}) => {
-  await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
-  uploadDocumentsEventPage.uploadCourtBundle(config.testFile);
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
-  caseViewPage.selectTab(caseViewPage.tabs.documents);
-  I.seeDocument('Court bundle', 'mockFile.txt', '', '', 'Date and time uploaded', 'Uploaded by');
 });
 
 Scenario('local authority update solicitor', async ({I, caseViewPage, enterApplicantEventPage}) => {

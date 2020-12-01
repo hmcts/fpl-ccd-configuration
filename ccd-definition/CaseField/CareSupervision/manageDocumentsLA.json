@@ -30,7 +30,7 @@
     "ID": "correspondenceDocumentsLA",
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
-    "Label": "Local authority correspondence documents",
+    "Label": "Correspondence uploaded by local authority",
     "SecurityClassification": "Public"
   },
   {
@@ -64,6 +64,14 @@
     "ID": "courtBundleTabHeading",
     "FieldType": "Label",
     "Label": "## Court bundle",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "correspondenceTabHeading",
+    "FieldType": "Label",
+    "Label": "## Correspondence",
     "SecurityClassification": "Public"
   }
 ]
