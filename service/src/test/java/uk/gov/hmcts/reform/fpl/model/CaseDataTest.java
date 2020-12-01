@@ -877,7 +877,7 @@ class CaseDataTest {
     @Nested
     class GetHearingLinkedToUUID {
         @Test
-        void shouldReturnTrueWhenHearingBookingCaseManagementOrderIdCanBeMatched() {
+        void hearingBookingShouldBePresentWhenHearingBookingCaseManagementOrderMatchesId() {
             UUID hearingId = UUID.randomUUID();
 
             CaseData caseData = CaseData.builder()
@@ -887,11 +887,11 @@ class CaseDataTest {
                         .build())
                 )).build();
 
-            assertThat(caseData.getHearingLinkedToCMO(hearingId).isPresent()).isTrue();
+            assertThat(caseData.getHearingLinkedToCMO(hearingId)).isPresent();
         }
 
         @Test
-        void shouldReturnFalseWhenHearingBookingCaseManagementOrderIdCannotBeMatched() {
+        void hearingBookingShouldNotBePresentWhenHearingBookingCaseManagementOrderDoesNotMatchId() {
             UUID hearingId = UUID.randomUUID();
 
             CaseData caseData = CaseData.builder()
@@ -901,7 +901,7 @@ class CaseDataTest {
                         .build())
                 )).build();
 
-            assertThat(caseData.getHearingLinkedToCMO(hearingId).isPresent()).isFalse();
+            assertThat(caseData.getHearingLinkedToCMO(hearingId)).isNotPresent();
         }
     }
 

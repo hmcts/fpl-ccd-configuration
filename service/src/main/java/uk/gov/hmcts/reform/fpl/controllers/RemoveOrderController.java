@@ -36,8 +36,9 @@ public class RemoveOrderController extends CallbackController {
     private final ObjectMapper mapper;
     private final RemoveOrderService service;
 
-    public static final String CMO_ERROR_MESSAGE = "Email DCD-SSCSServiceDesk@HMCTS.NET to remove the order. Include"
-        + " ref %s in the subject, and add the type of order and the hearing it relates to in the email message.";
+    public static final String CMO_ERROR_MESSAGE = "Email dcd-familypubliclawservicedesk@hmcts.net to remove the order."
+        + " Include ref %s in the subject, and add the type of order and the hearing it relates to in the email"
+        + " message.";
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
