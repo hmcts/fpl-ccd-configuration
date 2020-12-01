@@ -30,7 +30,6 @@ import static uk.gov.hmcts.reform.fpl.service.ManageDocumentLAService.COURT_BUND
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -136,7 +135,8 @@ public class ManageDocumentService {
         UUID selectedC2 = getDynamicListSelectedValue(caseData.getManageDocumentsSupportingC2List(), mapper);
         C2DocumentBundle c2DocumentBundle = caseData.getC2DocumentBundleByUUID(selectedC2);
 
-        if (c2DocumentBundle.getSupportingEvidenceBundle() != null) {
+        if (c2DocumentBundle.getSupportingEvidenceBundle() != null
+            && !c2DocumentBundle.getSupportingEvidenceBundle().isEmpty()) {
             return c2DocumentBundle.getSupportingEvidenceBundle();
         }
 

@@ -40,4 +40,17 @@ module.exports = [
     },
     document: config.testFile,
   },
+  {
+    name: 'C2 supporting document',
+    notes: 'Supports the C2 application',
+    date: {
+      day: 3,
+      month: 3,
+      year: 2020,
+      hour: 11,
+      minute: 0,
+      second: 0,
+    },
+    document: config.testFile,
+  },
 ];

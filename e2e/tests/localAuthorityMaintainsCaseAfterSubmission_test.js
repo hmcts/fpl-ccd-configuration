@@ -3,9 +3,9 @@ const recipients = require('../fixtures/recipients.js');
 const legalRepresentatives = require('../fixtures/legalRepresentatives.js');
 const placementHelper = require('../helpers/placement_helper.js');
 const uploadDocumentsHelper = require('../helpers/upload_case_documents_helper.js');
+const manageDocumentsForLAHelper = require('../helpers/manage_documents_for_LA_helper.js');
 const mandatoryWithMultipleChildren = require('../fixtures/caseData/mandatoryWithMultipleChildren.json');
 const supportingEvidenceDocuments = require('../fixtures/supportingEvidenceDocuments.js');
-const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 const moment = require('moment');
 
 const dateFormat = require('dateformat');
@@ -16,7 +16,6 @@ const formatDate = (date, format) => dateFormat(date instanceof Date ? date : da
 let caseId;
 let submittedAt;
 let hearingStartDate;
-let hearingEndDate;
 
 Feature('Case maintenance after submission');
 
@@ -43,7 +42,7 @@ Scenario('local authority add an external barrister as a legal representative fo
   I.seeInTab(['LA Legal representatives 1', 'Phone number'], legalRepresentatives.barrister.telephone);
 });
 
-Scenario('local authority adds further evidence documents and correspondence', async ({I, caseViewPage, manageDocumentsLAEventPage}) => {
+Scenario('local authority adds further evidence and correspondence documents', async ({I, caseViewPage, manageDocumentsLAEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
   await manageDocumentsLAEventPage.selectFurtherEvidence();
   await I.goToNextPage();
@@ -83,23 +82,13 @@ Scenario('local authority adds further evidence documents and correspondence', a
   I.seeTextInTab(['Local authority correspondence documents 1', 'Uploaded by']);
 });
 
-Scenario('local authority manages documents after admin adds hearing and C2', async ({I, caseViewPage, manageDocumentsLAEventPage, manageHearingsEventPage}) => {
+Scenario('local authority adds hearing related documents', async ({I, caseViewPage, manageDocumentsLAEventPage, manageHearingsEventPage}) => {
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   hearingStartDate = moment().add(5, 'm').toDate();
-  hearingEndDate = moment(hearingStartDate).add(5, 'm').toDate();
-
-  await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
-  await manageHearingsEventPage.enterHearingDetails({startDate: hearingStartDate, endDate: hearingEndDate});
-  await manageHearingsEventPage.enterVenue(hearingDetails[0]);
-  await I.goToNextPage();
-  await manageHearingsEventPage.enterJudgeDetails(hearingDetails[0]);
-  await manageHearingsEventPage.enterLegalAdvisorName(hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
-  await I.goToNextPage();
-  await manageHearingsEventPage.sendNoticeOfHearingWithNotes(hearingDetails[0].additionalNotes);
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.manageHearings);
+  await manageDocumentsForLAHelper.createHearing(I, caseViewPage, manageHearingsEventPage);
 
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
   await manageDocumentsLAEventPage.selectFurtherEvidence();
   await manageDocumentsLAEventPage.selectFurtherEvidenceIsRelatedToHearing();
@@ -130,6 +119,21 @@ Scenario('local authority manages documents after admin adds hearing and C2', as
   I.seeInTab(['Court bundle 1', 'Court bundle for'], `Case management hearing, ${formatHearingDate(hearingStartDate)}`);
   I.seeInTab(['Court bundle 1', 'Court bundle'], 'mockFile.txt');
   I.seeInTab(['Court bundle 1', 'Redacted court bundle'], 'mockFile.txt');
+});
+
+Scenario('local authority adds C2 supporting documents', async ({I, caseViewPage, manageDocumentsLAEventPage, uploadC2DocumentsEventPage}) => {
+  await manageDocumentsForLAHelper.uploadC2(I, caseViewPage, uploadC2DocumentsEventPage);
+
+  await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
+  await manageDocumentsLAEventPage.selectC2();
+  await I.goToNextPage();
+  await manageDocumentsLAEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[3]);
+  await I.completeEvent('Save and continue');
+
+  caseViewPage.selectTab(caseViewPage.tabs.c2);
+  I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'Document name'], 'C2 supporting document');
+  I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'Notes'], 'Supports the C2 application');
+  I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'File'], 'mockFile.txt');
 });
 
 Scenario('local authority uploads documents when SWET not required', async ({I, caseViewPage, uploadDocumentsEventPage}) => {

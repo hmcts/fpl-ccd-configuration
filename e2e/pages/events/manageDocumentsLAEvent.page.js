@@ -1,4 +1,5 @@
 const { I } = inject();
+const c2SupportingDocuments = require('../../fixtures/c2SupportingDocuments.js');
 const supportingDocumentsFragment = require('../../fragments/supportingDocuments.js');
 
 module.exports = {
@@ -19,6 +20,7 @@ module.exports = {
     courtBundleDocument: '#manageDocumentsCourtBundle_document',
     courtBundleDocumentRedacted: '#manageDocumentsCourtBundle_documentRedacted',
     c2DocumentsList: '#manageDocumentsSupportingC2List',
+    supportingDocumentsForC2: supportingDocumentsFragment.supportingDocuments(0, 'temporaryC2Document_supportingEvidenceBundle'),
     supportingDocumentsCollectionId: '#supportingEvidenceDocumentsTemp',
     supportingDocuments: function(index) {
       return supportingDocumentsFragment.supportingDocuments(index, 'supportingEvidenceDocumentsTemp');
@@ -39,6 +41,20 @@ module.exports = {
 
   async selectCourtBundle() {
     I.click(this.fields.documentType.courtBundle);
+  },
+
+  async selectC2() {
+    I.click(this.fields.documentType.c2);
+    const dropdownLabel = await I.grabTextFrom(`${this.fields.c2DocumentsList} option:nth-child(2)`);
+    I.waitForElement(this.fields.c2DocumentsList);
+    I.selectOption(this.fields.c2DocumentsList, dropdownLabel);
+  },
+
+  async uploadC2SupportingDocument() {
+    I.fillField(this.fields.supportingDocuments.name, c2SupportingDocuments.name);
+    I.fillField(this.fields.supportingDocuments.notes, c2SupportingDocuments.notes);
+    I.fillDateAndTime(c2SupportingDocuments.date, this.fields.supportingDocuments.dateAndTime);
+    I.attachFile(this.fields.supportingDocuments.document, c2SupportingDocuments.document);
   },
 
   async selectCourtBundleHearing(hearingDate) {
