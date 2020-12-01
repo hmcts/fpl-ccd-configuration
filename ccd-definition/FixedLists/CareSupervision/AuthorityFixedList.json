@@ -275,16 +275,30 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "SMC",
+    "ListElement": "Sandwell Metropolitan Council",
+    "DisplayOrder": 71
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SHR",
+    "ListElement": "Shropshire Borough Council",
+    "DisplayOrder": 72
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "SOL",
     "ListElement": "Solihull Metropolitan Borough Council",
-    "DisplayOrder": 71
+    "DisplayOrder": 73
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "SOC",
     "ListElement": "Somerset County Council",
-    "DisplayOrder": 72
+    "DisplayOrder": 74
   },
   {
     "LiveFrom": "01/01/2017",
@@ -345,36 +359,50 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "TWB",
+    "ListElement": "Telford and Wrekin Borough Council",
+    "DisplayOrder": 92
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "WMD",
     "ListElement": "Wakefield Metropolitan District Council",
-    "DisplayOrder": 92
+    "DisplayOrder": 93
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "WAL",
+    "ListElement": "Walsall Borough Council",
+    "DisplayOrder": 94
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "WCC",
     "ListElement": "Warwickshire County Council",
-    "DisplayOrder": 93
+    "DisplayOrder": 95
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "SNW",
     "ListElement": "Wiltshire Council",
-    "DisplayOrder": 95
+    "DisplayOrder": 96
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "WOL",
     "ListElement": "Wolverhampton City Council",
-    "DisplayOrder": 96
+    "DisplayOrder": 97
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "WSC",
     "ListElement": "Worcestershire County Council",
-    "DisplayOrder": 97
+    "DisplayOrder": 98
   }
 ]
