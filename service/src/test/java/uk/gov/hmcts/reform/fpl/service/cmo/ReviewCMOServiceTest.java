@@ -215,7 +215,8 @@ class ReviewCMOServiceTest {
         Element<CaseManagementOrder> cmoToSeal = service.getCMOToSeal(caseData);
 
         assertThat(cmoToSeal.getValue()).isEqualTo(expectedCmo);
-        assertThat(cmoToSeal.getId()).isEqualTo(agreedCMO.getId());    }
+        assertThat(cmoToSeal.getId()).isEqualTo(agreedCMO.getId());
+    }
 
     @Test
     void shouldReturnCMOThatWasSelectedFromDynamicListWhenMultipleCMOsExist() {
