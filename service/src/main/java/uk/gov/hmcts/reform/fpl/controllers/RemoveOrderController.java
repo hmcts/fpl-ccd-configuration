@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
@@ -101,12 +102,14 @@ public class RemoveOrderController extends CallbackController {
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
         if (isRemovingNewSDO(caseData, caseDataBefore)) {
-            StandardDirectionOrder removedSDO = getRemovedSDO(caseData, caseDataBefore);
+            Optional<StandardDirectionOrder> removedSDO = getRemovedSDO(caseData, caseDataBefore);
             publishEvent(new PopulateStandardDirectionsEvent(callbackRequest));
-            publishEvent(new StandardDirectionsOrderRemovedEvent(caseData, removedSDO.getRemovalReason()));
+            publishEvent(new StandardDirectionsOrderRemovedEvent(
+                caseData, removedSDO.map(StandardDirectionOrder::getRemovalReason).orElse(null)));
         } else if (isRemovingNewCMO(caseData, caseDataBefore)) {
-            CaseManagementOrder removedCMO = getRemovedCMO(caseData, caseDataBefore);
-            publishEvent(new CMORemovedEvent(caseData, removedCMO.getRemovalReason()));
+            Optional<CaseManagementOrder> removedCMO = getRemovedCMO(caseData, caseDataBefore);
+            publishEvent(
+                new CMORemovedEvent(caseData, removedCMO.map(CaseManagementOrder::getRemovalReason).orElse(null)));
         }
     }
 
@@ -115,14 +118,14 @@ public class RemoveOrderController extends CallbackController {
             caseDataBefore.getHiddenStandardDirectionOrders());
     }
 
-    private StandardDirectionOrder getRemovedSDO(CaseData caseData, CaseData caseDataBefore) {
+    private Optional<StandardDirectionOrder> getRemovedSDO(CaseData caseData, CaseData caseDataBefore) {
         List<Element<StandardDirectionOrder>> hiddenSDOs = caseData.getHiddenStandardDirectionOrders();
         List<Element<StandardDirectionOrder>> previousHiddenSDOs = caseDataBefore.getHiddenStandardDirectionOrders();
 
         return hiddenSDOs.stream()
             .filter(removedSDO -> !previousHiddenSDOs.contains(removedSDO))
             .findFirst()
-            .map(Element::getValue).orElse(null);
+            .map(Element::getValue);
     }
 
     private boolean isRemovingNewCMO(CaseData caseData, CaseData caseDataBefore) {
@@ -130,13 +133,13 @@ public class RemoveOrderController extends CallbackController {
             caseDataBefore.getHiddenCaseManagementOrders());
     }
 
-    private CaseManagementOrder getRemovedCMO(CaseData caseData, CaseData caseDataBefore) {
+    private Optional<CaseManagementOrder> getRemovedCMO(CaseData caseData, CaseData caseDataBefore) {
         List<Element<CaseManagementOrder>> hiddenCMOs = caseData.getHiddenCMOs();
         List<Element<CaseManagementOrder>> previousHiddenCMOs = caseDataBefore.getHiddenCMOs();
 
         return hiddenCMOs.stream()
             .filter(removedCMO -> !previousHiddenCMOs.contains(removedCMO))
             .findFirst()
-            .map(Element::getValue).orElse(null);
+            .map(Element::getValue);
     }
 }
