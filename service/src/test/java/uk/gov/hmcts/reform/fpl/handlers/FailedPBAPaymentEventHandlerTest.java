@@ -71,10 +71,10 @@ class FailedPBAPaymentEventHandlerTest {
             .applicationType(C110A_APPLICATION.getType())
             .build();
 
-        given(failedPBAPaymentContentProvider.buildLANotificationParameters(C110A_APPLICATION))
+        given(failedPBAPaymentContentProvider.getLocalAuthorityNotifyData(C110A_APPLICATION))
             .willReturn(expectedParameters);
 
-        failedPBAPaymentEventHandler.sendFailedPBAPaymentEmailToLocalAuthority(
+        failedPBAPaymentEventHandler.notifyLocalAuthority(
             new FailedPBAPaymentEvent(caseData, C110A_APPLICATION));
 
         verify(notificationService).sendEmail(
@@ -91,17 +91,17 @@ class FailedPBAPaymentEventHandlerTest {
             .caseUrl("caseUrl")
             .build();
 
-        given(failedPBAPaymentContentProvider.buildCtscNotificationParameters(caseData, C2_APPLICATION))
+        given(failedPBAPaymentContentProvider.getCtscNotifyData(caseData, C2_APPLICATION))
             .willReturn(expectedParameters);
 
-        failedPBAPaymentEventHandler.sendFailedPBAPaymentEmailToCTSC(
+        failedPBAPaymentEventHandler.notifyCTSC(
             new FailedPBAPaymentEvent(caseData, C2_APPLICATION));
 
         verify(notificationService).sendEmail(
             APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
             CTSC_INBOX,
             expectedParameters,
-            caseData.getId().toString());
+            caseData.getId());
     }
 
 }

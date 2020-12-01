@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,11 +9,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.PlacementApplicationContentProvider;
-
-import java.util.Map;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -40,22 +38,21 @@ class PlacementApplicationEventHandlerTest {
     private PlacementApplicationEventHandler placementApplicationEventHandler;
 
     @Test
-    void shouldNotifyHmctsAdminOfPlacementApplicationUploadWhenCtscIsDiabled() {
+    void shouldNotifyHmctsAdminOfPlacementApplicationUploadWhenCtscIsDisabled() {
         CaseData caseData = caseData();
 
-        final Map<String, Object> expectedParameters = getExpectedPlacementNotificationParameters();
+        final BaseCaseNotifyData expectedParameters = getExpectedPlacementNotificationParameters();
 
         given(placementApplicationContentProvider.buildPlacementApplicationNotificationParameters(caseData))
             .willReturn(expectedParameters);
 
-        placementApplicationEventHandler.notifyAdminOfPlacementApplicationUpload(
-            new PlacementApplicationEvent(caseData));
+        placementApplicationEventHandler.notifyAdmin(new PlacementApplicationEvent(caseData));
 
         verify(notificationService).sendEmail(
             PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
             COURT_EMAIL_ADDRESS,
             expectedParameters,
-            "12345");
+            caseData.getId());
     }
 
     @Test
@@ -65,25 +62,24 @@ class PlacementApplicationEventHandlerTest {
             .sendToCtsc("Yes")
             .build();
 
-        final Map<String, Object> expectedParameters = getExpectedPlacementNotificationParameters();
+        final BaseCaseNotifyData expectedParameters = getExpectedPlacementNotificationParameters();
 
         given(placementApplicationContentProvider.buildPlacementApplicationNotificationParameters(caseData))
             .willReturn(expectedParameters);
 
-        placementApplicationEventHandler.notifyAdminOfPlacementApplicationUpload(
-            new PlacementApplicationEvent(caseData));
+        placementApplicationEventHandler.notifyAdmin(new PlacementApplicationEvent(caseData));
 
         verify(notificationService).sendEmail(
             PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
             CTSC_INBOX,
             expectedParameters,
-            caseData.getId().toString());
+            caseData.getId());
     }
 
-    private Map<String, Object> getExpectedPlacementNotificationParameters() {
-        return ImmutableMap.of(
-            "respondentLastName", "Moley",
-            "caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345"
-        );
+    private BaseCaseNotifyData getExpectedPlacementNotificationParameters() {
+        return BaseCaseNotifyData.builder()
+            .respondentLastName("Moley")
+            .caseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+            .build();
     }
 }

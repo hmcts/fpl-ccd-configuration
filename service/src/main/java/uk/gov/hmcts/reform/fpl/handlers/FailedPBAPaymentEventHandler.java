@@ -27,11 +27,11 @@ public class FailedPBAPaymentEventHandler {
     private final FailedPBAPaymentContentProvider notificationContent;
 
     @EventListener
-    public void sendFailedPBAPaymentEmailToLocalAuthority(FailedPBAPaymentEvent event) {
+    public void notifyLocalAuthority(FailedPBAPaymentEvent event) {
         CaseData caseData = event.getCaseData();
 
-        FailedPBANotificationData params = notificationContent
-            .buildLANotificationParameters(event.getApplicationType());
+        FailedPBANotificationData parameters = notificationContent
+            .getLocalAuthorityNotifyData(event.getApplicationType());
 
         Collection<String> emails = inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder()
@@ -39,20 +39,20 @@ public class FailedPBAPaymentEventHandler {
                 .caseData(caseData)
                 .build());
 
-        notificationService.sendEmail(APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA, emails, params,
+        notificationService.sendEmail(APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA, emails, parameters,
             caseData.getId().toString());
     }
 
     @EventListener
-    public void sendFailedPBAPaymentEmailToCTSC(FailedPBAPaymentEvent event) {
+    public void notifyCTSC(FailedPBAPaymentEvent event) {
         CaseData caseData = event.getCaseData();
 
-        FailedPBANotificationData parameters = notificationContent.buildCtscNotificationParameters(caseData,
+        FailedPBANotificationData parameters = notificationContent.getCtscNotifyData(caseData,
             event.getApplicationType());
 
         String email = ctscEmailLookupConfiguration.getEmail();
 
         notificationService.sendEmail(APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC, email, parameters,
-            caseData.getId().toString());
+            caseData.getId());
     }
 }

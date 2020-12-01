@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,10 +12,10 @@ import uk.gov.hmcts.reform.fpl.model.LegalRepresentative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.notify.LegalRepresentativeAddedTemplate;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -70,37 +69,32 @@ class LegalRepresentativeAddedContentProviderTest {
 
     @Test
     void testGetParameters() {
-
-        Map<String, Object> actual = underTest.getParameters(
+        LegalRepresentativeAddedTemplate actual = underTest.getNotifyData(
             LEGAL_REPRESENTATIVE,
             CASE_DATA
         );
 
-        assertThat(actual).isEqualTo(ImmutableMap.builder()
-            .put("repName", REPRESENTATIVE_FULL_NAME)
-            .put("localAuthority", LOCAL_AUTHORITY_NAME)
-            .put("firstRespondentLastName", RESPONDENT_LAST_NAME)
-            .put("familyManCaseNumber", FAMILY_MAN_CASE_NUMBER)
-            .put("caseUrl", CASE_URL)
-            .build()
-        );
+        assertThat(actual).usingRecursiveComparison().isEqualTo(expectedNotificationData(FAMILY_MAN_CASE_NUMBER));
     }
 
     @Test
     void testGetParametersIfNullFamilyManCaseNumber() {
 
-        Map<String, Object> actual = underTest.getParameters(
+        LegalRepresentativeAddedTemplate actual = underTest.getNotifyData(
             LEGAL_REPRESENTATIVE,
             CASE_DATA.toBuilder().familyManCaseNumber(null).build()
         );
 
-        assertThat(actual).isEqualTo(ImmutableMap.builder()
-            .put("repName", REPRESENTATIVE_FULL_NAME)
-            .put("localAuthority", LOCAL_AUTHORITY_NAME)
-            .put("firstRespondentLastName", RESPONDENT_LAST_NAME)
-            .put("familyManCaseNumber", "")
-            .put("caseUrl", CASE_URL)
-            .build()
-        );
+        assertThat(actual).usingRecursiveComparison().isEqualTo(expectedNotificationData(""));
+    }
+
+    private LegalRepresentativeAddedTemplate expectedNotificationData(String familyManId) {
+        return LegalRepresentativeAddedTemplate.builder()
+            .repName(REPRESENTATIVE_FULL_NAME)
+            .localAuthority(LOCAL_AUTHORITY_NAME)
+            .firstRespondentLastName(RESPONDENT_LAST_NAME)
+            .familyManCaseNumber(familyManId)
+            .caseUrl(CASE_URL)
+            .build();
     }
 }

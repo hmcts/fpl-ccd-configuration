@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Builder;
+import lombok.Data;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 
-@Getter
-@Setter
+@Data
+@Builder
 public final class AllocatedJudgeTemplate implements NotifyData {
     private String judgeTitle;
     private String judgeName;

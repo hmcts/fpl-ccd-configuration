@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.AmendedReturnedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.notify.returnedcase.ReturnedCaseTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.ReturnedCaseContentProvider;
 
@@ -27,12 +27,12 @@ public class AmendedReturnedCaseEventHandler {
     @EventListener
     public void notifyAdmin(AmendedReturnedCaseEvent event) {
         final CaseData caseData = event.getCaseData();
-        final String email = adminNotificationHandler.getHmctsAdminEmail(caseData);
 
-        ReturnedCaseTemplate parameters = contentProvider.parametersWithCaseUrl(caseData);
+        final String recipient = adminNotificationHandler.getHmctsAdminEmail(caseData);
+        final NotifyData notifyData = contentProvider.parametersWithCaseUrl(caseData);
 
-        notificationService.sendEmail(AMENDED_APPLICATION_RETURNED_ADMIN_TEMPLATE, email, parameters,
-            caseData.getId().toString());
+        notificationService
+            .sendEmail(AMENDED_APPLICATION_RETURNED_ADMIN_TEMPLATE, recipient, notifyData, caseData.getId());
     }
 
     @Async
@@ -40,11 +40,10 @@ public class AmendedReturnedCaseEventHandler {
     public void notifyCafcass(AmendedReturnedCaseEvent event) {
         final CaseData caseData = event.getCaseData();
 
-        final String email = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
+        final String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
+        final NotifyData notifyData = contentProvider.parametersWithApplicationLink(caseData);
 
-        ReturnedCaseTemplate parameters = contentProvider.parametersWithApplicationLink(caseData);
-
-        notificationService.sendEmail(AMENDED_APPLICATION_RETURNED_CAFCASS_TEMPLATE, email, parameters,
-            caseData.getId().toString());
+        notificationService
+            .sendEmail(AMENDED_APPLICATION_RETURNED_CAFCASS_TEMPLATE, recipient, notifyData, caseData.getId());
     }
 }

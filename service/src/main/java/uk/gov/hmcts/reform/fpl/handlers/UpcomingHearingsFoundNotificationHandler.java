@@ -7,11 +7,10 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.UpcomingHearingsFound;
+import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.UpcomingHearingsContentProvider;
-
-import java.util.Map;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UPCOMING_HEARINGS_TEMPLATE;
@@ -29,12 +28,12 @@ public class UpcomingHearingsFoundNotificationHandler {
     public void sendEmailWithUpcomingHearings(UpcomingHearingsFound event) {
         if (featureToggleService.isCtscReportEnabled()) {
             if (!isEmpty(event.getCaseDetails())) {
-                Map<String, Object> parameters = upcomingHearingsEmailContentProvider.buildParameters(
+                NotifyData notifyData = upcomingHearingsEmailContentProvider.buildParameters(
                     event.getHearingDate(), event.getCaseDetails());
-                String email = ctscEmailLookupConfiguration.getEmail();
+                String recipient = ctscEmailLookupConfiguration.getEmail();
                 String reference = event.getHearingDate().toString();
 
-                notificationService.sendEmail(UPCOMING_HEARINGS_TEMPLATE, email, parameters, reference);
+                notificationService.sendEmail(UPCOMING_HEARINGS_TEMPLATE, recipient, notifyData, reference);
             } else {
                 log.info("Email of upcoming hearings not sent as no cases to be heard on {}", event.getHearingDate());
             }

@@ -19,12 +19,13 @@ public class DraftCMOUploadedContentProvider extends AbstractEmailContentProvide
 
     public DraftCMOUploadedTemplate buildTemplate(HearingBooking hearing, Long caseId, AbstractJudge judge,
                                                   List<Element<Respondent>> respondents, String familyManCaseNumber) {
-        return new DraftCMOUploadedTemplate()
-            .setCaseUrl(getCaseUrl(caseId, "DraftOrdersTab"))
-            .setJudgeName(judge.getJudgeName())
-            .setJudgeTitle(judge.getJudgeOrMagistrateTitle())
-            .setRespondentLastName(getFirstRespondentLastName(respondents))
-            .setSubjectLineWithHearingDate(subjectLine(hearing, respondents, familyManCaseNumber));
+        return DraftCMOUploadedTemplate.builder()
+            .caseUrl(getCaseUrl(caseId, "DraftOrdersTab"))
+            .judgeName(judge.getJudgeName())
+            .judgeTitle(judge.getJudgeOrMagistrateTitle())
+            .respondentLastName(getFirstRespondentLastName(respondents))
+            .subjectLineWithHearingDate(subjectLine(hearing, respondents, familyManCaseNumber))
+            .build();
     }
 
     private String subjectLine(HearingBooking hearing, List<Element<Respondent>> respondents,

@@ -40,7 +40,7 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.expectedRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedCaseUrlParameters;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParameters;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
@@ -71,7 +71,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
     @Autowired
     private CaseManagementOrderIssuedEventHandler caseManagementOrderIssuedEventHandler;
 
-    private final IssuedCMOTemplate issuedCMOTemplate = new IssuedCMOTemplate();
+    private final IssuedCMOTemplate issuedCMOTemplate = IssuedCMOTemplate.builder().build();
 
     @BeforeEach
     void init() {
@@ -91,11 +91,10 @@ class CaseManagementOrderIssuedEventHandlerTest {
             DIGITAL_SERVICE))
             .willReturn(issuedCMOTemplate);
 
-        given(orderIssuedEmailContentProvider.buildParametersWithCaseUrl(caseData, DOCUMENT_CONTENTS, CMO))
-            .willReturn(getExpectedCaseUrlParameters(CMO.getLabel(), true));
+        given(orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(caseData, DOCUMENT_CONTENTS, CMO))
+            .willReturn(getExpectedParameters(CMO.getLabel(), true));
 
-        caseManagementOrderIssuedEventHandler.sendEmailsForIssuedCaseManagementOrder(
-            new CaseManagementOrderIssuedEvent(caseData, cmo));
+        caseManagementOrderIssuedEventHandler.notifyParties(new CaseManagementOrderIssuedEvent(caseData, cmo));
 
         verify(notificationService).sendEmail(
             CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE,
@@ -106,8 +105,8 @@ class CaseManagementOrderIssuedEventHandlerTest {
         verify(notificationService).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
             eq(COURT_EMAIL_ADDRESS),
-            eqJson(getExpectedCaseUrlParameters(CMO.getLabel(), true)),
-            eq(caseData.getId().toString()));
+            eqJson(getExpectedParameters(CMO.getLabel(), true)),
+            eq(caseData.getId()));
     }
 
     @Test
@@ -119,17 +118,16 @@ class CaseManagementOrderIssuedEventHandlerTest {
             .build();
         CaseManagementOrder cmo = buildCmo();
 
-        given(orderIssuedEmailContentProvider.buildParametersWithCaseUrl(caseData, DOCUMENT_CONTENTS, CMO))
-            .willReturn(getExpectedCaseUrlParameters(CMO.getLabel(), true));
+        given(orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(caseData, DOCUMENT_CONTENTS, CMO))
+            .willReturn(getExpectedParameters(CMO.getLabel(), true));
 
-        caseManagementOrderIssuedEventHandler.sendEmailsForIssuedCaseManagementOrder(
-            new CaseManagementOrderIssuedEvent(caseData, cmo));
+        caseManagementOrderIssuedEventHandler.notifyParties(new CaseManagementOrderIssuedEvent(caseData, cmo));
 
         verify(notificationService).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
             eq(CTSC_INBOX),
-            eqJson(getExpectedCaseUrlParameters(CMO.getLabel(), true)),
-            eq(caseData.getId().toString()));
+            eqJson(getExpectedParameters(CMO.getLabel(), true)),
+            eq(caseData.getId()));
     }
 
     @Test
@@ -145,14 +143,13 @@ class CaseManagementOrderIssuedEventHandlerTest {
             DIGITAL_SERVICE))
             .willReturn(issuedCMOTemplate);
 
-        caseManagementOrderIssuedEventHandler.sendEmailsForIssuedCaseManagementOrder(
-            new CaseManagementOrderIssuedEvent(caseData, cmo));
+        caseManagementOrderIssuedEventHandler.notifyParties(new CaseManagementOrderIssuedEvent(caseData, cmo));
 
         verify(notificationService).sendEmail(
             CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE,
             "abc@example.com",
             issuedCMOTemplate,
-            "12345");
+            caseData.getId());
     }
 
     private CaseManagementOrder buildCmo() {

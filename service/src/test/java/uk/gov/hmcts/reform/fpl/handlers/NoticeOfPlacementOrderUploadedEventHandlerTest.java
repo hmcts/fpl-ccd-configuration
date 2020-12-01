@@ -7,14 +7,15 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
+import uk.gov.hmcts.reform.fpl.model.notify.OrderIssuedNotifyData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
-import java.util.Map;
 import java.util.Set;
 
 import static org.mockito.BDDMockito.given;
@@ -55,8 +56,13 @@ class NoticeOfPlacementOrderUploadedEventHandlerTest {
     @Test
     void shouldSendEmailForPlacementOrderUploaded() {
 
-        final Map<String, Object> localAuthorityParameters = Map.of("key1", "value1");
-        final Map<String, Object> representativesParameters = Map.of("key2", "value2");
+        final BaseCaseNotifyData localAuthorityParameters = BaseCaseNotifyData.builder()
+            .caseUrl("test1")
+            .build();
+
+        final OrderIssuedNotifyData representativesParameters = OrderIssuedNotifyData.builder()
+            .caseUrl("test2")
+            .build();
 
         final CaseData caseData = caseData();
         final NoticeOfPlacementOrderUploadedEvent event = new NoticeOfPlacementOrderUploadedEvent(
@@ -69,11 +75,11 @@ class NoticeOfPlacementOrderUploadedEventHandlerTest {
         given(localAuthorityEmailContentProvider.buildNoticeOfPlacementOrderUploadedNotification(caseData))
             .willReturn(localAuthorityParameters);
 
-        given(orderIssuedEmailContentProvider.buildParametersWithoutCaseUrl(
+        given(orderIssuedEmailContentProvider.getNotifyDataWithoutCaseUrl(
             caseData, DOCUMENT_CONTENTS, NOTICE_OF_PLACEMENT_ORDER))
             .willReturn(representativesParameters);
 
-        noticeOfPlacementOrderUploadedEventHandler.sendEmailForNoticeOfPlacementOrderUploaded(event);
+        noticeOfPlacementOrderUploadedEventHandler.notifyParties(event);
 
         verify(notificationService).sendEmail(
             NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE,
@@ -81,7 +87,7 @@ class NoticeOfPlacementOrderUploadedEventHandlerTest {
             localAuthorityParameters,
             caseData.getId().toString());
 
-        verify(issuedOrderAdminNotificationHandler).sendToAdmin(
+        verify(issuedOrderAdminNotificationHandler).notifyAdmin(
             caseData,
             event.getDocumentContents(),
             NOTICE_OF_PLACEMENT_ORDER);

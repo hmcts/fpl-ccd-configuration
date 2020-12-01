@@ -17,7 +17,7 @@ public class HmctsEmailContentProvider extends SharedNotifyContentProvider {
 
     public SubmitCaseHmctsTemplate buildHmctsSubmissionNotification(CaseData caseData) {
 
-        SubmitCaseHmctsTemplate template = super.buildNotifyTemplate(new SubmitCaseHmctsTemplate(),
+        SubmitCaseHmctsTemplate template = super.buildNotifyTemplate(SubmitCaseHmctsTemplate.builder().build(),
             caseData.getId(),
             caseData.getOrders(),
             caseData.getHearing(),

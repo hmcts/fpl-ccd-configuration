@@ -6,7 +6,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.events.NotifyAllocatedJudgeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.AllocatedJudgeContentProvider;
 
@@ -22,12 +22,10 @@ public class NotifyAllocatedJudgeEventHandler {
     public void notifyAllocatedJudge(NotifyAllocatedJudgeEvent event) {
         CaseData caseData = event.getCaseData();
 
-        AllocatedJudgeTemplate parameters = allocatedJudgeContentProvider.buildNotificationParameters(caseData);
+        NotifyData notifyData = allocatedJudgeContentProvider.buildNotificationParameters(caseData);
 
-        String email = caseData.getAllocatedJudge().getJudgeEmailAddress();
+        String recipient = caseData.getAllocatedJudge().getJudgeEmailAddress();
 
-        notificationService.sendEmail(
-            ALLOCATED_JUDGE_TEMPLATE, email, parameters, caseData.getId().toString()
-        );
+        notificationService.sendEmail(ALLOCATED_JUDGE_TEMPLATE, recipient, notifyData, caseData.getId());
     }
 }

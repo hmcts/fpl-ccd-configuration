@@ -7,8 +7,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForC2;
-import uk.gov.hmcts.reform.fpl.model.notify.c2uploaded.C2UploadedTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
@@ -29,32 +28,33 @@ public class C2UploadedEventHandler {
     private final C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
 
     @EventListener
-    public void sendNotifications(final C2UploadedEvent event) {
+    public void notifyAdmin(final C2UploadedEvent event) {
         List<String> roles = idamClient.getUserInfo(requestData.authorisation()).getRoles();
         if (!roles.containsAll(UserRole.HMCTS_ADMIN.getRoles())) {
             CaseData caseData = event.getCaseData();
-            C2UploadedTemplate parameters = c2UploadedEmailContentProvider.buildC2UploadNotificationTemplate(
-                caseData, event.getUploadedBundle().getDocument());
 
-            String email = adminNotificationHandler.getHmctsAdminEmail(caseData);
+            NotifyData notifyData = c2UploadedEmailContentProvider
+                .getNotifyData(caseData, event.getUploadedBundle().getDocument());
+            String recipient = adminNotificationHandler.getHmctsAdminEmail(caseData);
 
-            notificationService.sendEmail(C2_UPLOAD_NOTIFICATION_TEMPLATE, email, parameters,
-                caseData.getId().toString());
+            notificationService
+                .sendEmail(C2_UPLOAD_NOTIFICATION_TEMPLATE, recipient, notifyData, caseData.getId());
         }
     }
 
     @EventListener
-    public void sendC2UploadedNotificationToAllocatedJudge(final C2UploadedEvent event) {
+    public void notifyAllocatedJudge(final C2UploadedEvent event) {
         CaseData caseData = event.getCaseData();
 
         if (caseData.hasAllocatedJudgeEmail()) {
-            AllocatedJudgeTemplateForC2 parameters = c2UploadedEmailContentProvider
-                .buildC2UploadNotificationForAllocatedJudge(caseData);
+            NotifyData notifyData = c2UploadedEmailContentProvider.getNotifyDataForAllocatedJudge(caseData);
+            String recipient = caseData.getAllocatedJudge().getJudgeEmailAddress();
 
-            String email = caseData.getAllocatedJudge().getJudgeEmailAddress();
-
-            notificationService.sendEmail(C2_UPLOAD_NOTIFICATION_TEMPLATE_JUDGE, email, parameters,
-                caseData.getId().toString());
+            notificationService.sendEmail(
+                C2_UPLOAD_NOTIFICATION_TEMPLATE_JUDGE,
+                recipient,
+                notifyData,
+                caseData.getId());
         }
     }
 }

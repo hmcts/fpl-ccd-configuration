@@ -19,7 +19,7 @@ class FailedPBAPaymentContentProviderTest extends AbstractEmailContentProviderTe
     private FailedPBAPaymentContentProvider contentProvider;
 
     @Test
-    void shouldReturnExpectedMapWithValidCtscNotificationParameters() {
+    void shouldReturnDataForCafcassNotification() {
         final ApplicationType applicationType = C2_APPLICATION;
         final CaseData caseData = CaseData.builder()
             .id(RandomUtils.nextLong())
@@ -31,21 +31,20 @@ class FailedPBAPaymentContentProviderTest extends AbstractEmailContentProviderTe
             .build();
 
         final FailedPBANotificationData actualParameters = contentProvider
-            .buildCtscNotificationParameters(caseData, applicationType);
-
+            .getCtscNotifyData(caseData, applicationType);
 
         assertThat(actualParameters).isEqualTo(expectedParameters);
     }
 
     @Test
-    void shouldReturnExpectedMapWithValidLANotificationParameters() {
+    void shouldReturnDataForLocalAuthorityNotification() {
         final ApplicationType applicationType = C110A_APPLICATION;
         final FailedPBANotificationData expectedParameters = FailedPBANotificationData.builder()
             .applicationType(applicationType.getType())
             .build();
 
         final FailedPBANotificationData actualParameters = contentProvider
-            .buildLANotificationParameters(applicationType);
+            .getLocalAuthorityNotifyData(applicationType);
 
         assertThat(actualParameters).isEqualTo(expectedParameters);
     }
