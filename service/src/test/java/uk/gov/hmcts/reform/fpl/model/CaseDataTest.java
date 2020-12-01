@@ -887,7 +887,7 @@ class CaseDataTest {
                         .build())
                 )).build();
 
-            assertThat(caseData.getHearingLinkedToCMO(hearingId).isPresent());
+            assertThat(caseData.getHearingLinkedToCMO(hearingId).isPresent()).isTrue();
         }
 
         @Test
@@ -901,7 +901,7 @@ class CaseDataTest {
                         .build())
                 )).build();
 
-            assertThat(caseData.getHearingLinkedToCMO(hearingId).isEmpty());
+            assertThat(caseData.getHearingLinkedToCMO(hearingId).isPresent()).isFalse();
         }
     }
 
