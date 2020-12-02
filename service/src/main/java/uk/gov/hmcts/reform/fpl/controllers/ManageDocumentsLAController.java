@@ -71,17 +71,27 @@ public class ManageDocumentsLAController extends CallbackController {
             case FURTHER_EVIDENCE_DOCUMENTS:
                 caseDetails.getData().putAll(manageDocumentService.initialiseHearingListAndLabel(
                     caseData, caseData.getManageDocumentLA().isDocumentRelatedToHearing()));
-                supportingEvidence = manageDocumentLAService.getFurtherEvidenceCollection(caseData);
+                supportingEvidence = manageDocumentService.getFurtherEvidenceCollection(
+                    caseData,
+                    caseData.getManageDocumentLA().isDocumentRelatedToHearing(),
+                    caseData.getFurtherEvidenceDocumentsLA()
+                );
                 break;
             case CORRESPONDENCE:
                 supportingEvidence = manageDocumentService.getSupportingEvidenceBundle(
                     caseData.getCorrespondenceDocumentsLA());
                 break;
             case C2:
+                if (!caseData.hasC2DocumentBundle()) {
+                    respond(caseDetails, List.of("There are no C2s to associate supporting documents with"));
+                }
                 caseDetails.getData().putAll(manageDocumentService.initialiseC2DocumentListAndLabel(caseData));
                 supportingEvidence = manageDocumentService.getC2SupportingEvidenceBundle(caseData);
                 break;
             case COURT_BUNDLE:
+                if (caseData.getCourtBundleList().isEmpty()) {
+                    respond(caseDetails, List.of("There are no hearings to associate a bundle with"));
+                }
                 caseDetails.getData().putAll(manageDocumentLAService.initialiseCourtBundleFields(caseData));
                 break;
             case APPLICATION:

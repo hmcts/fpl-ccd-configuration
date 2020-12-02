@@ -429,8 +429,8 @@ public class CaseData {
     private final ManageDocument manageDocument;
     private final ManageDocumentLA manageDocumentLA;
     private final List<Element<SupportingEvidenceBundle>> supportingEvidenceDocumentsTemp;
-    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments;
-    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA;
+    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments; //general evidence
+    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA; //general evidence
     private final List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocuments;
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocumentsLA;
@@ -444,6 +444,10 @@ public class CaseData {
 
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceDocumentsTemp() {
         return defaultIfNull(supportingEvidenceDocumentsTemp, new ArrayList<>());
+    }
+
+    public List<Element<CourtBundle>> getCourtBundleList() {
+        return defaultIfNull(courtBundleList, new ArrayList<>());
     }
 
     public List<Element<SupportingEvidenceBundle>> getCorrespondenceDocuments() {

@@ -1206,11 +1206,11 @@
     "CaseEventID": "manageDocumentsLA",
     "AccessControl": [
       {
-        "UserRoles": ["[LABARRISTER]", "[LASOLICITOR]", "caseworker-publiclaw-solicitor"],
+        "UserRoles": ["[LABARRISTER]", "[LASOLICITOR]"],
         "CRUD": "CRU"
       },
       {
-        "UserRoles": ["caseworker-publiclaw-courtadmin", "caseworker-publiclaw-gatekeeper", "caseworker-publiclaw-judiciary", "caseworker-publiclaw-magistrate"],
+        "UserRoles": ["caseworker-publiclaw-solicitor", "caseworker-publiclaw-courtadmin", "caseworker-publiclaw-gatekeeper", "caseworker-publiclaw-judiciary", "caseworker-publiclaw-magistrate"],
         "CRUD": "R"
       }
     ]

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -12,9 +13,12 @@ import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +27,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -37,6 +44,8 @@ public class ManageDocumentService {
     private final ObjectMapper mapper;
     private final Time time;
     private final DocumentUploadHelper documentUploadHelper;
+    private final IdamClient idamClient;
+    private final RequestData requestData;
 
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_KEY = "correspondenceDocuments";
     public static final String C2_DOCUMENTS_COLLECTION_KEY = "c2DocumentBundle";
@@ -75,7 +84,6 @@ public class ManageDocumentService {
             .hasHearings(hasHearings)
             .hasC2s(hasC2s)
             .build();
-
 
         listAndLabel.put(caseFieldKey, manageDocument);
 
@@ -118,25 +126,42 @@ public class ManageDocumentService {
         return listAndLabel;
     }
 
-    public List<Element<SupportingEvidenceBundle>> getFurtherEvidenceCollection(CaseData caseData) {
-        if (caseData.getManageDocument().isDocumentRelatedToHearing()) {
+    public List<Element<SupportingEvidenceBundle>> getFurtherEvidenceCollection(
+        CaseData caseData,
+        boolean isDocumentRelatedToHearing,
+        List<Element<SupportingEvidenceBundle>> unrelatedEvidence) {
+        if (isDocumentRelatedToHearing) {
             List<Element<HearingFurtherEvidenceBundle>> bundles = caseData.getHearingFurtherEvidenceDocuments();
             if (!bundles.isEmpty()) {
                 UUID selectedHearingId = getDynamicListSelectedValue(caseData.getManageDocumentsHearingList(), mapper);
 
-                Optional<Element<HearingFurtherEvidenceBundle>> bundle = findElement(
-                    selectedHearingId, bundles
-                );
+                Optional<Element<HearingFurtherEvidenceBundle>> bundle = findElement(selectedHearingId, bundles);
 
                 if (bundle.isPresent()) {
-                    return bundle.get().getValue().getSupportingEvidenceBundle();
+                    //Separate tab collection based on idam role (only show users their own documents)
+                    UserDetails userDetails = idamClient.getUserDetails(requestData.authorisation());
+                    boolean isHmctsUser = userDetails.getRoles().stream().anyMatch(UserRole::isHmctsUser);
+
+                    Stream<Element<SupportingEvidenceBundle>> bundleStream = bundle.get().getValue()
+                        .getSupportingEvidenceBundle().stream();
+
+                    Predicate<Element<SupportingEvidenceBundle>> userFilter =
+                        evidenceBundleElement -> "HMCTS".equals(evidenceBundleElement.getValue().getUploadedBy());
+
+                    if (!isHmctsUser) {
+                        userFilter = userFilter.negate();
+                    }
+
+                    return bundleStream
+                        .filter(userFilter)
+                        .collect(Collectors.toList());
                 }
             }
-        } else if (caseData.getFurtherEvidenceDocuments() != null) {
-            return caseData.getFurtherEvidenceDocuments();
+        } else if (unrelatedEvidence != null) {
+            return unrelatedEvidence;
         }
 
-        return getEmptySupportingEvidenceBundle();
+        return List.of(element(SupportingEvidenceBundle.builder().build()));
     }
 
     public List<Element<SupportingEvidenceBundle>> getC2SupportingEvidenceBundle(CaseData caseData) {
@@ -148,7 +173,7 @@ public class ManageDocumentService {
             return c2DocumentBundle.getSupportingEvidenceBundle();
         }
 
-        return getEmptySupportingEvidenceBundle();
+        return List.of(element(SupportingEvidenceBundle.builder().build()));
     }
 
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle(
@@ -270,9 +295,5 @@ public class ManageDocumentService {
             .hearingName(hearingBooking.toLabel())
             .supportingEvidenceBundle(supportingEvidenceBundle)
             .build());
-    }
-
-    public List<Element<SupportingEvidenceBundle>> getEmptySupportingEvidenceBundle() {
-        return List.of(element(SupportingEvidenceBundle.builder().build()));
     }
 }

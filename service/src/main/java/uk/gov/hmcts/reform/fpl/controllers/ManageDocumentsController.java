@@ -66,7 +66,11 @@ public class ManageDocumentsController extends CallbackController {
             case FURTHER_EVIDENCE_DOCUMENTS:
                 caseDetails.getData().putAll(manageDocumentService.initialiseHearingListAndLabel(
                     caseData, caseData.getManageDocument().isDocumentRelatedToHearing()));
-                supportingEvidence = manageDocumentService.getFurtherEvidenceCollection(caseData);
+                supportingEvidence = manageDocumentService.getFurtherEvidenceCollection(
+                    caseData,
+                    caseData.getManageDocument().isDocumentRelatedToHearing(),
+                    caseData.getFurtherEvidenceDocuments()
+                );
                 break;
             case CORRESPONDENCE:
                 supportingEvidence = manageDocumentService.getSupportingEvidenceBundle(
