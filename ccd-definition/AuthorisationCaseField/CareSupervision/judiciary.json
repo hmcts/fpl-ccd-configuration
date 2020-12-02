@@ -1237,5 +1237,68 @@
     "CaseFieldID": "orderExclusionClause",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hasC2Applications",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "isMessageRegardingC2",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "C2DynamicList",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "courtOrJudgeEmail",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "messageFrom",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "messageUrgency",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "nextHearingLabel",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "relatedC2DocumentsLabel",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "messageBody",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRUD"
   }
 ]

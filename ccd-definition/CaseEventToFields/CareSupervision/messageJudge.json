@@ -1,0 +1,103 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "messageJudgeOrLegalAdvisor",
+    "CaseFieldID": "hasC2Applications",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": "MessageSubject",
+    "ShowSummaryChangeOption": "Y",
+    "PageDisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "messageJudgeOrLegalAdvisor",
+    "CaseFieldID": "isMessageRegardingC2",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY",
+    "PageID": "MessageSubject",
+    "ShowSummaryChangeOption": "Y",
+    "PageDisplayOrder": 1,
+    "FieldShowCondition": "hasC2Applications=\"YES\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "messageJudgeOrLegalAdvisor",
+    "CaseFieldID": "C2DynamicList",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY",
+    "PageID": "MessageSubject",
+    "ShowSummaryChangeOption": "Y",
+    "PageDisplayOrder": 1,
+    "FieldShowCondition": "isMessageRegardingC2=\"YES\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "messageJudgeOrLegalAdvisor",
+    "CaseFieldID": "courtOrJudgeEmail",
+    "PageFieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "PageID": "MessageSubject",
+    "ShowSummaryChangeOption": "Y",
+    "PageDisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "messageJudgeOrLegalAdvisor",
+    "CaseFieldID": "messageFrom",
+    "PageFieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY",
+    "PageID": "MessageSubject",
+    "ShowSummaryChangeOption": "Y",
+    "PageDisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "messageJudgeOrLegalAdvisor",
+    "CaseFieldID": "messageUrgency",
+    "PageFieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY",
+    "PageID": "MessageSubject",
+    "ShowSummaryChangeOption": "Y",
+    "PageDisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "messageJudgeOrLegalAdvisor",
+    "CaseFieldID": "nextHearingLabel",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": "MessageBody",
+    "ShowSummaryChangeOption": "Y",
+    "PageDisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "messageJudgeOrLegalAdvisor",
+    "CaseFieldID": "relatedC2DocumentsLabel",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "PageID": "MessageBody",
+    "ShowSummaryChangeOption": "Y",
+    "PageDisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "messageJudgeOrLegalAdvisor",
+    "CaseFieldID": "messageBody",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY",
+    "PageID": "MessageBody",
+    "ShowSummaryChangeOption": "Y",
+    "PageDisplayOrder": 2
+  }
+]
