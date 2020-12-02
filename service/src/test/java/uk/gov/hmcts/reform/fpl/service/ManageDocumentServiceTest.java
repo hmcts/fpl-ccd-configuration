@@ -266,7 +266,7 @@ class ManageDocumentServiceTest {
     }
 
     @Test
-    void shouldReturnOnlyHMCTSUploadedSupportingEvidenceForHearingWhenBothHMCTSAndLAUploadedEvidenceExists() {
+    void shouldReturnOnlyAdminUploadedSupportingEvidenceForHearingWhenBothAdminAndLAUploadedEvidenceExists() {
         Element<SupportingEvidenceBundle> adminEvidence = element(SupportingEvidenceBundle.builder()
             .name("Admin uploaded evidence")
             .uploadedBy("HMCTS")
