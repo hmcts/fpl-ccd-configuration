@@ -35,7 +35,7 @@ class StandardDirectionsOrderRemovedEventHandlerTest {
     private StandardDirectionsOrderRemovedEventHandler eventHandler;
 
     @Test
-    void shouldSendEmailToGatekeepersWhenStandardDirectionOrderAddedToCase() {
+    void shouldSendEmailToGatekeepersWhenStandardDirectionOrderRemovedFromCase() {
         final CaseData caseData = CaseData.builder()
             .id(CASE_ID)
             .gatekeeperEmails(singletonList(element(EmailAddress.builder().email(GATEKEEPER_EMAIL_ADDRESS).build())))
