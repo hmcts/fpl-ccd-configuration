@@ -22,7 +22,9 @@ import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentsService;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Objects.isNull;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.CARE_PLAN;
@@ -70,71 +72,43 @@ public class UploadDocumentsController extends CallbackController {
                 caseDataBefore.getApplicationDocuments()));
         } else {
             // New document event is not enabled so move old collection to new
-            processCaseDataAndExtractOldDocuments(caseData, caseDetails);
+            addDocumentsToApplicationDocumentCollection(caseData, caseDetails);
         }
 
         return respond(caseDetails);
     }
 
-    private void processCaseDataAndExtractOldDocuments(CaseData caseData, CaseDetails caseDetails) {
+    private void addDocumentsToApplicationDocumentCollection(CaseData caseData, CaseDetails caseDetails) {
         List<Element<ApplicationDocument>> applicationDocuments = new ArrayList<>();
 
-        Document socialWorkChronologyDocument = caseData.getSocialWorkChronologyDocument();
-        Document socialWorkStatementDocument = caseData.getSocialWorkStatementDocument();
-        Document socialWorkAssessment = caseData.getSocialWorkAssessmentDocument();
-        Document socialWorkCarePlanDocument = caseData.getSocialWorkCarePlanDocument();
-        Document socialWorkEvidenceTemplateDocument = caseData.getSocialWorkEvidenceTemplateDocument();
-        Document thresholdDocument = caseData.getThresholdDocument();
-        Document checklistDocument = caseData.getChecklistDocument();
-
-        List<Element<Document>> documentsToProcess;
+        Map<Document, ApplicationDocumentType> documentsToProcess = new LinkedHashMap<>();
+        documentsToProcess.put(caseData.getSocialWorkChronologyDocument(), SOCIAL_WORK_CHRONOLOGY);
+        documentsToProcess.put(caseData.getSocialWorkStatementDocument(), SOCIAL_WORK_STATEMENT);
+        documentsToProcess.put(caseData.getSocialWorkAssessmentDocument(), SOCIAL_WORK_STATEMENT);
+        documentsToProcess.put(caseData.getSocialWorkCarePlanDocument(), CARE_PLAN);
+        documentsToProcess.put(caseData.getSocialWorkEvidenceTemplateDocument(), SWET);
+        documentsToProcess.put(caseData.getThresholdDocument(), THRESHOLD);
+        documentsToProcess.put(caseData.getChecklistDocument(), CHECKLIST_DOCUMENT);
 
         //this maps to other
         //need to loop through these
         List<Element<DocumentSocialWorkOther>> otherDocuments = caseData.getOtherSocialWorkDocuments();
 
+        for (Map.Entry<Document, ApplicationDocumentType> document : documentsToProcess.entrySet()) {
+            Document applicationDocument = document.getKey();
+            ApplicationDocumentType documentType = document.getValue();
 
-        if(!isNull(socialWorkChronologyDocument.getDocumentStatus()) || !isNull(socialWorkChronologyDocument.getTypeOfDocument())){
-            //need to cater for when status set to follow
-            ApplicationDocument document = convertOldDocumentsToNewApplicationDocuments(socialWorkChronologyDocument, SOCIAL_WORK_CHRONOLOGY);
-            applicationDocuments.add(element(document));
-        }
-
-        if(!isNull(socialWorkStatementDocument.getDocumentStatus()) || !isNull(socialWorkStatementDocument.getTypeOfDocument())){
-            ApplicationDocument document = convertOldDocumentsToNewApplicationDocuments(socialWorkStatementDocument, SOCIAL_WORK_STATEMENT);
-            applicationDocuments.add(element(document));
-        }
-
-        if(!isNull(socialWorkAssessment.getDocumentStatus()) || !isNull(socialWorkAssessment.getTypeOfDocument())){
-            ApplicationDocument document = convertOldDocumentsToNewApplicationDocuments(socialWorkAssessment, SOCIAL_WORK_STATEMENT);
-            applicationDocuments.add(element(document));
-        }
-
-        if(!isNull(socialWorkCarePlanDocument.getDocumentStatus()) || !isNull(socialWorkCarePlanDocument.getTypeOfDocument())){
-            ApplicationDocument document = convertOldDocumentsToNewApplicationDocuments(socialWorkCarePlanDocument, CARE_PLAN);
-            applicationDocuments.add(element(document));
-        }
-
-        if(!isNull(socialWorkEvidenceTemplateDocument.getDocumentStatus()) || !isNull(socialWorkEvidenceTemplateDocument.getTypeOfDocument())){
-            ApplicationDocument document = convertOldDocumentsToNewApplicationDocuments(socialWorkEvidenceTemplateDocument, SWET);
-            applicationDocuments.add(element(document));
-        }
-
-        if(!isNull(thresholdDocument.getDocumentStatus()) || !isNull(thresholdDocument.getTypeOfDocument())){
-            ApplicationDocument document = convertOldDocumentsToNewApplicationDocuments(thresholdDocument, THRESHOLD);
-            applicationDocuments.add(element(document));
-        }
-
-        if(!isNull(checklistDocument.getDocumentStatus()) || !isNull(checklistDocument.getTypeOfDocument())){
-            ApplicationDocument document = convertOldDocumentsToNewApplicationDocuments(checklistDocument, CHECKLIST_DOCUMENT);
-            applicationDocuments.add(element(document));
+            if(!isNull(applicationDocument.getDocumentStatus()) || !isNull(applicationDocument.getTypeOfDocument())) {
+                //cater for if status is to follow
+                ApplicationDocument updatedDocument = convertOldDocumentToNewApplicationDocument(applicationDocument, documentType);
+                applicationDocuments.add(element(updatedDocument));
+            }
         }
 
         caseDetails.getData().put("applicationDocuments", applicationDocuments);
     }
 
-    private ApplicationDocument convertOldDocumentsToNewApplicationDocuments(Document document,
-                                                                                            ApplicationDocumentType documentType) {
+    private ApplicationDocument convertOldDocumentToNewApplicationDocument(Document document, ApplicationDocumentType documentType) {
 
         ApplicationDocument applicationDocument = ApplicationDocument.builder()
             .document(document.getTypeOfDocument())
