@@ -30,10 +30,9 @@ module.exports = {
   caseTitle: '.case-title .markdown',
 
   async goToNewActions(actionSelected) {
-    I.waitForElement(this.actionsDropdown);
     const currentUrl = await I.grabCurrentUrl();
-    await I.retryUntilExists(async () => {
-      if(await I.hasSelector(this.actionsDropdown)) {
+    return await I.retryUntilExists(async () => {
+      if(await I.waitForSelector(this.actionsDropdown, 10) != null) {
         I.selectOption(this.actionsDropdown, actionSelected);
         I.click(this.goButton);
       } else {
@@ -41,7 +40,6 @@ module.exports = {
         if(newUrl === currentUrl){
           output.print('Page refresh');
           I.refreshPage();
-          I.wait(5);
         }
       }
     }, 'ccd-case-event-trigger');
@@ -86,10 +84,13 @@ module.exports = {
     this.checkTaskStatus(task, undefined);
   },
 
-  checkTaskIsAvailable(task) {
-    I.click(`${task}`);
-    I.seeElement(`//ccd-case-event-trigger//h1[text()="${task}"]`);
-    I.click('Cancel');
+  async checkTaskIsAvailable(task) {
+    await I.retryUntilExists(() => {
+      I.click(task);
+    }, 'ccd-case-event-trigger');
+    await I.retryUntilExists(() => {
+      I.click('Cancel');
+    }, this.caseTitle);
   },
 
   async checkTaskIsUnavailable(task) {
