@@ -138,23 +138,8 @@ public class ManageDocumentService {
                 Optional<Element<HearingFurtherEvidenceBundle>> bundle = findElement(selectedHearingId, bundles);
 
                 if (bundle.isPresent()) {
-                    //Separate tab collection based on idam role (only show users their own documents)
-                    UserDetails userDetails = idamClient.getUserDetails(requestData.authorisation());
-                    boolean isHmctsUser = userDetails.getRoles().stream().anyMatch(UserRole::isHmctsUser);
-
-                    Stream<Element<SupportingEvidenceBundle>> bundleStream = bundle.get().getValue()
-                        .getSupportingEvidenceBundle().stream();
-
-                    Predicate<Element<SupportingEvidenceBundle>> userFilter =
-                        evidenceBundleElement -> "HMCTS".equals(evidenceBundleElement.getValue().getUploadedBy());
-
-                    if (!isHmctsUser) {
-                        userFilter = userFilter.negate();
-                    }
-
-                    return bundleStream
-                        .filter(userFilter)
-                        .collect(Collectors.toList());
+                    return getUserSpecificSupportingEvidenceBundle(
+                        bundle.get().getValue().getSupportingEvidenceBundle());
                 }
             }
         } else if (unrelatedEvidence != null) {
@@ -170,7 +155,7 @@ public class ManageDocumentService {
 
         if (c2DocumentBundle.getSupportingEvidenceBundle() != null
             && !c2DocumentBundle.getSupportingEvidenceBundle().isEmpty()) {
-            return c2DocumentBundle.getSupportingEvidenceBundle();
+            return getUserSpecificSupportingEvidenceBundle(c2DocumentBundle.getSupportingEvidenceBundle());
         }
 
         return List.of(element(SupportingEvidenceBundle.builder().build()));
@@ -285,6 +270,26 @@ public class ManageDocumentService {
                 .orElse(List.of());
 
         return setDateTimeUploadedOnSupportingEvidence(currentSupportingDocuments, previousSupportingDocuments);
+    }
+
+    //Separate collection based on idam role (only show users their own documents)
+    private List<Element<SupportingEvidenceBundle>> getUserSpecificSupportingEvidenceBundle(
+        List<Element<SupportingEvidenceBundle>> bundleList) {
+        UserDetails userDetails = idamClient.getUserDetails(requestData.authorisation());
+        boolean isHmctsUser = userDetails.getRoles().stream().anyMatch(UserRole::isHmctsUser);
+
+        Stream<Element<SupportingEvidenceBundle>> bundleStream = bundleList.stream();
+
+        Predicate<Element<SupportingEvidenceBundle>> userFilter =
+            evidenceBundleElement -> "HMCTS".equals(evidenceBundleElement.getValue().getUploadedBy());
+
+        if (!isHmctsUser) {
+            userFilter = userFilter.negate();
+        }
+
+        return bundleStream
+            .filter(userFilter)
+            .collect(Collectors.toList());
     }
 
     private Element<HearingFurtherEvidenceBundle> buildHearingSupportingEvidenceBundle(

@@ -19,12 +19,16 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -33,7 +37,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.Constants.USER_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -55,6 +61,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 })
 class ManageDocumentServiceTest {
     private static final String USER = "HMCTS";
+    private static final String USER_ID = "1";
 
     @Autowired
     private Time time;
@@ -65,12 +72,20 @@ class ManageDocumentServiceTest {
     @MockBean
     private DocumentUploadHelper documentUploadHelper;
 
+    @MockBean
+    private IdamClient idamClient;
+
+    @MockBean
+    private RequestData requestData;
+
     private LocalDateTime futureDate;
 
     @BeforeEach
     void before() {
         futureDate = time.now().plusDays(1);
         given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn("HMCTS");
+        given(idamClient.getUserDetails(eq(USER_AUTH_TOKEN))).willReturn(createUserDetailsWithHmctsRole());
+        given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
     }
 
     @Test
@@ -97,7 +112,10 @@ class ManageDocumentServiceTest {
         DynamicList expectedC2DocumentsDynamicList = asDynamicList(c2DocumentBundle, null,
             documentBundle -> documentBundle.toLabel(i.getAndIncrement()));
 
-        ManageDocument expectedManageDocument = ManageDocument.builder().hasHearings(YES.getValue()).build();
+        ManageDocument expectedManageDocument = ManageDocument.builder()
+            .hasHearings(YES.getValue())
+            .hasC2s(YES.getValue())
+            .build();
 
         Map<String, Object> listAndLabel = manageDocumentService.initialiseManageDocumentEvent(
             caseData, MANAGE_DOCUMENT_KEY);
@@ -110,7 +128,10 @@ class ManageDocumentServiceTest {
     @Test
     void shouldNotPopulateHearingListOrC2DocumentListWhenHearingAndC2DocumentsAreNotPresentOnCaseData() {
         CaseData caseData = CaseData.builder().build();
-        ManageDocument expectedManageDocument = ManageDocument.builder().hasHearings(NO.getValue()).build();
+        ManageDocument expectedManageDocument = ManageDocument.builder()
+            .hasHearings(NO.getValue())
+            .hasC2s(NO.getValue())
+            .build();
 
         Map<String, Object> listAndLabel = manageDocumentService.initialiseManageDocumentEvent(
             caseData, MANAGE_DOCUMENT_KEY);
@@ -198,7 +219,8 @@ class ManageDocumentServiceTest {
             .build();
 
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundleCollection =
-            manageDocumentService.getFurtherEvidenceCollection(caseData);
+            manageDocumentService.getFurtherEvidenceCollection(caseData, false,
+                List.of(element(SupportingEvidenceBundle.builder().build())));
 
         SupportingEvidenceBundle firstSupportingEvidenceBundle = supportingEvidenceBundleCollection.get(0).getValue();
 
@@ -216,7 +238,7 @@ class ManageDocumentServiceTest {
             .build();
 
         List<Element<SupportingEvidenceBundle>> furtherDocumentBundleCollection =
-            manageDocumentService.getFurtherEvidenceCollection(caseData);
+            manageDocumentService.getFurtherEvidenceCollection(caseData, false, furtherEvidenceBundle);
 
         assertThat(furtherDocumentBundleCollection).isEqualTo(furtherEvidenceBundle);
     }
@@ -238,9 +260,42 @@ class ManageDocumentServiceTest {
             .build();
 
         List<Element<SupportingEvidenceBundle>> furtherDocumentBundleCollection =
-            manageDocumentService.getFurtherEvidenceCollection(caseData);
+            manageDocumentService.getFurtherEvidenceCollection(caseData, true, furtherEvidenceBundle);
 
         assertThat(furtherDocumentBundleCollection).isEqualTo(furtherEvidenceBundle);
+    }
+
+    @Test
+    void shouldReturnOnlyHMCTSUploadedSupportingEvidenceForHearingWhenBothHMCTSAndLAUploadedEvidenceExists() {
+        Element<SupportingEvidenceBundle> adminEvidence = element(SupportingEvidenceBundle.builder()
+            .name("Admin uploaded evidence")
+            .uploadedBy("HMCTS")
+            .build());
+
+        Element<SupportingEvidenceBundle> laEvidence = element(SupportingEvidenceBundle.builder()
+            .name("LA uploaded evidence")
+            .uploadedBy("Raghu Karthik")
+            .build());
+
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = List.of(adminEvidence, laEvidence);
+
+        UUID hearingId = UUID.randomUUID();
+        List<Element<HearingBooking>> hearingBookings = List.of(element(hearingId, buildFinalHearingBooking()));
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(hearingBookings)
+            .manageDocumentsHearingList(asDynamicList(hearingBookings, hearingId, HearingBooking::toLabel))
+            .hearingFurtherEvidenceDocuments(List.of(
+                element(hearingId, HearingFurtherEvidenceBundle.builder()
+                    .supportingEvidenceBundle(furtherEvidenceBundle)
+                    .build())))
+            .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
+            .build();
+
+        List<Element<SupportingEvidenceBundle>> furtherDocumentBundleCollection =
+            manageDocumentService.getFurtherEvidenceCollection(caseData, true, furtherEvidenceBundle);
+
+        assertThat(furtherDocumentBundleCollection).containsExactly(adminEvidence);
     }
 
     @Test
@@ -664,7 +719,10 @@ class ManageDocumentServiceTest {
     }
 
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
-        return wrapElements(SupportingEvidenceBundle.builder().name("test").build());
+        return wrapElements(SupportingEvidenceBundle.builder()
+            .name("test")
+            .uploadedBy("HMCTS")
+            .build());
     }
 
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle(LocalDateTime localDateTime) {
@@ -702,6 +760,16 @@ class ManageDocumentServiceTest {
             .value(DynamicListElement.builder()
                 .code(selectedId)
                 .build())
+            .build();
+    }
+
+    private UserDetails createUserDetailsWithHmctsRole() {
+        return UserDetails.builder()
+            .id(USER_ID)
+            .surname("Hudson")
+            .forename("Steve")
+            .email("steve.hudson@gov.uk")
+            .roles(Arrays.asList("caseworker-publiclaw-courtadmin", "caseworker-publiclaw-judiciary"))
             .build();
     }
 }

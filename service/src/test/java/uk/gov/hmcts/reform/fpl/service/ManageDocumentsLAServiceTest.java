@@ -34,48 +34,6 @@ public class ManageDocumentsLAServiceTest {
     private ManageDocumentLAService manageDocumentLAService;
 
     @Test
-    void shouldReturnNewElementWhenDocumentNotRelatedToHearingSelectedAndFurtherEvidenceDocumentsNotPresent() {
-        CaseData caseData = CaseData.builder().manageDocumentLA(ManageDocumentLA.builder().build()).build();
-
-        assertThat(unwrapElements(manageDocumentLAService.getFurtherEvidenceCollection(caseData)))
-            .containsExactly(SupportingEvidenceBundle.builder().build());
-    }
-
-    @Test
-    void shouldReturnExistingGeneralEvidenceDocumentsWhenRelatedToHearingNotSelectedAndDocumentsPresent() {
-        SupportingEvidenceBundle furtherEvidence = SupportingEvidenceBundle.builder().name("general evidence").build();
-
-        CaseData caseData = CaseData.builder()
-            .manageDocumentLA(ManageDocumentLA.builder().relatedToHearing("No").build())
-            .furtherEvidenceDocumentsLA(wrapElements(furtherEvidence))
-            .build();
-
-        assertThat(unwrapElements(manageDocumentLAService.getFurtherEvidenceCollection(caseData)))
-            .containsExactly(furtherEvidence);
-    }
-
-    @Test
-    void shouldReturnExistingHearingEvidenceDocumentsWhenRelatedToHearingSelectedAndDocumentsPresent() {
-        UUID selectedHearingId = randomUUID();
-
-        List<Element<SupportingEvidenceBundle>> hearingEvidence = List.of(element(selectedHearingId,
-            SupportingEvidenceBundle.builder().name("hearing related evidence").build()));
-
-        HearingFurtherEvidenceBundle hearingBundle = HearingFurtherEvidenceBundle.builder()
-            .hearingName("Test Hearing - Case Management 1st Jan")
-            .supportingEvidenceBundle(hearingEvidence)
-            .build();
-
-        CaseData caseData = CaseData.builder()
-            .manageDocumentLA(ManageDocumentLA.builder().relatedToHearing("Yes").build())
-            .manageDocumentsHearingList(selectedHearingId.toString())
-            .hearingFurtherEvidenceDocuments(List.of(element(selectedHearingId, hearingBundle)))
-            .build();
-
-        assertThat(manageDocumentLAService.getFurtherEvidenceCollection(caseData)).isEqualTo(hearingEvidence);
-    }
-
-    @Test
     void shouldReturnNewCourtBundleListWithCourtBundleWhenNoExistingCourtBundlesPresentForSelectedHearing() {
         UUID selectedHearingId = randomUUID();
 
