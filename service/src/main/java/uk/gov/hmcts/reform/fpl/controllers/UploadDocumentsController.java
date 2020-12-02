@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentsService;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Objects.isNull;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.CARE_PLAN;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.CHECKLIST_DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SOCIAL_WORK_CHRONOLOGY;
@@ -95,7 +96,8 @@ public class UploadDocumentsController extends CallbackController {
         //need to loop through these
         List<Element<DocumentSocialWorkOther>> otherDocuments = caseData.getOtherSocialWorkDocuments();
 
-        if (socialWorkChronologyDocument != null) {
+
+        if(!isNull(socialWorkChronologyDocument.getDocumentStatus()) || !isNull(socialWorkChronologyDocument.getTypeOfDocument())){
             //currently null not working here
             //currently can't add multiple documents
             //if status is set as to follow and no document attached should we copy nothing over
@@ -103,27 +105,27 @@ public class UploadDocumentsController extends CallbackController {
             caseDetails.getData().put("applicationDocuments", updatedApplicationDocuments);
         }
 
-        if (socialWorkStatementDocument != null) {
+        if(!isNull(socialWorkStatementDocument.getDocumentStatus()) || !isNull(socialWorkStatementDocument.getTypeOfDocument())){
             List<Element<ApplicationDocument>> updatedApplicationDocuments = convertOldDocumentsToNewApplicationDocuments(socialWorkStatementDocument, SOCIAL_WORK_STATEMENT);
             caseDetails.getData().put("applicationDocuments", updatedApplicationDocuments);
         }
 
-        if (socialWorkCarePlanDocument != null) {
+        if(!isNull(socialWorkCarePlanDocument.getDocumentStatus()) || !isNull(socialWorkCarePlanDocument.getTypeOfDocument())){
             List<Element<ApplicationDocument>> updatedApplicationDocuments = convertOldDocumentsToNewApplicationDocuments(socialWorkCarePlanDocument, CARE_PLAN);
             caseDetails.getData().put("applicationDocuments", updatedApplicationDocuments);
         }
 
-        if (socialWorkEvidenceTemplateDocument != null) {
+        if(!isNull(socialWorkEvidenceTemplateDocument.getDocumentStatus()) || !isNull(socialWorkEvidenceTemplateDocument.getTypeOfDocument())){
             List<Element<ApplicationDocument>> updatedApplicationDocuments = convertOldDocumentsToNewApplicationDocuments(socialWorkEvidenceTemplateDocument, SWET);
             caseDetails.getData().put("applicationDocuments", updatedApplicationDocuments);
         }
 
-        if (thresholdDocument != null) {
+        if(!isNull(thresholdDocument.getDocumentStatus()) || !isNull(thresholdDocument.getTypeOfDocument())){
             List<Element<ApplicationDocument>> updatedApplicationDocuments = convertOldDocumentsToNewApplicationDocuments(thresholdDocument, THRESHOLD);
             caseDetails.getData().put("applicationDocuments", updatedApplicationDocuments);
         }
 
-        if (checklistDocument != null) {
+        if(!isNull(checklistDocument.getDocumentStatus()) || !isNull(checklistDocument.getTypeOfDocument())){
             List<Element<ApplicationDocument>> updatedApplicationDocuments = convertOldDocumentsToNewApplicationDocuments(checklistDocument, CHECKLIST_DOCUMENT);
             caseDetails.getData().put("applicationDocuments", updatedApplicationDocuments);
         }
