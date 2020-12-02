@@ -39,7 +39,7 @@ public class CaseManagementOrderIssuedEventHandler {
     private final DocumentDownloadService documentDownloadService;
 
     @EventListener
-    public void sendEmailsForIssuedCaseManagementOrder(final CaseManagementOrderIssuedEvent event) {
+    public void notifyParties(final CaseManagementOrderIssuedEvent event) {
         CaseData caseData = event.getCaseData();
         CaseManagementOrder issuedCmo = event.getCmo();
 
@@ -48,7 +48,7 @@ public class CaseManagementOrderIssuedEventHandler {
         sendToCafcass(caseData, issuedCmo);
         sendToRepresentatives(caseData, issuedCmo, DIGITAL_SERVICE);
         sendToRepresentatives(caseData, issuedCmo, EMAIL);
-        issuedOrderAdminNotificationHandler.sendToAdmin(caseData,
+        issuedOrderAdminNotificationHandler.notifyAdmin(caseData,
             documentDownloadService.downloadDocument(issuedCmo.getOrder().getBinaryUrl()), CMO);
     }
 
@@ -70,7 +70,7 @@ public class CaseManagementOrderIssuedEventHandler {
         final String cafcassEmail = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
 
         notificationService.sendEmail(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, cafcassEmail, cafcassParameters,
-            caseData.getId().toString());
+            caseData.getId());
     }
 
     private void sendToRepresentatives(final CaseData caseData,
@@ -87,7 +87,7 @@ public class CaseManagementOrderIssuedEventHandler {
                         caseData, cmo, servingPreference);
 
                 notificationService.sendEmail(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, representative.getEmail(),
-                    representativeNotificationParameters, caseData.getId().toString());
+                    representativeNotificationParameters, caseData.getId());
             });
     }
 }

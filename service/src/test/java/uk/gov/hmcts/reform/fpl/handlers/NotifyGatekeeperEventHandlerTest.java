@@ -28,6 +28,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMP
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.GATEKEEPER_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_NAME;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 
 @ExtendWith(SpringExtension.class)
@@ -56,15 +57,15 @@ class NotifyGatekeeperEventHandlerTest {
     void shouldSendEmailToMultipleGatekeepers() {
         CaseData caseData = caseData();
 
-        notifyGatekeeperEventHandler.sendEmailToGatekeeper(new NotifyGatekeepersEvent(caseData));
+        notifyGatekeeperEventHandler.notifyGatekeeper(new NotifyGatekeepersEvent(caseData));
 
         verify(notificationService).sendEmail(
             eq(GATEKEEPER_SUBMISSION_TEMPLATE), eq(GATEKEEPER_EMAIL_ADDRESS),
-            captor.capture(), eq(CASE_ID));
+            captor.capture(), eq(caseData.getId()));
 
         verify(notificationService).sendEmail(
             eq(GATEKEEPER_SUBMISSION_TEMPLATE), eq("Cafcass+gatekeeper@gmail.com"),
-            captor.capture(), eq(CASE_ID));
+            captor.capture(), eq(caseData.getId()));
 
         NotifyGatekeeperTemplate firstTemplate = getExpectedTemplate();
         NotifyGatekeeperTemplate secondTemplate = getExpectedTemplate();
@@ -74,18 +75,18 @@ class NotifyGatekeeperEventHandlerTest {
     }
 
     private NotifyGatekeeperTemplate getExpectedTemplate() {
-        NotifyGatekeeperTemplate expectedTemplate = new NotifyGatekeeperTemplate();
-        expectedTemplate.setCaseUrl("http://case/url");
-        expectedTemplate.setDataPresent(YES.getValue());
-        expectedTemplate.setFirstRespondentName("Smith");
-        expectedTemplate.setFullStop(NO.getValue());
-        expectedTemplate.setReference(CASE_ID);
-        expectedTemplate.setNonUrgentHearing(NO.getValue());
-        expectedTemplate.setTimeFramePresent(YES.getValue());
-        expectedTemplate.setTimeFrameValue("same day");
-        expectedTemplate.setUrgentHearing(YES.getValue());
-        expectedTemplate.setOrdersAndDirections(List.of("Emergency protection order", "Contact with any named person"));
-        expectedTemplate.setLocalAuthority("Example Local Authority");
-        return expectedTemplate;
+        return NotifyGatekeeperTemplate.builder()
+            .caseUrl("http://case/url")
+            .dataPresent(YES.getValue())
+            .firstRespondentName("Smith")
+            .fullStop(NO.getValue())
+            .reference(CASE_ID)
+            .nonUrgentHearing(NO.getValue())
+            .timeFramePresent(YES.getValue())
+            .timeFrameValue("same day")
+            .urgentHearing(YES.getValue())
+            .ordersAndDirections(List.of("Emergency protection order", "Contact with any named person"))
+            .localAuthority(LOCAL_AUTHORITY_NAME)
+            .build();
     }
 }

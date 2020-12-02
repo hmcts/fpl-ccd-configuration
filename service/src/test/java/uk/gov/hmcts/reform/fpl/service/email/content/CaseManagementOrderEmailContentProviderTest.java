@@ -44,21 +44,22 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
     void shouldBuildCMOIssuedExpectedParametersWithEmptyCaseUrl() {
         given(documentDownloadService.downloadDocument(anyString())).willReturn(TestDataHelper.DOCUMENT_CONTENT);
 
-        IssuedCMOTemplate expectedTemplate = new IssuedCMOTemplate();
         final CaseManagementOrder cmo = buildCmo();
+        IssuedCMOTemplate expectedTemplate = IssuedCMOTemplate.builder()
+            .respondentLastName("lastName")
+            .familyManCaseNumber("11")
+            .digitalPreference("No")
+            .hearing("test hearing, 20th June")
+            .caseUrl("")
+            .documentLink(generateAttachedDocumentLink(TestDataHelper.DOCUMENT_CONTENT)
+                .map(JSONObject::toMap)
+                .orElse(null))
+            .build();
 
-        expectedTemplate.setRespondentLastName("lastName");
-        expectedTemplate.setFamilyManCaseNumber("11");
-        expectedTemplate.setDigitalPreference("No");
-        expectedTemplate.setHearing("test hearing, 20th June");
-        expectedTemplate.setCaseUrl("");
-        expectedTemplate.setDocumentLink(generateAttachedDocumentLink(TestDataHelper.DOCUMENT_CONTENT)
-            .map(JSONObject::toMap)
-            .orElse(null));
-
-        assertThat(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(
-            createCase(), cmo, EMAIL))
-            .isEqualToComparingFieldByField(expectedTemplate);
+        assertThat(
+            caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(createCase(), cmo, EMAIL))
+            .usingRecursiveComparison()
+            .isEqualTo(expectedTemplate);
     }
 
     @Test
@@ -67,20 +68,21 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
 
         final CaseManagementOrder cmo = buildCmo();
 
-        IssuedCMOTemplate expectedTemplate = new IssuedCMOTemplate();
-
-        expectedTemplate.setRespondentLastName("lastName");
-        expectedTemplate.setFamilyManCaseNumber("11");
-        expectedTemplate.setDigitalPreference("Yes");
-        expectedTemplate.setCaseUrl(caseUrl(CASE_REFERENCE, "OrdersTab"));
-        expectedTemplate.setHearing("test hearing, 20th June");
-        expectedTemplate.setDocumentLink(generateAttachedDocumentLink(TestDataHelper.DOCUMENT_CONTENT)
-            .map(JSONObject::toMap)
-            .orElse(null));
+        IssuedCMOTemplate expectedTemplate = IssuedCMOTemplate.builder()
+            .respondentLastName("lastName")
+            .familyManCaseNumber("11")
+            .digitalPreference("Yes")
+            .hearing("test hearing, 20th June")
+            .caseUrl(caseUrl(CASE_REFERENCE, "OrdersTab"))
+            .documentLink(generateAttachedDocumentLink(TestDataHelper.DOCUMENT_CONTENT)
+                .map(JSONObject::toMap)
+                .orElse(null))
+            .build();
 
         assertThat(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(
             createCase(), cmo, DIGITAL_SERVICE))
-            .isEqualToComparingFieldByField(expectedTemplate);
+            .usingRecursiveComparison()
+            .isEqualTo(expectedTemplate);
     }
 
     @Test
@@ -88,17 +90,17 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
         final CaseManagementOrder cmo = buildCmo();
         cmo.setRequestedChanges("change it");
 
-        RejectedCMOTemplate expectedTemplate = new RejectedCMOTemplate();
-
-        expectedTemplate.setRequestedChanges("change it");
-        expectedTemplate.setHearing("test hearing, 20th June");
-        expectedTemplate.setCaseUrl(caseUrl(CASE_REFERENCE, "OrdersTab"));
-        expectedTemplate.setRespondentLastName("lastName");
-        expectedTemplate.setFamilyManCaseNumber("11");
+        RejectedCMOTemplate expectedTemplate = RejectedCMOTemplate.builder()
+            .requestedChanges("change it")
+            .hearing("test hearing, 20th June")
+            .caseUrl(caseUrl(CASE_REFERENCE, "OrdersTab"))
+            .respondentLastName("lastName")
+            .familyManCaseNumber("11")
+            .build();
 
         assertThat(caseManagementOrderEmailContentProvider
-            .buildCMORejectedByJudgeNotificationParameters(createCase(), cmo)).isEqualToComparingFieldByField(
-            expectedTemplate);
+            .buildCMORejectedByJudgeNotificationParameters(createCase(), cmo))
+            .usingRecursiveComparison().isEqualTo(expectedTemplate);
     }
 
     private CaseManagementOrder buildCmo() {

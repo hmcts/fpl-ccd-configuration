@@ -1,11 +1,9 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-
-import java.util.Map;
+import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
@@ -18,12 +16,14 @@ class PlacementApplicationContentProviderTest extends AbstractEmailContentProvid
 
     @Test
     void shouldBuildPlacementNotificationWithExpectedParameters() {
-        final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
-            .put("respondentLastName", "Smith")
-            .put("caseUrl", caseUrl(CASE_REFERENCE, "PlacementTab"))
+        BaseCaseNotifyData expected = BaseCaseNotifyData.builder()
+            .respondentLastName("Smith")
+            .caseUrl(caseUrl(CASE_REFERENCE, "PlacementTab"))
             .build();
 
-        assertThat(placementApplicationContentProvider.buildPlacementApplicationNotificationParameters(caseData()))
-            .isEqualTo(expectedParameters);
+        BaseCaseNotifyData actual = placementApplicationContentProvider
+            .buildPlacementApplicationNotificationParameters(caseData());
+
+        assertThat(actual).isEqualTo(expected);
     }
 }

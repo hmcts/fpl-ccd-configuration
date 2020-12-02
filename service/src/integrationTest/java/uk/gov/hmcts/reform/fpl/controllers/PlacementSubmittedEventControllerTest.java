@@ -38,7 +38,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
@@ -53,8 +53,8 @@ import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOr
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedCaseUrlParameters;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersMap;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersMapForRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacement;
@@ -217,16 +217,16 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             postSubmittedEvent(callbackRequestWithEmptyCaseDetailsBefore());
 
             verify(notificationClient).sendEmail(
-                PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
-                ADMIN_EMAIL_ADDRESS,
-                expectedParameters(),
-                NOTIFICATION_REFERENCE);
+                eq(PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE),
+                eq(ADMIN_EMAIL_ADDRESS),
+                eqJson(expectedParameters()),
+                eq(NOTIFICATION_REFERENCE));
 
             verify(notificationClient).sendEmail(
-                NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE,
-                LOCAL_AUTHORITY_EMAIL_ADDRESS,
-                expectedParameters(),
-                NOTIFICATION_REFERENCE);
+                eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
+                eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+                eqJson(expectedParameters()),
+                eq(NOTIFICATION_REFERENCE));
 
             verify(notificationClient).sendEmail(
                 NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE,
@@ -237,14 +237,14 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             verify(notificationClient).sendEmail(
                 eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES),
                 eq(EMAIL_SERVED_REPRESENTATIVE_ADDRESS),
-                eqJson(getExpectedParametersForRepresentatives(IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER.getLabel(),
+                eqJson(getExpectedParametersMapForRepresentatives(IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER.getLabel(),
                     false)),
                 eq(NOTIFICATION_REFERENCE));
 
             verify(notificationClient).sendEmail(
                 eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
                 eq(ADMIN_EMAIL_ADDRESS),
-                eqJson(getExpectedCaseUrlParameters(IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER.getLabel(), false)),
+                eqJson(getExpectedParametersMap(IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER.getLabel(), false)),
                 eq(NOTIFICATION_REFERENCE));
 
             verify(notificationClient, never()).sendEmail(
@@ -253,7 +253,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
                 any(),
                 any());
 
-            verifyZeroInteractions(notificationClient);
+            verifyNoMoreInteractions(notificationClient);
         }
 
         @Test
@@ -287,7 +287,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             verify(notificationClient).sendEmail(
                 eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
                 eq(CTSC_EMAIL_ADDRESS),
-                eqJson(getExpectedCaseUrlParameters(IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER.getLabel(), false)),
+                eqJson(getExpectedParametersMap(IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER.getLabel(), false)),
                 eq(NOTIFICATION_REFERENCE));
         }
 

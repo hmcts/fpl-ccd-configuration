@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.fpl.model.notify.hearing;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.SharedAllocatedJudgeTemplate;
 
-@Getter
-@Setter
+@EqualsAndHashCode(callSuper = true)
+@Data
+@SuperBuilder
 public final class TemporaryHearingJudgeTemplate extends SharedAllocatedJudgeTemplate {
     private String hearingType;
     private String callout;
