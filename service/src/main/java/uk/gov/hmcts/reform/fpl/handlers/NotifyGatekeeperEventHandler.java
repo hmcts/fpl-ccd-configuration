@@ -6,17 +6,14 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeepersEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.notify.sendtogatekeeper.NotifyGatekeeperTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.getDistinctGatekeeperEmails;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -38,13 +35,5 @@ public class NotifyGatekeeperEventHandler {
             notificationService.sendEmail(GATEKEEPER_SUBMISSION_TEMPLATE, recipientEmail, template,
                 caseData.getId().toString());
         });
-    }
-
-    private List<String> getDistinctGatekeeperEmails(List<Element<EmailAddress>> emailCollection) {
-        return unwrapElements(emailCollection)
-            .stream()
-            .distinct()
-            .map(EmailAddress::getEmail)
-            .collect(Collectors.toList());
     }
 }
