@@ -79,21 +79,16 @@ public class UploadDocumentsController extends CallbackController {
     private void processCaseDataAndExtractOldDocuments(CaseData caseData, CaseDetails caseDetails) {
         List<Element<ApplicationDocument>> applicationDocuments = new ArrayList<>();
 
-        // Extract All Old documents
-        //this maps to social work chronology
         Document socialWorkChronologyDocument = caseData.getSocialWorkChronologyDocument();
-        //this could map to social work statement or genogram
         Document socialWorkStatementDocument = caseData.getSocialWorkStatementDocument();
-        //what does document 3 Social work assessment map to
-        //***
-        //this maps to care plan
+        Document socialWorkAssessment = caseData.getSocialWorkAssessmentDocument();
         Document socialWorkCarePlanDocument = caseData.getSocialWorkCarePlanDocument();
-        //this maps to swet
         Document socialWorkEvidenceTemplateDocument = caseData.getSocialWorkEvidenceTemplateDocument();
-        //this maps to threshold
         Document thresholdDocument = caseData.getThresholdDocument();
-        //this maps to checklist
         Document checklistDocument = caseData.getChecklistDocument();
+
+        List<Element<Document>> documentsToProcess;
+
         //this maps to other
         //need to loop through these
         List<Element<DocumentSocialWorkOther>> otherDocuments = caseData.getOtherSocialWorkDocuments();
@@ -107,6 +102,11 @@ public class UploadDocumentsController extends CallbackController {
 
         if(!isNull(socialWorkStatementDocument.getDocumentStatus()) || !isNull(socialWorkStatementDocument.getTypeOfDocument())){
             ApplicationDocument document = convertOldDocumentsToNewApplicationDocuments(socialWorkStatementDocument, SOCIAL_WORK_STATEMENT);
+            applicationDocuments.add(element(document));
+        }
+
+        if(!isNull(socialWorkAssessment.getDocumentStatus()) || !isNull(socialWorkAssessment.getTypeOfDocument())){
+            ApplicationDocument document = convertOldDocumentsToNewApplicationDocuments(socialWorkAssessment, SOCIAL_WORK_STATEMENT);
             applicationDocuments.add(element(document));
         }
 
