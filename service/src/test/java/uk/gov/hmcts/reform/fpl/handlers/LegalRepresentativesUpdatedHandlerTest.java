@@ -9,12 +9,12 @@ import uk.gov.hmcts.reform.fpl.events.LegalRepresentativesUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LegalRepresentative;
 import uk.gov.hmcts.reform.fpl.model.LegalRepresentativesChange;
+import uk.gov.hmcts.reform.fpl.model.notify.LegalRepresentativeAddedTemplate;
 import uk.gov.hmcts.reform.fpl.service.LegalRepresentativesDifferenceCalculator;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.LegalRepresentativeAddedContentProvider;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import static java.util.Collections.emptySet;
@@ -34,8 +34,6 @@ class LegalRepresentativesUpdatedHandlerTest {
         .legalRepresentatives(wrapElements(LEGAL_REPRESENTATIVES_BEFORE))
         .build();
     public static final List<LegalRepresentative> LEGAL_REPRESENTATIVES_NOW = List.of(mock(LegalRepresentative.class));
-    public static final Map<String, Object> TEMPLATE_PARAMETERS = Map.of("blah", new Object());
-    public static final Map<String, Object> TEMPLATE_PARAMETERS_2 = Map.of("blah2", new Object());
     public static final String REPRESENTATIVE_EMAIL = "representativeEmail";
     public static final String REPRESENTATIVE_EMAIL_2 = "representativeEmail2";
     public static final LegalRepresentative LEGAL_REPRESENTATIVE = LegalRepresentative.builder()
@@ -69,8 +67,9 @@ class LegalRepresentativesUpdatedHandlerTest {
             .build()
         );
 
-        when(legalRepresentativeAddedContentProvider.getParameters(LEGAL_REPRESENTATIVE, CASE_DATA)).thenReturn(
-            TEMPLATE_PARAMETERS);
+        LegalRepresentativeAddedTemplate notifyData = LegalRepresentativeAddedTemplate.builder().build();
+        when(legalRepresentativeAddedContentProvider.getNotifyData(LEGAL_REPRESENTATIVE, CASE_DATA))
+            .thenReturn(notifyData);
 
         underTest.sendEmailToLegalRepresentativesAddedToCase(
             new LegalRepresentativesUpdated(CASE_DATA, CASE_DATA_BEFORE)
@@ -79,7 +78,7 @@ class LegalRepresentativesUpdatedHandlerTest {
         verify(notificationService).sendEmail(
             LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE,
             REPRESENTATIVE_EMAIL,
-            TEMPLATE_PARAMETERS,
+            notifyData,
             CASE_ID
         );
     }
@@ -92,10 +91,14 @@ class LegalRepresentativesUpdatedHandlerTest {
             .added(Set.of(LEGAL_REPRESENTATIVE, LEGAL_REPRESENTATIVE_2))
             .build()
         );
-        when(legalRepresentativeAddedContentProvider.getParameters(LEGAL_REPRESENTATIVE, CASE_DATA)).thenReturn(
-            TEMPLATE_PARAMETERS);
-        when(legalRepresentativeAddedContentProvider.getParameters(LEGAL_REPRESENTATIVE_2, CASE_DATA)).thenReturn(
-            TEMPLATE_PARAMETERS_2);
+
+        LegalRepresentativeAddedTemplate notifyData1 = LegalRepresentativeAddedTemplate.builder().build();
+        LegalRepresentativeAddedTemplate notifyData2 = LegalRepresentativeAddedTemplate.builder().build();
+
+        when(legalRepresentativeAddedContentProvider.getNotifyData(LEGAL_REPRESENTATIVE, CASE_DATA)).thenReturn(
+            notifyData1);
+        when(legalRepresentativeAddedContentProvider.getNotifyData(LEGAL_REPRESENTATIVE_2, CASE_DATA)).thenReturn(
+            notifyData2);
 
         underTest.sendEmailToLegalRepresentativesAddedToCase(
             new LegalRepresentativesUpdated(CASE_DATA, CASE_DATA_BEFORE)
@@ -104,13 +107,13 @@ class LegalRepresentativesUpdatedHandlerTest {
         verify(notificationService).sendEmail(
             LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE,
             REPRESENTATIVE_EMAIL,
-            TEMPLATE_PARAMETERS,
+            notifyData1,
             CASE_ID
         );
         verify(notificationService).sendEmail(
             LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE,
             REPRESENTATIVE_EMAIL_2,
-            TEMPLATE_PARAMETERS_2,
+            notifyData2,
             CASE_ID
         );
     }
@@ -129,6 +132,6 @@ class LegalRepresentativesUpdatedHandlerTest {
             new LegalRepresentativesUpdated(CASE_DATA, CASE_DATA_BEFORE)
         );
 
-        verifyNoInteractions(legalRepresentativeAddedContentProvider,notificationService);
+        verifyNoInteractions(legalRepresentativeAddedContentProvider, notificationService);
     }
 }

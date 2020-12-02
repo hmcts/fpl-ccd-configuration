@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
@@ -11,7 +10,7 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
-import uk.gov.hmcts.reform.fpl.model.notify.hearing.NoticeOfHearingTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -35,7 +34,6 @@ public class SendNoticeOfHearingHandler {
     private static final List<RepresentativeServingPreferences> SERVING_PREFERENCES = List.of(EMAIL, DIGITAL_SERVICE);
 
     private final NoticeOfHearingEmailContentProvider newHearingContent;
-    private final ObjectMapper mapper;
     private final NotificationService notificationService;
     private final RepresentativeNotificationService representativeNotificationService;
     private final InboxLookupService inboxLookupService;
@@ -44,42 +42,43 @@ public class SendNoticeOfHearingHandler {
 
     @Async
     @EventListener
-    public void sendEmailToLA(final SendNoticeOfHearing event) {
+    public void notifyLocalAuthority(final SendNoticeOfHearing event) {
         final CaseData caseData = event.getCaseData();
         Collection<String> emails = inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
 
-        NoticeOfHearingTemplate templateData = newHearingContent.buildNewNoticeOfHearingNotification(caseData,
+        NotifyData notifyData = newHearingContent.buildNewNoticeOfHearingNotification(caseData,
             event.getSelectedHearing(), DIGITAL_SERVICE);
 
-        notificationService.sendEmail(NOTICE_OF_NEW_HEARING, emails, templateData, caseData.getId().toString());
+        notificationService.sendEmail(NOTICE_OF_NEW_HEARING, emails, notifyData, caseData.getId().toString());
     }
 
     @Async
     @EventListener
-    public void sendEmailToCafcass(final SendNoticeOfHearing event) {
+    public void notifyCafcass(final SendNoticeOfHearing event) {
         final CaseData caseData = event.getCaseData();
-        String email = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
 
-        NoticeOfHearingTemplate templateData = newHearingContent.buildNewNoticeOfHearingNotification(caseData,
+        final String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
+
+        NotifyData notifyData = newHearingContent.buildNewNoticeOfHearingNotification(caseData,
             event.getSelectedHearing(), EMAIL);
 
-        notificationService.sendEmail(NOTICE_OF_NEW_HEARING, email, templateData, caseData.getId().toString());
+        notificationService.sendEmail(NOTICE_OF_NEW_HEARING, recipient, notifyData, caseData.getId());
     }
 
     @Async
     @EventListener
-    public void sendEmailToRepresentatives(final SendNoticeOfHearing event) {
+    public void notifyRepresentatives(final SendNoticeOfHearing event) {
         final CaseData caseData = event.getCaseData();
 
         SERVING_PREFERENCES.forEach(servingPreference -> {
-            NoticeOfHearingTemplate templateParameters =
+            NotifyData notifyData =
                 newHearingContent.buildNewNoticeOfHearingNotification(
                     caseData, event.getSelectedHearing(), servingPreference);
 
             representativeNotificationService
-                .sendToRepresentativesByServedPreference(servingPreference, NOTICE_OF_NEW_HEARING,
-                    templateParameters.toMap(mapper), caseData);
+                .sendToRepresentativesByServedPreference(
+                    servingPreference, NOTICE_OF_NEW_HEARING, notifyData, caseData);
         });
     }
 

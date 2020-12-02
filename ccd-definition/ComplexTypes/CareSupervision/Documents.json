@@ -41,7 +41,7 @@
     "ID": "Documents",
     "ListElementCode": "dateTimeUploaded",
     "FieldType": "DateTime",
-    "ElementLabel": "Created by",
+    "ElementLabel": "Date and time uploaded",
     "SecurityClassification": "Public"
   },
   {

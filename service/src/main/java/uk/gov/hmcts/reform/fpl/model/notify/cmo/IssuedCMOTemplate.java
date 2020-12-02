@@ -1,14 +1,16 @@
 package uk.gov.hmcts.reform.fpl.model.notify.cmo;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
 import uk.gov.hmcts.reform.fpl.model.notify.SharedNotifyTemplate;
 
-@Getter
-@Setter
+@EqualsAndHashCode(callSuper = true)
+@Data
+@SuperBuilder
 public final class IssuedCMOTemplate extends SharedNotifyTemplate {
-    private String respondentLastName;
-    private String familyManCaseNumber;
-    private String hearing;
-    private String digitalPreference;
+    private final String respondentLastName;
+    private final String familyManCaseNumber;
+    private final String hearing;
+    private final String digitalPreference;
 }

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForSDO;
 import uk.gov.hmcts.reform.fpl.model.notify.sdo.CTSCTemplateForSDO;
+import uk.gov.hmcts.reform.fpl.model.notify.sdo.SDONotifyData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.StandardDirectionOrderIssuedEmailContentProvider;
 
-import java.util.Map;
 import java.util.Set;
 
 import static org.mockito.BDDMockito.given;
@@ -68,31 +67,31 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
 
     @Test
     void shouldNotifyCafcassOfIssuedSDOAndNoticeOfProceedingsWhenSDOIssued() {
-        final Map<String, Object> expectedParameters = getStandardDirectionTemplateParameters();
+        final SDONotifyData expectedParameters = getStandardDirectionTemplateParameters();
 
         CaseData caseData = caseData();
 
         given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
             .willReturn(new CafcassLookupConfiguration.Cafcass(CAFCASS_NAME, CAFCASS_EMAIL_ADDRESS));
 
-        given(cafcassEmailContentProviderSDOIssued.buildCafcassStandardDirectionOrderIssuedNotification(caseData))
+        given(cafcassEmailContentProviderSDOIssued.getNotifyData(caseData))
             .willReturn(expectedParameters);
 
-        standardDirectionsOrderIssuedEventHandler.notifyCafcassOfIssuedSDOAndNoticeOfProceedings(
+        standardDirectionsOrderIssuedEventHandler.notifyCafcass(
             new StandardDirectionsOrderIssuedEvent(caseData));
 
         verify(notificationService).sendEmail(
             SDO_AND_NOP_ISSUED_CAFCASS,
             CAFCASS_EMAIL_ADDRESS,
             expectedParameters,
-            "12345");
+            caseData.getId());
     }
 
     @Test
     void shouldNotifyLocalAuthorityOfIssuedSDOAndNoticeOfProceedingsWhenSDOIssued() {
-        final Map<String, Object> expectedParameters = getStandardDirectionTemplateParameters();
+        final SDONotifyData expectedParameters = getStandardDirectionTemplateParameters();
         CaseData caseData = caseData();
-        given(localAuthorityEmailContentProvider.buildLocalAuthorityStandardDirectionOrderIssuedNotification(caseData))
+        given(localAuthorityEmailContentProvider.buildStandardDirectionOrderIssuedNotification(caseData))
             .willReturn(expectedParameters);
 
         given(inboxLookupService.getRecipients(
@@ -101,14 +100,14 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
                 .build())
         ).willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
-        standardDirectionsOrderIssuedEventHandler.notifyLocalAuthorityOfIssuedSDOAndNoticeOfProceedings(
+        standardDirectionsOrderIssuedEventHandler.notifyLocalAuthority(
             new StandardDirectionsOrderIssuedEvent(caseData));
 
         verify(notificationService).sendEmail(
             SDO_AND_NOP_ISSUED_LA,
             Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             expectedParameters,
-            "12345");
+            caseData.getId().toString());
     }
 
     @Test
@@ -119,39 +118,37 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
         given(standardDirectionOrderIssuedEmailContentProvider.buildNotificationParametersForCTSC(caseData))
             .willReturn(templateForSDO);
 
-        standardDirectionsOrderIssuedEventHandler.notifyCTSCOfIssuedSDOandNoticeOfProceedings(
-            new StandardDirectionsOrderIssuedEvent(caseData));
+        standardDirectionsOrderIssuedEventHandler.notifyCTSC(new StandardDirectionsOrderIssuedEvent(caseData));
 
         verify(notificationService).sendEmail(
             SDO_AND_NOP_ISSUED_CTSC,
             CTSC_INBOX,
             templateForSDO,
-            "12345");
+            caseData.getId());
     }
 
-    private Map<String, Object> getStandardDirectionTemplateParameters() {
-        return ImmutableMap.<String, Object>builder()
-            .put("familyManCaseNumber", "6789")
-            .put("leadRespondentsName", "Moley")
-            .put("hearingDate", "21 October 2020")
-            .put("reference", "12345")
-            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+    private SDONotifyData getStandardDirectionTemplateParameters() {
+        return SDONotifyData.builder()
+            .familyManCaseNumber("6789")
+            .leadRespondentsName("Moley")
+            .hearingDate("21 October 2020")
+            .reference("12345")
+            .caseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
     }
 
     private AllocatedJudgeTemplateForSDO getAllocatedJudgeSDOTemplateParameters() {
-        AllocatedJudgeTemplateForSDO allocatedJudgeTemplate = new AllocatedJudgeTemplateForSDO();
-        allocatedJudgeTemplate.setFamilyManCaseNumber("6789");
-        allocatedJudgeTemplate.setLeadRespondentsName("Moley");
-        allocatedJudgeTemplate.setHearingDate("21 October 2020");
-        allocatedJudgeTemplate.setCaseUrl("null/case/\" + JURISDICTION + \"/\" + CASE_TYPE + \"/12345");
-        allocatedJudgeTemplate.setJudgeTitle("Her Honour Judge");
-        allocatedJudgeTemplate.setJudgeName("Byrne");
-
-        return allocatedJudgeTemplate;
+        return AllocatedJudgeTemplateForSDO.builder()
+            .familyManCaseNumber("6789")
+            .leadRespondentsName("Moley")
+            .hearingDate("21 October 2020")
+            .caseUrl("null/case/\" + JURISDICTION + \"/\" + CASE_TYPE + \"/12345")
+            .judgeTitle("Her Honour Judge")
+            .judgeName("Byrne")
+            .build();
     }
 
     private CTSCTemplateForSDO getCTSCTemplateForSDO() {
-        return new CTSCTemplateForSDO();
+        return CTSCTemplateForSDO.builder().build();
     }
 }

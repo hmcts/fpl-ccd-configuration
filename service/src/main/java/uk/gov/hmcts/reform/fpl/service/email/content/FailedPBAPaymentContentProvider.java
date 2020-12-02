@@ -11,7 +11,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 @Service
 public class FailedPBAPaymentContentProvider extends AbstractEmailContentProvider {
 
-    public FailedPBANotificationData buildCtscNotificationParameters(CaseData caseData,
+    public FailedPBANotificationData getCtscNotifyData(CaseData caseData,
                                                                      ApplicationType applicationType) {
         String tab = applicationType.equals(C2_APPLICATION) ? "C2Tab" : "";
         return FailedPBANotificationData.builder()
@@ -20,7 +20,7 @@ public class FailedPBAPaymentContentProvider extends AbstractEmailContentProvide
             .build();
     }
 
-    public FailedPBANotificationData buildLANotificationParameters(ApplicationType applicationType) {
+    public FailedPBANotificationData getLocalAuthorityNotifyData(ApplicationType applicationType) {
         return FailedPBANotificationData.builder()
             .applicationType(applicationType.getType())
             .build();

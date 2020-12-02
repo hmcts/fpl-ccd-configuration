@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.notify.OrderIssuedNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
 
 import java.time.LocalDateTime;
@@ -30,7 +31,7 @@ public class OrderIssuedNotificationTestHelper {
     private static final String callout = "^Jones, SACCCCCCCC5676576567, hearing " + LocalDateTime.now().plusMonths(3)
         .toLocalDate().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).localizedBy(Locale.UK));
 
-    public static Map<String, Object> getExpectedCaseUrlParameters(String orderType, boolean withCallout) {
+    public static Map<String, Object> getExpectedParametersMap(String orderType, boolean withCallout) {
         String fileContent = new String(Base64.encodeBase64(PDF), ISO_8859_1);
         JSONObject jsonFileObject = new JSONObject()
             .put("file", fileContent)
@@ -45,7 +46,39 @@ public class OrderIssuedNotificationTestHelper {
             "respondentLastName", "Jones");
     }
 
-    public static Map<String, Object> getExpectedParametersForRepresentatives(String orderType, boolean withCallout) {
+    public static OrderIssuedNotifyData getExpectedParameters(String orderType, boolean withCallout) {
+        String fileContent = new String(Base64.encodeBase64(PDF), ISO_8859_1);
+        JSONObject jsonFileObject = new JSONObject()
+            .put("file", fileContent)
+            .put("is_csv", false);
+
+        return OrderIssuedNotifyData.builder()
+            .orderType(orderType.toLowerCase())
+            .callout(withCallout ? callout : "")
+            .courtName(EXAMPLE_COURT)
+            .documentLink(jsonFileObject)
+            .caseUrl(formatCaseUrl("http://fake-url", 12345L, "OrdersTab"))
+            .respondentLastName("Jones")
+            .build();
+    }
+
+    public static OrderIssuedNotifyData getExpectedParametersForRepresentatives(String orderType, boolean withCallout) {
+        String fileContent = new String(Base64.encodeBase64(PDF), ISO_8859_1);
+        JSONObject jsonFileObject = new JSONObject()
+            .put("file", fileContent)
+            .put("is_csv", false);
+
+        return OrderIssuedNotifyData.builder()
+            .orderType(orderType.toLowerCase())
+            .callout(withCallout ? callout : "")
+            .courtName(EXAMPLE_COURT)
+            .documentLink(jsonFileObject)
+            .respondentLastName("Jones")
+            .build();
+    }
+
+    public static Map<String, Object> getExpectedParametersMapForRepresentatives(String orderType,
+                                                                                 boolean withCallout) {
         String fileContent = new String(Base64.encodeBase64(PDF), ISO_8859_1);
         JSONObject jsonFileObject = new JSONObject()
             .put("file", fileContent)
@@ -59,15 +92,14 @@ public class OrderIssuedNotificationTestHelper {
     }
 
     public static AllocatedJudgeTemplateForGeneratedOrder getExpectedAllocatedJudgeParameters() {
-        AllocatedJudgeTemplateForGeneratedOrder allocatedJudgeTemplate = new AllocatedJudgeTemplateForGeneratedOrder();
-        allocatedJudgeTemplate.setOrderType("blank order (c21)");
-        allocatedJudgeTemplate.setCallout(callout);
-        allocatedJudgeTemplate.setRespondentLastName("Jones");
-        allocatedJudgeTemplate.setJudgeTitle("Deputy District Judge");
-        allocatedJudgeTemplate.setJudgeName("Scott");
-        allocatedJudgeTemplate.setCaseUrl(formatCaseUrl("http://fake-url", 12345L, "OrdersTab"));
-
-        return allocatedJudgeTemplate;
+        return AllocatedJudgeTemplateForGeneratedOrder.builder()
+            .orderType("blank order (c21)")
+            .callout(callout)
+            .respondentLastName("Jones")
+            .judgeTitle("Deputy District Judge")
+            .judgeName("Scott")
+            .caseUrl(formatCaseUrl("http://fake-url", 12345L, "OrdersTab"))
+            .build();
     }
 
     public static List<Element<Representative>> buildRepresentatives() {

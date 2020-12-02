@@ -1,13 +1,11 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import com.google.common.collect.ImmutableMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
-
-import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
@@ -15,11 +13,11 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class PlacementApplicationContentProvider extends AbstractEmailContentProvider {
 
-    public Map<String, Object> buildPlacementApplicationNotificationParameters(CaseData caseData) {
+    public BaseCaseNotifyData buildPlacementApplicationNotificationParameters(CaseData caseData) {
 
-        return ImmutableMap.of(
-            "respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()),
-            "caseUrl", getCaseUrl(caseData.getId(), "PlacementTab")
-        );
+        return BaseCaseNotifyData.builder()
+            .caseUrl(getCaseUrl(caseData.getId(), "PlacementTab"))
+            .respondentLastName(getFirstRespondentLastName(caseData))
+            .build();
     }
 }

@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ApplicationDocumentsService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,6 +34,9 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 public class UploadDocumentsAboutToSubmitControllerTest extends AbstractControllerTest {
     @MockBean
     private ApplicationDocumentsService applicationDocumentsService;
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     UploadDocumentsAboutToSubmitControllerTest() {
         super("upload-documents");
@@ -54,7 +58,9 @@ public class UploadDocumentsAboutToSubmitControllerTest extends AbstractControll
     }
 
     @Test
-    void shouldUpdateDocumentsInCaseDataWithCreatedByAndDateTimeUploadedFieldsIncluded() {
+    void shouldUpdateDocumentsInCaseDataWithCreatedByAndDateTimeUploadedFieldsIncludedWhenApplicationDocumentEventToggledOn() {
+        given(featureToggleService.isApplicationDocumentsEventEnabled()).willReturn(true);
+
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(caseDetails)
             .caseDetailsBefore(caseDetailsBefore)

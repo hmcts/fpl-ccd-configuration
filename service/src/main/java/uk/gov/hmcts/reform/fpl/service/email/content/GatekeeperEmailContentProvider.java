@@ -14,7 +14,7 @@ public class GatekeeperEmailContentProvider extends SharedNotifyContentProvider 
     private final LocalAuthorityNameLookupConfiguration config;
 
     public NotifyGatekeeperTemplate buildGatekeeperNotification(CaseData caseData) {
-        NotifyGatekeeperTemplate template = super.buildNotifyTemplate(new NotifyGatekeeperTemplate(),
+        NotifyGatekeeperTemplate template = super.buildNotifyTemplate(NotifyGatekeeperTemplate.builder().build(),
             caseData.getId(),
             caseData.getOrders(),
             caseData.getHearing(),

@@ -17,31 +17,26 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
 
     public IssuedCMOTemplate buildCMOIssuedNotificationParameters(CaseData caseData, CaseManagementOrder cmo,
                                                                   RepresentativeServingPreferences servingPreference) {
-
-        IssuedCMOTemplate template = new IssuedCMOTemplate();
-
-        template.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
-        template.setFamilyManCaseNumber(caseData.getFamilyManCaseNumber());
-        template.setHearing(uncapitalize(cmo.getHearing()));
-        template.setDigitalPreference(hasDigitalServingPreference(servingPreference) ? "Yes" : "No");
-        template.setDocumentLink(linkToAttachedDocument(cmo.getOrder()));
-        template.setCaseUrl((hasDigitalServingPreference(servingPreference)
-            ? getCaseUrl(caseData.getId(), "OrdersTab") : ""));
-
-        return template;
+        return IssuedCMOTemplate.builder()
+            .respondentLastName(getFirstRespondentLastName(caseData))
+            .familyManCaseNumber(caseData.getFamilyManCaseNumber())
+            .hearing(uncapitalize(cmo.getHearing()))
+            .digitalPreference(hasDigitalServingPreference(servingPreference) ? "Yes" : "No")
+            .documentLink(linkToAttachedDocument(cmo.getOrder()))
+            .caseUrl((hasDigitalServingPreference(servingPreference)
+                ? getCaseUrl(caseData.getId(), "OrdersTab") : ""))
+            .build();
     }
 
     public RejectedCMOTemplate buildCMORejectedByJudgeNotificationParameters(final CaseData caseData,
                                                                              CaseManagementOrder cmo) {
-        RejectedCMOTemplate template = new RejectedCMOTemplate();
-
-        template.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
-        template.setFamilyManCaseNumber(caseData.getFamilyManCaseNumber());
-        template.setHearing(uncapitalize(cmo.getHearing()));
-        template.setCaseUrl(getCaseUrl(caseData.getId(), "OrdersTab"));
-        template.setRequestedChanges(cmo.getRequestedChanges());
-
-        return template;
+        return RejectedCMOTemplate.builder()
+            .respondentLastName(getFirstRespondentLastName(caseData))
+            .familyManCaseNumber(caseData.getFamilyManCaseNumber())
+            .hearing(uncapitalize(cmo.getHearing()))
+            .caseUrl(getCaseUrl(caseData.getId(), "OrdersTab"))
+            .requestedChanges(cmo.getRequestedChanges())
+            .build();
     }
 
     private boolean hasDigitalServingPreference(RepresentativeServingPreferences servingPreference) {

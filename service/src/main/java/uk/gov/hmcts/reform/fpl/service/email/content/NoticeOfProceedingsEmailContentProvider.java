@@ -18,18 +18,16 @@ public class NoticeOfProceedingsEmailContentProvider extends AbstractEmailConten
 
     public AllocatedJudgeTemplateForNoticeOfProceedings buildAllocatedJudgeNotification(CaseData caseData) {
 
-        AllocatedJudgeTemplateForNoticeOfProceedings allocatedJudgeTemplate
-            = new AllocatedJudgeTemplateForNoticeOfProceedings();
+        return AllocatedJudgeTemplateForNoticeOfProceedings.builder()
 
-        allocatedJudgeTemplate.setFamilyManCaseNumber(caseData.getFamilyManCaseNumber());
-        allocatedJudgeTemplate.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
-        allocatedJudgeTemplate.setHearingDate(getHearingBookingStartDate(caseData));
-        allocatedJudgeTemplate.setCaseUrl(getCaseUrl(caseData.getId(), "HearingTab"));
-        allocatedJudgeTemplate.setJudgeTitle(caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()
-            .getJudgeOrMagistrateTitle());
-        allocatedJudgeTemplate.setJudgeName(caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor().getJudgeName());
-
-        return allocatedJudgeTemplate;
+            .familyManCaseNumber(caseData.getFamilyManCaseNumber())
+            .respondentLastName(getFirstRespondentLastName(caseData))
+            .hearingDate(getHearingBookingStartDate(caseData))
+            .caseUrl(getCaseUrl(caseData.getId(), "HearingTab"))
+            .judgeTitle(caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()
+                .getJudgeOrMagistrateTitle())
+            .judgeName(caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor().getJudgeName())
+            .build();
     }
 
     private String getHearingBookingStartDate(CaseData caseData) {
