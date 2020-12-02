@@ -36,8 +36,8 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.buildRepresentatives;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedCaseUrlParameters;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersMap;
+import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersMapForRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
@@ -100,25 +100,25 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
         verify(notificationClient).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES),
             eq(EMAIL_SERVED_REPRESENTATIVE_ADDRESS),
-            eqJson(getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true)),
+            eqJson(getExpectedParametersMapForRepresentatives(BLANK_ORDER.getLabel(), true)),
             eq(NOTIFICATION_REFERENCE));
 
         verify(notificationClient).sendEmail(
             eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
             eq(DIGITAL_SERVED_REPRESENTATIVE_ADDRESS),
-            eqJson(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true)),
+            eqJson(getExpectedParametersMap(BLANK_ORDER.getLabel(), true)),
             eq(NOTIFICATION_REFERENCE));
 
         verify(notificationClient).sendEmail(
             eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
             eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            eqJson(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true)),
+            eqJson(getExpectedParametersMap(BLANK_ORDER.getLabel(), true)),
             eq(NOTIFICATION_REFERENCE));
 
         verify(notificationClient).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
             eq(ADMIN_EMAIL_ADDRESS),
-            eqJson(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true)),
+            eqJson(getExpectedParametersMap(BLANK_ORDER.getLabel(), true)),
             eq(NOTIFICATION_REFERENCE));
 
         verifySendDocumentEventTriggered();
@@ -134,7 +134,7 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
         verify(notificationClient).sendEmail(
             eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
             eq(CTSC_EMAIL_ADDRESS),
-            eqJson(getExpectedCaseUrlParameters(BLANK_ORDER.getLabel(), true)),
+            eqJson(getExpectedParametersMap(BLANK_ORDER.getLabel(), true)),
             eq(NOTIFICATION_REFERENCE));
 
         verify(notificationClient, never()).sendEmail(

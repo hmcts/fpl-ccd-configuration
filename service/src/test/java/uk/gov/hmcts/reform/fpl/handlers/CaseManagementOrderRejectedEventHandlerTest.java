@@ -42,7 +42,7 @@ class CaseManagementOrderRejectedEventHandlerTest {
         CaseData caseData = caseData();
         CaseManagementOrder cmo = CaseManagementOrder.builder().build();
 
-        RejectedCMOTemplate expectedTemplate = new RejectedCMOTemplate();
+        RejectedCMOTemplate expectedTemplate = RejectedCMOTemplate.builder().build();
 
         given(inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))
@@ -51,7 +51,7 @@ class CaseManagementOrderRejectedEventHandlerTest {
         given(caseManagementOrderEmailContentProvider.buildCMORejectedByJudgeNotificationParameters(caseData, cmo))
             .willReturn(expectedTemplate);
 
-        caseManagementOrderRejectedEventHandler.notifyLocalAuthorityOfRejectedCaseManagementOrder(
+        caseManagementOrderRejectedEventHandler.notifyLocalAuthority(
             new CaseManagementOrderRejectedEvent(caseData, cmo));
 
         verify(notificationService).sendEmail(

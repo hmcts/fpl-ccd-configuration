@@ -191,12 +191,13 @@ class AgreedCMOUploadedEventHandlerTest {
     }
 
     private static CMOReadyToSealTemplate expectedJudgeTemplate(String judgeName) {
-        return new CMOReadyToSealTemplate()
-            .setRespondentLastName("Smith")
-            .setJudgeTitle("His Honour Judge")
-            .setJudgeName(judgeName)
-            .setCaseUrl(FAKE_URL)
-            .setSubjectLineWithHearingDate("Smith, 12345, Case management hearing, 1 February 2020");
+        return CMOReadyToSealTemplate.builder()
+            .respondentLastName("Smith")
+            .judgeTitle("His Honour Judge")
+            .judgeName(judgeName)
+            .caseUrl(FAKE_URL)
+            .subjectLineWithHearingDate("Smith, 12345, Case management hearing, 1 February 2020")
+            .build();
     }
 
     private HearingBooking buildHearing(AbstractJudge judgeAndLegalAdvisor) {
