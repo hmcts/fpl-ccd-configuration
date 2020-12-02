@@ -66,26 +66,26 @@ public class RemoveOrderService {
             .orElseThrow(() -> new RemovableOrderNotFoundException(removedOrderId));
     }
 
-    public Optional<StandardDirectionOrder> getRemovedSDO(CaseData caseData, CaseData caseDataBefore) {
-        List<Element<StandardDirectionOrder>> hiddenSDOs = caseData.getHiddenStandardDirectionOrders();
-        List<Element<StandardDirectionOrder>> previousHiddenSDOs = caseDataBefore.getHiddenStandardDirectionOrders();
-
-        if (!Objects.equals(hiddenSDOs, previousHiddenSDOs)) {
-            return hiddenSDOs.stream()
-                .filter(removedSDO -> !previousHiddenSDOs.contains(removedSDO))
-                .findFirst()
-                .map(Element::getValue);
-        }
-        return Optional.empty();
+    public Optional<StandardDirectionOrder> getRemovedSDO(
+        List<Element<StandardDirectionOrder>> hiddenSDOs,
+        List<Element<StandardDirectionOrder>> previousHiddenSDOs
+    ) {
+        return getRemovedOrder(hiddenSDOs, previousHiddenSDOs);
     }
 
-    public Optional<CaseManagementOrder> getRemovedCMO(CaseData caseData, CaseData caseDataBefore) {
-        List<Element<CaseManagementOrder>> hiddenCMOs = caseData.getHiddenCMOs();
-        List<Element<CaseManagementOrder>> previousHiddenCMOs = caseDataBefore.getHiddenCMOs();
+    public Optional<CaseManagementOrder> getRemovedCMO(
+        List<Element<CaseManagementOrder>> hiddenCMOs,
+        List<Element<CaseManagementOrder>> previousHiddenCMOs
+    ) {
+        return getRemovedOrder(hiddenCMOs, previousHiddenCMOs);
+    }
 
-        if (!Objects.equals(hiddenCMOs, previousHiddenCMOs)) {
-            return hiddenCMOs.stream()
-                .filter(removedCMO -> !previousHiddenCMOs.contains(removedCMO))
+    private <T extends RemovableOrder> Optional<T> getRemovedOrder(
+        List<Element<T>> hiddenOrders, List<Element<T>> previousHiddenOrders
+    ) {
+        if (!Objects.equals(hiddenOrders, previousHiddenOrders)) {
+            return hiddenOrders.stream()
+                .filter(order -> !previousHiddenOrders.contains(order))
                 .findFirst()
                 .map(Element::getValue);
         }

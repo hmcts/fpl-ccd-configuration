@@ -162,32 +162,10 @@ class RemoveOrderControllerSubmittedEvent extends AbstractControllerTest {
             .sendEmail(eq(SDO_REMOVAL_NOTIFICATION_TEMPLATE), any(), any(), any()));
     }
 
-    @Test
-    void shouldNotSendEmailNotificationsIfABlankOrderIsRemoved() {
-        Element<GeneratedOrder> blankOrder = element(buildBlankOrder());
-
-        List<Element<GeneratedOrder>> hiddenOrders = singletonList(blankOrder);
-        List<Element<StandardDirectionOrder>> hiddenSDOs =
-            singletonList(element(StandardDirectionOrder.builder().build()));
-        List<Element<CaseManagementOrder>> hiddenCMOs = singletonList(element(CaseManagementOrder.builder().build()));
-
-        CaseDetails caseDetails = caseDetailsWithRemovableOrders(hiddenCMOs, hiddenSDOs, hiddenOrders);
-        CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(hiddenCMOs, hiddenSDOs, emptyList());
-
-        CallbackRequest callbackRequest = CallbackRequest.builder()
-            .caseDetails(caseDetails)
-            .caseDetailsBefore(caseDetailsBefore)
-            .build();
-
-        postSubmittedEvent(callbackRequest);
-
-        verifyNoInteractions(notificationClient);
-    }
-
     @ParameterizedTest
     @EnumSource(
         value = GeneratedOrderType.class,
-        names = {"EMERGENCY_PROTECTION_ORDER", "CARE_ORDER", "SUPERVISION_ORDER"}
+        names = {"BLANK_ORDER", "EMERGENCY_PROTECTION_ORDER", "CARE_ORDER", "SUPERVISION_ORDER"}
     )
     void shouldNotSendNotificationsIfAGeneratedOrderIsRemoved(GeneratedOrderType generatedOrderType) {
         Element<GeneratedOrder> removedOrder = element(buildOrder(generatedOrderType));
@@ -270,15 +248,6 @@ class RemoveOrderControllerSubmittedEvent extends AbstractControllerTest {
             .build();
         return mapper.convertValue(orderRemovalTemplate, new TypeReference<>() {
         });
-    }
-
-    private GeneratedOrder buildBlankOrder() {
-        return GeneratedOrder.builder()
-            .type("Blank order (C21)")
-            .title("order")
-            .dateOfIssue("12 March 1234")
-            .removalReason(REMOVAL_REASON)
-            .build();
     }
 
     private GeneratedOrder buildOrder(GeneratedOrderType type) {

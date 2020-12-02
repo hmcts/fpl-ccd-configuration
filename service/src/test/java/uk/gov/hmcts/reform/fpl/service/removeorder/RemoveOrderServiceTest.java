@@ -154,10 +154,7 @@ class RemoveOrderServiceTest {
         List<Element<StandardDirectionOrder>> previousHiddenSDOs,
         Element<StandardDirectionOrder> expectedRemovedSDO
     ) {
-        when(caseData.getHiddenStandardDirectionOrders()).thenReturn(hiddenSDOs);
-        when(caseDataBefore.getHiddenStandardDirectionOrders()).thenReturn(previousHiddenSDOs);
-
-        Optional<StandardDirectionOrder> removedOrder = underTest.getRemovedSDO(caseData, caseDataBefore);
+        Optional<StandardDirectionOrder> removedOrder = underTest.getRemovedSDO(hiddenSDOs, previousHiddenSDOs);
 
         if (expectedRemovedSDO == null) {
             assertThat(removedOrder).isEmpty();
@@ -174,10 +171,7 @@ class RemoveOrderServiceTest {
         List<Element<CaseManagementOrder>> previousHiddenCMOs,
         Element<CaseManagementOrder> expectedRemovedCMO
     ) {
-        when(caseData.getHiddenCMOs()).thenReturn(hiddenCMOs);
-        when(caseDataBefore.getHiddenCMOs()).thenReturn(previousHiddenCMOs);
-
-        Optional<CaseManagementOrder> removedOrder = underTest.getRemovedCMO(caseData, caseDataBefore);
+        Optional<CaseManagementOrder> removedOrder = underTest.getRemovedCMO(hiddenCMOs, previousHiddenCMOs);
 
         if (expectedRemovedCMO == null) {
             assertThat(removedOrder).isEmpty();

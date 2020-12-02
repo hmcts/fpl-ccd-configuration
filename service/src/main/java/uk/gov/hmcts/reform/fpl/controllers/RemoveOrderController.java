@@ -107,8 +107,10 @@ public class RemoveOrderController extends CallbackController {
         CaseData caseData = getCaseData(callbackRequest.getCaseDetails());
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
-        Optional<StandardDirectionOrder> removedSDO = service.getRemovedSDO(caseData, caseDataBefore);
-        Optional<CaseManagementOrder> removedCMO = service.getRemovedCMO(caseData, caseDataBefore);
+        Optional<StandardDirectionOrder> removedSDO = service.getRemovedSDO(
+            caseData.getHiddenStandardDirectionOrders(), caseDataBefore.getHiddenStandardDirectionOrders());
+        Optional<CaseManagementOrder> removedCMO = service.getRemovedCMO(
+            caseData.getHiddenCMOs(), caseDataBefore.getHiddenCMOs());
 
         if (removedSDO.isPresent()) {
             publishEvent(new PopulateStandardDirectionsEvent(callbackRequest));
