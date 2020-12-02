@@ -6,6 +6,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeepersEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.notify.SharedNotifyTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.sendtogatekeeper.NotifyGatekeeperTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
@@ -22,7 +23,7 @@ public class NotifyGatekeeperEventHandler {
     private final GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
 
     @EventListener
-    public void sendEmailToGatekeeper(NotifyGatekeepersEvent event) {
+    public void notifyGatekeeper(NotifyGatekeepersEvent event) {
         CaseData caseData = event.getCaseData();
 
         NotifyGatekeeperTemplate parameters = gatekeeperEmailContentProvider.buildGatekeeperNotification(caseData);
@@ -30,10 +31,8 @@ public class NotifyGatekeeperEventHandler {
         List<String> emailList = getDistinctGatekeeperEmails(caseData.getGatekeeperEmails());
 
         emailList.forEach(recipientEmail -> {
-            NotifyGatekeeperTemplate template = parameters.duplicate();
-
-            notificationService.sendEmail(GATEKEEPER_SUBMISSION_TEMPLATE, recipientEmail, template,
-                caseData.getId().toString());
+            SharedNotifyTemplate template = parameters.duplicate();
+            notificationService.sendEmail(GATEKEEPER_SUBMISSION_TEMPLATE, recipientEmail, template, caseData.getId());
         });
     }
 }

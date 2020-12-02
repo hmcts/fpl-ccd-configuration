@@ -233,6 +233,14 @@ public class CaseData {
         return findElement(elementId, hearingDetails);
     }
 
+    @JsonIgnore
+    public Optional<Element<HearingBooking>> getHearingLinkedToCMO(UUID removedOrderId) {
+        return hearingDetails.stream()
+            .filter(hearingBookingElement ->
+                removedOrderId.equals(hearingBookingElement.getValue().getCaseManagementOrderId()))
+            .findFirst();
+    }
+
     private LocalDate dateSubmitted;
     private final List<Element<DocumentBundle>> noticeOfProceedingsBundle;
     private final List<Element<Recipients>> statementOfService;

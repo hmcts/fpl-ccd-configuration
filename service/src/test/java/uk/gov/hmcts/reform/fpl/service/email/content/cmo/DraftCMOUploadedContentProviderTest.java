@@ -54,13 +54,14 @@ class DraftCMOUploadedContentProviderTest extends AbstractEmailContentProviderTe
             hearing, CASE_NUMBER, judge, respondents, "123456"
         );
 
-        DraftCMOUploadedTemplate expected = new DraftCMOUploadedTemplate()
-            .setJudgeName("Simmons")
-            .setJudgeTitle("Her Honour Judge")
-            .setRespondentLastName("Vlad")
-            .setSubjectLineWithHearingDate("Vlad, 123456, case management hearing, 20 February 2020")
-            .setCaseUrl(caseUrl(CASE_NUMBER.toString(), "DraftOrdersTab"));
+        DraftCMOUploadedTemplate expected = DraftCMOUploadedTemplate.builder()
+            .judgeName("Simmons")
+            .judgeTitle("Her Honour Judge")
+            .respondentLastName("Vlad")
+            .subjectLineWithHearingDate("Vlad, 123456, case management hearing, 20 February 2020")
+            .caseUrl(caseUrl(CASE_NUMBER.toString(), "DraftOrdersTab"))
+            .build();
 
-        assertThat(template).isEqualToComparingFieldByField(expected);
+        assertThat(template).usingRecursiveComparison().isEqualTo(expected);
     }
 }

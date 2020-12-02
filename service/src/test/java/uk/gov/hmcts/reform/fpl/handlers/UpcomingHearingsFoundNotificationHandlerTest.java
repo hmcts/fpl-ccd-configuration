@@ -9,6 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.UpcomingHearingsFound;
+import uk.gov.hmcts.reform.fpl.model.notify.hearing.UpcomingHearingNotifyData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -18,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static org.mockito.Mockito.verify;
@@ -56,7 +56,9 @@ class UpcomingHearingsFoundNotificationHandlerTest {
     @Test
     void shouldSendEmailWithUpcomingHearings() {
         final List<CaseDetails> cases = List.of(CaseDetails.builder().build());
-        final Map<String, Object> params = Map.of("testKey", "testValue");
+        final UpcomingHearingNotifyData params = UpcomingHearingNotifyData.builder()
+            .cases("1")
+            .build();
         final UpcomingHearingsFound upcomingHearings = new UpcomingHearingsFound(hearingDate, cases);
 
         when(featureToggleService.isCtscReportEnabled()).thenReturn(true);

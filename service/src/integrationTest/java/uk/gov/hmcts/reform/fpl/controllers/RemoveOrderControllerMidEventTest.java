@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.controllers.RemoveOrderController.CMO_ERROR_MESSAGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -134,7 +135,41 @@ public class RemoveOrderControllerMidEventTest extends AbstractControllerTest {
             "showRemoveSDOWarningFlag", YES.getValue()
         );
 
+        assertThat(response.getErrors()).isNull();
         assertThat(responseData).containsAllEntriesOf(extractedFields);
+    }
+
+    @Test
+    void shouldThrowAnErrorWhenCaseManagementOrderHasNotLinkedHearing() {
+        UUID removedOrderId = UUID.randomUUID();
+        DocumentReference documentReference = DocumentReference.builder().build();
+
+        HearingBooking hearingBooking = HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .startDate(now())
+            .caseManagementOrderId(UUID.randomUUID())
+            .build();
+
+        CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder()
+            .order(documentReference)
+            .build();
+
+        DynamicList dynamicList = DynamicList.builder()
+            .value(DynamicListElement.builder()
+                .code(removedOrderId)
+                .label("Case management order - 12 March 1234")
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .sealedCMOs(List.of(element(removedOrderId, caseManagementOrder)))
+            .hearingDetails(List.of(element(hearingBooking)))
+            .removableOrderList(dynamicList)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
+
+        assertThat(response.getErrors()).isEqualTo(List.of(String.format(CMO_ERROR_MESSAGE, removedOrderId)));
     }
 
     @Test

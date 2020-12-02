@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -56,12 +57,15 @@ public class CMORemovalAction implements OrderRemovalAction {
                                    RemovableOrder removableOrder) {
         CaseManagementOrder caseManagementOrder = (CaseManagementOrder) removableOrder;
 
-        Element<HearingBooking> hearingBooking
-            = getHearingLinkedToCMO(caseData.getHearingDetails(), removableOrderId);
+        Optional<Element<HearingBooking>> hearingBooking = caseData.getHearingLinkedToCMO(removableOrderId);
+
+        if (hearingBooking.isEmpty()) {
+            throw new HearingNotFoundException(format("Could not find hearing matching id %s", removableOrderId));
+        }
 
         data.put("orderToBeRemoved", caseManagementOrder.getOrder());
         data.put("orderTitleToBeRemoved", "Case management order");
-        data.put("hearingToUnlink", hearingBooking.getValue().toLabel());
+        data.put("hearingToUnlink", hearingBooking.get().getValue().toLabel());
         data.put("showRemoveCMOFieldsFlag", YES.getValue());
     }
 
@@ -79,15 +83,5 @@ public class CMORemovalAction implements OrderRemovalAction {
                 }
                 return element;
             }).collect(Collectors.toList());
-    }
-
-    private Element<HearingBooking> getHearingLinkedToCMO(List<Element<HearingBooking>> hearings,
-                                                                    UUID removedOrderId) {
-        return hearings.stream()
-            .filter(hearingBookingElement ->
-                removedOrderId.equals(hearingBookingElement.getValue().getCaseManagementOrderId()))
-            .findFirst()
-            .orElseThrow(() -> new HearingNotFoundException(
-                format("Could not find hearing matching id %s", removedOrderId)));
     }
 }

@@ -58,7 +58,7 @@ class TemporaryHearingJudgeContentProviderTest extends AbstractEmailContentProvi
             .build();
 
         assertThat(temporaryHearingJudgeContentProvider.buildNotificationParameters(caseData, hearingBooking))
-            .isEqualToComparingFieldByField(getExpectedNotificationParameters());
+            .usingRecursiveComparison().isEqualTo(getExpectedNotificationParameters());
     }
 
     @Test
@@ -92,18 +92,16 @@ class TemporaryHearingJudgeContentProviderTest extends AbstractEmailContentProvi
     }
 
     private TemporaryHearingJudgeTemplate getExpectedNotificationParameters() {
-        TemporaryHearingJudgeTemplate allocatedJudgeTemplate = new TemporaryHearingJudgeTemplate();
         String hearingStartDate = formatLocalDateToString(NOW.toLocalDate(), FormatStyle.MEDIUM);
-
-        allocatedJudgeTemplate.setJudgeTitle(HER_HONOUR_JUDGE.getLabel());
-        allocatedJudgeTemplate.setJudgeName("Davidson");
-        allocatedJudgeTemplate.setCaseUrl("http://fake-url/cases/case-details/12345");
-        allocatedJudgeTemplate.setCallout(String.format("Watson, 123, hearing %s", hearingStartDate));
-        allocatedJudgeTemplate.setHearingType(CASE_MANAGEMENT.getLabel());
-        allocatedJudgeTemplate.setAllocatedJudgeTitle(HIS_HONOUR_JUDGE.getLabel());
-        allocatedJudgeTemplate.setAllocatedJudgeName("Watson");
-        allocatedJudgeTemplate.setHasAllocatedJudge(YES.getValue());
-
-        return allocatedJudgeTemplate;
+        return TemporaryHearingJudgeTemplate.builder()
+            .judgeTitle(HER_HONOUR_JUDGE.getLabel())
+            .judgeName("Davidson")
+            .caseUrl("http://fake-url/cases/case-details/12345")
+            .callout(String.format("Watson, 123, hearing %s", hearingStartDate))
+            .hearingType(CASE_MANAGEMENT.getLabel())
+            .allocatedJudgeTitle(HIS_HONOUR_JUDGE.getLabel())
+            .allocatedJudgeName("Watson")
+            .hasAllocatedJudge(YES.getValue())
+            .build();
     }
 }

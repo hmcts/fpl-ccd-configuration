@@ -70,7 +70,7 @@ class DraftCMOUploadedEventHandlerTest {
             any(),
             eq(ALLOCATED_JUDGE_EMAIL),
             any(NotifyData.class),
-            any()
+            eq(CASE_ID)
         );
     }
 
@@ -143,11 +143,12 @@ class DraftCMOUploadedEventHandlerTest {
     }
 
     private DraftCMOUploadedTemplate template(String name, String title) {
-        return new DraftCMOUploadedTemplate()
-            .setCaseUrl("https://fake.url")
-            .setJudgeName(name)
-            .setJudgeTitle(title)
-            .setRespondentLastName("Smith")
-            .setSubjectLineWithHearingDate("Smith, 12345, Case management hearing, 1 February 2020");
+        return DraftCMOUploadedTemplate.builder()
+            .caseUrl("https://fake.url")
+            .judgeName(name)
+            .judgeTitle(title)
+            .respondentLastName("Smith")
+            .subjectLineWithHearingDate("Smith, 12345, Case management hearing, 1 February 2020")
+            .build();
     }
 }

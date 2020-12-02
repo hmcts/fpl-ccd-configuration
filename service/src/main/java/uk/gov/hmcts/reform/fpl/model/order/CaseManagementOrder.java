@@ -23,6 +23,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJud
 public class CaseManagementOrder implements RemovableOrder {
     private DocumentReference order;
     private String hearing;
+    // Case management order, 21 June 2020
     private LocalDate dateSent;
     private LocalDate dateIssued;
     private CMOStatus status;
