@@ -62,7 +62,7 @@ public class UploadDocumentsController extends CallbackController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        if(featureToggleService.isApplicationDocumentsEventEnabled()) {
+        if (featureToggleService.isApplicationDocumentsEventEnabled()) {
             CaseData caseDataBefore = getCaseDataBefore(callbackrequest);
             caseDetails.getData().putAll(applicationDocumentsService.updateApplicationDocuments(
                 caseData.getApplicationDocuments(),
@@ -99,38 +99,44 @@ public class UploadDocumentsController extends CallbackController {
             //currently null not working here
             //currently can't add multiple documents
             //if status is set as to follow and no document attached should we copy nothing over
-            List<Element<ApplicationDocument>> updatedApplicationDocuments = convertOldDocumentsToNewApplicationDocuments(socialWorkChronologyDocument, SOCIAL_WORK_CHRONOLOGY);
+            List<Element<ApplicationDocument>> updatedApplicationDocuments
+                = convertOldDocumentsToNewApplicationDocuments(socialWorkChronologyDocument, SOCIAL_WORK_CHRONOLOGY);
             caseDetails.getData().put("applicationDocuments", updatedApplicationDocuments);
         }
 
         if (socialWorkStatementDocument != null) {
-            List<Element<ApplicationDocument>> updatedApplicationDocuments = convertOldDocumentsToNewApplicationDocuments(socialWorkStatementDocument, SOCIAL_WORK_STATEMENT);
+            List<Element<ApplicationDocument>> updatedApplicationDocuments
+                = convertOldDocumentsToNewApplicationDocuments(socialWorkStatementDocument, SOCIAL_WORK_STATEMENT);
             caseDetails.getData().put("applicationDocuments", updatedApplicationDocuments);
         }
 
         if (socialWorkCarePlanDocument != null) {
-            List<Element<ApplicationDocument>> updatedApplicationDocuments = convertOldDocumentsToNewApplicationDocuments(socialWorkCarePlanDocument, CARE_PLAN);
+            List<Element<ApplicationDocument>> updatedApplicationDocuments
+                = convertOldDocumentsToNewApplicationDocuments(socialWorkCarePlanDocument, CARE_PLAN);
             caseDetails.getData().put("applicationDocuments", updatedApplicationDocuments);
         }
 
         if (socialWorkEvidenceTemplateDocument != null) {
-            List<Element<ApplicationDocument>> updatedApplicationDocuments = convertOldDocumentsToNewApplicationDocuments(socialWorkEvidenceTemplateDocument, SWET);
+            List<Element<ApplicationDocument>> updatedApplicationDocuments
+                = convertOldDocumentsToNewApplicationDocuments(socialWorkEvidenceTemplateDocument, SWET);
             caseDetails.getData().put("applicationDocuments", updatedApplicationDocuments);
         }
 
         if (thresholdDocument != null) {
-            List<Element<ApplicationDocument>> updatedApplicationDocuments = convertOldDocumentsToNewApplicationDocuments(thresholdDocument, THRESHOLD);
+            List<Element<ApplicationDocument>> updatedApplicationDocuments
+                = convertOldDocumentsToNewApplicationDocuments(thresholdDocument, THRESHOLD);
             caseDetails.getData().put("applicationDocuments", updatedApplicationDocuments);
         }
 
         if (checklistDocument != null) {
-            List<Element<ApplicationDocument>> updatedApplicationDocuments = convertOldDocumentsToNewApplicationDocuments(checklistDocument, CHECKLIST_DOCUMENT);
+            List<Element<ApplicationDocument>> updatedApplicationDocuments
+                = convertOldDocumentsToNewApplicationDocuments(checklistDocument, CHECKLIST_DOCUMENT);
             caseDetails.getData().put("applicationDocuments", updatedApplicationDocuments);
         }
     }
 
-    private List<Element<ApplicationDocument>> convertOldDocumentsToNewApplicationDocuments(Document document,
-                                                                                            ApplicationDocumentType documentType) {
+    private List<Element<ApplicationDocument>> convertOldDocumentsToNewApplicationDocuments(
+        Document document, ApplicationDocumentType documentType) {
 
         List<Element<ApplicationDocument>> applicationDocuments = new ArrayList<>();
 
@@ -144,7 +150,6 @@ public class UploadDocumentsController extends CallbackController {
 
         //is included in swet fine as null or does it need to be empty string
         //cater for if it's an 'other document' then set document name
-
 
         applicationDocuments.add(element(applicationDocument));
         return applicationDocuments;
