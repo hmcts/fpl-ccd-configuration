@@ -73,7 +73,10 @@ public class ManageDocumentsLAControllerAboutToStartTest extends AbstractControl
         ManageDocumentLA actualManageDocument =
             mapper.convertValue(response.getData().get(MANAGE_DOCUMENT_LA_KEY), ManageDocumentLA.class);
 
-        ManageDocumentLA expectedManageDocument = ManageDocumentLA.builder().hasHearings(YES.getValue()).build();
+        ManageDocumentLA expectedManageDocument = ManageDocumentLA.builder()
+            .hasHearings(YES.getValue())
+            .hasC2s(YES.getValue())
+            .build();
 
         assertThat(hearingDynamicList).isEqualTo(expectedHearingDynamicList);
         assertThat(c2DocumentDynamicList).isEqualTo(expectedC2DocumentsDynamicList);
