@@ -29,6 +29,19 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageDocuments",
+    "CaseFieldID": "manageDocumentsNoC2sLabel",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "PageID": "ManageDocumentType",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "manageDocument.type=\"C2\" AND manageDocument.hasC2s=\"No\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageDocuments",
     "CaseFieldID": "manageDocumentsSupportingC2List",
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
@@ -104,7 +117,7 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "FieldShowCondition": "manageDocument.type=\"C2\""
+    "FieldShowCondition": "manageDocument.type=\"C2\" AND manageDocument.hasC2s=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",

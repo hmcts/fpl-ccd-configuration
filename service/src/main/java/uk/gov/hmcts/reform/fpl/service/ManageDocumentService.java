@@ -53,6 +53,7 @@ public class ManageDocumentService {
     public Map<String, Object> initialiseManageDocumentEvent(CaseData caseData, String caseFieldKey) {
         Map<String, Object> listAndLabel = new HashMap<>();
         String hasHearings;
+        String hasC2s;
 
         if (caseData.getHearingDetails() != null && !caseData.getHearingDetails().isEmpty()) {
             listAndLabel.put(MANAGE_DOCUMENTS_HEARING_LIST_KEY, caseData.buildDynamicHearingList());
@@ -63,11 +64,18 @@ public class ManageDocumentService {
             hasHearings = NO.getValue();
         }
 
-        ManageDocument manageDocument = ManageDocument.builder().hasHearings(hasHearings).build();
-
         if (caseData.hasC2DocumentBundle()) {
             listAndLabel.put(SUPPORTING_C2_LIST_KEY, caseData.buildC2DocumentDynamicList());
+            hasC2s = YES.getValue();
+        } else {
+            hasC2s = NO.getValue();
         }
+
+        ManageDocument manageDocument = ManageDocument.builder()
+            .hasHearings(hasHearings)
+            .hasC2s(hasC2s)
+            .build();
+
 
         listAndLabel.put(caseFieldKey, manageDocument);
 

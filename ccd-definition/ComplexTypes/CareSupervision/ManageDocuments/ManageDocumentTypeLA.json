@@ -28,6 +28,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocumentTypeLA",
+    "ListElementCode": "hasC2s",
+    "FieldType": "Text",
+    "ElementLabel": "Hidden to control display of the next field when there are no C2s",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type=\"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentTypeLA",
     "ListElementCode": "relatedToHearing",
     "FieldType": "YesOrNo",
     "ElementLabel": "Does the evidence document relate to a hearing?",

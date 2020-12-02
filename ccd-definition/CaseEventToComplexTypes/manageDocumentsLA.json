@@ -17,7 +17,7 @@
     "ListElementCode": "uploadedBy",
     "FieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
-    "FieldShowCondition": "supportingEvidenceDocumentsTemp.uploadedBy=\"*\""
+    "FieldShowCondition": "supportingEvidenceDocumentsTemp.uploadedBy=\"*\" AND manageDocumentLA.type!=\"CORRESPONDENCE\""
   },
   {
     "LiveFrom": "01/01/2017",
