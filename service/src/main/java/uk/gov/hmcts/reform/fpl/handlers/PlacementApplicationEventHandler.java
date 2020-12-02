@@ -6,10 +6,9 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.PlacementApplicationContentProvider;
-
-import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
 
@@ -21,14 +20,14 @@ public class PlacementApplicationEventHandler {
     private final PlacementApplicationContentProvider placementApplicationContentProvider;
 
     @EventListener
-    public void notifyAdminOfPlacementApplicationUpload(PlacementApplicationEvent event) {
+    public void notifyAdmin(PlacementApplicationEvent event) {
         CaseData caseData = event.getCaseData();
-        Map<String, Object> parameters = placementApplicationContentProvider
+
+        BaseCaseNotifyData notifyData = placementApplicationContentProvider
             .buildPlacementApplicationNotificationParameters(caseData);
+        String recipient = adminNotificationHandler.getHmctsAdminEmail(caseData);
 
-        String email = adminNotificationHandler.getHmctsAdminEmail(caseData);
-
-        notificationService.sendEmail(PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE, email, parameters,
-            caseData.getId().toString());
+        notificationService
+            .sendEmail(PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE, recipient, notifyData, caseData.getId());
     }
 }

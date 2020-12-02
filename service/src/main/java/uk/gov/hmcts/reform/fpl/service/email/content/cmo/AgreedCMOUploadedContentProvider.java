@@ -20,12 +20,13 @@ public class AgreedCMOUploadedContentProvider extends AbstractEmailContentProvid
     public CMOReadyToSealTemplate buildTemplate(HearingBooking hearing, Long caseId,
                                                 AbstractJudge judge, List<Element<Respondent>> respondents,
                                                 String familyManCaseNumber) {
-        return new CMOReadyToSealTemplate()
-            .setCaseUrl(getCaseUrl(caseId, "DraftOrdersTab"))
-            .setJudgeName(judge.getJudgeName())
-            .setJudgeTitle(judge.getJudgeOrMagistrateTitle())
-            .setRespondentLastName(getFirstRespondentLastName(respondents))
-            .setSubjectLineWithHearingDate(subjectLine(hearing, respondents, familyManCaseNumber));
+        return CMOReadyToSealTemplate.builder()
+            .caseUrl(getCaseUrl(caseId, "DraftOrdersTab"))
+            .judgeName(judge.getJudgeName())
+            .judgeTitle(judge.getJudgeOrMagistrateTitle())
+            .respondentLastName(getFirstRespondentLastName(respondents))
+            .subjectLineWithHearingDate(subjectLine(hearing, respondents, familyManCaseNumber))
+            .build();
     }
 
     private String subjectLine(HearingBooking hearing, List<Element<Respondent>> respondents,

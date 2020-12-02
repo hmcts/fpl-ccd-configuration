@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForNoticeOfProceedings;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,22 +17,21 @@ class NoticeOfProceedingsEmailContentProviderTest extends AbstractEmailContentPr
 
     @Test
     void shouldBuildNoticeOfProceedingsParametersForAllocatedJudge() {
-        AllocatedJudgeTemplateForNoticeOfProceedings expectedMap = getExpectedAllocatedJudgeParameters();
+        NotifyData expectedData = getExpectedAllocatedJudgeParameters();
+        NotifyData actualData = noticeOfProceedingsEmailContentProvider
+            .buildAllocatedJudgeNotification(populatedCaseData());
 
-        assertThat(noticeOfProceedingsEmailContentProvider.buildAllocatedJudgeNotification(populatedCaseData()))
-            .isEqualToComparingFieldByField(expectedMap);
+        assertThat(actualData).usingRecursiveComparison().isEqualTo(expectedData);
     }
 
     private AllocatedJudgeTemplateForNoticeOfProceedings getExpectedAllocatedJudgeParameters() {
-        AllocatedJudgeTemplateForNoticeOfProceedings allocatedJudgeTemplate
-            = new AllocatedJudgeTemplateForNoticeOfProceedings();
-        allocatedJudgeTemplate.setCaseUrl(caseUrl(CASE_REFERENCE, "HearingTab"));
-        allocatedJudgeTemplate.setFamilyManCaseNumber("12345");
-        allocatedJudgeTemplate.setHearingDate("1 January 2020");
-        allocatedJudgeTemplate.setJudgeName("Moley");
-        allocatedJudgeTemplate.setJudgeTitle("Her Honour Judge");
-        allocatedJudgeTemplate.setRespondentLastName("Smith");
-
-        return allocatedJudgeTemplate;
+        return AllocatedJudgeTemplateForNoticeOfProceedings.builder()
+            .caseUrl(caseUrl(CASE_REFERENCE, "HearingTab"))
+            .familyManCaseNumber("12345")
+            .hearingDate("1 January 2020")
+            .judgeName("Moley")
+            .judgeTitle("Her Honour Judge")
+            .respondentLastName("Smith")
+            .build();
     }
 }

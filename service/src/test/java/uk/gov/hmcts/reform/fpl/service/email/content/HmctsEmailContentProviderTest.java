@@ -32,11 +32,10 @@ class HmctsEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     private static final byte[] APPLICATION_BINARY = TestDataHelper.DOCUMENT_CONTENT;
 
-    private static DocumentReference applicationDocument;
+    private static DocumentReference applicationDocument = testDocumentReference();
 
     @BeforeEach
     void init() {
-        applicationDocument = testDocumentReference();
         when(documentDownloadService.downloadDocument(applicationDocument.getBinaryUrl()))
             .thenReturn(APPLICATION_BINARY);
     }
@@ -45,55 +44,56 @@ class HmctsEmailContentProviderTest extends AbstractEmailContentProviderTest {
     void shouldReturnExpectedMapWithValidCaseDetails() {
         List<String> ordersAndDirections = List.of("Emergency protection order", "Contact with any named person");
 
-        SubmitCaseHmctsTemplate hmctsSubmissionTemplate = new SubmitCaseHmctsTemplate();
-        hmctsSubmissionTemplate.setCourt(COURT_NAME);
-        hmctsSubmissionTemplate.setLocalAuthority(LOCAL_AUTHORITY_NAME);
-        hmctsSubmissionTemplate.setDataPresent(YES.getValue());
-        hmctsSubmissionTemplate.setFullStop(NO.getValue());
-        hmctsSubmissionTemplate.setOrdersAndDirections(ordersAndDirections);
-        hmctsSubmissionTemplate.setTimeFramePresent(YES.getValue());
-        hmctsSubmissionTemplate.setTimeFrameValue("same day");
-        hmctsSubmissionTemplate.setUrgentHearing(YES.getValue());
-        hmctsSubmissionTemplate.setNonUrgentHearing(NO.getValue());
-        hmctsSubmissionTemplate.setFirstRespondentName("Smith");
-        hmctsSubmissionTemplate.setReference(CASE_REFERENCE);
-        hmctsSubmissionTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
-        hmctsSubmissionTemplate.setDocumentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
-            .map(JSONObject::toMap)
-            .orElse(null));
+        SubmitCaseHmctsTemplate hmctsSubmissionTemplate = SubmitCaseHmctsTemplate.builder()
+            .court(COURT_NAME)
+            .localAuthority(LOCAL_AUTHORITY_NAME)
+            .dataPresent(YES.getValue())
+            .fullStop(NO.getValue())
+            .ordersAndDirections(ordersAndDirections)
+            .timeFramePresent(YES.getValue())
+            .timeFrameValue("same day")
+            .urgentHearing(YES.getValue())
+            .nonUrgentHearing(NO.getValue())
+            .firstRespondentName("Smith")
+            .reference(CASE_REFERENCE)
+            .caseUrl(caseUrl(CASE_REFERENCE))
+            .documentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
+                .map(JSONObject::toMap)
+                .orElse(null))
+            .build();
 
         CaseData caseData = populatedCaseData(Map.of("applicationBinaryUrl", applicationDocument.getBinaryUrl()));
 
         assertThat(hmctsEmailContentProvider.buildHmctsSubmissionNotification(caseData))
-            .isEqualToComparingFieldByField(hmctsSubmissionTemplate);
+            .usingRecursiveComparison().isEqualTo(hmctsSubmissionTemplate);
     }
 
     @Test
     void shouldReturnSuccessfullyWithIncompleteCaseDetails() {
-        SubmitCaseHmctsTemplate hmctsSubmissionTemplate = new SubmitCaseHmctsTemplate();
-
-        hmctsSubmissionTemplate.setCourt(COURT_NAME);
-        hmctsSubmissionTemplate.setLocalAuthority(LOCAL_AUTHORITY_NAME);
-        hmctsSubmissionTemplate.setDataPresent(YES.getValue());
-        hmctsSubmissionTemplate.setFullStop(NO.getValue());
-        hmctsSubmissionTemplate.setOrdersAndDirections(List.of("Care order"));
-        hmctsSubmissionTemplate.setTimeFramePresent(NO.getValue());
-        hmctsSubmissionTemplate.setTimeFrameValue("");
-        hmctsSubmissionTemplate.setUrgentHearing(NO.getValue());
-        hmctsSubmissionTemplate.setNonUrgentHearing(NO.getValue());
-        hmctsSubmissionTemplate.setFirstRespondentName("");
-        hmctsSubmissionTemplate.setReference("123");
-        hmctsSubmissionTemplate.setCaseUrl(caseUrl("123"));
-        hmctsSubmissionTemplate.setDocumentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
-            .map(JSONObject::toMap).orElse(null));
+        SubmitCaseHmctsTemplate hmctsSubmissionTemplate = SubmitCaseHmctsTemplate.builder()
+            .court(COURT_NAME)
+            .localAuthority(LOCAL_AUTHORITY_NAME)
+            .dataPresent(YES.getValue())
+            .fullStop(NO.getValue())
+            .ordersAndDirections(List.of("Care order"))
+            .timeFramePresent(NO.getValue())
+            .timeFrameValue("")
+            .urgentHearing(NO.getValue())
+            .nonUrgentHearing(NO.getValue())
+            .firstRespondentName("")
+            .reference(CASE_REFERENCE)
+            .caseUrl(caseUrl(CASE_REFERENCE))
+            .documentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
+                .map(JSONObject::toMap).orElse(null))
+            .build();
 
         assertThat(hmctsEmailContentProvider.buildHmctsSubmissionNotification(buildCaseData(applicationDocument)))
-            .isEqualToComparingFieldByField(hmctsSubmissionTemplate);
+            .usingRecursiveComparison().isEqualTo(hmctsSubmissionTemplate);
     }
 
     private CaseData buildCaseData(DocumentReference applicationDocument) {
         return CaseData.builder()
-            .id(123L)
+            .id(Long.valueOf(CASE_REFERENCE))
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .submittedForm(applicationDocument)
             .orders(Orders.builder()

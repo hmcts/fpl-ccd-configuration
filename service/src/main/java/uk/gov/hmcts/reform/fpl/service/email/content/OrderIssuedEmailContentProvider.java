@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,12 +10,11 @@ import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.notify.OrderIssuedNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-
-import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
@@ -32,24 +30,24 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
     private final GeneratedOrderService generatedOrderService;
     private final Time time;
 
-    public Map<String, Object> buildParametersWithoutCaseUrl(final CaseData caseData,
+    public OrderIssuedNotifyData getNotifyDataWithoutCaseUrl(final CaseData caseData,
                                                              final byte[] documentContents,
                                                              final IssuedOrderType issuedOrderType) {
-        return ImmutableMap.<String, Object>builder()
-            .put("orderType", getTypeOfOrder(caseData, issuedOrderType))
-            .put("callout", (issuedOrderType != NOTICE_OF_PLACEMENT_ORDER) ? buildCallout(caseData) : "")
-            .put("courtName", config.getCourt(caseData.getCaseLocalAuthority()).getName())
-            .putAll(linkToAttachedDocument(documentContents))
-            .put("respondentLastName", getFirstRespondentLastName(caseData.getRespondents1()))
+        return OrderIssuedNotifyData.builder()
+            .respondentLastName(getFirstRespondentLastName(caseData))
+            .orderType(getTypeOfOrder(caseData, issuedOrderType))
+            .courtName(config.getCourt(caseData.getCaseLocalAuthority()).getName())
+            .callout((issuedOrderType != NOTICE_OF_PLACEMENT_ORDER) ? buildCallout(caseData) : "")
+            .documentLink(generateAttachedDocumentLink(documentContents).orElse(null))
             .build();
     }
 
-    public Map<String, Object> buildParametersWithCaseUrl(final CaseData caseData,
+    public OrderIssuedNotifyData getNotifyDataWithCaseUrl(final CaseData caseData,
                                                           final byte[] documentContents,
                                                           final IssuedOrderType issuedOrderType) {
-        return ImmutableMap.<String, Object>builder()
-            .putAll(buildParametersWithoutCaseUrl(caseData, documentContents, issuedOrderType))
-            .put("caseUrl", getCaseUrl(caseData.getId(), "OrdersTab"))
+        return getNotifyDataWithoutCaseUrl(caseData, documentContents, issuedOrderType)
+            .toBuilder()
+            .caseUrl(getCaseUrl(caseData.getId(), "OrdersTab"))
             .build();
     }
 
@@ -57,15 +55,14 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
 
         JudgeAndLegalAdvisor judge = getAllocatedJudge(caseData);
 
-        AllocatedJudgeTemplateForGeneratedOrder judgeTemplate = new AllocatedJudgeTemplateForGeneratedOrder();
-        judgeTemplate.setOrderType(getTypeOfOrder(caseData, GENERATED_ORDER));
-        judgeTemplate.setCallout(buildCallout(caseData));
-        judgeTemplate.setCaseUrl(getCaseUrl(caseData.getId(), "OrdersTab"));
-        judgeTemplate.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
-        judgeTemplate.setJudgeTitle(judge.getJudgeOrMagistrateTitle());
-        judgeTemplate.setJudgeName(judge.getJudgeName());
-
-        return judgeTemplate;
+        return AllocatedJudgeTemplateForGeneratedOrder.builder()
+            .orderType(getTypeOfOrder(caseData, GENERATED_ORDER))
+            .callout(buildCallout(caseData))
+            .caseUrl(getCaseUrl(caseData.getId(), "OrdersTab"))
+            .respondentLastName(getFirstRespondentLastName(caseData))
+            .judgeTitle(judge.getJudgeOrMagistrateTitle())
+            .judgeName(judge.getJudgeName())
+            .build();
     }
 
     private JudgeAndLegalAdvisor getAllocatedJudge(CaseData caseData) {
@@ -93,12 +90,5 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
         return orderType.toLowerCase();
     }
 
-    private Map<String, Object> linkToAttachedDocument(final byte[] documentContents) {
-        ImmutableMap.Builder<String, Object> url = ImmutableMap.builder();
 
-        generateAttachedDocumentLink(documentContents).ifPresent(
-            attachedDocumentLink -> url.put("documentLink", attachedDocumentLink));
-
-        return url.build();
-    }
 }

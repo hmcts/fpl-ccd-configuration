@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.notify.PartyAddedNotifyData;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -20,9 +20,8 @@ import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotification
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
-import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
@@ -79,8 +78,8 @@ class PartyAddedToCaseEventHandlerTest {
 
     @Test
     void shouldSendEmailToPartiesWhenAddedToCase() {
-        final Map<String, Object> expectedEmailParameters = getPartyAddedByEmailNotificationParameters();
-        final Map<String, Object> expectedDigitalParameters = getPartyAddedByDigitalServiceNotificationParameters();
+        final PartyAddedNotifyData expectedEmailParameters = getPartyAddedByEmailNotificationParameters();
+        final PartyAddedNotifyData expectedDigitalParameters = getPartyAddedByDigitalServiceNotificationParameters();
 
         given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(caseData, EMAIL))
             .willReturn(expectedEmailParameters);
@@ -88,19 +87,19 @@ class PartyAddedToCaseEventHandlerTest {
         given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(caseData, DIGITAL_SERVICE))
             .willReturn(expectedDigitalParameters);
 
-        partyAddedToCaseEventHandler.sendEmailToPartiesAddedToCase(new PartyAddedToCaseEvent(caseData, caseDataBefore));
+        partyAddedToCaseEventHandler.notifyParties(new PartyAddedToCaseEvent(caseData, caseDataBefore));
 
         verify(notificationService).sendEmail(
             PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE,
             PARTY_ADDED_TO_CASE_BY_EMAIL_ADDRESS,
             expectedEmailParameters,
-            "12345");
+            caseData.getId());
 
         verify(notificationService).sendEmail(
             PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE,
             PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_EMAIL,
             expectedDigitalParameters,
-            "12345");
+            caseData.getId());
     }
 
     @Test
@@ -115,25 +114,25 @@ class PartyAddedToCaseEventHandlerTest {
             caseData, DIGITAL_SERVICE))
             .willReturn(getPartyAddedByDigitalServiceNotificationParameters());
 
-        partyAddedToCaseEventHandler.sendEmailToPartiesAddedToCase(new PartyAddedToCaseEvent(caseData, caseDataBefore));
+        partyAddedToCaseEventHandler.notifyParties(new PartyAddedToCaseEvent(caseData, caseDataBefore));
 
         verify(notificationService, never()).sendEmail(
             eq(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE),
             eq(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_EMAIL),
-            anyMap(),
-            eq("12345"));
+            any(),
+            eq(caseData.getId()));
 
         verify(notificationService, never()).sendEmail(
             eq(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE),
             eq(PARTY_ADDED_TO_CASE_BY_EMAIL_ADDRESS),
-            anyMap(),
-            eq("12345"));
+            any(),
+            eq(caseData.getId()));
 
         verify(notificationService).sendEmail(
-            eq(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE),
-            eq("johnmoley@test.com"),
-            eq(getPartyAddedByDigitalServiceNotificationParameters()),
-            eq("12345"));
+            PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE,
+            "johnmoley@test.com",
+            getPartyAddedByDigitalServiceNotificationParameters(),
+            caseData.getId());
     }
 
     private List<Representative> getUpdatedRepresentatives() {
@@ -148,20 +147,20 @@ class PartyAddedToCaseEventHandlerTest {
             .build());
     }
 
-    private Map<String, Object> getPartyAddedByEmailNotificationParameters() {
-        return ImmutableMap.<String, Object>builder()
-            .put("firstRespondentLastName", "Moley")
-            .put("familyManCaseNumber", "123")
-            .put("reference", "12345")
+    private PartyAddedNotifyData getPartyAddedByEmailNotificationParameters() {
+        return PartyAddedNotifyData.builder()
+            .firstRespondentLastName("Moley")
+            .familyManCaseNumber("123")
+            .reference("12345")
             .build();
     }
 
-    private Map<String, Object> getPartyAddedByDigitalServiceNotificationParameters() {
-        return ImmutableMap.<String, Object>builder()
-            .put("firstRespondentLastName", "Moley")
-            .put("familyManCaseNumber", "123")
-            .put("reference", "12345")
-            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+    private PartyAddedNotifyData getPartyAddedByDigitalServiceNotificationParameters() {
+        return PartyAddedNotifyData.builder()
+            .firstRespondentLastName("Moley")
+            .familyManCaseNumber("123")
+            .reference("12345")
+            .caseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
     }
 }
