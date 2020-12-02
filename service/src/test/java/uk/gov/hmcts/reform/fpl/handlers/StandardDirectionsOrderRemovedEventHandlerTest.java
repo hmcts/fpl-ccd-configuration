@@ -35,7 +35,7 @@ class StandardDirectionsOrderRemovedEventHandlerTest {
     private StandardDirectionsOrderRemovedEventHandler eventHandler;
 
     @Test
-    void shouldSendEmailToGatekeepersWhenAddedToCase() {
+    void shouldSendEmailToGatekeepersWhenStandardDirectionOrderAddedToCase() {
         final CaseData caseData = CaseData.builder()
             .id(CASE_ID)
             .gatekeeperEmails(singletonList(element(EmailAddress.builder().email(GATEKEEPER_EMAIL_ADDRESS).build())))
@@ -59,7 +59,7 @@ class StandardDirectionsOrderRemovedEventHandlerTest {
     private OrderRemovalTemplate expectedTemplate(String removalReason) {
         return OrderRemovalTemplate.builder()
             .respondentLastName("Smith")
-            .returnedNote(removalReason)
+            .removalReason(removalReason)
             .caseReference(String.valueOf(CASE_ID))
             .caseUrl(FAKE_URL)
             .build();

@@ -10,5 +10,5 @@ public class OrderRemovalTemplate implements NotifyData {
     private String caseReference;
     private String caseUrl;
     private String respondentLastName;
-    private String returnedNote;
+    private String removalReason;
 }

@@ -2,6 +2,9 @@ package uk.gov.hmcts.reform.fpl.service.removeorder;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -18,9 +21,13 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -52,6 +59,8 @@ class RemoveOrderServiceTest {
     private CaseDetailsMap data;
     @Mock
     private CaseData caseData;
+    @Mock
+    private CaseData caseDataBefore;
 
     @InjectMocks
     private RemoveOrderService underTest;
@@ -128,7 +137,6 @@ class RemoveOrderServiceTest {
         verify(orderRemovalAction).remove(caseData, data, REMOVED_UUID, removableOrder);
     }
 
-
     @Test
     void shouldUseExpectedRemovalActionWhenPreparingCaseFields() {
         when(orderRemovalActions.getAction(removableOrder)).thenReturn(orderRemovalAction);
@@ -136,6 +144,72 @@ class RemoveOrderServiceTest {
         underTest.populateSelectedOrderFields(caseData, data, REMOVED_UUID, removableOrder);
 
         verify(orderRemovalAction).populateCaseFields(caseData, data, REMOVED_UUID, removableOrder);
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("generateGetRemovedSDOArgumentsSource")
+    void shouldReturnRemovedSDO(
+        String testName,
+        List<Element<StandardDirectionOrder>> hiddenSDOs,
+        List<Element<StandardDirectionOrder>> previousHiddenSDOs,
+        Element<StandardDirectionOrder> expectedRemovedSDO
+    ) {
+        when(caseData.getHiddenStandardDirectionOrders()).thenReturn(hiddenSDOs);
+        when(caseDataBefore.getHiddenStandardDirectionOrders()).thenReturn(previousHiddenSDOs);
+
+        Optional<StandardDirectionOrder> removedOrder = underTest.getRemovedSDO(caseData, caseDataBefore);
+
+        if (expectedRemovedSDO == null) {
+            assertThat(removedOrder).isEmpty();
+        } else {
+            assertThat(removedOrder).isNotEmpty().containsSame(expectedRemovedSDO.getValue());
+        }
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("generateGetRemovedCMOArgumentsSource")
+    void shouldReturnRemovedCMO(
+        String testName,
+        List<Element<CaseManagementOrder>> hiddenCMOs,
+        List<Element<CaseManagementOrder>> previousHiddenCMOs,
+        Element<CaseManagementOrder> expectedRemovedCMO
+    ) {
+        when(caseData.getHiddenCMOs()).thenReturn(hiddenCMOs);
+        when(caseDataBefore.getHiddenCMOs()).thenReturn(previousHiddenCMOs);
+
+        Optional<CaseManagementOrder> removedOrder = underTest.getRemovedCMO(caseData, caseDataBefore);
+
+        if (expectedRemovedCMO == null) {
+            assertThat(removedOrder).isEmpty();
+        } else {
+            assertThat(removedOrder).isNotEmpty().containsSame(expectedRemovedCMO.getValue());
+        }
+    }
+
+    private static Stream<Arguments> generateGetRemovedSDOArgumentsSource() {
+        Element<StandardDirectionOrder> hiddenSDO1 = element(StandardDirectionOrder.builder().build());
+        Element<StandardDirectionOrder> hiddenSDO2 = element(StandardDirectionOrder.builder().build());
+
+        return Stream.of(
+            Arguments.of("A SDO is removed", singletonList(hiddenSDO2), emptyList(), hiddenSDO2),
+            Arguments.of(
+                "A new SDO is removed", List.of(hiddenSDO1, hiddenSDO2), singletonList(hiddenSDO1), hiddenSDO2),
+            Arguments.of("No SDOs removed", List.of(hiddenSDO2, hiddenSDO1), List.of(hiddenSDO2, hiddenSDO1), null),
+            Arguments.of("No Hidden SDOs exist", emptyList(), emptyList(), null)
+        );
+    }
+
+    private static Stream<Arguments> generateGetRemovedCMOArgumentsSource() {
+        Element<CaseManagementOrder> hiddenCMO1 = element(CaseManagementOrder.builder().build());
+        Element<CaseManagementOrder> hiddenCMO2 = element(CaseManagementOrder.builder().build());
+
+        return Stream.of(
+            Arguments.of("A CMO is removed", singletonList(hiddenCMO2), emptyList(), hiddenCMO2),
+            Arguments.of(
+                "A new CMO is removed", List.of(hiddenCMO1, hiddenCMO2), singletonList(hiddenCMO1), hiddenCMO2),
+            Arguments.of("No CMOs removed", List.of(hiddenCMO2, hiddenCMO1), List.of(hiddenCMO2, hiddenCMO1), null),
+            Arguments.of("No Hidden CMOs exist", emptyList(), emptyList(), null)
+        );
     }
 
     private DynamicListElement buildListElement(UUID id, String label) {

@@ -62,7 +62,7 @@ class OrderRemovalEmailContentProviderTest extends AbstractEmailContentProviderT
     private OrderRemovalTemplate expectedTemplate() {
         return OrderRemovalTemplate.builder()
             .respondentLastName("Smith")
-            .returnedNote(REMOVAL_REASON)
+            .removalReason(REMOVAL_REASON)
             .caseReference(String.valueOf(CASE_ID))
             .caseUrl(FAKE_URL)
             .build();

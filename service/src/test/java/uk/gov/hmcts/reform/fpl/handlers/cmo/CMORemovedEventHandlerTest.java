@@ -40,7 +40,7 @@ class CMORemovedEventHandlerTest {
     private CMORemovedEventHandler eventHandler;
 
     @Test
-    void shouldSendEmailToPartiesWhenAddedToCase() {
+    void shouldSendEmailToLocalAuthorityWhenCaseManagementOrderRemovedFromCase() {
         CaseData caseData = caseData();
         String removalReason = "removal reason details";
 
@@ -66,7 +66,7 @@ class CMORemovedEventHandlerTest {
     private OrderRemovalTemplate expectedTemplate(String removalReason) {
         return OrderRemovalTemplate.builder()
             .respondentLastName("Smith")
-            .returnedNote(removalReason)
+            .removalReason(removalReason)
             .caseReference(String.valueOf(CASE_ID))
             .caseUrl(FAKE_URL)
             .build();

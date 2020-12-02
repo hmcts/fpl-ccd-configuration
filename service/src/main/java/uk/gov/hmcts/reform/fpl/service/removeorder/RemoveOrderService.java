@@ -9,10 +9,13 @@ import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
+import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -61,6 +64,32 @@ public class RemoveOrderService {
             .map(Element::getValue)
             .findAny()
             .orElseThrow(() -> new RemovableOrderNotFoundException(removedOrderId));
+    }
+
+    public Optional<StandardDirectionOrder> getRemovedSDO(CaseData caseData, CaseData caseDataBefore) {
+        List<Element<StandardDirectionOrder>> hiddenSDOs = caseData.getHiddenStandardDirectionOrders();
+        List<Element<StandardDirectionOrder>> previousHiddenSDOs = caseDataBefore.getHiddenStandardDirectionOrders();
+
+        if (!Objects.equals(hiddenSDOs, previousHiddenSDOs)) {
+            return hiddenSDOs.stream()
+                .filter(removedSDO -> !previousHiddenSDOs.contains(removedSDO))
+                .findFirst()
+                .map(Element::getValue);
+        }
+        return Optional.empty();
+    }
+
+    public Optional<CaseManagementOrder> getRemovedCMO(CaseData caseData, CaseData caseDataBefore) {
+        List<Element<CaseManagementOrder>> hiddenCMOs = caseData.getHiddenCMOs();
+        List<Element<CaseManagementOrder>> previousHiddenCMOs = caseDataBefore.getHiddenCMOs();
+
+        if (!Objects.equals(hiddenCMOs, previousHiddenCMOs)) {
+            return hiddenCMOs.stream()
+                .filter(removedCMO -> !previousHiddenCMOs.contains(removedCMO))
+                .findFirst()
+                .map(Element::getValue);
+        }
+        return Optional.empty();
     }
 
     private List<Element<? extends RemovableOrder>> getRemovableOrderList(CaseData caseData) {

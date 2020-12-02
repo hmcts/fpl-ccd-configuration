@@ -266,7 +266,7 @@ class RemoveOrderControllerSubmittedEvent extends AbstractControllerTest {
             .caseReference(CASE_ID)
             .caseUrl("http://fake-url/cases/case-details/12345")
             .respondentLastName(RESPONDENT_LAST_NAME)
-            .returnedNote(REMOVAL_REASON)
+            .removalReason(REMOVAL_REASON)
             .build();
         return mapper.convertValue(orderRemovalTemplate, new TypeReference<>() {
         });
