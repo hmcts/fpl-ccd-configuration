@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
-import uk.gov.hmcts.reform.fpl.model.notify.sdo.CTSCTemplateForSDO;
+import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentP
 import uk.gov.hmcts.reform.fpl.service.email.content.StandardDirectionOrderIssuedEmailContentProvider;
 
 import java.util.Collection;
-import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CAFCASS;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CTSC;
@@ -36,40 +35,40 @@ public class StandardDirectionsOrderIssuedEventHandler {
     private final StandardDirectionOrderIssuedEmailContentProvider standardDirectionOrderIssuedEmailContentProvider;
     private final FeatureToggleService featureToggleService;
 
-    // FPLA-1513
-    // Needs refactored to use NotifyObject rather than Map<String, Object>
     @EventListener
-    public void notifyCafcassOfIssuedSDOAndNoticeOfProceedings(StandardDirectionsOrderIssuedEvent event) {
+    public void notifyCafcass(StandardDirectionsOrderIssuedEvent event) {
         CaseData caseData = event.getCaseData();
-        Map<String, Object> parameters = cafcassEmailContentProviderSDOIssued
-            .buildCafcassStandardDirectionOrderIssuedNotification(caseData);
-        String email = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
 
-        notificationService.sendEmail(SDO_AND_NOP_ISSUED_CAFCASS, email, parameters, caseData.getId().toString());
+        NotifyData parameters = cafcassEmailContentProviderSDOIssued.getNotifyData(caseData);
+        String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
+
+        notificationService
+            .sendEmail(SDO_AND_NOP_ISSUED_CAFCASS, recipient, parameters, caseData.getId());
     }
 
-    // FPLA-1513
-    // Needs refactored to use NotifyObject rather than Map<String, Object>
     @EventListener
-    public void notifyLocalAuthorityOfIssuedSDOAndNoticeOfProceedings(StandardDirectionsOrderIssuedEvent event) {
+    public void notifyLocalAuthority(StandardDirectionsOrderIssuedEvent event) {
         CaseData caseData = event.getCaseData();
-        Map<String, Object> parameters = localAuthorityEmailContentProvider
-            .buildLocalAuthorityStandardDirectionOrderIssuedNotification(caseData);
+
+        NotifyData notifyData = localAuthorityEmailContentProvider
+            .buildStandardDirectionOrderIssuedNotification(caseData);
+
         Collection<String> emails = inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()
         );
 
-        notificationService.sendEmail(SDO_AND_NOP_ISSUED_LA, emails, parameters, caseData.getId().toString());
+        notificationService.sendEmail(SDO_AND_NOP_ISSUED_LA, emails, notifyData, caseData.getId().toString());
     }
 
     @EventListener
-    public void notifyCTSCOfIssuedSDOandNoticeOfProceedings(StandardDirectionsOrderIssuedEvent event) {
+    public void notifyCTSC(StandardDirectionsOrderIssuedEvent event) {
         CaseData caseData = event.getCaseData();
-        CTSCTemplateForSDO parameters = standardDirectionOrderIssuedEmailContentProvider
-            .buildNotificationParametersForCTSC(caseData);
-        String email = ctscEmailLookupConfiguration.getEmail();
 
-        notificationService.sendEmail(SDO_AND_NOP_ISSUED_CTSC, email, parameters, caseData.getId().toString());
+        NotifyData notifyData = standardDirectionOrderIssuedEmailContentProvider
+            .buildNotificationParametersForCTSC(caseData);
+        String recipient = ctscEmailLookupConfiguration.getEmail();
+
+        notificationService.sendEmail(SDO_AND_NOP_ISSUED_CTSC, recipient, notifyData, caseData.getId());
     }
 
 }

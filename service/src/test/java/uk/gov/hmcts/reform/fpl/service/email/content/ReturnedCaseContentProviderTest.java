@@ -4,13 +4,11 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.DocumentException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.returnedcase.ReturnedCaseTemplate;
-import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
@@ -21,43 +19,39 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.model.notify.returnedcase.ReturnedCaseTemplate.ReturnedCaseTemplateBuilder;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
 
-@ContextConfiguration(classes = {ReturnedCaseContentProvider.class, LookupTestConfig.class,
-    CaseConverter.class, JacksonAutoConfiguration.class})
+@ContextConfiguration(classes = {ReturnedCaseContentProvider.class, LookupTestConfig.class})
 class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
 
     private static final byte[] APPLICATION_BINARY = TestDataHelper.DOCUMENT_CONTENT;
-
-    @Autowired
-    private CaseConverter caseConverter;
 
     @Autowired
     private ReturnedCaseContentProvider returnedCaseContentProvider;
 
     @Test
     void shouldBuildReturnedCaseTemplateWithCaseUrlWithAllData() {
-        CaseData caseDetails = caseConverter.convert(populatedCaseDetails());
-        ReturnedCaseTemplate expectedTemplate = returnedCaseTemplateWithCaseUrl().build();
+        CaseData caseDetails = populatedCaseData();
+        ReturnedCaseTemplate expectedData = returnedCaseTemplateWithCaseUrl().build();
 
-        ReturnedCaseTemplate actualTemplate = returnedCaseContentProvider.parametersWithCaseUrl(caseDetails);
+        ReturnedCaseTemplate actualData = returnedCaseContentProvider.parametersWithCaseUrl(caseDetails);
 
-        assertThat(actualTemplate).isEqualTo(expectedTemplate);
+        assertThat(actualData).isEqualTo(expectedData);
     }
 
     @Test
     void shouldBuildReturnedCaseTemplateWithCaseUrlWithoutOptionalData() {
         String familyManCaseNumber = "";
-        CaseData caseData = caseConverter.convert(populatedCaseDetails(
-            Map.of("familyManCaseNumber", familyManCaseNumber)));
-        ReturnedCaseTemplate expectedTemplate = returnedCaseTemplateWithCaseUrl()
+        CaseData caseData = populatedCaseData(Map.of("familyManCaseNumber", familyManCaseNumber));
+
+        ReturnedCaseTemplate expectedData = returnedCaseTemplateWithCaseUrl()
             .familyManCaseNumber(familyManCaseNumber)
             .build();
 
-        ReturnedCaseTemplate actualTemplate = returnedCaseContentProvider.parametersWithCaseUrl(caseData);
+        ReturnedCaseTemplate actualData = returnedCaseContentProvider.parametersWithCaseUrl(caseData);
 
-        assertThat(actualTemplate).isEqualTo(expectedTemplate);
+        assertThat(actualData).isEqualTo(expectedData);
     }
 
     @Nested
@@ -65,25 +59,21 @@ class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
 
         @Test
         void shouldBuildReturnedCaseTemplateWithApplicationUrl() {
-            final DocumentReference applicationDocument = TestDataHelper.testDocumentReference();
-            CaseData caseData = caseConverter.convert(populatedCaseDetails(Map.of(
-                "applicationBinaryUrl", applicationDocument.getBinaryUrl()
-            )));
+            DocumentReference application = TestDataHelper.testDocumentReference();
+            CaseData caseData = populatedCaseData(Map.of("applicationBinaryUrl", application.getBinaryUrl()));
 
-            ReturnedCaseTemplate expectedTemplate = returnedCaseTemplateWithApplicationUrl().build();
+            ReturnedCaseTemplate expectedData = returnedCaseTemplateWithApplicationUrl().build();
 
-            when(documentDownloadService.downloadDocument(applicationDocument.getBinaryUrl()))
-                .thenReturn(APPLICATION_BINARY);
+            when(documentDownloadService.downloadDocument(application.getBinaryUrl())).thenReturn(APPLICATION_BINARY);
 
-            ReturnedCaseTemplate actualTemplate = returnedCaseContentProvider
-                .parametersWithApplicationLink(caseData);
+            ReturnedCaseTemplate actualData = returnedCaseContentProvider.parametersWithApplicationLink(caseData);
 
-            assertThat(actualTemplate).isEqualTo(expectedTemplate);
+            assertThat(actualData).isEqualTo(expectedData);
         }
 
         @Test
         void shouldThrowExceptionWhenDocumentCannotBeDownload() {
-            CaseData caseData = caseConverter.convert(populatedCaseDetails());
+            CaseData caseData = populatedCaseData();
 
             when(documentDownloadService.downloadDocument(any())).thenReturn(null);
 
@@ -93,7 +83,7 @@ class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
 
         @Test
         void shouldThrowExceptionWhenApplicationDocumentIsEmpty() {
-            CaseData caseData = caseConverter.convert(populatedCaseDetails());
+            CaseData caseData = populatedCaseData();
             when(documentDownloadService.downloadDocument(any())).thenReturn(new byte[0]);
             assertThrows(DocumentException.class,
                 () -> returnedCaseContentProvider.parametersWithApplicationLink(caseData));
@@ -101,7 +91,7 @@ class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
 
         @Test
         void shouldThrowExceptionWhenDocumentIsNotSpecified() {
-            CaseData caseData = caseConverter.convert(populatedCaseDetails()).toBuilder()
+            CaseData caseData = populatedCaseData().toBuilder()
                 .submittedForm(null)
                 .build();
 

@@ -19,14 +19,15 @@ import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubject
 public class TemporaryHearingJudgeContentProvider extends AbstractEmailContentProvider {
 
     public TemporaryHearingJudgeTemplate buildNotificationParameters(CaseData caseData, HearingBooking hearingBooking) {
-        TemporaryHearingJudgeTemplate temporaryHearingJudgeTemplate = new TemporaryHearingJudgeTemplate();
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = hearingBooking.getJudgeAndLegalAdvisor();
+        TemporaryHearingJudgeTemplate temporaryHearingJudgeTemplate = TemporaryHearingJudgeTemplate.builder()
+            .judgeTitle(judgeAndLegalAdvisor.getJudgeOrMagistrateTitle())
+            .judgeName(judgeAndLegalAdvisor.getJudgeName())
+            .hearingType(hearingBooking.getType().getLabel())
+            .caseUrl(getCaseUrl(caseData.getId()))
+            .callout(buildCallout(caseData, hearingBooking))
+            .build();
 
-        temporaryHearingJudgeTemplate.setJudgeTitle(judgeAndLegalAdvisor.getJudgeOrMagistrateTitle());
-        temporaryHearingJudgeTemplate.setJudgeName(judgeAndLegalAdvisor.getJudgeName());
-        temporaryHearingJudgeTemplate.setHearingType(hearingBooking.getType().getLabel());
-        temporaryHearingJudgeTemplate.setCaseUrl(getCaseUrl(caseData.getId()));
-        temporaryHearingJudgeTemplate.setCallout(buildCallout(caseData, hearingBooking));
         setAllocatedJudgeFields(caseData.getAllocatedJudge(), temporaryHearingJudgeTemplate);
 
         return temporaryHearingJudgeTemplate;

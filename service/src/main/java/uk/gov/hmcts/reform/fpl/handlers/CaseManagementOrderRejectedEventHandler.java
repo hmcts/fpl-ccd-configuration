@@ -24,7 +24,7 @@ public class CaseManagementOrderRejectedEventHandler {
     private final CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
 
     @EventListener
-    public void notifyLocalAuthorityOfRejectedCaseManagementOrder(final CaseManagementOrderRejectedEvent event) {
+    public void notifyLocalAuthority(final CaseManagementOrderRejectedEvent event) {
         CaseData caseData = event.getCaseData();
         RejectedCMOTemplate parameters =
             caseManagementOrderEmailContentProvider.buildCMORejectedByJudgeNotificationParameters(

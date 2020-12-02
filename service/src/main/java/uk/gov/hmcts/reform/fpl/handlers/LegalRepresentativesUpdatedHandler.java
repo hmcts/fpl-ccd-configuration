@@ -35,7 +35,7 @@ public class LegalRepresentativesUpdatedHandler {
             legalRepresentative -> notificationService.sendEmail(
                 LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE,
                 legalRepresentative.getEmail(),
-                legalRepresentativeAddedContentProvider.getParameters(legalRepresentative, caseData),
+                legalRepresentativeAddedContentProvider.getNotifyData(legalRepresentative, caseData),
                 caseData.getId().toString())
         );
     }
