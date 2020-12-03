@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.document;
 
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -221,13 +222,44 @@ class UploadDocumentsMigrationServiceTest {
                 CONVERTED_OTHER_DOCUMENT_1,
                 CONVERTED_OTHER_DOCUMENT_2
             ),
-            "applicationDocumentsToFollowReason", "Social work chronology to follow,"
-                + " Social work statement to follow,"
-                + " Care plan to follow,"
-                + " SWET to follow,"
-                + " Social work statement to follow,"
-                + " Threshold to follow,"
-                + " Checklist document to follow"
+            "applicationDocumentsToFollowReason", ""
+        ));
+    }
+
+    @Test
+    void shouldTransformMixedSelection() {
+
+        when(transformer.convert(SOCIAL_WORK_CHRONOLOGY_DOCUMENT, SOCIAL_WORK_CHRONOLOGY))
+            .thenReturn(CONVERTED_SOCIAL_WORK_CHRONOLOGY_DOCUMENT);
+        when(transformer.convert(SOCIAL_WORK_CARE_PLAN_DOCUMENT_TO_FOLLOW_WITH_FILE, CARE_PLAN))
+            .thenReturn(CONVERTED_SOCIAL_WORK_CARE_PLAN_DOCUMENT);
+
+        Map<String, Object> actual = underTest.transformFromOldCaseData(CaseData.builder()
+            .socialWorkChronologyDocument(SOCIAL_WORK_CHRONOLOGY_DOCUMENT)
+            .socialWorkStatementDocument(SOCIAL_WORK_STATEMENT_DOCUMENT_TO_FOLLOW)
+            .socialWorkCarePlanDocument(SOCIAL_WORK_CARE_PLAN_DOCUMENT_TO_FOLLOW_WITH_FILE)
+            .socialWorkEvidenceTemplateDocument(SOCIAL_WORK_EVIDENCE_TEMPLATE_DOCUMENT_TO_FOLLOW)
+            .build());
+
+        assertThat(actual).isEqualTo(Map.of(
+            "applicationDocuments", List.of(
+                CONVERTED_SOCIAL_WORK_CHRONOLOGY_DOCUMENT,
+                CONVERTED_SOCIAL_WORK_CARE_PLAN_DOCUMENT
+            ),
+            "applicationDocumentsToFollowReason", "Social work statement to follow, SWET to follow"
+        ));
+    }
+
+    @Test
+    void shouldTransformOneDocToFollow() {
+
+        Map<String, Object> actual = underTest.transformFromOldCaseData(CaseData.builder()
+            .socialWorkChronologyDocument(SOCIAL_WORK_CHRONOLOGY_DOCUMENT_TO_FOLLOW)
+            .build());
+
+        assertThat(actual).isEqualTo(Map.of(
+            "applicationDocuments", Lists.emptyList(),
+            "applicationDocumentsToFollowReason", "Social work chronology to follow"
         ));
     }
 
