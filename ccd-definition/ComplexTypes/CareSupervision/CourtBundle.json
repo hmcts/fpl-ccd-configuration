@@ -2,25 +2,9 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CourtBundle",
-    "ListElementCode": "hearing",
-    "FieldType": "Text",
-    "ElementLabel": "Court bundle for",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "CourtBundle",
     "ListElementCode": "document",
     "FieldType": "Document",
-    "ElementLabel": "Court bundle",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "CourtBundle",
-    "ListElementCode": "documentRedacted",
-    "FieldType": "Document",
-    "ElementLabel": "Redacted court bundle",
+    "ElementLabel": "Upload a file",
     "SecurityClassification": "Public"
   },
   {

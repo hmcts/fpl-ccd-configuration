@@ -45,7 +45,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageDocumentsCourtBundle",
-    "FieldType": "CourtBundle",
+    "FieldType": "CourtBundleV2",
     "Label": " ",
     "SecurityClassification": "Public"
   },
@@ -62,7 +62,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "courtBundleList",
     "FieldType": "Collection",
-    "FieldTypeParameter": "CourtBundle",
+    "FieldTypeParameter": "CourtBundleV2",
     "Label": "Court bundle",
     "SecurityClassification": "Public"
   },
