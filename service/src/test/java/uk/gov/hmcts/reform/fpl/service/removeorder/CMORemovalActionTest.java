@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -107,7 +106,7 @@ class CMORemovalActionTest {
     }
 
     @Test
-    void shouldRemovedCaseManagementOrderWhenOtherCMOisPresent() {
+    void shouldRemoveCaseManagementOrderWhenOtherCMOisPresent() {
         CaseData caseData = CaseData.builder()
             .reasonToRemoveOrder(REASON)
             .sealedCMOs(newArrayList(
@@ -115,7 +114,10 @@ class CMORemovalActionTest {
                 element(ANOTHER_CASE_MANAGEMENT_ORDER_ID, cmo())
             ))
             .hiddenCaseManagementOrders(null)
-            .hearingDetails(null)
+            .hearingDetails(newArrayList(
+                element(HEARING_ID, hearing(TO_REMOVE_ORDER_ID)),
+                element(ANOTHER_HEARING_ID, hearing(ANOTHER_CASE_MANAGEMENT_ORDER_ID))
+            ))
             .build();
 
         CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
@@ -124,35 +126,14 @@ class CMORemovalActionTest {
 
         underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, cmo());
 
-        Map<String, List<?>> expectedData = new HashMap<>();
-        expectedData.put("hearingDetails", List.of());
-        expectedData.put("hiddenCaseManagementOrders", List.of(element(TO_REMOVE_ORDER_ID, cmoWithRemovalReason())));
-        expectedData.put("sealedCMOs", List.of(element(ANOTHER_CASE_MANAGEMENT_ORDER_ID, cmo())));
-
-        assertThat(caseDetailsMap).isEqualTo(expectedData);
-    }
-
-    @Test
-    void shouldRemovedCaseManagementOrderWhenNoHearing() {
-        CaseData caseData = CaseData.builder()
-            .reasonToRemoveOrder(REASON)
-            .sealedCMOs(newArrayList(element(TO_REMOVE_ORDER_ID, cmo())))
-            .hiddenCaseManagementOrders(newArrayList(element(ALREADY_REMOVED_ORDER_ID, cmo())))
-            .hearingDetails(null)
-            .build();
-
-        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
-            .data(Map.of())
-            .build());
-
-        underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, cmo());
-
-        Map<String, List<?>> expectedData = new HashMap<>();
-        expectedData.put("hearingDetails", List.of());
-        expectedData.put("hiddenCaseManagementOrders", List.of(
-            element(ALREADY_REMOVED_ORDER_ID, cmo()),
-            element(TO_REMOVE_ORDER_ID, cmoWithRemovalReason())
-        ));
+        Map<String, List<?>> expectedData = Map.of(
+            "hearingDetails", List.of(
+                element(HEARING_ID, hearing(null)),
+                element(ANOTHER_HEARING_ID, hearing(ANOTHER_CASE_MANAGEMENT_ORDER_ID))
+            ),
+            "hiddenCaseManagementOrders", List.of(element(TO_REMOVE_ORDER_ID, cmoWithRemovalReason())),
+            "sealedCMOs", List.of(element(ANOTHER_CASE_MANAGEMENT_ORDER_ID, cmo()))
+        );
 
         assertThat(caseDetailsMap).isEqualTo(expectedData);
     }
@@ -240,16 +221,16 @@ class CMORemovalActionTest {
 
     @Test
     void shouldPopulateCaseFieldsFromRemovedCMOAndHearingLinkedByLabel() {
+        LocalDateTime startDate = HEARING_START_DATE.plusDays(3);
         DocumentReference orderDocument = DocumentReference.builder().build();
-        CaseManagementOrder removedOrder = cmo(orderDocument, HEARING_START_DATE);
-
-        HearingBooking hearingToBeUnlinked = hearing(TO_REMOVE_ORDER_ID);
+        CaseManagementOrder removedOrder = cmo(orderDocument, startDate);
+        HearingBooking hearingToBeUnlinked = hearing(UUID.randomUUID(), startDate);
 
         CaseData caseData = CaseData.builder()
             .reasonToRemoveOrder(REASON)
             .sealedCMOs(newArrayList(element(TO_REMOVE_ORDER_ID, removedOrder)))
             .hearingDetails(List.of(
-                element(HEARING_ID, hearing(ANOTHER_HEARING_ID)),
+                element(HEARING_ID, hearing()),
                 element(UUID.randomUUID(), hearingToBeUnlinked)
             ))
             .build();
@@ -292,6 +273,10 @@ class CMORemovalActionTest {
             removedOrder))
             .usingRecursiveComparison()
             .isEqualTo(unexpectedNumberOfCMOsRemovedException(TO_REMOVE_ORDER_ID, 2));
+    }
+
+    private HearingBooking hearing() {
+        return hearing(null);
     }
 
     private HearingBooking hearing(UUID cmoId) {

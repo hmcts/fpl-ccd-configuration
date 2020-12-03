@@ -9,16 +9,13 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
-import uk.gov.hmcts.reform.fpl.utils.IncrementalInteger;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
-import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -50,7 +47,7 @@ public class CMORemovalAction implements OrderRemovalAction {
 
         data.put("hiddenCaseManagementOrders", hiddenCMOs);
         data.putIfNotEmpty("sealedCMOs", sealedCMOs);
-        data.put("hearingDetails", removeHearingLinkedToCMO(caseData.getHearingDetails(), cmoElement));
+        data.put("hearingDetails", removeHearingLinkedToCMO(caseData, cmoElement));
     }
 
     @Override
@@ -60,101 +57,49 @@ public class CMORemovalAction implements OrderRemovalAction {
                                    RemovableOrder removableOrder) {
         CaseManagementOrder caseManagementOrder = (CaseManagementOrder) removableOrder;
 
-        Optional<Element<HearingBooking>> hearingBooking = caseData.getHearingLinkedToCMO(removableOrderId);
-
-        if (hearingBooking.isEmpty()) {
-            IncrementalInteger counter = new IncrementalInteger();
-            Element<HearingBooking> foundHearing = null;
-
-            for (Element<HearingBooking> hearing : caseData.getHearingDetails()) {
-                if (hearing.getValue().toLabel().equals(caseManagementOrder.getHearing())) {
-                    foundHearing = hearing;
-                    if (counter.incrementAndGet() > 1) {
-                        // stop the loop early, already found too many
-                        break;
-                    }
-                }
-            }
-
-            // won't be null but stops nullable complaints later on
-            if (counter.getValue() != 1 || foundHearing == null) {
-                throw new UnexpectedNumberOfCMOsRemovedException(
-                    removableOrderId,
-                    format("CMO %s could not be linked to hearing by CMO id and there wasn't a unique link "
-                        + "(%s links found) to a hearing with the same label", removableOrderId, counter.getValue())
-                );
-            }
-
-            hearingBooking = Optional.of(foundHearing);
-        }
+        Element<HearingBooking> hearing = getHearingToUnlink(caseData, removableOrderId, caseManagementOrder);
 
         data.put("orderToBeRemoved", caseManagementOrder.getOrder());
         data.put("orderTitleToBeRemoved", "Case management order");
-        data.put("hearingToUnlink", hearingBooking.get().getValue().toLabel());
+        data.put("hearingToUnlink", hearing.getValue().toLabel());
         data.put("showRemoveCMOFieldsFlag", YES.getValue());
     }
 
-    private List<Element<HearingBooking>> removeHearingLinkedToCMO(List<Element<HearingBooking>> hearings,
+    private List<Element<HearingBooking>> removeHearingLinkedToCMO(CaseData caseData,
                                                                    Element<CaseManagementOrder> cmoElement) {
-        // QUESTION: 03/12/2020 Do we need this empty check?
-        if (isEmpty(hearings)) {
-            return List.of();
-        }
 
-        IncrementalInteger counter = new IncrementalInteger();
-        UUID id = cmoElement.getId();
-        CaseManagementOrder cmo = cmoElement.getValue();
-
-        List<Element<HearingBooking>> updatedHearings = updateOnCondition(
-            hearings,
-            hearing -> id.equals(hearing.getValue().getCaseManagementOrderId()),
-            counter
+        Element<HearingBooking> hearingToUnlink = getHearingToUnlink(
+            caseData,
+            cmoElement.getId(),
+            cmoElement.getValue()
         );
 
-        switch (counter.getValue()) {
-            case 0:
-                // use label instead
-                counter.reset();
-                updatedHearings = updateOnCondition(
-                    hearings,
-                    hearing -> cmo.getHearing().equals(hearing.getValue().toLabel()),
-                    counter
-                );
+        // this will still be the same reference as the one in the case data list so just update it
+        hearingToUnlink.getValue().setCaseManagementOrderId(null);
 
-                // QUESTION: 03/12/2020 are these additional checks required seeing as it should have been guarded in
-                //  the mid event?
-                if (counter.getValue() == 1) {
-                    return updatedHearings;
-                } else {
-                    throw new UnexpectedNumberOfCMOsRemovedException(
-                        id,
-                        format("CMO %s could not be linked to hearing by CMO id and there wasn't a unique link "
-                            + "(%s links found) to a hearing with the same label", id, counter.getValue())
-                    );
-                }
-            case 1:
-                return updatedHearings;
-            default:
-                // more than one hearing was linked to the cmo, situation should not occur but covers the default switch
-                throw new UnexpectedNumberOfCMOsRemovedException(
-                    id,
-                    format("CMO %s was linked to multiple hearings by id", id)
-                );
-        }
+        return caseData.getHearingDetails();
     }
 
-    private List<Element<HearingBooking>> updateOnCondition(List<Element<HearingBooking>> hearings,
-                                                            Predicate<Element<HearingBooking>> linkTest,
-                                                            IncrementalInteger counter) {
+    private Element<HearingBooking> getHearingToUnlink(CaseData caseData, UUID cmoId, CaseManagementOrder cmo) {
 
-        return hearings.stream()
-            .map(hearing -> {
-                if (linkTest.test(hearing)) {
-                    counter.increment();
-                    hearing.getValue().setCaseManagementOrderId(null);
-                }
-                return hearing;
-            })
-            .collect(Collectors.toList());
+        Optional<Element<HearingBooking>> hearingBooking = caseData.getHearingLinkedToCMO(cmoId);
+
+        if (hearingBooking.isEmpty()) {
+            List<Element<HearingBooking>> matchingLabel = caseData.getHearingDetails()
+                .stream()
+                .filter(hearing -> hearing.getValue().toLabel().equals(cmo.getHearing()))
+                .collect(Collectors.toList());
+
+            if (matchingLabel.size() != 1) {
+                throw new UnexpectedNumberOfCMOsRemovedException(
+                    cmoId,
+                    format("CMO %s could not be linked to hearing by CMO id and there wasn't a unique link "
+                        + "(%s links found) to a hearing with the same label", cmoId, matchingLabel.size())
+                );
+            }
+
+            return matchingLabel.get(0);
+        }
+        return hearingBooking.get();
     }
 }
