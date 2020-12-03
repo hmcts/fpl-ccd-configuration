@@ -17,9 +17,8 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
     "CaseFieldID": "applicationDocuments",
-    "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\"",
     "FieldShowCondition": "applicationDocuments!=\"\"",
-    "TabFieldDisplayOrder": 10
+    "TabFieldDisplayOrder": 9
   },
   {
     "LiveFrom": "01/01/2017",
@@ -30,6 +29,6 @@
     "TabDisplayOrder": 7,
     "CaseFieldID": "applicationDocumentsToFollowReason",
     "FieldShowCondition": "applicationDocumentsToFollowReason !=\"\"",
-    "TabFieldDisplayOrder": 11
+    "TabFieldDisplayOrder": 10
   }
 ]
