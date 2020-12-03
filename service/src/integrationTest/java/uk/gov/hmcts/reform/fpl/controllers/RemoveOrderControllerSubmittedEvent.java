@@ -237,6 +237,8 @@ class RemoveOrderControllerSubmittedEvent extends AbstractControllerTest {
             eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             eq(expectedOrderRemovalTemplateParameters()),
             eq(NOTIFICATION_REFERENCE));
+
+        verifyNoMoreInteractions(coreCaseDataService);
     }
 
     private Map<String, Object> expectedOrderRemovalTemplateParameters() {
