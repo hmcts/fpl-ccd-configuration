@@ -46,6 +46,7 @@ public class ManageDocumentService {
     private final DocumentUploadHelper documentUploadHelper;
     private final IdamClient idamClient;
     private final RequestData requestData;
+    private final FeatureToggleService featureToggleService;
 
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_KEY = "correspondenceDocuments";
     public static final String C2_DOCUMENTS_COLLECTION_KEY = "c2DocumentBundle";
@@ -66,6 +67,7 @@ public class ManageDocumentService {
 
         if (caseData.getHearingDetails() != null && !caseData.getHearingDetails().isEmpty()) {
             listAndLabel.put(MANAGE_DOCUMENTS_HEARING_LIST_KEY, caseData.buildDynamicHearingList());
+            //only relevant for LA event
             listAndLabel.put(COURT_BUNDLE_HEARING_LIST_KEY, caseData.buildDynamicHearingList());
 
             hasHearings = YES.getValue();
@@ -73,7 +75,8 @@ public class ManageDocumentService {
             hasHearings = NO.getValue();
         }
 
-        if (caseData.hasC2DocumentBundle()) {
+        //If toggle not on, replicate old behaviour (always show C2 list, even if empty)
+        if (caseData.hasC2DocumentBundle() || !featureToggleService.isApplicationDocumentsEventEnabled()) {
             listAndLabel.put(SUPPORTING_C2_LIST_KEY, caseData.buildC2DocumentDynamicList());
             hasC2s = YES.getValue();
         } else {

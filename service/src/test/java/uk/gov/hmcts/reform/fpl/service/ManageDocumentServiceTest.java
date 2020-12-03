@@ -78,6 +78,9 @@ class ManageDocumentServiceTest {
     @MockBean
     private RequestData requestData;
 
+    @MockBean
+    private FeatureToggleService featureToggleService;
+
     private LocalDateTime futureDate;
 
     @BeforeEach
@@ -126,7 +129,9 @@ class ManageDocumentServiceTest {
     }
 
     @Test
-    void shouldNotPopulateHearingListOrC2DocumentListWhenHearingAndC2DocumentsAreNotPresentOnCaseData() {
+    void shouldNotPopulateHearingListOrC2DocumentListWhenHearingAndC2DocumentsAreNotPresentOnCaseDataAndToggleOn() {
+        given(featureToggleService.isApplicationDocumentsEventEnabled()).willReturn(true);
+        
         CaseData caseData = CaseData.builder().build();
         ManageDocument expectedManageDocument = ManageDocument.builder()
             .hasHearings(NO.getValue())
@@ -139,6 +144,29 @@ class ManageDocumentServiceTest {
         assertThat(listAndLabel)
             .extracting(MANAGE_DOCUMENTS_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_KEY)
             .containsExactly(null, null, expectedManageDocument);
+    }
+
+    @Test
+    void shouldReturnEmptyC2DocumentListWhenC2DocumentsAreNotPresentOnCaseDataAndToggleOff() {
+        given(featureToggleService.isApplicationDocumentsEventEnabled()).willReturn(false);
+
+        CaseData caseData = CaseData.builder().build();
+        ManageDocument expectedManageDocument = ManageDocument.builder()
+            .hasC2s(YES.getValue())
+            .hasHearings(NO.getValue())
+            .build();
+
+        Map<String, Object> listAndLabel = manageDocumentService.initialiseManageDocumentEvent(
+            caseData, MANAGE_DOCUMENT_KEY);
+
+        DynamicList expectedEmptyList = DynamicList.builder()
+            .value(DynamicListElement.builder().build())
+            .listItems(List.of())
+            .build();
+
+        assertThat(listAndLabel)
+            .extracting(SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_KEY)
+            .containsExactly(expectedEmptyList, expectedManageDocument);
     }
 
     @Test
