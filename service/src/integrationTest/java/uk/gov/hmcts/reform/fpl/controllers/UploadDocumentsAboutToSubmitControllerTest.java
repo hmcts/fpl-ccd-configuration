@@ -58,7 +58,7 @@ public class UploadDocumentsAboutToSubmitControllerTest extends AbstractControll
     }
 
     @Test
-    void shouldUpdateDocumentsWithCreatedByAndDateTimeUploadedFieldsIncludedWhenApplicationDocumentEventToggledOn() {
+    void shouldUpdateDocumentsInCaseDataFieldsIncludedWhenApplicationDocumentEventToggledOn() {
         given(featureToggleService.isApplicationDocumentsEventEnabled()).willReturn(true);
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
