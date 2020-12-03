@@ -57,30 +57,30 @@ public class CMORemovalAction implements OrderRemovalAction {
                                    RemovableOrder removableOrder) {
         CaseManagementOrder caseManagementOrder = (CaseManagementOrder) removableOrder;
 
-        Element<HearingBooking> hearing = getHearingToUnlink(caseData, removableOrderId, caseManagementOrder);
+        HearingBooking hearing = getHearingToUnlink(caseData, removableOrderId, caseManagementOrder);
 
         data.put("orderToBeRemoved", caseManagementOrder.getOrder());
         data.put("orderTitleToBeRemoved", "Case management order");
-        data.put("hearingToUnlink", hearing.getValue().toLabel());
+        data.put("hearingToUnlink", hearing.toLabel());
         data.put("showRemoveCMOFieldsFlag", YES.getValue());
     }
 
     private List<Element<HearingBooking>> removeHearingLinkedToCMO(CaseData caseData,
                                                                    Element<CaseManagementOrder> cmoElement) {
 
-        Element<HearingBooking> hearingToUnlink = getHearingToUnlink(
+        HearingBooking hearingToUnlink = getHearingToUnlink(
             caseData,
             cmoElement.getId(),
             cmoElement.getValue()
         );
 
         // this will still be the same reference as the one in the case data list so just update it
-        hearingToUnlink.getValue().setCaseManagementOrderId(null);
+        hearingToUnlink.setCaseManagementOrderId(null);
 
         return caseData.getHearingDetails();
     }
 
-    private Element<HearingBooking> getHearingToUnlink(CaseData caseData, UUID cmoId, CaseManagementOrder cmo) {
+    private HearingBooking getHearingToUnlink(CaseData caseData, UUID cmoId, CaseManagementOrder cmo) {
 
         Optional<Element<HearingBooking>> hearingBooking = caseData.getHearingLinkedToCMO(cmoId);
 
@@ -98,8 +98,8 @@ public class CMORemovalAction implements OrderRemovalAction {
                 );
             }
 
-            return matchingLabel.get(0);
+            return matchingLabel.get(0).getValue();
         }
-        return hearingBooking.get();
+        return hearingBooking.get().getValue();
     }
 }
