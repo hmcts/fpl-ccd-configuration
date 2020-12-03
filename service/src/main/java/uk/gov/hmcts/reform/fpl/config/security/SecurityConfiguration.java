@@ -57,7 +57,7 @@ public class SecurityConfiguration {
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http.requestMatchers()
-                .antMatchers(HttpMethod.POST, "/sendRPAEmailByID/*", "/support/case/*/share", "/support/cases/share")
+                .antMatchers(HttpMethod.POST, "/sendRPAEmailByID/*", "/support/**/*")
                 .and()
                 .addFilter(authCheckerUserOnlyFilter)
                 .csrf(AbstractHttpConfigurer::disable)
