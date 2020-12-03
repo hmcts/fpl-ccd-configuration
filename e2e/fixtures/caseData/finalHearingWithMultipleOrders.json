@@ -1,0 +1,717 @@
+{
+  "state": "PREPARE_FOR_HEARING",
+  "caseData": {
+    "caseName": "e2e test case",
+    "orders": {
+      "orderType": [
+        "CARE_ORDER"
+      ]
+    },
+    "grounds": {
+      "thresholdReason": [
+        "noCare"
+      ],
+      "thresholdDetails": "mock threshold details"
+    },
+    "hearing": {
+      "reason": "test reason",
+      "timeFrame": "Same day"
+    },
+    "children1": [
+      {
+        "id": "a8caaf05-e52b-4315-9474-c247ae266164",
+        "value": {
+          "party": {
+            "gender": "Boy",
+            "lastName": "Jones",
+            "firstName": "Timothy",
+            "dateOfBirth": "2015-08-01"
+          }
+        }
+      }
+    ],
+    "solicitor": {
+      "dx": "160010 Kingsway 7",
+      "name": "John Smith",
+      "email": "solicitor@email.com",
+      "mobile": "07000000000",
+      "reference": "reference",
+      "telephone": "00000000000"
+    },
+    "allParties": [
+      {
+        "id": "749f29dc-c200-4377-9e12-a5b4bad631bc",
+        "value": {
+          "assignee": "ALL_PARTIES",
+          "readOnly": "Yes",
+          "responses": [],
+          "directionType": "Request permission for expert evidence",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "dateToBeCompletedBy": "2050-01-01T12:00:00.000"
+        }
+      },
+      {
+        "id": "c8f60fdf-d5fb-43cf-ad07-a38f86b6b96e",
+        "value": {
+          "assignee": "ALL_PARTIES",
+          "readOnly": "Yes",
+          "responses": [],
+          "directionType": "Request help to take part in proceedings",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      },
+      {
+        "id": "f9f9653b-545e-406d-8fc0-e5ea55186b73",
+        "value": {
+          "assignee": "ALL_PARTIES",
+          "readOnly": "Yes",
+          "responses": [],
+          "directionType": "Ask for disclosure",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      },
+      {
+        "id": "5e03c2e5-a1b3-44b7-b34a-0060be2edb7f",
+        "value": {
+          "assignee": "ALL_PARTIES",
+          "readOnly": "No",
+          "responses": [],
+          "directionText": "Parties and their legal representatives must attend the pre-hearing and hearing",
+          "directionType": "Attend the pre-hearing and hearing",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "dateToBeCompletedBy": "2050-01-01T15:15:00"
+        }
+      },
+      {
+        "id": "27978766-f6bc-4f7f-83f9-fa3dd61ad8ee",
+        "value": {
+          "assignee": "ALL_PARTIES",
+          "readOnly": "Yes",
+          "responses": [],
+          "directionType": "Contact alternative carers",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      }
+    ],
+    "applicants": [
+      {
+        "id": "99ceafd0-de4b-4725-b78b-7625342febed",
+        "value": {
+          "party": {
+            "email": {
+              "email": "applicant@email.com"
+            },
+            "address": {
+              "County": "United Kingdom",
+              "PostCode": "CR0 2GE",
+              "PostTown": "London",
+              "AddressLine1": "Flat 12, Pinnacle Apartments",
+              "AddressLine2": "Saffron Central Square 11"
+            },
+            "partyId": "3a8785c6-178d-4138-bd1a-5eea0debed25",
+            "jobTitle": "Legal adviser",
+            "partyType": "ORGANISATION",
+            "pbaNumber": "PBA1234567",
+            "clientCode": "8888",
+            "mobileNumber": {
+              "telephoneNumber": "07000000000"
+            },
+            "telephoneNumber": {
+              "telephoneNumber": "00000000000",
+              "contactDirection": "Jonathon Walker"
+            },
+            "organisationName": "John Smith",
+            "customerReference": "Example reference"
+          },
+          "leadApplicantIndicator": "Yes"
+        }
+      }
+    ],
+    "sendToCtsc": "Yes",
+    "respondents1": [
+      {
+        "id": "d5eb6a70-d6d3-4eb6-b06e-9dc9d6360090",
+        "value": {
+          "party": {
+            "gender": "Male",
+            "address": {
+              "County": "",
+              "Country": "United Kingdom",
+              "PostCode": "RG4 7AA",
+              "PostTown": "Reading",
+              "AddressLine1": "Flat 2",
+              "AddressLine2": "Caversham House 15-17",
+              "AddressLine3": "Church Road"
+            },
+            "lastName": "Bloggs",
+            "firstName": "Joe",
+            "dateOfBirth": "1980-01-01",
+            "placeOfBirth": "London",
+            "telephoneNumber": {
+              "telephoneNumber": "00000 000000"
+            },
+            "relationshipToChild": "Uncle"
+          }
+        }
+      }
+    ],
+    "dateSubmitted": "TO BE FILLED WITH VALID DATA",
+    "submittedForm": "TO BE FILLED WITH VALID DATA",
+    "allocatedJudge": {
+      "judgeTitle": "HER_HONOUR_JUDGE",
+      "judgeLastName": "Moley",
+      "judgeEmailAddress": "moley@example.com"
+    },
+    "hearingDetails": [
+      {
+        "id": "c2a5d73c-0c5c-416b-b288-236e3b395df9",
+        "value": {
+          "type": "CASE_MANAGEMENT",
+          "venue": "96",
+          "endDate": "2020-01-02T16:30:00",
+          "startDate": "2020-01-01T15:15:00",
+          "hearingNeedsBooked": [
+            "INTERPRETER",
+            "SPOKEN_OR_WRITTEN_WELSH",
+            "SOMETHING_ELSE"
+          ],
+          "venueCustomAddress": {},
+          "hearingNeedsDetails": "Some details",
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "HER_HONOUR_JUDGE",
+            "judgeLastName": "Reed",
+            "legalAdvisorName": "Rupert Robert"
+          }
+        }
+      },
+      {
+        "id": "c2a5d73b-0c5c-416b-b288-236e3b395df3",
+        "value": {
+          "type": "FINAL",
+          "venue": "96",
+          "endDate": "2020-03-02T16:30:00",
+          "startDate": "2020-03-01T15:15:00",
+          "hearingNeedsBooked": [
+            "INTERPRETER",
+            "SPOKEN_OR_WRITTEN_WELSH",
+            "SOMETHING_ELSE"
+          ],
+          "venueCustomAddress": {},
+          "hearingNeedsDetails": "Some details",
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "HER_HONOUR_JUDGE",
+            "judgeLastName": "Reed",
+            "legalAdvisorName": "Rupert Robert"
+          }
+        }
+      },
+      {
+        "id": "c2a5d73c-0c5c-416b-b288-236e3b395df6",
+        "value": {
+          "type": "CASE_MANAGEMENT",
+          "venue": "16",
+          "endDate": "2020-01-02T16:30:00",
+          "startDate": "2020-01-01T15:15:00",
+          "hearingNeedsBooked": [
+            "INTERPRETER",
+            "SOMETHING_ELSE"
+          ],
+          "venueCustomAddress": {},
+          "hearingNeedsDetails": "Some details",
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "HER_HONOUR_JUDGE",
+            "judgeLastName": "Reed",
+            "legalAdvisorName": "Rupert Robert"
+          },
+          "caseManagementOrderId": "749f29dc-c200-4377-9e12-a5b4bad631b3"
+        }
+      }
+    ],
+    "courtDirections": [
+      {
+        "id": "b4d1e2e7-40ba-46fc-a853-482197ac1a87",
+        "value": {
+          "assignee": "COURT",
+          "readOnly": "No",
+          "responses": [],
+          "directionText": "At all hearings, the court must arrange an interpreter for [Respondent’s Name] in [Language].",
+          "directionType": "Arrange interpreters",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "dateToBeCompletedBy": "2050-01-01T12:00:00.000"
+        }
+      }
+    ],
+    "allPartiesCustom": [],
+    "gatekeeperEmails": [
+      {
+        "id": "a76f6d78-6f42-46e7-988c-571ca6abfc68",
+        "value": {
+          "email": "familypubliclaw+gatekeeper@gmail.com"
+        }
+      }
+    ],
+    "cafcassDirections": [
+      {
+        "id": "3cdc4c84-e65a-48ea-908d-f85a22c08eae",
+        "value": {
+          "assignee": "CAFCASS",
+          "readOnly": "Yes",
+          "responses": [],
+          "directionType": "Arrange an advocates' meeting",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "dateToBeCompletedBy": "2050-01-01T12:00:00.000"
+        }
+      },
+      {
+        "id": "45c730d6-97eb-46ee-9064-cf085d3bd3e7",
+        "value": {
+          "assignee": "CAFCASS",
+          "readOnly": "Yes",
+          "responses": [],
+          "directionType": "Send the guardian's analysis to all parties",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      },
+      {
+        "id": "1ab9622b-7dbc-4b68-a75d-3d799a4ea98b",
+        "value": {
+          "assignee": "CAFCASS",
+          "readOnly": "No",
+          "responses": [],
+          "directionType": "Appoint a children's guardian",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      }
+    ],
+    "submissionConsent": [
+      "agree"
+    ],
+    "allocationProposal": {
+      "proposal": "District judge"
+    },
+    "displayAmountToPay": "Yes",
+    "familyManCaseNumber": "mockcaseID",
+    "dateAndTimeSubmitted": "TO BE FILLED WITH VALID DATA",
+    "respondentDirections": [
+      {
+        "id": "048052fc-e26a-4511-8be5-84b9c474118c",
+        "value": {
+          "assignee": "PARENTS_AND_RESPONDENTS",
+          "readOnly": "Yes",
+          "responses": [],
+          "directionType": "Send response to threshold statement to all parties",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "dateToBeCompletedBy": "2050-01-01T12:00:00.000"
+        }
+      }
+    ],
+    "allPartiesHearingDate": "1 January 2050, 3:15pm",
+    "courtDirectionsCustom": [],
+    "otherPartiesDirections": [
+      {
+        "id": "dec3b79d-f13c-4632-8b47-94b3acc3a3fe",
+        "value": {
+          "assignee": "OTHERS",
+          "readOnly": "Yes",
+          "responses": [],
+          "directionType": "Object to a request for disclosure",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "dateToBeCompletedBy": "2050-01-01T12:00:00.000"
+        }
+      }
+    ],
+    "sealedCMOs": [
+      {
+        "id": "749f29dc-c200-4377-9e12-a5b4bad631b3",
+        "value": {
+          "order":"TO BE FILLED WITH VALID DATA",
+          "status": "APPROVED",
+          "hearing": "Case management hearing, 1 January 2020",
+          "dateSent": "2020-08-27",
+          "dateIssued": "2020-08-27",
+          "requestedChanges": null,
+          "judgeTitleAndName":"Her Honour Judge Reed"
+        }
+      }
+    ],
+    "standardDirectionOrder": {
+      "orderDoc": "TO BE FILLED WITH VALID DATA",
+      "directions": [
+        {
+          "id": "c8f60fdf-d5fb-43cf-ad07-a38f86b6b96e",
+          "value": {
+            "assignee": "ALL_PARTIES",
+            "readOnly": "Yes",
+            "responses": [],
+            "directionText": "Make an application to the court if you believe any party or witness needs help with:\n\n- understanding proceedings and their role in them in court\n- putting their views to the court\n- instructing their representatives before, during and after the hearing\n- attending the hearing without significant distress\n\nIf possible, include in your application:\n\n- why the party or witness would benefit from help\n- the kind of help that would benefit them the most in giving evidence or participating, and is practically possible\n- written confirmation from any relevant witnesses of their view\n",
+            "directionType": "Request help to take part in proceedings",
+            "directionNeeded": "Yes",
+            "directionRemovable": "Yes"
+          }
+        },
+        {
+          "id": "f9f9653b-545e-406d-8fc0-e5ea55186b73",
+          "value": {
+            "assignee": "ALL_PARTIES",
+            "readOnly": "Yes",
+            "responses": [],
+            "directionText": "Serve requests for disclosure on any third parties, for example the police or a hospital.\n\nIf you plan to ask for a disclosure order at the case management hearing, let the third party know in writing. Include a copy of this order.\n\nAnything disclosed in this case is confidential. It cannot be shown to any third party without the court's permission.  \n",
+            "directionType": "Ask for disclosure",
+            "directionNeeded": "Yes",
+            "directionRemovable": "Yes"
+          }
+        },
+        {
+          "id": "5e03c2e5-a1b3-44b7-b34a-0060be2edb7f",
+          "value": {
+            "assignee": "ALL_PARTIES",
+            "readOnly": "No",
+            "responses": [],
+            "directionText": "Parties and their legal representatives must attend the pre-hearing and hearing",
+            "directionType": "Attend the pre-hearing and hearing",
+            "directionNeeded": "Yes",
+            "directionRemovable": "Yes",
+            "dateToBeCompletedBy": "2050-01-01T15:15:00"
+          }
+        },
+        {
+          "id": "27978766-f6bc-4f7f-83f9-fa3dd61ad8ee",
+          "value": {
+            "assignee": "ALL_PARTIES",
+            "readOnly": "Yes",
+            "responses": [],
+            "directionText": "Contact anyone who might want to be a carer if your preferred plan proves to be impossible. Give their contact details to the Local Authority.",
+            "directionType": "Contact alternative carers",
+            "directionNeeded": "Yes",
+            "directionRemovable": "Yes"
+          }
+        },
+        {
+          "id": "7baf0573-a2bc-49cf-8a26-b311d0dfee98",
+          "value": {
+            "assignee": "LOCAL_AUTHORITY",
+            "readOnly": "No",
+            "responses": [],
+            "directionText": "Give all parties access to all documents sent to the court, including:\n\n- the application form\n- annex documents\n- evidential checklist documents\n- any documents sent later on",
+            "directionType": "Send documents to all parties",
+            "directionNeeded": "Yes",
+            "directionRemovable": "Yes",
+            "dateToBeCompletedBy": "2050-01-01T12:00:00"
+          }
+        },
+        {
+          "id": "4faec1c9-7011-4a8a-94d2-fbee2128fcc4",
+          "value": {
+            "assignee": "LOCAL_AUTHORITY",
+            "readOnly": "No",
+            "responses": [],
+            "directionText": "- Social work chronology\n- Social work statement\n- Family tree (genogram)\n- Social work assessment\n- Care plan\n- Threshold document\n- Index of checklist documents",
+            "directionType": "Send missing annex documents to the court and all parties",
+            "directionNeeded": "Yes",
+            "directionRemovable": "Yes"
+          }
+        },
+        {
+          "id": "6c60b9e4-57f7-4bf4-b67c-358204298c22",
+          "value": {
+            "assignee": "LOCAL_AUTHORITY",
+            "readOnly": "Yes",
+            "responses": [],
+            "directionText": "Contact the parents to make sure there is a complete family tree showing family members who could be alternative carers.",
+            "directionType": "Identify alternative carers",
+            "directionNeeded": "Yes",
+            "directionRemovable": "Yes",
+            "dateToBeCompletedBy": "2050-01-01T15:15:00"
+          }
+        },
+        {
+          "id": "e123ae1d-a7d2-4f49-910c-5789a61ac8e6",
+          "value": {
+            "assignee": "LOCAL_AUTHORITY",
+            "readOnly": "No",
+            "responses": [],
+            "directionText": "Send documents to [Respondent's Name] in [Language], including the application and genogram.\n\nThis must include documents that the local authority relies on to support allegations and explain why they have made their application for an order.",
+            "directionType": "Send translated case documents to respondents",
+            "directionNeeded": "Yes",
+            "directionRemovable": "Yes"
+          }
+        },
+        {
+          "id": "a8dd9a97-290c-40ee-8a29-3b13fc2510b0",
+          "value": {
+            "assignee": "LOCAL_AUTHORITY",
+            "readOnly": "Yes",
+            "responses": [],
+            "directionText": "It must comply with practice direction 27A from Family Procedure Rules 2010.",
+            "directionType": "Lodge a bundle",
+            "directionNeeded": "Yes",
+            "directionRemovable": "Yes",
+            "dateToBeCompletedBy": "2049-12-30T15:15:00"
+          }
+        },
+        {
+          "id": "b3be9152-99df-4e75-8ac0-a32c3a04cfd1",
+          "value": {
+            "assignee": "LOCAL_AUTHORITY",
+            "readOnly": "Yes",
+            "responses": [],
+            "directionText": "Send to the court and all parties.",
+            "directionType": "Send case summary to all parties",
+            "directionNeeded": "Yes",
+            "directionRemovable": "Yes"
+          }
+        },
+        {
+          "id": "b544f6dc-9f0d-41c1-86fa-47e4344590ba",
+          "value": {
+            "assignee": "LOCAL_AUTHORITY",
+            "readOnly": "No",
+            "responses": [],
+            "directionText": "The court has jurisdiction, based on all of the relevant law and facts, for example habitual residency. \n\nIf there is an issue, consider it urgently. Ask the relevant state authority for information needed to decide where jurisdiction lies. Bring this information to the case management hearing at .\n\nIf the child is a foreign national, tell the consulate or embassy in writing that these proceedings are happening. Invite any representations to be made to the court.",
+            "directionType": "Urgently consider jurisdiction and invite any representations",
+            "directionNeeded": "Yes",
+            "directionRemovable": "Yes"
+          }
+        },
+        {
+          "id": "048052fc-e26a-4511-8be5-84b9c474118c",
+          "value": {
+            "assignee": "PARENTS_AND_RESPONDENTS",
+            "readOnly": "Yes",
+            "responses": [],
+            "directionText": "Send a written statement to the court and all parties, showing:\n\n- the parents' response to the local authority's threshold statement\n- the parents' proposals for placing the children, immediately and long-term\n- whether they agree to a family group conference if one has not taken place yet\n\nIf the parents do not do this, the court can assume they do not disagree with allegations in the threshold statement.\n",
+            "directionType": "Send response to threshold statement to all parties",
+            "directionNeeded": "Yes",
+            "directionRemovable": "Yes",
+            "dateToBeCompletedBy": "2050-01-01T12:00:00"
+          }
+        },
+        {
+          "id": "3cdc4c84-e65a-48ea-908d-f85a22c08eae",
+          "value": {
+            "assignee": "CAFCASS",
+            "readOnly": "Yes",
+            "responses": [],
+            "directionText": "All of the advocates who will appear at the related hearing must attend. ",
+            "directionType": "Arrange an advocates' meeting",
+            "directionNeeded": "Yes",
+            "directionRemovable": "Yes",
+            "dateToBeCompletedBy": "2050-01-01T12:00:00"
+          }
+        },
+        {
+          "id": "45c730d6-97eb-46ee-9064-cf085d3bd3e7",
+          "value": {
+            "assignee": "CAFCASS",
+            "readOnly": "Yes",
+            "responses": [],
+            "directionText": "Send to the court and all parties.",
+            "directionType": "Send the guardian's analysis to all parties",
+            "directionNeeded": "Yes",
+            "directionRemovable": "Yes"
+          }
+        },
+        {
+          "id": "1ab9622b-7dbc-4b68-a75d-3d799a4ea98b",
+          "value": {
+            "assignee": "CAFCASS",
+            "readOnly": "No",
+            "responses": [],
+            "directionType": "Appoint a children's guardian",
+            "directionNeeded": "Yes",
+            "directionRemovable": "Yes"
+          }
+        },
+        {
+          "id": "dec3b79d-f13c-4632-8b47-94b3acc3a3fe",
+          "value": {
+            "assignee": "OTHERS",
+            "readOnly": "Yes",
+            "responses": [],
+            "directionText": "If you object to the disclosure request, attend the case management hearing or write to the court to explain your objection.\n\nAnything disclosed in this case is confidential. It cannot be shown to any third party without the court's permission.\n",
+            "directionType": "Object to a request for disclosure",
+            "directionNeeded": "Yes",
+            "directionRemovable": "Yes",
+            "dateToBeCompletedBy": "2050-01-01T12:00:00"
+          }
+        },
+        {
+          "id": "b4d1e2e7-40ba-46fc-a853-482197ac1a87",
+          "value": {
+            "assignee": "COURT",
+            "readOnly": "No",
+            "responses": [],
+            "directionText": "At all hearings, the court must arrange an interpreter for [Respondent’s Name] in [Language].",
+            "directionType": "Arrange interpreters",
+            "directionNeeded": "Yes",
+            "directionRemovable": "Yes",
+            "dateToBeCompletedBy": "2050-01-01T12:00:00"
+          }
+        }
+      ],
+      "dateOfIssue": "28 April 2020",
+      "orderStatus": "SEALED",
+      "judgeAndLegalAdvisor": {
+        "judgeTitle": "HER_HONOUR_JUDGE",
+        "judgeLastName": "Moley",
+        "judgeEmailAddress": "moley@example.com",
+        "legalAdvisorName": "Bob Ross"
+      }
+    },
+    "submissionConsentLabel": "I, kurt@swansea.gov.uk (local-authority), believe that the facts stated in this application are true.",
+    "cafcassDirectionsCustom": [],
+    "localAuthorityDirections": [
+      {
+        "id": "7baf0573-a2bc-49cf-8a26-b311d0dfee98",
+        "value": {
+          "assignee": "LOCAL_AUTHORITY",
+          "readOnly": "No",
+          "responses": [],
+          "directionText": "Give all parties access to all documents sent to the court, including:\n\n- the application form\n- annex documents\n- evidential checklist documents\n- any documents sent later on",
+          "directionType": "Send documents to all parties",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "dateToBeCompletedBy": "2050-01-01T12:00:00.000"
+        }
+      },
+      {
+        "id": "4faec1c9-7011-4a8a-94d2-fbee2128fcc4",
+        "value": {
+          "assignee": "LOCAL_AUTHORITY",
+          "readOnly": "No",
+          "responses": [],
+          "directionText": "- Social work chronology\n- Social work statement\n- Family tree (genogram)\n- Social work assessment\n- Care plan\n- Threshold document\n- Index of checklist documents",
+          "directionType": "Send missing annex documents to the court and all parties",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      },
+      {
+        "id": "6c60b9e4-57f7-4bf4-b67c-358204298c22",
+        "value": {
+          "assignee": "LOCAL_AUTHORITY",
+          "readOnly": "Yes",
+          "responses": [],
+          "directionType": "Identify alternative carers",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "dateToBeCompletedBy": "2050-01-01T15:15:00"
+        }
+      },
+      {
+        "id": "e123ae1d-a7d2-4f49-910c-5789a61ac8e6",
+        "value": {
+          "assignee": "LOCAL_AUTHORITY",
+          "readOnly": "No",
+          "responses": [],
+          "directionText": "Send documents to [Respondent's Name] in [Language], including the application and genogram.\n\nThis must include documents that the local authority relies on to support allegations and explain why they have made their application for an order.",
+          "directionType": "Send translated case documents to respondents",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      },
+      {
+        "id": "a8dd9a97-290c-40ee-8a29-3b13fc2510b0",
+        "value": {
+          "assignee": "LOCAL_AUTHORITY",
+          "readOnly": "Yes",
+          "responses": [],
+          "directionType": "Lodge a bundle",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes",
+          "dateToBeCompletedBy": "2049-12-30T15:15:00"
+        }
+      },
+      {
+        "id": "b3be9152-99df-4e75-8ac0-a32c3a04cfd1",
+        "value": {
+          "assignee": "LOCAL_AUTHORITY",
+          "readOnly": "Yes",
+          "responses": [],
+          "directionType": "Send case summary to all parties",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      },
+      {
+        "id": "b544f6dc-9f0d-41c1-86fa-47e4344590ba",
+        "value": {
+          "assignee": "LOCAL_AUTHORITY",
+          "readOnly": "No",
+          "responses": [],
+          "directionText": "The court has jurisdiction, based on all of the relevant law and facts, for example habitual residency. \n\nIf there is an issue, consider it urgently. Ask the relevant state authority for information needed to decide where jurisdiction lies. Bring this information to the case management hearing at .\n\nIf the child is a foreign national, tell the consulate or embassy in writing that these proceedings are happening. Invite any representations to be made to the court.",
+          "directionType": "Urgently consider jurisdiction and invite any representations",
+          "directionNeeded": "Yes",
+          "directionRemovable": "Yes"
+        }
+      }
+    ],
+    "documents_socialWorkOther": [],
+    "courtDirectionsHearingDate": "1 January 2050, 3:15pm",
+    "respondentDirectionsCustom": [],
+    "cafcassDirectionsHearingDate": "1 January 2050, 3:15pm",
+    "documents_checklist_document": {
+      "documentStatus": "Attached"
+    },
+    "documents_threshold_document": {
+      "documentStatus": "Attached"
+    },
+    "otherPartiesDirectionsCustom": [],
+    "localAuthorityDirectionsCustom": [],
+    "respondentDirectionsHearingDate": "1 January 2050, 3:15pm",
+    "otherPartiesDirectionsHearingDate": "1 January 2050, 3:15pm",
+    "localAuthorityDirectionsHearingDate": "1 January 2050, 3:15pm",
+    "documents_socialWorkCarePlan_document": {
+      "documentStatus": "Attached"
+    },
+    "documents_socialWorkStatement_document": {
+      "documentStatus": "Included in social work evidence template (SWET)"
+    },
+    "documents_socialWorkAssessment_document": {
+      "documentStatus": "Attached"
+    },
+    "documents_socialWorkChronology_document": {
+      "statusReason": "mock reason",
+      "documentStatus": "To follow"
+    },
+    "documents_socialWorkEvidenceTemplate_document": {
+      "documentStatus": "Attached"
+    },
+    "orderCollection": [
+      {
+        "id": "52caf114-d171-4dc5-ac33-c842dba88205",
+        "value": {
+          "date": "2:33pm, 26 May 2020",
+          "type": "Blank order (C21)",
+          "title": "Example Order Title",
+          "details": "szvd",
+          "document": "TO BE FILLED WITH VALID DATA",
+          "expiryDate": null,
+          "dateOfIssue": "26 May 2020",
+          "furtherDirections": {},
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "HER_HONOUR_JUDGE",
+            "otherTitle": null,
+            "judgeFullName": null,
+            "judgeLastName": "Sotomayer",
+            "legalAdvisorName": "Peter Parker",
+            "judgeEmailAddress": "test@test.com",
+            "useAllocatedJudge": null,
+            "allocatedJudgeLabel": null
+          }
+        }
+      }
+    ]
+  }
+}

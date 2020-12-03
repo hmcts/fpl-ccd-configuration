@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.GeneratedOrderTypeDescriptor;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 
 import java.util.List;
 import java.util.UUID;
@@ -25,7 +26,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER
 
 @Data
 @Builder(toBuilder = true)
-public class GeneratedOrder {
+public class GeneratedOrder implements RemovableOrder {
     private final String type;
     private final String title;
     private final String details;
