@@ -72,7 +72,7 @@ public class ReShareCaseController {
         }
     }
 
-    private void reShareCases(CaseDetails caseDetails) {
+    private void reShareCases(CaseDetails caseDetails) throws Exception {
         String caseId = caseDetails.getId().toString();
         final String serviceToken = authTokenGenerator.generate();
         log.info("Migrating access for case {}", caseId);
@@ -117,7 +117,36 @@ public class ReShareCaseController {
             .build();
 
         caseAccessDataStoreApi.removeCaseUserRoles(requestData.authorisation(), serviceToken, rolesToBeRemoved);
-        caseAccessDataStoreApi.addCaseUserRoles(requestData.authorisation(), serviceToken, rolesToBeAdded);
+
+        retry(caseId,
+            () -> caseAccessDataStoreApi.addCaseUserRoles(requestData.authorisation(), serviceToken, rolesToBeAdded));
+    }
+
+    private void retry(String caseId, Runnable runnable) throws Exception {
+        int tryNumber = 0;
+        int maxTries = 3;
+        while (true) {
+            try {
+                runnable.run();
+                break;
+            } catch (Exception e) {
+                tryNumber++;
+                log.warn("Grant roles try {} failed for {}", tryNumber, caseId);
+                if (tryNumber >= maxTries) {
+                    throw e;
+                } else {
+                    sleep();
+                }
+            }
+        }
+    }
+
+    private void sleep() throws Exception {
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException ex) {
+            throw ex;
+        }
     }
 
     private CaseAssignedUserRolesResource filterRoles(CaseAssignedUserRolesResource a) {
