@@ -49,7 +49,7 @@
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "manageDocument.type=\"C2\""
+    "FieldShowCondition": "manageDocument.type=\"C2\" AND manageDocumentLA.hasC2s=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
