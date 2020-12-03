@@ -19,14 +19,6 @@ public class IncrementalInteger {
         return ++value;
     }
 
-    public void increment() {
-        value++;
-    }
-
-    public void reset() {
-        value = 0;
-    }
-
     public int getValue() {
         return value;
     }
