@@ -42,7 +42,7 @@ public class ApplicationDocumentsService {
     public Map<String, Object> updateApplicationDocuments(List<Element<ApplicationDocument>> currentDocuments,
                                                           List<Element<ApplicationDocument>> previousDocuments) {
         List<Element<ApplicationDocument>> updatedDocuments = setUpdatedByAndDateAndTimeOnDocuments(
-             currentDocuments, previousDocuments);
+            currentDocuments, previousDocuments);
 
         Map<String, Object> data = new HashMap<>();
 
@@ -67,16 +67,16 @@ public class ApplicationDocumentsService {
             Document applicationDocument = document.getKey();
             ApplicationDocumentType documentType = document.getValue();
 
-            if(!isNull(applicationDocument.getDocumentStatus()) || !isNull(applicationDocument.getTypeOfDocument())) {
+            if (!isNull(applicationDocument.getDocumentStatus()) || !isNull(applicationDocument.getTypeOfDocument())) {
                 //cater for if status is to follow
-                ApplicationDocument updatedDocument = convertOldDocumentToApplicationDocument(applicationDocument, documentType);
+                ApplicationDocument updatedDocument = convertOldDocumentToApplicationDocument(applicationDocument,
+                    documentType);
                 applicationDocuments.add(element(updatedDocument));
             }
         }
 
         List<Element<DocumentSocialWorkOther>> otherDocuments = caseData.getOtherSocialWorkDocuments();
-        if(!otherDocuments.isEmpty())
-        {
+        if (!otherDocuments.isEmpty()) {
             handleOtherDocuments(otherDocuments, applicationDocuments);
         }
 
@@ -131,16 +131,18 @@ public class ApplicationDocumentsService {
         document.getValue().setUploadedBy(uploadedBy);
     }
 
-    private void handleOtherDocuments(List<Element<DocumentSocialWorkOther>> otherDocuments,  List<Element<ApplicationDocument>> applicationDocuments) {
+    private void handleOtherDocuments(List<Element<DocumentSocialWorkOther>> otherDocuments,
+                                      List<Element<ApplicationDocument>> applicationDocuments) {
         otherDocuments.stream().forEach(document -> {
-            if(!isNull(document.getValue().getTypeOfDocument()) || !isNull(document.getValue().getDocumentTitle())) {
+            if (!isNull(document.getValue().getTypeOfDocument()) || !isNull(document.getValue().getDocumentTitle())) {
                 ApplicationDocument updatedDocument = buildApplicationDocumentWithTypeOther(document.getValue(), OTHER);
                 applicationDocuments.add(element(updatedDocument));
             }
         });
     }
 
-    private ApplicationDocument convertOldDocumentToApplicationDocument(Document document, ApplicationDocumentType documentType) {
+    private ApplicationDocument convertOldDocumentToApplicationDocument(Document document,
+                                                                        ApplicationDocumentType documentType) {
 
         ApplicationDocument applicationDocument = ApplicationDocument.builder()
             .document(document.getTypeOfDocument())
@@ -153,7 +155,8 @@ public class ApplicationDocumentsService {
         return applicationDocument;
     }
 
-    private ApplicationDocument buildApplicationDocumentWithTypeOther(DocumentSocialWorkOther document, ApplicationDocumentType documentType) {
+    private ApplicationDocument buildApplicationDocumentWithTypeOther(DocumentSocialWorkOther document,
+                                                                      ApplicationDocumentType documentType) {
 
         ApplicationDocument applicationDocument = ApplicationDocument.builder()
             .document(document.getTypeOfDocument())
