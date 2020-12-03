@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.document.UploadDocumentsMigrationService;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @Api
 @RestController
@@ -44,8 +45,14 @@ public class MigrateCaseController extends CallbackController {
             caseDetails.getData().remove(MIGRATION_ID_KEY);
         }
         if (isDocumentMigrationRequired(migrationId)) {
-            log.info("Migration of Documents to Application Documents");
-            uploadDocumentsMigrationService.transformFromOldCaseData(caseData);
+            log.info("Migration of Old Documents to Application Documents");
+            Map<String, Object> migratedData = uploadDocumentsMigrationService.transformFromOldCaseData(caseData);
+            Map<String, Object> data = caseDetails.getData();
+            data.put("applicationDocuments",
+                migratedData.getOrDefault("applicationDocuments", null));
+            data.put("applicationDocumentsToFollowReason",
+                migratedData.getOrDefault("applicationDocumentsToFollowReason", null)
+            );
             caseDetails.getData().remove(MIGRATION_ID_KEY);
         }
 
