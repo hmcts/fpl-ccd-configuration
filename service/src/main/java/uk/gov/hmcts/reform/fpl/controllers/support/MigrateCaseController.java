@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.document.UploadDocumentsMigrationService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -28,6 +29,8 @@ public class MigrateCaseController extends CallbackController {
 
     private static final String MIGRATION_ID_KEY = "migrationId";
 
+    private final UploadDocumentsMigrationService uploadDocumentsMigrationService;
+
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
@@ -40,8 +43,17 @@ public class MigrateCaseController extends CallbackController {
             caseDetails.getData().put("hearingDetails", removeHearings(caseData.getHearingDetails()));
             caseDetails.getData().remove(MIGRATION_ID_KEY);
         }
+        if (isDocumentMigrationRequired(migrationId)) {
+            log.info("Migration of Documents to Application Documents");
+            uploadDocumentsMigrationService.transformFromOldCaseData(caseData);
+            caseDetails.getData().remove(MIGRATION_ID_KEY);
+        }
 
         return respond(caseDetails);
+    }
+
+    private boolean isDocumentMigrationRequired(Object migrationId) {
+        return "FPLA-2379".equals(migrationId);
     }
 
     private boolean isCorrectCase(Object migrationId, String familyManCaseNumber) {
