@@ -7,12 +7,14 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookingsFromInitialDate;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
@@ -104,7 +106,7 @@ class EmailNotificationHelperTest {
 
     @Test
     void subjectLineShouldBeSuffixedWithHearingDate() {
-        final LocalDateTime futureDate = LocalDateTime.of(2022, 05, 23, 0, 0, 0);
+        final LocalDateTime futureDate = LocalDateTime.of(2022, 5, 23, 0, 0, 0);
         List<Element<HearingBooking>> hearingBookingsFromInitialDate =
             createHearingBookingsFromInitialDate(futureDate);
         CaseData caseData = CaseData.builder()
@@ -214,6 +216,29 @@ class EmailNotificationHelperTest {
         String expectedContent = String.format("^12345,%s", buildHearingDateText(hearingBooking));
 
         assertThat(buildCallout(caseData)).isEqualTo(expectedContent);
+    }
+
+    @Test
+    void shouldReturnDistinctGatekeepersEmailAddressesWhenDuplicateEmailAddressesExist() {
+        List<Element<EmailAddress>> emailCollection = List.of(
+            element(EmailAddress.builder().email("gatekeeper1@test.com").build()),
+            element(EmailAddress.builder().email("gatekeeper2@test.com").build()),
+            element(EmailAddress.builder().email("gatekeeper2@test.com").build())
+        );
+
+        List<String> emailAddresses = EmailNotificationHelper.getDistinctGatekeeperEmails(emailCollection);
+
+        assertThat(emailAddresses).containsAll(List.of("gatekeeper1@test.com", "gatekeeper2@test.com"));
+    }
+
+    @Test
+    void shouldReturnGatekeepersEmailAddressesWhenDuplicateEmailAddressesDoNotExist() {
+        List<Element<EmailAddress>> emailCollection = singletonList(
+            element(EmailAddress.builder().email("gatekeeper1@test.com").build()));
+
+        List<String> emailAddresses = EmailNotificationHelper.getDistinctGatekeeperEmails(emailCollection);
+
+        assertThat(emailAddresses).containsOnly("gatekeeper1@test.com");
     }
 
     private static String buildHearingDateText(HearingBooking hearingBooking) {
