@@ -148,6 +148,12 @@ public class CaseData {
 
     private final List<Element<Placement>> placements;
     private final StandardDirectionOrder standardDirectionOrder;
+    private final List<Element<StandardDirectionOrder>> hiddenStandardDirectionOrders;
+
+    public List<Element<StandardDirectionOrder>> getHiddenStandardDirectionOrders() {
+        return defaultIfNull(hiddenStandardDirectionOrders, new ArrayList<>());
+    }
+
     private SDORoute sdoRouter;
     private final DocumentReference preparedSDO;
     private final DocumentReference replacementSDO;
@@ -225,6 +231,14 @@ public class CaseData {
     @JsonIgnore
     public Optional<Element<HearingBooking>> findHearingBookingElement(UUID elementId) {
         return findElement(elementId, hearingDetails);
+    }
+
+    @JsonIgnore
+    public Optional<Element<HearingBooking>> getHearingLinkedToCMO(UUID removedOrderId) {
+        return hearingDetails.stream()
+            .filter(hearingBookingElement ->
+                removedOrderId.equals(hearingBookingElement.getValue().getCaseManagementOrderId()))
+            .findFirst();
     }
 
     private LocalDate dateSubmitted;
@@ -580,6 +594,13 @@ public class CaseData {
         return unwrapElements(hearingDetails).stream()
             .filter(hearingBooking -> hearingBooking.getStartDate().isAfter(currentCmoStartDate))
             .min(comparing(HearingBooking::getStartDate));
+    }
+
+    private final List<Element<CaseManagementOrder>> hiddenCaseManagementOrders;
+
+    @JsonIgnore
+    public List<Element<CaseManagementOrder>> getHiddenCMOs() {
+        return defaultIfNull(hiddenCaseManagementOrders, new ArrayList<>());
     }
 
     private String sendToCtsc;
