@@ -12,6 +12,8 @@ exports.config = {
       show: process.env.SHOW_BROWSER_WINDOW || false,
       restart: false,
       keepCookies: true,
+      keepBrowserState: true,
+      pressKeyDelay: 1,
       waitForTimeout: parseInt(process.env.WAIT_FOR_TIMEOUT || '20000'),
       chrome: {
         ignoreHTTPSErrors: true,
@@ -90,10 +92,6 @@ exports.config = {
       enabled: true,
       methods: [
         'click',
-        'doubleClick',
-        'rightClick',
-        'fillField',
-        'pressKey',
         'checkOption',
         'selectOption',
       ],
