@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Month;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,7 +24,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @ActiveProfiles("integration-test")
 @WebMvcTest(MigrateCaseController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class MigrationControllerTest extends AbstractControllerTest {
+class MigrationControllerTest extends AbstractControllerTest {
 
     private static final LocalTime TIME = LocalTime.now();
 
@@ -34,14 +35,14 @@ public class MigrationControllerTest extends AbstractControllerTest {
     private String familyManCaseNumber;
     private String migrationId;
 
-    protected MigrationControllerTest() {
+    MigrationControllerTest() {
         super("migrate-case");
     }
 
     @BeforeEach
     void setCaseIdentifiers() {
-        familyManCaseNumber = "ZW20C50003";
-        migrationId = "FPLA-2437";
+        familyManCaseNumber = "SN20C50010";
+        migrationId = "FPLA-2469";
 
         hearing1 = element(buildHearing());
         hearing2 = element(buildHearing());
@@ -55,8 +56,8 @@ public class MigrationControllerTest extends AbstractControllerTest {
 
         CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
-        assertThat(extractedCaseData.getHearingDetails()).hasSize(2)
-            .containsOnly(hearing2, hearing4);
+        assertThat(extractedCaseData.getHearingDetails())
+            .containsOnly(hearing2, hearing3, hearing4);
     }
 
     @Test
@@ -84,15 +85,15 @@ public class MigrationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldThrowExceptionIfOneOfTheDatesIsUnexpected() {
+    void shouldThrowExceptionIfHearingDateIsUnexpected() {
         LocalDate invalidDate = LocalDate.of(1990, 1, 1);
-        hearing2 = element(buildHearing(invalidDate));
+        hearing1 = element(buildHearing(invalidDate));
 
         CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, hearing1, hearing2, hearing3, hearing4);
 
         assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
             .getRootCause()
-            .hasMessage(String.format("Invalid hearing date %s", LocalDateTime.of(invalidDate, TIME)));
+            .hasMessage(String.format("Invalid hearing date %s", invalidDate));
     }
 
     @SafeVarargs
@@ -107,7 +108,7 @@ public class MigrationControllerTest extends AbstractControllerTest {
     }
 
     private HearingBooking buildHearing() {
-        return buildHearing(LocalDate.of(2020, 11, 10));
+        return buildHearing(LocalDate.of(2020, Month.OCTOBER, 14));
     }
 
     private HearingBooking buildHearing(LocalDate date) {
