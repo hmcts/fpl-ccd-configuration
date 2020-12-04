@@ -1,60 +1,155 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "UploadApplicationDocuments",
+    "ID": "OtherDocuments",
     "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "applicationDocuments",
-    "ListElementCode": "documentType",
+    "CaseFieldID": "documents_socialWorkOther",
+    "ListElementCode": "documentTitle",
     "FieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "UploadApplicationDocuments",
-    "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "applicationDocuments",
-    "ListElementCode": "documentName",
-    "FieldDisplayOrder": 2,
-    "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "UploadApplicationDocuments",
-    "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "applicationDocuments",
-    "ListElementCode": "includedInSWET",
-    "EventElementLabel": "Let us know what you are including in your SWET",
-    "FieldDisplayOrder": 3,
     "DisplayContext": "OPTIONAL"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "UploadApplicationDocuments",
+    "ID": "OtherDocuments",
     "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "applicationDocuments",
+    "CaseFieldID": "documents_socialWorkOther",
+    "ListElementCode": "typeOfDocument",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "documents_socialWorkChronology_document",
+    "ListElementCode": "typeOfDocument",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "documents_socialWorkChronology_document",
+    "ListElementCode": "documentStatus",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "documents_socialWorkStatement_document",
+    "ListElementCode": "typeOfDocument",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "documents_socialWorkStatement_document",
+    "ListElementCode": "documentStatus",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "documents_socialWorkAssessment_document",
+    "ListElementCode": "typeOfDocument",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "documents_socialWorkAssessment_document",
+    "ListElementCode": "documentStatus",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "documents_socialWorkCarePlan_document",
+    "ListElementCode": "typeOfDocument",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "documents_socialWorkCarePlan_document",
+    "ListElementCode": "documentStatus",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "documents_socialWorkEvidenceTemplate_document",
+    "ListElementCode": "typeOfDocument",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "documents_socialWorkEvidenceTemplate_document",
+    "ListElementCode": "documentStatus",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "documents_threshold_document",
+    "ListElementCode": "typeOfDocument",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "documents_threshold_document",
+    "ListElementCode": "documentStatus",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "documents_checklist_document",
+    "ListElementCode": "typeOfDocument",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "documents_checklist_document",
+    "ListElementCode": "documentStatus",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "courtBundle",
     "ListElementCode": "document",
-    "EventElementLabel": "Upload a file",
-    "FieldDisplayOrder": 4,
-    "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "UploadApplicationDocuments",
-    "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "applicationDocuments",
-    "ListElementCode": "dateTimeUploaded",
-    "FieldDisplayOrder": 5,
-    "DisplayContext": "OPTIONAL",
-    "FieldShowCondition": "applicationDocuments=\"DO NOT SHOW\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "UploadApplicationDocuments",
-    "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "applicationDocuments",
-    "ListElementCode": "uploadedBy",
-    "FieldDisplayOrder": 6,
-    "DisplayContext": "OPTIONAL",
-    "FieldShowCondition": "applicationDocuments=\"DO NOT SHOW\""
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL"
   }
 ]
