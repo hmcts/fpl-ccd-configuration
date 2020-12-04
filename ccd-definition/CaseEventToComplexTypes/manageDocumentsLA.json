@@ -14,18 +14,8 @@
     "ID": "ManageDocuments",
     "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "supportingEvidenceDocumentsTemp",
-    "ListElementCode": "uploadedBy",
-    "FieldDisplayOrder": 2,
-    "DisplayContext": "READONLY",
-    "FieldShowCondition": "supportingEvidenceDocumentsTemp.uploadedBy=\"*\" AND manageDocumentLA.type!=\"CORRESPONDENCE\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageDocuments",
-    "CaseEventID": "manageDocumentsLA",
-    "CaseFieldID": "supportingEvidenceDocumentsTemp",
     "ListElementCode": "notes",
-    "FieldDisplayOrder": 3,
+    "FieldDisplayOrder": 2,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -34,7 +24,7 @@
     "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "supportingEvidenceDocumentsTemp",
     "ListElementCode": "dateTimeReceived",
-    "FieldDisplayOrder": 4,
+    "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
     "FieldShowCondition": "manageDocumentLA.type=\"CORRESPONDENCE\""
   },
@@ -44,9 +34,29 @@
     "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "supportingEvidenceDocumentsTemp",
     "ListElementCode": "document",
-    "FieldDisplayOrder": 5,
+    "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY",
     "EventElementLabel": "Upload document"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "supportingEvidenceDocumentsTemp",
+    "ListElementCode": "uploadedBy",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "manageDocumentLA.type=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "supportingEvidenceDocumentsTemp",
+    "ListElementCode": "dateTimeUploaded",
+    "FieldDisplayOrder": 6,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "manageDocumentLA.type=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
