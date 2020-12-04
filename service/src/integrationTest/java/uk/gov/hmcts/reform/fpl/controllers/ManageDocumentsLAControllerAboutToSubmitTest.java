@@ -259,7 +259,6 @@ public class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractContro
         return CourtBundle.builder()
             .hearing("string")
             .document(testDocumentReference())
-            .documentRedacted(testDocumentReference())
             .uploadedBy("Kurt")
             .build();
     }

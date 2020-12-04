@@ -18,7 +18,6 @@ module.exports = {
     hearingList: '#manageDocumentsHearingList',
     courtBundleHearingList: '#courtBundleHearingList',
     courtBundleDocument: '#manageDocumentsCourtBundle_document',
-    courtBundleDocumentRedacted: '#manageDocumentsCourtBundle_documentRedacted',
     c2DocumentsList: '#manageDocumentsSupportingC2List',
     supportingDocumentsForC2: supportingDocumentsFragment.supportingDocuments(0, 'temporaryC2Document_supportingEvidenceBundle'),
     supportingDocumentsCollectionId: '#supportingEvidenceDocumentsTemp',
@@ -64,7 +63,6 @@ module.exports = {
 
   async attachCourtBundle(document) {
     I.attachFile(this.fields.courtBundleDocument, document);
-    I.attachFile(this.fields.courtBundleDocumentRedacted, document);
   },
 
   async selectFurtherEvidenceIsRelatedToHearing() {

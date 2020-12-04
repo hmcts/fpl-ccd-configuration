@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 public class CourtBundle {
     private String hearing;
     private DocumentReference document;
-    private DocumentReference documentRedacted;
     private LocalDateTime dateTimeUploaded;
     private String uploadedBy;
 }

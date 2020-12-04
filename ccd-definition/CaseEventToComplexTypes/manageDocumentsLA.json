@@ -81,16 +81,6 @@
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocuments",
     "CaseEventID": "manageDocumentsLA",
-    "CaseFieldID": "manageDocumentsCourtBundle",
-    "ListElementCode": "documentRedacted",
-    "FieldDisplayOrder": 3,
-    "DisplayContext": "OPTIONAL",
-    "EventElementLabel": "Attach redacted court bundle"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageDocuments",
-    "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "applicationDocuments",
     "ListElementCode": "documentType",
     "FieldDisplayOrder": 1,
