@@ -59,9 +59,10 @@ public class MigrateCaseController extends CallbackController {
                     caseDetails.getId(), hearings.size(), hearingIndex + 1));
             }
 
-            if (!expectedHearingDate.equals(hearings.get(hearingIndex).getValue().getStartDate().toLocalDate())) {
-                throw new IllegalArgumentException(format(
-                    "Invalid hearing date %s", hearings.get(hearingIndex).getValue().getStartDate().toLocalDate()));
+            LocalDate hearingDate = hearings.get(hearingIndex).getValue().getStartDate().toLocalDate();
+
+            if (!expectedHearingDate.equals(hearingDate)) {
+                throw new IllegalArgumentException(format("Invalid hearing date %s", hearingDate));
             }
 
             hearings.remove(hearingIndex);

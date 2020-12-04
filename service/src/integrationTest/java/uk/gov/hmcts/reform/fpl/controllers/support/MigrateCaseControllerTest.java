@@ -24,7 +24,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @ActiveProfiles("integration-test")
 @WebMvcTest(MigrateCaseController.class)
 @OverrideAutoConfiguration(enabled = true)
-class MigrationControllerTest extends AbstractControllerTest {
+class MigrateCaseControllerTest extends AbstractControllerTest {
 
     private static final LocalTime TIME = LocalTime.now();
 
@@ -35,7 +35,7 @@ class MigrationControllerTest extends AbstractControllerTest {
     private String familyManCaseNumber;
     private String migrationId;
 
-    MigrationControllerTest() {
+    MigrateCaseControllerTest() {
         super("migrate-case");
     }
 
