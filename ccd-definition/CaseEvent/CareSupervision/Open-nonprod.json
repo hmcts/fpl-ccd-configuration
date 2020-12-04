@@ -6,7 +6,7 @@
     "Name": "Application documents",
     "Description": "Upload supporting documents",
     "DisplayOrder": 14,
-    "PreConditionState(s)": "Open",
+    "PreConditionState(s)": "Open;RETURNED",
     "PostConditionState": "Open",
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
