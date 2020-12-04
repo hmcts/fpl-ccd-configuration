@@ -1,0 +1,91 @@
+package uk.gov.hmcts.reform.fpl.controllers;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.NewJudicialMessageEvent;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.MessageJudgeService;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
+
+import java.util.List;
+import java.util.UUID;
+
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
+
+@Api
+@RestController
+@RequestMapping("/callback/message-judge")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+public class MessageJudgeController extends CallbackController {
+    private final MessageJudgeService messageJudgeService;
+    private final ObjectMapper mapper;
+
+    @PostMapping("/about-to-start")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
+
+        if (hasC2Documents(caseData)) {
+            caseDetailsMap.putAll(messageJudgeService.initialiseCaseFields(caseData));
+        }
+
+        removeTemporaryFields(caseDetailsMap, "judicialMessageMetaData", "judicialMessageNote");
+
+        return respond(caseDetailsMap);
+    }
+
+    @PostMapping("/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
+
+        caseData.getFirstHearing().ifPresent(hearingBooking -> caseDetailsMap.put("nextHearingLabel",
+            String.format("Next hearing in the case: %s", hearingBooking.toLabel())));
+
+        if (hasC2Documents(caseData) && caseData.getC2DynamicList() != null) {
+            UUID selectedC2Id = getDynamicListSelectedValue(caseData.getC2DynamicList(), mapper);
+            caseDetailsMap.putAll(messageJudgeService.buildRelatedC2DocumentFields(caseData, selectedC2Id));
+        }
+
+        return respond(caseDetailsMap);
+    }
+
+    @PostMapping("/about-to-submit")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
+
+        List<Element<JudicialMessage>> updatedMessages = messageJudgeService.addNewJudicialMessage(caseData);
+        caseDetailsMap.put("judicialMessages", messageJudgeService.sortJudicialMessages(updatedMessages));
+
+        removeTemporaryFields(caseDetailsMap, "hasC2Applications", "isMessageRegardingC2", "c2DynamicList",
+            "relatedDocumentsLabel", "nextHearingLabel");
+
+        return respond(caseDetailsMap);
+    }
+
+    @PostMapping("/submitted")
+    public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
+        publishEvent(new NewJudicialMessageEvent(getCaseData(callbackRequest)));
+    }
+
+    private boolean hasC2Documents(CaseData caseData) {
+        return caseData.getC2DocumentBundle() != null;
+    }
+}

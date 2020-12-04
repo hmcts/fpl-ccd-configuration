@@ -1556,50 +1556,36 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "C2DynamicList",
+    "CaseFieldID": "c2DynamicList",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "courtOrJudgeEmail",
-    "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "messageFrom",
-    "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "messageUrgency",
-    "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "nextHearingLabel",
+    "CaseFieldID": "relatedDocumentsLabel",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "CRD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "relatedC2DocumentsLabel",
+    "CaseFieldID": "judicialMessageNote",
     "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "CRD"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "messageBody",
+    "CaseFieldID": "judicialMessageMetaData",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "judicialMessages",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRU"
   }
 ]

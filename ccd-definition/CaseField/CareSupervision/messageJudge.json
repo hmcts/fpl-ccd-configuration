@@ -20,36 +20,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "C2DynamicList",
+    "ID": "c2DynamicList",
     "Label": "Which application?",
     "FieldType": "DynamicList",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "courtOrJudgeEmail",
-    "Label": "Court or judicial email address",
-    "FieldType": "Email",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "messageFrom",
-    "Label": "To review an application from:",
-    "FieldType": "Email",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "messageUrgency",
-    "Label": "Urgency",
-    "FieldType": "Text",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -65,8 +38,8 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "relatedC2DocumentsLabel",
-    "Label": " ",
+    "ID": "relatedDocumentsLabel",
+    "Label": "Documents related to message:",
     "FieldType": "Text",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -74,11 +47,30 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "messageBody",
+    "ID": "judicialMessageMetaData",
+    "Label": " ",
+    "FieldType": "JudicialMessageMetaData",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "judicialMessageNote",
     "Label": "Message from the CTSC admin team:",
     "FieldType": "TextArea",
     "SecurityClassification": "Public",
     "HintText": "Add any notes given with the application, or what you'd like the judge or legal advisor to do.",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "judicialMessages",
+    "Label": "Message",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "JudicialMessage",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   }
 ]

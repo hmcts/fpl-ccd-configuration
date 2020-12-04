@@ -5,7 +5,7 @@
     "Channel": "CaseWorker",
     "TabID": "OverviewTab",
     "TabLabel": "Overview",
-    "TabDisplayOrder": 15,
+    "TabDisplayOrder": 16,
     "CaseFieldID": "returnApplication",
     "TabFieldDisplayOrder": 1
   },
@@ -15,7 +15,7 @@
     "Channel": "CaseWorker",
     "TabID": "OverviewTab",
     "TabLabel": "Overview",
-    "TabDisplayOrder": 15,
+    "TabDisplayOrder": 16,
     "CaseFieldID": "caseCompletionDate",
     "TabFieldDisplayOrder": 2
   },
@@ -25,7 +25,7 @@
     "Channel": "CaseWorker",
     "TabID": "OverviewTab",
     "TabLabel": "Overview",
-    "TabDisplayOrder": 15,
+    "TabDisplayOrder": 16,
     "CaseFieldID": "caseExtensionReasonList",
     "TabFieldDisplayOrder": 3
   },
@@ -35,7 +35,7 @@
     "Channel": "CaseWorker",
     "TabID": "OverviewTab",
     "TabLabel": "Overview",
-    "TabDisplayOrder": 15,
+    "TabDisplayOrder": 16,
     "CaseFieldID": "extensionComments",
     "TabFieldDisplayOrder": 4,
     "FieldShowCondition": "extensionComments!=\"\""
@@ -46,7 +46,7 @@
     "Channel": "CaseWorker",
     "TabID": "OverviewTab",
     "TabLabel": "Overview",
-    "TabDisplayOrder": 15,
+    "TabDisplayOrder": 16,
     "CaseFieldID": "closeCaseTabField",
     "TabFieldDisplayOrder": 4
   }

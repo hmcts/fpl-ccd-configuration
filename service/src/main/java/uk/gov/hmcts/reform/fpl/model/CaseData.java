@@ -632,4 +632,13 @@ public class CaseData {
         return hearingEndDate.isBefore(LocalDateTime.now()) || hearingStartDate.isBefore(LocalDateTime.now());
     }
 
+    private final Object c2DynamicList;
+    private final String judicialMessageNote;
+    private final JudicialMessageMetaData judicialMessageMetaData;
+    private final String relatedDocumentsLabel;
+    private final List<Element<JudicialMessage>> judicialMessages;
+
+    public List<Element<JudicialMessage>> getJudicialMessages() {
+        return defaultIfNull(judicialMessages, new ArrayList<>());
+    }
 }

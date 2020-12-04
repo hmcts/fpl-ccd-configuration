@@ -29,6 +29,12 @@ public class CaseDetailsHelper {
         }
     }
 
+    public static void removeTemporaryFields(CaseDetailsMap caseDetailsMap, String... fields) {
+        for (String field : fields) {
+            caseDetailsMap.remove(field);
+        }
+    }
+
     public static boolean isInOpenState(CaseDetails caseDetails) {
         return isInState(caseDetails, OPEN);
     }

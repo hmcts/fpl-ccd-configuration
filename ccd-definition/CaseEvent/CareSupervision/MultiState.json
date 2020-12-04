@@ -672,9 +672,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "messageJudgeOrLegalAdvisor",
-    "Name": "Message judge or legal advisor",
-    "Description": "Message judge or legal advisor",
+    "ID": "messageJudgeOrLegalAdviser",
+    "Name": "Message judge or legal adviser",
+    "Description": "Message judge or legal adviser",
     "DisplayOrder": 26,
     "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING",
     "PostConditionState": "*",
@@ -682,7 +682,8 @@
     "ShowSummary": "Y",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue",
-    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/message-judge-legal-advisor/about-to-start",
-    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/message-judge-legal-advisor/about-to-submit"
+    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/message-judge/about-to-start",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/message-judge/about-to-submit",
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/message-judge/submitted"
   }
 ]
