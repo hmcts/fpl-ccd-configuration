@@ -63,8 +63,9 @@ public class UploadDocumentsController extends CallbackController {
             data.put("applicationDocuments",
                 migratedData.getOrDefault("applicationDocuments", null));
             data.put("applicationDocumentsToFollowReason",
-                migratedData.getOrDefault("applicationDocumentsToFollowReason", null)
-            );
+                migratedData.getOrDefault("applicationDocumentsToFollowReason", null));
+            data.put("courtBundleList",
+                migratedData.getOrDefault("courtBundleList", null));
         }
 
         return respond(caseDetails);

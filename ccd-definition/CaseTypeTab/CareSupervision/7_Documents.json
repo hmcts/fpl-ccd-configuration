@@ -39,7 +39,7 @@
     "TabDisplayOrder": 7,
     "CaseFieldID": "documentTabFurtherEvidenceHeading",
     "TabFieldDisplayOrder": 4,
-    "FieldShowCondition": "hearingFurtherEvidenceDocuments=\"*\" OR furtherEvidenceDocuments=\"*\""
+    "FieldShowCondition": "hearingFurtherEvidenceDocuments=\"*\" OR furtherEvidenceDocuments=\"*\" OR furtherEvidenceDocumentsLA=\"*\""
   },
   {
     "LiveFrom": "01/01/2017",

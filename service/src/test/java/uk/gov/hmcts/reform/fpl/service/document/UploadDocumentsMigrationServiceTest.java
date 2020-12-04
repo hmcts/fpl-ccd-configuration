@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.DocumentStatus;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
@@ -28,7 +29,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SWET;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.THRESHOLD;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ExtendWith(MockitoExtension.class)
 class UploadDocumentsMigrationServiceTest {
@@ -40,6 +41,7 @@ class UploadDocumentsMigrationServiceTest {
     private static final Document THRESHOLD_DOCUMENT = documentWithUploadedFile();
     private static final Document CHECKLIST__DOCUMENT = documentWithUploadedFile();
     private static final Document SOCIAL_WORK_ASSESSMENT_DOCUMENT = documentWithUploadedFile();
+    private static final CourtBundle COURT_BUNDLE = CourtBundle.builder().document(testDocumentReference()).build();
 
     private static final Document SOCIAL_WORK_CHRONOLOGY_DOCUMENT_TO_FOLLOW = documentWithToFollow();
     private static final Document SOCIAL_WORK_STATEMENT_DOCUMENT_TO_FOLLOW = documentWithToFollow();
@@ -229,6 +231,22 @@ class UploadDocumentsMigrationServiceTest {
                 + " Threshold to follow,"
                 + " Checklist document to follow"
         ));
+    }
+
+    @Test
+    void shouldAddCourtBundleToCourtBundleList() {
+        CaseData caseData = CaseData.builder().courtBundle(COURT_BUNDLE).build();
+        Map<String, Object> actual = underTest.transformFromOldCaseData(caseData);
+
+        assertThat(actual.get("courtBundleList")).isNotNull();
+    }
+
+    @Test
+    void shouldNotAddCourtBundleToCourtBundleListIfNoCourtBundlePresent() {
+        CaseData caseData = CaseData.builder().build();
+        Map<String, Object> actual = underTest.transformFromOldCaseData(caseData);
+
+        assertThat(actual.get("courtBundleList")).isNull();
     }
 
     private static Document documentWithUploadedFile() {

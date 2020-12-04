@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
@@ -24,6 +25,8 @@ import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SOCIAL_WORK_
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SWET;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.THRESHOLD;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.TO_FOLLOW;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -35,6 +38,7 @@ public class UploadDocumentsMigrationService {
 
         List<Element<ApplicationDocument>> applicationDocuments = Lists.newArrayList();
         List<String> toFollowComments = Lists.newArrayList();
+        Map<String, Object> data = new HashMap<>();
 
         ofNullable(caseData.getSocialWorkChronologyDocument())
             .ifPresent(addTransformedDocument(applicationDocuments, toFollowComments, SOCIAL_WORK_CHRONOLOGY));
@@ -58,11 +62,13 @@ public class UploadDocumentsMigrationService {
             .ifPresent(addTransformedDocument(applicationDocuments, toFollowComments, CHECKLIST_DOCUMENT));
 
         ofNullable(caseData.getOtherSocialWorkDocuments())
-            .ifPresent(otherDocumentElements -> {
-                applicationDocuments.addAll(transformer.convert(otherDocumentElements));
-            });
+            .ifPresent(
+                otherDocumentElements -> applicationDocuments.addAll(transformer.convert(otherDocumentElements)));
 
-        Map<String, Object> data = new HashMap<>();
+        if (ofNullable(caseData.getCourtBundle()).isPresent()) {
+            data.put("courtBundleList", List.of(element(caseData.getCourtBundle())));
+        }
+
         data.put("applicationDocuments", applicationDocuments);
         data.put("applicationDocumentsToFollowReason", String.join(", ", toFollowComments));
         return data;

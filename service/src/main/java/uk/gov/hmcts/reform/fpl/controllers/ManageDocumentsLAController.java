@@ -83,14 +83,14 @@ public class ManageDocumentsLAController extends CallbackController {
                 break;
             case C2:
                 if (!caseData.hasC2DocumentBundle()) {
-                    respond(caseDetails, List.of("There are no C2s to associate supporting documents with"));
+                    return respond(caseDetails, List.of("There are no C2s to associate supporting documents with"));
                 }
                 caseDetails.getData().putAll(manageDocumentService.initialiseC2DocumentListAndLabel(caseData));
                 supportingEvidence = manageDocumentService.getC2SupportingEvidenceBundle(caseData);
                 break;
             case COURT_BUNDLE:
                 if (caseData.getCourtBundleList().isEmpty()) {
-                    respond(caseDetails, List.of("There are no hearings to associate a bundle with"));
+                    return respond(caseDetails, List.of("There are no hearings to associate a bundle with"));
                 }
                 caseDetails.getData().putAll(manageDocumentLAService.initialiseCourtBundleFields(caseData));
                 break;
