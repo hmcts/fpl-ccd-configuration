@@ -9,7 +9,7 @@ const otherProceedings = require('../fixtures/otherProceedingData');
 
 let caseId;
 
-Feature('Application draft');
+Feature('Application draft (populated draft)');
 
 BeforeSuite(async ({I}) => caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne));
 
