@@ -58,9 +58,8 @@ public class UploadDocumentsMigrationService {
             .ifPresent(addTransformedDocument(applicationDocuments, toFollowComments, CHECKLIST_DOCUMENT));
 
         ofNullable(caseData.getOtherSocialWorkDocuments())
-            .ifPresent(otherDocumentElements -> {
-                applicationDocuments.addAll(transformer.convert(otherDocumentElements));
-            });
+            .ifPresent(otherDocumentElements ->
+                applicationDocuments.addAll(transformer.convert(otherDocumentElements)));
 
         Map<String, Object> data = new HashMap<>();
         data.put("applicationDocuments", applicationDocuments);

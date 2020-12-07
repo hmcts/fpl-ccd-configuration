@@ -32,9 +32,7 @@ public class CaseSubmissionDocumentAnnexGenerator {
 
     private List<DocmosisAnnexDocument> transformDocuments(List<Element<ApplicationDocument>> documents) {
 
-        Map<String, Long> documentTitlesAndCounts = nullSafeList(documents).stream().map(
-            document -> generateTitle(document)
-        ).collect(Collectors.groupingBy(Function.identity(), LinkedHashMap::new, Collectors.counting()));
+        Map<String, Long> documentTitlesAndCounts = nullSafeList(documents).stream().map(this::generateTitle).collect(Collectors.groupingBy(Function.identity(), LinkedHashMap::new, Collectors.counting()));
 
         return documentTitlesAndCounts.entrySet().stream().map(
             entry -> DocmosisAnnexDocument.builder()

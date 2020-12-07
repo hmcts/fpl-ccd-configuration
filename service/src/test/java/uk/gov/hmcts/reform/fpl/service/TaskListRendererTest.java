@@ -1,12 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
 
@@ -14,6 +8,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
 import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
@@ -38,18 +33,13 @@ import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_AVAILABLE;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_STARTED;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {TaskListRenderer.class})
-@TestPropertySource(properties = {
-    "resources.images.baseUrl=https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/"
-})
+
 class TaskListRendererTest {
-
-    @MockBean
-    private FeatureToggleService featureToggleService;
-
-    @Autowired
-    private TaskListRenderer taskListRenderer;
+    private final FeatureToggleService featureToggleService = mock(FeatureToggleService.class);
+    private final TaskListRenderer taskListRenderer = new TaskListRenderer(
+        "https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/",
+        featureToggleService
+    );
 
     private List<Task> getTasks(Event event) {
         return List.of(
