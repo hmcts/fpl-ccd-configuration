@@ -74,14 +74,15 @@ public class UploadDocumentsMigrationService {
         return doc -> {
             if (!isNull(doc.getTypeOfDocument())) {
                 applicationDocuments.add(transformer.convert(doc, documentType));
+            } else {
+                addToFollowCommentIfMarked(doc, documentType, toFollowComments);
             }
-            addToFollowComment(doc, documentType, toFollowComments);
         };
     }
 
-    private void addToFollowComment(Document document,
-                                    ApplicationDocumentType documentType,
-                                    List<String> toFollowComments) {
+    private void addToFollowCommentIfMarked(Document document,
+                                            ApplicationDocumentType documentType,
+                                            List<String> toFollowComments) {
         String documentStatus = document.getDocumentStatus();
         if (TO_FOLLOW.getLabel().equals(documentStatus)) {
             toFollowComments.add(String.format("%s to follow", documentType.getLabel()));
