@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.events.cmo.CMORemovedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
+import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.removeorder.RemoveOrderService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
@@ -101,9 +102,11 @@ public class RemoveOrderController extends CallbackController {
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
         Optional<StandardDirectionOrder> removedSDO = service.getRemovedSDO(
-            caseData.getHiddenStandardDirectionOrders(), caseDataBefore.getHiddenStandardDirectionOrders());
+            caseData.getHiddenStandardDirectionOrders(), caseDataBefore.getHiddenStandardDirectionOrders()
+        );
         Optional<CaseManagementOrder> removedCMO = service.getRemovedCMO(
-            caseData.getHiddenCMOs(), caseDataBefore.getHiddenCMOs());
+            caseData.getHiddenCMOs(), caseDataBefore.getHiddenCMOs()
+        );
 
         if (removedSDO.isPresent()) {
             publishEvent(new PopulateStandardDirectionsEvent(callbackRequest));
