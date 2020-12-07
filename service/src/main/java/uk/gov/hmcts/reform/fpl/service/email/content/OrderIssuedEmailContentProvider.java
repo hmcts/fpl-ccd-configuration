@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.OrderIssuedNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
@@ -19,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
-import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 @Slf4j
@@ -31,24 +31,30 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
     private final Time time;
 
     public OrderIssuedNotifyData getNotifyDataWithoutCaseUrl(final CaseData caseData,
-                                                             final byte[] documentContents,
+                                                             final DocumentReference orderDocument,
                                                              final IssuedOrderType issuedOrderType) {
-        return OrderIssuedNotifyData.builder()
-            .respondentLastName(getFirstRespondentLastName(caseData))
-            .orderType(getTypeOfOrder(caseData, issuedOrderType))
-            .courtName(config.getCourt(caseData.getCaseLocalAuthority()).getName())
-            .callout((issuedOrderType != NOTICE_OF_PLACEMENT_ORDER) ? buildCallout(caseData) : "")
-            .documentLink(generateAttachedDocumentLink(documentContents).orElse(null))
+        return commonOrderIssuedNotifyData(caseData, issuedOrderType)
+            .documentLink(linkToAttachedDocument(orderDocument))
             .build();
     }
 
     public OrderIssuedNotifyData getNotifyDataWithCaseUrl(final CaseData caseData,
-                                                          final byte[] documentContents,
+                                                          final String documentUrl,
                                                           final IssuedOrderType issuedOrderType) {
-        return getNotifyDataWithoutCaseUrl(caseData, documentContents, issuedOrderType)
-            .toBuilder()
+        return commonOrderIssuedNotifyData(caseData, issuedOrderType)
+            .documentLink(documentUrl)
             .caseUrl(getCaseUrl(caseData.getId(), "OrdersTab"))
             .build();
+    }
+
+    public OrderIssuedNotifyData.OrderIssuedNotifyDataBuilder<?, ?> commonOrderIssuedNotifyData(
+        final CaseData caseData,
+        final IssuedOrderType issuedOrderType) {
+        return OrderIssuedNotifyData.builder()
+            .respondentLastName(getFirstRespondentLastName(caseData))
+            .orderType(getTypeOfOrder(caseData, issuedOrderType))
+            .courtName(config.getCourt(caseData.getCaseLocalAuthority()).getName())
+            .callout((issuedOrderType != NOTICE_OF_PLACEMENT_ORDER) ? buildCallout(caseData) : "");
     }
 
     public AllocatedJudgeTemplateForGeneratedOrder buildAllocatedJudgeOrderIssuedNotification(CaseData caseData) {
@@ -89,6 +95,5 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
 
         return orderType.toLowerCase();
     }
-
 
 }

@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
@@ -12,7 +13,6 @@ import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -26,6 +26,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICAT
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.concatUrlAndMostRecentUploadedDocumentPath;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -36,20 +37,21 @@ public class CaseManagementOrderIssuedEventHandler {
     private final CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final IssuedOrderAdminNotificationHandler issuedOrderAdminNotificationHandler;
-    private final DocumentDownloadService documentDownloadService;
+
+    @Value("${manage-case.ui.base.url}")
+    private String xuiBaseUrl;
 
     @EventListener
     public void notifyParties(final CaseManagementOrderIssuedEvent event) {
         CaseData caseData = event.getCaseData();
         CaseManagementOrder issuedCmo = event.getCmo();
 
-        //TODO Document is downloaded 5 times, this could impact performance. Investigate in FPLA-2061
         sendToLocalAuthority(caseData, issuedCmo);
         sendToCafcass(caseData, issuedCmo);
         sendToRepresentatives(caseData, issuedCmo, DIGITAL_SERVICE);
         sendToRepresentatives(caseData, issuedCmo, EMAIL);
         issuedOrderAdminNotificationHandler.notifyAdmin(caseData,
-            documentDownloadService.downloadDocument(issuedCmo.getOrder().getBinaryUrl()), CMO);
+            concatUrlAndMostRecentUploadedDocumentPath(xuiBaseUrl, issuedCmo.getOrder().getBinaryUrl()), CMO);
     }
 
     private void sendToLocalAuthority(final CaseData caseData, CaseManagementOrder cmo) {

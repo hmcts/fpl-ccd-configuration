@@ -12,5 +12,4 @@ public class OrderIssuedNotifyData extends BaseCaseNotifyData {
     private final String callout;
     private final String courtName;
     private final Object documentLink;
-
 }

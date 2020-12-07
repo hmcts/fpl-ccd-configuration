@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
@@ -32,6 +33,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedAllocatedJudgeParameters;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParameters;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ContextConfiguration(classes = {OrderIssuedEmailContentProvider.class, LookupTestConfig.class,
     EmailNotificationHelper.class, FixedTimeConfiguration.class})
@@ -50,16 +53,18 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
     void shouldBuildGeneratedOrderParametersWithCaseUrl() {
         NotifyData expectedParameters = getExpectedParameters(BLANK_ORDER.getLabel(), true);
         NotifyData actualParameters = orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(
-            caseData, documentContents, GENERATED_ORDER);
+            caseData, "testUrl", GENERATED_ORDER);
 
         assertThat(actualParameters).usingRecursiveComparison().isEqualTo(expectedParameters);
     }
 
     @Test
     void shouldBuildGeneratedOrderParametersWithoutCaseUrl() {
+        given(documentDownloadService.downloadDocument(anyString())).willReturn(DOCUMENT_CONTENT);
+
         NotifyData expectedParameters = getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true);
         NotifyData actualParameters = orderIssuedEmailContentProvider.getNotifyDataWithoutCaseUrl(
-            caseData, documentContents, GENERATED_ORDER);
+            caseData, testDocumentReference(), GENERATED_ORDER);
 
         assertThat(actualParameters).usingRecursiveComparison().isEqualTo(expectedParameters);
     }
@@ -69,7 +74,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
         NotifyData expectedParameters = getExpectedParameters(NOTICE_OF_PLACEMENT_ORDER.getLabel(),
             false);
         NotifyData actualParameters = orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(
-            caseData, documentContents, NOTICE_OF_PLACEMENT_ORDER);
+            caseData, "testUrl", NOTICE_OF_PLACEMENT_ORDER);
 
         assertThat(actualParameters).usingRecursiveComparison().isEqualTo(expectedParameters);
     }
@@ -78,7 +83,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
     void shouldBuildCaseManagementOrderParameters() {
         NotifyData expectedParameters = getExpectedParameters(CMO.getLabel(), true);
         NotifyData actualParameters = orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(
-            caseData, documentContents, CMO);
+            caseData, "testUrl", CMO);
 
         assertThat(actualParameters).usingRecursiveComparison().isEqualTo(expectedParameters);
     }
