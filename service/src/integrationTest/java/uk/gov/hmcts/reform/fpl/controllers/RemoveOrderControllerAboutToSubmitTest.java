@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -11,18 +12,31 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.service.IdentityService;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
 
@@ -31,6 +45,10 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
 @OverrideAutoConfiguration(enabled = true)
 public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTest {
     private static final String REASON = "The order was removed because the order was removed";
+    private static final UUID SDO_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
+
+    @MockBean
+    private IdentityService identityService;
 
     private Element<GeneratedOrder> selectedOrder;
 
@@ -44,12 +62,12 @@ public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTe
     }
 
     @Test
-    void shouldUpdateOrderCollectionAndHiddenOrderCollection() {
+    void shouldUpdateGeneratedOrderCollectionAndHiddenGeneratedOrderCollection() {
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
             asCaseDetails(buildCaseData(selectedOrder))
         );
 
-        CaseData responseData = mapper.convertValue(response.getData(), CaseData.class);
+        CaseData responseData = extractCaseData(response);
 
         selectedOrder.getValue().setRemovalReason(REASON);
 
@@ -66,7 +84,10 @@ public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTe
                 "orderToBeRemoved", "dummy data",
                 "orderTitleToBeRemoved", "dummy data",
                 "orderIssuedDateToBeRemoved", "dummy data",
-                "orderDateToBeRemoved", "dummy data"
+                "orderDateToBeRemoved", "dummy data",
+                "hearingToUnlink", "dummy data",
+                "showRemoveCMOFieldsFlag", "dummy data",
+                "showRemoveSDOWarningFlag", "dummy data"
             )
         );
 
@@ -78,7 +99,10 @@ public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTe
             "orderToBeRemoved",
             "orderTitleToBeRemoved",
             "orderIssuedDateToBeRemoved",
-            "orderDateToBeRemoved"
+            "orderDateToBeRemoved",
+            "hearingToUnlink",
+            "showRemoveCMOFieldsFlag",
+            "showRemoveSDOWarningFlag"
         );
     }
 
@@ -112,7 +136,7 @@ public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTe
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
 
-        CaseData returnedCaseData = mapper.convertValue(response.getData(), CaseData.class);
+        CaseData returnedCaseData = extractCaseData(response);
         List<Element<Child>> returnedChildren = returnedCaseData.getChildren1();
 
         List<Element<Child>> expectedChildrenList = List.of(
@@ -154,10 +178,82 @@ public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTe
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
 
-        CaseData returnedCaseData = mapper.convertValue(response.getData(), CaseData.class);
+        CaseData returnedCaseData = extractCaseData(response);
         List<Element<Child>> returnedChildren = returnedCaseData.getChildren1();
 
         assertThat(returnedChildren).isEqualTo(childrenList);
+    }
+
+    @Test
+    void shouldRemoveCaseManagementOrderAndRemoveHearingAssociation() {
+        UUID removedOrderId = UUID.randomUUID();
+
+        Element<CaseManagementOrder> caseManagementOrder1 = element(removedOrderId, CaseManagementOrder.builder()
+            .status(APPROVED)
+            .build());
+
+        List<Element<CaseManagementOrder>> caseManagementOrders = List.of(
+            caseManagementOrder1,
+            element(CaseManagementOrder.builder().build()));
+
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(HearingBooking.builder()
+                .caseManagementOrderId(removedOrderId)
+                .build()));
+
+        CaseData caseData = CaseData.builder()
+            .sealedCMOs(caseManagementOrders)
+            .hearingDetails(hearingBookings)
+            .removableOrderList(DynamicList.builder()
+                .value(buildListElement(removedOrderId, "Case management order - 15 June 2020"))
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
+
+        CaseData responseData = extractCaseData(response);
+        List<Element<CaseManagementOrder>> hiddenCMOs = responseData.getHiddenCMOs();
+        HearingBooking unlinkedHearing = responseData.getHearingDetails().get(0).getValue();
+
+        assertThat(hiddenCMOs).hasSize(1).first().isEqualTo(caseManagementOrder1);
+        assertNull(unlinkedHearing.getCaseManagementOrderId());
+    }
+
+    @Test
+    void shouldRemoveSDONoticeOfProceedingsAndSetStateToGatekeepingWhenRemovingASealedSDO() {
+        UUID newSDOId = UUID.randomUUID();
+
+        StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeTitle(HIS_HONOUR_JUDGE)
+                .judgeLastName("Watson")
+                .build())
+            .orderStatus(SEALED)
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .state(CASE_MANAGEMENT)
+            .reasonToRemoveOrder(REASON)
+            .standardDirectionOrder(standardDirectionOrder)
+            .noticeOfProceedingsBundle(List.of(element(DocumentBundle.builder().build())))
+            .removableOrderList(DynamicList.builder()
+                .value(buildListElement(SDO_ID, "Gatekeeping order - 15 June 2020"))
+                .build())
+            .build();
+
+        StandardDirectionOrder expectedSDO = StandardDirectionOrder.builder()
+            .orderStatus(SEALED)
+            .removalReason(REASON)
+            .build();
+
+        when(identityService.generateId()).thenReturn(newSDOId);
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
+        CaseData responseData = extractCaseData(response);
+
+        assertThat(responseData.getHiddenStandardDirectionOrders()).isEqualTo(List.of(element(newSDOId, expectedSDO)));
+        assertThat(responseData.getState()).isEqualTo(GATEKEEPING);
+        assertNull(responseData.getNoticeOfProceedingsBundle());
     }
 
     private CaseData buildCaseData(Element<GeneratedOrder> order) {
