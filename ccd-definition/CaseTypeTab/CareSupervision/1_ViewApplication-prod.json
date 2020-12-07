@@ -1,0 +1,13 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ViewApplicationTab",
+    "TabLabel": "View application",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "documentsLink",
+    "FieldShowCondition": "documents_socialWorkChronology_document!=\"\" OR documents_socialWorkStatement_document!=\"\" OR documents_socialWorkAssessment_document!=\"\" OR documents_socialWorkCarePlan_document!=\"\" OR documents_socialWorkEvidenceTemplate_document!=\"\" OR documents_threshold_document!=\"\" OR documents_checklist_document!=\"\" OR documents_socialWorkOther!=\"\"",
+    "TabFieldDisplayOrder": 36
+  }
+]
