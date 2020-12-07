@@ -9,10 +9,13 @@ import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
+import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -61,6 +64,32 @@ public class RemoveOrderService {
             .map(Element::getValue)
             .findAny()
             .orElseThrow(() -> new RemovableOrderNotFoundException(removedOrderId));
+    }
+
+    public Optional<StandardDirectionOrder> getRemovedSDO(
+        List<Element<StandardDirectionOrder>> hiddenSDOs,
+        List<Element<StandardDirectionOrder>> previousHiddenSDOs
+    ) {
+        return getRemovedOrder(hiddenSDOs, previousHiddenSDOs);
+    }
+
+    public Optional<CaseManagementOrder> getRemovedCMO(
+        List<Element<CaseManagementOrder>> hiddenCMOs,
+        List<Element<CaseManagementOrder>> previousHiddenCMOs
+    ) {
+        return getRemovedOrder(hiddenCMOs, previousHiddenCMOs);
+    }
+
+    private <T extends RemovableOrder> Optional<T> getRemovedOrder(
+        List<Element<T>> hiddenOrders, List<Element<T>> previousHiddenOrders
+    ) {
+        if (!Objects.equals(hiddenOrders, previousHiddenOrders)) {
+            return hiddenOrders.stream()
+                .filter(order -> !previousHiddenOrders.contains(order))
+                .findFirst()
+                .map(Element::getValue);
+        }
+        return Optional.empty();
     }
 
     private List<Element<? extends RemovableOrder>> getRemovableOrderList(CaseData caseData) {
