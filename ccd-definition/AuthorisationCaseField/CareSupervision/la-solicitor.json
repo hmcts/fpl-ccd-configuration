@@ -1271,5 +1271,19 @@
     "CaseFieldID": "manageLegalRepresentativesLink",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "applicationDocuments",
+    "UserRole": "caseworker-publiclaw-solicitor",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "applicationDocumentsToFollowReason",
+    "UserRole": "caseworker-publiclaw-solicitor",
+    "CRUD": "CRU"
   }
 ]
