@@ -94,7 +94,7 @@ Scenario('HMCTS admin uploads correspondence documents', async ({I, caseViewPage
   I.seeInTab(['Correspondence document 2', 'File'], 'mockFile.txt');
 });
 
-Scenario('HMCTS admin uploads C2 documents to the case', async ({I, caseViewPage, uploadC2DocumentsEventPage, paymentHistoryPage}) => {
+Scenario('@f', async ({I, caseViewPage, uploadC2DocumentsEventPage, paymentHistoryPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.uploadC2Documents);
   uploadC2DocumentsEventPage.selectApplicationType('WITH_NOTICE');
   await I.goToNextPage();
@@ -332,6 +332,25 @@ Scenario('HMCTS admin makes 26-week case extension', async ({I, caseViewPage, ad
   I.see('10 Oct 2030');
   I.see('Timetable for child');
   I.see('Comment');
+});
+
+Scenario('@f', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
+  await caseViewPage.goToNewActions(config.applicationActions.messageJudge);
+  messageJudgeOrLegalAdviserEventPage.relatedMessageToAC2();
+  messageJudgeOrLegalAdviserEventPage.selectC2(`Application 1: ${dateFormat(submittedAt, 'd mmmm yyyy, HH:MMtt')}`);
+  messageJudgeOrLegalAdviserEventPage.enterRecipientEmail('recipient@fpla.com');
+  messageJudgeOrLegalAdviserEventPage.enterSenderEmail('sender@fpla.com');
+  messageJudgeOrLegalAdviserEventPage.enterUrgency('High');
+  await I.goToNextPage();
+  messageJudgeOrLegalAdviserEventPage.enterMessageNote('Some note');
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.messageJudge);
+  caseViewPage.selectTab(caseViewPage.tabs.judicialMessages);
+  I.seeInTab(['Message 1', 'From'], 'sender@fpla.com');
+  I.seeInTab(['Message 1', 'Sent to'], 'recipient@fpla.com');
+  I.seeInTab(['Message 1', 'Date sent'], dateFormat(submittedAt, 'd mmm yyyy'));
+  I.seeInTab(['Message 1', 'Note'], 'Some note');
+  I.seeInTab(['Message 1', 'Status'], 'Open');
 });
 
 Scenario('HMCTS admin closes the case', async ({I, caseViewPage, closeTheCaseEventPage}) => {

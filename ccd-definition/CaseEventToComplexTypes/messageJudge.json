@@ -4,8 +4,7 @@
     "ID": "JudicialMessageMetaData",
     "CaseEventID": "messageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageMetaData",
-    "ListElementCode": "sender",
-    "SecurityClassification": "Public",
+    "ListElementCode": "recipient",
     "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY"
   },
@@ -14,7 +13,8 @@
     "ID": "JudicialMessageMetaData",
     "CaseEventID": "messageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageMetaData",
-    "ListElementCode": "recipient",
+    "ListElementCode": "sender",
+    "SecurityClassification": "Public",
     "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY"
   },

@@ -24,6 +24,7 @@ module.exports = {
     viewApplication: 'View application',
     startApplication: 'Start application',
     correspondence: 'Correspondence',
+    judicialMessages: 'Judicial messages',
   },
   actionsDropdown: '.ccd-dropdown',
   goButton: 'Go',
