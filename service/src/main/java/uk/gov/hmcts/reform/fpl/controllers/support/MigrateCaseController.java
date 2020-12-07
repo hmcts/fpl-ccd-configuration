@@ -37,13 +37,7 @@ public class MigrateCaseController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         Object migrationId = getMigrationId(caseDetails);
-        String familyManCaseNumber = caseData.getFamilyManCaseNumber();
 
-        if (isCorrectCase(migrationId, familyManCaseNumber)) {
-            log.info("Removing hearings from case reference {}", caseDetails.getId());
-            caseDetails.getData().put("hearingDetails", removeHearings(caseData.getHearingDetails()));
-            caseDetails.getData().remove(MIGRATION_ID_KEY);
-        }
         if (isDocumentMigrationRequired(migrationId)) {
             log.info("Migration of Old Documents to Application Documents");
             Map<String, Object> migratedData = uploadDocumentsMigrationService.transformFromOldCaseData(caseData);
@@ -61,10 +55,6 @@ public class MigrateCaseController extends CallbackController {
 
     private boolean isDocumentMigrationRequired(Object migrationId) {
         return "FPLA-2379".equals(migrationId);
-    }
-
-    private boolean isCorrectCase(Object migrationId, String familyManCaseNumber) {
-        return "FPLA-2437".equals(migrationId) && "ZW20C50003".equals(familyManCaseNumber);
     }
 
     private Object getMigrationId(CaseDetails caseDetails) {
