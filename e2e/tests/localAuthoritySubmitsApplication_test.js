@@ -523,28 +523,6 @@ Scenario('local authority enters attending hearing', async ({I, caseViewPage, en
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterAttendingHearing);
 });
 
-// This will be removed fully when FPLA-768 is toggled on, commenting out as will fail in build due to new and old event having same name
-// To allow task list to work
-// Scenario('local authority uploads documents @create-case-with-mandatory-sections-only', async ({I, caseViewPage, uploadDocumentsEventPage}) => {
-//   await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
-//   uploadDocumentsHelper.uploadCaseDocuments(uploadDocumentsEventPage);
-//   await I.seeCheckAnswersAndCompleteEvent('Save and continue');
-//   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
-//   caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
-//   uploadDocumentsHelper.assertCaseDocuments(I);
-//
-//   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
-//   caseViewPage.checkTaskIsCompleted(config.applicationActions.uploadDocuments);
-//   await caseViewPage.checkTaskIsAvailable(config.applicationActions.uploadDocuments);
-//   await caseViewPage.checkTaskIsAvailable(config.applicationActions.submitCase);
-// });
-
-// Scenario('local authority cannot upload court bundle', async ({I, caseViewPage, uploadDocumentsEventPage}) => {
-//   await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
-//   I.dontSeeElement(uploadDocumentsEventPage.documents.courtBundle);
-//   I.click('Cancel');
-// });
-
 Scenario('local authority adds multiple application documents', async ({I, caseViewPage, addApplicationDocumentsEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.addApplicationDocuments);
   await addApplicationDocumentsEventPage.selectDocumentType('Threshold');
