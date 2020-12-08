@@ -63,7 +63,8 @@
     "LiveFrom": "01/01/2017",
     "ID": "JudicialMessage",
     "ListElementCode": "relatedDocuments",
-    "FieldType": "TextArea",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Document",
     "ElementLabel": "Related documents",
     "SecurityClassification": "Public"
   }

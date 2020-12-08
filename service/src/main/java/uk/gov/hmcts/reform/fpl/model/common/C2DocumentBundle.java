@@ -7,10 +7,11 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
-import static net.logstash.logback.encoder.org.apache.commons.lang.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Data
 @Builder(toBuilder = true)
@@ -33,24 +34,31 @@ public class C2DocumentBundle {
     }
 
     @JsonIgnore
-    public String getC2DocumentBundleDocumentReferencesAsString() {
-        String stringBuilder = defaultIfNull(document, "") + "\n" + getSupportingEvidenceBundleAsString();
-        return stringBuilder.trim();
+    public List<Element<DocumentReference>> getMainC2AndSupportingEvidenceBundleDocumentReferences() {
+        List<Element<DocumentReference>> documentReferences = new ArrayList<>();
+
+        if (document != null) {
+            documentReferences.add(element(document));
+        }
+
+        documentReferences.addAll(getSupportingEvidenceBundleDocumentReferences());
+
+        return documentReferences;
     }
 
     @JsonIgnore
-    private String getSupportingEvidenceBundleAsString() {
-        StringBuilder stringBuilder = new StringBuilder();
+    private List<Element<DocumentReference>> getSupportingEvidenceBundleDocumentReferences() {
+        List<Element<DocumentReference>> documentReferences = new ArrayList<>();
 
         if (supportingEvidenceBundle != null) {
             supportingEvidenceBundle.stream()
                 .map(Element::getValue)
                 .map(SupportingEvidenceBundle::getDocument)
                 .forEach(documentReference -> {
-                    stringBuilder.append(String.format("%s", documentReference)).append("\n");
+                    documentReferences.add(element(documentReference));
                 });
         }
 
-        return stringBuilder.toString().trim();
+        return documentReferences;
     }
 }

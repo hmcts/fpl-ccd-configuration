@@ -1656,7 +1656,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "relatedDocumentsLabel",
     "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "CRD"
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1678,5 +1678,12 @@
     "CaseFieldID": "judicialMessages",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "messageJudgeLegalAdviserLink",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "R"
   }
 ]

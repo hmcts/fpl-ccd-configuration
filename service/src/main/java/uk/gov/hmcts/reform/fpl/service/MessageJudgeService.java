@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessageMetaData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -41,9 +42,10 @@ public class MessageJudgeService {
         Map<String, Object> data = new HashMap<>();
 
         C2DocumentBundle selectedC2DocumentBundle = caseData.getC2DocumentBundleByUUID(selectedC2Id);
-        String documentsAsLabel = selectedC2DocumentBundle.getC2DocumentBundleDocumentReferencesAsString();
+        List<Element<DocumentReference>> documents
+            = selectedC2DocumentBundle.getMainC2AndSupportingEvidenceBundleDocumentReferences();
 
-        data.put("relatedDocumentsLabel", documentsAsLabel);
+        data.put("relatedDocumentsLabel", documents);
         data.put("c2DynamicList", rebuildC2DynamicList(caseData, selectedC2Id));
 
         return data;
