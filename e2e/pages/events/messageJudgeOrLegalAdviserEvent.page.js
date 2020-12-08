@@ -17,8 +17,10 @@ module.exports = {
     I.click(this.fields.messageRegardingC2.yes);
   },
 
-  selectC2(C2) {
-    I.selectOption(this.fields.c2List, C2);
+  async selectC2() {
+    const dropdownLabel = await I.grabTextFrom(`${this.fields.c2List} option:nth-child(2)`);
+    I.waitForElement(this.fields.c2List);
+    I.selectOption(this.fields.c2List, dropdownLabel);
   },
 
   enterRecipientEmail(email) {
