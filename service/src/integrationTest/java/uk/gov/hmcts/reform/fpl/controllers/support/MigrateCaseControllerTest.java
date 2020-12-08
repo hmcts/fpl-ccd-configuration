@@ -8,12 +8,15 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractControllerTest;
+import uk.gov.hmcts.reform.fpl.model.Applicant;
+import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -129,12 +132,18 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
         final String caseName = "test name";
 
         @Test
-        void shouldRemoveRespondentsFiledIfPresent() {
+        void shouldRemoveLegacyFields() {
             CaseDetails caseDetails = CaseDetails.builder()
                 .data(Map.of(
                     "caseName", caseName,
-                    "respondents", List.of(ElementUtils.element(Respondent.builder()
+                    "respondents", List.of(element(Respondent.builder()
                         .party(RespondentParty.builder().lastName("Wilson").build())
+                        .build())),
+                    "children", List.of(element(Child.builder()
+                        .party(ChildParty.builder().lastName("Smith").build())
+                        .build())),
+                    "applicant", List.of(element(Applicant.builder()
+                        .party(ApplicantParty.builder().lastName("White").build())
                         .build())),
                     "migrationId", migrationId))
                 .build();
@@ -145,7 +154,7 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
         }
 
         @Test
-        void shouldRemoveMigrationIdOnlyIfRespondentsFiledNotPresent() {
+        void shouldRemoveMigrationIdOnlyIfRespondentsAndChildrenFiledNotPresent() {
             CaseDetails caseDetails = CaseDetails.builder()
                 .data(Map.of(
                     "caseName", caseName,

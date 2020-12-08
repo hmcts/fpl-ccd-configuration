@@ -77,5 +77,7 @@ public class MigrateCaseController extends CallbackController {
 
     private void run2501(CaseDetails caseDetails) {
         caseDetails.getData().remove("respondents");
+        caseDetails.getData().remove("children");
+        caseDetails.getData().remove("applicant");
     }
 }
