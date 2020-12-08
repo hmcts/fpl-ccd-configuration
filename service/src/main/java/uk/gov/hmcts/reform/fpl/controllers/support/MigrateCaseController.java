@@ -36,8 +36,12 @@ public class MigrateCaseController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Object migrationId = caseDetails.getData().get(MIGRATION_ID_KEY);
 
+
         if ("FPLA-2469".equals(migrationId)) {
             run2469(caseDetails);
+        }
+        if ("FPLA-2501".equals(migrationId)) {
+            run2501(caseDetails);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
@@ -69,5 +73,11 @@ public class MigrateCaseController extends CallbackController {
 
             caseDetails.getData().put("hearingDetails", hearings);
         }
+    }
+
+    private void run2501(CaseDetails caseDetails) {
+        caseDetails.getData().remove("respondents");
+        caseDetails.getData().remove("children");
+        caseDetails.getData().remove("applicant");
     }
 }
