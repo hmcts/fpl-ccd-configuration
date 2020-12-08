@@ -29,9 +29,9 @@ public class CaseDetailsHelper {
         }
     }
 
-    public static void removeTemporaryFields(CaseDetailsMap caseDetailsMap, String... fields) {
+    public static void removeTemporaryFields(CaseDetailsMap caseDetails, String... fields) {
         for (String field : fields) {
-            caseDetailsMap.remove(field);
+            caseDetails.remove(field);
         }
     }
 

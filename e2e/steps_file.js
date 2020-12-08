@@ -206,8 +206,6 @@ module.exports = function () {
         await this.retryUntilExists(async () => {
           await this.goToPage(`${baseUrl}/cases/case-details/${caseId}`);
         }, signedInSelector);
-      } else {
-        this.refreshPage();
       }
     },
 
@@ -296,6 +294,7 @@ module.exports = function () {
     async submitNewCaseWithData(data = mandatorySubmissionFields) {
       const caseId = await this.logInAndCreateCase(config.swanseaLocalAuthorityUserOne);
       await caseHelper.populateWithData(caseId, data);
+      await this.refreshPage();
       output.print(`Case #${caseId} has been populated with data`);
 
       return caseId;
