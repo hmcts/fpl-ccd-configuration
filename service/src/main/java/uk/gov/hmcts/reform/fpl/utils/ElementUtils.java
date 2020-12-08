@@ -109,6 +109,10 @@ public class ElementUtils {
         return defaultIfNull(collection, Collections.emptyList());
     }
 
+    public static <T> List<T> nullSafeList(List<T> collection) {
+        return defaultIfNull(collection, Collections.emptyList());
+    }
+
     public static UUID getDynamicListSelectedValue(Object dynamicList, ObjectMapper mapper) {
         if (dynamicList instanceof String) {
             return UUID.fromString((String) dynamicList);

@@ -185,7 +185,10 @@ class ReviewCMOServiceTest {
             .status(APPROVED)
             .build();
 
-        assertThat(service.getCMOToSeal(caseData).getValue()).isEqualTo(expectedCmo);
+        Element<CaseManagementOrder> cmoToSeal = service.getCMOToSeal(caseData);
+
+        assertThat(cmoToSeal.getValue()).isEqualTo(expectedCmo);
+        assertThat(cmoToSeal.getId()).isEqualTo(agreedCMO.getId());
     }
 
     @Test
@@ -209,7 +212,10 @@ class ReviewCMOServiceTest {
             .status(APPROVED)
             .build();
 
-        assertThat(service.getCMOToSeal(caseData).getValue()).isEqualTo(expectedCmo);
+        Element<CaseManagementOrder> cmoToSeal = service.getCMOToSeal(caseData);
+
+        assertThat(cmoToSeal.getValue()).isEqualTo(expectedCmo);
+        assertThat(cmoToSeal.getId()).isEqualTo(agreedCMO.getId());
     }
 
     @Test

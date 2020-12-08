@@ -6,7 +6,6 @@ const applicant = require('../fixtures/applicant.js');
 const solicitor = require('../fixtures/solicitor.js');
 const others = require('../fixtures/others.js');
 const otherProceedings = require('../fixtures/otherProceedingData');
-const uploadDocumentsHelper = require('../helpers/upload_case_documents_helper.js');
 
 let caseId;
 
@@ -495,7 +494,6 @@ Scenario('local authority enters allocation proposal @create-case-with-mandatory
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
   caseViewPage.checkTaskIsCompleted(config.applicationActions.enterAllocationProposal);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterAllocationProposal);
-  await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
 Scenario('local authority enters attending hearing', async ({I, caseViewPage, enterAttendingHearingEventPage}) => {
@@ -523,27 +521,6 @@ Scenario('local authority enters attending hearing', async ({I, caseViewPage, en
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
   caseViewPage.checkTaskIsInProgress(config.applicationActions.enterAttendingHearing);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterAttendingHearing);
-  await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
-});
-
-Scenario('local authority uploads documents @create-case-with-mandatory-sections-only', async ({I, caseViewPage, uploadDocumentsEventPage}) => {
-  await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
-  uploadDocumentsHelper.uploadCaseDocuments(uploadDocumentsEventPage);
-  await I.seeCheckAnswersAndCompleteEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
-  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
-  uploadDocumentsHelper.assertCaseDocuments(I);
-
-  caseViewPage.selectTab(caseViewPage.tabs.startApplication);
-  caseViewPage.checkTaskIsCompleted(config.applicationActions.uploadDocuments);
-  await caseViewPage.checkTaskIsAvailable(config.applicationActions.uploadDocuments);
-  await caseViewPage.checkTaskIsAvailable(config.applicationActions.submitCase);
-});
-
-Scenario('local authority cannot upload court bundle', async ({I, caseViewPage, uploadDocumentsEventPage}) => {
-  await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
-  I.dontSeeElement(uploadDocumentsEventPage.documents.courtBundle);
-  I.click('Cancel');
 });
 
 Scenario('local authority adds multiple application documents', async ({I, caseViewPage, addApplicationDocumentsEventPage}) => {

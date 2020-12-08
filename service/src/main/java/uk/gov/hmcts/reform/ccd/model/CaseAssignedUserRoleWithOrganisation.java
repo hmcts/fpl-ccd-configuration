@@ -2,15 +2,13 @@ package uk.gov.hmcts.reform.ccd.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.extern.jackson.Jacksonized;
 
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Builder(toBuilder = true)
+@Jacksonized
 public class CaseAssignedUserRoleWithOrganisation {
 
     @JsonProperty("organisation_id")

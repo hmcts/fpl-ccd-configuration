@@ -3,7 +3,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath("net.serenity-bdd:serenity-gradle-plugin:2.3.8")
+    classpath("net.serenity-bdd:serenity-gradle-plugin:2.3.9")
   }
 }
 
@@ -161,7 +161,7 @@ sonarqube {
     property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
     property "sonar.pitest.mode", "reuseReport"
     property "sonar.pitest.reportsDirectory", "build/reports/pitest"
-    property "sonar.coverage.exclusions", "**/model/**, **/config/**/*Configuration.java, **/testingsupport/**, **MigrateCaseController.java"
+    property "sonar.coverage.exclusions", "**/model/**, **/config/**/*Configuration.java, **/testingsupport/**, **MigrateCaseController.java, **/controllers/support/**"
   }
 }
 
@@ -222,7 +222,7 @@ dependencies {
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '10.9'
 
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.18'
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.3.0'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.3.1'
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger

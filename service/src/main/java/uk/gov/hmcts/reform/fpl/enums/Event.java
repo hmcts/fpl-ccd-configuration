@@ -33,7 +33,7 @@ public enum Event {
     COURT_SERVICES("attendingHearing", "Court services needed", List.of(OPEN, RETURNED)),
     SUBMIT_APPLICATION("submitApplication", "Submit application", List.of(OPEN, RETURNED)),
     CASE_NAME("changeCaseName", "Change case name", List.of(OPEN, RETURNED)),
-    APPLICATION_DOCUMENTS("uploadApplicationDocuments", "Upload documents", List.of(OPEN));
+    APPLICATION_DOCUMENTS("uploadDocuments", "Upload documents", List.of(OPEN, RETURNED));
 
     private final String id;
     private String name;

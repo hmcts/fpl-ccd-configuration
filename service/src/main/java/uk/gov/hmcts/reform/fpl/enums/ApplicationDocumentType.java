@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
+@Getter
 public enum ApplicationDocumentType {
 
     THRESHOLD("Threshold"),
@@ -16,8 +18,4 @@ public enum ApplicationDocumentType {
     OTHER("Other");
 
     private final String label;
-
-    public String getLabel() {
-        return label;
-    }
 }
