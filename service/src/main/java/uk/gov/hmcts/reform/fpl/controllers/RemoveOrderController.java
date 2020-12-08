@@ -12,15 +12,17 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
+import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderRemovedEvent;
+import uk.gov.hmcts.reform.fpl.events.cmo.CMORemovedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.removeorder.RemoveOrderService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
@@ -58,11 +60,6 @@ public class RemoveOrderController extends CallbackController {
         // When dynamic lists are fixed this can be moved into the below method
         UUID removedOrderId = getDynamicListSelectedValue(caseData.getRemovableOrderList(), mapper);
         RemovableOrder removableOrder = service.getRemovedOrderByUUID(caseData, removedOrderId);
-
-        if (removableOrder instanceof CaseManagementOrder
-            && caseData.getHearingLinkedToCMO(removedOrderId).isEmpty()) {
-            return respond(caseDetailsMap, List.of(String.format(CMO_ERROR_MESSAGE, removedOrderId)));
-        }
 
         service.populateSelectedOrderFields(caseData, caseDetailsMap, removedOrderId, removableOrder);
 
@@ -104,13 +101,20 @@ public class RemoveOrderController extends CallbackController {
         CaseData caseData = getCaseData(callbackRequest.getCaseDetails());
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
-        if (isRemovingNewSDO(caseData, caseDataBefore)) {
-            publishEvent(new PopulateStandardDirectionsEvent(callbackRequest));
-        }
-    }
+        Optional<StandardDirectionOrder> removedSDO = service.getRemovedSDO(
+            caseData.getHiddenStandardDirectionOrders(), caseDataBefore.getHiddenStandardDirectionOrders()
+        );
+        Optional<CaseManagementOrder> removedCMO = service.getRemovedCMO(
+            caseData.getHiddenCMOs(), caseDataBefore.getHiddenCMOs()
+        );
 
-    private boolean isRemovingNewSDO(CaseData caseData, CaseData caseDataBefore) {
-        return !Objects.equals(caseData.getHiddenStandardDirectionOrders(),
-            caseDataBefore.getHiddenStandardDirectionOrders());
+        if (removedSDO.isPresent()) {
+            publishEvent(new PopulateStandardDirectionsEvent(callbackRequest));
+            publishEvent(new StandardDirectionsOrderRemovedEvent(
+                caseData, removedSDO.map(StandardDirectionOrder::getRemovalReason).orElse("")));
+        } else if (removedCMO.isPresent()) {
+            publishEvent(
+                new CMORemovedEvent(caseData, removedCMO.map(CaseManagementOrder::getRemovalReason).orElse("")));
+        }
     }
 }

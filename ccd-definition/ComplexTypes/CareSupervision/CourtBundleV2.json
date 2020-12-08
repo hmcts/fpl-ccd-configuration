@@ -1,0 +1,34 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CourtBundleV2",
+    "ListElementCode": "hearing",
+    "FieldType": "Text",
+    "ElementLabel": "Court bundle for",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CourtBundleV2",
+    "ListElementCode": "document",
+    "FieldType": "Document",
+    "ElementLabel": "Court bundle",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CourtBundleV2",
+    "ListElementCode": "dateTimeUploaded",
+    "FieldType": "DateTime",
+    "ElementLabel": "Date and time uploaded",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CourtBundleV2",
+    "ListElementCode": "uploadedBy",
+    "FieldType": "Text",
+    "ElementLabel": "Uploaded by",
+    "SecurityClassification": "Public"
+  }
+]

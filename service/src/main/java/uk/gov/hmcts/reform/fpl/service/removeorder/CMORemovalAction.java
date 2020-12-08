@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.removeorder;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
-import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
+import uk.gov.hmcts.reform.fpl.exceptions.removeorder.UnexpectedNumberOfCMOsRemovedException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -16,7 +16,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
-import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -35,19 +34,20 @@ public class CMORemovalAction implements OrderRemovalAction {
         CaseManagementOrder caseManagementOrder = (CaseManagementOrder) removableOrder;
 
         List<Element<CaseManagementOrder>> sealedCMOs = caseData.getSealedCMOs();
-        boolean removed = sealedCMOs.remove(element(removedOrderId, caseManagementOrder));
-        if (!removed) {
+        Element<CaseManagementOrder> cmoElement = element(removedOrderId, caseManagementOrder);
+
+        if (!sealedCMOs.remove(cmoElement)) {
             throw new CMONotFoundException(format("Failed to find order matching id %s", removedOrderId));
         }
 
         caseManagementOrder.setRemovalReason(caseData.getReasonToRemoveOrder());
 
         List<Element<CaseManagementOrder>> hiddenCMOs = caseData.getHiddenCMOs();
-        hiddenCMOs.add(element(removedOrderId, caseManagementOrder));
+        hiddenCMOs.add(cmoElement);
 
         data.put("hiddenCaseManagementOrders", hiddenCMOs);
         data.putIfNotEmpty("sealedCMOs", sealedCMOs);
-        data.put("hearingDetails", removeHearingLinkedToCMO(caseData.getHearingDetails(), removedOrderId));
+        data.put("hearingDetails", removeHearingLinkedToCMO(caseData, cmoElement));
     }
 
     @Override
@@ -57,31 +57,49 @@ public class CMORemovalAction implements OrderRemovalAction {
                                    RemovableOrder removableOrder) {
         CaseManagementOrder caseManagementOrder = (CaseManagementOrder) removableOrder;
 
-        Optional<Element<HearingBooking>> hearingBooking = caseData.getHearingLinkedToCMO(removableOrderId);
-
-        if (hearingBooking.isEmpty()) {
-            throw new HearingNotFoundException(format("Could not find hearing matching id %s", removableOrderId));
-        }
+        HearingBooking hearing = getHearingToUnlink(caseData, removableOrderId, caseManagementOrder);
 
         data.put("orderToBeRemoved", caseManagementOrder.getOrder());
         data.put("orderTitleToBeRemoved", "Case management order");
-        data.put("hearingToUnlink", hearingBooking.get().getValue().toLabel());
+        data.put("hearingToUnlink", hearing.toLabel());
         data.put("showRemoveCMOFieldsFlag", YES.getValue());
     }
 
-    private List<Element<HearingBooking>> removeHearingLinkedToCMO(List<Element<HearingBooking>> hearings,
-                                                                  UUID removedOrderId) {
-        if (isEmpty(hearings)) {
-            return List.of();
-        }
+    private List<Element<HearingBooking>> removeHearingLinkedToCMO(CaseData caseData,
+                                                                   Element<CaseManagementOrder> cmoElement) {
 
-        return hearings.stream()
-            .map(element -> {
-                HearingBooking hearingBooking = element.getValue();
-                if (removedOrderId.equals(hearingBooking.getCaseManagementOrderId())) {
-                    hearingBooking.setCaseManagementOrderId(null);
-                }
-                return element;
-            }).collect(Collectors.toList());
+        HearingBooking hearingToUnlink = getHearingToUnlink(
+            caseData,
+            cmoElement.getId(),
+            cmoElement.getValue()
+        );
+
+        // this will still be the same reference as the one in the case data list so just update it
+        hearingToUnlink.setCaseManagementOrderId(null);
+
+        return caseData.getHearingDetails();
+    }
+
+    private HearingBooking getHearingToUnlink(CaseData caseData, UUID cmoId, CaseManagementOrder cmo) {
+
+        Optional<Element<HearingBooking>> hearingBooking = caseData.getHearingLinkedToCMO(cmoId);
+
+        if (hearingBooking.isEmpty()) {
+            List<Element<HearingBooking>> matchingLabel = caseData.getHearingDetails()
+                .stream()
+                .filter(hearing -> hearing.getValue().toLabel().equals(cmo.getHearing()))
+                .collect(Collectors.toList());
+
+            if (matchingLabel.size() != 1) {
+                throw new UnexpectedNumberOfCMOsRemovedException(
+                    cmoId,
+                    format("CMO %s could not be linked to hearing by CMO id and there wasn't a unique link "
+                        + "(%s links found) to a hearing with the same label", cmoId, matchingLabel.size())
+                );
+            }
+
+            return matchingLabel.get(0).getValue();
+        }
+        return hearingBooking.get().getValue();
     }
 }
