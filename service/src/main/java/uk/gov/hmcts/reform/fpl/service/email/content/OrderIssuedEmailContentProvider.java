@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import com.google.common.collect.Iterables;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
@@ -15,6 +16,9 @@ import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplat
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+
+import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
@@ -33,12 +37,19 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
     public OrderIssuedNotifyData getNotifyDataWithoutCaseUrl(final CaseData caseData,
                                                              final byte[] documentContents,
                                                              final IssuedOrderType issuedOrderType) {
+        Optional<JSONObject> documentJSONObject = generateAttachedDocumentLink(documentContents);
+        Map<String, Object> documentDownloadLink = null;
+
+        if (documentJSONObject.isPresent()) {
+            documentDownloadLink = documentJSONObject.get().toMap();
+        }
+
         return OrderIssuedNotifyData.builder()
             .respondentLastName(getFirstRespondentLastName(caseData))
             .orderType(getTypeOfOrder(caseData, issuedOrderType))
             .courtName(config.getCourt(caseData.getCaseLocalAuthority()).getName())
             .callout((issuedOrderType != NOTICE_OF_PLACEMENT_ORDER) ? buildCallout(caseData) : "")
-            .documentLink(generateAttachedDocumentLink(documentContents).orElse(null))
+            .documentLink(documentDownloadLink)
             .build();
     }
 
@@ -89,6 +100,5 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
 
         return orderType.toLowerCase();
     }
-
 
 }

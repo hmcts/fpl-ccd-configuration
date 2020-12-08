@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.util.EnumMap;
 import java.util.List;
@@ -12,6 +13,7 @@ import javax.annotation.PostConstruct;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
+import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
 import static uk.gov.hmcts.reform.fpl.enums.Event.COURT_SERVICES;
@@ -79,6 +81,12 @@ public class EventsChecker {
     @Autowired
     private FactorsAffectingParentingChecker factorsAffectingParentingChecker;
 
+    @Autowired
+    private FeatureToggleService featureToggleService;
+
+    @Autowired
+    private ApplicationDocumentChecker applicationDocumentChecker;
+
     private final EnumMap<Event, EventChecker> eventCheckers = new EnumMap<>(Event.class);
 
     @PostConstruct
@@ -91,7 +99,6 @@ public class EventsChecker {
         eventCheckers.put(GROUNDS, groundsChecker);
         eventCheckers.put(ORGANISATION_DETAILS, organisationDetailsChecker);
         eventCheckers.put(ALLOCATION_PROPOSAL, allocationProposalChecker);
-        eventCheckers.put(DOCUMENTS, documentsChecker);
         eventCheckers.put(RISK_AND_HARM, riskAndHarmChecker);
         eventCheckers.put(FACTORS_AFFECTING_PARENTING, factorsAffectingParentingChecker);
         eventCheckers.put(OTHER_PROCEEDINGS, proceedingsChecker);
@@ -101,7 +108,16 @@ public class EventsChecker {
         eventCheckers.put(SUBMIT_APPLICATION, caseSubmissionChecker);
     }
 
+    private void addCheckersBasedOnToggle() {
+        if (featureToggleService.isApplicationDocumentsEventEnabled()) {
+            eventCheckers.put(APPLICATION_DOCUMENTS, applicationDocumentChecker);
+        } else {
+            eventCheckers.put(DOCUMENTS, documentsChecker);
+        }
+    }
+
     public List<String> validate(Event event, CaseData caseData) {
+        addCheckersBasedOnToggle();
         return ofNullable(eventCheckers.get(event))
                 .map(validator -> validator.validate(caseData))
                 .orElse(emptyList());
@@ -120,6 +136,7 @@ public class EventsChecker {
     }
 
     public boolean isAvailable(Event event, CaseData caseData) {
+        addCheckersBasedOnToggle();
         return ofNullable(eventCheckers.get(event))
                 .map(validator -> validator.isAvailable(caseData))
                 .orElse(true);
