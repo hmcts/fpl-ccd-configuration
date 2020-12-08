@@ -105,6 +105,7 @@ module.exports = {
     allocatedJudge: 'Allocated Judge',
     extend26WeekTimeline: 'Extend 26-week timeline',
     manageLegalRepresentatives: 'Manage legal representatives',
+    addApplicationDocuments: 'Application documents',
     messageJudge: 'Message judge or legal adviser',
   },
   administrationActions: {

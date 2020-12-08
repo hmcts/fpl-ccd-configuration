@@ -125,6 +125,18 @@ class FeatureToggleServiceTest {
             eq(false));
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForIsApplicationDocumentsEventEnabled(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isApplicationDocumentsEventEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("application-documents-event"),
+            ldUser(ENVIRONMENT).build(),
+            eq(false));
+    }
+
     private static Stream<Arguments> userAttributesTestSource() {
         return Stream.of(
             Arguments.of(

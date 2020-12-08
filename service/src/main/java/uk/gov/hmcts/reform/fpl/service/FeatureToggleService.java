@@ -63,6 +63,10 @@ public class FeatureToggleService {
         return ldClient.boolVariation("add-hearings-in-past", createLDUser(), false);
     }
 
+    public boolean isApplicationDocumentsEventEnabled() {
+        return ldClient.boolVariation("application-documents-event", createLDUser(), false);
+    }
+
     private LDUser createLDUser() {
         return createLDUser(Map.of());
     }

@@ -20,7 +20,6 @@ Scenario('local authority tries to submit incomplete case', async ({I, caseViewP
   I.see('Add the orders and directions sought');
   I.see('Add the hearing urgency details');
   I.see('Add the grounds for the application');
-  I.see('Add social work documents, or details of when you\'ll send them');
   I.see('Add your organisation\'s details');
   I.see('Add the applicant\'s solicitor\'s details');
   I.see('Add the child\'s details');
