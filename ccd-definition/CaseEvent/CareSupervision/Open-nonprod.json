@@ -7,7 +7,7 @@
     "Description": "Upload supporting documents",
     "DisplayOrder": 14,
     "PreConditionState(s)": "Open;RETURNED",
-    "PostConditionState": "Open",
+    "PostConditionState": "*",
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
     "ShowSummaryChangeOption": "Y",
