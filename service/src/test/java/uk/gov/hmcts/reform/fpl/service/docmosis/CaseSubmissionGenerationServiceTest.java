@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisAnnexDocuments;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisFactorsParenting;
@@ -42,6 +43,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingPreferences;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisInternationalElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRisks;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
@@ -53,6 +55,8 @@ import static java.time.LocalDate.now;
 import static java.util.List.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType.CHILD_WHEREABOUTS;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.HOSPITAL_SOON_TO_BE_DISCHARGED;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.REMOVED_BY_POLICE_POWER_ENDS;
@@ -76,9 +80,16 @@ class CaseSubmissionGenerationServiceTest {
 
     private static final String FORMATTED_DATE = formatLocalDateToString(NOW, DATE);
     private static final String AUTH_TOKEN = "Bearer token";
+    private static final DocmosisAnnexDocuments DOCMOSIS_ANNEX_DOCUMENTS = mock(DocmosisAnnexDocuments.class);
 
     @MockBean
     private IdamClient idamClient;
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
+
+    @MockBean
+    private CaseSubmissionDocumentAnnexGenerator annexGenerator;
 
     @MockBean
     private RequestData requestData;
@@ -955,8 +966,24 @@ class CaseSubmissionGenerationServiceTest {
         }
     }
 
+    @Test
+    void shouldReturnDocmosisAnnexToggledOn() {
+        when(featureToggleService.isApplicationDocumentsEventEnabled()).thenReturn(true);
+        when(annexGenerator.generate(givenCaseData)).thenReturn(DOCMOSIS_ANNEX_DOCUMENTS);
+
+        DocmosisCaseSubmission actual = templateDataGenerationService.getTemplateData(givenCaseData);
+
+        assertThat(actual.getAnnexDocuments()).isEqualTo(DOCMOSIS_ANNEX_DOCUMENTS);
+    }
+
     @Nested
+    @Deprecated
     class DocmosisCaseSubmissionFormatAnnexDocumentDisplayTest {
+
+        @BeforeEach
+        void setUp() {
+            when(featureToggleService.isApplicationDocumentsEventEnabled()).thenReturn(false);
+        }
 
         @Test
         void shouldReturnEmptyWhenDocumentIsNotAvailable() {

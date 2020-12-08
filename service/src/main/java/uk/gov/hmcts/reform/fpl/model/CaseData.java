@@ -653,4 +653,6 @@ public class CaseData {
         return hearingEndDate.isBefore(LocalDateTime.now()) || hearingStartDate.isBefore(LocalDateTime.now());
     }
 
+    private final List<Element<ApplicationDocument>> applicationDocuments;
+    private final String applicationDocumentsToFollowReason;
 }
