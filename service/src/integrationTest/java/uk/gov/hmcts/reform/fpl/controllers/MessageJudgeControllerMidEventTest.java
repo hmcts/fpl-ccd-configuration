@@ -88,7 +88,7 @@ class MessageJudgeControllerMidEventTest extends AbstractControllerTest {
             ))
             .build();
 
-        String expectedC2Label = mainC2Document + "\n" + supportingC2Document;
+        String expectedC2Label = mainC2Document.getFilename() + "\n" + supportingC2Document.getFilename();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
 

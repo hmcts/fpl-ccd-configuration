@@ -1565,7 +1565,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "relatedDocumentsLabel",
     "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "R"
+    "CRUD": "CRD"
   },
   {
     "LiveFrom": "01/01/2017",

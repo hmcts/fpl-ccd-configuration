@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
@@ -8,6 +9,8 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -20,17 +23,26 @@ import java.util.UUID;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 class MessageJudgeServiceTest {
     private Time time = new FixedTimeConfiguration().stoppedTime();
     private IdentityService identityService = new IdentityService();
+    private ObjectMapper mapper = new ObjectMapper();
 
-    private MessageJudgeService messageJudgeService = new MessageJudgeService(time, identityService);
+    private static final String MESSAGE_NOTE = "Message note";
+    private static final String MESSAGE_SENDER = "sender@fpla.com";
+    private static final String MESSAGE_RECIPIENT = "recipient@fpla.com";
+    private static final String C2_FILE_NAME = "c2.doc";
+    private static final String C2_SUPPORTING_DOCUMENT_FILE_NAME = "c2_supporting.doc";
+    private static final UUID SELECTED_C2_ID = UUID.randomUUID();
+
+    private MessageJudgeService messageJudgeService = new MessageJudgeService(time, identityService, mapper);
 
     @Test
-    void shouldInitialiseC2CaseFields() {
+    void shouldInitialiseC2CaseFieldsWhenC2DocumentsExist() {
         CaseData caseData = CaseData.builder()
             .c2DocumentBundle(List.of(element(C2DocumentBundle.builder()
                 .uploadedDateTime("01 Dec 2020")
@@ -48,31 +60,33 @@ class MessageJudgeServiceTest {
         assertThat(data).isEqualTo(expectedData);
     }
 
+    @Test
+    void shouldReturnEmptyMapWhenC2DocumentsDoNotExist() {
+        assertThat(messageJudgeService.initialiseCaseFields(CaseData.builder().build())).isEmpty();
+    }
 
     @Test
-    void shouldRebuildC2DynamicListAndFormatC2DocumentsCorrectly() {
-        UUID selectedC2Id = UUID.randomUUID();
-
-        DocumentReference mainC2Document = DocumentReference.builder()
-            .filename("c2.doc")
-            .build();
-
-        DocumentReference supportingC2Document = DocumentReference.builder()
-            .filename("additional_c2_document.doc")
-            .build();
-
+    void shouldRebuildC2DynamicListAndFormatC2DocumentsCorrectlyWhenC2HasBeenSelected() {
         C2DocumentBundle selectedC2DocumentBundle = C2DocumentBundle.builder()
-            .document(mainC2Document)
+            .document(DocumentReference.builder()
+                .filename(C2_FILE_NAME)
+                .build())
             .supportingEvidenceBundle(List.of(
                 element(SupportingEvidenceBundle.builder()
-                    .document(supportingC2Document)
+                    .document(DocumentReference.builder()
+                        .filename(C2_SUPPORTING_DOCUMENT_FILE_NAME)
+                        .build())
                     .build())))
             .build();
 
         CaseData caseData = CaseData.builder()
-            .c2DynamicList(selectedC2Id)
+            .c2DynamicList(DynamicList.builder()
+                .value(DynamicListElement.builder()
+                    .code(SELECTED_C2_ID)
+                    .build())
+                .build())
             .c2DocumentBundle(List.of(
-                element(selectedC2Id, selectedC2DocumentBundle),
+                element(SELECTED_C2_ID, selectedC2DocumentBundle),
                 element(UUID.randomUUID(), C2DocumentBundle.builder()
                     .document(DocumentReference.builder()
                         .filename("other_c2.doc")
@@ -81,28 +95,50 @@ class MessageJudgeServiceTest {
             ))
             .build();
 
-        String expectedC2Label = mainC2Document + "\n" + supportingC2Document;
+        String expectedC2Label = C2_FILE_NAME + "\n" + C2_SUPPORTING_DOCUMENT_FILE_NAME;
 
-        assertThat(messageJudgeService.buildRelatedC2DocumentFields(caseData, selectedC2Id))
+        assertThat(messageJudgeService.buildRelatedC2DocumentFields(caseData))
             .extracting("relatedDocumentsLabel", "c2DynamicList")
-            .containsExactly(expectedC2Label, caseData.buildC2DocumentDynamicList(selectedC2Id));
+            .containsExactly(expectedC2Label, caseData.buildC2DocumentDynamicList(SELECTED_C2_ID));
     }
 
     @Test
-    void shouldAppendNewJudicialMessageToJudicialMessageList() {
-        String note = "Some note";
-        String sender = "sender@fpla.com";
-        String recipient = "judge@fpla.com";
-        String relatedDocuments = "doc1.doc";
-
-        JudicialMessageMetaData judicialMessageMetaData = JudicialMessageMetaData.builder()
-            .sender(sender)
-            .recipient(recipient)
+    void shouldReturnEmptyMapWhenC2DocumentHasNotBeenSelected() {
+        C2DocumentBundle selectedC2DocumentBundle = C2DocumentBundle.builder()
+            .document(DocumentReference.builder()
+                .filename(C2_FILE_NAME)
+                .build())
+            .supportingEvidenceBundle(List.of(
+                element(SupportingEvidenceBundle.builder()
+                    .document(DocumentReference.builder()
+                        .filename(C2_SUPPORTING_DOCUMENT_FILE_NAME)
+                        .build())
+                    .build())))
             .build();
 
         CaseData caseData = CaseData.builder()
-            .relatedDocumentsLabel(relatedDocuments)
-            .judicialMessageNote(note)
+            .c2DocumentBundle(List.of(
+                element(SELECTED_C2_ID, selectedC2DocumentBundle),
+                element(UUID.randomUUID(), C2DocumentBundle.builder()
+                    .document(DocumentReference.builder()
+                        .filename("other_c2.doc")
+                        .build())
+                    .build())
+            ))
+            .build();
+
+        assertThat(messageJudgeService.buildRelatedC2DocumentFields(caseData)).isEmpty();
+    }
+
+    @Test
+    void shouldAppendNewJudicialMessageToJudicialMessageListWhenC2DocumentNotSelected() {
+        JudicialMessageMetaData judicialMessageMetaData = JudicialMessageMetaData.builder()
+            .sender(MESSAGE_SENDER)
+            .recipient(MESSAGE_RECIPIENT)
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .judicialMessageNote(MESSAGE_NOTE)
             .judicialMessageMetaData(judicialMessageMetaData)
             .build();
 
@@ -111,11 +147,10 @@ class MessageJudgeServiceTest {
         JudicialMessage expectedJudicialMessage = JudicialMessage.builder()
             .dateSentAsLocalDateTime(time.now())
             .status(OPEN)
-            .note(note)
-            .dateSent(formatLocalDateToString(time.now().toLocalDate(), "d MMMM yyyy"))
-            .relatedDocuments(relatedDocuments)
-            .sender(sender)
-            .recipient(recipient)
+            .note(MESSAGE_NOTE)
+            .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
+            .sender(MESSAGE_SENDER)
+            .recipient(MESSAGE_RECIPIENT)
             .build();
 
         assertThat(updatedMessages).hasSize(1).first()
@@ -123,14 +158,58 @@ class MessageJudgeServiceTest {
     }
 
     @Test
-    void shouldAppendNewJudicialMessageToExistingJudicialMessageList() {
-        String note = "Some note";
-        String sender = "sender@fpla.com";
-        String recipient = "judge@fpla.com";
+    void shouldAppendNewJudicialMessageToJudicialMessageListWhenC2DocumentHasBeenSelected() {
+        JudicialMessageMetaData judicialMessageMetaData = JudicialMessageMetaData.builder()
+            .sender(MESSAGE_SENDER)
+            .recipient(MESSAGE_RECIPIENT)
+            .build();
 
+        DocumentReference mainC2DocumentReference = DocumentReference.builder()
+            .filename(C2_FILE_NAME)
+            .build();
+
+        DocumentReference supportingC2DocumentReference = DocumentReference.builder()
+            .filename(C2_SUPPORTING_DOCUMENT_FILE_NAME)
+            .build();
+
+        C2DocumentBundle selectedC2DocumentBundle = C2DocumentBundle.builder()
+            .document(mainC2DocumentReference)
+            .supportingEvidenceBundle(List.of(
+                element(SupportingEvidenceBundle.builder()
+                    .document(supportingC2DocumentReference)
+                    .build())))
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .c2DynamicList(DynamicList.builder()
+                .value(DynamicListElement.builder()
+                    .code(SELECTED_C2_ID)
+                    .build())
+                .build())
+            .c2DocumentBundle(List.of(
+                element(SELECTED_C2_ID, selectedC2DocumentBundle),
+                element(UUID.randomUUID(), C2DocumentBundle.builder()
+                    .document(DocumentReference.builder()
+                        .filename("other_c2.doc")
+                        .build())
+                    .build())
+            ))
+            .judicialMessageNote(MESSAGE_NOTE)
+            .judicialMessageMetaData(judicialMessageMetaData)
+            .build();
+
+        List<Element<JudicialMessage>> updatedMessages = messageJudgeService.addNewJudicialMessage(caseData);
+        List<Element<DocumentReference>> relatedDocuments = updatedMessages.get(0).getValue().getRelatedDocuments();
+
+        assertThat(relatedDocuments.get(0).getValue()).isEqualTo(mainC2DocumentReference);
+        assertThat(relatedDocuments.get(1).getValue()).isEqualTo(supportingC2DocumentReference);
+    }
+
+    @Test
+    void shouldAppendNewJudicialMessageToExistingJudicialMessageList() {
         JudicialMessage newMessage = JudicialMessage.builder()
-            .sender(sender)
-            .recipient(recipient)
+            .sender(MESSAGE_SENDER)
+            .recipient(MESSAGE_RECIPIENT)
             .build();
 
         List<Element<JudicialMessage>> existingJudicialMessages = new ArrayList<>();
@@ -138,7 +217,7 @@ class MessageJudgeServiceTest {
 
         CaseData caseData = CaseData.builder()
             .judicialMessages(existingJudicialMessages)
-            .judicialMessageNote(note)
+            .judicialMessageNote(MESSAGE_NOTE)
             .judicialMessageMetaData(newMessage)
             .build();
 

@@ -348,7 +348,6 @@ Scenario('HMCTS admin messages the judge', async ({I, caseViewPage, messageJudge
   caseViewPage.selectTab(caseViewPage.tabs.judicialMessages);
   I.seeInTab(['Message 1', 'From'], 'sender@fpla.com');
   I.seeInTab(['Message 1', 'Sent to'], 'recipient@fpla.com');
-  I.seeInTab(['Message 1', 'Date sent'], dateFormat(submittedAt, 'd mmmm yyyy'));
   I.seeInTab(['Message 1', 'Note'], 'Some note');
   I.seeInTab(['Message 1', 'Status'], 'Open');
 });

@@ -66,9 +66,9 @@
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
     "PageID": "JudicialMessageNote",
-    "ShowSummaryChangeOption": "Y",
+    "ShowSummaryChangeOption": "N",
     "PageDisplayOrder": 2,
-    "FieldShowCondition": "isMessageRegardingC2=\"Yes\""
+    "FieldShowCondition": "c2DynamicList=\"*\""
   },
   {
     "LiveFrom": "01/01/2017",

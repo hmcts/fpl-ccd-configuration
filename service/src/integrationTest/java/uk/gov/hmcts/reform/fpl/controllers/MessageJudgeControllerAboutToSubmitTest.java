@@ -19,7 +19,8 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ActiveProfiles("integration-test")
@@ -59,13 +60,12 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
         CaseData responseCaseData = mapper.convertValue(response.getData(), CaseData.class);
 
         JudicialMessage expectedJudicialMessage = JudicialMessage.builder()
-            .dateSent(formatLocalDateToString(now().toLocalDate(), "d MMMM yyyy"))
+            .dateSent(formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME_AT))
             .dateSentAsLocalDateTime(now())
             .status(OPEN)
             .recipient("John@fpla.com")
             .note("Some note")
             .sender("ben@fpla.com")
-            .relatedDocuments("related documents")
             .build();
 
         assertThat(responseCaseData.getJudicialMessages().get(0).getValue()).isEqualTo(expectedJudicialMessage);

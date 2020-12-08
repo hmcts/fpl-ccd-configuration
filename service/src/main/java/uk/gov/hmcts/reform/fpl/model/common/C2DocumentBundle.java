@@ -34,20 +34,48 @@ public class C2DocumentBundle {
     }
 
     @JsonIgnore
-    public List<Element<DocumentReference>> getMainC2AndSupportingEvidenceBundleDocumentReferences() {
+    public String getC2DocumentFileNames() {
+        String c2Filename = "";
+
+        if (document != null) {
+            c2Filename = document.getFilename();
+        }
+
+        String stringBuilder = c2Filename + "\n" + getSupportingEvidenceFileNames();
+        return stringBuilder.trim();
+    }
+
+    @JsonIgnore
+    public List<Element<DocumentReference>> getAllC2DocumentReferences() {
         List<Element<DocumentReference>> documentReferences = new ArrayList<>();
 
         if (document != null) {
             documentReferences.add(element(document));
         }
 
-        documentReferences.addAll(getSupportingEvidenceBundleDocumentReferences());
+        documentReferences.addAll(getSupportingEvidenceBundleReferences());
 
         return documentReferences;
     }
 
     @JsonIgnore
-    private List<Element<DocumentReference>> getSupportingEvidenceBundleDocumentReferences() {
+    private String getSupportingEvidenceFileNames() {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (supportingEvidenceBundle != null) {
+            supportingEvidenceBundle.stream()
+                .map(Element::getValue)
+                .map(SupportingEvidenceBundle::getDocument)
+                .forEach(documentReference -> {
+                    stringBuilder.append(String.format("%s", documentReference.getFilename())).append("\n");
+                });
+        }
+
+        return stringBuilder.toString().trim();
+    }
+
+    @JsonIgnore
+    private List<Element<DocumentReference>> getSupportingEvidenceBundleReferences() {
         List<Element<DocumentReference>> documentReferences = new ArrayList<>();
 
         if (supportingEvidenceBundle != null) {
