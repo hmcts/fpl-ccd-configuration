@@ -41,6 +41,7 @@
     "ID": "relatedDocumentsLabel",
     "Label": "Related documents",
     "FieldType": "TextArea",
+    "HintText": "Go to the C2 tab to view the files.",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

@@ -64,7 +64,7 @@ public class MessageJudgeService {
         List<Element<JudicialMessage>> judicialMessages = caseData.getJudicialMessages();
         JudicialMessageMetaData judicialMessageMetaData = caseData.getJudicialMessageMetaData();
 
-        JudicialMessage.JudicialMessageBuilder judicialMessageBuilder = JudicialMessage.builder()
+        JudicialMessage.JudicialMessageBuilder<?, ?> judicialMessageBuilder = JudicialMessage.builder()
             .sender(judicialMessageMetaData.getSender())
             .recipient(judicialMessageMetaData.getRecipient())
             .note(caseData.getJudicialMessageNote())

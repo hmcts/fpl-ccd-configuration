@@ -19,7 +19,7 @@ public class NewJudicialMessageContentProvider extends AbstractEmailContentProvi
     public NewJudicialMessageTemplate buildNewJudicialMessageTemplate(CaseData caseData) {
         JudicialMessageMetaData judicialMessageMetaData = caseData.getJudicialMessageMetaData();
 
-        NewJudicialMessageTemplate.NewJudicialMessageTemplateBuilder templateBuilder
+        NewJudicialMessageTemplate.NewJudicialMessageTemplateBuilder<?, ?> templateBuilder
             = NewJudicialMessageTemplate.builder()
             .respondentLastName(getFirstRespondentLastName(caseData))
             .callout(buildCallout(caseData))
