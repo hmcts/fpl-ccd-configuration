@@ -88,7 +88,7 @@ class GeneratedOrderEventHandlerTest {
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))
             .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
-        given(orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(caseData, "http://fake-url/testUrl",
+        given(orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(caseData, "testUrl",
             GENERATED_ORDER))
             .willReturn(getExpectedParameters(BLANK_ORDER.getLabel(), true));
 
@@ -103,7 +103,7 @@ class GeneratedOrderEventHandlerTest {
 
         verify(issuedOrderAdminNotificationHandler).notifyAdmin(
             caseData,
-            "http://fake-url/testUrl",
+            "testUrl",
             GENERATED_ORDER);
 
         verify(notificationService).sendEmail(

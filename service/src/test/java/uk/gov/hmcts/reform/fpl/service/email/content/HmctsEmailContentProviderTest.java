@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,6 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
-import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ContextConfiguration(classes = {HmctsEmailContentProvider.class, LookupTestConfig.class})
@@ -57,14 +55,12 @@ class HmctsEmailContentProviderTest extends AbstractEmailContentProviderTest {
             .firstRespondentName("Smith")
             .reference(CASE_REFERENCE)
             .caseUrl(caseUrl(CASE_REFERENCE))
-            .documentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
-                .map(JSONObject::toMap)
-                .orElse(null))
+            .documentLink("applicationBinaryUrl")
             .build();
 
         CaseData caseData = populatedCaseData(Map.of("applicationBinaryUrl", applicationDocument.getBinaryUrl()));
 
-        assertThat(hmctsEmailContentProvider.buildHmctsSubmissionNotification(caseData))
+        assertThat(hmctsEmailContentProvider.buildHmctsSubmissionNotification(caseData, "applicationBinaryUrl"))
             .usingRecursiveComparison().isEqualTo(hmctsSubmissionTemplate);
     }
 
@@ -83,11 +79,11 @@ class HmctsEmailContentProviderTest extends AbstractEmailContentProviderTest {
             .firstRespondentName("")
             .reference(CASE_REFERENCE)
             .caseUrl(caseUrl(CASE_REFERENCE))
-            .documentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
-                .map(JSONObject::toMap).orElse(null))
+            .documentLink("applicationBinaryUrl")
             .build();
 
-        assertThat(hmctsEmailContentProvider.buildHmctsSubmissionNotification(buildCaseData(applicationDocument)))
+        assertThat(hmctsEmailContentProvider.buildHmctsSubmissionNotification(buildCaseData(applicationDocument),
+            "applicationBinaryUrl"))
             .usingRecursiveComparison().isEqualTo(hmctsSubmissionTemplate);
     }
 

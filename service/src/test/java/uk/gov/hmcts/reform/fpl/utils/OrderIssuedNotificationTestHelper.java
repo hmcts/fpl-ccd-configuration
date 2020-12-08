@@ -51,7 +51,7 @@ public class OrderIssuedNotificationTestHelper {
             .orderType(orderType.toLowerCase())
             .callout(withCallout ? callout : "")
             .courtName(EXAMPLE_COURT)
-            .documentLink("testUrl")
+            .documentLink("http://fake-url/testUrl")
             .caseUrl(formatCaseUrl("http://fake-url", 12345L, "OrdersTab"))
             .respondentLastName("Jones")
             .build();

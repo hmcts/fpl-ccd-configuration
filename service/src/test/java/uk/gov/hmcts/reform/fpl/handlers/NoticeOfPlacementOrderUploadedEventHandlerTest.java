@@ -106,7 +106,7 @@ class NoticeOfPlacementOrderUploadedEventHandlerTest {
 
         verify(issuedOrderAdminNotificationHandler).notifyAdmin(
             caseData,
-            "http://fake-url/testUrl",
+            "testUrl",
             NOTICE_OF_PLACEMENT_ORDER);
 
         verify(representativeNotificationService).sendToRepresentativesByServedPreference(

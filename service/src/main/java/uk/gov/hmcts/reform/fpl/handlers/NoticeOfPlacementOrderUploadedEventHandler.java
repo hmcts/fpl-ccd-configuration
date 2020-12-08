@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
@@ -24,7 +23,6 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
-import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.concatUrlAndMostRecentUploadedDocumentPath;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -36,14 +34,10 @@ public class NoticeOfPlacementOrderUploadedEventHandler {
     private final LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
     private final IssuedOrderAdminNotificationHandler issuedOrderAdminNotificationHandler;
 
-    @Value("${manage-case.ui.base.url}")
-    private String xuiBaseUrl;
-
     @EventListener
     public void notifyParties(NoticeOfPlacementOrderUploadedEvent noticeOfPlacementEvent) {
         CaseData caseData = noticeOfPlacementEvent.getCaseData();
         DocumentReference orderDocument = noticeOfPlacementEvent.getOrderDocument();
-        String documentUrl = concatUrlAndMostRecentUploadedDocumentPath(xuiBaseUrl, orderDocument.getBinaryUrl());
 
         Collection<String> emails = inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()
@@ -55,7 +49,8 @@ public class NoticeOfPlacementOrderUploadedEventHandler {
         notificationService.sendEmail(
             NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE, emails, notifyData, caseData.getId().toString());
 
-        issuedOrderAdminNotificationHandler.notifyAdmin(caseData, documentUrl, NOTICE_OF_PLACEMENT_ORDER);
+        issuedOrderAdminNotificationHandler.notifyAdmin(
+            caseData, orderDocument.getBinaryUrl(), NOTICE_OF_PLACEMENT_ORDER);
 
         representativeNotificationService.sendToRepresentativesByServedPreference(DIGITAL_SERVICE,
             NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE, notifyData, caseData);

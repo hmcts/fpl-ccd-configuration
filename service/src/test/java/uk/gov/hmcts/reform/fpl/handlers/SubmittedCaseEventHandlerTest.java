@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -70,13 +71,16 @@ class SubmittedCaseEventHandlerTest {
     @Test
     void shouldSendEmailToHmctsAdmin() {
         final String expectedEmail = "test@test.com";
-        final CaseData caseData = caseData();
+        final String binaryUrl = "testUrl";
+        final CaseData caseData = caseData().toBuilder()
+            .submittedForm(DocumentReference.builder().binaryUrl(binaryUrl).build())
+            .build();
         final CaseData caseDataBefore = caseData();
         final SubmitCaseHmctsTemplate expectedTemplate = SubmitCaseHmctsTemplate.builder().build();
         final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(caseData, caseDataBefore);
 
         when(adminNotificationHandler.getHmctsAdminEmail(caseData)).thenReturn(expectedEmail);
-        when(hmctsEmailContentProvider.buildHmctsSubmissionNotification(caseData))
+        when(hmctsEmailContentProvider.buildHmctsSubmissionNotification(caseData, binaryUrl))
             .thenReturn(expectedTemplate);
 
         submittedCaseEventHandler.notifyAdmin(submittedCaseEvent);

@@ -11,5 +11,5 @@ public class OrderIssuedNotifyData extends BaseCaseNotifyData {
     private final String orderType;
     private final String callout;
     private final String courtName;
-    private final Object documentLink;
+    private final Object documentLink; //This will be String or Map<String, Object> depending on case access/no access
 }

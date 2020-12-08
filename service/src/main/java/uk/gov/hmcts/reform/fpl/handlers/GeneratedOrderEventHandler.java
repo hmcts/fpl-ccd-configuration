@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
@@ -28,7 +27,6 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
-import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.concatUrlAndMostRecentUploadedDocumentPath;
 
 @Slf4j
 @Component
@@ -41,19 +39,15 @@ public class GeneratedOrderEventHandler {
     private final IssuedOrderAdminNotificationHandler issuedOrderAdminNotificationHandler;
     private final GeneratedOrderService generatedOrderService;
 
-    @Value("${manage-case.ui.base.url}")
-    private String xuiBaseUrl;
-
     @EventListener
     public void notifyParties(final GeneratedOrderEvent orderEvent) {
         final CaseData caseData = orderEvent.getCaseData();
         final DocumentReference orderDocument = orderEvent.getOrderDocument();
 
-        final String documentUrl = concatUrlAndMostRecentUploadedDocumentPath(xuiBaseUrl, orderDocument.getBinaryUrl());
-        issuedOrderAdminNotificationHandler.notifyAdmin(caseData, documentUrl, GENERATED_ORDER);
+        issuedOrderAdminNotificationHandler.notifyAdmin(caseData, orderDocument.getBinaryUrl(), GENERATED_ORDER);
+        sendNotificationToLocalAuthorityAndDigitalServedRepresentatives(caseData, orderDocument.getBinaryUrl());
 
         sendNotificationToEmailServedRepresentatives(caseData, orderDocument);
-        sendNotificationToLocalAuthorityAndDigitalServedRepresentatives(caseData, documentUrl);
     }
 
     @EventListener
@@ -84,9 +78,9 @@ public class GeneratedOrderEventHandler {
     }
 
     private void sendNotificationToLocalAuthorityAndDigitalServedRepresentatives(final CaseData caseData,
-                                                                                 final String documentUrl) {
+                                                                                 final String binaryUrl) {
         final NotifyData notifyData =
-            orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(caseData, documentUrl, GENERATED_ORDER);
+            orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(caseData, binaryUrl, GENERATED_ORDER);
 
         sendToLocalAuthority(caseData, notifyData);
         representativeNotificationService.sendToRepresentativesByServedPreference(DIGITAL_SERVICE,

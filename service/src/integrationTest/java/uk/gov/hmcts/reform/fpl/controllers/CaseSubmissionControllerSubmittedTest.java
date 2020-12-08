@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.SharedNotifyTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
@@ -109,16 +110,17 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
     @Test
     void shouldBuildNotificationTemplatesWithCompleteValues() {
-        Map<String, Object> expectedHmctsParameters = mapper.convertValue(
+        final Map<String, Object> expectedHmctsParameters = mapper.convertValue(
             getExpectedHmctsParameters(true), new TypeReference<>() {
             });
 
-        Map<String, Object> completeCafcassParameters = mapper.convertValue(
+        final Map<String, Object> completeCafcassParameters = mapper.convertValue(
             getExpectedCafcassParameters(true), new TypeReference<>() {
             });
 
         CaseDetails caseDetails = populatedCaseDetails(Map.of("id", CASE_ID));
         caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
+        caseDetails.getData().put("submittedForm", DocumentReference.builder().binaryUrl("testUrl").build());
 
         postSubmittedEvent(buildCallbackRequest(caseDetails, OPEN));
 
@@ -375,7 +377,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         return CaseDetails.builder()
             .id(CASE_ID)
             .data(new HashMap<>(Map.of(
-                "submittedForm", TestDataHelper.testDocumentReference(),
+                "submittedForm", DocumentReference.builder().binaryUrl("testUrl").build(),
                 RETURN_APPLICATION, ReturnApplication.builder()
                     .note("Some note")
                     .reason(List.of(INCOMPLETE))
@@ -406,6 +408,11 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     private Map<String, Object> getExpectedCafcassParameters(boolean completed) {
         SubmitCaseCafcassTemplate submitCaseCafcassTemplate;
 
+        String fileContent = new String(Base64.encodeBase64(DOCUMENT_CONTENT), ISO_8859_1);
+        JSONObject jsonFileObject = new JSONObject()
+            .put("file", fileContent)
+            .put("is_csv", false);
+
         if (completed) {
             submitCaseCafcassTemplate = getCompleteParameters(SubmitCaseCafcassTemplate.builder().build());
         } else {
@@ -413,6 +420,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         }
 
         submitCaseCafcassTemplate.setCafcass(DEFAULT_CAFCASS_COURT);
+        submitCaseCafcassTemplate.setDocumentLink(jsonFileObject.toMap());
         return mapper.convertValue(submitCaseCafcassTemplate, new TypeReference<>() {
         });
     }
@@ -442,18 +450,13 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     }
 
     private <T extends SharedNotifyTemplate> void setSharedTemplateParameters(T template) {
-        String fileContent = new String(Base64.encodeBase64(DOCUMENT_CONTENT), ISO_8859_1);
-        JSONObject jsonFileObject = new JSONObject()
-            .put("file", fileContent)
-            .put("is_csv", false);
-
         template.setLocalAuthority("Example Local Authority");
         template.setReference(CASE_ID.toString());
         template.setCaseUrl(String.format("http://fake-url/cases/case-details/%s", CASE_ID));
         template.setDataPresent(YES.getValue());
         template.setFullStop(NO.getValue());
         template.setOrdersAndDirections(List.of("Emergency protection order", "Contact with any named person"));
-        template.setDocumentLink(jsonFileObject.toMap());
+        template.setDocumentLink("testUrl");
     }
 
     private CallbackRequest buildCallbackRequest(CaseDetails caseDetails, State stateBefore) {

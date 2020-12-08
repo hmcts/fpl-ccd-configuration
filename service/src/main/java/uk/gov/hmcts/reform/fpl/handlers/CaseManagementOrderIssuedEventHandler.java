@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
@@ -26,7 +25,6 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICAT
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
-import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.concatUrlAndMostRecentUploadedDocumentPath;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -38,9 +36,6 @@ public class CaseManagementOrderIssuedEventHandler {
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final IssuedOrderAdminNotificationHandler issuedOrderAdminNotificationHandler;
 
-    @Value("${manage-case.ui.base.url}")
-    private String xuiBaseUrl;
-
     @EventListener
     public void notifyParties(final CaseManagementOrderIssuedEvent event) {
         CaseData caseData = event.getCaseData();
@@ -50,8 +45,7 @@ public class CaseManagementOrderIssuedEventHandler {
         sendToCafcass(caseData, issuedCmo);
         sendToRepresentatives(caseData, issuedCmo, DIGITAL_SERVICE);
         sendToRepresentatives(caseData, issuedCmo, EMAIL);
-        issuedOrderAdminNotificationHandler.notifyAdmin(caseData,
-            concatUrlAndMostRecentUploadedDocumentPath(xuiBaseUrl, issuedCmo.getOrder().getBinaryUrl()), CMO);
+        issuedOrderAdminNotificationHandler.notifyAdmin(caseData, issuedCmo.getOrder().getBinaryUrl(), CMO);
     }
 
     private void sendToLocalAuthority(final CaseData caseData, CaseManagementOrder cmo) {

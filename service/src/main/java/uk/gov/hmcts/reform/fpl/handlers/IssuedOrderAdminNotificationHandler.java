@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -19,14 +18,11 @@ public class IssuedOrderAdminNotificationHandler {
     private final HmctsAdminNotificationHandler adminNotificationHandler;
     private final OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
 
-    @Value("${manage-case.ui.base.url}")
-    private String xuiBaseUrl;
-
     public void notifyAdmin(final CaseData caseData,
-                            final String documentUrl,
+                            final String binaryUrl,
                             final IssuedOrderType issuedOrderType) {
         NotifyData notifyData = orderIssuedEmailContentProvider
-            .getNotifyDataWithCaseUrl(caseData, documentUrl, issuedOrderType);
+            .getNotifyDataWithCaseUrl(caseData, binaryUrl, issuedOrderType);
 
         String recipient = adminNotificationHandler.getHmctsAdminEmail(caseData);
 

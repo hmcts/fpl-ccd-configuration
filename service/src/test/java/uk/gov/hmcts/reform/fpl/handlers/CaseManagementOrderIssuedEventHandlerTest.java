@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
@@ -21,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.util.Set;
@@ -35,7 +33,6 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIG
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.expectedRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParameters;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 
 @ExtendWith(SpringExtension.class)
@@ -55,9 +52,6 @@ class CaseManagementOrderIssuedEventHandlerTest {
     private RepresentativeService representativeService;
 
     @MockBean
-    private OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
-
-    @MockBean
     private CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
 
     @MockBean
@@ -68,9 +62,6 @@ class CaseManagementOrderIssuedEventHandlerTest {
 
     @Autowired
     private CaseManagementOrderIssuedEventHandler caseManagementOrderIssuedEventHandler;
-
-    @Value("${manage-case.ui.base.url}")
-    private String xuiBaseUrl;
 
     private final IssuedCMOTemplate issuedCMOTemplate = IssuedCMOTemplate.builder().build();
 
@@ -95,9 +86,6 @@ class CaseManagementOrderIssuedEventHandlerTest {
             DIGITAL_SERVICE))
             .willReturn(issuedCMOTemplate);
 
-        given(orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(caseData, cmo.getOrder().getBinaryUrl(), CMO))
-            .willReturn(getExpectedParameters(CMO.getLabel(), true));
-
         caseManagementOrderIssuedEventHandler.notifyParties(event);
 
         verify(notificationService).sendEmail(
@@ -108,7 +96,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
 
         verify(issuedOrderAdminNotificationHandler).notifyAdmin(
             caseData,
-            "http://fake-url/testUrl",
+            "testUrl",
             CMO);
     }
 
