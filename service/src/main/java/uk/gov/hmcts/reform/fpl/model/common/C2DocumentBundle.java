@@ -34,7 +34,7 @@ public class C2DocumentBundle {
     }
 
     @JsonIgnore
-    public String getC2DocumentFileNames() {
+    public String getAllC2DocumentFileNames() {
         String c2Filename = "";
 
         if (document != null) {
@@ -66,9 +66,8 @@ public class C2DocumentBundle {
             supportingEvidenceBundle.stream()
                 .map(Element::getValue)
                 .map(SupportingEvidenceBundle::getDocument)
-                .forEach(documentReference -> {
-                    stringBuilder.append(String.format("%s", documentReference.getFilename())).append("\n");
-                });
+                .forEach(documentReference ->
+                    stringBuilder.append(String.format("%s", documentReference.getFilename())).append("\n"));
         }
 
         return stringBuilder.toString().trim();
@@ -76,17 +75,15 @@ public class C2DocumentBundle {
 
     @JsonIgnore
     private List<Element<DocumentReference>> getSupportingEvidenceBundleReferences() {
-        List<Element<DocumentReference>> documentReferences = new ArrayList<>();
+        List<Element<DocumentReference>> documentReferenceList = new ArrayList<>();
 
         if (supportingEvidenceBundle != null) {
             supportingEvidenceBundle.stream()
                 .map(Element::getValue)
                 .map(SupportingEvidenceBundle::getDocument)
-                .forEach(documentReference -> {
-                    documentReferences.add(element(documentReference));
-                });
+                .forEach(documentReference -> documentReferenceList.add(element(documentReference)));
         }
 
-        return documentReferences;
+        return documentReferenceList;
     }
 }

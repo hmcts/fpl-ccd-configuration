@@ -50,7 +50,7 @@ public class MessageJudgeService {
             UUID selectedC2Id = getDynamicListSelectedValue(caseData.getC2DynamicList(), mapper);
 
             C2DocumentBundle selectedC2DocumentBundle = caseData.getC2DocumentBundleByUUID(selectedC2Id);
-            String documentFileNames = selectedC2DocumentBundle.getC2DocumentFileNames();
+            String documentFileNames = selectedC2DocumentBundle.getAllC2DocumentFileNames();
 
             data.put("relatedDocumentsLabel", documentFileNames);
             data.put("c2DynamicList", rebuildC2DynamicList(caseData, selectedC2Id));

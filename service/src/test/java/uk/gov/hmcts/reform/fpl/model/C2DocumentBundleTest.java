@@ -85,7 +85,7 @@ class C2DocumentBundleTest {
             .document(mainC2DocumentReference)
             .build();
 
-        assertThat(c2DocumentBundle.getC2DocumentFileNames()).isEqualTo(
+        assertThat(c2DocumentBundle.getAllC2DocumentFileNames()).isEqualTo(
             String.format("%s", fileName));
     }
 
@@ -120,14 +120,13 @@ class C2DocumentBundleTest {
 
         String stringBuilder = c2DocumentFileName + "\n" + supportingDocumentOne + "\n" + supportingDocumentTwo;
 
-        assertThat(c2DocumentBundle.getC2DocumentFileNames()).isEqualTo(
+        assertThat(c2DocumentBundle.getAllC2DocumentFileNames()).isEqualTo(
             stringBuilder);
     }
 
     @Test
     void shouldReturnEmptyStringIfC2DocumentsDoNotExist() {
         C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder().build();
-
-        assertThat(c2DocumentBundle.getC2DocumentFileNames()).isEqualTo("");
+        assertThat(c2DocumentBundle.getAllC2DocumentFileNames()).isEmpty();
     }
 }
