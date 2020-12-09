@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessageMetaData;
+import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.notify.NewJudicialMessageTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,7 +21,7 @@ class NewJudicialMessageContentProviderTest extends AbstractEmailContentProvider
     void createTemplateWithExpectedParameters() {
         CaseData caseData = populatedCaseData();
 
-        caseData = caseData.toBuilder()
+        MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
             .judicialMessageNote("Please see latest C2")
             .judicialMessageMetaData(JudicialMessageMetaData.builder()
                 .recipient("paulStuart@fpla.com")
@@ -28,6 +29,8 @@ class NewJudicialMessageContentProviderTest extends AbstractEmailContentProvider
                 .urgency("Needed asap")
                 .build())
             .build();
+
+        caseData = caseData.toBuilder().messageJudgeEventData(messageJudgeEventData).build();
 
         NewJudicialMessageTemplate expectedTemplate = NewJudicialMessageTemplate.builder()
             .sender("robertDunlop@fpla.com")
@@ -47,13 +50,15 @@ class NewJudicialMessageContentProviderTest extends AbstractEmailContentProvider
     void shouldNotSetUrgencyWhenNotPresentOnJudicialMessageMetaData() {
         CaseData caseData = populatedCaseData();
 
-        caseData = caseData.toBuilder()
+        MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
             .judicialMessageNote("Please see latest C2")
             .judicialMessageMetaData(JudicialMessageMetaData.builder()
                 .recipient("paulStuart@fpla.com")
                 .sender("robertDunlop@fpla.com")
                 .build())
             .build();
+
+        caseData = caseData.toBuilder().messageJudgeEventData(messageJudgeEventData).build();
 
         NewJudicialMessageTemplate template
             = newJudicialMessageContentProvider.buildNewJudicialMessageTemplate(caseData);

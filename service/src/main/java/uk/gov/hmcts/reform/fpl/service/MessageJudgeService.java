@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.JudicialMessageMetaData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.Comparator;
@@ -47,7 +48,9 @@ public class MessageJudgeService {
         Map<String, Object> data = new HashMap<>();
 
         if (hasSelectedC2(caseData)) {
-            UUID selectedC2Id = getDynamicListSelectedValue(caseData.getC2DynamicList(), mapper);
+            UUID selectedC2Id = getDynamicListSelectedValue(
+                caseData.getMessageJudgeEventData().getC2DynamicList(), mapper
+            );
 
             C2DocumentBundle selectedC2DocumentBundle = caseData.getC2DocumentBundleByUUID(selectedC2Id);
             String documentFileNames = selectedC2DocumentBundle.getAllC2DocumentFileNames();
@@ -59,21 +62,21 @@ public class MessageJudgeService {
         return data;
     }
 
-    @SuppressWarnings("unchecked")
     public List<Element<JudicialMessage>> addNewJudicialMessage(CaseData caseData) {
         List<Element<JudicialMessage>> judicialMessages = caseData.getJudicialMessages();
-        JudicialMessageMetaData judicialMessageMetaData = caseData.getJudicialMessageMetaData();
+        MessageJudgeEventData messageJudgeEventData = caseData.getMessageJudgeEventData();
+        JudicialMessageMetaData judicialMessageMetaData = messageJudgeEventData.getJudicialMessageMetaData();
 
         JudicialMessage.JudicialMessageBuilder<?, ?> judicialMessageBuilder = JudicialMessage.builder()
             .sender(judicialMessageMetaData.getSender())
             .recipient(judicialMessageMetaData.getRecipient())
-            .note(caseData.getJudicialMessageNote())
+            .note(messageJudgeEventData.getJudicialMessageNote())
             .dateSentAsLocalDateTime(time.now())
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
             .status(OPEN);
 
         if (hasSelectedC2(caseData)) {
-            UUID selectedC2Id = getDynamicListSelectedValue(caseData.getC2DynamicList(), mapper);
+            UUID selectedC2Id = getDynamicListSelectedValue(messageJudgeEventData.getC2DynamicList(), mapper);
             C2DocumentBundle selectedC2DocumentBundle = caseData.getC2DocumentBundleByUUID(selectedC2Id);
 
             judicialMessageBuilder.relatedDocuments(selectedC2DocumentBundle.getAllC2DocumentReferences());
@@ -99,6 +102,8 @@ public class MessageJudgeService {
     }
 
     private boolean hasSelectedC2(CaseData caseData) {
-        return hasC2Documents(caseData) && caseData.getC2DynamicList() != null;
+        return hasC2Documents(caseData)
+            && caseData.getMessageJudgeEventData() != null
+            && caseData.getMessageJudgeEventData().getC2DynamicList() != null;
     }
 }

@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 
 import java.util.List;
 import java.util.UUID;
@@ -77,7 +78,9 @@ class MessageJudgeControllerMidEventTest extends AbstractControllerTest {
             .build();
 
         CaseData caseData = CaseData.builder()
-            .c2DynamicList(selectedC2Id)
+            .messageJudgeEventData(MessageJudgeEventData.builder()
+                .c2DynamicList(selectedC2Id)
+                .build())
             .c2DocumentBundle(List.of(
                 element(selectedC2Id, selectedC2DocumentBundle),
                 element(UUID.randomUUID(), C2DocumentBundle.builder()

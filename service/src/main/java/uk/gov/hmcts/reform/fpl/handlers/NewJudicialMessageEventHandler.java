@@ -22,7 +22,8 @@ public class NewJudicialMessageEventHandler {
     @EventListener
     public void notifyJudicialMessageRecipient(NewJudicialMessageEvent event) {
         CaseData caseData = event.getCaseData();
-        JudicialMessageMetaData judicialMessageMetaData = caseData.getJudicialMessageMetaData();
+        JudicialMessageMetaData judicialMessageMetaData
+            = caseData.getMessageJudgeEventData().getJudicialMessageMetaData();
 
         NewJudicialMessageTemplate notifyData =
             newJudicialMessageContentProvider.buildNewJudicialMessageTemplate(caseData);

@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -21,6 +22,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
@@ -29,8 +32,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 class MessageJudgeServiceTest {
     private Time time = new FixedTimeConfiguration().stoppedTime();
-    private IdentityService identityService = new IdentityService();
+
     private ObjectMapper mapper = new ObjectMapper();
+
+    private IdentityService identityService = mock(IdentityService.class);
 
     private static final String MESSAGE_NOTE = "Message note";
     private static final String MESSAGE_SENDER = "sender@fpla.com";
@@ -38,6 +43,7 @@ class MessageJudgeServiceTest {
     private static final String C2_FILE_NAME = "c2.doc";
     private static final String C2_SUPPORTING_DOCUMENT_FILE_NAME = "c2_supporting.doc";
     private static final UUID SELECTED_C2_ID = UUID.randomUUID();
+    private static final UUID NEW_ELEMENT_ID = UUID.randomUUID();
 
     private MessageJudgeService messageJudgeService = new MessageJudgeService(time, identityService, mapper);
 
@@ -79,12 +85,16 @@ class MessageJudgeServiceTest {
                     .build())))
             .build();
 
-        CaseData caseData = CaseData.builder()
+        MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
             .c2DynamicList(DynamicList.builder()
                 .value(DynamicListElement.builder()
                     .code(SELECTED_C2_ID)
                     .build())
                 .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .messageJudgeEventData(messageJudgeEventData)
             .c2DocumentBundle(List.of(
                 element(SELECTED_C2_ID, selectedC2DocumentBundle),
                 element(UUID.randomUUID(), C2DocumentBundle.builder()
@@ -137,24 +147,27 @@ class MessageJudgeServiceTest {
             .recipient(MESSAGE_RECIPIENT)
             .build();
 
-        CaseData caseData = CaseData.builder()
+        MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
             .judicialMessageNote(MESSAGE_NOTE)
             .judicialMessageMetaData(judicialMessageMetaData)
             .build();
 
+        CaseData caseData = CaseData.builder().messageJudgeEventData(messageJudgeEventData).build();
+
+        when(identityService.generateId()).thenReturn(NEW_ELEMENT_ID);
+
         List<Element<JudicialMessage>> updatedMessages = messageJudgeService.addNewJudicialMessage(caseData);
 
-        JudicialMessage expectedJudicialMessage = JudicialMessage.builder()
+        Element<JudicialMessage> expectedJudicialMessageElement = element(NEW_ELEMENT_ID, JudicialMessage.builder()
             .dateSentAsLocalDateTime(time.now())
             .status(OPEN)
             .note(MESSAGE_NOTE)
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
             .sender(MESSAGE_SENDER)
             .recipient(MESSAGE_RECIPIENT)
-            .build();
+            .build());
 
-        assertThat(updatedMessages).hasSize(1).first()
-            .extracting(Element::getValue).isEqualTo(expectedJudicialMessage);
+        assertThat(updatedMessages).hasSize(1).first().isEqualTo(expectedJudicialMessageElement);
     }
 
     @Test
@@ -180,12 +193,18 @@ class MessageJudgeServiceTest {
                     .build())))
             .build();
 
-        CaseData caseData = CaseData.builder()
+        MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
+            .judicialMessageNote(MESSAGE_NOTE)
+            .judicialMessageMetaData(judicialMessageMetaData)
             .c2DynamicList(DynamicList.builder()
                 .value(DynamicListElement.builder()
                     .code(SELECTED_C2_ID)
                     .build())
                 .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .messageJudgeEventData(messageJudgeEventData)
             .c2DocumentBundle(List.of(
                 element(SELECTED_C2_ID, selectedC2DocumentBundle),
                 element(UUID.randomUUID(), C2DocumentBundle.builder()
@@ -194,8 +213,6 @@ class MessageJudgeServiceTest {
                         .build())
                     .build())
             ))
-            .judicialMessageNote(MESSAGE_NOTE)
-            .judicialMessageMetaData(judicialMessageMetaData)
             .build();
 
         List<Element<JudicialMessage>> updatedMessages = messageJudgeService.addNewJudicialMessage(caseData);
@@ -212,18 +229,40 @@ class MessageJudgeServiceTest {
             .recipient(MESSAGE_RECIPIENT)
             .build();
 
-        List<Element<JudicialMessage>> existingJudicialMessages = new ArrayList<>();
-        existingJudicialMessages.add(element(JudicialMessage.builder().build()));
+        UUID existingJudicialMessageId = UUID.randomUUID();
+        JudicialMessage existingJudicialMessage = JudicialMessage.builder().build();
 
-        CaseData caseData = CaseData.builder()
-            .judicialMessages(existingJudicialMessages)
+        List<Element<JudicialMessage>> existingJudicialMessages = new ArrayList<>();
+        existingJudicialMessages.add(element(existingJudicialMessageId, existingJudicialMessage));
+
+        MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
             .judicialMessageNote(MESSAGE_NOTE)
             .judicialMessageMetaData(newMessage)
             .build();
 
+        CaseData caseData = CaseData.builder()
+            .messageJudgeEventData(messageJudgeEventData)
+            .judicialMessages(existingJudicialMessages)
+            .build();
+
+        JudicialMessage expectedNewJudicialMessage = JudicialMessage.builder()
+            .sender(MESSAGE_SENDER)
+            .recipient(MESSAGE_RECIPIENT)
+            .dateSentAsLocalDateTime(time.now())
+            .status(OPEN)
+            .note(MESSAGE_NOTE)
+            .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
+            .build();
+
+        when(identityService.generateId()).thenReturn(NEW_ELEMENT_ID);
+
         List<Element<JudicialMessage>> updatedMessages = messageJudgeService.addNewJudicialMessage(caseData);
 
         assertThat(updatedMessages.size()).isEqualTo(2);
+        assertThat(updatedMessages).isEqualTo(List.of(
+            element(existingJudicialMessageId, existingJudicialMessage),
+            element(NEW_ELEMENT_ID, expectedNewJudicialMessage)
+        ));
     }
 
     @Test

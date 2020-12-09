@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessageMetaData;
+import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 
 import java.util.List;
@@ -42,9 +43,7 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
             .dateSentAsLocalDateTime(now().minusDays(1))
             .build();
 
-        CaseData caseData = CaseData.builder()
-            .id(1111L)
-            .judicialMessages(List.of(element(oldJudicialMessage)))
+        MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
             .relatedDocumentsLabel("related documents")
             .judicialMessageNote("Some note")
             .judicialMessageMetaData(JudicialMessageMetaData.builder()
@@ -52,6 +51,12 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
                 .sender("ben@fpla.com")
                 .recipient("John@fpla.com")
                 .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .id(1111L)
+            .judicialMessages(List.of(element(oldJudicialMessage)))
+            .messageJudgeEventData(messageJudgeEventData)
             .build();
 
         when(identityService.generateId()).thenReturn(judicialMessageId);

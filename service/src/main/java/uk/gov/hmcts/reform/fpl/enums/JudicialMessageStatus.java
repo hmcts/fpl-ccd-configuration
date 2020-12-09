@@ -6,7 +6,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum JudicialMessageStatus {
-    OPEN("Open");
-
-    private final String label;
+    OPEN
 }

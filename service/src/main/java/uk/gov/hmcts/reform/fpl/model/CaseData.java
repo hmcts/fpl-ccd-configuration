@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
+import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadCMOEventData;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
@@ -656,10 +657,8 @@ public class CaseData {
     private final List<Element<ApplicationDocument>> applicationDocuments;
     private final String applicationDocumentsToFollowReason;
 
-    private final Object c2DynamicList;
-    private final String judicialMessageNote;
-    private final JudicialMessageMetaData judicialMessageMetaData;
-    private final String relatedDocumentsLabel;
+    @JsonUnwrapped
+    private final MessageJudgeEventData messageJudgeEventData;
     private final List<Element<JudicialMessage>> judicialMessages;
 
     public List<Element<JudicialMessage>> getJudicialMessages() {
