@@ -196,7 +196,7 @@ module.exports = {
   async assertOrder(I, caseViewPage, order, defaultIssuedDate, hasAllocatedJudge = false, isOrderRemoved = false) {
     caseViewPage.selectTab(caseViewPage.tabs.orders);
     const numberOfOrders = await I.grabNumberOfVisibleElements('//*[text() = \'Type of order\']');
-    const orderHeading = isOrderRemoved ? `Removed orders ${numberOfOrders}` : `Order ${numberOfOrders}`;
+    const orderHeading = isOrderRemoved ? `Other removed orders ${numberOfOrders}` : `Order ${numberOfOrders}`;
 
     if (order.type === 'Blank order (C21)') {
       I.seeInTab([orderHeading, 'Order title'], order.title);

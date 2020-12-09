@@ -87,7 +87,7 @@ public class ReviewCMOService {
         } else {
             order = cmo.getValue().getOrder();
         }
-        return element(cmo.getValue().toBuilder()
+        return element(cmo.getId(), cmo.getValue().toBuilder()
             .dateIssued(time.now().toLocalDate())
             .status(CMOStatus.APPROVED)
             .order(order)

@@ -65,21 +65,5 @@
     "FieldTypeParameter": "CourtBundleV2",
     "Label": "Court bundle",
     "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "courtBundleTabHeading",
-    "FieldType": "Label",
-    "Label": "## Court bundle",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "correspondenceTabHeading",
-    "FieldType": "Label",
-    "Label": "## Correspondence",
-    "SecurityClassification": "Public"
   }
 ]

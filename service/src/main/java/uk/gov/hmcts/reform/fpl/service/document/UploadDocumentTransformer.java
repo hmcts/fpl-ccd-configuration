@@ -23,9 +23,6 @@ public class UploadDocumentTransformer {
     private final IdentityService identityService;
 
     public Element<ApplicationDocument> convert(Document document, ApplicationDocumentType documentType) {
-
-        //is included in swet fine as null or does it need to be empty string
-        //cater for if it's an 'other document' then set document name
         return element(identityService.generateId(),
             ApplicationDocument.builder()
                 .document(document.getTypeOfDocument())

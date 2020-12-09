@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.document;
 
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -8,7 +9,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.DocumentStatus;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
@@ -29,7 +29,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SWET;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.THRESHOLD;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
+
 
 @ExtendWith(MockitoExtension.class)
 class UploadDocumentsMigrationServiceTest {
@@ -41,7 +41,6 @@ class UploadDocumentsMigrationServiceTest {
     private static final Document THRESHOLD_DOCUMENT = documentWithUploadedFile();
     private static final Document CHECKLIST__DOCUMENT = documentWithUploadedFile();
     private static final Document SOCIAL_WORK_ASSESSMENT_DOCUMENT = documentWithUploadedFile();
-    private static final CourtBundle COURT_BUNDLE = CourtBundle.builder().document(testDocumentReference()).build();
 
     private static final Document SOCIAL_WORK_CHRONOLOGY_DOCUMENT_TO_FOLLOW = documentWithToFollow();
     private static final Document SOCIAL_WORK_STATEMENT_DOCUMENT_TO_FOLLOW = documentWithToFollow();
@@ -223,30 +222,45 @@ class UploadDocumentsMigrationServiceTest {
                 CONVERTED_OTHER_DOCUMENT_1,
                 CONVERTED_OTHER_DOCUMENT_2
             ),
-            "applicationDocumentsToFollowReason", "Social work chronology to follow,"
-                + " Social work statement to follow,"
-                + " Care plan to follow,"
-                + " SWET to follow,"
-                + " Social work statement to follow,"
-                + " Threshold to follow,"
-                + " Checklist document to follow"
+            "applicationDocumentsToFollowReason", ""
         ));
     }
 
     @Test
-    void shouldAddCourtBundleToCourtBundleList() {
-        CaseData caseData = CaseData.builder().courtBundle(COURT_BUNDLE).build();
-        Map<String, Object> actual = underTest.transformFromOldCaseData(caseData);
+    void shouldTransformMixedSelection() {
 
-        assertThat(actual.get("courtBundleList")).isNotNull();
+        when(transformer.convert(SOCIAL_WORK_CHRONOLOGY_DOCUMENT, SOCIAL_WORK_CHRONOLOGY))
+            .thenReturn(CONVERTED_SOCIAL_WORK_CHRONOLOGY_DOCUMENT);
+        when(transformer.convert(SOCIAL_WORK_CARE_PLAN_DOCUMENT_TO_FOLLOW_WITH_FILE, CARE_PLAN))
+            .thenReturn(CONVERTED_SOCIAL_WORK_CARE_PLAN_DOCUMENT);
+
+        Map<String, Object> actual = underTest.transformFromOldCaseData(CaseData.builder()
+            .socialWorkChronologyDocument(SOCIAL_WORK_CHRONOLOGY_DOCUMENT)
+            .socialWorkStatementDocument(SOCIAL_WORK_STATEMENT_DOCUMENT_TO_FOLLOW)
+            .socialWorkCarePlanDocument(SOCIAL_WORK_CARE_PLAN_DOCUMENT_TO_FOLLOW_WITH_FILE)
+            .socialWorkEvidenceTemplateDocument(SOCIAL_WORK_EVIDENCE_TEMPLATE_DOCUMENT_TO_FOLLOW)
+            .build());
+
+        assertThat(actual).isEqualTo(Map.of(
+            "applicationDocuments", List.of(
+                CONVERTED_SOCIAL_WORK_CHRONOLOGY_DOCUMENT,
+                CONVERTED_SOCIAL_WORK_CARE_PLAN_DOCUMENT
+            ),
+            "applicationDocumentsToFollowReason", "Social work statement to follow, SWET to follow"
+        ));
     }
 
     @Test
-    void shouldNotAddCourtBundleToCourtBundleListIfNoCourtBundlePresent() {
-        CaseData caseData = CaseData.builder().build();
-        Map<String, Object> actual = underTest.transformFromOldCaseData(caseData);
+    void shouldTransformOneDocToFollow() {
 
-        assertThat(actual.get("courtBundleList")).isNull();
+        Map<String, Object> actual = underTest.transformFromOldCaseData(CaseData.builder()
+            .socialWorkChronologyDocument(SOCIAL_WORK_CHRONOLOGY_DOCUMENT_TO_FOLLOW)
+            .build());
+
+        assertThat(actual).isEqualTo(Map.of(
+            "applicationDocuments", Lists.emptyList(),
+            "applicationDocumentsToFollowReason", "Social work chronology to follow"
+        ));
     }
 
     private static Document documentWithUploadedFile() {

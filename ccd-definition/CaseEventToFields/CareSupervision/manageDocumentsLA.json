@@ -69,7 +69,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "manageDocumentsSupportingC2List",
-    "PageFieldDisplayOrder": 3,
+    "PageFieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
     "PageID": "ManageDocumentType",
     "PageDisplayOrder": 1,

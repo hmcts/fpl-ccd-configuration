@@ -24,7 +24,6 @@ import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SOCIAL_WORK_
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SWET;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.THRESHOLD;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.TO_FOLLOW;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -36,7 +35,6 @@ public class UploadDocumentsMigrationService {
 
         List<Element<ApplicationDocument>> applicationDocuments = Lists.newArrayList();
         List<String> toFollowComments = Lists.newArrayList();
-        Map<String, Object> data = new HashMap<>();
 
         ofNullable(caseData.getSocialWorkChronologyDocument())
             .ifPresent(addTransformedDocument(applicationDocuments, toFollowComments, SOCIAL_WORK_CHRONOLOGY));
@@ -60,13 +58,10 @@ public class UploadDocumentsMigrationService {
             .ifPresent(addTransformedDocument(applicationDocuments, toFollowComments, CHECKLIST_DOCUMENT));
 
         ofNullable(caseData.getOtherSocialWorkDocuments())
-            .ifPresent(
-                otherDocumentElements -> applicationDocuments.addAll(transformer.convert(otherDocumentElements)));
+            .ifPresent(otherDocumentElements ->
+                applicationDocuments.addAll(transformer.convert(otherDocumentElements)));
 
-        if (ofNullable(caseData.getCourtBundle()).isPresent()) {
-            data.put("courtBundleList", List.of(element(caseData.getCourtBundle())));
-        }
-
+        Map<String, Object> data = new HashMap<>();
         data.put("applicationDocuments", applicationDocuments);
         data.put("applicationDocumentsToFollowReason", String.join(", ", toFollowComments));
         return data;
@@ -78,14 +73,15 @@ public class UploadDocumentsMigrationService {
         return doc -> {
             if (!isNull(doc.getTypeOfDocument())) {
                 applicationDocuments.add(transformer.convert(doc, documentType));
+            } else {
+                addToFollowCommentIfMarked(doc, documentType, toFollowComments);
             }
-            addToFollowComment(doc, documentType, toFollowComments);
         };
     }
 
-    private void addToFollowComment(Document document,
-                                    ApplicationDocumentType documentType,
-                                    List<String> toFollowComments) {
+    private void addToFollowCommentIfMarked(Document document,
+                                            ApplicationDocumentType documentType,
+                                            List<String> toFollowComments) {
         String documentStatus = document.getDocumentStatus();
         if (TO_FOLLOW.getLabel().equals(documentStatus)) {
             toFollowComments.add(String.format("%s to follow", documentType.getLabel()));

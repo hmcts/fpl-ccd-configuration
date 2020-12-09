@@ -43,6 +43,13 @@ public abstract class CallbackController {
             .build();
     }
 
+    protected AboutToStartOrSubmitCallbackResponse respond(Map<String, Object> caseDetailsMap, List<String> errors) {
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetailsMap)
+            .errors(errors)
+            .build();
+    }
+
     protected AboutToStartOrSubmitCallbackResponse respond(CaseDetails caseDetails, List<String> errors) {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
