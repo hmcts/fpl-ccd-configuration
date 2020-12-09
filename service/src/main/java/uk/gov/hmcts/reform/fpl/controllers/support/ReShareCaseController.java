@@ -70,6 +70,8 @@ public class ReShareCaseController {
                 log.error("Access migration failed for case {}", casesDetail.getId(), e);
             }
         }
+
+        log.info("Access migration finished");
     }
 
     private void reShareCases(CaseDetails caseDetails) throws Exception {
