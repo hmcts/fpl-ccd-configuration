@@ -41,7 +41,7 @@ Scenario('local authority add an external barrister as a legal representative fo
   I.seeInTab(['LA Legal representatives 1', 'Phone number'], legalRepresentatives.barrister.telephone);
 });
 
-Scenario('local authority adds further evidence and correspondence documents', async ({I, caseViewPage, manageDocumentsLAEventPage}) => {
+Scenario('local authority adds further evidence and correspondence documents @la-doc-upload-post-submission', async ({I, caseViewPage, manageDocumentsLAEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
   await manageDocumentsLAEventPage.selectFurtherEvidence();
   await I.goToNextPage();
@@ -79,7 +79,7 @@ Scenario('local authority adds further evidence and correspondence documents', a
   I.seeTextInTab(['Correspondence uploaded by local authority 1', 'Uploaded by']);
 });
 
-Scenario('local authority adds hearing evidence and court bundle', async ({I, caseViewPage, manageDocumentsLAEventPage, manageHearingsEventPage}) => {
+Scenario('local authority adds hearing evidence and court bundle @la-doc-upload-post-submission', async ({I, caseViewPage, manageDocumentsLAEventPage, manageHearingsEventPage}) => {
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   hearingStartDate = moment().add(5, 'm').toDate();
   await manageDocumentsForLAHelper.createHearing(I, caseViewPage, manageHearingsEventPage);
@@ -114,10 +114,9 @@ Scenario('local authority adds hearing evidence and court bundle', async ({I, ca
   caseViewPage.selectTab(caseViewPage.tabs.courtBundle);
   I.seeInTab(['Court bundle 1', 'Court bundle for'], `Case management hearing, ${formatHearingDate(hearingStartDate)}`);
   I.seeInTab(['Court bundle 1', 'Court bundle'], 'mockFile.txt');
-  I.seeInTab(['Court bundle 1', 'Redacted court bundle'], 'mockFile.txt');
 });
 
-Scenario('local authority adds C2 supporting documents', async ({I, caseViewPage, manageDocumentsLAEventPage, uploadC2DocumentsEventPage}) => {
+Scenario('local authority adds C2 supporting documents @la-doc-upload-post-submission', async ({I, caseViewPage, manageDocumentsLAEventPage, uploadC2DocumentsEventPage}) => {
   await manageDocumentsForLAHelper.uploadC2(I, caseViewPage, uploadC2DocumentsEventPage);
 
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);

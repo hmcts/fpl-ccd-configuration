@@ -39,8 +39,8 @@ public class ManageDocumentsLAControllerAboutToStartTest extends AbstractControl
     @Test
     void shouldBuildManageDocumentsHearingListAndSupportingC2DocumentsList() {
         List<Element<HearingBooking>> hearingBookings = List.of(
-            element(hearing(LocalDateTime.of(2020, 3, 15, 20, 20))),
-            element(hearing(LocalDateTime.of(2020, 3, 16, 10, 10))));
+            element(buildHearing(LocalDateTime.of(2020, 3, 15, 20, 20))),
+            element(buildHearing(LocalDateTime.of(2020, 3, 16, 10, 10))));
 
         List<Element<C2DocumentBundle>> c2DocumentBundle = List.of(
             element(buildC2DocumentBundle(LocalDateTime.now().plusDays(2))),
@@ -83,7 +83,7 @@ public class ManageDocumentsLAControllerAboutToStartTest extends AbstractControl
         assertThat(actualManageDocument).isEqualTo(expectedManageDocument);
     }
 
-    private HearingBooking hearing(LocalDateTime startDate) {
+    private HearingBooking buildHearing(LocalDateTime startDate) {
         return HearingBooking.builder()
             .type(CASE_MANAGEMENT)
             .startDate(startDate)

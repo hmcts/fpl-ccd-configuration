@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -216,7 +215,7 @@ public class ManageDocumentsControllerMidEventTest extends AbstractControllerTes
             .surname("Hudson")
             .forename("Steve")
             .email("steve.hudson@gov.uk")
-            .roles(Arrays.asList("caseworker-publiclaw-courtadmin", "caseworker-publiclaw-judiciary"))
+            .roles(List.of("caseworker-publiclaw-courtadmin"))
             .build();
     }
 }

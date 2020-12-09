@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
 import java.util.HashMap;
 import java.util.List;
@@ -57,7 +58,7 @@ public class ManageDocumentLAService {
         return courtBundleList;
     }
 
-    private Object initialiseCourtBundleHearingList(CaseData caseData) {
+    private DynamicList initialiseCourtBundleHearingList(CaseData caseData) {
         UUID selectedHearingId = getDynamicListSelectedValue(caseData.getCourtBundleHearingList(), mapper);
         Optional<Element<HearingBooking>> hearingBooking = caseData.findHearingBookingElement(
             selectedHearingId);

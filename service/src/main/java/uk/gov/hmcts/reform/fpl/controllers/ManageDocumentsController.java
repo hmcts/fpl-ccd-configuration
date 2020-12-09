@@ -66,6 +66,7 @@ public class ManageDocumentsController extends CallbackController {
             case FURTHER_EVIDENCE_DOCUMENTS:
                 caseDetails.getData().putAll(manageDocumentService.initialiseHearingListAndLabel(
                     caseData, caseData.getManageDocument().isDocumentRelatedToHearing()));
+
                 supportingEvidence = manageDocumentService.getFurtherEvidenceCollection(
                     caseData,
                     caseData.getManageDocument().isDocumentRelatedToHearing(),
@@ -112,8 +113,7 @@ public class ManageDocumentsController extends CallbackController {
                     currentBundle = manageDocumentService.setDateTimeOnHearingFurtherEvidenceSupportingEvidence(
                         caseData, caseDataBefore);
 
-                    caseDetails.getData().put(
-                        HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY,
+                    caseDetails.getData().put(HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY,
                         manageDocumentService.buildHearingFurtherEvidenceCollection(caseData, currentBundle)
                     );
                 } else {
@@ -126,8 +126,7 @@ public class ManageDocumentsController extends CallbackController {
             case CORRESPONDENCE:
                 List<Element<SupportingEvidenceBundle>> updatedCorrespondenceDocuments = manageDocumentService
                     .setDateTimeUploadedOnSupportingEvidence(caseData.getSupportingEvidenceDocumentsTemp(),
-                        caseDataBefore.getCorrespondenceDocuments()
-                    );
+                        caseDataBefore.getCorrespondenceDocuments());
 
                 caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, updatedCorrespondenceDocuments);
                 break;

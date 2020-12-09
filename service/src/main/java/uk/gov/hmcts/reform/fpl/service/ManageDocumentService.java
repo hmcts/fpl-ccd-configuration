@@ -29,7 +29,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -281,8 +280,6 @@ public class ManageDocumentService {
         UserDetails userDetails = idamClient.getUserDetails(requestData.authorisation());
         boolean isHmctsUser = userDetails.getRoles().stream().anyMatch(UserRole::isHmctsUser);
 
-        Stream<Element<SupportingEvidenceBundle>> bundleStream = bundleList.stream();
-
         Predicate<Element<SupportingEvidenceBundle>> userFilter =
             evidenceBundleElement -> "HMCTS".equals(evidenceBundleElement.getValue().getUploadedBy());
 
@@ -290,7 +287,7 @@ public class ManageDocumentService {
             userFilter = userFilter.negate();
         }
 
-        return bundleStream
+        return bundleList.stream()
             .filter(userFilter)
             .collect(Collectors.toList());
     }

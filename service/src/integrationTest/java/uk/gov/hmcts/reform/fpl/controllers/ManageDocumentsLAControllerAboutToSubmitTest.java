@@ -70,7 +70,7 @@ public class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractContro
 
     @BeforeEach
     void init() {
-        given(idamClient.getUserDetails(eq(USER_AUTH_TOKEN))).willReturn(createUserDetailsWithLARole());
+        given(idamClient.getUserDetails(eq(USER_AUTH_TOKEN))).willReturn(buildUserDetailsWithLARole());
     }
 
     @Test
@@ -79,29 +79,30 @@ public class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractContro
         UUID hearingId = UUID.randomUUID();
         HearingBooking hearingBooking = buildFinalHearingBooking();
 
-        Map<String, Object> data = new HashMap<>(Map.of(
-            "hearingDetails", List.of(element(hearingId, hearingBooking)),
-            "manageDocumentsHearingList", DynamicList.builder()
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(List.of(element(hearingId, hearingBooking)))
+            .manageDocumentsHearingList(DynamicList.builder()
                 .value(DynamicListElement.builder()
                     .code(hearingId)
                     .build())
-                .build(),
-            TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, furtherEvidenceBundle,
-            MANAGE_DOCUMENT_LA_KEY,
-            buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue())));
+                .build())
+            .supportingEvidenceDocumentsTemp(furtherEvidenceBundle)
+            .manageDocumentLA(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue()))
+            .build();
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetailsBefore(buildCaseDetails(Map.of()))
-            .caseDetails(buildCaseDetails(data))
+            .caseDetails(asCaseDetails(caseData))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        assertThat(caseData.getHearingFurtherEvidenceDocuments().get(0).getValue()
+        CaseData responseData = extractCaseData(callbackResponse);
+
+        assertThat(responseData.getHearingFurtherEvidenceDocuments().get(0).getValue()
             .getSupportingEvidenceBundle()).isEqualTo(furtherEvidenceBundle);
 
-        assertExpectedFieldsAreRemoved(caseData);
+        assertExpectedFieldsAreRemoved(responseData);
     }
 
     @Test
@@ -186,25 +187,35 @@ public class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractContro
             element(buildC2DocumentBundle(time.now().plusDays(2))));
 
         AtomicInteger i = new AtomicInteger(1);
-        DynamicList expectedC2DocumentsDynamicList = asDynamicList(c2DocumentBundleList, selectedC2DocumentId,
+        DynamicList c2DocumentsDynamicList = asDynamicList(c2DocumentBundleList, selectedC2DocumentId,
             documentBundle -> documentBundle.toLabel(i.getAndIncrement()));
 
-        Map<String, Object> data = new HashMap<>(Map.of(
-            "c2DocumentBundle", c2DocumentBundleList,
-            "manageDocumentsSupportingC2List", expectedC2DocumentsDynamicList,
-            "c2SupportingDocuments", supportingEvidenceBundle,
-            MANAGE_DOCUMENT_LA_KEY, buildManagementDocument(C2)));
+        CaseData caseData = CaseData.builder()
+            .c2DocumentBundle(c2DocumentBundleList)
+            .manageDocumentsSupportingC2List(c2DocumentsDynamicList)
+            .c2SupportingDocuments(supportingEvidenceBundle)
+            .manageDocumentLA(buildManagementDocument(C2))
+            .build();
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetailsBefore(buildCaseDetails(Map.of()))
-            .caseDetails(buildCaseDetails(data))
+            .caseDetails(asCaseDetails(caseData))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        CaseData responseData = extractCaseData(callbackResponse);
 
-        assertThat(caseData.getC2DocumentBundle().get(0)).isEqualTo(c2DocumentBundleList.get(0));
-        assertExpectedFieldsAreRemoved(caseData);
+        assertThat(responseData.getC2DocumentBundle().get(0)).isEqualTo(c2DocumentBundleList.get(0));
+        assertExpectedFieldsAreRemoved(responseData);
+    }
+
+    private void assertExpectedFieldsAreRemoved(CaseData caseData) {
+        assertThat(caseData.getSupportingEvidenceDocumentsTemp()).isEmpty();
+        assertThat(caseData.getManageDocumentLA()).isNull();
+        assertThat(caseData.getManageDocumentsCourtBundle()).isNull();
+        assertThat(caseData.getC2SupportingDocuments()).isNull();
+        assertThat(caseData.getManageDocumentsHearingList()).isNull();
+        assertThat(caseData.getManageDocumentsSupportingC2List()).isNull();
     }
 
     private CaseDetails buildCaseDetails(Map<String, Object> caseData) {
@@ -242,15 +253,6 @@ public class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractContro
             .build());
     }
 
-    private void assertExpectedFieldsAreRemoved(CaseData caseData) {
-        assertThat(caseData.getSupportingEvidenceDocumentsTemp()).isEmpty();
-        assertThat(caseData.getManageDocumentLA()).isNull();
-        assertThat(caseData.getManageDocumentsCourtBundle()).isNull();
-        assertThat(caseData.getC2SupportingDocuments()).isNull();
-        assertThat(caseData.getManageDocumentsHearingList()).isNull();
-        assertThat(caseData.getManageDocumentsSupportingC2List()).isNull();
-    }
-
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {
         return C2DocumentBundle.builder().uploadedDateTime(dateTime.toString()).build();
     }
@@ -263,7 +265,7 @@ public class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractContro
             .build();
     }
 
-    private UserDetails createUserDetailsWithLARole() {
+    private UserDetails buildUserDetailsWithLARole() {
         return UserDetails.builder()
             .id(USER_ID)
             .surname("Swansea")

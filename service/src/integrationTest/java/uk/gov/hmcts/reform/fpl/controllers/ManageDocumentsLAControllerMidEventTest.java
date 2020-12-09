@@ -7,7 +7,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeLA;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
@@ -24,28 +23,19 @@ import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeLA.C2;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeLA.CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeLA.COURT_BUNDLE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeLA.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.service.ManageDocumentLAService.COURT_BUNDLE_HEARING_LIST_KEY;
-import static uk.gov.hmcts.reform.fpl.service.ManageDocumentLAService.COURT_BUNDLE_LIST_KEY;
-import static uk.gov.hmcts.reform.fpl.service.ManageDocumentLAService.MANAGE_DOCUMENT_LA_KEY;
-import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
-import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LABEL_KEY;
-import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
-import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
-import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -81,54 +71,48 @@ public class ManageDocumentsLAControllerMidEventTest extends AbstractControllerT
             element(createHearingBooking(today.plusDays(5), today.plusDays(6))),
             element(createHearingBooking(today.plusDays(2), today.plusDays(3))),
             element(createHearingBooking(today, today.plusDays(1))),
-            Element.<HearingBooking>builder().id(selectedHearingId).value(selectedHearingBooking).build());
+            element(selectedHearingId, selectedHearingBooking));
 
-        Map<String, Object> data = new HashMap<>(Map.of(
-            MANAGE_DOCUMENTS_HEARING_LIST_KEY, selectedHearingId,
-            HEARING_DETAILS_KEY, hearingBookings,
-            HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, List.of(
-                element(selectedHearingId, HearingFurtherEvidenceBundle.builder()
-                    .supportingEvidenceBundle(furtherEvidenceBundle)
-                    .build())),
-            MANAGE_DOCUMENT_LA_KEY, buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue())));
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(hearingBookings)
+            .manageDocumentsHearingList(selectedHearingId)
+            .hearingFurtherEvidenceDocuments(List.of(element(selectedHearingId, HearingFurtherEvidenceBundle.builder()
+                .supportingEvidenceBundle(furtherEvidenceBundle)
+                .build())))
+            .manageDocumentLA(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue()))
+            .build();
 
-        CaseDetails caseDetails = buildCaseDetails(data);
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails,
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
             "initialise-manage-document-collections");
 
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        CaseData responseData = extractCaseData(callbackResponse);
 
         DynamicList expectedDynamicList = ElementUtils
             .asDynamicList(hearingBookings, selectedHearingId, HearingBooking::toLabel);
 
-        DynamicList hearingList
-            = mapper.convertValue(callbackResponse.getData().get(MANAGE_DOCUMENTS_HEARING_LIST_KEY),
-            DynamicList.class);
+        DynamicList hearingList = mapper.convertValue(responseData.getManageDocumentsHearingList(), DynamicList.class);
 
         assertThat(hearingList).isEqualTo(expectedDynamicList);
 
         assertThat(callbackResponse.getData().get(MANAGE_DOCUMENTS_HEARING_LABEL_KEY))
             .isEqualTo(selectedHearingBooking.toLabel());
 
-        assertThat(caseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(furtherEvidenceBundle);
+        assertThat(responseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(furtherEvidenceBundle);
     }
 
     @Test
     void shouldInitialiseCorrespondenceCollection() {
         List<Element<SupportingEvidenceBundle>> correspondenceDocuments = buildSupportingEvidenceBundle();
 
-        Map<String, Object> data = new HashMap<>(Map.of(
-            CORRESPONDING_DOCUMENTS_COLLECTION_KEY, correspondenceDocuments,
-            MANAGE_DOCUMENT_LA_KEY, buildManagementDocument(CORRESPONDENCE)));
+        CaseData caseData = CaseData.builder()
+            .correspondenceDocumentsLA(correspondenceDocuments)
+            .manageDocumentLA(buildManagementDocument(CORRESPONDENCE)).build();
 
-        CaseDetails caseDetails = buildCaseDetails(data);
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails,
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
             "initialise-manage-document-collections");
 
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-        assertThat(caseData.getCorrespondenceDocuments()).isEqualTo(correspondenceDocuments);
+        CaseData responseData = extractCaseData(callbackResponse);
+        assertThat(responseData.getCorrespondenceDocumentsLA()).isEqualTo(correspondenceDocuments);
     }
 
     @Test
@@ -137,30 +121,29 @@ public class ManageDocumentsLAControllerMidEventTest extends AbstractControllerT
         LocalDateTime today = LocalDateTime.now();
         HearingBooking selectedHearingBooking = createHearingBooking(today, today.plusDays(3));
 
-        List<Element<CourtBundle>> courtBundle = buildCourtBundleList(selectedHearingId);
+        List<Element<CourtBundle>> courtBundleList = buildCourtBundleList(selectedHearingId);
 
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(createHearingBooking(today.plusDays(5), today.plusDays(6))),
             element(createHearingBooking(today.plusDays(2), today.plusDays(3))),
             element(createHearingBooking(today, today.plusDays(1))),
-            Element.<HearingBooking>builder().id(selectedHearingId).value(selectedHearingBooking).build());
+            element(selectedHearingId, selectedHearingBooking));
 
         DynamicList hearingList = ElementUtils
             .asDynamicList(hearingBookings, selectedHearingId, HearingBooking::toLabel);
 
-        Map<String, Object> data = new HashMap<>(Map.of(
-            HEARING_DETAILS_KEY, hearingBookings,
-            COURT_BUNDLE_LIST_KEY, courtBundle,
-            COURT_BUNDLE_HEARING_LIST_KEY, hearingList,
-            MANAGE_DOCUMENT_LA_KEY, buildManagementDocument(COURT_BUNDLE)));
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(hearingBookings)
+            .courtBundleList(courtBundleList)
+            .courtBundleHearingList(hearingList)
+            .manageDocumentLA(buildManagementDocument(COURT_BUNDLE))
+            .build();
 
-        CaseDetails caseDetails = buildCaseDetails(data);
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails,
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
             "initialise-manage-document-collections");
 
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-        assertThat(caseData.getCourtBundleList()).isEqualTo(courtBundle);
+        CaseData responseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        assertThat(responseData.getCourtBundleList()).isEqualTo(courtBundleList);
     }
 
     @Test
@@ -175,27 +158,17 @@ public class ManageDocumentsLAControllerMidEventTest extends AbstractControllerT
             element(selectedC2DocumentId, buildC2DocumentBundle(c2EvidenceDocuments)),
             element(buildC2DocumentBundle(today.plusDays(2))));
 
-        Map<String, Object> data = new HashMap<>(Map.of(
-            "c2DocumentBundle", c2DocumentBundle,
-            MANAGE_DOCUMENT_LA_KEY, buildManagementDocument(ManageDocumentTypeLA.C2),
-            SUPPORTING_C2_LIST_KEY, selectedC2DocumentId));
+        CaseData caseData = CaseData.builder()
+            .c2DocumentBundle(c2DocumentBundle)
+            .manageDocumentLA(buildManagementDocument(C2))
+            .manageDocumentsSupportingC2List(selectedC2DocumentId)
+            .build();
 
-        CaseDetails caseDetails = buildCaseDetails(data);
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails,
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
             "initialise-manage-document-collections");
 
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-        assertThat(caseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(c2EvidenceDocuments);
-    }
-
-    private CaseDetails buildCaseDetails(Map<String, Object> caseData) {
-        return CaseDetails.builder().data(caseData).build();
-    }
-
-    private CaseDetails buildCaseDetails(String key, LocalDateTime dateTimeReceived) {
-        return buildCaseDetails(Map.of(key, List.of(
-            element(SupportingEvidenceBundle.builder().dateTimeReceived(dateTimeReceived).build()))));
+        CaseData responseData = extractCaseData(callbackResponse);
+        assertThat(responseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(c2EvidenceDocuments);
     }
 
     private ManageDocumentLA buildManagementDocument(ManageDocumentTypeLA type) {
