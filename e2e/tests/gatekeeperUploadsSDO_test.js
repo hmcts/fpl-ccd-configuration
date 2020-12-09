@@ -40,7 +40,7 @@ Scenario('Gatekeeper uploads final standard directions', async ({I, caseViewPage
   await I.completeEvent('Save and continue');
 
   caseViewPage.selectTab(caseViewPage.tabs.orders);
-  I.seeInTab(['Gatekeeping order', 'File'], 'mockFile.docx');
+  I.seeInTab(['Gatekeeping order', 'File'], 'mockFile.pdf');
   I.seeInTab(['Gatekeeping order', 'Date uploaded'], dateFormat('d mmm yyyy'));
   I.seeInTab(['Gatekeeping order', 'Uploaded by'], 'Uploaded by'); // Asserting row is there, data in local and aat are different
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
