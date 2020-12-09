@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessageMetaData;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 
@@ -81,16 +82,19 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
     void shouldRemoveTransientFields() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of(
+                "messageJudgeEventData", MessageJudgeEventData.builder()
+                    .c2DynamicList(DynamicList.builder().build())
+                    .relatedDocumentsLabel("Some data")
+                    .judicialMessageNote("Some data")
+                    .judicialMessageMetaData(JudicialMessageMetaData.builder()
+                        .urgency("High urgency")
+                        .sender("ben@fpla.com")
+                        .recipient("John@fpla.com")
+                        .build())
+                    .build(),
                 "hasC2Applications", "some data",
                 "isMessageRegardingC2", "some data",
-                "c2DynamicList", "some data",
-                "relatedDocumentsLabel", "some data",
-                "nextHearingLabel", "some data",
-                "judicialMessageMetaData", JudicialMessageMetaData.builder()
-                    .urgency("High urgency")
-                    .sender("ben@fpla.com")
-                    .recipient("John@fpla.com")
-                    .build()
+                "nextHearingLabel", "some data"
             ))
             .build();
 
@@ -101,5 +105,7 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
         assertThat(response.getData().get("c2DynamicList")).isNull();
         assertThat(response.getData().get("relatedDocumentsLabel")).isNull();
         assertThat(response.getData().get("nextHearingLabel")).isNull();
+        assertThat(response.getData().get("judicialMessageMetaData")).isNull();
+        assertThat(response.getData().get("judicialMessageNote")).isNull();
     }
 }

@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadCMOEventData;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 
@@ -61,10 +60,7 @@ class UploadCMOAboutToStartControllerTest extends AbstractUploadCMOControllerTes
             .cmosSentToJudge("Case management hearing, 2 March 2020")
             .build();
 
-        CaseData expectedCaseData = caseData.toBuilder()
-            .messageJudgeEventData(MessageJudgeEventData.builder().build())
-            .uploadCMOEventData(expectedEventData)
-            .build();
+        CaseData expectedCaseData = caseData.toBuilder().uploadCMOEventData(expectedEventData).build();
 
         assertThat(responseData).isEqualTo(expectedCaseData);
     }

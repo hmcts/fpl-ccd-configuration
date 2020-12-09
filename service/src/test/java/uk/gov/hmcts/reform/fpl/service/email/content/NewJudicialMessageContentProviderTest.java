@@ -4,8 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.JudicialMessageMetaData;
-import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
+import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.notify.NewJudicialMessageTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,16 +20,12 @@ class NewJudicialMessageContentProviderTest extends AbstractEmailContentProvider
     void createTemplateWithExpectedParameters() {
         CaseData caseData = populatedCaseData();
 
-        MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
-            .judicialMessageNote("Please see latest C2")
-            .judicialMessageMetaData(JudicialMessageMetaData.builder()
-                .recipient("paulStuart@fpla.com")
-                .sender("robertDunlop@fpla.com")
-                .urgency("Needed asap")
-                .build())
+        JudicialMessage judicialMessage = JudicialMessage.builder()
+            .note("Please see latest C2")
+            .recipient("paulStuart@fpla.com")
+            .sender("robertDunlop@fpla.com")
+            .urgency("Needed asap")
             .build();
-
-        caseData = caseData.toBuilder().messageJudgeEventData(messageJudgeEventData).build();
 
         NewJudicialMessageTemplate expectedTemplate = NewJudicialMessageTemplate.builder()
             .sender("robertDunlop@fpla.com")
@@ -42,7 +37,7 @@ class NewJudicialMessageContentProviderTest extends AbstractEmailContentProvider
             .respondentLastName("Smith")
             .build();
 
-        assertThat(newJudicialMessageContentProvider.buildNewJudicialMessageTemplate(caseData))
+        assertThat(newJudicialMessageContentProvider.buildNewJudicialMessageTemplate(caseData, judicialMessage))
             .isEqualTo(expectedTemplate);
     }
 
@@ -50,18 +45,14 @@ class NewJudicialMessageContentProviderTest extends AbstractEmailContentProvider
     void shouldNotSetUrgencyWhenNotPresentOnJudicialMessageMetaData() {
         CaseData caseData = populatedCaseData();
 
-        MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
-            .judicialMessageNote("Please see latest C2")
-            .judicialMessageMetaData(JudicialMessageMetaData.builder()
-                .recipient("paulStuart@fpla.com")
-                .sender("robertDunlop@fpla.com")
-                .build())
+        JudicialMessage judicialMessage = JudicialMessage.builder()
+            .note("Please see latest C2")
+            .recipient("paulStuart@fpla.com")
+            .sender("robertDunlop@fpla.com")
             .build();
 
-        caseData = caseData.toBuilder().messageJudgeEventData(messageJudgeEventData).build();
-
         NewJudicialMessageTemplate template
-            = newJudicialMessageContentProvider.buildNewJudicialMessageTemplate(caseData);
+            = newJudicialMessageContentProvider.buildNewJudicialMessageTemplate(caseData, judicialMessage);
 
         assertThat(template.getHasUrgency()).isNull();
         assertThat(template.getUrgency()).isNull();

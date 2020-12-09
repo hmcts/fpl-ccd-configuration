@@ -7,8 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.events.NewJudicialMessageEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.JudicialMessageMetaData;
-import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
+import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.notify.NewJudicialMessageTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NewJudicialMessageContentProvider;
@@ -33,21 +32,21 @@ class NewJudicialMessageEventHandlerTest {
     void shouldNotifyJudicialMessageRecipientWhenNewJudicialMessageCreated() {
         String recipient = "David@fpla.com";
 
-        MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
-            .judicialMessageMetaData(JudicialMessageMetaData.builder()
-                .sender("Paul@fpla.com")
-                .recipient(recipient)
-                .build())
+        JudicialMessage judicialMessage = JudicialMessage.builder()
+            .sender("Paul@fpla.com")
+            .recipient(recipient)
             .build();
 
-        CaseData caseData = caseData().toBuilder().messageJudgeEventData(messageJudgeEventData).build();
+        CaseData caseData = caseData();
 
         final NewJudicialMessageTemplate expectedParameters = NewJudicialMessageTemplate.builder().build();
 
-        given(newJudicialMessageContentProvider.buildNewJudicialMessageTemplate(caseData))
+        given(newJudicialMessageContentProvider.buildNewJudicialMessageTemplate(caseData, judicialMessage))
             .willReturn(expectedParameters);
 
-        newJudicialMessageEventHandler.notifyJudicialMessageRecipient(new NewJudicialMessageEvent(caseData));
+        newJudicialMessageEventHandler.notifyJudicialMessageRecipient(
+            new NewJudicialMessageEvent(caseData, judicialMessage)
+        );
 
         verify(notificationService).sendEmail(
             NEW_JUDICIAL_MESSAGE_ADDED_TEMPLATE,

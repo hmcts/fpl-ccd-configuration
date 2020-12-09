@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
 
+import static uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData.transientFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 
@@ -36,7 +37,6 @@ public class MessageJudgeController extends CallbackController {
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
 
         caseDetailsMap.putAll(messageJudgeService.initialiseCaseFields(caseData));
-        removeTemporaryFields(caseDetailsMap, "judicialMessageMetaData", "judicialMessageNote");
 
         return respond(caseDetailsMap);
     }
@@ -64,14 +64,18 @@ public class MessageJudgeController extends CallbackController {
         List<Element<JudicialMessage>> updatedMessages = messageJudgeService.addNewJudicialMessage(caseData);
         caseDetailsMap.put("judicialMessages", messageJudgeService.sortJudicialMessages(updatedMessages));
 
-        removeTemporaryFields(caseDetailsMap, "hasC2Applications", "isMessageRegardingC2", "c2DynamicList",
-            "relatedDocumentsLabel", "nextHearingLabel");
+        removeTemporaryFields(caseDetailsMap, transientFields());
 
         return respond(caseDetailsMap);
     }
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        publishEvent(new NewJudicialMessageEvent(getCaseData(callbackRequest)));
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        JudicialMessage newJudicialMessage = caseData.getJudicialMessages().get(0).getValue();
+
+        publishEvent(new NewJudicialMessageEvent(caseData, newJudicialMessage));
     }
 }

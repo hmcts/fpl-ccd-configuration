@@ -6,7 +6,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.JudicialMessageMetaData;
+import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.service.notify.NotificationClient;
@@ -37,6 +37,12 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
 
     @Test
     void shouldNotifyJudicialMessageRecipientWhenNewJudicialMessageAdded() throws NotificationClientException {
+        JudicialMessage latestJudicialMessage = JudicialMessage.builder()
+            .recipient(JUDICIAL_MESSAGE_RECIPIENT)
+            .sender("sender@fpla.com")
+            .urgency("High")
+            .build();
+
         CaseDetails caseDetails = CaseDetails.builder()
             .id(CASE_REFERENCE)
             .data(Map.of(
@@ -46,12 +52,13 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
                             .lastName("Davidson")
                             .build())
                         .build())),
-                "judicialMessageNote", "Some note",
-                "judicialMessageMetaData", JudicialMessageMetaData.builder()
-                    .recipient(JUDICIAL_MESSAGE_RECIPIENT)
-                    .sender("sender@fpla.com")
-                    .urgency("High")
-                    .build()
+                    "judicialMessages", List.of(
+                        element(latestJudicialMessage),
+                        element(JudicialMessage.builder()
+                            .recipient("do_not_send@fpla.com")
+                            .sender("sender@fpla.com")
+                            .urgency("High")
+                            .build()))
             )).build();
 
         postSubmittedEvent(caseDetails);

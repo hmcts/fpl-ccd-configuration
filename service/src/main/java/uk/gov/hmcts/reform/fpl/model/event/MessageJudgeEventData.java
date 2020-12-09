@@ -13,4 +13,11 @@ public class MessageJudgeEventData {
     String judicialMessageNote;
     JudicialMessageMetaData judicialMessageMetaData;
     String relatedDocumentsLabel;
+
+    public static String[] transientFields() {
+        return new String[]{
+            "hasC2Applications", "isMessageRegardingC2", "c2DynamicList", "relatedDocumentsLabel", "nextHearingLabel",
+            "judicialMessageMetaData", "judicialMessageNote"
+        };
+    }
 }

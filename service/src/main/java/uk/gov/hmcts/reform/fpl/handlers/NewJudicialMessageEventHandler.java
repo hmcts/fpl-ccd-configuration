@@ -6,7 +6,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.NewJudicialMessageEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.JudicialMessageMetaData;
+import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.notify.NewJudicialMessageTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NewJudicialMessageContentProvider;
@@ -22,13 +22,12 @@ public class NewJudicialMessageEventHandler {
     @EventListener
     public void notifyJudicialMessageRecipient(NewJudicialMessageEvent event) {
         CaseData caseData = event.getCaseData();
-        JudicialMessageMetaData judicialMessageMetaData
-            = caseData.getMessageJudgeEventData().getJudicialMessageMetaData();
+        JudicialMessage newJudicialMessage = event.getJudicialMessage();
 
         NewJudicialMessageTemplate notifyData =
-            newJudicialMessageContentProvider.buildNewJudicialMessageTemplate(caseData);
+            newJudicialMessageContentProvider.buildNewJudicialMessageTemplate(caseData, newJudicialMessage);
 
-        notificationService.sendEmail(NEW_JUDICIAL_MESSAGE_ADDED_TEMPLATE, judicialMessageMetaData.getRecipient(),
+        notificationService.sendEmail(NEW_JUDICIAL_MESSAGE_ADDED_TEMPLATE, newJudicialMessage.getRecipient(),
             notifyData, caseData.getId());
     }
 }

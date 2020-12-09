@@ -4,8 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.JudicialMessageMetaData;
-import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
+import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.notify.NewJudicialMessageTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
@@ -17,21 +16,19 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class NewJudicialMessageContentProvider extends AbstractEmailContentProvider {
 
-    public NewJudicialMessageTemplate buildNewJudicialMessageTemplate(CaseData caseData) {
-        MessageJudgeEventData messageJudgeEventData = caseData.getMessageJudgeEventData();
-        JudicialMessageMetaData judicialMessageMetaData = messageJudgeEventData.getJudicialMessageMetaData();
-
+    public NewJudicialMessageTemplate buildNewJudicialMessageTemplate(CaseData caseData,
+                                                                      JudicialMessage judicialMessage) {
         NewJudicialMessageTemplate.NewJudicialMessageTemplateBuilder<?, ?> templateBuilder
             = NewJudicialMessageTemplate.builder()
             .respondentLastName(getFirstRespondentLastName(caseData))
             .callout(buildCallout(caseData))
-            .sender(judicialMessageMetaData.getSender())
-            .note(messageJudgeEventData.getJudicialMessageNote())
+            .sender(judicialMessage.getSender())
+            .note(judicialMessage.getNote())
             .caseUrl(getCaseUrl(caseData.getId(), "JudicialMessagesTab"));
 
-        if (judicialMessageMetaData.getUrgency() != null) {
+        if (judicialMessage.getUrgency() != null) {
             templateBuilder.hasUrgency(YES.getValue());
-            templateBuilder.urgency(judicialMessageMetaData.getUrgency());
+            templateBuilder.urgency(judicialMessage.getUrgency());
         }
 
         return templateBuilder.build();
