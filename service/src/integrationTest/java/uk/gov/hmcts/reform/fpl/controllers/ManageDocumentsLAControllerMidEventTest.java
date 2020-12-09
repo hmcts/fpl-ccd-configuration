@@ -45,7 +45,6 @@ import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.HEARING_FURT
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LABEL_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
-import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DETAILS_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -188,27 +187,6 @@ public class ManageDocumentsLAControllerMidEventTest extends AbstractControllerT
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
         assertThat(caseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(c2EvidenceDocuments);
-    }
-
-    @Test
-    void shouldReturnValidationErrorsIfSupportingEvidenceDateTimeReceivedOnFurtherEvidenceIsInTheFuture() {
-        LocalDateTime futureDate = LocalDateTime.now().plusDays(1);
-        CaseDetails caseDetails = buildCaseDetails(TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, futureDate);
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails,
-            "validate-supporting-evidence");
-
-        assertThat(callbackResponse.getErrors()).isNotEmpty();
-        assertThat(callbackResponse.getErrors()).containsExactly("Date received cannot be in the future");
-    }
-
-    @Test
-    void shouldReturnNoValidationErrorsIfSupportingEvidenceDateTimeReceivedOnFurtherEvidenceIsInThePast() {
-        LocalDateTime pastDate = LocalDateTime.now().minusDays(2);
-        CaseDetails caseDetails = buildCaseDetails(TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, pastDate);
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails,
-            "validate-supporting-evidence");
-
-        assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
     private CaseDetails buildCaseDetails(Map<String, Object> caseData) {

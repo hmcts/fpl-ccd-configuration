@@ -60,17 +60,6 @@ public class ManageDocumentsLAController extends CallbackController {
         return respond(caseDetails);
     }
 
-    @PostMapping("/validate-supporting-evidence/mid-event")
-    public AboutToStartOrSubmitCallbackResponse validateSupportingEvidence(@RequestBody CallbackRequest request) {
-        CaseDetails caseDetails = request.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
-
-        List<Element<SupportingEvidenceBundle>> supportingEvidence = caseData.getSupportingEvidenceDocumentsTemp();
-        List<String> errors = supportingEvidenceValidatorService.validate(supportingEvidence);
-
-        return respond(caseDetails, errors);
-    }
-
     @PostMapping("/initialise-manage-document-collections/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
