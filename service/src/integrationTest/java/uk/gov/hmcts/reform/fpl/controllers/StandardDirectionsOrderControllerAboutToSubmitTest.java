@@ -136,7 +136,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        assertThat(caseData.getStandardDirectionOrder()).isEqualToComparingFieldByField(expectedOrder());
+        assertThat(caseData.getStandardDirectionOrder()).usingRecursiveComparison().isEqualTo(expectedOrder());
         assertThat(caseData.getJudgeAndLegalAdvisor()).isNull();
         assertThatDirectionsArePlacedBackIntoCaseDetailsWithValues(caseData);
         assertThat(filename.getValue()).isEqualTo(SEALED_ORDER_FILE_NAME);
@@ -209,14 +209,14 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
     }
 
     @Test
-    void shouldUpdateStateWhenOrderIsSealedThroughUploadRouteAndRemoveRouterAndSendNoticeOfProceedings()
-        throws Exception {
-        DocumentReference document = DocumentReference.builder().filename("final.pdf").build();
+    void shouldUpdateStateAndOrderDocWhenSDOIsSealedThroughUploadRouteAndRemoveRouterAndSendNoticeOfProceedings() {
+        DocumentReference sealedDocument = DocumentReference.builder().filename("sealed.pdf").build();
+        DocumentReference document = DocumentReference.builder().filename("final.docx").build();
         CaseDetails caseDetails = validCaseDetailsForUploadRoute(document, SEALED);
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         given(idamClient.getUserInfo(anyString())).willReturn(UserInfo.builder().name("adam").build());
-        given(sealingService.sealDocument(document)).willReturn(document);
+        given(sealingService.sealDocument(document)).willReturn(sealedDocument);
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
 
@@ -225,6 +225,8 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
         DocumentReference noticeOfProceedingBundle = responseCaseData.getNoticeOfProceedingsBundle().get(0).getValue()
             .getDocument();
 
+        assertThat(responseCaseData.getStandardDirectionOrder().getLastUploadedOrder())
+            .usingRecursiveComparison().isEqualTo(document);
         assertThat(responseCaseData.getNoticeOfProceedingsBundle()).hasSize(1);
         assertThat(noticeOfProceedingBundle.getUrl()).isEqualTo(DOCUMENT.links.self.href);
         assertThat(noticeOfProceedingBundle.getFilename()).isEqualTo(DOCUMENT.originalDocumentName);
@@ -395,6 +397,11 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
         return StandardDirectionOrder.builder()
             .directions(fullyPopulatedDirections())
             .orderStatus(SEALED)
+            .orderDoc(DocumentReference.builder()
+                .url(DOCUMENT.links.self.href)
+                .binaryUrl(DOCUMENT.links.binary.href)
+                .filename("final.docx")
+                .build())
             .orderDoc(DocumentReference.builder()
                 .url(DOCUMENT.links.self.href)
                 .binaryUrl(DOCUMENT.links.binary.href)

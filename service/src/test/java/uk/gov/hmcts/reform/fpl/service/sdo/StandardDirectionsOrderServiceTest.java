@@ -40,7 +40,6 @@ class StandardDirectionsOrderServiceTest {
     private static final String USER_NAME = "Adam";
     private static final DocumentReference SEALED_DOC = DocumentReference.builder().filename("sealed.pdf").build();
     private static final DocumentReference WORD_DOC = DocumentReference.builder().filename("word.docx").build();
-    private static final DocumentReference PDF_DOC = DocumentReference.builder().filename("doc.pdf").build();
     private static final Time TIME = new FixedTimeConfiguration().stoppedTime();
     private static final String JUDGE_NAME = "Davidson";
     private static final JudgeOrMagistrateTitle JUDGE_TITLE = HIS_HONOUR_JUDGE;
@@ -92,12 +91,12 @@ class StandardDirectionsOrderServiceTest {
     @Test
     void shouldUsePreparedSDOForTemporaryStandardDirectionOrder() {
         CaseData caseData = CaseData.builder()
-            .preparedSDO(PDF_DOC)
+            .preparedSDO(WORD_DOC)
             .build();
 
         StandardDirectionOrder order = service.buildTemporarySDO(caseData, null);
 
-        StandardDirectionOrder expectedOrder = StandardDirectionOrder.builder().orderDoc(PDF_DOC).build();
+        StandardDirectionOrder expectedOrder = StandardDirectionOrder.builder().orderDoc(WORD_DOC).build();
 
         assertThat(order).isEqualTo(expectedOrder);
     }
@@ -175,12 +174,12 @@ class StandardDirectionsOrderServiceTest {
     @Test
     void shouldNotSealDocumentWhenSDOIsDraft() {
         mockIdamAndRequestData();
-        StandardDirectionOrder order = buildStandardDirectionOrder(PDF_DOC, DRAFT, judgeAndLegalAdvisor);
+        StandardDirectionOrder order = buildStandardDirectionOrder(WORD_DOC, DRAFT, judgeAndLegalAdvisor);
 
         StandardDirectionOrder builtOrder = service.buildOrderFromUpload(order);
 
         StandardDirectionOrder expectedOrder = buildStandardDirectionOrder(
-            PDF_DOC, DRAFT, TIME.now().toLocalDate(), USER_NAME, judgeAndLegalAdvisor
+            WORD_DOC, null, DRAFT, TIME.now().toLocalDate(), USER_NAME, judgeAndLegalAdvisor
         );
 
         assertThat(builtOrder).isEqualTo(expectedOrder);
@@ -191,17 +190,17 @@ class StandardDirectionsOrderServiceTest {
     void shouldSealDocumentWhenSDOIsToBeSealed() {
         mockSealingService();
         mockIdamAndRequestData();
-        StandardDirectionOrder order = buildStandardDirectionOrder(PDF_DOC, SEALED, judgeAndLegalAdvisor);
+        StandardDirectionOrder order = buildStandardDirectionOrder(WORD_DOC, SEALED, judgeAndLegalAdvisor);
 
         StandardDirectionOrder builtOrder = service.buildOrderFromUpload(order);
 
         StandardDirectionOrder expectedOrder = buildStandardDirectionOrder(
-            SEALED_DOC, SEALED, TIME.now().toLocalDate(), USER_NAME, judgeAndLegalAdvisor
+            SEALED_DOC, WORD_DOC, SEALED, TIME.now().toLocalDate(), USER_NAME, judgeAndLegalAdvisor
         );
 
         assertThat(builtOrder).isEqualTo(expectedOrder);
 
-        verify(sealingService).sealDocument(PDF_DOC);
+        verify(sealingService).sealDocument(WORD_DOC);
     }
 
     @Test
@@ -315,14 +314,17 @@ class StandardDirectionsOrderServiceTest {
 
     private StandardDirectionOrder buildStandardDirectionOrder(DocumentReference document, OrderStatus status,
                                                                JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
-        return buildStandardDirectionOrder(document, status, null, null, judgeAndLegalAdvisor);
+        return buildStandardDirectionOrder(document, null, status, null, null, judgeAndLegalAdvisor);
     }
 
-    private StandardDirectionOrder buildStandardDirectionOrder(DocumentReference document, OrderStatus status,
-                                                               LocalDate dateOfUpload, String uploader,
+    private StandardDirectionOrder buildStandardDirectionOrder(DocumentReference document,
+                                                               DocumentReference lastUploadedDocument,
+                                                               OrderStatus status, LocalDate dateOfUpload,
+                                                               String uploader,
                                                                JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
         return StandardDirectionOrder.builder()
             .orderDoc(document)
+            .lastUploadedOrder(lastUploadedDocument)
             .orderStatus(status)
             .dateOfUpload(dateOfUpload)
             .uploader(uploader)
@@ -336,7 +338,7 @@ class StandardDirectionsOrderServiceTest {
     }
 
     private void mockSealingService() {
-        given(sealingService.sealDocument(PDF_DOC)).willReturn(SEALED_DOC);
+        given(sealingService.sealDocument(WORD_DOC)).willReturn(SEALED_DOC);
     }
 
     private JudgeAndLegalAdvisor buildJudgeAndLegalAdvisor() {
