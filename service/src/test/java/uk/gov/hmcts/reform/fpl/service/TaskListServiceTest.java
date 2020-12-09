@@ -22,6 +22,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
+import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
 import static uk.gov.hmcts.reform.fpl.enums.Event.COURT_SERVICES;
@@ -105,6 +106,7 @@ class TaskListServiceTest {
                 COURT_SERVICES,
                 DOCUMENTS,
                 CASE_NAME,
+                APPLICATION_DOCUMENTS,
                 SUBMIT_APPLICATION)
                 .map(event -> task(event, state))
                 .collect(Collectors.toList());

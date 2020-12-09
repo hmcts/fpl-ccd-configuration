@@ -48,6 +48,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisProceeding;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRisks;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
@@ -87,6 +88,8 @@ public class CaseSubmissionGenerationService
     private final HmctsCourtLookupConfiguration courtLookupConfiguration;
     private final IdamClient idamClient;
     private final RequestData requestData;
+    private final FeatureToggleService featureToggleService;
+    private final CaseSubmissionDocumentAnnexGenerator annexGenerator;
 
     public DocmosisCaseSubmission getTemplateData(final CaseData caseData) {
         DocmosisCaseSubmission.Builder applicationFormBuilder = DocmosisCaseSubmission.builder();
@@ -116,8 +119,10 @@ public class CaseSubmissionGenerationService
             .groundsThresholdReason(caseData.getGrounds() != null
                 ? buildGroundsThresholdReason(caseData.getGrounds().getThresholdReason()) : DEFAULT_STRING)
             .thresholdDetails(getThresholdDetails(caseData.getGrounds()))
-            .annexDocuments(buildDocmosisAnnexDocuments(caseData))
-            .userFullName(idamClient.getUserInfo(requestData.authorisation()).getName());
+            .annexDocuments(
+                featureToggleService.isApplicationDocumentsEventEnabled()
+                    ? annexGenerator.generate(caseData) : buildDocmosisAnnexDocuments(caseData)
+            ).userFullName(idamClient.getUserInfo(requestData.authorisation()).getName());
 
         return applicationFormBuilder.build();
     }
