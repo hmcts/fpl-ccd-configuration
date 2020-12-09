@@ -36,6 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -131,7 +132,7 @@ class ManageDocumentServiceTest {
     @Test
     void shouldNotPopulateHearingListOrC2DocumentListWhenHearingAndC2DocumentsAreNotPresentOnCaseDataAndToggleOn() {
         given(featureToggleService.isApplicationDocumentsEventEnabled()).willReturn(true);
-        
+
         CaseData caseData = CaseData.builder().build();
         ManageDocument expectedManageDocument = ManageDocument.builder()
             .hasHearings(NO.getValue())
@@ -213,13 +214,9 @@ class ManageDocumentServiceTest {
             .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
             .build();
 
-        final IllegalStateException exception = assertThrows(IllegalStateException.class,
-            () -> manageDocumentService.initialiseHearingListAndLabel(caseData,
-                caseData.getManageDocument().isDocumentRelatedToHearing()));
-
-        assertThat(exception.getMessage()).isEqualTo(
-            String.format("Hearing booking with id %s not found", selectedHearingId)
-        );
+        assertThatThrownBy(() -> manageDocumentService.initialiseHearingListAndLabel(caseData, true))
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessage(String.format("Hearing booking with id %s not found", selectedHearingId));
     }
 
     @Test

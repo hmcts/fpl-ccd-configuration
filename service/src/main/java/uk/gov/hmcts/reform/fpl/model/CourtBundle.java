@@ -6,14 +6,10 @@ import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentMetaData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
-import java.time.LocalDateTime;
-
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Builder(toBuilder = true)
 public class CourtBundle extends DocumentMetaData {
     private String hearing;
     private DocumentReference document;
-    private LocalDateTime dateTimeUploaded;
-    private String uploadedBy;
 }
