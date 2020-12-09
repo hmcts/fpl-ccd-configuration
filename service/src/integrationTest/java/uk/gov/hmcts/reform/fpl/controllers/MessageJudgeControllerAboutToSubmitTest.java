@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessageMetaData;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 
@@ -82,20 +81,18 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
     void shouldRemoveTransientFields() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of(
-                "messageJudgeEventData", MessageJudgeEventData.builder()
-                    .c2DynamicList(DynamicList.builder().build())
-                    .relatedDocumentsLabel("Some data")
-                    .judicialMessageNote("Some data")
-                    .judicialMessageMetaData(JudicialMessageMetaData.builder()
-                        .urgency("High urgency")
-                        .sender("ben@fpla.com")
-                        .recipient("John@fpla.com")
-                        .build())
-                    .build(),
                 "hasC2Applications", "some data",
                 "isMessageRegardingC2", "some data",
-                "nextHearingLabel", "some data"
-            ))
+                "c2DynamicList", "some data",
+                "relatedDocumentsLabel", "some data",
+                "nextHearingLabel", "some data",
+                "judicialMessageMetaData", JudicialMessageMetaData.builder()
+                        .recipient("some data")
+                        .sender("some data")
+                        .urgency("some data")
+                    .build(),
+                "judicialMessageNote", "some data"
+                ))
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);

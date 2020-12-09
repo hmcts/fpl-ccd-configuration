@@ -657,6 +657,7 @@ public class CaseData {
     private final List<Element<ApplicationDocument>> applicationDocuments;
     private final String applicationDocumentsToFollowReason;
 
+    @JsonUnwrapped
     @Builder.Default
     private final MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder().build();
     private final List<Element<JudicialMessage>> judicialMessages;

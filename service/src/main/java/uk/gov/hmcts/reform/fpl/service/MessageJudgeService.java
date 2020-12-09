@@ -103,7 +103,6 @@ public class MessageJudgeService {
 
     private boolean hasSelectedC2(CaseData caseData) {
         return hasC2Documents(caseData)
-            && caseData.getMessageJudgeEventData() != null
             && caseData.getMessageJudgeEventData().getC2DynamicList() != null;
     }
 }
