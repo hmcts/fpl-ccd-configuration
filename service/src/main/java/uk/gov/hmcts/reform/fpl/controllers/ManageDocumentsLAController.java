@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ApplicationDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.ManageDocumentLAService;
 import uk.gov.hmcts.reform.fpl.service.ManageDocumentService;
-import uk.gov.hmcts.reform.fpl.service.SupportingEvidenceValidatorService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +45,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFie
 public class ManageDocumentsLAController extends CallbackController {
     private final ManageDocumentLAService manageDocumentLAService;
     private final ManageDocumentService manageDocumentService;
-    private final SupportingEvidenceValidatorService supportingEvidenceValidatorService;
     private final ApplicationDocumentsService applicationDocumentsService;
 
     @PostMapping("/about-to-start")
@@ -89,7 +87,7 @@ public class ManageDocumentsLAController extends CallbackController {
                 supportingEvidence = manageDocumentService.getC2SupportingEvidenceBundle(caseData);
                 break;
             case COURT_BUNDLE:
-                if (caseData.getCourtBundleList().isEmpty()) {
+                if (caseData.getHearingDetails() == null || caseData.getHearingDetails().isEmpty()) {
                     return respond(caseDetails, List.of("There are no hearings to associate a bundle with"));
                 }
                 caseDetails.getData().putAll(manageDocumentLAService.initialiseCourtBundleFields(caseData));
