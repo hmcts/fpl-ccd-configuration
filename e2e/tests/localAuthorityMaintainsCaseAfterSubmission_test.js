@@ -73,7 +73,7 @@ Scenario('local authority adds further evidence and correspondence documents @la
   caseViewPage.selectTab(caseViewPage.tabs.correspondence);
   I.seeInTab(['Correspondence uploaded by local authority 1', 'Document name'], 'Correspondence document');
   I.seeInTab(['Correspondence uploaded by local authority 1', 'Notes'], 'Test notes');
-  I.seeInTab(['Correspondence uploaded by local authority 1', 'Date and time received'], '2 Feb 2020, 11:00:00 AM');
+  I.seeInTab(['Correspondence uploaded by local authority 1', 'Date and time received'], '2 Feb 2020, 11:10:10 AM');
   I.seeInTab(['Correspondence uploaded by local authority 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
   I.seeInTab(['Correspondence uploaded by local authority 1', 'File'], 'mockFile.txt');
   I.seeTextInTab(['Correspondence uploaded by local authority 1', 'Uploaded by']);
