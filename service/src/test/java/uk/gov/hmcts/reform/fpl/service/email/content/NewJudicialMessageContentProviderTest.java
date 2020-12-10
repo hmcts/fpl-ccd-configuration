@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.notify.NewJudicialMessageTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
 
@@ -54,7 +55,7 @@ class NewJudicialMessageContentProviderTest extends AbstractEmailContentProvider
         NewJudicialMessageTemplate template
             = newJudicialMessageContentProvider.buildNewJudicialMessageTemplate(caseData, judicialMessage);
 
-        assertThat(template.getHasUrgency()).isNull();
-        assertThat(template.getUrgency()).isNull();
+        assertThat(template.getHasUrgency()).isEqualTo(NO.getValue());
+        assertThat(template.getUrgency()).isEmpty();
     }
 }

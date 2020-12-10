@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.notify.NewJudicialMessageTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCallout;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
@@ -29,6 +30,9 @@ public class NewJudicialMessageContentProvider extends AbstractEmailContentProvi
         if (judicialMessage.getUrgency() != null) {
             templateBuilder.hasUrgency(YES.getValue());
             templateBuilder.urgency(judicialMessage.getUrgency());
+        } else {
+            templateBuilder.hasUrgency(NO.getValue());
+            templateBuilder.urgency("");
         }
 
         return templateBuilder.build();
