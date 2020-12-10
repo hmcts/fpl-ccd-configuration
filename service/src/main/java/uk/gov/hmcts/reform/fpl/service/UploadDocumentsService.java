@@ -28,7 +28,7 @@ public class UploadDocumentsService {
 
     public Map<String, Object> updateCaseDocuments(CaseData caseData, CaseData caseDataBefore) {
         List<Element<DocumentSocialWorkOther>> otherSocialWorkDocuments = setUpdatedByAndDateAndTimeOnDocuments(
-                caseData.getOtherSocialWorkDocuments(), caseDataBefore.getOtherSocialWorkDocuments());
+            caseData.getOtherSocialWorkDocuments(), caseDataBefore.getOtherSocialWorkDocuments());
 
         Document socialWorkChronologyDocument = setUpdatedByAndDateAndTimeOnDocuments(
             caseData.getSocialWorkChronologyDocument(), caseDataBefore.getSocialWorkChronologyDocument());

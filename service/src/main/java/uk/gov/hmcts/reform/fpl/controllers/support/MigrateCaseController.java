@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -36,38 +37,66 @@ public class MigrateCaseController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Object migrationId = caseDetails.getData().get(MIGRATION_ID_KEY);
 
-        if ("FPLA-2469".equals(migrationId)) {
-            run2469(caseDetails);
+
+        if ("FPLA-2491".equals(migrationId)) {
+            run2491(caseDetails);
+        }
+        if ("FPLA-2501".equals(migrationId)) {
+            run2501(caseDetails);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
     }
 
-
-    private void run2469(CaseDetails caseDetails) {
+    private void run2491(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
 
-        if ("SN20C50010".equals(caseData.getFamilyManCaseNumber())) {
+        if ("SN20C50018".equals(caseData.getFamilyManCaseNumber())) {
             List<Element<HearingBooking>> hearings = caseData.getHearingDetails();
 
-            int hearingIndex = 0;
-            LocalDate expectedHearingDate = LocalDate.of(2020, Month.OCTOBER, 14);
+            LocalDate expectedHearing1Date = LocalDate.of(2021, Month.FEBRUARY, 5);
+            LocalDate expectedHearing2Date = LocalDate.of(2021, Month.MARCH, 4);
 
-            if (hearings.size() < hearingIndex + 1) {
-                throw new IllegalArgumentException(format("Case %s has %s hearing(s), expected at least %s ",
-                    caseDetails.getId(), hearings.size(), hearingIndex + 1));
+            if (hearings.size() < 5) {
+                throw new IllegalArgumentException(
+                    format("Case has %s hearing(s), expected at least %s", hearings.size(), 5));
             }
 
-            LocalDate hearingDate = hearings.get(hearingIndex).getValue().getStartDate().toLocalDate();
+            Element<HearingBooking> hearing1 = hearings.get(3);
+            Element<HearingBooking> hearing2 = hearings.get(4);
 
-            if (!expectedHearingDate.equals(hearingDate)) {
-                throw new IllegalArgumentException(format("Invalid hearing date %s", hearingDate));
+            if (!expectedHearing1Date.equals(hearing1.getValue().getStartDate().toLocalDate())) {
+                throw new IllegalArgumentException(
+                    format("Invalid hearing date %s", hearing1.getValue().getStartDate().toLocalDate()));
             }
 
-            hearings.remove(hearingIndex);
+            if (!expectedHearing2Date.equals(hearing2.getValue().getStartDate().toLocalDate())) {
+                throw new IllegalArgumentException(
+                    format("Invalid hearing date %s", hearing2.getValue().getStartDate().toLocalDate()));
+            }
+
+            if (!HearingType.FURTHER_CASE_MANAGEMENT.equals(hearing1.getValue().getType())) {
+                throw new IllegalArgumentException(
+                    format("Invalid hearing type %s", hearing1.getValue().getType()));
+            }
+
+            if (!HearingType.ISSUE_RESOLUTION.equals(hearing2.getValue().getType())) {
+                throw new IllegalArgumentException(
+                    format("Invalid hearing type %s", hearing2.getValue().getType()));
+            }
+
+            hearings.remove(hearing2);
+            hearings.remove(hearing1);
 
             caseDetails.getData().put("hearingDetails", hearings);
         }
     }
+
+    private void run2501(CaseDetails caseDetails) {
+        caseDetails.getData().remove("respondents");
+        caseDetails.getData().remove("children");
+        caseDetails.getData().remove("applicant");
+    }
+
 }
