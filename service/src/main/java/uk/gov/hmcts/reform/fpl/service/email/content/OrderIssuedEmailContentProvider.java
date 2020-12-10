@@ -38,7 +38,7 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
     public OrderIssuedNotifyData getNotifyDataWithoutCaseUrl(final CaseData caseData,
                                                              final DocumentReference orderDocument,
                                                              final IssuedOrderType issuedOrderType) {
-        return commonOrderIssuedNotifyData(caseData, issuedOrderType)
+        return commonOrderIssuedNotifyData(caseData, issuedOrderType).toBuilder()
             .documentLink(linkToAttachedDocument(orderDocument))
             .build();
     }
@@ -46,20 +46,10 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
     public OrderIssuedNotifyData getNotifyDataWithCaseUrl(final CaseData caseData,
                                                           final String binaryUrl,
                                                           final IssuedOrderType issuedOrderType) {
-        return commonOrderIssuedNotifyData(caseData, issuedOrderType)
+        return commonOrderIssuedNotifyData(caseData, issuedOrderType).toBuilder()
             .documentLink(concatUrlAndMostRecentUploadedDocumentPath(xuiBaseUrl, binaryUrl))
             .caseUrl(getCaseUrl(caseData.getId(), "OrdersTab"))
             .build();
-    }
-
-    public OrderIssuedNotifyData.OrderIssuedNotifyDataBuilder<?, ?> commonOrderIssuedNotifyData(
-        final CaseData caseData,
-        final IssuedOrderType issuedOrderType) {
-        return OrderIssuedNotifyData.builder()
-            .respondentLastName(getFirstRespondentLastName(caseData))
-            .orderType(getTypeOfOrder(caseData, issuedOrderType))
-            .courtName(config.getCourt(caseData.getCaseLocalAuthority()).getName())
-            .callout((issuedOrderType != NOTICE_OF_PLACEMENT_ORDER) ? buildCallout(caseData) : "");
     }
 
     public AllocatedJudgeTemplateForGeneratedOrder buildAllocatedJudgeOrderIssuedNotification(CaseData caseData) {
@@ -73,6 +63,17 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
             .respondentLastName(getFirstRespondentLastName(caseData))
             .judgeTitle(judge.getJudgeOrMagistrateTitle())
             .judgeName(judge.getJudgeName())
+            .build();
+    }
+
+    private OrderIssuedNotifyData commonOrderIssuedNotifyData(
+        final CaseData caseData,
+        final IssuedOrderType issuedOrderType) {
+        return OrderIssuedNotifyData.builder()
+            .respondentLastName(getFirstRespondentLastName(caseData))
+            .orderType(getTypeOfOrder(caseData, issuedOrderType))
+            .courtName(config.getCourt(caseData.getCaseLocalAuthority()).getName())
+            .callout((issuedOrderType != NOTICE_OF_PLACEMENT_ORDER) ? buildCallout(caseData) : "")
             .build();
     }
 
