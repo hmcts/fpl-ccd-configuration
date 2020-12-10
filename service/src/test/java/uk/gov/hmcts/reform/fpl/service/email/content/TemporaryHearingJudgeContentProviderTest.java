@@ -111,7 +111,7 @@ class TemporaryHearingJudgeContentProviderTest extends AbstractEmailContentProvi
             temporaryHearingJudgeContentProvider.buildNotificationParameters(caseData, hearingBooking);
 
         assertThat(template.getJudgeTitle()).isEqualTo("Justice of the Peace");
-        assertThat(template.getJudgeName()).isEqualTo("");
+        assertThat(template.getJudgeName()).isEmpty();
     }
 
     @Test
@@ -133,7 +133,7 @@ class TemporaryHearingJudgeContentProviderTest extends AbstractEmailContentProvi
         TemporaryHearingJudgeTemplate template =
             temporaryHearingJudgeContentProvider.buildNotificationParameters(caseData, hearingBooking);
 
-        assertThat(template.getJudgeTitle()).isEqualTo("");
+        assertThat(template.getJudgeTitle()).isEmpty();
         assertThat(template.getJudgeName()).isEqualTo("Paul Hastings (JP)");
     }
 
