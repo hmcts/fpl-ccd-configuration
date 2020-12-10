@@ -239,7 +239,7 @@
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 5,
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-hearings/validate-hearing-dates/mid-event",
-    "PageShowCondition": "hearingOption=\"NEW_HEARING\" OR hearingOption=\"EDIT_HEARING\" OR hearingOption=\"RE_LIST_HEARING\" OR hearingOption=\"\" OR hearingReListOption=\"RE_LIST_NOW\""
+    "PageShowCondition": "hasExistingHearings!=\"Yes\" OR hearingOption=\"NEW_HEARING\" OR hearingOption=\"EDIT_HEARING\" OR hearingOption=\"RE_LIST_HEARING\" OR hearingReListOption=\"RE_LIST_NOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -430,7 +430,7 @@
     "PageID": "JudgeInformation",
     "PageDisplayOrder": 7,
     "ShowSummaryChangeOption": "Y",
-    "PageShowCondition": "hearingOption=\"NEW_HEARING\" OR hearingOption=\"EDIT_HEARING\" OR hearingOption=\"RE_LIST_HEARING\" OR hearingOption=\"\" OR hearingReListOption=\"RE_LIST_NOW\""
+    "PageShowCondition": "hasExistingHearings!=\"Yes\" OR hearingOption=\"NEW_HEARING\" OR hearingOption=\"EDIT_HEARING\" OR hearingOption=\"RE_LIST_HEARING\" OR hearingReListOption=\"RE_LIST_NOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -442,7 +442,7 @@
     "PageID": "SendNoticeOfHearing",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 8,
-    "PageShowCondition": "hearingOption=\"NEW_HEARING\" OR hearingOption=\"EDIT_HEARING\" OR hearingOption=\"RE_LIST_HEARING\" OR hearingOption=\"\" OR hearingReListOption=\"RE_LIST_NOW\""
+    "PageShowCondition": "hasExistingHearings!=\"Yes\" OR hearingOption=\"NEW_HEARING\" OR hearingOption=\"EDIT_HEARING\" OR hearingOption=\"RE_LIST_HEARING\" OR hearingReListOption=\"RE_LIST_NOW\""
   },
   {
     "LiveFrom": "01/01/2017",
