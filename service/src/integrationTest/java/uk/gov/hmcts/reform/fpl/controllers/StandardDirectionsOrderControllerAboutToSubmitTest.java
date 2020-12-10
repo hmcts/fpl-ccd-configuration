@@ -136,7 +136,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        assertThat(caseData.getStandardDirectionOrder()).usingRecursiveComparison().isEqualTo(expectedOrder());
+        assertThat(caseData.getStandardDirectionOrder()).isEqualTo(expectedOrder());
         assertThat(caseData.getJudgeAndLegalAdvisor()).isNull();
         assertThatDirectionsArePlacedBackIntoCaseDetailsWithValues(caseData);
         assertThat(filename.getValue()).isEqualTo(SEALED_ORDER_FILE_NAME);
@@ -225,8 +225,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
         DocumentReference noticeOfProceedingBundle = responseCaseData.getNoticeOfProceedingsBundle().get(0).getValue()
             .getDocument();
 
-        assertThat(responseCaseData.getStandardDirectionOrder().getLastUploadedOrder())
-            .usingRecursiveComparison().isEqualTo(document);
+        assertThat(responseCaseData.getStandardDirectionOrder().getLastUploadedOrder()).isEqualTo(document);
         assertThat(responseCaseData.getNoticeOfProceedingsBundle()).hasSize(1);
         assertThat(noticeOfProceedingBundle.getUrl()).isEqualTo(DOCUMENT.links.self.href);
         assertThat(noticeOfProceedingBundle.getFilename()).isEqualTo(DOCUMENT.originalDocumentName);
