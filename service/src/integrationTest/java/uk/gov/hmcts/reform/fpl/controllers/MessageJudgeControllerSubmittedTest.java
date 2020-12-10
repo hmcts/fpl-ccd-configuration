@@ -15,8 +15,6 @@ import uk.gov.service.notify.NotificationClientException;
 import java.util.List;
 import java.util.Map;
 
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_JUDICIAL_MESSAGE_ADDED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -41,6 +39,7 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
             .recipient(JUDICIAL_MESSAGE_RECIPIENT)
             .sender("sender@fpla.com")
             .urgency("High")
+            .note("Some note")
             .build();
 
         CaseDetails caseDetails = CaseDetails.builder()
@@ -56,15 +55,24 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
                         element(latestJudicialMessage),
                         element(JudicialMessage.builder()
                             .recipient("do_not_send@fpla.com")
-                            .sender("sender@fpla.com")
+                            .sender("someOthersender@fpla.com")
                             .urgency("High")
                             .build()))
             )).build();
 
         postSubmittedEvent(caseDetails);
 
+        Map<String, Object> expectedData = Map.of(
+            "respondentLastName", "Davidson",
+            "caseUrl", "http://fake-url/cases/case-details/12345#JudicialMessagesTab",
+            "callout", "^Davidson",
+            "sender", "sender@fpla.com",
+            "urgency", "High",
+            "hasUrgency", "Yes",
+            "note", "Some note"
+        );
+
         verify(notificationClient).sendEmail(
-            eq(NEW_JUDICIAL_MESSAGE_ADDED_TEMPLATE), eq(JUDICIAL_MESSAGE_RECIPIENT),
-            anyMap(), eq("localhost/12345"));
+            NEW_JUDICIAL_MESSAGE_ADDED_TEMPLATE, JUDICIAL_MESSAGE_RECIPIENT, expectedData, "localhost/12345");
     }
 }

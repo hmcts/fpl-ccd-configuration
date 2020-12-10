@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.notify.NewJudicialMessageTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
-import uk.gov.hmcts.reform.fpl.service.email.content.NewJudicialMessageContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.JudicialMessageContentProvider;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_JUDICIAL_MESSAGE_ADDED_TEMPLATE;
 
@@ -17,7 +17,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_JUDICIAL_MESSAGE_ADDED
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class NewJudicialMessageEventHandler {
     private final NotificationService notificationService;
-    private final NewJudicialMessageContentProvider newJudicialMessageContentProvider;
+    private final JudicialMessageContentProvider newJudicialMessageContentProvider;
 
     @EventListener
     public void notifyJudicialMessageRecipient(NewJudicialMessageEvent event) {

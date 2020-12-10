@@ -12,10 +12,10 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
 
-@ContextConfiguration(classes = {NewJudicialMessageContentProvider.class})
-class NewJudicialMessageContentProviderTest extends AbstractEmailContentProviderTest {
+@ContextConfiguration(classes = {JudicialMessageContentProvider.class})
+class JudicialMessageContentProviderTest extends AbstractEmailContentProviderTest {
     @Autowired
-    private NewJudicialMessageContentProvider newJudicialMessageContentProvider;
+    private JudicialMessageContentProvider newJudicialMessageContentProvider;
 
     @Test
     void createTemplateWithExpectedParameters() {
@@ -43,7 +43,7 @@ class NewJudicialMessageContentProviderTest extends AbstractEmailContentProvider
     }
 
     @Test
-    void shouldNotSetUrgencyWhenNotPresentOnJudicialMessageMetaData() {
+    void shouldSetUrgencyToNoWhenNotPresentOnJudicialMessageMetaData() {
         CaseData caseData = populatedCaseData();
 
         JudicialMessage judicialMessage = JudicialMessage.builder()
@@ -52,10 +52,42 @@ class NewJudicialMessageContentProviderTest extends AbstractEmailContentProvider
             .sender("robertDunlop@fpla.com")
             .build();
 
-        NewJudicialMessageTemplate template
-            = newJudicialMessageContentProvider.buildNewJudicialMessageTemplate(caseData, judicialMessage);
+        NewJudicialMessageTemplate expectedTemplate = NewJudicialMessageTemplate.builder()
+            .sender("robertDunlop@fpla.com")
+            .note("Please see latest C2")
+            .hasUrgency(NO.getValue())
+            .urgency("")
+            .callout("^Smith, 12345, hearing 1 Jan 2020")
+            .caseUrl(caseUrl(CASE_REFERENCE, "JudicialMessagesTab"))
+            .respondentLastName("Smith")
+            .build();
 
-        assertThat(template.getHasUrgency()).isEqualTo(NO.getValue());
-        assertThat(template.getUrgency()).isEmpty();
+        assertThat(newJudicialMessageContentProvider.buildNewJudicialMessageTemplate(caseData, judicialMessage))
+            .isEqualTo(expectedTemplate);
+    }
+
+    @Test
+    void shouldSetUrgencyToNoWhenNotUrgencyDefinedAsEmptyStringOnJudicialMessageMetaData() {
+        CaseData caseData = populatedCaseData();
+
+        JudicialMessage judicialMessage = JudicialMessage.builder()
+            .note("Please see latest C2")
+            .recipient("paulStuart@fpla.com")
+            .sender("robertDunlop@fpla.com")
+            .urgency("")
+            .build();
+
+        NewJudicialMessageTemplate expectedTemplate = NewJudicialMessageTemplate.builder()
+            .sender("robertDunlop@fpla.com")
+            .note("Please see latest C2")
+            .hasUrgency(NO.getValue())
+            .urgency("")
+            .callout("^Smith, 12345, hearing 1 Jan 2020")
+            .caseUrl(caseUrl(CASE_REFERENCE, "JudicialMessagesTab"))
+            .respondentLastName("Smith")
+            .build();
+
+        assertThat(newJudicialMessageContentProvider.buildNewJudicialMessageTemplate(caseData, judicialMessage))
+            .isEqualTo(expectedTemplate);
     }
 }

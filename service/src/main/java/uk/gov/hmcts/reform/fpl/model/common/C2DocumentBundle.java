@@ -6,9 +6,11 @@ import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -60,30 +62,27 @@ public class C2DocumentBundle {
 
     @JsonIgnore
     private String getSupportingEvidenceFileNames() {
-        StringBuilder stringBuilder = new StringBuilder();
-
         if (supportingEvidenceBundle != null) {
-            supportingEvidenceBundle.stream()
+            return supportingEvidenceBundle.stream()
                 .map(Element::getValue)
                 .map(SupportingEvidenceBundle::getDocument)
-                .forEach(documentReference ->
-                    stringBuilder.append(String.format("%s", documentReference.getFilename())).append("\n"));
+                .map(DocumentReference::getFilename)
+                .collect(Collectors.joining("\n"));
         }
 
-        return stringBuilder.toString().trim();
+        return "";
     }
 
     @JsonIgnore
     private List<Element<DocumentReference>> getSupportingEvidenceBundleReferences() {
-        List<Element<DocumentReference>> documentReferenceList = new ArrayList<>();
-
         if (supportingEvidenceBundle != null) {
-            supportingEvidenceBundle.stream()
+            return supportingEvidenceBundle.stream()
                 .map(Element::getValue)
                 .map(SupportingEvidenceBundle::getDocument)
-                .forEach(documentReference -> documentReferenceList.add(element(documentReference)));
+                .map(ElementUtils::element)
+                .collect(Collectors.toList());
         }
 
-        return documentReferenceList;
+        return List.of();
     }
 }

@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.notify.NewJudicialMessageTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
+import static org.apache.logging.log4j.util.Strings.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCallout;
@@ -15,7 +16,7 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class NewJudicialMessageContentProvider extends AbstractEmailContentProvider {
+public class JudicialMessageContentProvider extends AbstractEmailContentProvider {
 
     public NewJudicialMessageTemplate buildNewJudicialMessageTemplate(CaseData caseData,
                                                                       JudicialMessage judicialMessage) {
@@ -27,7 +28,7 @@ public class NewJudicialMessageContentProvider extends AbstractEmailContentProvi
             .note(judicialMessage.getNote())
             .caseUrl(getCaseUrl(caseData.getId(), "JudicialMessagesTab"));
 
-        if (judicialMessage.getUrgency() != null) {
+        if (isNotEmpty(judicialMessage.getUrgency())) {
             templateBuilder.hasUrgency(YES.getValue());
             templateBuilder.urgency(judicialMessage.getUrgency());
         } else {

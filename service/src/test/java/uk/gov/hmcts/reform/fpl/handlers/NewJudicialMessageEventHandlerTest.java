@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.notify.NewJudicialMessageTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
-import uk.gov.hmcts.reform.fpl.service.email.content.NewJudicialMessageContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.JudicialMessageContentProvider;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -23,7 +23,7 @@ class NewJudicialMessageEventHandlerTest {
     private NotificationService notificationService;
 
     @Mock
-    private NewJudicialMessageContentProvider newJudicialMessageContentProvider;
+    private JudicialMessageContentProvider newJudicialMessageContentProvider;
 
     @InjectMocks
     private NewJudicialMessageEventHandler newJudicialMessageEventHandler;
