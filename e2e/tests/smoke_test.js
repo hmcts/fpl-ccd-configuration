@@ -11,3 +11,4 @@ Scenario('Sign in as local authority and create a case', async ({I, caseListPage
   await caseListPage.searchForCasesWithName(caseName, 'Open');
   await I.seeCaseInSearchResult(caseId);
 });
+// Dummy comment
