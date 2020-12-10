@@ -7,8 +7,7 @@
     "TabLabel": "Judicial messages",
     "TabDisplayOrder": 13,
     "CaseFieldID": "messageJudgeLegalAdviserLink",
-    "TabFieldDisplayOrder": 1,
-    "TabShowCondition": "judicialMessages=\"*\""
+    "TabFieldDisplayOrder": 1
   },
   {
     "LiveFrom": "01/01/2017",
