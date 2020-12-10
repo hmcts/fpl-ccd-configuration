@@ -55,27 +55,35 @@ public class ReShareCaseController {
                 List.of(
                     of("match", of("state", "Deleted")),
                     of("exists", of("field", "supplementary_data"))
-                )
-            )))
+                ),
+                "must", of("match", of("data.caseLocalAuthority", "KBC")))
+            ))
             .toString();
+
+        log.info("Access migration query: {}", query);
 
         final List<CaseDetails> casesDetails = coreCaseDataService.searchCases(CASE_TYPE, query);
 
-        log.info("Number of cases to be migrated: {}", casesDetails.size());
+        log.info("Access migration - number of cases to be migrated: {}", casesDetails.size());
 
-        for (CaseDetails casesDetail : casesDetails) {
+        for (int i = 0; i < casesDetails.size(); i++) {
+            CaseDetails caseDetail = casesDetails.get(i);
             try {
-                reShareCases(casesDetail);
+                log.info("Access migration - migrating access for case {}. ({}/{})",
+                    caseDetail.getId(), i + 1, casesDetails.size());
+
+                reShareCases(caseDetail);
             } catch (Exception e) {
-                log.error("Access migration failed for case {}", casesDetail.getId(), e);
+                log.error("Access migration failed for case {}", caseDetail.getId(), e);
             }
         }
+
+        log.info("Access migration finished");
     }
 
-    private void reShareCases(CaseDetails caseDetails) throws Exception {
+    private void reShareCases(CaseDetails caseDetails) throws InterruptedException {
         String caseId = caseDetails.getId().toString();
         final String serviceToken = authTokenGenerator.generate();
-        log.info("Migrating access for case {}", caseId);
 
         OrganisationPolicy policy = mapper
             .convertValue(caseDetails.getData().get("localAuthorityPolicy"), OrganisationPolicy.class);
@@ -88,11 +96,11 @@ public class ReShareCaseController {
         CaseAssignedUserRolesResource originalUserRoles = caseAccessDataStoreApi
             .getUserRoles(requestData.authorisation(), serviceToken, List.of(caseId));
 
-        log.info("Original access control: {}", originalUserRoles.toString());
+        log.info("Access migration - Original access control: {}", originalUserRoles.toString());
 
         CaseAssignedUserRolesResource filtered = filterRoles(originalUserRoles);
 
-        log.info("Filtered access control: {}", filtered.toString());
+        log.info("Access migration - Filtered access control: {}", filtered.toString());
 
         if (isEmpty(filtered.getCaseAssignedUserRoles())) {
             log.warn("Access migration skipped for {} - no roles to be migrate", caseId);
@@ -122,7 +130,7 @@ public class ReShareCaseController {
             () -> caseAccessDataStoreApi.addCaseUserRoles(requestData.authorisation(), serviceToken, rolesToBeAdded));
     }
 
-    private void retry(String caseId, Runnable runnable) throws Exception {
+    private void retry(String caseId, Runnable runnable) throws InterruptedException {
         int tryNumber = 0;
         int maxTries = 3;
         while (true) {
@@ -131,21 +139,13 @@ public class ReShareCaseController {
                 break;
             } catch (Exception e) {
                 tryNumber++;
-                log.warn("Grant roles try {} failed for {}", tryNumber, caseId);
+                log.warn("Access migration - Grant roles try {} failed for {}", tryNumber, caseId);
                 if (tryNumber >= maxTries) {
                     throw e;
                 } else {
-                    sleep();
+                    Thread.sleep(3000);
                 }
             }
-        }
-    }
-
-    private void sleep() throws Exception {
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException ex) {
-            throw ex;
         }
     }
 
