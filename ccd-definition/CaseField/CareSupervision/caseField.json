@@ -1340,5 +1340,14 @@
     "FieldTypeParameter": "CourtBundleV2",
     "Label": "Court bundle",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documentCollectionExampleField",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Document",
+    "Label": "Document",
+    "SecurityClassification": "Public"
   }
 ]
