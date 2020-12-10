@@ -1559,5 +1559,12 @@
     "CaseFieldID": "documentCollectionExampleField",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "documentExampleField",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "R"
   }
 ]

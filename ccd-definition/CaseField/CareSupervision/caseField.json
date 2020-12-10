@@ -1347,7 +1347,15 @@
     "ID": "documentCollectionExampleField",
     "FieldType": "Collection",
     "FieldTypeParameter": "Document",
-    "Label": "Document",
+    "Label": "Documents in a collection",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documentExampleField",
+    "FieldType": "Document",
+    "Label": "Document not in a collection",
     "SecurityClassification": "Public"
   }
 ]
