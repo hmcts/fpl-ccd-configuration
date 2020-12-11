@@ -49,4 +49,5 @@ public final class NotifyTemplates {
     public static final String TEMP_JUDGE_ALLOCATED_TO_HEARING_TEMPLATE = "eeb3a6f5-af49-48aa-a52a-a29a7be2bc38";
     public static final String CMO_REMOVAL_NOTIFICATION_TEMPLATE = "cd114602-4343-42ce-ab60-1be88b797cd2";
     public static final String SDO_REMOVAL_NOTIFICATION_TEMPLATE = "8f66e70f-e328-4a22-aa17-f52f44e69d45";
+    public static final String NEW_JUDICIAL_MESSAGE_ADDED_TEMPLATE = "584ec49a-977d-4c8c-97f4-c619c12b3ec5";
 }
