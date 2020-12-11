@@ -218,8 +218,10 @@ class MessageJudgeServiceTest {
             .build();
 
         List<Element<JudicialMessage>> updatedMessages = messageJudgeService.addNewJudicialMessage(caseData);
-        List<Element<DocumentReference>> relatedDocuments = updatedMessages.get(0).getValue().getRelatedDocuments();
+        JudicialMessage newMessage = updatedMessages.get(0).getValue();
+        List<Element<DocumentReference>> relatedDocuments = newMessage.getRelatedDocuments();
 
+        assertThat(newMessage.getRelatedC2Identifier()).isEqualTo(SELECTED_C2_ID);
         assertThat(relatedDocuments.get(0).getValue()).isEqualTo(mainC2DocumentReference);
         assertThat(relatedDocuments.get(1).getValue()).isEqualTo(supportingC2DocumentReference);
     }

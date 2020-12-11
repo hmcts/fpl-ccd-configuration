@@ -102,5 +102,14 @@
     "SecurityClassification": "Public",
     "HintText": "Message subject comprises application type and urgency, if relevant, and date requested.",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "judicialMessageReply",
+    "Label": " ",
+    "FieldType": "JudicialMessage",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]

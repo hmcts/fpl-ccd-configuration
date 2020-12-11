@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.model;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -32,6 +33,8 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTE
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -905,6 +908,52 @@ class CaseDataTest {
         }
     }
 
+    @Nested
+    class BuildJudicialMessageList {
+        @Test
+        void shouldBuildDynamicJudicialMessageListFromJudicialMessages() {
+            UUID c2Id = randomUUID();
+
+            List<Element<JudicialMessage>> judicialMessages = List.of(
+                element(buildJudicialMessage("Low", "11 November 2020", c2Id)),
+                element(buildJudicialMessage("Medium", "12 November 2020", c2Id)),
+                element(buildJudicialMessage("High", "13 November 2020", c2Id)));
+
+            CaseData caseData = CaseData.builder().judicialMessages(judicialMessages).build();
+            DynamicList expectedDynamicList = ElementUtils
+                .asDynamicList(judicialMessages, null, JudicialMessage::toLabel);
+
+            assertThat(caseData.buildJudicialMessageDynamicList())
+                .isEqualTo(expectedDynamicList);
+        }
+
+        @Test
+        void shouldBuildDynamicJudicialMessageListWithSelectorPropertyFromJudicialMessage() {
+            UUID selectedMessageId = randomUUID();
+            UUID c2Id = randomUUID();
+
+            List<Element<JudicialMessage>> judicialMessages = List.of(
+                element(buildJudicialMessage("Low", "11 November 2020", c2Id)),
+                element(buildJudicialMessage("Medium", "12 November 2020", c2Id)),
+                element(selectedMessageId, buildJudicialMessage("High", "13 November 2020", c2Id))
+            );
+
+            CaseData caseData = CaseData.builder().judicialMessages(judicialMessages).build();
+            DynamicList expectedDynamicList = ElementUtils
+                .asDynamicList(judicialMessages, selectedMessageId, JudicialMessage::toLabel);
+
+            assertThat(caseData.buildJudicialMessageDynamicList(selectedMessageId))
+                .isEqualTo(expectedDynamicList);
+        }
+    }
+
+    private JudicialMessage buildJudicialMessage(String urgency, String dateSent, UUID c2Id) {
+        return JudicialMessage.builder()
+            .urgency(urgency)
+            .dateSent(dateSent)
+            .relatedC2Identifier(c2Id)
+            .build();
+    }
 
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {
         return C2DocumentBundle.builder().uploadedDateTime(dateTime.toString()).build();

@@ -33,24 +33,17 @@ public class MessageJudgeService {
     private final IdentityService identityService;
     private final ObjectMapper mapper;
 
-    // Needs renamed, placeholder for now
-    public Map<String, Object> aboutToStart(CaseData caseData) {
-        Map<String, Object> data = new HashMap<>();
-
-        if (hasJudicialMessages(caseData)) {
-            data.put("hasJudicialMessages", YES.getValue());
-            data.put("judicialMessageDynamicList", caseData);
-        }
-
-        return data;
-    }
-
     public Map<String, Object> initialiseCaseFields(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
 
         if (hasC2Documents(caseData)) {
             data.put("hasC2Applications", YES.getValue());
             data.put("c2DynamicList", caseData.buildC2DocumentDynamicList());
+        }
+
+        if (hasJudicialMessages(caseData)) {
+            data.put("hasJudicialMessages", YES.getValue());
+            data.put("judicialMessageDynamicList", caseData.buildJudicialMessageDynamicList());
         }
 
         return data;
@@ -93,7 +86,7 @@ public class MessageJudgeService {
             C2DocumentBundle selectedC2DocumentBundle = caseData.getC2DocumentBundleByUUID(selectedC2Id);
 
             judicialMessageBuilder.relatedDocuments(selectedC2DocumentBundle.getAllC2DocumentReferences());
-            judicialMessageBuilder.isRelatedToC2(YES);
+            judicialMessageBuilder.relatedC2Identifier(selectedC2Id);
         }
 
         judicialMessages.add(element(identityService.generateId(), judicialMessageBuilder.build()));

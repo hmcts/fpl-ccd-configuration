@@ -9,7 +9,7 @@
     "PageID": "messageJudgeOptions",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 1,
-    "PageShowCondition": "hasJudicialMessages=\"DO_NOT_SHOW\""
+    "FieldShowCondition": "messageJudgeOption=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -17,11 +17,11 @@
     "CaseEventID": "messageJudgeOrLegalAdviser",
     "CaseFieldID": "messageJudgeOption",
     "PageFieldDisplayOrder": 2,
-    "DisplayContext": "READONLY",
+    "DisplayContext": "MANDATORY",
     "PageID": "messageJudgeOptions",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 1,
-    "FieldShowCondition": "hasJudicialMessages=\"Yes\""
+    "PageShowCondition": "hasJudicialMessages=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -29,7 +29,7 @@
     "CaseEventID": "messageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageDynamicList",
     "PageFieldDisplayOrder": 3,
-    "DisplayContext": "READONLY",
+    "DisplayContext": "MANDATORY",
     "PageID": "messageJudgeOptions",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 1,
@@ -42,7 +42,7 @@
     "CaseFieldID": "hasC2Applications",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
-    "PageID": "JudicialMessageMetaData",
+    "PageID": "NewMessageMetaData",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 2,
     "FieldShowCondition": "isMessageRegardingC2=\"DO_NOT_SHOW\"",
@@ -55,9 +55,10 @@
     "CaseFieldID": "isMessageRegardingC2",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
-    "PageID": "JudicialMessageMetaData",
+    "PageID": "NewMessageMetaData",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 2,
+    "PageShowCondition": "messageJudgeOption=\"NEW_MESSAGE\"",
     "FieldShowCondition": "hasC2Applications=\"Yes\""
   },
   {
@@ -67,7 +68,7 @@
     "CaseFieldID": "c2DynamicList",
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
-    "PageID": "JudicialMessageMetaData",
+    "PageID": "NewMessageMetaData",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 2,
     "FieldShowCondition": "isMessageRegardingC2=\"Yes\""
@@ -79,7 +80,7 @@
     "CaseFieldID": "judicialMessageMetaData",
     "PageFieldDisplayOrder": 4,
     "DisplayContext": "COMPLEX",
-    "PageID": "JudicialMessageMetaData",
+    "PageID": "NewMessageMetaData",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 2
   },
@@ -90,7 +91,7 @@
     "CaseFieldID": "nextHearingLabel",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
-    "PageID": "JudicialMessageNote",
+    "PageID": "NewMessageNote",
     "ShowSummaryChangeOption": "N",
     "PageDisplayOrder": 3
   },
@@ -101,20 +102,32 @@
     "CaseFieldID": "relatedDocumentsLabel",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
-    "PageID": "JudicialMessageNote",
+    "PageID": "NewMessageNote",
+    "ShowSummaryChangeOption": "N",
+    "PageDisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "messageJudgeOrLegalAdviser",
+    "CaseFieldID": "judicialMessageReply",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "COMPLEX",
+    "PageID": "NewMessageNote",
     "ShowSummaryChangeOption": "N",
     "PageDisplayOrder": 3,
-    "FieldShowCondition": "c2DynamicList=\"*\""
+    "FieldShowCondition": "messageJudgeOption=\"REPLY\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "messageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageNote",
-    "PageFieldDisplayOrder": 3,
+    "PageFieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY",
-    "PageID": "JudicialMessageNote",
+    "PageID": "NewMessageNote",
     "ShowSummaryChangeOption": "Y",
-    "PageDisplayOrder": 3
+    "PageDisplayOrder": 3,
+    "FieldShowCondition": "messageJudgeOption=\"NEW_MESSAGE\""
   }
 ]

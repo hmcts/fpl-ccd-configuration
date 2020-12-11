@@ -663,14 +663,12 @@ public class CaseData {
     private final List<Element<JudicialMessage>> judicialMessages;
 
     public DynamicList buildJudicialMessageDynamicList(UUID selected) {
-        IncrementalInteger i = new IncrementalInteger(1);
-        return asDynamicList(c2DocumentBundle, selected, documentBundle -> documentBundle.toLabel(i.getAndIncrement()));
+        return asDynamicList(judicialMessages, selected, JudicialMessage::toLabel);
     }
 
     public DynamicList buildJudicialMessageDynamicList() {
         return buildJudicialMessageDynamicList(null);
     }
-
 
     public List<Element<JudicialMessage>> getJudicialMessages() {
         return defaultIfNull(judicialMessages, new ArrayList<>());
