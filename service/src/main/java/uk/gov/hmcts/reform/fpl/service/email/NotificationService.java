@@ -12,6 +12,7 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.utils.MaskHelper.maskEmail;
 
@@ -21,14 +22,17 @@ public class NotificationService {
     private final NotificationClient notificationClient;
     private final ObjectMapper mapper;
     private final String environment;
+    private final NotificationResponsePostProcessor notificationResponsePostProcessor;
 
     @Autowired
     public NotificationService(NotificationClient notificationClient,
                                ObjectMapper mapper,
-                               @Value("${fpl.env}") String environment) {
+                               @Value("${fpl.env}") String environment,
+                               NotificationResponsePostProcessor notificationResponsePostProcessor) {
         this.notificationClient = notificationClient;
         this.mapper = mapper;
         this.environment = environment;
+        this.notificationResponsePostProcessor = notificationResponsePostProcessor;
     }
 
     public void sendEmail(String templateId, String recipient, NotifyData data, String reference) {
@@ -36,8 +40,9 @@ public class NotificationService {
         });
         log.debug("Sending email (with template id: {}) to {}", templateId, maskEmail(recipient));
         try {
-            notificationClient
-                .sendEmail(templateId, recipient, personalisation, environment + "/" + reference);
+            Optional.ofNullable(notificationClient
+                .sendEmail(templateId, recipient, personalisation, environment + "/" + reference))
+                .ifPresent(sentEmail -> notificationResponsePostProcessor.process(sentEmail));
         } catch (NotificationClientException e) {
             log.error("Failed to send email (with template id: {}) to {}", templateId, maskEmail(recipient), e);
         }

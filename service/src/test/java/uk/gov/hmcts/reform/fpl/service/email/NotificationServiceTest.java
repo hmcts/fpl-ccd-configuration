@@ -12,10 +12,13 @@ import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
+import uk.gov.service.notify.SendEmailResponse;
 
 import java.util.Map;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.service.email.NotificationServiceTest.ENV;
 
@@ -28,9 +31,13 @@ class NotificationServiceTest {
     private static final String TEMPLATE_ID = PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
     static final String ENV = "TEST_ENV";
     private static final String NOTIFICATION_REFERENCE = String.format("%s/%s", ENV, REFERENCE);
+    private static final SendEmailResponse EMAIL_RESPONSE = mock(SendEmailResponse.class);
 
     @MockBean
     private NotificationClient notificationClient;
+
+    @MockBean
+    private NoOpNotificationResponsePostProcessor notificationResponsePostProcessor;
 
     @Autowired
     private NotificationService notificationService;
@@ -46,13 +53,16 @@ class NotificationServiceTest {
             "respondentLastName", "Smith",
             "caseUrl", "http://fake-url");
 
-        notificationService.sendEmail(TEMPLATE_ID, TEST_RECIPIENT_EMAIL, notifyData, REFERENCE);
-
-        verify(notificationClient).sendEmail(
+        when(notificationClient.sendEmail(
             PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE,
             TEST_RECIPIENT_EMAIL,
             expectedParams,
-            NOTIFICATION_REFERENCE);
+            NOTIFICATION_REFERENCE)).thenReturn(EMAIL_RESPONSE);
+
+        notificationService.sendEmail(TEMPLATE_ID, TEST_RECIPIENT_EMAIL, notifyData, REFERENCE);
+
+        verify(notificationResponsePostProcessor).process(EMAIL_RESPONSE);
+
     }
 
 }
