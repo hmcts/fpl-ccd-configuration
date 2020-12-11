@@ -56,9 +56,11 @@ class CareOrderGenerationServiceTest extends AbstractOrderGenerationServiceTest 
                 .childrenAct("Section 38 Children Act 1989")
                 .exclusionClause(EXAMPLE_EXCLUSION_CLAUSE)
                 .orderDetails("It is ordered that the children are "
-                    + "placed in the care of Example Local Authority until the end of the proceedings.").build());
+                    + "placed in the care of Example Local Authority until the end of the proceedings, or until a "
+                    + "further order is made.")
+                .build());
 
-        assertThat(templateData).isEqualToComparingFieldByField(expectedData);
+        assertThat(templateData).isEqualTo(expectedData);
     }
 
     @Test
@@ -79,7 +81,7 @@ class CareOrderGenerationServiceTest extends AbstractOrderGenerationServiceTest 
             CARE_ORDER, INTERIM, ORDER_STATUS, orderBuilder.build()
         );
 
-        assertThat(templateData).isEqualToComparingFieldByField(expectedData);
+        assertThat(templateData).isEqualTo(expectedData);
     }
 
     private CaseData getCase(GeneratedOrderSubtype subtype, OrderStatus status) {
