@@ -55,8 +55,7 @@ public class ReShareCaseController {
                 List.of(
                     of("match", of("state", "Deleted")),
                     of("exists", of("field", "supplementary_data"))
-                ),
-                "must", of("match", of("data.caseLocalAuthority", "KBC")))
+                ))
             ))
             .toString();
 
