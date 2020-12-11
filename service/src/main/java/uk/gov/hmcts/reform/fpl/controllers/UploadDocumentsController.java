@@ -31,6 +31,7 @@ public class UploadDocumentsController extends CallbackController {
     private final FeatureToggleService featureToggleService;
     private final UploadDocumentsMigrationService uploadDocumentsMigrationService;
 
+    //Delete after toggle on (no mid-event for new event)
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();

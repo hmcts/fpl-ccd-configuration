@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
+@AllArgsConstructor
 public class ApplicationDocument {
     private final DocumentReference document;
     private final ApplicationDocumentType documentType;
