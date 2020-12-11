@@ -6,6 +6,7 @@
     "CaseFieldID": "judicialMessageReply",
     "ListElementCode": "recipient",
     "FieldDisplayOrder": 1,
+    "EventElementLabel": "Message from CTSC admin member",
     "DisplayContext": "READONLY"
   },
   {
@@ -16,6 +17,7 @@
     "ListElementCode": "sender",
     "SecurityClassification": "Public",
     "FieldDisplayOrder": 2,
+    "EventElementLabel": "About a request from",
     "DisplayContext": "READONLY"
   },
   {
@@ -34,6 +36,7 @@
     "CaseFieldID": "judicialMessageReply",
     "ListElementCode": "note",
     "FieldDisplayOrder": 4,
-    "DisplayContext": "READONLY"
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "Message from CTSC admin team"
   }
 ]
