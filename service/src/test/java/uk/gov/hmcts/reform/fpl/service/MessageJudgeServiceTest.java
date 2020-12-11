@@ -145,6 +145,7 @@ class MessageJudgeServiceTest {
         JudicialMessageMetaData judicialMessageMetaData = JudicialMessageMetaData.builder()
             .sender(MESSAGE_SENDER)
             .recipient(MESSAGE_RECIPIENT)
+            .urgency("High urgency")
             .build();
 
         MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
@@ -165,6 +166,7 @@ class MessageJudgeServiceTest {
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
             .sender(MESSAGE_SENDER)
             .recipient(MESSAGE_RECIPIENT)
+            .urgency("High urgency")
             .build());
 
         assertThat(updatedMessages).hasSize(1).first().isEqualTo(expectedJudicialMessageElement);

@@ -73,6 +73,7 @@ public class MessageJudgeService {
             .note(messageJudgeEventData.getJudicialMessageNote())
             .dateSentAsLocalDateTime(time.now())
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
+            .urgency(judicialMessageMetaData.getUrgency())
             .status(OPEN);
 
         if (hasSelectedC2(caseData)) {

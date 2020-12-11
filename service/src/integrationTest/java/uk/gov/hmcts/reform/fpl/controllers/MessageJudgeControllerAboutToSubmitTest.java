@@ -71,6 +71,7 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
             .recipient("John@fpla.com")
             .note("Some note")
             .sender("ben@fpla.com")
+            .urgency("High urgency")
             .build();
 
         assertThat(responseCaseData.getJudicialMessages().get(0).getValue()).isEqualTo(expectedJudicialMessage);
