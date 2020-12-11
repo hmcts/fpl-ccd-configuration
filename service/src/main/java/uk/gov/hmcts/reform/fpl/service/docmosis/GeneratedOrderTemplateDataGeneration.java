@@ -109,6 +109,6 @@ public abstract class GeneratedOrderTemplateDataGeneration
                 return formatLocalDateTimeBaseUsingFormat(dateTime, String.format(DATE_WITH_ORDINAL_SUFFIX,
                     dayOrdinalSuffix));
             })
-            .orElse("the end of the proceedings");
+            .orElse("the end of the proceedings, or until a further order is made");
     }
 }
