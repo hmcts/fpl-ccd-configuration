@@ -33,10 +33,10 @@ Scenario('Local authority sends agreed CMOs to judge', async ({I, caseViewPage, 
   assertDraftCMO(I, '2', '1 March 2020', withJudgeStatus);
   assertDraftCMO(I, '3', '1 January 2050', draftStatus, supportingDocs);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
-  I.seeInTab(['Further evidence documents 1', 'Hearing'], 'Case management hearing, 1 March 2020');
-  I.seeInTab(['Further evidence documents 1', 'Documents 1', 'Document name'], supportingDocs.name);
-  I.seeInTab(['Further evidence documents 1', 'Documents 1', 'Notes'], supportingDocs.notes);
-  I.seeInTab(['Further evidence documents 1', 'Documents 1', 'File'], supportingDocs.fileName);
+  I.seeInTab(['Further evidence documents for hearings 1', 'Hearing'], 'Case management hearing, 1 March 2020');
+  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Document name'], supportingDocs.name);
+  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Notes'], supportingDocs.notes);
+  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'File'], supportingDocs.fileName);
 });
 
 Scenario('Judge makes changes to agreed CMO and seals', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {

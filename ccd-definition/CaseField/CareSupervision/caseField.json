@@ -1331,14 +1331,5 @@
     "FieldType": "TextArea",
     "SecurityClassification": "Public",
     "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "courtBundleList",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "CourtBundleV2",
-    "Label": "Court bundle",
-    "SecurityClassification": "Public"
   }
 ]
