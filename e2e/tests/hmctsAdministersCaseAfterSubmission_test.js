@@ -80,18 +80,18 @@ Scenario('HMCTS admin uploads correspondence documents', async ({I, caseViewPage
   await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
   I.seeEventSubmissionConfirmation(config.administrationActions.manageDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.correspondence);
-  I.seeInTab(['Correspondence document 1', 'Document name'], 'Email to say evidence will be late');
-  I.seeInTab(['Correspondence document 1', 'Notes'], 'Evidence will be late');
-  I.seeInTab(['Correspondence document 1', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
-  I.seeInTab(['Correspondence document 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeTextInTab(['Correspondence document 1', 'Uploaded by']);
-  I.seeInTab(['Correspondence document 1', 'File'], 'mockFile.txt');
-  I.seeInTab(['Correspondence document 2', 'Document name'], 'Email with evidence attached');
-  I.seeInTab(['Correspondence document 2', 'Notes'], 'Case evidence included');
-  I.seeInTab(['Correspondence document 2', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
-  I.seeInTab(['Correspondence document 2', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeTextInTab(['Correspondence document 2', 'Uploaded by']);
-  I.seeInTab(['Correspondence document 2', 'File'], 'mockFile.txt');
+  I.seeInTab(['Correspondence uploaded by HMCTS 1', 'Document name'], 'Email to say evidence will be late');
+  I.seeInTab(['Correspondence uploaded by HMCTS 1', 'Notes'], 'Evidence will be late');
+  I.seeInTab(['Correspondence uploaded by HMCTS 1', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
+  I.seeInTab(['Correspondence uploaded by HMCTS 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
+  I.seeTextInTab(['Correspondence uploaded by HMCTS 1', 'Uploaded by']);
+  I.seeInTab(['Correspondence uploaded by HMCTS 1', 'File'], 'mockFile.txt');
+  I.seeInTab(['Correspondence uploaded by HMCTS 2', 'Document name'], 'Email with evidence attached');
+  I.seeInTab(['Correspondence uploaded by HMCTS 2', 'Notes'], 'Case evidence included');
+  I.seeInTab(['Correspondence uploaded by HMCTS 2', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
+  I.seeInTab(['Correspondence uploaded by HMCTS 2', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
+  I.seeTextInTab(['Correspondence uploaded by HMCTS 2', 'Uploaded by']);
+  I.seeInTab(['Correspondence uploaded by HMCTS 2', 'File'], 'mockFile.txt');
 });
 
 Scenario('HMCTS admin uploads C2 documents to the case', async ({I, caseViewPage, uploadC2DocumentsEventPage, paymentHistoryPage}) => {
@@ -141,7 +141,7 @@ Scenario('HMCTS admin uploads C2 documents to the case', async ({I, caseViewPage
 Scenario('HMCTS admin edits supporting evidence document on C2 application', async({I, caseViewPage, manageDocumentsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
   await manageDocumentsEventPage.selectC2SupportingDocuments();
-  await manageDocumentsEventPage.select2FromDropdown();
+  await manageDocumentsEventPage.selectC2FromDropdown();
   await I.goToNextPage();
   await manageDocumentsEventPage.enterDocumentName('Updated document name');
   await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
