@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
+import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -31,6 +32,10 @@ public class UploadDocumentTransformer {
                 .documentType(documentType)
                 .includedInSWET(null)
                 .build());
+    }
+
+    public Element<CourtBundle> convert(CourtBundle document) {
+        return element(identityService.generateId(), document);
     }
 
     public List<Element<ApplicationDocument>> convert(List<Element<DocumentSocialWorkOther>> otherSocialWorkDocuments) {
