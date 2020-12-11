@@ -36,6 +36,9 @@ public class MessageJudgeController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
 
+        caseDetailsMap.putAll(messageJudgeService.aboutToStart(caseData));
+
+        // Needs moved to new mid event
         caseDetailsMap.putAll(messageJudgeService.initialiseCaseFields(caseData));
 
         return respond(caseDetailsMap);
