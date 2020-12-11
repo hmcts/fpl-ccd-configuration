@@ -334,6 +334,24 @@ Scenario('HMCTS admin makes 26-week case extension', async ({I, caseViewPage, ad
   I.see('Comment');
 });
 
+Scenario('HMCTS admin messages the judge', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
+  await caseViewPage.goToNewActions(config.applicationActions.messageJudge);
+  messageJudgeOrLegalAdviserEventPage.relatedMessageToAC2();
+  await messageJudgeOrLegalAdviserEventPage.selectC2();
+  messageJudgeOrLegalAdviserEventPage.enterRecipientEmail('recipient@fpla.com');
+  messageJudgeOrLegalAdviserEventPage.enterSenderEmail('sender@fpla.com');
+  messageJudgeOrLegalAdviserEventPage.enterUrgency('High');
+  await I.goToNextPage();
+  messageJudgeOrLegalAdviserEventPage.enterMessageNote('Some note');
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.messageJudge);
+  caseViewPage.selectTab(caseViewPage.tabs.judicialMessages);
+  I.seeInTab(['Message 1', 'From'], 'sender@fpla.com');
+  I.seeInTab(['Message 1', 'Sent to'], 'recipient@fpla.com');
+  I.seeInTab(['Message 1', 'Note'], 'Some note');
+  I.seeInTab(['Message 1', 'Status'], 'Open');
+});
+
 Scenario('HMCTS admin closes the case', async ({I, caseViewPage, closeTheCaseEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.closeTheCase);
   closeTheCaseEventPage.closeCase({day: 12, month: 3, year: 2020}, true, closeTheCaseEventPage.fields.radioGroup.partialReason.options.deprivation);
