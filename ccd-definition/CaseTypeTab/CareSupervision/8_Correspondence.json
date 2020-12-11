@@ -6,7 +6,26 @@
     "TabID": "Correspondence",
     "TabLabel": "Correspondence",
     "TabDisplayOrder": 8,
-    "CaseFieldID": "correspondenceDocuments",
+    "CaseFieldID": "correspondenceTabHeading",
     "TabFieldDisplayOrder": 1
+  },  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "Correspondence",
+    "TabLabel": "Correspondence",
+    "TabDisplayOrder": 8,
+    "CaseFieldID": "correspondenceDocuments",
+    "TabFieldDisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "Correspondence",
+    "TabLabel": "Correspondence",
+    "TabDisplayOrder": 8,
+    "CaseFieldID": "correspondenceDocumentsLA",
+    "TabFieldDisplayOrder": 3
   }
 ]
