@@ -47,9 +47,6 @@ public class MessageJudgeController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
 
-        caseData.getFirstHearing().ifPresent(hearingBooking -> caseDetailsMap.put("nextHearingLabel",
-            String.format("Next hearing in the case: %s", hearingBooking.toLabel())));
-
         caseDetailsMap.putAll(messageJudgeService.populateNewMessageFields(caseData));
 
         return respond(caseDetailsMap);
@@ -60,9 +57,6 @@ public class MessageJudgeController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
-
-        caseData.getFirstHearing().ifPresent(hearingBooking -> caseDetailsMap.put("nextHearingLabel",
-            String.format("Next hearing in the case: %s", hearingBooking.toLabel())));
 
         caseDetailsMap.putAll(messageJudgeService.populateReplyMessageFields(caseData));
 

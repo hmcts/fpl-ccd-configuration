@@ -65,6 +65,9 @@ public class MessageJudgeService {
             data.put("c2DynamicList", rebuildC2DynamicList(caseData, selectedC2Id));
         }
 
+        caseData.getFirstHearing().ifPresent(hearingBooking -> data.put("nextHearingLabel",
+            String.format("Next hearing in the case: %s", hearingBooking.toLabel())));
+
         return data;
     }
 
@@ -83,6 +86,9 @@ public class MessageJudgeService {
             data.put("judicialMessageDynamicList",
                 rebuildJudicialMessageDynamicList(caseData, selectedJudicialMessageId));
         }
+
+        caseData.getFirstHearing().ifPresent(hearingBooking -> data.put("nextHearingLabel",
+            String.format("Next hearing in the case: %s", hearingBooking.toLabel())));
 
         return data;
     }
