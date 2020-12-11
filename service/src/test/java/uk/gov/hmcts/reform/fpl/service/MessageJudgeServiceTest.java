@@ -107,7 +107,7 @@ class MessageJudgeServiceTest {
 
         String expectedC2Label = C2_FILE_NAME + "\n" + C2_SUPPORTING_DOCUMENT_FILE_NAME;
 
-        assertThat(messageJudgeService.buildRelatedC2DocumentFields(caseData))
+        assertThat(messageJudgeService.populateNewMessageFields(caseData))
             .extracting("relatedDocumentsLabel", "c2DynamicList")
             .containsExactly(expectedC2Label, caseData.buildC2DocumentDynamicList(SELECTED_C2_ID));
     }
@@ -137,7 +137,7 @@ class MessageJudgeServiceTest {
             ))
             .build();
 
-        assertThat(messageJudgeService.buildRelatedC2DocumentFields(caseData)).isEmpty();
+        assertThat(messageJudgeService.populateNewMessageFields(caseData)).isEmpty();
     }
 
     @Test

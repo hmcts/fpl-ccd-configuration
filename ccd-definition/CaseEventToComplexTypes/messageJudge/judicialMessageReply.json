@@ -1,7 +1,7 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "JudicialMessageMetaData",
+    "ID": "JudicialMessageReply",
     "CaseEventID": "messageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageReply",
     "ListElementCode": "recipient",
@@ -11,7 +11,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "JudicialMessageMetaData",
+    "ID": "JudicialMessageReply",
     "CaseEventID": "messageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageReply",
     "ListElementCode": "sender",
@@ -22,7 +22,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "JudicialMessageMetaData",
+    "ID": "JudicialMessageReply",
     "CaseEventID": "messageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageReply",
     "ListElementCode": "urgency",
@@ -31,7 +31,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "JudicialMessageMetaData",
+    "ID": "JudicialMessageReply",
     "CaseEventID": "messageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageReply",
     "ListElementCode": "note",

@@ -41,8 +41,8 @@ public class MessageJudgeController extends CallbackController {
         return respond(caseDetailsMap);
     }
 
-    @PostMapping("/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
+    @PostMapping("/populate-new-message/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handlePopulateNewMessageMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
@@ -50,7 +50,21 @@ public class MessageJudgeController extends CallbackController {
         caseData.getFirstHearing().ifPresent(hearingBooking -> caseDetailsMap.put("nextHearingLabel",
             String.format("Next hearing in the case: %s", hearingBooking.toLabel())));
 
-        caseDetailsMap.putAll(messageJudgeService.buildRelatedC2DocumentFields(caseData));
+        caseDetailsMap.putAll(messageJudgeService.populateNewMessageFields(caseData));
+
+        return respond(caseDetailsMap);
+    }
+
+    @PostMapping("/populate-reply-message/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handlePopulateReplyMessageMidEvent(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
+
+        caseData.getFirstHearing().ifPresent(hearingBooking -> caseDetailsMap.put("nextHearingLabel",
+            String.format("Next hearing in the case: %s", hearingBooking.toLabel())));
+
+        caseDetailsMap.putAll(messageJudgeService.populateReplyMessageFields(caseData));
 
         return respond(caseDetailsMap);
     }

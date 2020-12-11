@@ -50,7 +50,25 @@ public class MessageJudgeService {
         return data;
     }
 
-    public Map<String, Object> buildRelatedC2DocumentFields(CaseData caseData) {
+    public Map<String, Object> populateNewMessageFields(CaseData caseData) {
+        Map<String, Object> data = new HashMap<>();
+
+        if (hasSelectedC2(caseData)) {
+            UUID selectedC2Id = getDynamicListSelectedValue(
+                caseData.getMessageJudgeEventData().getC2DynamicList(), mapper
+            );
+
+            C2DocumentBundle selectedC2DocumentBundle = caseData.getC2DocumentBundleByUUID(selectedC2Id);
+            String documentFileNames = selectedC2DocumentBundle.getAllC2DocumentFileNames();
+
+            data.put("relatedDocumentsLabel", documentFileNames);
+            data.put("c2DynamicList", rebuildC2DynamicList(caseData, selectedC2Id));
+        }
+
+        return data;
+    }
+
+    public Map<String, Object> populateReplyMessageFields(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
 
         if (isReplyingToJudicialMessage(caseData)) {
@@ -64,17 +82,6 @@ public class MessageJudgeService {
             data.put("judicialMessageReply", selectedJudicialMessage);
             data.put("judicialMessageDynamicList",
                 rebuildJudicialMessageDynamicList(caseData, selectedJudicialMessageId));
-
-        } else if (!isReplyingToJudicialMessage(caseData) && hasSelectedC2(caseData)) {
-            UUID selectedC2Id = getDynamicListSelectedValue(
-                caseData.getMessageJudgeEventData().getC2DynamicList(), mapper
-            );
-
-            C2DocumentBundle selectedC2DocumentBundle = caseData.getC2DocumentBundleByUUID(selectedC2Id);
-            String documentFileNames = selectedC2DocumentBundle.getAllC2DocumentFileNames();
-
-            data.put("relatedDocumentsLabel", documentFileNames);
-            data.put("c2DynamicList", rebuildC2DynamicList(caseData, selectedC2Id));
         }
 
         return data;
