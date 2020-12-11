@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
+import static uk.gov.hmcts.reform.fpl.enums.MessageJudgeOptions.REPLY;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -52,7 +53,19 @@ public class MessageJudgeService {
     public Map<String, Object> buildRelatedC2DocumentFields(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
 
-        if (hasSelectedC2(caseData)) {
+        if (isReplyingToJudicialMessage(caseData)) {
+            UUID selectedJudicialMessageId = getDynamicListSelectedValue(
+                caseData.getMessageJudgeEventData().getJudicialMessageDynamicList(), mapper
+            );
+
+            JudicialMessage selectedJudicialMessage = caseData.getJudicialMessageByUUID(selectedJudicialMessageId);
+
+            data.put("relatedDocumentsLabel", selectedJudicialMessage.getRelatedDocumentFileNames());
+            data.put("judicialMessageReply", selectedJudicialMessage);
+            data.put("judicialMessageDynamicList",
+                rebuildJudicialMessageDynamicList(caseData, selectedJudicialMessageId));
+
+        } else if (!isReplyingToJudicialMessage(caseData) && hasSelectedC2(caseData)) {
             UUID selectedC2Id = getDynamicListSelectedValue(
                 caseData.getMessageJudgeEventData().getC2DynamicList(), mapper
             );
@@ -105,6 +118,10 @@ public class MessageJudgeService {
         return caseData.buildC2DocumentDynamicList(selectedC2Id);
     }
 
+    private DynamicList rebuildJudicialMessageDynamicList(CaseData caseData, UUID selectedC2Id) {
+        return caseData.buildC2DocumentDynamicList(selectedC2Id);
+    }
+
     private boolean hasC2Documents(CaseData caseData) {
         return caseData.getC2DocumentBundle() != null;
     }
@@ -116,5 +133,9 @@ public class MessageJudgeService {
 
     private boolean hasJudicialMessages(CaseData caseData) {
         return caseData.getJudicialMessages() != null;
+    }
+
+    private boolean isReplyingToJudicialMessage(CaseData caseData) {
+        return REPLY.equals(caseData.getMessageJudgeEventData().getMessageJudgeOption());
     }
 }

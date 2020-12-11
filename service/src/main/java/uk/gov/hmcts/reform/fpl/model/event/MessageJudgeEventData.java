@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.JudicialMessageMetaData;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class MessageJudgeEventData {
     Object c2DynamicList;
+    Object judicialMessageDynamicList;
     String judicialMessageNote;
     JudicialMessageMetaData judicialMessageMetaData;
     String relatedDocumentsLabel;
