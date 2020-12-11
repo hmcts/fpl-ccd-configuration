@@ -191,30 +191,37 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "LBM",
+    "ListElement": "London Borough of Merton",
+    "DisplayOrder": 31
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "MWC",
     "ListElement": "Medway Council",
-    "DisplayOrder": 31
+    "DisplayOrder": 32
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "MTC",
     "ListElement": "Merthyr Tydfil CBC",
-    "DisplayOrder": 32
+    "DisplayOrder": 33
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "MDB",
     "ListElement": "Middlesbrough Council",
-    "DisplayOrder": 33
+    "DisplayOrder": 34
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "MKC",
     "ListElement": "Milton Keynes Council",
-    "DisplayOrder": 34
+    "DisplayOrder": 35
   },
   {
     "LiveFrom": "01/01/2017",
