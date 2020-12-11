@@ -106,7 +106,6 @@ Custom configuration parameters:
 |docmosis.tornado.key|SECRET|Docmosis Tornado (document generation service) API key|
 |document_management.url|ENV|URL for service responsible for storing documents|
 |notify.api_key|SECRET|Gov notify API Key for sending emails|
-|gateway.url|ENV|URL for CCD gateway, currently used to prepare URL leading directly to the document, used in notifications|
 |rd_professional.api.url|ENV|URL for Professional Reference Data service|
 |send-letter.url|ENV|URL for service delivering Bulk Print functionality|
 |send-grid.host|ENV|SendGrid host|

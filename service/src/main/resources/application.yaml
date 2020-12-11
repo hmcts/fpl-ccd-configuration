@@ -187,9 +187,6 @@ docmosis:
 document_management:
   url: http://fake-document-management-store-api
 
-gateway:
-  url: http://fake-document-gateway
-
 notify:
   api_key: testApiKey
 

@@ -57,8 +57,8 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
 
     private final DocumentReference lastOrderDocumentReference = DocumentReference.builder()
         .filename("C21 3.pdf")
-        .url("http://fake-document-gateway/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079")
-        .binaryUrl("http://fake-document-gateway/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary")
+        .url("url")
+        .binaryUrl("testUrl")
         .build();
 
     private LocalDateTime dateIn3Months;
