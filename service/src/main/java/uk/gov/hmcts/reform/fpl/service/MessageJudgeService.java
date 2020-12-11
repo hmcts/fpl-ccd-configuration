@@ -86,7 +86,8 @@ public class MessageJudgeService {
             C2DocumentBundle selectedC2DocumentBundle = caseData.getC2DocumentBundleByUUID(selectedC2Id);
 
             judicialMessageBuilder.relatedDocuments(selectedC2DocumentBundle.getAllC2DocumentReferences());
-            judicialMessageBuilder.relatedC2Identifier(selectedC2Id);
+            judicialMessageBuilder.relatedDocumentFileNames(selectedC2DocumentBundle.getAllC2DocumentFileNames());
+            judicialMessageBuilder.isRelatedToC2(YES);
         }
 
         judicialMessages.add(element(identityService.generateId(), judicialMessageBuilder.build()));

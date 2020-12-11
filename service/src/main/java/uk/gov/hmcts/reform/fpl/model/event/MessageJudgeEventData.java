@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.model.event;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Value;
+import uk.gov.hmcts.reform.fpl.enums.MessageJudgeOptions;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessageMetaData;
 
 @Value
@@ -13,6 +14,7 @@ public class MessageJudgeEventData {
     String judicialMessageNote;
     JudicialMessageMetaData judicialMessageMetaData;
     String relatedDocumentsLabel;
+    MessageJudgeOptions messageJudgeOption;
 
     public static String[] transientFields() {
         return new String[]{

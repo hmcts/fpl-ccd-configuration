@@ -2,20 +2,18 @@ package uk.gov.hmcts.reform.fpl.model;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.UUID;
-
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 class JudicialMessageTest {
     private static String DATE_SENT = "11 November at 08:30am";
     private static String URGENCY = "High urgency";
-    private static UUID C2_ID = UUID.randomUUID();
 
     @Test
     void shouldBuildJudicialMessageLabel() {
         JudicialMessage judicialMessage = JudicialMessage.builder()
             .urgency(URGENCY)
-            .relatedC2Identifier(C2_ID)
+            .isRelatedToC2(YES)
             .dateSent(DATE_SENT)
             .build();
 
@@ -35,7 +33,7 @@ class JudicialMessageTest {
     @Test
     void shouldBuildJudicialMessageLabelWithoutUrgency() {
         JudicialMessage judicialMessage = JudicialMessage.builder()
-            .relatedC2Identifier(C2_ID)
+            .isRelatedToC2(YES)
             .dateSent(DATE_SENT)
             .build();
 

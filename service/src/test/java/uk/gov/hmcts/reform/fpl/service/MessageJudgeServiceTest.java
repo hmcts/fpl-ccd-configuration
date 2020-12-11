@@ -221,7 +221,10 @@ class MessageJudgeServiceTest {
         JudicialMessage newMessage = updatedMessages.get(0).getValue();
         List<Element<DocumentReference>> relatedDocuments = newMessage.getRelatedDocuments();
 
-        assertThat(newMessage.getRelatedC2Identifier()).isEqualTo(SELECTED_C2_ID);
+        assertThat(newMessage.getIsRelatedToC2()).isEqualTo(YES);
+        assertThat(newMessage.getRelatedDocumentFileNames()).isEqualTo(
+            selectedC2DocumentBundle.getAllC2DocumentFileNames()
+        );
         assertThat(relatedDocuments.get(0).getValue()).isEqualTo(mainC2DocumentReference);
         assertThat(relatedDocuments.get(1).getValue()).isEqualTo(supportingC2DocumentReference);
     }

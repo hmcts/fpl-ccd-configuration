@@ -912,12 +912,10 @@ class CaseDataTest {
     class BuildJudicialMessageList {
         @Test
         void shouldBuildDynamicJudicialMessageListFromJudicialMessages() {
-            UUID c2Id = randomUUID();
-
             List<Element<JudicialMessage>> judicialMessages = List.of(
-                element(buildJudicialMessage("Low", "11 November 2020", c2Id)),
-                element(buildJudicialMessage("Medium", "12 November 2020", c2Id)),
-                element(buildJudicialMessage("High", "13 November 2020", c2Id)));
+                element(buildJudicialMessage("Low", "11 November 2020", YES)),
+                element(buildJudicialMessage("Medium", "12 November 2020", NO)),
+                element(buildJudicialMessage("High", "13 November 2020", YES)));
 
             CaseData caseData = CaseData.builder().judicialMessages(judicialMessages).build();
             DynamicList expectedDynamicList = ElementUtils
@@ -930,12 +928,11 @@ class CaseDataTest {
         @Test
         void shouldBuildDynamicJudicialMessageListWithSelectorPropertyFromJudicialMessage() {
             UUID selectedMessageId = randomUUID();
-            UUID c2Id = randomUUID();
 
             List<Element<JudicialMessage>> judicialMessages = List.of(
-                element(buildJudicialMessage("Low", "11 November 2020", c2Id)),
-                element(buildJudicialMessage("Medium", "12 November 2020", c2Id)),
-                element(selectedMessageId, buildJudicialMessage("High", "13 November 2020", c2Id))
+                element(buildJudicialMessage("Low", "11 November 2020", YES)),
+                element(buildJudicialMessage("Medium", "12 November 2020", NO)),
+                element(selectedMessageId, buildJudicialMessage("High", "13 November 2020", YES))
             );
 
             CaseData caseData = CaseData.builder().judicialMessages(judicialMessages).build();
@@ -947,11 +944,11 @@ class CaseDataTest {
         }
     }
 
-    private JudicialMessage buildJudicialMessage(String urgency, String dateSent, UUID c2Id) {
+    private JudicialMessage buildJudicialMessage(String urgency, String dateSent, YesNo isRelatedToC2) {
         return JudicialMessage.builder()
             .urgency(urgency)
             .dateSent(dateSent)
-            .relatedC2Identifier(c2Id)
+            .isRelatedToC2(isRelatedToC2)
             .build();
     }
 
