@@ -30,6 +30,8 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.ManageDocumentLAService.COURT_BUNDLE_HEARING_LIST_KEY;
@@ -140,36 +142,30 @@ public class ManageDocumentService {
                 Optional<Element<HearingFurtherEvidenceBundle>> bundle = findElement(selectedHearingId, bundles);
 
                 if (bundle.isPresent()) {
-                    return getUserSpecificSupportingEvidenceBundle(
-                        bundle.get().getValue().getSupportingEvidenceBundle());
+                    return getUserSpecificSupportingEvidences(bundle.get().getValue().getSupportingEvidenceBundle());
                 }
             }
         } else if (unrelatedEvidence != null) {
             return unrelatedEvidence;
         }
 
-        return List.of(element(SupportingEvidenceBundle.builder().build()));
+        return defaultSupportingEvidences();
     }
 
     public List<Element<SupportingEvidenceBundle>> getC2SupportingEvidenceBundle(CaseData caseData) {
         UUID selectedC2 = getDynamicListSelectedValue(caseData.getManageDocumentsSupportingC2List(), mapper);
         C2DocumentBundle c2DocumentBundle = caseData.getC2DocumentBundleByUUID(selectedC2);
 
-        if (c2DocumentBundle.getSupportingEvidenceBundle() != null
-            && !c2DocumentBundle.getSupportingEvidenceBundle().isEmpty()) {
-            return getUserSpecificSupportingEvidenceBundle(c2DocumentBundle.getSupportingEvidenceBundle());
+        if (isNotEmpty(c2DocumentBundle.getSupportingEvidenceBundle())) {
+            return getUserSpecificSupportingEvidences(c2DocumentBundle.getSupportingEvidenceBundle());
         }
 
-        return List.of(element(SupportingEvidenceBundle.builder().build()));
+        return defaultSupportingEvidences();
     }
 
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle(
-        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundleList) {
-        if (supportingEvidenceBundleList == null || supportingEvidenceBundleList.isEmpty()) {
-            return List.of(element(SupportingEvidenceBundle.builder().build()));
-        }
-
-        return supportingEvidenceBundleList;
+        List<Element<SupportingEvidenceBundle>> supportingEvidences) {
+        return isEmpty(supportingEvidences) ? defaultSupportingEvidences() : supportingEvidences;
     }
 
     public List<Element<HearingFurtherEvidenceBundle>> buildHearingFurtherEvidenceCollection(
@@ -275,7 +271,7 @@ public class ManageDocumentService {
     }
 
     //Separate collection based on idam role (only show users their own documents)
-    private List<Element<SupportingEvidenceBundle>> getUserSpecificSupportingEvidenceBundle(
+    private List<Element<SupportingEvidenceBundle>> getUserSpecificSupportingEvidences(
         List<Element<SupportingEvidenceBundle>> bundleList) {
         UserDetails userDetails = idamClient.getUserDetails(requestData.authorisation());
         boolean isHmctsUser = userDetails.getRoles().stream().anyMatch(UserRole::isHmctsUser);
@@ -287,9 +283,11 @@ public class ManageDocumentService {
             userFilter = userFilter.negate();
         }
 
-        return bundleList.stream()
+        List<Element<SupportingEvidenceBundle>> supportingEvidences = bundleList.stream()
             .filter(userFilter)
             .collect(Collectors.toList());
+
+        return isEmpty(supportingEvidences) ? defaultSupportingEvidences() : supportingEvidences;
     }
 
     private Element<HearingFurtherEvidenceBundle> buildHearingSupportingEvidenceBundle(
@@ -300,5 +298,9 @@ public class ManageDocumentService {
             .hearingName(hearingBooking.toLabel())
             .supportingEvidenceBundle(supportingEvidenceBundle)
             .build());
+    }
+
+    private List<Element<SupportingEvidenceBundle>> defaultSupportingEvidences() {
+        return List.of(element(SupportingEvidenceBundle.builder().build()));
     }
 }

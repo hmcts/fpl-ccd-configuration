@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
@@ -34,6 +35,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -321,6 +323,30 @@ class ManageDocumentServiceTest {
             manageDocumentService.getFurtherEvidenceCollection(caseData, true, furtherEvidenceBundle);
 
         assertThat(furtherDocumentBundleCollection).containsExactly(adminEvidence);
+    }
+
+    @Test
+    void shouldReturnDefaultSupportingEvidenceWhenOnlyNonHmctsSupportingEvidencePresent() {
+        UUID hearingId = UUID.randomUUID();
+        List<Element<HearingBooking>> hearingBookings = List.of(element(hearingId, buildFinalHearingBooking()));
+
+        SupportingEvidenceBundle supportingEvidence = SupportingEvidenceBundle.builder()
+            .name("Supporting doc 1")
+            .uploadedBy("LA Solicitor")
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(hearingBookings)
+            .manageDocumentsHearingList(asDynamicList(hearingBookings, hearingId, HearingBooking::toLabel))
+            .hearingFurtherEvidenceDocuments(List.of(
+                element(hearingId, HearingFurtherEvidenceBundle.builder()
+                    .supportingEvidenceBundle(ElementUtils.wrapElements(supportingEvidence))
+                    .build())))
+            .build();
+
+        assertThat(manageDocumentService.getFurtherEvidenceCollection(caseData, true, emptyList()))
+            .extracting(Element::getValue)
+            .containsExactly(SupportingEvidenceBundle.builder().build());
     }
 
     @Test
