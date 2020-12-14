@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.NewJudicialMessageEvent;
+import uk.gov.hmcts.reform.fpl.events.NewJudicialMessageReplyEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -52,11 +53,13 @@ public class MessageJudgeController extends CallbackController {
 
         //MOVE INTO SUBMITTED WHEN UI WORKS
         Object judicialMessageDynamicList = caseData.getMessageJudgeEventData().getJudicialMessageDynamicList();
+        JudicialMessage newJudicialMessageReply = caseData.getJudicialMessages().get(0).getValue();
 
         if(isNull(judicialMessageDynamicList)) {
             System.out.println("Let's trigger new message notification");
         } else {
             System.out.println("Let's trigger reply notification");
+            publishEvent(new NewJudicialMessageReplyEvent(caseData, newJudicialMessageReply));
         }
 
         return respond(caseDetailsMap);
@@ -72,11 +75,13 @@ public class MessageJudgeController extends CallbackController {
 
         //MOVE INTO SUBMITTED WHEN UI WORKS
         Object judicialMessageDynamicList = caseData.getMessageJudgeEventData().getJudicialMessageDynamicList();
+        JudicialMessage newJudicialMessageReply = caseData.getJudicialMessages().get(0).getValue();
 
         if(isNull(judicialMessageDynamicList)) {
             System.out.println("Let's trigger new message notification");
         } else {
             System.out.println("Let's trigger reply notification");
+            publishEvent(new NewJudicialMessageReplyEvent(caseData, newJudicialMessageReply));
         }
 
         return respond(caseDetailsMap);

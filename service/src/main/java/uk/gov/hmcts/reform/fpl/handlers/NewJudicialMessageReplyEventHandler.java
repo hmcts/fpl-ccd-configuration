@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.fpl.events.NewJudicialMessageEvent;
+import uk.gov.hmcts.reform.fpl.events.NewJudicialMessageReplyEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.notify.NewJudicialMessageReplyTemplate;
@@ -20,7 +20,7 @@ public class NewJudicialMessageReplyEventHandler {
     private final JudicialMessageReplyContentProvider newJudicialMessageReplyContentProvider;
 
     @EventListener
-    public void notifyJudicialMessageRecipientOfReply(NewJudicialMessageEvent event) {
+    public void notifyJudicialMessageRecipientOfReply(NewJudicialMessageReplyEvent event) {
         CaseData caseData = event.getCaseData();
         JudicialMessage newJudicialMessage = event.getJudicialMessage();
 
