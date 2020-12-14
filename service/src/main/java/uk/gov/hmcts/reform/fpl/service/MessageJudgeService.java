@@ -94,7 +94,7 @@ public class MessageJudgeService {
         JudicialMessage.JudicialMessageBuilder<?, ?> judicialMessageBuilder = JudicialMessage.builder()
             .sender(judicialMessageMetaData.getSender())
             .recipient(judicialMessageMetaData.getRecipient())
-            .note(latestMessage)
+            .latestMessage(latestMessage)
             .messageHistory(latestMessage)
             .updatedTime(time.now())
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
@@ -132,8 +132,8 @@ public class MessageJudgeService {
                         .updatedTime(time.now())
                         .messageHistory(String.join("\n", List.of(
                             judicialMessage.getMessageHistory(),
-                            judicialMessageReply.getNote())))
-                        .note(judicialMessageReply.getNote())
+                            judicialMessageReply.getLatestMessage())))
+                        .latestMessage(judicialMessageReply.getLatestMessage())
                         .build();
 
                     return element(judicialMessageElement.getId(), updatedMessage);

@@ -10,7 +10,7 @@ module.exports = {
     recipientEmail: '#judicialMessageMetaData_recipient',
     senderEmail: '#judicialMessageMetaData_sender',
     urgency: '#judicialMessageMetaData_urgency',
-    note: '#judicialMessageNote',
+    latestMessage: '#judicialMessageLatestMessage',
   },
 
   relatedMessageToAC2() {
@@ -35,7 +35,7 @@ module.exports = {
     I.fillField(this.fields.urgency, urgency);
   },
 
-  enterMessageNote(note) {
-    I.fillField(this.fields.note, note);
+  enterMessageNote(latestMessage) {
+    I.fillField(this.fields.latestMessage, latestMessage);
   },
 };

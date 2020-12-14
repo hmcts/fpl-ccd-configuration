@@ -56,12 +56,12 @@ class MessageJudgeServiceTest {
         CaseData caseData = CaseData.builder()
             .judicialMessages(List.of(
                 element(JudicialMessage.builder()
-                    .note("some note")
+                    .latestMessage("some note")
                     .messageHistory("some history")
                     .dateSent("Some date sent")
                     .build()),
                 element(JudicialMessage.builder()
-                    .note("some note")
+                    .latestMessage("some note")
                     .messageHistory("some history")
                     .dateSent("Some date sent")
                     .build())))
@@ -161,7 +161,7 @@ class MessageJudgeServiceTest {
         JudicialMessage selectedJudicialMessage= JudicialMessage.builder()
             .relatedDocumentFileNames("file1.doc")
             .messageHistory("message history")
-            .note("Some note")
+            .latestMessage("Some note")
             .build();
 
         MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
@@ -207,7 +207,7 @@ class MessageJudgeServiceTest {
         Element<JudicialMessage> expectedJudicialMessageElement = element(NEW_ELEMENT_ID, JudicialMessage.builder()
             .updatedTime(time.now())
             .status(OPEN)
-            .note(MESSAGE_NOTE)
+            .latestMessage(MESSAGE_NOTE)
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
             .sender(MESSAGE_SENDER)
             .recipient(MESSAGE_RECIPIENT)
@@ -303,7 +303,7 @@ class MessageJudgeServiceTest {
             .recipient(MESSAGE_RECIPIENT)
             .updatedTime(time.now())
             .status(OPEN)
-            .note(MESSAGE_NOTE)
+            .latestMessage(MESSAGE_NOTE)
             .messageHistory(MESSAGE_NOTE)
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
             .build();
@@ -330,7 +330,7 @@ class MessageJudgeServiceTest {
                     .build())
                 .build())
             .judicialMessageReply(JudicialMessage.builder()
-                .note(messageReply)
+                .latestMessage(messageReply)
                 .build())
             .build();
 
@@ -342,7 +342,7 @@ class MessageJudgeServiceTest {
                     .recipient(MESSAGE_RECIPIENT)
                     .updatedTime(time.now().minusDays(1))
                     .status(OPEN)
-                    .note(MESSAGE_NOTE)
+                    .latestMessage(MESSAGE_NOTE)
                     .messageHistory(MESSAGE_NOTE)
                     .dateSent(formatLocalDateTimeBaseUsingFormat(time.now().minusDays(1), DATE_TIME_AT))
                     .build())))
@@ -353,7 +353,7 @@ class MessageJudgeServiceTest {
             .recipient(MESSAGE_RECIPIENT)
             .updatedTime(time.now())
             .status(OPEN)
-            .note(messageReply)
+            .latestMessage(messageReply)
             .messageHistory(MESSAGE_NOTE + "\n" + messageReply)
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now().minusDays(1), DATE_TIME_AT))
             .build();

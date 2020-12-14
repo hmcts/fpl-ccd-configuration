@@ -39,7 +39,7 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
             .recipient(JUDICIAL_MESSAGE_RECIPIENT)
             .sender("sender@fpla.com")
             .urgency("High")
-            .note("Some note")
+            .latestMessage("Some note")
             .build();
 
         CaseDetails caseDetails = CaseDetails.builder()

@@ -44,7 +44,7 @@
     "ID": "JudicialMessageReply",
     "CaseEventID": "messageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageReply",
-    "ListElementCode": "latestReply",
+    "ListElementCode": "latestMessage",
     "FieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY",
     "EventElementLabel": "Message from judge or legal adviser"

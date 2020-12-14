@@ -69,7 +69,7 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
             .updatedTime(now())
             .status(OPEN)
             .recipient("John@fpla.com")
-            .note("Some note")
+            .latestMessage("Some note")
             .sender("ben@fpla.com")
             .urgency("High urgency")
             .build();

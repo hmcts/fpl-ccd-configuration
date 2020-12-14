@@ -45,7 +45,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudicialMessage",
-    "ListElementCode": "note",
+    "ListElementCode": "latestMessage",
     "FieldType": "TextArea",
     "ElementLabel": "Note",
     "SecurityClassification": "Public"

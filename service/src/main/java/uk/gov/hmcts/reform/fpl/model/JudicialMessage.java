@@ -24,11 +24,11 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 public class JudicialMessage extends JudicialMessageMetaData {
     private final String dateSent;
     private final LocalDateTime updatedTime;
-    private final String note;
     private final JudicialMessageStatus status;
     private final List<Element<DocumentReference>> relatedDocuments;
     private final String relatedDocumentFileNames;
     private final YesNo isRelatedToC2;
+    private final String latestMessage;
     private final String messageHistory;
 
     public String toLabel() {
