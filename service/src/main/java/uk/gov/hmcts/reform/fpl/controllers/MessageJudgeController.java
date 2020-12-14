@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
 
+import static java.util.Objects.isNull;
 import static uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData.transientFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
@@ -49,6 +50,15 @@ public class MessageJudgeController extends CallbackController {
 
         caseDetailsMap.putAll(messageJudgeService.populateNewMessageFields(caseData));
 
+        //MOVE INTO SUBMITTED WHEN UI WORKS
+        Object judicialMessageDynamicList = caseData.getMessageJudgeEventData().getJudicialMessageDynamicList();
+
+        if(isNull(judicialMessageDynamicList)) {
+            System.out.println("Let's trigger new message notification");
+        } else {
+            System.out.println("Let's trigger reply notification");
+        }
+
         return respond(caseDetailsMap);
     }
 
@@ -59,6 +69,15 @@ public class MessageJudgeController extends CallbackController {
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
 
         caseDetailsMap.putAll(messageJudgeService.populateReplyMessageFields(caseData));
+
+        //MOVE INTO SUBMITTED WHEN UI WORKS
+        Object judicialMessageDynamicList = caseData.getMessageJudgeEventData().getJudicialMessageDynamicList();
+
+        if(isNull(judicialMessageDynamicList)) {
+            System.out.println("Let's trigger new message notification");
+        } else {
+            System.out.println("Let's trigger reply notification");
+        }
 
         return respond(caseDetailsMap);
     }
