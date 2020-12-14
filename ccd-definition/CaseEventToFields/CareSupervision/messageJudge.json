@@ -58,7 +58,7 @@
     "PageID": "NewMessageMetaData",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 2,
-    "PageShowCondition": "messageJudgeOption=\"NEW_MESSAGE\"",
+    "PageShowCondition": "messageJudgeOption!=\"REPLY\"",
     "FieldShowCondition": "hasC2Applications=\"Yes\""
   },
   {
@@ -128,6 +128,6 @@
     "PageID": "NewMessageNote",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 3,
-    "FieldShowCondition": "messageJudgeOption=\"NEW_MESSAGE\""
+    "FieldShowCondition": "messageJudgeOption!=\"REPLY\""
   }
 ]
