@@ -342,13 +342,30 @@ Scenario('@f', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) =>
   messageJudgeOrLegalAdviserEventPage.enterSenderEmail('sender@fpla.com');
   messageJudgeOrLegalAdviserEventPage.enterUrgency('High');
   await I.goToNextPage();
-  messageJudgeOrLegalAdviserEventPage.enterMessageNote('Some note');
+  messageJudgeOrLegalAdviserEventPage.enterMessage('Some note');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.messageJudge);
   caseViewPage.selectTab(caseViewPage.tabs.judicialMessages);
   I.seeInTab(['Message 1', 'From'], 'sender@fpla.com');
   I.seeInTab(['Message 1', 'Sent to'], 'recipient@fpla.com');
   I.seeInTab(['Message 1', 'Note'], 'Some note');
+  I.seeInTab(['Message 1', 'Status'], 'Open');
+});
+
+// Judge responds to CTSC admin
+Scenario('@f', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
+  const reply = 'This is a reply';
+  await caseViewPage.goToNewActions(config.applicationActions.messageJudge);
+  messageJudgeOrLegalAdviserEventPage.selectReplyToMessage();
+  await messageJudgeOrLegalAdviserEventPage.selectJudicialMessage();
+  await I.goToNextPage();
+  messageJudgeOrLegalAdviserEventPage.enterMessageReply(reply);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.messageJudge);
+  caseViewPage.selectTab(caseViewPage.tabs.judicialMessages);
+  I.seeInTab(['Message 1', 'From'], 'sender@fpla.com');
+  I.seeInTab(['Message 1', 'Sent to'], 'recipient@fpla.com');
+  I.seeInTab(['Message 1', 'Note'], reply);
   I.seeInTab(['Message 1', 'Status'], 'Open');
 });
 

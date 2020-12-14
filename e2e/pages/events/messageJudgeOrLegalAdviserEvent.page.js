@@ -6,11 +6,17 @@ module.exports = {
       yes: '#isMessageRegardingC2-Yes',
       no: '#isMessageRegardingC2-Yes',
     },
+    eventOptions: {
+      newMessage: '#messageJudgeOption-NEW_MESSAGE',
+      reply: '#messageJudgeOption-REPLY',
+    },
     c2List: '#c2DynamicList',
+    existingMessagesList: '#judicialMessageDynamicList',
     recipientEmail: '#judicialMessageMetaData_recipient',
     senderEmail: '#judicialMessageMetaData_sender',
     urgency: '#judicialMessageMetaData_urgency',
-    latestMessage: '#judicialMessageLatestMessage',
+    latestMessage: '#judicialMessageNote',
+    replyMessage: '#judicialMessageReply_latestMessage',
   },
 
   relatedMessageToAC2() {
@@ -35,7 +41,21 @@ module.exports = {
     I.fillField(this.fields.urgency, urgency);
   },
 
-  enterMessageNote(latestMessage) {
+  enterMessage(latestMessage) {
     I.fillField(this.fields.latestMessage, latestMessage);
+  },
+
+  selectReplyToMessage() {
+    I.click(this.fields.eventOptions.reply);
+  },
+
+  async selectJudicialMessage() {
+    const messageLabel = await I.grabTextFrom(`${this.fields.existingMessagesList} option:nth-child(2)`);
+    I.waitForElement(this.fields.existingMessagesList);
+    I.selectOption(this.fields.existingMessagesList, messageLabel);
+  },
+
+  enterMessageReply(reply) {
+    I.fillField(this.fields.replyMessage, reply);
   },
 };
