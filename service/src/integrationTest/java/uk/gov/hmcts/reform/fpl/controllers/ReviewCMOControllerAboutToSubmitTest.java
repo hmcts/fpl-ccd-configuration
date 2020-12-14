@@ -79,8 +79,9 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldSealPDFAndAddToSealedCMOsListWhenJudgeApprovesOrder() throws Exception {
-        given(documentSealingService.sealDocument((cmo.getOrder()))).willReturn(sealedDocument);
+    void shouldSealPDFAndAddToSealedCMOsListAndSaveUnsealedCMOWhenJudgeApprovesOrder() {
+        DocumentReference order = cmo.getOrder();
+        given(documentSealingService.sealDocument(order)).willReturn(sealedDocument);
 
         UUID cmoId = UUID.randomUUID();
 
@@ -94,6 +95,7 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
 
         CaseManagementOrder expectedSealedCmo = cmo.toBuilder()
             .order(sealedDocument)
+            .lastUploadedOrder(order)
             .dateIssued(LocalDate.now())
             .status(APPROVED)
             .build();
@@ -105,8 +107,7 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldKeepStateInCaseManagementWhenNextHearingTypeIsIssueResolutionAndCmoDecisionIsSendToAllParties()
-        throws Exception {
+    void shouldKeepStateInCaseManagementWhenNextHearingTypeIsIssueResolutionAndCmoDecisionIsSendToAllParties() {
         given(documentSealingService.sealDocument(convertedDocument)).willReturn(sealedDocument);
 
         UUID cmoId = UUID.randomUUID();
@@ -123,8 +124,7 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldUpdateStateToFinalHearingWhenNextHearingTypeIsFinalAndCmoDecisionIsSendToAllParties()
-        throws Exception {
+    void shouldUpdateStateToFinalHearingWhenNextHearingTypeIsFinalAndCmoDecisionIsSendToAllParties() {
         given(documentSealingService.sealDocument(convertedDocument)).willReturn(sealedDocument);
 
         UUID cmoId = UUID.randomUUID();

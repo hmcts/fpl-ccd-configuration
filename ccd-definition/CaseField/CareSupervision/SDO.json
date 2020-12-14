@@ -123,7 +123,7 @@
     "ID": "preparedSDO",
     "FieldType": "Document",
     "Label": "Attach prepared order",
-    "RegularExpression": ".doc,.docx,.pdf",
+    "RegularExpression": ".doc,.docx",
     "SecurityClassification": "Public"
   },
   {
@@ -141,7 +141,7 @@
     "ID": "replacementSDO",
     "FieldType": "Document",
     "Label": "Or upload an updated order",
-    "RegularExpression": ".doc,.docx,.pdf",
+    "RegularExpression": ".doc,.docx",
     "SecurityClassification": "Public"
   },
   {
