@@ -22,7 +22,7 @@ class JudicialMessageContentProviderTest extends AbstractEmailContentProviderTes
         CaseData caseData = populatedCaseData();
 
         JudicialMessage judicialMessage = JudicialMessage.builder()
-            .note("Please see latest C2")
+            .latestMessage("Please see latest C2")
             .recipient("paulStuart@fpla.com")
             .sender("robertDunlop@fpla.com")
             .urgency("Needed asap")
@@ -30,7 +30,7 @@ class JudicialMessageContentProviderTest extends AbstractEmailContentProviderTes
 
         NewJudicialMessageTemplate expectedTemplate = NewJudicialMessageTemplate.builder()
             .sender("robertDunlop@fpla.com")
-            .note("Please see latest C2")
+            .latestMessage("Please see latest C2")
             .hasUrgency(YES.getValue())
             .urgency("Needed asap")
             .callout("^Smith, 12345, hearing 1 Jan 2020")
@@ -47,14 +47,14 @@ class JudicialMessageContentProviderTest extends AbstractEmailContentProviderTes
         CaseData caseData = populatedCaseData();
 
         JudicialMessage judicialMessage = JudicialMessage.builder()
-            .note("Please see latest C2")
+            .latestMessage("Please see latest C2")
             .recipient("paulStuart@fpla.com")
             .sender("robertDunlop@fpla.com")
             .build();
 
         NewJudicialMessageTemplate expectedTemplate = NewJudicialMessageTemplate.builder()
             .sender("robertDunlop@fpla.com")
-            .note("Please see latest C2")
+            .latestMessage("Please see latest C2")
             .hasUrgency(NO.getValue())
             .urgency("")
             .callout("^Smith, 12345, hearing 1 Jan 2020")
@@ -71,7 +71,7 @@ class JudicialMessageContentProviderTest extends AbstractEmailContentProviderTes
         CaseData caseData = populatedCaseData();
 
         JudicialMessage judicialMessage = JudicialMessage.builder()
-            .note("Please see latest C2")
+            .latestMessage("Please see latest C2")
             .recipient("paulStuart@fpla.com")
             .sender("robertDunlop@fpla.com")
             .urgency("")
@@ -79,7 +79,7 @@ class JudicialMessageContentProviderTest extends AbstractEmailContentProviderTes
 
         NewJudicialMessageTemplate expectedTemplate = NewJudicialMessageTemplate.builder()
             .sender("robertDunlop@fpla.com")
-            .note("Please see latest C2")
+            .latestMessage("Please see latest C2")
             .hasUrgency(NO.getValue())
             .urgency("")
             .callout("^Smith, 12345, hearing 1 Jan 2020")

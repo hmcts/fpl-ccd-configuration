@@ -2,7 +2,9 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessageMetaData;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -24,8 +26,10 @@ import java.util.UUID;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -42,14 +46,25 @@ class MessageJudgeServiceTest {
     private static final String MESSAGE_RECIPIENT = "recipient@fpla.com";
     private static final String C2_FILE_NAME = "c2.doc";
     private static final String C2_SUPPORTING_DOCUMENT_FILE_NAME = "c2_supporting.doc";
-    private static final UUID SELECTED_C2_ID = UUID.randomUUID();
+    private static final UUID SELECTED_DYNAMIC_LIST_ITEM_ID = UUID.randomUUID();
     private static final UUID NEW_ELEMENT_ID = UUID.randomUUID();
 
     private MessageJudgeService messageJudgeService = new MessageJudgeService(time, identityService, mapper);
 
     @Test
-    void shouldInitialiseC2CaseFieldsWhenC2DocumentsExist() {
+    void shouldInitialiseCaseFieldsWhenC2DocumentsAndJudicialMessagesExist() {
         CaseData caseData = CaseData.builder()
+            .judicialMessages(List.of(
+                element(JudicialMessage.builder()
+                    .latestMessage("some note")
+                    .messageHistory("some history")
+                    .dateSent("Some date sent")
+                    .build()),
+                element(JudicialMessage.builder()
+                    .latestMessage("some note")
+                    .messageHistory("some history")
+                    .dateSent("Some date sent")
+                    .build())))
             .c2DocumentBundle(List.of(element(C2DocumentBundle.builder()
                 .uploadedDateTime("01 Dec 2020")
                 .author("Some author")
@@ -58,8 +73,9 @@ class MessageJudgeServiceTest {
 
         Map<String, Object> expectedData = Map.of(
             "hasC2Applications", YES.getValue(),
-            "c2DynamicList", caseData.buildC2DocumentDynamicList()
-        );
+            "hasJudicialMessages", YES.getValue(),
+            "c2DynamicList", caseData.buildC2DocumentDynamicList(),
+            "judicialMessageDynamicList", caseData.buildJudicialMessageDynamicList());
 
         Map<String, Object> data = messageJudgeService.initialiseCaseFields(caseData);
 
@@ -88,7 +104,7 @@ class MessageJudgeServiceTest {
         MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
             .c2DynamicList(DynamicList.builder()
                 .value(DynamicListElement.builder()
-                    .code(SELECTED_C2_ID)
+                    .code(SELECTED_DYNAMIC_LIST_ITEM_ID)
                     .build())
                 .build())
             .build();
@@ -96,7 +112,7 @@ class MessageJudgeServiceTest {
         CaseData caseData = CaseData.builder()
             .messageJudgeEventData(messageJudgeEventData)
             .c2DocumentBundle(List.of(
-                element(SELECTED_C2_ID, selectedC2DocumentBundle),
+                element(SELECTED_DYNAMIC_LIST_ITEM_ID, selectedC2DocumentBundle),
                 element(UUID.randomUUID(), C2DocumentBundle.builder()
                     .document(DocumentReference.builder()
                         .filename("other_c2.doc")
@@ -109,7 +125,7 @@ class MessageJudgeServiceTest {
 
         assertThat(messageJudgeService.populateNewMessageFields(caseData))
             .extracting("relatedDocumentsLabel", "c2DynamicList")
-            .containsExactly(expectedC2Label, caseData.buildC2DocumentDynamicList(SELECTED_C2_ID));
+            .containsExactly(expectedC2Label, caseData.buildC2DocumentDynamicList(SELECTED_DYNAMIC_LIST_ITEM_ID));
     }
 
     @Test
@@ -128,7 +144,7 @@ class MessageJudgeServiceTest {
 
         CaseData caseData = CaseData.builder()
             .c2DocumentBundle(List.of(
-                element(SELECTED_C2_ID, selectedC2DocumentBundle),
+                element(SELECTED_DYNAMIC_LIST_ITEM_ID, selectedC2DocumentBundle),
                 element(UUID.randomUUID(), C2DocumentBundle.builder()
                     .document(DocumentReference.builder()
                         .filename("other_c2.doc")
@@ -138,6 +154,35 @@ class MessageJudgeServiceTest {
             .build();
 
         assertThat(messageJudgeService.populateNewMessageFields(caseData)).isEmpty();
+    }
+
+    @Test
+    void shouldBuildRelatedDocumentsLabelAndRebuildJudicialMessagesDynamicListWhenReplyingToAMessage() {
+        JudicialMessage selectedJudicialMessage= JudicialMessage.builder()
+            .relatedDocumentFileNames("file1.doc")
+            .messageHistory("message history")
+            .latestMessage("Some note")
+            .build();
+
+        MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
+            .judicialMessageDynamicList(DynamicList.builder()
+                .value(DynamicListElement.builder()
+                    .code(SELECTED_DYNAMIC_LIST_ITEM_ID)
+                    .build())
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .messageJudgeEventData(messageJudgeEventData)
+            .judicialMessages(List.of(
+                element(SELECTED_DYNAMIC_LIST_ITEM_ID, selectedJudicialMessage),
+                element(JudicialMessage.builder().build())))
+            .build();
+
+        assertThat(messageJudgeService.populateReplyMessageFields(caseData))
+            .extracting("relatedDocumentsLabel", "judicialMessageReply", "judicialMessageDynamicList")
+            .containsExactly(selectedJudicialMessage.getRelatedDocumentFileNames(), selectedJudicialMessage,
+                caseData.buildJudicialMessageDynamicList(SELECTED_DYNAMIC_LIST_ITEM_ID));
     }
 
     @Test
@@ -160,13 +205,14 @@ class MessageJudgeServiceTest {
         List<Element<JudicialMessage>> updatedMessages = messageJudgeService.addNewJudicialMessage(caseData);
 
         Element<JudicialMessage> expectedJudicialMessageElement = element(NEW_ELEMENT_ID, JudicialMessage.builder()
-            .dateSentAsLocalDateTime(time.now())
+            .updatedTime(time.now())
             .status(OPEN)
-            .note(MESSAGE_NOTE)
+            .latestMessage(MESSAGE_NOTE)
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
             .sender(MESSAGE_SENDER)
             .recipient(MESSAGE_RECIPIENT)
             .urgency("High urgency")
+            .messageHistory(MESSAGE_NOTE)
             .build());
 
         assertThat(updatedMessages).hasSize(1).first().isEqualTo(expectedJudicialMessageElement);
@@ -200,7 +246,7 @@ class MessageJudgeServiceTest {
             .judicialMessageMetaData(judicialMessageMetaData)
             .c2DynamicList(DynamicList.builder()
                 .value(DynamicListElement.builder()
-                    .code(SELECTED_C2_ID)
+                    .code(SELECTED_DYNAMIC_LIST_ITEM_ID)
                     .build())
                 .build())
             .build();
@@ -208,7 +254,7 @@ class MessageJudgeServiceTest {
         CaseData caseData = CaseData.builder()
             .messageJudgeEventData(messageJudgeEventData)
             .c2DocumentBundle(List.of(
-                element(SELECTED_C2_ID, selectedC2DocumentBundle),
+                element(SELECTED_DYNAMIC_LIST_ITEM_ID, selectedC2DocumentBundle),
                 element(UUID.randomUUID(), C2DocumentBundle.builder()
                     .document(DocumentReference.builder()
                         .filename("other_c2.doc")
@@ -255,9 +301,10 @@ class MessageJudgeServiceTest {
         JudicialMessage expectedNewJudicialMessage = JudicialMessage.builder()
             .sender(MESSAGE_SENDER)
             .recipient(MESSAGE_RECIPIENT)
-            .dateSentAsLocalDateTime(time.now())
+            .updatedTime(time.now())
             .status(OPEN)
-            .note(MESSAGE_NOTE)
+            .latestMessage(MESSAGE_NOTE)
+            .messageHistory(MESSAGE_NOTE)
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
             .build();
 
@@ -270,6 +317,51 @@ class MessageJudgeServiceTest {
             element(existingJudicialMessageId, existingJudicialMessage),
             element(NEW_ELEMENT_ID, expectedNewJudicialMessage)
         ));
+    }
+
+    @Test
+    void shouldUpdateExistingJudicialMessageWhenReplying() {
+        String messageReply = "Reply to message";
+
+        MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
+            .judicialMessageDynamicList(DynamicList.builder()
+                .value(DynamicListElement.builder()
+                    .code(SELECTED_DYNAMIC_LIST_ITEM_ID)
+                    .build())
+                .build())
+            .judicialMessageReply(JudicialMessage.builder()
+                .latestMessage(messageReply)
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .messageJudgeEventData(messageJudgeEventData)
+            .judicialMessages(List.of(
+                element(SELECTED_DYNAMIC_LIST_ITEM_ID, JudicialMessage.builder()
+                    .sender(MESSAGE_SENDER)
+                    .recipient(MESSAGE_RECIPIENT)
+                    .updatedTime(time.now().minusDays(1))
+                    .status(OPEN)
+                    .latestMessage(MESSAGE_NOTE)
+                    .messageHistory(MESSAGE_NOTE)
+                    .dateSent(formatLocalDateTimeBaseUsingFormat(time.now().minusDays(1), DATE_TIME_AT))
+                    .build())))
+            .build();
+
+        JudicialMessage expectedUpdatedJudicialMessage = JudicialMessage.builder()
+            .sender(MESSAGE_SENDER)
+            .recipient(MESSAGE_RECIPIENT)
+            .updatedTime(time.now())
+            .status(OPEN)
+            .latestMessage(messageReply)
+            .messageHistory(MESSAGE_NOTE + "\n" + messageReply)
+            .dateSent(formatLocalDateTimeBaseUsingFormat(time.now().minusDays(1), DATE_TIME_AT))
+            .build();
+
+        List<Element<JudicialMessage>> updatedMessages = messageJudgeService.replyToJudicialMessage(caseData);
+
+        assertThat(updatedMessages.get(0)).isEqualTo(
+            element(SELECTED_DYNAMIC_LIST_ITEM_ID, expectedUpdatedJudicialMessage));
     }
 
     @Test
@@ -290,7 +382,30 @@ class MessageJudgeServiceTest {
             oldestJudicialMessage));
     }
 
+    @Test
+    void shouldPopulateFirstHearingLabelWhenHearingExists() {
+        HearingType hearingType = CASE_MANAGEMENT;
+        LocalDateTime hearingStartDate = LocalDateTime.now();
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(List.of(element(HearingBooking.builder()
+                .type(hearingType)
+                .startDate(hearingStartDate)
+                .build())))
+            .build();
+
+        assertThat(messageJudgeService.getFirstHearingLabel(caseData))
+            .isEqualTo(String.format("Next hearing in the case: %s hearing, %s", hearingType.getLabel(),
+                formatLocalDateTimeBaseUsingFormat(hearingStartDate, DATE)));
+    }
+
+    @Test
+    void shouldNotPopulateFirstHearingLabelWhenHearingDoesNotExists() {
+        CaseData caseData = CaseData.builder().build();
+        assertThat(messageJudgeService.getFirstHearingLabel(caseData)).isEmpty();
+    }
+
     private Element<JudicialMessage> buildJudicialMessageElement(LocalDateTime dateTime) {
-        return element(JudicialMessage.builder().dateSentAsLocalDateTime(dateTime).build());
+        return element(JudicialMessage.builder().updatedTime(dateTime).build());
     }
 }

@@ -40,7 +40,7 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
         UUID judicialMessageId = UUID.randomUUID();
 
         JudicialMessage oldJudicialMessage = JudicialMessage.builder()
-            .dateSentAsLocalDateTime(now().minusDays(1))
+            .updatedTime(now().minusDays(1))
             .build();
 
         MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
@@ -66,10 +66,10 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
 
         JudicialMessage expectedJudicialMessage = JudicialMessage.builder()
             .dateSent(formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME_AT))
-            .dateSentAsLocalDateTime(now())
+            .updatedTime(now())
             .status(OPEN)
             .recipient("John@fpla.com")
-            .note("Some note")
+            .latestMessage("Some note")
             .sender("ben@fpla.com")
             .urgency("High urgency")
             .build();

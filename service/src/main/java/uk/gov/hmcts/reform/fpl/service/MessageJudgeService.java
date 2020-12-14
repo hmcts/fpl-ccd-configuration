@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessageMetaData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -17,10 +18,11 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
-import static uk.gov.hmcts.reform.fpl.enums.MessageJudgeOptions.REPLY;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -65,30 +67,20 @@ public class MessageJudgeService {
             data.put("c2DynamicList", rebuildC2DynamicList(caseData, selectedC2Id));
         }
 
-        caseData.getFirstHearing().ifPresent(hearingBooking -> data.put("nextHearingLabel",
-            String.format("Next hearing in the case: %s", hearingBooking.toLabel())));
-
         return data;
     }
 
     public Map<String, Object> populateReplyMessageFields(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
 
-        if (isReplyingToJudicialMessage(caseData)) {
-            UUID selectedJudicialMessageId = getDynamicListSelectedValue(
-                caseData.getMessageJudgeEventData().getJudicialMessageDynamicList(), mapper
-            );
+        UUID selectedJudicialMessageId = getDynamicListSelectedValue(
+            caseData.getMessageJudgeEventData().getJudicialMessageDynamicList(), mapper);
 
-            JudicialMessage selectedJudicialMessage = caseData.getJudicialMessageByUUID(selectedJudicialMessageId);
+        JudicialMessage selectedJudicialMessage = caseData.getJudicialMessageByUUID(selectedJudicialMessageId);
 
-            data.put("relatedDocumentsLabel", selectedJudicialMessage.getRelatedDocumentFileNames());
-            data.put("judicialMessageReply", selectedJudicialMessage);
-            data.put("judicialMessageDynamicList",
-                rebuildJudicialMessageDynamicList(caseData, selectedJudicialMessageId));
-        }
-
-        caseData.getFirstHearing().ifPresent(hearingBooking -> data.put("nextHearingLabel",
-            String.format("Next hearing in the case: %s", hearingBooking.toLabel())));
+        data.put("relatedDocumentsLabel", selectedJudicialMessage.getRelatedDocumentFileNames());
+        data.put("judicialMessageReply", selectedJudicialMessage);
+        data.put("judicialMessageDynamicList", rebuildJudicialMessageDynamicList(caseData, selectedJudicialMessageId));
 
         return data;
     }
@@ -97,12 +89,14 @@ public class MessageJudgeService {
         List<Element<JudicialMessage>> judicialMessages = caseData.getJudicialMessages();
         MessageJudgeEventData messageJudgeEventData = caseData.getMessageJudgeEventData();
         JudicialMessageMetaData judicialMessageMetaData = messageJudgeEventData.getJudicialMessageMetaData();
+        String latestMessage = messageJudgeEventData.getJudicialMessageNote();
 
         JudicialMessage.JudicialMessageBuilder<?, ?> judicialMessageBuilder = JudicialMessage.builder()
             .sender(judicialMessageMetaData.getSender())
             .recipient(judicialMessageMetaData.getRecipient())
-            .note(messageJudgeEventData.getJudicialMessageNote())
-            .dateSentAsLocalDateTime(time.now())
+            .latestMessage(latestMessage)
+            .messageHistory(latestMessage)
+            .updatedTime(time.now())
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
             .urgency(judicialMessageMetaData.getUrgency())
             .status(OPEN);
@@ -120,11 +114,50 @@ public class MessageJudgeService {
         return judicialMessages;
     }
 
+    public List<Element<JudicialMessage>> replyToJudicialMessage(CaseData caseData) {
+        List<Element<JudicialMessage>> judicialMessages = caseData.getJudicialMessages();
+        MessageJudgeEventData messageJudgeEventData = caseData.getMessageJudgeEventData();
+        JudicialMessage judicialMessageReply = messageJudgeEventData.getJudicialMessageReply();
+
+        UUID selectedJudicialMessageId = getDynamicListSelectedValue(
+            caseData.getMessageJudgeEventData().getJudicialMessageDynamicList(), mapper);
+
+        return judicialMessages.stream()
+            .map(judicialMessageElement -> {
+                if (selectedJudicialMessageId.equals(judicialMessageElement.getId())) {
+
+                    JudicialMessage judicialMessage = judicialMessageElement.getValue();
+
+                    JudicialMessage updatedMessage = judicialMessage.toBuilder()
+                        .updatedTime(time.now())
+                        .messageHistory(String.join("\n", List.of(
+                            judicialMessage.getMessageHistory(),
+                            judicialMessageReply.getLatestMessage())))
+                        .latestMessage(judicialMessageReply.getLatestMessage())
+                        .build();
+
+                    return element(judicialMessageElement.getId(), updatedMessage);
+                }
+
+                return judicialMessageElement;
+            }).collect(Collectors.toList());
+    }
+
     public List<Element<JudicialMessage>> sortJudicialMessages(List<Element<JudicialMessage>> judicialMessages) {
         judicialMessages.sort(Comparator.comparing(judicialMessageElement
-            -> judicialMessageElement.getValue().getDateSentAsLocalDateTime(), Comparator.reverseOrder()));
+            -> judicialMessageElement.getValue().getUpdatedTime(), Comparator.reverseOrder()));
 
         return judicialMessages;
+    }
+
+    public String getFirstHearingLabel(CaseData caseData) {
+        Optional<HearingBooking> firstHearing = caseData.getFirstHearing();
+
+        if (firstHearing.isPresent()) {
+            return String.format("Next hearing in the case: %s", firstHearing.get().toLabel());
+        }
+
+        return "";
     }
 
     private DynamicList rebuildC2DynamicList(CaseData caseData, UUID selectedC2Id) {
@@ -132,7 +165,7 @@ public class MessageJudgeService {
     }
 
     private DynamicList rebuildJudicialMessageDynamicList(CaseData caseData, UUID selectedC2Id) {
-        return caseData.buildC2DocumentDynamicList(selectedC2Id);
+        return caseData.buildJudicialMessageDynamicList(selectedC2Id);
     }
 
     private boolean hasC2Documents(CaseData caseData) {
@@ -145,10 +178,6 @@ public class MessageJudgeService {
     }
 
     private boolean hasJudicialMessages(CaseData caseData) {
-        return caseData.getJudicialMessages() != null;
-    }
-
-    private boolean isReplyingToJudicialMessage(CaseData caseData) {
-        return REPLY.equals(caseData.getMessageJudgeEventData().getMessageJudgeOption());
+        return caseData.getJudicialMessages() != null && caseData.getJudicialMessages().size() >= 1;
     }
 }
