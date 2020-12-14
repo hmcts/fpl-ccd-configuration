@@ -79,7 +79,7 @@ public class MessageJudgeService {
         JudicialMessage selectedJudicialMessage = caseData.getJudicialMessageByUUID(selectedJudicialMessageId);
 
         data.put("relatedDocumentsLabel", selectedJudicialMessage.getRelatedDocumentFileNames());
-        data.put("judicialMessageReply", selectedJudicialMessage);
+        data.put("judicialMessageReply", selectedJudicialMessage.toBuilder().latestMessage("").build());
         data.put("judicialMessageDynamicList", rebuildJudicialMessageDynamicList(caseData, selectedJudicialMessageId));
 
         return data;
