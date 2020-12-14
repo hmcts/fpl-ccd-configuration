@@ -12,7 +12,9 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -35,6 +37,8 @@ public class MessageJudgeService {
     private final Time time;
     private final IdentityService identityService;
     private final ObjectMapper mapper;
+    private final IdamClient idamClient;
+    private final RequestData requestData;
 
     public Map<String, Object> initialiseCaseFields(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
@@ -79,7 +83,10 @@ public class MessageJudgeService {
         JudicialMessage selectedJudicialMessage = caseData.getJudicialMessageByUUID(selectedJudicialMessageId);
 
         data.put("relatedDocumentsLabel", selectedJudicialMessage.getRelatedDocumentFileNames());
-        data.put("judicialMessageReply", selectedJudicialMessage.toBuilder().latestMessage("").build());
+        data.put("judicialMessageReply", selectedJudicialMessage.toBuilder()
+            .recipient(idamClient.getUserDetails(requestData.authorisation()).getEmail())
+            .latestMessage("")
+            .build());
         data.put("judicialMessageDynamicList", rebuildJudicialMessageDynamicList(caseData, selectedJudicialMessageId));
 
         return data;
@@ -130,6 +137,7 @@ public class MessageJudgeService {
 
                     JudicialMessage updatedMessage = judicialMessage.toBuilder()
                         .updatedTime(time.now())
+                        .recipient(judicialMessageReply.getRecipient())
                         .messageHistory(String.join("\n", List.of(
                             judicialMessage.getMessageHistory(),
                             judicialMessageReply.getLatestMessage())))
