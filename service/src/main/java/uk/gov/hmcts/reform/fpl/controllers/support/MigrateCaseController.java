@@ -106,14 +106,8 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         log.info("Migration of Old Documents to Application Documents for FamilyManCaseNumber {}",
             caseData.getFamilyManCaseNumber());
-        Map<String, Object> migratedData = uploadDocumentsMigrationService.transformFromOldCaseData(caseData);
         Map<String, Object> data = caseDetails.getData();
-        data.put("applicationDocuments",
-            migratedData.getOrDefault("applicationDocuments", null));
-        data.put("applicationDocumentsToFollowReason",
-            migratedData.getOrDefault("applicationDocumentsToFollowReason", null)
-        );
-        data.put("courtBundleList", migratedData.getOrDefault("courtBundleList", null));
+        data.putAll(uploadDocumentsMigrationService.transformFromOldCaseData(caseData));
     }
 
     private void run2501(CaseDetails caseDetails) {
