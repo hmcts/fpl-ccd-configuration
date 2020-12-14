@@ -25,7 +25,7 @@ public class JudicialMessageContentProvider extends AbstractEmailContentProvider
             .respondentLastName(getFirstRespondentLastName(caseData))
             .callout(buildCallout(caseData))
             .sender(judicialMessage.getSender())
-            .note(judicialMessage.getNote())
+            .latestMessage(judicialMessage.getLatestMessage())
             .caseUrl(getCaseUrl(caseData.getId(), "JudicialMessagesTab"));
 
         if (isNotEmpty(judicialMessage.getUrgency())) {
