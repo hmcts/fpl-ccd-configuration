@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.cmo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Iterables;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -163,15 +165,26 @@ public class UploadCMOService {
     }
 
     private void migrateDocuments(List<Element<HearingFurtherEvidenceBundle>> evidenceBundles, UUID selectedHearingId,
-                                  HearingBooking hearing, List<Element<SupportingEvidenceBundle>> supportingDocs) {
+                                  HearingBooking hearing, List<Element<SupportingEvidenceBundle>> cmoSupportingDocs) {
         Optional<Element<HearingFurtherEvidenceBundle>> bundle = findElement(selectedHearingId, evidenceBundles);
 
         if (bundle.isPresent()) {
-            bundle.get().getValue().getSupportingEvidenceBundle().addAll(supportingDocs);
+            List<Element<SupportingEvidenceBundle>> hearingDocs = bundle.get().getValue().getSupportingEvidenceBundle();
+
+            cmoSupportingDocs.forEach(cmoSupportingDoc -> {
+                int hearingDocIndex = Iterables.indexOf(hearingDocs,
+                    hearingDoc -> Objects.equals(hearingDoc.getId(), cmoSupportingDoc.getId()));
+                if (hearingDocIndex < 0) {
+                    hearingDocs.add(cmoSupportingDoc);
+                } else {
+                    hearingDocs.remove(hearingDocIndex);
+                    hearingDocs.add(hearingDocIndex, cmoSupportingDoc);
+                }
+            });
         } else {
             evidenceBundles.add(element(selectedHearingId, HearingFurtherEvidenceBundle.builder()
                 .hearingName(hearing.toLabel())
-                .supportingEvidenceBundle(supportingDocs)
+                .supportingEvidenceBundle(cmoSupportingDocs)
                 .build()));
         }
     }
