@@ -9,5 +9,5 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class NewJudicialMessageReplyTemplate extends BaseCaseNotifyData {
     private final String callout;
-    private final String note;
+    private final String latestMessage;
 }
