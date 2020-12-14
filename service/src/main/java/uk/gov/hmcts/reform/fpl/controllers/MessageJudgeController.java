@@ -51,17 +51,6 @@ public class MessageJudgeController extends CallbackController {
 
         caseDetailsMap.putAll(messageJudgeService.populateNewMessageFields(caseData));
 
-        //MOVE INTO SUBMITTED WHEN UI WORKS
-        Object judicialMessageDynamicList = caseData.getMessageJudgeEventData().getJudicialMessageDynamicList();
-        JudicialMessage newJudicialMessageReply = caseData.getJudicialMessages().get(0).getValue();
-
-        if(isNull(judicialMessageDynamicList)) {
-            System.out.println("Let's trigger new message notification");
-        } else {
-            System.out.println("Let's trigger reply notification");
-            publishEvent(new NewJudicialMessageReplyEvent(caseData, newJudicialMessageReply));
-        }
-
         return respond(caseDetailsMap);
     }
 
@@ -72,17 +61,6 @@ public class MessageJudgeController extends CallbackController {
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
 
         caseDetailsMap.putAll(messageJudgeService.populateReplyMessageFields(caseData));
-
-        //MOVE INTO SUBMITTED WHEN UI WORKS
-        Object judicialMessageDynamicList = caseData.getMessageJudgeEventData().getJudicialMessageDynamicList();
-        JudicialMessage newJudicialMessageReply = caseData.getJudicialMessages().get(0).getValue();
-
-        if(isNull(judicialMessageDynamicList)) {
-            System.out.println("Let's trigger new message notification");
-        } else {
-            System.out.println("Let's trigger reply notification");
-            publishEvent(new NewJudicialMessageReplyEvent(caseData, newJudicialMessageReply));
-        }
 
         return respond(caseDetailsMap);
     }
@@ -106,8 +84,13 @@ public class MessageJudgeController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
+        Object judicialMessageDynamicList = caseData.getMessageJudgeEventData().getJudicialMessageDynamicList();
         JudicialMessage newJudicialMessage = caseData.getJudicialMessages().get(0).getValue();
 
-        publishEvent(new NewJudicialMessageEvent(caseData, newJudicialMessage));
+        if(isNull(judicialMessageDynamicList)) {
+            publishEvent(new NewJudicialMessageEvent(caseData, newJudicialMessage));
+        } else {
+            publishEvent(new NewJudicialMessageReplyEvent(caseData, newJudicialMessage));
+        }
     }
 }
