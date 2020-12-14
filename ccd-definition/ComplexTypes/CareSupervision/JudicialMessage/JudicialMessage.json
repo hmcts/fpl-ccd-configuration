@@ -92,6 +92,7 @@
     "ListElementCode": "messageHistory",
     "FieldType": "TextArea",
     "ElementLabel": " ",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "relatedDocuments=\"DO_NOT_SHOW\""
   }
 ]

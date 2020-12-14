@@ -37,7 +37,8 @@
     "ListElementCode": "messageHistory",
     "FieldDisplayOrder": 4,
     "DisplayContext": "READONLY",
-    "EventElementLabel": "Message from CTSC admin team"
+    "EventElementLabel": "Message from CTSC admin team",
+    "FieldShowCondition": "messageHistory!=\"ALWAYS_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
