@@ -35,21 +35,22 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 class MessageJudgeServiceTest {
-    private Time time = new FixedTimeConfiguration().stoppedTime();
-
-    private ObjectMapper mapper = new ObjectMapper();
-
-    private IdentityService identityService = mock(IdentityService.class);
+    private final Time time = new FixedTimeConfiguration().stoppedTime();
+    private final ObjectMapper mapper = new ObjectMapper();
+    private final IdentityService identityService = mock(IdentityService.class);
+    private final UserService userService = mock(UserService.class);
+    private final MessageJudgeService messageJudgeService = new MessageJudgeService(
+        time, identityService, mapper, userService
+    );
 
     private static final String MESSAGE_NOTE = "Message note";
     private static final String MESSAGE_SENDER = "sender@fpla.com";
+    private static final String MESSAGE_ABOUT = "request review from some court";
     private static final String MESSAGE_RECIPIENT = "recipient@fpla.com";
     private static final String C2_FILE_NAME = "c2.doc";
     private static final String C2_SUPPORTING_DOCUMENT_FILE_NAME = "c2_supporting.doc";
     private static final UUID SELECTED_DYNAMIC_LIST_ITEM_ID = UUID.randomUUID();
     private static final UUID NEW_ELEMENT_ID = UUID.randomUUID();
-
-    private MessageJudgeService messageJudgeService = new MessageJudgeService(time, identityService, mapper);
 
     @Test
     void shouldInitialiseCaseFieldsWhenC2DocumentsAndJudicialMessagesExist() {
@@ -159,6 +160,7 @@ class MessageJudgeServiceTest {
     @Test
     void shouldBuildRelatedDocumentsLabelAndRebuildJudicialMessagesDynamicListWhenReplyingToAMessage() {
         JudicialMessage selectedJudicialMessage= JudicialMessage.builder()
+            .sender(MESSAGE_SENDER)
             .relatedDocumentFileNames("file1.doc")
             .messageHistory("message history")
             .latestMessage("Some note")
@@ -179,16 +181,21 @@ class MessageJudgeServiceTest {
                 element(JudicialMessage.builder().build())))
             .build();
 
+        JudicialMessage expectedJudicialMessage = selectedJudicialMessage.toBuilder()
+            .latestMessage("")
+            .recipient(MESSAGE_SENDER)
+            .build();
+
         assertThat(messageJudgeService.populateReplyMessageFields(caseData))
             .extracting("relatedDocumentsLabel", "judicialMessageReply", "judicialMessageDynamicList")
-            .containsExactly(selectedJudicialMessage.getRelatedDocumentFileNames(), selectedJudicialMessage,
+            .containsExactly(selectedJudicialMessage.getRelatedDocumentFileNames(), expectedJudicialMessage,
                 caseData.buildJudicialMessageDynamicList(SELECTED_DYNAMIC_LIST_ITEM_ID));
     }
 
     @Test
     void shouldAppendNewJudicialMessageToJudicialMessageListWhenC2DocumentNotSelected() {
         JudicialMessageMetaData judicialMessageMetaData = JudicialMessageMetaData.builder()
-            .sender(MESSAGE_SENDER)
+            .about(MESSAGE_ABOUT)
             .recipient(MESSAGE_RECIPIENT)
             .urgency("High urgency")
             .build();
@@ -201,6 +208,7 @@ class MessageJudgeServiceTest {
         CaseData caseData = CaseData.builder().messageJudgeEventData(messageJudgeEventData).build();
 
         when(identityService.generateId()).thenReturn(NEW_ELEMENT_ID);
+        when(userService.getUserEmail()).thenReturn(MESSAGE_SENDER);
 
         List<Element<JudicialMessage>> updatedMessages = messageJudgeService.addNewJudicialMessage(caseData);
 
@@ -211,6 +219,7 @@ class MessageJudgeServiceTest {
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
             .sender(MESSAGE_SENDER)
             .recipient(MESSAGE_RECIPIENT)
+            .about(MESSAGE_ABOUT)
             .urgency("High urgency")
             .messageHistory(MESSAGE_NOTE)
             .build());
@@ -221,7 +230,6 @@ class MessageJudgeServiceTest {
     @Test
     void shouldAppendNewJudicialMessageToJudicialMessageListWhenC2DocumentHasBeenSelected() {
         JudicialMessageMetaData judicialMessageMetaData = JudicialMessageMetaData.builder()
-            .sender(MESSAGE_SENDER)
             .recipient(MESSAGE_RECIPIENT)
             .build();
 
@@ -263,6 +271,8 @@ class MessageJudgeServiceTest {
             ))
             .build();
 
+        when(userService.getUserEmail()).thenReturn(MESSAGE_SENDER);
+
         List<Element<JudicialMessage>> updatedMessages = messageJudgeService.addNewJudicialMessage(caseData);
         JudicialMessage newMessage = updatedMessages.get(0).getValue();
         List<Element<DocumentReference>> relatedDocuments = newMessage.getRelatedDocuments();
@@ -278,7 +288,7 @@ class MessageJudgeServiceTest {
     @Test
     void shouldAppendNewJudicialMessageToExistingJudicialMessageList() {
         JudicialMessage newMessage = JudicialMessage.builder()
-            .sender(MESSAGE_SENDER)
+            .about(MESSAGE_ABOUT)
             .recipient(MESSAGE_RECIPIENT)
             .build();
 
@@ -303,12 +313,14 @@ class MessageJudgeServiceTest {
             .recipient(MESSAGE_RECIPIENT)
             .updatedTime(time.now())
             .status(OPEN)
+            .about(MESSAGE_ABOUT)
             .latestMessage(MESSAGE_NOTE)
             .messageHistory(MESSAGE_NOTE)
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
             .build();
 
         when(identityService.generateId()).thenReturn(NEW_ELEMENT_ID);
+        when(userService.getUserEmail()).thenReturn(MESSAGE_SENDER);
 
         List<Element<JudicialMessage>> updatedMessages = messageJudgeService.addNewJudicialMessage(caseData);
 
@@ -342,21 +354,27 @@ class MessageJudgeServiceTest {
                     .recipient(MESSAGE_RECIPIENT)
                     .updatedTime(time.now().minusDays(1))
                     .status(OPEN)
+                    .about(MESSAGE_ABOUT)
                     .latestMessage(MESSAGE_NOTE)
                     .messageHistory(MESSAGE_NOTE)
                     .dateSent(formatLocalDateTimeBaseUsingFormat(time.now().minusDays(1), DATE_TIME_AT))
                     .build())))
             .build();
 
+        // The sender and recipient are not the wrong way round, the sender of the previous message has be made the
+        // recipient of this one and the recipient has "responded" and become the sender.
         JudicialMessage expectedUpdatedJudicialMessage = JudicialMessage.builder()
-            .sender(MESSAGE_SENDER)
-            .recipient(MESSAGE_RECIPIENT)
+            .sender(MESSAGE_RECIPIENT)
+            .recipient(MESSAGE_SENDER)
+            .about(MESSAGE_ABOUT)
             .updatedTime(time.now())
             .status(OPEN)
             .latestMessage(messageReply)
             .messageHistory(MESSAGE_NOTE + "\n" + messageReply)
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now().minusDays(1), DATE_TIME_AT))
             .build();
+
+       when(userService.getUserEmail()).thenReturn(MESSAGE_RECIPIENT);
 
         List<Element<JudicialMessage>> updatedMessages = messageJudgeService.replyToJudicialMessage(caseData);
 

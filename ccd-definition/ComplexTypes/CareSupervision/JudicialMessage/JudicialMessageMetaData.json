@@ -10,7 +10,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudicialMessageMetaData",
-    "ListElementCode": "sender",
+    "ListElementCode": "about",
     "FieldType": "Text",
     "ElementLabel": "To review an application from:",
     "SecurityClassification": "Public"

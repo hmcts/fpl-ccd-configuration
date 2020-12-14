@@ -12,9 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -37,8 +35,7 @@ public class MessageJudgeService {
     private final Time time;
     private final IdentityService identityService;
     private final ObjectMapper mapper;
-    private final IdamClient idamClient;
-    private final RequestData requestData;
+    private final UserService userService;
 
     public Map<String, Object> initialiseCaseFields(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
@@ -78,15 +75,18 @@ public class MessageJudgeService {
         Map<String, Object> data = new HashMap<>();
 
         UUID selectedJudicialMessageId = getDynamicListSelectedValue(
-            caseData.getMessageJudgeEventData().getJudicialMessageDynamicList(), mapper);
+            caseData.getMessageJudgeEventData().getJudicialMessageDynamicList(), mapper
+        );
 
         JudicialMessage selectedJudicialMessage = caseData.getJudicialMessageByUUID(selectedJudicialMessageId);
 
-        data.put("relatedDocumentsLabel", selectedJudicialMessage.getRelatedDocumentFileNames());
-        data.put("judicialMessageReply", selectedJudicialMessage.toBuilder()
-            .recipient(idamClient.getUserDetails(requestData.authorisation()).getEmail())
+        selectedJudicialMessage = selectedJudicialMessage.toBuilder()
+            .recipient(selectedJudicialMessage.getSender())
             .latestMessage("")
-            .build());
+            .build();
+
+        data.put("relatedDocumentsLabel", selectedJudicialMessage.getRelatedDocumentFileNames());
+        data.put("judicialMessageReply", selectedJudicialMessage);
         data.put("judicialMessageDynamicList", rebuildJudicialMessageDynamicList(caseData, selectedJudicialMessageId));
 
         return data;
@@ -99,8 +99,9 @@ public class MessageJudgeService {
         String latestMessage = messageJudgeEventData.getJudicialMessageNote();
 
         JudicialMessage.JudicialMessageBuilder<?, ?> judicialMessageBuilder = JudicialMessage.builder()
-            .sender(judicialMessageMetaData.getSender())
+            .sender(userService.getUserEmail())
             .recipient(judicialMessageMetaData.getRecipient())
+            .about(judicialMessageMetaData.getAbout())
             .latestMessage(latestMessage)
             .messageHistory(latestMessage)
             .updatedTime(time.now())
@@ -127,7 +128,8 @@ public class MessageJudgeService {
         JudicialMessage judicialMessageReply = messageJudgeEventData.getJudicialMessageReply();
 
         UUID selectedJudicialMessageId = getDynamicListSelectedValue(
-            caseData.getMessageJudgeEventData().getJudicialMessageDynamicList(), mapper);
+            caseData.getMessageJudgeEventData().getJudicialMessageDynamicList(), mapper
+        );
 
         return judicialMessages.stream()
             .map(judicialMessageElement -> {
@@ -137,7 +139,8 @@ public class MessageJudgeService {
 
                     JudicialMessage updatedMessage = judicialMessage.toBuilder()
                         .updatedTime(time.now())
-                        .recipient(judicialMessageReply.getRecipient())
+                        .sender(userService.getUserEmail()) // Get the email of the current user
+                        .recipient(judicialMessage.getSender()) // Get the sender of the previous message
                         .messageHistory(String.join("\n", List.of(
                             judicialMessage.getMessageHistory(),
                             judicialMessageReply.getLatestMessage())))

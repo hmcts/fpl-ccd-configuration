@@ -14,11 +14,12 @@
     "ID": "JudicialMessageReply",
     "CaseEventID": "messageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageReply",
-    "ListElementCode": "sender",
+    "ListElementCode": "about",
     "SecurityClassification": "Public",
     "FieldDisplayOrder": 2,
     "EventElementLabel": "About a request from",
-    "DisplayContext": "READONLY"
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "recipient!=\"ALWAYS_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",

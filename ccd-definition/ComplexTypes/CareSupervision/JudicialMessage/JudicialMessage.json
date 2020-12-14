@@ -3,7 +3,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "JudicialMessage",
     "ListElementCode": "sender",
-    "FieldType": "Text",
+    "FieldType": "Email",
     "ElementLabel": "From",
     "SecurityClassification": "Public"
   },
@@ -14,6 +14,15 @@
     "FieldType": "Email",
     "ElementLabel": "Sent to",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "about",
+    "FieldType": "Text",
+    "ElementLabel": "Review request from",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "sender=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
