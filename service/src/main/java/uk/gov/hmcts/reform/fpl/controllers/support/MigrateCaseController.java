@@ -16,10 +16,12 @@ import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.document.UploadDocumentsMigrationService;
 
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
+import java.util.Map;
 
 import static java.lang.String.format;
 
@@ -29,6 +31,8 @@ import static java.lang.String.format;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Slf4j
 public class MigrateCaseController extends CallbackController {
+
+    private final UploadDocumentsMigrationService uploadDocumentsMigrationService;
 
     private static final String MIGRATION_ID_KEY = "migrationId";
 
@@ -41,6 +45,11 @@ public class MigrateCaseController extends CallbackController {
         if ("FPLA-2491".equals(migrationId)) {
             run2491(caseDetails);
         }
+
+        if ("FPLA-2379".equals(migrationId)) {
+            run2379(caseDetails);
+        }
+
         if ("FPLA-2501".equals(migrationId)) {
             run2501(caseDetails);
         }
@@ -91,6 +100,20 @@ public class MigrateCaseController extends CallbackController {
 
             caseDetails.getData().put("hearingDetails", hearings);
         }
+    }
+
+    private void run2379(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+        log.info("Migration of Old Documents to Application Documents for FamilyManCaseNumber {}",
+            caseData.getFamilyManCaseNumber());
+        Map<String, Object> migratedData = uploadDocumentsMigrationService.transformFromOldCaseData(caseData);
+        Map<String, Object> data = caseDetails.getData();
+        data.put("applicationDocuments",
+            migratedData.getOrDefault("applicationDocuments", null));
+        data.put("applicationDocumentsToFollowReason",
+            migratedData.getOrDefault("applicationDocumentsToFollowReason", null)
+        );
+        data.put("courtBundleList", migratedData.getOrDefault("courtBundleList", null));
     }
 
     private void run2501(CaseDetails caseDetails) {
