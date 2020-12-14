@@ -184,7 +184,8 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
 
         final AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
 
-        final String expiryDate = subtype == INTERIM ? "End of the proceedings" : null;
+        final String expiryDate = subtype == INTERIM
+            ? "At the end of the proceedings, or until a further order is made" : null;
         final GeneratedOrder expectedCareOrder = commonExpectedOrder(format("%s care order", subtype.getLabel()))
             .expiryDate(expiryDate)
             .children(expectedChildren(caseData))
@@ -203,7 +204,7 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
         final AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
 
         final GeneratedOrder expectedSupervisionOrder = commonExpectedOrder("Interim supervision order")
-            .expiryDate("End of the proceedings")
+            .expiryDate("At the end of the proceedings, or until a further order is made")
             .children(expectedChildren(caseData))
             .build();
 
