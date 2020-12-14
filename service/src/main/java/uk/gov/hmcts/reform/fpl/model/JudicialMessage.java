@@ -23,12 +23,13 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 @ToString(callSuper = true)
 public class JudicialMessage extends JudicialMessageMetaData {
     private final String dateSent;
-    private final LocalDateTime dateSentAsLocalDateTime;
+    private final LocalDateTime updatedTime;
     private final String note;
     private final JudicialMessageStatus status;
     private final List<Element<DocumentReference>> relatedDocuments;
     private final String relatedDocumentFileNames;
     private final YesNo isRelatedToC2;
+    private final String messageHistory;
 
     public String toLabel() {
         List<String> labels = new ArrayList<>();

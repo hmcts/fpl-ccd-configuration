@@ -3,7 +3,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "JudicialMessage",
     "ListElementCode": "sender",
-    "FieldType": "Email",
+    "FieldType": "Text",
     "ElementLabel": "From",
     "SecurityClassification": "Public"
   },
@@ -26,7 +26,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudicialMessage",
-    "ListElementCode": "dateSentAsLocalDateTime",
+    "ListElementCode": "updatedTime",
     "FieldType": "DateTime",
     "ElementLabel": " ",
     "SecurityClassification": "Public",
@@ -85,5 +85,13 @@
     "ElementLabel": " ",
     "SecurityClassification": "Public",
     "FieldShowCondition": "relatedDocuments=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "messageHistory",
+    "FieldType": "TextArea",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public"
   }
 ]

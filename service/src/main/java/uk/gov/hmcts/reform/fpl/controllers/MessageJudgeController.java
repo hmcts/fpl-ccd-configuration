@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
 
+import static uk.gov.hmcts.reform.fpl.enums.MessageJudgeOptions.REPLY;
 import static uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData.transientFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
@@ -48,6 +49,7 @@ public class MessageJudgeController extends CallbackController {
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
 
         caseDetailsMap.putAll(messageJudgeService.populateNewMessageFields(caseData));
+        caseDetailsMap.put("nextHearingLabel", messageJudgeService.getFirstHearingLabel(caseData));
 
         return respond(caseDetailsMap);
     }
@@ -59,6 +61,7 @@ public class MessageJudgeController extends CallbackController {
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
 
         caseDetailsMap.putAll(messageJudgeService.populateReplyMessageFields(caseData));
+        caseDetailsMap.put("nextHearingLabel", messageJudgeService.getFirstHearingLabel(caseData));
 
         return respond(caseDetailsMap);
     }
@@ -68,8 +71,14 @@ public class MessageJudgeController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
+        List<Element<JudicialMessage>> updatedMessages;
 
-        List<Element<JudicialMessage>> updatedMessages = messageJudgeService.addNewJudicialMessage(caseData);
+        if (isReplyingToAMessage(caseData)) {
+            updatedMessages = messageJudgeService.replyToJudicialMessage(caseData);
+        } else {
+            updatedMessages = messageJudgeService.addNewJudicialMessage(caseData);
+        }
+
         caseDetailsMap.put("judicialMessages", messageJudgeService.sortJudicialMessages(updatedMessages));
 
         removeTemporaryFields(caseDetailsMap, transientFields());
@@ -85,5 +94,10 @@ public class MessageJudgeController extends CallbackController {
         JudicialMessage newJudicialMessage = caseData.getJudicialMessages().get(0).getValue();
 
         publishEvent(new NewJudicialMessageEvent(caseData, newJudicialMessage));
+    }
+
+    private boolean isReplyingToAMessage(CaseData caseData) {
+        return caseData.getMessageJudgeEventData().getMessageJudgeOption() != null
+            && REPLY.equals(caseData.getMessageJudgeEventData().getMessageJudgeOption());
     }
 }

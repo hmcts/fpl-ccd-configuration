@@ -94,7 +94,7 @@ Scenario('HMCTS admin uploads correspondence documents', async ({I, caseViewPage
   I.seeInTab(['Correspondence document 2', 'File'], 'mockFile.txt');
 });
 
-Scenario('HMCTS admin uploads C2 documents to the case', async ({I, caseViewPage, uploadC2DocumentsEventPage, paymentHistoryPage}) => {
+Scenario('@f', async ({I, caseViewPage, uploadC2DocumentsEventPage, paymentHistoryPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.uploadC2Documents);
   uploadC2DocumentsEventPage.selectApplicationType('WITH_NOTICE');
   await I.goToNextPage();
@@ -334,7 +334,7 @@ Scenario('HMCTS admin makes 26-week case extension', async ({I, caseViewPage, ad
   I.see('Comment');
 });
 
-Scenario('HMCTS admin messages the judge', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
+Scenario('@f', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.messageJudge);
   messageJudgeOrLegalAdviserEventPage.relatedMessageToAC2();
   await messageJudgeOrLegalAdviserEventPage.selectC2();
