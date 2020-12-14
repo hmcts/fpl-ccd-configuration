@@ -42,25 +42,18 @@ public class MessageJudgeController extends CallbackController {
         return respond(caseDetailsMap);
     }
 
-    @PostMapping("/populate-new-message/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handlePopulateNewMessageMidEvent(@RequestBody CallbackRequest callbackRequest) {
+    @PostMapping("/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
 
-        caseDetailsMap.putAll(messageJudgeService.populateNewMessageFields(caseData));
-        caseDetailsMap.put("nextHearingLabel", messageJudgeService.getFirstHearingLabel(caseData));
+        if (isReplyingToAMessage(caseData)) {
+            caseDetailsMap.putAll(messageJudgeService.populateReplyMessageFields(caseData));
+        } else {
+            caseDetailsMap.putAll(messageJudgeService.populateNewMessageFields(caseData));
+        }
 
-        return respond(caseDetailsMap);
-    }
-
-    @PostMapping("/populate-reply-message/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handlePopulateReplyMessageMidEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
-        CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
-
-        caseDetailsMap.putAll(messageJudgeService.populateReplyMessageFields(caseData));
         caseDetailsMap.put("nextHearingLabel", messageJudgeService.getFirstHearingLabel(caseData));
 
         return respond(caseDetailsMap);
