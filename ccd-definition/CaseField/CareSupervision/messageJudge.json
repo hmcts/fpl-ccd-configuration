@@ -1,0 +1,77 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hasC2Applications",
+    "Label": " ",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "isMessageRegardingC2",
+    "Label": "Is it about a C2 Application?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "c2DynamicList",
+    "Label": "Which application?",
+    "FieldType": "DynamicList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "nextHearingLabel",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "relatedDocumentsLabel",
+    "Label": "Related documents",
+    "FieldType": "TextArea",
+    "HintText": "Go to the C2 tab to view the files.",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "judicialMessageMetaData",
+    "Label": " ",
+    "FieldType": "JudicialMessageMetaData",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "judicialMessageNote",
+    "Label": "Message from the CTSC admin team:",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public",
+    "HintText": "Add any notes given with the application, or what you'd like the judge or legal advisor to do.",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "judicialMessages",
+    "Label": "Message",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "JudicialMessage",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  }
+]

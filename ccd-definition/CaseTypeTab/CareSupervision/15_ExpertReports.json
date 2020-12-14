@@ -3,10 +3,10 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
-    "TabID": "Notes",
-    "TabLabel": "Notes",
-    "TabDisplayOrder": 13,
-    "CaseFieldID": "caseNotes",
+    "TabID": "ExpertReportsTab",
+    "TabLabel": "Expert Reports",
+    "TabDisplayOrder": 15,
+    "CaseFieldID": "expertReport",
     "TabFieldDisplayOrder": 1
   }
 ]

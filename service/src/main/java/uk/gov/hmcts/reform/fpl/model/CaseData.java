@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
+import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadCMOEventData;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
@@ -441,16 +442,27 @@ public class CaseData {
     private final String closeCaseFromOrder;
 
     private final ManageDocument manageDocument;
+    private final ManageDocumentLA manageDocumentLA;
     private final List<Element<SupportingEvidenceBundle>> supportingEvidenceDocumentsTemp;
-    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments;
+    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments; //general evidence
+    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA; //general evidence
     private final List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocuments;
+    private final List<Element<SupportingEvidenceBundle>> correspondenceDocumentsLA;
     private final List<Element<SupportingEvidenceBundle>> c2SupportingDocuments;
     private final Object manageDocumentsHearingList;
     private final Object manageDocumentsSupportingC2List;
+    private final Object courtBundleHearingList;
+
+    private final CourtBundle manageDocumentsCourtBundle;
+    private final List<Element<CourtBundle>> courtBundleList;
 
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceDocumentsTemp() {
         return defaultIfNull(supportingEvidenceDocumentsTemp, new ArrayList<>());
+    }
+
+    public List<Element<CourtBundle>> getCourtBundleList() {
+        return defaultIfNull(courtBundleList, new ArrayList<>());
     }
 
     public List<Element<SupportingEvidenceBundle>> getCorrespondenceDocuments() {
@@ -655,4 +667,13 @@ public class CaseData {
 
     private final List<Element<ApplicationDocument>> applicationDocuments;
     private final String applicationDocumentsToFollowReason;
+
+    @JsonUnwrapped
+    @Builder.Default
+    private final MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder().build();
+    private final List<Element<JudicialMessage>> judicialMessages;
+
+    public List<Element<JudicialMessage>> getJudicialMessages() {
+        return defaultIfNull(judicialMessages, new ArrayList<>());
+    }
 }

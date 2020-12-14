@@ -276,7 +276,8 @@ class GeneratedOrderServiceTest {
         final GeneratedOrder builtOrder = service.buildCompleteOrder(orderTypeAndDocument, judgeAndLegalAdvisor,
             caseData);
 
-        assertThat(builtOrder.getExpiryDate()).isEqualTo("End of the proceedings");
+        assertThat(builtOrder.getExpiryDate())
+            .isEqualTo("At the end of the proceedings, or until a further order is made");
     }
 
     @ParameterizedTest

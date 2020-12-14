@@ -16,9 +16,9 @@ main() {
 }
 
 checkArgs() {
-    if [ $# -lt 3 ]
+    if [ $# -lt 4 ]
     then
-        echo "Usage: shareCase.sh <systemUserEmail> <systemUserPassword> [<idamUrl>] [<fplUrl>] "
+        echo "Usage: reShareCases.sh <systemUserEmail> <systemUserPassword> [<idamUrl>] [<fplUrl>] "
         exit 1
     fi
 }
