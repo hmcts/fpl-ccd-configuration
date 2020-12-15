@@ -238,6 +238,7 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
             HashMap<Object, Object> expectedData = Maps.newHashMap();
             expectedData.put("applicationDocuments", Lists.emptyList());
             expectedData.put("applicationDocumentsToFollowReason", "");
+            expectedData.put("courtBundleList", Lists.emptyList());
 
             AboutToStartOrSubmitCallbackResponse actual = postAboutToSubmitEvent(caseDetails);
 
