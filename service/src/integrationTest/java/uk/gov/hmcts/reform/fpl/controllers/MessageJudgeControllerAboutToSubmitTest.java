@@ -7,6 +7,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.MessageJudgeOptions;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessageMetaData;
@@ -72,8 +73,7 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
         when(identityService.generateId()).thenReturn(SELECTED_DYNAMIC_LIST_ITEM_ID);
         when(userService.getUserEmail()).thenReturn(SENDER);
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(asCaseDetails(caseData));
-        CaseData responseCaseData = mapper.convertValue(response.getData(), CaseData.class);
+        CaseData responseCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
         JudicialMessage expectedJudicialMessage = JudicialMessage.builder()
             .dateSent(formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME_AT))
@@ -101,6 +101,7 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
             .judicialMessageReply(JudicialMessage.builder()
                 .latestMessage(REPLY)
                 .build())
+            .messageJudgeOption(MessageJudgeOptions.REPLY)
             .build();
 
         CaseData caseData = CaseData.builder()
@@ -131,11 +132,11 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
 
         when(userService.getUserEmail()).thenReturn(MESSAGE_RECIPIENT);
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(asCaseDetails(caseData));
-        CaseData responseCaseData = mapper.convertValue(response.getData(), CaseData.class);
+        CaseData responseCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
-        assertThat(responseCaseData.getJudicialMessages().get(0)).isEqualTo(
-            element(SELECTED_DYNAMIC_LIST_ITEM_ID, expectedUpdatedJudicialMessage));
+        assertThat(responseCaseData.getJudicialMessages())
+            .first()
+            .isEqualTo(element(SELECTED_DYNAMIC_LIST_ITEM_ID, expectedUpdatedJudicialMessage));
     }
 
     @Test
@@ -148,22 +149,23 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
                 "relatedDocumentsLabel", "some data",
                 "nextHearingLabel", "some data",
                 "judicialMessageMetaData", JudicialMessageMetaData.builder()
-                        .recipient("some data")
-                        .sender("some data")
-                        .urgency("some data")
+                    .recipient("some data")
+                    .sender("some data")
+                    .urgency("some data")
                     .build(),
                 "judicialMessageNote", "some data"
-                ))
+            ))
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
 
-        assertThat(response.getData().get("hasC2Applications")).isNull();
-        assertThat(response.getData().get("isMessageRegardingC2")).isNull();
-        assertThat(response.getData().get("c2DynamicList")).isNull();
-        assertThat(response.getData().get("relatedDocumentsLabel")).isNull();
-        assertThat(response.getData().get("nextHearingLabel")).isNull();
-        assertThat(response.getData().get("judicialMessageMetaData")).isNull();
-        assertThat(response.getData().get("judicialMessageNote")).isNull();
+        assertThat(response.getData()).doesNotContainKeys("hasC2Applications",
+            "isMessageRegardingC2",
+            "c2DynamicList",
+            "relatedDocumentsLabel",
+            "nextHearingLabel",
+            "judicialMessageMetaData",
+            "judicialMessageNote"
+        );
     }
 }

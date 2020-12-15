@@ -97,7 +97,6 @@ public class MessageJudgeController extends CallbackController {
     }
 
     private boolean isReplyingToAMessage(CaseData caseData) {
-        return caseData.getMessageJudgeEventData().getMessageJudgeOption() != null
-            && REPLY.equals(caseData.getMessageJudgeEventData().getMessageJudgeOption());
+        return REPLY.equals(caseData.getMessageJudgeEventData().getMessageJudgeOption());
     }
 }
