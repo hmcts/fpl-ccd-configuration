@@ -1,10 +1,42 @@
 /* global process */
 
+const lodash = require('lodash');
+
 exports.config = {
   output: './output',
   multiple: {
     parallel: {
-      chunks: parseInt(process.env.PARALLEL_CHUNKS || '5'),
+      chunks: (files) => {
+
+        const splitFiles = (list, size) => {
+          const sets = [];
+          const chunks = list.length / size;
+          let i = 0;
+
+          while (i < chunks) {
+            sets[i] = list.splice(0, size);
+            i++;
+          }
+          return sets;
+        };
+
+        const buckets = parseInt(process.env.PARALLEL_CHUNKS || '5');
+        const slowTests = lodash.filter(files, file => file.includes('@slow'));
+        const otherTests = lodash.difference(files, slowTests);
+
+        let chunks = [];
+        if (buckets > slowTests.length) {
+          const slowTestChunkSize = 1;
+          const regularChunkSize = Math.ceil((files.length - slowTests.length) / (buckets - slowTests.length));
+          chunks = lodash.union(splitFiles(slowTests, slowTestChunkSize), splitFiles(otherTests, regularChunkSize));
+        } else {
+          chunks = splitFiles(files, Math.ceil(files.length / buckets));
+        }
+
+        console.log(chunks);
+
+        return chunks;
+      },
     },
   },
   helpers: {
