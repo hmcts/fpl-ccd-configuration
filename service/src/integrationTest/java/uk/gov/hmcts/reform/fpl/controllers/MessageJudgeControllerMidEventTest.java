@@ -139,7 +139,10 @@ class MessageJudgeControllerMidEventTest extends AbstractControllerTest {
 
         assertThat(response.getData().get("relatedDocumentsLabel")).isEqualTo(
             expectedJudicialMessage.getRelatedDocumentFileNames());
+
         assertThat(judicialMessageReply).isEqualTo(expectedJudicialMessage);
-        assertThat(judicialMessageDynamicList).isEqualTo(caseData.buildJudicialMessageDynamicList(DYNAMIC_LIST_ITEM_ID));
+
+        assertThat(judicialMessageDynamicList).isEqualTo(
+            caseData.buildJudicialMessageDynamicList(DYNAMIC_LIST_ITEM_ID));
     }
 }

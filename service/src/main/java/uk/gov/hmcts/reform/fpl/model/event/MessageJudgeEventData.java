@@ -22,7 +22,8 @@ public class MessageJudgeEventData {
     public static String[] transientFields() {
         return new String[]{
             "hasC2Applications", "isMessageRegardingC2", "c2DynamicList", "relatedDocumentsLabel", "nextHearingLabel",
-            "judicialMessageMetaData", "judicialMessageNote"
+            "judicialMessageMetaData", "judicialMessageNote", "judicialMessageDynamicList", "messageJudgeOption",
+            "judicialMessageReply"
         };
     }
 }
