@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
 
-import static java.util.Objects.isNull;
 import static uk.gov.hmcts.reform.fpl.enums.MessageJudgeOptions.REPLY;
 import static uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData.transientFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
@@ -84,22 +83,7 @@ public class MessageJudgeController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        Object judicialMessageDynamicList = caseData.getMessageJudgeEventData().getJudicialMessageDynamicList();
-        JudicialMessage newJudicialMessage = caseData.getJudicialMessages().get(0).getValue();
-
-        List<Element<JudicialMessage>> judicialMessages = caseData.getJudicialMessages();
-
-        if(isNull(judicialMessages.get(0).getValue().getUpdatedTime())) {
-            System.out.println("This is a new message");
-        } else {
-            System.out.println("This is a reply message");
-        }
-
-//        if (isNull(judicialMessageDynamicList)) {
-//            publishEvent(new NewJudicialMessageEvent(caseData, newJudicialMessage));
-//        } else {
-//            publishEvent(new NewJudicialMessageReplyEvent(caseData, newJudicialMessage));
-//        }
+        messageJudgeService.sendJudicialMessageNotification(caseData);
     }
 
     private boolean isReplyingToAMessage(CaseData caseData) {
