@@ -7,6 +7,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -20,12 +21,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
+import static uk.gov.hmcts.reform.fpl.enums.MessageJudgeOptions.REPLY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(MessageJudgeController.class)
 @OverrideAutoConfiguration(enabled = true)
 class MessageJudgeControllerMidEventTest extends AbstractControllerTest {
+    private static final UUID DYNAMIC_LIST_ITEM_ID = UUID.randomUUID();
+
     MessageJudgeControllerMidEventTest() {
         super("message-judge");
     }
@@ -58,9 +62,7 @@ class MessageJudgeControllerMidEventTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldPopulateRelatedDocumentsFields() {
-        UUID selectedC2Id = UUID.randomUUID();
-
+    void shouldPopulateRelatedDocumentsFieldsWhenSendingANewJudicialMessage() {
         DocumentReference mainC2Document = DocumentReference.builder()
             .filename("c2.doc")
             .build();
@@ -79,10 +81,10 @@ class MessageJudgeControllerMidEventTest extends AbstractControllerTest {
 
         CaseData caseData = CaseData.builder()
             .messageJudgeEventData(MessageJudgeEventData.builder()
-                .c2DynamicList(selectedC2Id)
+                .c2DynamicList(DYNAMIC_LIST_ITEM_ID)
                 .build())
             .c2DocumentBundle(List.of(
-                element(selectedC2Id, selectedC2DocumentBundle),
+                element(DYNAMIC_LIST_ITEM_ID, selectedC2DocumentBundle),
                 element(UUID.randomUUID(), C2DocumentBundle.builder()
                     .document(DocumentReference.builder()
                         .filename("other_c2.doc")
@@ -100,6 +102,41 @@ class MessageJudgeControllerMidEventTest extends AbstractControllerTest {
         );
 
         assertThat(response.getData().get("relatedDocumentsLabel")).isEqualTo(expectedC2Label);
-        assertThat(builtDynamicList).isEqualTo(caseData.buildC2DocumentDynamicList(selectedC2Id));
+        assertThat(builtDynamicList).isEqualTo(caseData.buildC2DocumentDynamicList(DYNAMIC_LIST_ITEM_ID));
+    }
+
+    @Test
+    void shouldPopulateRelatedDocumentsAndJudgeReplyFieldsWhenReplyingToAMessage() {
+        JudicialMessage selectedJudicialMessage = JudicialMessage.builder()
+            .sender("sender@gmail.com")
+            .relatedDocumentFileNames("file1.doc")
+            .messageHistory("message history")
+            .latestMessage("Some note")
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .messageJudgeEventData(MessageJudgeEventData.builder()
+                .messageJudgeOption(REPLY)
+                .judicialMessageDynamicList(DYNAMIC_LIST_ITEM_ID)
+                .build())
+            .judicialMessages(List.of(
+                element(DYNAMIC_LIST_ITEM_ID, selectedJudicialMessage)
+            ))
+            .build();
+
+        JudicialMessage expectedJudicialMessage = selectedJudicialMessage.toBuilder()
+            .recipient(selectedJudicialMessage.getSender())
+            .latestMessage("")
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
+
+        DynamicList builtDynamicList = mapper.convertValue(
+            response.getData().get("judicialMessageDynamicList"), DynamicList.class);
+
+        assertThat(response.getData().get("relatedDocumentsLabel")).isEqualTo(
+            expectedJudicialMessage.getRelatedDocumentFileNames());
+        assertThat(response.getData().get("judicialMessageReply")).isEqualTo(expectedJudicialMessage);
+        assertThat(builtDynamicList).isEqualTo(caseData.buildJudicialMessageDynamicList(DYNAMIC_LIST_ITEM_ID));
     }
 }
