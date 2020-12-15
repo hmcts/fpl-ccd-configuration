@@ -36,6 +36,7 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder {
     private final String uploader;
     private List<Element<Direction>> directions;
     private DocumentReference orderDoc;
+    private DocumentReference lastUploadedOrder;
     private String removalReason;
 
     @JsonIgnore
