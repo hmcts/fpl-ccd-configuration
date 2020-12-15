@@ -84,6 +84,49 @@ class MessageJudgeServiceTest {
     }
 
     @Test
+    void shouldInitialiseC2DocumentFieldsOnlyWhenJudicialMessagesDoNotExist() {
+        CaseData caseData = CaseData.builder()
+            .c2DocumentBundle(List.of(element(C2DocumentBundle.builder()
+                .uploadedDateTime("01 Dec 2020")
+                .author("Some author")
+                .build())))
+            .build();
+
+        Map<String, Object> expectedData = Map.of(
+            "hasC2Applications", YES.getValue(),
+            "c2DynamicList", caseData.buildC2DocumentDynamicList());
+
+        Map<String, Object> data = messageJudgeService.initialiseCaseFields(caseData);
+
+        assertThat(data).isEqualTo(expectedData);
+    }
+
+    @Test
+    void shouldInitialiseJudicialFieldsOnlyWhenC2DocumentsDoNotExist() {
+        CaseData caseData = CaseData.builder()
+            .judicialMessages(List.of(
+                element(JudicialMessage.builder()
+                    .latestMessage("some note")
+                    .messageHistory("some history")
+                    .dateSent("Some date sent")
+                    .build()),
+                element(JudicialMessage.builder()
+                    .latestMessage("some note")
+                    .messageHistory("some history")
+                    .dateSent("Some date sent")
+                    .build())))
+            .build();
+
+        Map<String, Object> expectedData = Map.of(
+            "hasJudicialMessages", YES.getValue(),
+            "judicialMessageDynamicList", caseData.buildJudicialMessageDynamicList());
+
+        Map<String, Object> data = messageJudgeService.initialiseCaseFields(caseData);
+
+        assertThat(data).isEqualTo(expectedData);
+    }
+
+    @Test
     void shouldReturnEmptyMapWhenC2DocumentsDoNotExist() {
         assertThat(messageJudgeService.initialiseCaseFields(CaseData.builder().build())).isEmpty();
     }
