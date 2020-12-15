@@ -12,6 +12,6 @@ import lombok.extern.jackson.Jacksonized;
 public class JudicialMessageMetaData {
     private final String sender;
     private final String recipient;
-    private final String about;
+    private final String requestedBy;
     private final String urgency;
 }

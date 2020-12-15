@@ -101,7 +101,7 @@ public class MessageJudgeService {
         JudicialMessage.JudicialMessageBuilder<?, ?> judicialMessageBuilder = JudicialMessage.builder()
             .sender(userService.getUserEmail())
             .recipient(judicialMessageMetaData.getRecipient())
-            .about(judicialMessageMetaData.getAbout())
+            .requestedBy(judicialMessageMetaData.getRequestedBy())
             .latestMessage(latestMessage)
             .messageHistory(latestMessage)
             .updatedTime(time.now())

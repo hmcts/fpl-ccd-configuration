@@ -14,7 +14,7 @@
     "ID": "JudicialMessageReply",
     "CaseEventID": "messageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageReply",
-    "ListElementCode": "about",
+    "ListElementCode": "requestedBy",
     "SecurityClassification": "Public",
     "FieldDisplayOrder": 2,
     "EventElementLabel": "About a request from",

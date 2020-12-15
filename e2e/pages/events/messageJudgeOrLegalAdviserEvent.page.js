@@ -13,7 +13,7 @@ module.exports = {
     c2List: '#c2DynamicList',
     existingMessagesList: '#judicialMessageDynamicList',
     recipientEmail: '#judicialMessageMetaData_recipient',
-    about: '#judicialMessageMetaData_about',
+    requested: '#judicialMessageMetaData_requestedBy',
     urgency: '#judicialMessageMetaData_urgency',
     latestMessage: '#judicialMessageNote',
     replyMessage: '#judicialMessageReply_latestMessage',
@@ -33,8 +33,8 @@ module.exports = {
     I.fillField(this.fields.recipientEmail, email);
   },
 
-  enterAbout(about) {
-    I.fillField(this.fields.about, about);
+  enterRequester(requester) {
+    I.fillField(this.fields.requested, requester);
   },
 
   enterUrgency(urgency) {

@@ -30,6 +30,7 @@ public class JudicialMessage extends JudicialMessageMetaData {
     private final YesNo isRelatedToC2;
     private final String latestMessage;
     private final String messageHistory;
+    private final String requestedBy;
 
     public String toLabel() {
         List<String> labels = new ArrayList<>();

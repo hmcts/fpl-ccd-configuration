@@ -18,11 +18,10 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudicialMessage",
-    "ListElementCode": "about",
+    "ListElementCode": "requestedBy",
     "FieldType": "Text",
-    "ElementLabel": "Review request from",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "sender=\"DO_NOT_SHOW\""
+    "ElementLabel": "Requested by",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -56,7 +55,7 @@
     "ID": "JudicialMessage",
     "ListElementCode": "latestMessage",
     "FieldType": "TextArea",
-    "ElementLabel": "Note",
+    "ElementLabel": "Message",
     "SecurityClassification": "Public"
   },
   {
