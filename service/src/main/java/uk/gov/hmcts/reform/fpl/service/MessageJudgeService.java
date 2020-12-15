@@ -5,8 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.events.NewJudicialMessageEvent;
-import uk.gov.hmcts.reform.fpl.events.NewJudicialMessageReplyEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
@@ -175,16 +173,14 @@ public class MessageJudgeService {
         return "";
     }
 
-    public void sendJudicialMessageNotification(CaseData caseData) {
-        JudicialMessage newJudicialMessage = caseData.getJudicialMessages().get(0).getValue();
-        String messageHistory = newJudicialMessage.getMessageHistory();
-        String latestMessage = newJudicialMessage.getLatestMessage();
+    public boolean isReplyingToNotification(JudicialMessage judicialMessage) {
+        String messageHistory = judicialMessage.getMessageHistory();
+        String latestMessage = judicialMessage.getLatestMessage();
 
-        if (messageHistory.equals(latestMessage)) {
-            applicationEventPublisher.publishEvent(new NewJudicialMessageEvent(caseData, newJudicialMessage));
-        } else {
-            applicationEventPublisher.publishEvent(new NewJudicialMessageReplyEvent(caseData, newJudicialMessage));
+        if(messageHistory.equals(latestMessage)) {
+            return false;
         }
+        return true;
     }
 
     private DynamicList rebuildC2DynamicList(CaseData caseData, UUID selectedC2Id) {

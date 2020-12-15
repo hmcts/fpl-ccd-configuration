@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEventPublisher;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
-import uk.gov.hmcts.reform.fpl.events.NewJudicialMessageEvent;
-import uk.gov.hmcts.reform.fpl.events.NewJudicialMessageReplyEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
@@ -28,7 +26,6 @@ import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
@@ -467,41 +464,26 @@ class MessageJudgeServiceTest {
     @Test
     void shouldNotPopulateFirstHearingLabelWhenHearingDoesNotExists() {
         CaseData caseData = CaseData.builder().build();
-        JudicialMessage judicialMessage = JudicialMessage.builder()
-            .latestMessage("This is a new message")
-            .messageHistory("This is a new message").build();
 
         assertThat(messageJudgeService.getFirstHearingLabel(caseData)).isEmpty();
     }
 
     @Test
-    void shouldNotifyRecipientWhenNewJudicialMessageAdded() {
+    void shouldReturnFalseWhenAddingNewJudicialMessage() {
         JudicialMessage judicialMessage = JudicialMessage.builder()
             .latestMessage("This is a new message")
             .messageHistory("This is a new message").build();
 
-        CaseData caseData = CaseData.builder()
-            .judicialMessages(List.of(element(judicialMessage)))
-        .build();
-
-        messageJudgeService.sendJudicialMessageNotification(caseData);
-
-        verify(applicationEventPublisher).publishEvent(NewJudicialMessageEvent.class);
+        assertThat(messageJudgeService.isReplyingToNotification(judicialMessage)).isFalse();
     }
 
     @Test
-    void shouldNotifyRecipientWhenNewJudicialMessageReplyAdded() {
+    void shouldReturnTrueWhenReplyingToJudicialMessage() {
         JudicialMessage judicialMessage = JudicialMessage.builder()
             .latestMessage("Fix up the order")
             .messageHistory("This is a new message, Fix up the order").build();
 
-        CaseData caseData = CaseData.builder()
-            .judicialMessages(List.of(element(judicialMessage)))
-            .build();
-
-        messageJudgeService.sendJudicialMessageNotification(caseData);
-
-        verify(applicationEventPublisher).publishEvent(NewJudicialMessageReplyEvent.class);
+        assertThat(messageJudgeService.isReplyingToNotification(judicialMessage)).isTrue();
     }
 
     private Element<JudicialMessage> buildJudicialMessageElement(LocalDateTime dateTime) {
