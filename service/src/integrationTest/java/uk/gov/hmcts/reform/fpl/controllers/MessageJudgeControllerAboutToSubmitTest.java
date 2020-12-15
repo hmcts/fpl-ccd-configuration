@@ -153,7 +153,14 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
                     .sender("some data")
                     .urgency("some data")
                     .build(),
-                "judicialMessageNote", "some data"
+                "judicialMessageNote", "some data",
+                "judicialMessageDynamicList", DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code(SELECTED_DYNAMIC_LIST_ITEM_ID)
+                        .build())
+                    .build(),
+                "messageJudgeOption", MessageJudgeOptions.REPLY,
+                "judicialMessageReply", JudicialMessage.builder().build()
             ))
             .build();
 
@@ -165,7 +172,10 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
             "relatedDocumentsLabel",
             "nextHearingLabel",
             "judicialMessageMetaData",
-            "judicialMessageNote"
+            "judicialMessageNote",
+            "judicialMessageDynamicList",
+            "messageJudgeOption",
+            "judicialMessageReply"
         );
     }
 }
