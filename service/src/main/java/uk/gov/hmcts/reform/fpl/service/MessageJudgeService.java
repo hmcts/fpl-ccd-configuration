@@ -173,16 +173,6 @@ public class MessageJudgeService {
         return "";
     }
 
-    public boolean isReplyingToNotification(JudicialMessage judicialMessage) {
-        String messageHistory = judicialMessage.getMessageHistory();
-        String latestMessage = judicialMessage.getLatestMessage();
-
-        if(messageHistory.equals(latestMessage)) {
-            return false;
-        }
-        return true;
-    }
-
     private DynamicList rebuildC2DynamicList(CaseData caseData, UUID selectedC2Id) {
         return caseData.buildC2DocumentDynamicList(selectedC2Id);
     }

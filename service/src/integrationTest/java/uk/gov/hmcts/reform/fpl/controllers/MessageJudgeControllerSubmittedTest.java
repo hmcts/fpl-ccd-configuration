@@ -21,6 +21,7 @@ import java.util.UUID;
 
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_JUDICIAL_MESSAGE_ADDED_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_JUDICIAL_MESSAGE_REPLY_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ActiveProfiles("integration-test")
@@ -29,6 +30,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
     private static final String JUDICIAL_MESSAGE_RECIPIENT = "recipient@test.com";
     private static final Long CASE_REFERENCE = 12345L;
+    private static final UUID SELECTED_DYNAMIC_LIST_ITEM_ID = UUID.randomUUID();
+    private static final String MESSAGE = "Some note";
+    private static final String REPLY = "Reply";
 
     @MockBean
     private NotificationClient notificationClient;
@@ -43,7 +47,8 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
             .recipient(JUDICIAL_MESSAGE_RECIPIENT)
             .sender("sender@fpla.com")
             .urgency("High")
-            .latestMessage("Some note")
+            .messageHistory(MESSAGE)
+            .latestMessage(MESSAGE)
             .build();
 
         CaseDetails caseDetails = CaseDetails.builder()
@@ -73,7 +78,7 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
             "sender", "sender@fpla.com",
             "urgency", "High",
             "hasUrgency", "Yes",
-            "latestMessage", "Some note"
+            "latestMessage", MESSAGE
         );
 
         verify(notificationClient).sendEmail(
@@ -86,15 +91,13 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
             .recipient(JUDICIAL_MESSAGE_RECIPIENT)
             .sender("sender@fpla.com")
             .urgency("High")
-            .latestMessage("Some note")
+            .latestMessage(REPLY)
+            .messageHistory(MESSAGE + "/n" + REPLY)
             .build();
-
-        UUID SDO_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
 
         DynamicList dynamicList = DynamicList.builder()
             .value(DynamicListElement.builder()
-                .code(SDO_ID)
-                .label("Gatekeeping order - 12 March 1234")
+                .code(SELECTED_DYNAMIC_LIST_ITEM_ID)
                 .build())
             .build();
 
@@ -111,7 +114,7 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
                             .build())
                         .build())),
                 "judicialMessages", List.of(
-                    element(latestJudicialMessage),
+                    element(SELECTED_DYNAMIC_LIST_ITEM_ID, latestJudicialMessage),
                     element(JudicialMessage.builder()
                         .recipient("do_not_send@fpla.com")
                         .sender("someOthersender@fpla.com")
@@ -124,13 +127,10 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
             "respondentLastName", "Davidson",
             "caseUrl", "http://fake-url/cases/case-details/12345#JudicialMessagesTab",
             "callout", "^Davidson",
-            "sender", "sender@fpla.com",
-            "urgency", "High",
-            "hasUrgency", "Yes",
-            "latestMessage", "Some note"
+            "latestMessage", REPLY
         );
 
         verify(notificationClient).sendEmail(
-            NEW_JUDICIAL_MESSAGE_ADDED_TEMPLATE, JUDICIAL_MESSAGE_RECIPIENT, expectedData, "localhost/12345");
+            NEW_JUDICIAL_MESSAGE_REPLY_TEMPLATE, JUDICIAL_MESSAGE_RECIPIENT, expectedData, "localhost/12345");
     }
 }

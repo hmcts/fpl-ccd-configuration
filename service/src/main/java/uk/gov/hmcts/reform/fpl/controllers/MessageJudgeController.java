@@ -82,14 +82,13 @@ public class MessageJudgeController extends CallbackController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
-        JudicialMessage newJudicialMessage = caseData.getJudicialMessages().get(0).getValue();
+        CaseData caseData = getCaseData(callbackRequest.getCaseDetails());
+        JudicialMessage judicialMessage = caseData.getJudicialMessages().get(0).getValue();
 
-        if(messageJudgeService.isReplyingToNotification(newJudicialMessage)) {
-           publishEvent(new NewJudicialMessageReplyEvent(caseData, newJudicialMessage));
+        if (judicialMessage.hasMatchingMessageHistory()) {
+            publishEvent(new NewJudicialMessageEvent(caseData, judicialMessage));
         } else {
-            publishEvent(new NewJudicialMessageEvent(caseData, newJudicialMessage));
+            publishEvent(new NewJudicialMessageReplyEvent(caseData, judicialMessage));
         }
     }
 

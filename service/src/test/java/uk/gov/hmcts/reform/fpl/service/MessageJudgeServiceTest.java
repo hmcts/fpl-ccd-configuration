@@ -468,24 +468,6 @@ class MessageJudgeServiceTest {
         assertThat(messageJudgeService.getFirstHearingLabel(caseData)).isEmpty();
     }
 
-    @Test
-    void shouldReturnFalseWhenAddingNewJudicialMessage() {
-        JudicialMessage judicialMessage = JudicialMessage.builder()
-            .latestMessage("This is a new message")
-            .messageHistory("This is a new message").build();
-
-        assertThat(messageJudgeService.isReplyingToNotification(judicialMessage)).isFalse();
-    }
-
-    @Test
-    void shouldReturnTrueWhenReplyingToJudicialMessage() {
-        JudicialMessage judicialMessage = JudicialMessage.builder()
-            .latestMessage("Fix up the order")
-            .messageHistory("This is a new message, Fix up the order").build();
-
-        assertThat(messageJudgeService.isReplyingToNotification(judicialMessage)).isTrue();
-    }
-
     private Element<JudicialMessage> buildJudicialMessageElement(LocalDateTime dateTime) {
         return element(JudicialMessage.builder().updatedTime(dateTime).build());
     }

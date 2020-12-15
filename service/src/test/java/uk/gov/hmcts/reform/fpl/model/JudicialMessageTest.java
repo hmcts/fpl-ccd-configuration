@@ -48,4 +48,22 @@ class JudicialMessageTest {
 
         assertThat(judicialMessage.toLabel()).isEqualTo(DATE_SENT);
     }
+
+    @Test
+    void shouldReturnTrueWhenMessageHistoryMatches() {
+        JudicialMessage judicialMessage = JudicialMessage.builder()
+            .latestMessage("This is a new message")
+            .messageHistory("This is a new message").build();
+
+        assertThat(judicialMessage.hasMatchingMessageHistory()).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenMessageHistoryDoesNotMatches() {
+        JudicialMessage judicialMessage = JudicialMessage.builder()
+            .latestMessage("Fix up the order")
+            .messageHistory("This is a new message, Fix up the order").build();
+
+        assertThat(judicialMessage.hasMatchingMessageHistory()).isFalse();
+    }
 }

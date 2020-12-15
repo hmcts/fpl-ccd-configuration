@@ -47,4 +47,8 @@ public class JudicialMessage extends JudicialMessageMetaData {
 
         return String.join(", ", labels);
     }
+
+    public boolean hasMatchingMessageHistory() {
+        return latestMessage.equals(messageHistory);
+    }
 }
