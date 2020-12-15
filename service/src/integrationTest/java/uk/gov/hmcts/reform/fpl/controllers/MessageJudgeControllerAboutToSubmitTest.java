@@ -7,11 +7,15 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.MessageJudgeOptions;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessageMetaData;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 
 import java.util.List;
 import java.util.Map;
@@ -28,6 +32,13 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @WebMvcTest(MessageJudgeController.class)
 @OverrideAutoConfiguration(enabled = true)
 class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
+    private static final String SENDER = "ben@fpla.com";
+    private static final String MESSAGE = "Some message";
+    private static final String REPLY = "Some reply";
+    private static final String MESSAGE_REQUESTED_BY = "request review from some court";
+    private static final String MESSAGE_RECIPIENT = "recipient@fpla.com";
+    private static final UUID SELECTED_DYNAMIC_LIST_ITEM_ID = UUID.randomUUID();
+
     MessageJudgeControllerAboutToSubmitTest() {
         super("message-judge");
     }
@@ -35,21 +46,21 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
     @MockBean
     private IdentityService identityService;
 
-    @Test
-    void shouldAddNewJudicialMessageAndSortIntoExisting() {
-        UUID judicialMessageId = UUID.randomUUID();
+    @MockBean
+    private UserService userService;
 
+    @Test
+    void shouldAddNewJudicialMessageAndSortIntoExistingJudicialMessageList() {
         JudicialMessage oldJudicialMessage = JudicialMessage.builder()
             .updatedTime(now().minusDays(1))
             .build();
 
         MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
             .relatedDocumentsLabel("related documents")
-            .judicialMessageNote("Some note")
+            .judicialMessageNote(MESSAGE)
             .judicialMessageMetaData(JudicialMessageMetaData.builder()
                 .urgency("High urgency")
-                .sender("ben@fpla.com")
-                .recipient("John@fpla.com")
+                .recipient(MESSAGE_RECIPIENT)
                 .build())
             .build();
 
@@ -59,23 +70,73 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
             .messageJudgeEventData(messageJudgeEventData)
             .build();
 
-        when(identityService.generateId()).thenReturn(judicialMessageId);
+        when(identityService.generateId()).thenReturn(SELECTED_DYNAMIC_LIST_ITEM_ID);
+        when(userService.getUserEmail()).thenReturn(SENDER);
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(asCaseDetails(caseData));
-        CaseData responseCaseData = mapper.convertValue(response.getData(), CaseData.class);
+        CaseData responseCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
         JudicialMessage expectedJudicialMessage = JudicialMessage.builder()
             .dateSent(formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME_AT))
             .updatedTime(now())
             .status(OPEN)
-            .recipient("John@fpla.com")
-            .latestMessage("Some note")
-            .sender("ben@fpla.com")
+            .recipient(MESSAGE_RECIPIENT)
+            .latestMessage(MESSAGE)
+            .sender(SENDER)
+            .messageHistory(MESSAGE)
             .urgency("High urgency")
             .build();
 
         assertThat(responseCaseData.getJudicialMessages().get(0).getValue()).isEqualTo(expectedJudicialMessage);
         assertThat(responseCaseData.getJudicialMessages().get(1).getValue()).isEqualTo(oldJudicialMessage);
+    }
+
+    @Test
+    void shouldUpdateExistingJudicialMessageAndSortIntoExistingJudicialMessageListWhenReplying() {
+        MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
+            .judicialMessageDynamicList(DynamicList.builder()
+                .value(DynamicListElement.builder()
+                    .code(SELECTED_DYNAMIC_LIST_ITEM_ID)
+                    .build())
+                .build())
+            .judicialMessageReply(JudicialMessage.builder()
+                .latestMessage(REPLY)
+                .build())
+            .messageJudgeOption(MessageJudgeOptions.REPLY)
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .messageJudgeEventData(messageJudgeEventData)
+            .judicialMessages(List.of(
+                element(SELECTED_DYNAMIC_LIST_ITEM_ID, JudicialMessage.builder()
+                    .sender(SENDER)
+                    .recipient(MESSAGE_RECIPIENT)
+                    .updatedTime(now().minusDays(1))
+                    .status(OPEN)
+                    .requestedBy(MESSAGE_REQUESTED_BY)
+                    .latestMessage(MESSAGE)
+                    .messageHistory(MESSAGE)
+                    .dateSent(formatLocalDateTimeBaseUsingFormat(now().minusDays(1), DATE_TIME_AT))
+                    .build())))
+            .build();
+
+        JudicialMessage expectedUpdatedJudicialMessage = JudicialMessage.builder()
+            .sender(MESSAGE_RECIPIENT)
+            .recipient(SENDER)
+            .requestedBy(MESSAGE_REQUESTED_BY)
+            .updatedTime(now())
+            .status(OPEN)
+            .latestMessage(REPLY)
+            .messageHistory(MESSAGE + "\n" + REPLY)
+            .dateSent(formatLocalDateTimeBaseUsingFormat(now().minusDays(1), DATE_TIME_AT))
+            .build();
+
+        when(userService.getUserEmail()).thenReturn(MESSAGE_RECIPIENT);
+
+        CaseData responseCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
+
+        assertThat(responseCaseData.getJudicialMessages())
+            .first()
+            .isEqualTo(element(SELECTED_DYNAMIC_LIST_ITEM_ID, expectedUpdatedJudicialMessage));
     }
 
     @Test
@@ -88,22 +149,23 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
                 "relatedDocumentsLabel", "some data",
                 "nextHearingLabel", "some data",
                 "judicialMessageMetaData", JudicialMessageMetaData.builder()
-                        .recipient("some data")
-                        .sender("some data")
-                        .urgency("some data")
+                    .recipient("some data")
+                    .sender("some data")
+                    .urgency("some data")
                     .build(),
                 "judicialMessageNote", "some data"
-                ))
+            ))
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
 
-        assertThat(response.getData().get("hasC2Applications")).isNull();
-        assertThat(response.getData().get("isMessageRegardingC2")).isNull();
-        assertThat(response.getData().get("c2DynamicList")).isNull();
-        assertThat(response.getData().get("relatedDocumentsLabel")).isNull();
-        assertThat(response.getData().get("nextHearingLabel")).isNull();
-        assertThat(response.getData().get("judicialMessageMetaData")).isNull();
-        assertThat(response.getData().get("judicialMessageNote")).isNull();
+        assertThat(response.getData()).doesNotContainKeys("hasC2Applications",
+            "isMessageRegardingC2",
+            "c2DynamicList",
+            "relatedDocumentsLabel",
+            "nextHearingLabel",
+            "judicialMessageMetaData",
+            "judicialMessageNote"
+        );
     }
 }
