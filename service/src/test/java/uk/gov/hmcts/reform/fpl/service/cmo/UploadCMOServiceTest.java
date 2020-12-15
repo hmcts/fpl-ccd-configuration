@@ -375,6 +375,44 @@ class UploadCMOServiceTest {
     }
 
     @Test
+    void shouldUpdateExistingBundleWhenUploadedCMOIsAgreed() {
+        List<Element<HearingBooking>> hearings = hearings();
+
+        Element<SupportingEvidenceBundle> doc1 = element(SupportingEvidenceBundle.builder().name("1").build());
+        Element<SupportingEvidenceBundle> doc2 = element(SupportingEvidenceBundle.builder().name("2").build());
+        Element<SupportingEvidenceBundle> doc3 = element(SupportingEvidenceBundle.builder().name("3").build());
+
+        Element<SupportingEvidenceBundle> updatedDoc2 = element(doc2.getId(), doc2.getValue().toBuilder()
+            .name("2 updated").build());
+        Element<SupportingEvidenceBundle> newDoc = element(SupportingEvidenceBundle.builder().name("3").build());
+
+        Element<HearingFurtherEvidenceBundle> existingHearingBundle = element(
+            hearings.get(0).getId(),
+            HearingFurtherEvidenceBundle.builder()
+                .supportingEvidenceBundle(new ArrayList<>(List.of(doc1, doc2, doc3)))
+                .build());
+
+        List<Element<SupportingEvidenceBundle>> cmoSupportingDocuments = List.of(doc1, updatedDoc2, doc3, newDoc);
+
+        UploadCMOEventData eventData = UploadCMOEventData.builder()
+            .pastHearingsForCMO(dynamicList(
+                hearings.get(0).getId(), hearings.get(1).getId(), hearings.get(2).getId(), true
+            ))
+            .uploadedCaseManagementOrder(DOCUMENT)
+            .cmoSupportingDocs(cmoSupportingDocuments)
+            .cmoUploadType(CMOType.AGREED)
+            .build();
+
+        List<Element<CaseManagementOrder>> unsealedOrders = new ArrayList<>();
+        List<Element<HearingFurtherEvidenceBundle>> bundles = List.of(existingHearingBundle);
+
+        service.updateHearingsAndOrders(eventData, hearings, unsealedOrders, bundles);
+
+        assertThat(bundles.get(0).getValue().getSupportingEvidenceBundle())
+            .containsExactly(doc1, updatedDoc2, doc3, newDoc);
+    }
+
+    @Test
     void shouldUpdateExistingCMOWithNewOrderAndChangeStatus() {
         List<Element<HearingBooking>> hearings = hearings();
         List<Element<CaseManagementOrder>> unsealedOrders = new ArrayList<>();
