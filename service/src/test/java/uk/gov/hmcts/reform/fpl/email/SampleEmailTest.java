@@ -7,8 +7,8 @@ import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 
 import java.util.UUID;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
+import static uk.gov.hmcts.reform.fpl.email.EmailContent.emailContent;
+import static uk.gov.hmcts.reform.fpl.email.SendEmailResponseAssert.assertThat;
 
 public class SampleEmailTest extends EmailTemplateTest {
 
@@ -28,13 +28,16 @@ public class SampleEmailTest extends EmailTemplateTest {
                 .build(),
             "testCaseID" + UUID.randomUUID());
 
-        assertThat(bodyFor("x")).isEqualTo(
-            line("# This is a title")
-                + NEW_LINE
-                + line("Apply now (normal link) at https://www.google.com ")
-                + line("Apply now (edge link) at microsoft-edge:https://www.google.com ")
-                + NEW_LINE
-                + line("Thanks,")
-                + "Test");
+
+        assertThat(response()).hasBody(emailContent()
+            .line("# This is a title")
+            .line()
+            .line("Apply now (normal link) at https://www.google.com ")
+            .line("Apply now (edge link) at microsoft-edge:https://www.google.com ")
+            .line()
+            .line("Thanks,")
+            .end("Test")
+        );
+
     }
 }

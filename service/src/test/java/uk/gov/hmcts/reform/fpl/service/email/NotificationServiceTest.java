@@ -17,7 +17,6 @@ import uk.gov.service.notify.SendEmailResponse;
 import java.util.Map;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.service.email.NotificationServiceTest.ENV;
@@ -35,9 +34,6 @@ class NotificationServiceTest {
 
     @MockBean
     private NotificationClient notificationClient;
-
-    @MockBean
-    private NoOpNotificationResponsePostProcessor notificationResponsePostProcessor;
 
     @Autowired
     private NotificationService notificationService;
@@ -60,9 +56,6 @@ class NotificationServiceTest {
             NOTIFICATION_REFERENCE)).thenReturn(EMAIL_RESPONSE);
 
         notificationService.sendEmail(TEMPLATE_ID, TEST_RECIPIENT_EMAIL, notifyData, REFERENCE);
-
-        verify(notificationResponsePostProcessor).process(EMAIL_RESPONSE);
-
     }
 
 }
