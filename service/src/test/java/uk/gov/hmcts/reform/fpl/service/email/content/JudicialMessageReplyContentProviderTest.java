@@ -33,7 +33,8 @@ class JudicialMessageReplyContentProviderTest extends AbstractEmailContentProvid
             .respondentLastName("Smith")
             .build();
 
-        assertThat(newJudicialMessageReplyContentProvider.buildNewJudicialMessageReplyTemplate(caseData, judicialMessage))
+        assertThat(newJudicialMessageReplyContentProvider
+            .buildNewJudicialMessageReplyTemplate(caseData, judicialMessage))
             .isEqualTo(expectedTemplate);
     }
 }

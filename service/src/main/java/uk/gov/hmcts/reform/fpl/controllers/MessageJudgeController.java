@@ -89,7 +89,7 @@ public class MessageJudgeController extends CallbackController {
         Object judicialMessageDynamicList = caseData.getMessageJudgeEventData().getJudicialMessageDynamicList();
         JudicialMessage newJudicialMessage = caseData.getJudicialMessages().get(0).getValue();
 
-        if(isNull(judicialMessageDynamicList)) {
+        if (isNull(judicialMessageDynamicList)) {
             publishEvent(new NewJudicialMessageEvent(caseData, newJudicialMessage));
         } else {
             publishEvent(new NewJudicialMessageReplyEvent(caseData, newJudicialMessage));

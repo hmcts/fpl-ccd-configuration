@@ -45,7 +45,7 @@ class MessageJudgeServiceTest {
 
     private static final String MESSAGE_NOTE = "Message note";
     private static final String MESSAGE_SENDER = "sender@fpla.com";
-    private static final String MESSAGE_ABOUT = "request review from some court";
+    private static final String MESSAGE_REQUESTED_BY = "request review from some court";
     private static final String MESSAGE_RECIPIENT = "recipient@fpla.com";
     private static final String C2_FILE_NAME = "c2.doc";
     private static final String C2_SUPPORTING_DOCUMENT_FILE_NAME = "c2_supporting.doc";
@@ -159,7 +159,7 @@ class MessageJudgeServiceTest {
 
     @Test
     void shouldBuildRelatedDocumentsLabelAndRebuildJudicialMessagesDynamicListWhenReplyingToAMessage() {
-        JudicialMessage selectedJudicialMessage= JudicialMessage.builder()
+        JudicialMessage selectedJudicialMessage = JudicialMessage.builder()
             .sender(MESSAGE_SENDER)
             .relatedDocumentFileNames("file1.doc")
             .messageHistory("message history")
@@ -195,7 +195,7 @@ class MessageJudgeServiceTest {
     @Test
     void shouldAppendNewJudicialMessageToJudicialMessageListWhenC2DocumentNotSelected() {
         JudicialMessageMetaData judicialMessageMetaData = JudicialMessageMetaData.builder()
-            .about(MESSAGE_ABOUT)
+            .requestedBy(MESSAGE_REQUESTED_BY)
             .recipient(MESSAGE_RECIPIENT)
             .urgency("High urgency")
             .build();
@@ -219,7 +219,7 @@ class MessageJudgeServiceTest {
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
             .sender(MESSAGE_SENDER)
             .recipient(MESSAGE_RECIPIENT)
-            .about(MESSAGE_ABOUT)
+            .requestedBy(MESSAGE_REQUESTED_BY)
             .urgency("High urgency")
             .messageHistory(MESSAGE_NOTE)
             .build());
@@ -288,7 +288,7 @@ class MessageJudgeServiceTest {
     @Test
     void shouldAppendNewJudicialMessageToExistingJudicialMessageList() {
         JudicialMessage newMessage = JudicialMessage.builder()
-            .about(MESSAGE_ABOUT)
+            .requestedBy(MESSAGE_REQUESTED_BY)
             .recipient(MESSAGE_RECIPIENT)
             .build();
 
@@ -313,7 +313,7 @@ class MessageJudgeServiceTest {
             .recipient(MESSAGE_RECIPIENT)
             .updatedTime(time.now())
             .status(OPEN)
-            .about(MESSAGE_ABOUT)
+            .requestedBy(MESSAGE_REQUESTED_BY)
             .latestMessage(MESSAGE_NOTE)
             .messageHistory(MESSAGE_NOTE)
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
@@ -354,7 +354,7 @@ class MessageJudgeServiceTest {
                     .recipient(MESSAGE_RECIPIENT)
                     .updatedTime(time.now().minusDays(1))
                     .status(OPEN)
-                    .about(MESSAGE_ABOUT)
+                    .requestedBy(MESSAGE_REQUESTED_BY)
                     .latestMessage(MESSAGE_NOTE)
                     .messageHistory(MESSAGE_NOTE)
                     .dateSent(formatLocalDateTimeBaseUsingFormat(time.now().minusDays(1), DATE_TIME_AT))
@@ -366,7 +366,7 @@ class MessageJudgeServiceTest {
         JudicialMessage expectedUpdatedJudicialMessage = JudicialMessage.builder()
             .sender(MESSAGE_RECIPIENT)
             .recipient(MESSAGE_SENDER)
-            .about(MESSAGE_ABOUT)
+            .requestedBy(MESSAGE_REQUESTED_BY)
             .updatedTime(time.now())
             .status(OPEN)
             .latestMessage(messageReply)
@@ -374,7 +374,7 @@ class MessageJudgeServiceTest {
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now().minusDays(1), DATE_TIME_AT))
             .build();
 
-       when(userService.getUserEmail()).thenReturn(MESSAGE_RECIPIENT);
+        when(userService.getUserEmail()).thenReturn(MESSAGE_RECIPIENT);
 
         List<Element<JudicialMessage>> updatedMessages = messageJudgeService.replyToJudicialMessage(caseData);
 
