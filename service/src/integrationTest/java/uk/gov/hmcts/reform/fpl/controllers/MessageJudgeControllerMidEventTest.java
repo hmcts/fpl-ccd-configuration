@@ -131,12 +131,15 @@ class MessageJudgeControllerMidEventTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
 
-        DynamicList builtDynamicList = mapper.convertValue(
+        DynamicList judicialMessageDynamicList = mapper.convertValue(
             response.getData().get("judicialMessageDynamicList"), DynamicList.class);
+
+        JudicialMessage judicialMessageReply = mapper.convertValue(
+            response.getData().get("judicialMessageReply"), JudicialMessage.class);
 
         assertThat(response.getData().get("relatedDocumentsLabel")).isEqualTo(
             expectedJudicialMessage.getRelatedDocumentFileNames());
-        assertThat(response.getData().get("judicialMessageReply")).isEqualTo(expectedJudicialMessage);
-        assertThat(builtDynamicList).isEqualTo(caseData.buildJudicialMessageDynamicList(DYNAMIC_LIST_ITEM_ID));
+        assertThat(judicialMessageReply).isEqualTo(expectedJudicialMessage);
+        assertThat(judicialMessageDynamicList).isEqualTo(caseData.buildJudicialMessageDynamicList(DYNAMIC_LIST_ITEM_ID));
     }
 }
