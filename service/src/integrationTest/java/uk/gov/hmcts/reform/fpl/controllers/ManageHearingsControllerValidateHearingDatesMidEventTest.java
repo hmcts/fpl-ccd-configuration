@@ -76,7 +76,7 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
         CaseData caseData = CaseData.builder()
             .id(nextLong())
             .hearingStartDate(pastDate)
-            .hearingEndDate(pastDate)
+            .hearingEndDate(pastDate.plusDays(1))
             .hearingOption(NEW_HEARING)
             .build();
 
@@ -92,7 +92,7 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
         CaseData caseData = CaseData.builder()
             .id(nextLong())
             .hearingStartDate(pastDate)
-            .hearingEndDate(pastDate)
+            .hearingEndDate(pastDate.plusHours(1))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "validate-hearing-dates");
@@ -104,7 +104,7 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
     void shouldThrowOnlyInvalidTimeErrorsWhenPastHearingDatesEnteredOnAddHearingAndPastHearingDatesIsEnabled() {
         given(featureToggleService.isAddHearingsInPastEnabled()).willReturn(true);
 
-        LocalDateTime dateWithInvalidTime = LocalDateTime.of(1990, 10, 2, 00, 00);
+        LocalDateTime dateWithInvalidTime = LocalDateTime.of(1990, 10, 2, 0, 0);
 
         CaseData caseDetails = CaseData.builder()
             .id(nextLong())
@@ -117,6 +117,42 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
 
         assertThat(callbackResponse.getErrors()).containsExactlyInAnyOrder(
             "Enter a valid end time");
+    }
+
+    @Test
+    void shouldThrowInvalidHearingEndDateTimeErrorWhenHearingEndDateIsBeforeHearingStartDate() {
+        given(featureToggleService.isAddHearingsInPastEnabled()).willReturn(true);
+
+        LocalDateTime hearingEndDate = pastDate.minusDays(1);
+
+        CaseData caseDetails = CaseData.builder()
+            .id(nextLong())
+            .hearingStartDate(pastDate)
+            .hearingEndDate(hearingEndDate)
+            .hearingOption(NEW_HEARING)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "validate-hearing-dates");
+
+        assertThat(callbackResponse.getErrors()).containsOnly(
+            "The end date and time must be after the start date and time");
+    }
+
+    @Test
+    void shouldThrowInvalidHearingEndDateTimeErrorWhenHearingEndDateIsSameAsHearingStartDate() {
+        given(featureToggleService.isAddHearingsInPastEnabled()).willReturn(true);
+
+        CaseData caseDetails = CaseData.builder()
+            .id(nextLong())
+            .hearingStartDate(pastDate)
+            .hearingEndDate(pastDate)
+            .hearingOption(NEW_HEARING)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "validate-hearing-dates");
+
+        assertThat(callbackResponse.getErrors()).containsOnly(
+            "The end date and time must be after the start date and time");
     }
 
     @Test
