@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.events.NewJudicialMessageEvent;
-import uk.gov.hmcts.reform.fpl.events.NewJudicialMessageReplyEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -89,11 +87,19 @@ public class MessageJudgeController extends CallbackController {
         Object judicialMessageDynamicList = caseData.getMessageJudgeEventData().getJudicialMessageDynamicList();
         JudicialMessage newJudicialMessage = caseData.getJudicialMessages().get(0).getValue();
 
-        if (isNull(judicialMessageDynamicList)) {
-            publishEvent(new NewJudicialMessageEvent(caseData, newJudicialMessage));
+        List<Element<JudicialMessage>> judicialMessages = caseData.getJudicialMessages();
+
+        if(isNull(judicialMessages.get(0).getValue().getUpdatedTime())) {
+            System.out.println("This is a new message");
         } else {
-            publishEvent(new NewJudicialMessageReplyEvent(caseData, newJudicialMessage));
+            System.out.println("This is a reply message");
         }
+
+//        if (isNull(judicialMessageDynamicList)) {
+//            publishEvent(new NewJudicialMessageEvent(caseData, newJudicialMessage));
+//        } else {
+//            publishEvent(new NewJudicialMessageReplyEvent(caseData, newJudicialMessage));
+//        }
     }
 
     private boolean isReplyingToAMessage(CaseData caseData) {

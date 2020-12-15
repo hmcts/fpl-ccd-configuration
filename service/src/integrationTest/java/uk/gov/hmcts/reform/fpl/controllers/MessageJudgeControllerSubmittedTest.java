@@ -9,11 +9,15 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_JUDICIAL_MESSAGE_ADDED_TEMPLATE;
@@ -69,7 +73,61 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
             "sender", "sender@fpla.com",
             "urgency", "High",
             "hasUrgency", "Yes",
-            "note", "Some note"
+            "latestMessage", "Some note"
+        );
+
+        verify(notificationClient).sendEmail(
+            NEW_JUDICIAL_MESSAGE_ADDED_TEMPLATE, JUDICIAL_MESSAGE_RECIPIENT, expectedData, "localhost/12345");
+    }
+
+    @Test
+    void shouldNotifyJudicialMessageRecipientWhenNewJudicialMessageReplyAdded() throws NotificationClientException {
+        JudicialMessage latestJudicialMessage = JudicialMessage.builder()
+            .recipient(JUDICIAL_MESSAGE_RECIPIENT)
+            .sender("sender@fpla.com")
+            .urgency("High")
+            .latestMessage("Some note")
+            .build();
+
+        UUID SDO_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
+
+        DynamicList dynamicList = DynamicList.builder()
+            .value(DynamicListElement.builder()
+                .code(SDO_ID)
+                .label("Gatekeeping order - 12 March 1234")
+                .build())
+            .build();
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(CASE_REFERENCE)
+            .data(Map.of(
+                "messageJudgeEventData", MessageJudgeEventData.builder()
+                    .judicialMessageDynamicList(dynamicList)
+                    .build(),
+                "respondents1", List.of(
+                    element(Respondent.builder()
+                        .party(RespondentParty.builder()
+                            .lastName("Davidson")
+                            .build())
+                        .build())),
+                "judicialMessages", List.of(
+                    element(latestJudicialMessage),
+                    element(JudicialMessage.builder()
+                        .recipient("do_not_send@fpla.com")
+                        .sender("someOthersender@fpla.com")
+                        .urgency("High")
+                        .build())))).build();
+
+        postSubmittedEvent(caseDetails);
+
+        Map<String, Object> expectedData = Map.of(
+            "respondentLastName", "Davidson",
+            "caseUrl", "http://fake-url/cases/case-details/12345#JudicialMessagesTab",
+            "callout", "^Davidson",
+            "sender", "sender@fpla.com",
+            "urgency", "High",
+            "hasUrgency", "Yes",
+            "latestMessage", "Some note"
         );
 
         verify(notificationClient).sendEmail(
