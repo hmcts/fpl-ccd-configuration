@@ -30,6 +30,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Orders",
+    "ListElementCode": "address",
+    "FieldType": "AddressUK",
+    "ElementLabel": "Address",
+    "FieldShowCondition": "epoType=\"PREVENT_REMOVAL\" AND orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
     "ListElementCode": "emergencyProtectionOrders",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "EmergencyProtectionOrderType",
