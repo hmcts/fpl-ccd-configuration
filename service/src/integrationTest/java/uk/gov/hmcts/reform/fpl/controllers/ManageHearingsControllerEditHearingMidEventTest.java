@@ -181,6 +181,21 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
         assertThat(response.getErrors()).contains(ERROR_MESSAGE);
     }
 
+    @Test
+    void shouldReturnErrorWhenNoHearingToRelistExists() {
+        Element<HearingBooking> pastHearing1 = element(testHearing(now().minusDays(2)));
+        Element<HearingBooking> pastHearing2 = element(testHearing(now().minusDays(3)));
+
+        CaseData initialCaseData = CaseData.builder()
+            .hearingOption(RE_LIST_HEARING)
+            .hearingDetails(List.of(pastHearing1, pastHearing2))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(initialCaseData);
+
+        assertThat(response.getErrors()).contains("There are no adjourned or vacated hearings to re-list");
+    }
+
     private static void assertHearingCaseFields(CaseData caseData, HearingBooking hearingBooking) {
         assertThat(caseData.getHearingType()).isEqualTo(hearingBooking.getType());
         assertThat(caseData.getHearingStartDate()).isEqualTo(hearingBooking.getStartDate());
