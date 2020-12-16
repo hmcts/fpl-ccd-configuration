@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -97,8 +96,9 @@ class UploadDocumentsMigrationServiceTest {
         Map<String, Object> actual = underTest.transformFromOldCaseData(CaseData.builder().build());
 
         assertThat(actual).isEqualTo(Map.of(
-            "applicationDocuments", Collections.emptyList(),
-            "applicationDocumentsToFollowReason", ""
+            "applicationDocuments", Lists.emptyList(),
+            "applicationDocumentsToFollowReason", "",
+            "courtBundleList", Lists.emptyList()
             )
         );
     }
@@ -176,15 +176,16 @@ class UploadDocumentsMigrationServiceTest {
             "applicationDocuments", List.of(
                 CONVERTED_OTHER_DOCUMENT_1,
                 CONVERTED_OTHER_DOCUMENT_2
-            ),
+                ),
             "applicationDocumentsToFollowReason", "Social work chronology to follow,"
-                + " Social work statement to follow,"
-                + " Care plan to follow,"
-                + " SWET to follow,"
-                + " Social work statement to follow,"
-                + " Threshold to follow,"
-                + " Checklist document to follow"
-        ));
+            + " Social work statement to follow,"
+            + " Care plan to follow,"
+            + " SWET to follow,"
+            + " Social work statement to follow,"
+            + " Threshold to follow,"
+            + " Checklist document to follow",
+            "courtBundleList", Lists.emptyList()
+            ));
     }
 
     @Test
@@ -231,7 +232,8 @@ class UploadDocumentsMigrationServiceTest {
                 CONVERTED_OTHER_DOCUMENT_1,
                 CONVERTED_OTHER_DOCUMENT_2
             ),
-            "applicationDocumentsToFollowReason", ""
+            "applicationDocumentsToFollowReason", "",
+            "courtBundleList", Lists.emptyList()
         ));
     }
 
@@ -255,7 +257,8 @@ class UploadDocumentsMigrationServiceTest {
                 CONVERTED_SOCIAL_WORK_CHRONOLOGY_DOCUMENT,
                 CONVERTED_SOCIAL_WORK_CARE_PLAN_DOCUMENT
             ),
-            "applicationDocumentsToFollowReason", "Social work statement to follow, SWET to follow"
+            "applicationDocumentsToFollowReason", "Social work statement to follow, SWET to follow",
+            "courtBundleList", Lists.emptyList()
         ));
     }
 
@@ -268,7 +271,8 @@ class UploadDocumentsMigrationServiceTest {
 
         assertThat(actual).isEqualTo(Map.of(
             "applicationDocuments", Lists.emptyList(),
-            "applicationDocumentsToFollowReason", "Social work chronology to follow"
+            "applicationDocumentsToFollowReason", "Social work chronology to follow",
+            "courtBundleList", Lists.emptyList()
         ));
     }
 
