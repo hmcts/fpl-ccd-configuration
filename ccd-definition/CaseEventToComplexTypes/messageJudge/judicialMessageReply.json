@@ -4,8 +4,19 @@
     "ID": "JudicialMessageReply",
     "CaseEventID": "messageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageReply",
-    "ListElementCode": "recipient",
+    "ListElementCode": "relatedDocumentFileNames",
     "FieldDisplayOrder": 1,
+    "EventElementLabel": "Related documents",
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "relatedDocumentFileNames!=\"*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessageReply",
+    "CaseEventID": "messageJudgeOrLegalAdviser",
+    "CaseFieldID": "judicialMessageReply",
+    "ListElementCode": "recipient",
+    "FieldDisplayOrder": 2,
     "EventElementLabel": "Message from CTSC admin member",
     "DisplayContext": "READONLY"
   },
@@ -16,7 +27,7 @@
     "CaseFieldID": "judicialMessageReply",
     "ListElementCode": "requestedBy",
     "SecurityClassification": "Public",
-    "FieldDisplayOrder": 2,
+    "FieldDisplayOrder": 3,
     "EventElementLabel": "About a request from",
     "DisplayContext": "READONLY",
     "FieldShowCondition": "recipient!=\"ALWAYS_SHOW\""
@@ -27,7 +38,7 @@
     "CaseEventID": "messageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageReply",
     "ListElementCode": "urgency",
-    "FieldDisplayOrder": 3,
+    "FieldDisplayOrder": 4,
     "DisplayContext": "READONLY"
   },
   {
@@ -36,7 +47,7 @@
     "CaseEventID": "messageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageReply",
     "ListElementCode": "messageHistory",
-    "FieldDisplayOrder": 4,
+    "FieldDisplayOrder": 5,
     "DisplayContext": "READONLY",
     "EventElementLabel": "Message from CTSC admin team",
     "FieldShowCondition": "messageHistory!=\"ALWAYS_SHOW\""
@@ -47,7 +58,7 @@
     "CaseEventID": "messageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageReply",
     "ListElementCode": "latestMessage",
-    "FieldDisplayOrder": 5,
+    "FieldDisplayOrder": 6,
     "DisplayContext": "MANDATORY",
     "EventElementLabel": "Messages from judge or legal adviser"
   }

@@ -76,25 +76,26 @@ public class MessageJudgeService {
         Map<String, Object> data = new HashMap<>();
 
         UUID selectedJudicialMessageId = getDynamicListSelectedValue(
-            caseData.getMessageJudgeEventData().getJudicialMessageDynamicList(), mapper
-        );
+            caseData.getMessageJudgeEventData().getJudicialMessageDynamicList(), mapper);
 
-        Optional<Element<JudicialMessage>> selectedJudicialMessage
+        Optional<Element<JudicialMessage>> selectedJudicialMessageElement
             = findElement(selectedJudicialMessageId, caseData.getJudicialMessages());
 
-        if (selectedJudicialMessage.isEmpty()) {
+        if (selectedJudicialMessageElement.isEmpty()) {
             throw new JudicialMessageNotFoundException(selectedJudicialMessageId);
         }
 
-        JudicialMessage judicialMessage = selectedJudicialMessage.get().getValue();
+        JudicialMessage selectedJudicialMessage = selectedJudicialMessageElement.get().getValue();
 
-        judicialMessage = judicialMessage.toBuilder()
-            .recipient(judicialMessage.getSender())
+        JudicialMessage judicialMessageReply = JudicialMessage.builder()
+            .relatedDocumentFileNames(selectedJudicialMessage.getRelatedDocumentFileNames())
+            .recipient(selectedJudicialMessage.getSender())
+            .requestedBy(selectedJudicialMessage.getRequestedBy())
+            .messageHistory(selectedJudicialMessage.getMessageHistory())
             .latestMessage("")
             .build();
 
-        data.put("relatedDocumentsLabel", judicialMessage.getRelatedDocumentFileNames());
-        data.put("judicialMessageReply", judicialMessage);
+        data.put("judicialMessageReply", judicialMessageReply);
         data.put("judicialMessageDynamicList", rebuildJudicialMessageDynamicList(caseData, selectedJudicialMessageId));
 
         return data;

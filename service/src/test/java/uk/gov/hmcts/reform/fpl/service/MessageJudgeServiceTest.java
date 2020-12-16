@@ -25,8 +25,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import static java.lang.String.format;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
@@ -226,14 +226,17 @@ class MessageJudgeServiceTest {
                 element(JudicialMessage.builder().build())))
             .build();
 
-        JudicialMessage expectedJudicialMessage = selectedJudicialMessage.toBuilder()
-            .latestMessage("")
+        JudicialMessage expectedJudicialMessage = JudicialMessage.builder()
+            .relatedDocumentFileNames(selectedJudicialMessage.getRelatedDocumentFileNames())
             .recipient(MESSAGE_SENDER)
+            .requestedBy(selectedJudicialMessage.getRequestedBy())
+            .messageHistory(selectedJudicialMessage.getMessageHistory())
+            .latestMessage("")
             .build();
 
         assertThat(messageJudgeService.populateReplyMessageFields(caseData))
-            .extracting("relatedDocumentsLabel", "judicialMessageReply", "judicialMessageDynamicList")
-            .containsExactly(selectedJudicialMessage.getRelatedDocumentFileNames(), expectedJudicialMessage,
+            .extracting("judicialMessageReply", "judicialMessageDynamicList")
+            .containsExactly(expectedJudicialMessage,
                 caseData.buildJudicialMessageDynamicList(SELECTED_DYNAMIC_LIST_ITEM_ID));
     }
 

@@ -124,8 +124,11 @@ class MessageJudgeControllerMidEventTest extends AbstractControllerTest {
             ))
             .build();
 
-        JudicialMessage expectedJudicialMessage = selectedJudicialMessage.toBuilder()
+        JudicialMessage expectedJudicialMessage = JudicialMessage.builder()
+            .relatedDocumentFileNames(selectedJudicialMessage.getRelatedDocumentFileNames())
             .recipient(selectedJudicialMessage.getSender())
+            .requestedBy(selectedJudicialMessage.getRequestedBy())
+            .messageHistory(selectedJudicialMessage.getMessageHistory())
             .latestMessage("")
             .build();
 
@@ -136,9 +139,6 @@ class MessageJudgeControllerMidEventTest extends AbstractControllerTest {
 
         JudicialMessage judicialMessageReply = mapper.convertValue(
             response.getData().get("judicialMessageReply"), JudicialMessage.class);
-
-        assertThat(response.getData().get("relatedDocumentsLabel")).isEqualTo(
-            expectedJudicialMessage.getRelatedDocumentFileNames());
 
         assertThat(judicialMessageReply).isEqualTo(expectedJudicialMessage);
 

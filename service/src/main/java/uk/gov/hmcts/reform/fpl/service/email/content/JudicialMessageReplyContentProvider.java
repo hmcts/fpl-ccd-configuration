@@ -18,13 +18,11 @@ public class JudicialMessageReplyContentProvider extends AbstractEmailContentPro
 
     public NewJudicialMessageReplyTemplate buildNewJudicialMessageReplyTemplate(CaseData caseData,
                                                                            JudicialMessage judicialMessage) {
-        NewJudicialMessageReplyTemplate.NewJudicialMessageReplyTemplateBuilder<?, ?> templateBuilder
-            = NewJudicialMessageReplyTemplate.builder()
+        return NewJudicialMessageReplyTemplate.builder()
             .respondentLastName(getFirstRespondentLastName(caseData))
             .callout(buildCallout(caseData))
             .latestMessage(judicialMessage.getLatestMessage())
-            .caseUrl(getCaseUrl(caseData.getId(), "JudicialMessagesTab"));
-
-        return templateBuilder.build();
+            .caseUrl(getCaseUrl(caseData.getId(), "JudicialMessagesTab"))
+            .build();
     }
 }

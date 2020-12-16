@@ -70,7 +70,7 @@
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
     "PageID": "NewMessageMetaData",
-    "ShowSummaryChangeOption": "N",
+    "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 2,
     "FieldShowCondition": "isMessageRegardingC2=\"Yes\""
   },
@@ -105,7 +105,8 @@
     "DisplayContext": "READONLY",
     "PageID": "NewMessageNote",
     "ShowSummaryChangeOption": "N",
-    "PageDisplayOrder": 3
+    "PageDisplayOrder": 3,
+    "FieldShowCondition": "isMessageRegardingC2=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
