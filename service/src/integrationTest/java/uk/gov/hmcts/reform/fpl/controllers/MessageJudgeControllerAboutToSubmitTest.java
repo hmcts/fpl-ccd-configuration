@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -11,8 +12,6 @@ import uk.gov.hmcts.reform.fpl.enums.MessageJudgeOptions;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessageMetaData;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
@@ -27,6 +26,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(MessageJudgeController.class)
@@ -92,12 +92,10 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldUpdateExistingJudicialMessageAndSortIntoExistingJudicialMessageListWhenReplying() {
+        String dateSent = formatLocalDateTimeBaseUsingFormat(now().minusDays(1), DATE_TIME_AT);
+
         MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
-            .judicialMessageDynamicList(DynamicList.builder()
-                .value(DynamicListElement.builder()
-                    .code(SELECTED_DYNAMIC_LIST_ITEM_ID)
-                    .build())
-                .build())
+            .judicialMessageDynamicList(buildDynamicList(0, Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, dateSent)))
             .judicialMessageReply(JudicialMessage.builder()
                 .latestMessage(REPLY)
                 .build())
@@ -115,7 +113,7 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
                     .requestedBy(MESSAGE_REQUESTED_BY)
                     .latestMessage(MESSAGE)
                     .messageHistory(MESSAGE)
-                    .dateSent(formatLocalDateTimeBaseUsingFormat(now().minusDays(1), DATE_TIME_AT))
+                    .dateSent(dateSent)
                     .build())))
             .build();
 
@@ -127,7 +125,7 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
             .status(OPEN)
             .latestMessage(REPLY)
             .messageHistory(MESSAGE + "\n" + REPLY)
-            .dateSent(formatLocalDateTimeBaseUsingFormat(now().minusDays(1), DATE_TIME_AT))
+            .dateSent(dateSent)
             .build();
 
         when(userService.getUserEmail()).thenReturn(MESSAGE_RECIPIENT);
@@ -154,11 +152,7 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
                     .urgency("some data")
                     .build(),
                 "judicialMessageNote", "some data",
-                "judicialMessageDynamicList", DynamicList.builder()
-                    .value(DynamicListElement.builder()
-                        .code(SELECTED_DYNAMIC_LIST_ITEM_ID)
-                        .build())
-                    .build(),
+                "judicialMessageDynamicList", buildDynamicList(0, Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, "some data")),
                 "messageJudgeOption", MessageJudgeOptions.REPLY,
                 "judicialMessageReply", JudicialMessage.builder().build()
             ))

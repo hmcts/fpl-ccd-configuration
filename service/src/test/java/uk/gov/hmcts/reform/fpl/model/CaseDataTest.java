@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
@@ -38,6 +39,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
 
@@ -910,16 +912,24 @@ class CaseDataTest {
 
     @Nested
     class BuildJudicialMessageList {
+        UUID firstId = randomUUID();
+        UUID secondId = randomUUID();
+        UUID thirdId = randomUUID();
+
         @Test
         void shouldBuildDynamicJudicialMessageListFromJudicialMessages() {
             List<Element<JudicialMessage>> judicialMessages = List.of(
-                element(buildJudicialMessage("Low", "11 November 2020", YES)),
-                element(buildJudicialMessage("Medium", "12 November 2020", NO)),
-                element(buildJudicialMessage("High", "13 November 2020", YES)));
+                element(firstId, buildJudicialMessage("Low", "11 November 2020", YES)),
+                element(secondId, buildJudicialMessage("Medium", "12 November 2020", NO)),
+                element(thirdId, buildJudicialMessage("High", "13 November 2020", YES))
+            );
 
             CaseData caseData = CaseData.builder().judicialMessages(judicialMessages).build();
-            DynamicList expectedDynamicList = ElementUtils
-                .asDynamicList(judicialMessages, null, JudicialMessage::toLabel);
+            DynamicList expectedDynamicList = buildDynamicList(
+                Pair.of(firstId, "C2, Low, 11 November 2020"),
+                Pair.of(secondId, "Medium, 12 November 2020"),
+                Pair.of(thirdId, "C2, High, 13 November 2020")
+            );
 
             assertThat(caseData.buildJudicialMessageDynamicList())
                 .isEqualTo(expectedDynamicList);
@@ -927,30 +937,32 @@ class CaseDataTest {
 
         @Test
         void shouldBuildDynamicJudicialMessageListWithSelectorPropertyFromJudicialMessage() {
-            UUID selectedMessageId = randomUUID();
-
             List<Element<JudicialMessage>> judicialMessages = List.of(
-                element(buildJudicialMessage("Low", "11 November 2020", YES)),
-                element(buildJudicialMessage("Medium", "12 November 2020", NO)),
-                element(selectedMessageId, buildJudicialMessage("High", "13 November 2020", YES))
+                element(firstId, buildJudicialMessage("Low", "11 November 2020", YES)),
+                element(secondId, buildJudicialMessage("Medium", "12 November 2020", NO)),
+                element(thirdId, buildJudicialMessage("High", "13 November 2020", YES))
             );
 
             CaseData caseData = CaseData.builder().judicialMessages(judicialMessages).build();
-            DynamicList expectedDynamicList = ElementUtils
-                .asDynamicList(judicialMessages, selectedMessageId, JudicialMessage::toLabel);
+            DynamicList expectedDynamicList = buildDynamicList(2,
+                Pair.of(firstId, "C2, Low, 11 November 2020"),
+                Pair.of(secondId, "Medium, 12 November 2020"),
+                Pair.of(thirdId, "C2, High, 13 November 2020")
+            );
 
-            assertThat(caseData.buildJudicialMessageDynamicList(selectedMessageId))
+            assertThat(caseData.buildJudicialMessageDynamicList(thirdId))
                 .isEqualTo(expectedDynamicList);
+        }
+
+        private JudicialMessage buildJudicialMessage(String urgency, String dateSent, YesNo isRelatedToC2) {
+            return JudicialMessage.builder()
+                .urgency(urgency)
+                .dateSent(dateSent)
+                .isRelatedToC2(isRelatedToC2)
+                .build();
         }
     }
 
-    private JudicialMessage buildJudicialMessage(String urgency, String dateSent, YesNo isRelatedToC2) {
-        return JudicialMessage.builder()
-            .urgency(urgency)
-            .dateSent(dateSent)
-            .isRelatedToC2(isRelatedToC2)
-            .build();
-    }
 
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {
         return C2DocumentBundle.builder().uploadedDateTime(dateTime.toString()).build();
