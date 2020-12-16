@@ -7,8 +7,10 @@
     "TabLabel": "Correspondence",
     "TabDisplayOrder": 8,
     "CaseFieldID": "correspondenceTabHeading",
-    "TabFieldDisplayOrder": 1
-  },  {
+    "TabFieldDisplayOrder": 1,
+    "TabShowCondition": "correspondenceDocuments!=\"\" OR correspondenceDocumentsLA!=\"\""
+  },
+  {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
