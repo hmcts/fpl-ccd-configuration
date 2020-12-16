@@ -114,11 +114,6 @@ public class ManageHearingsController extends CallbackController {
             caseDetails.getData().putAll(hearingsService.populateHearingCaseFields(
                 hearingBooking, caseData.getAllocatedJudge()));
 
-            if (hearingBookingId.equals(caseData.getHearingDetails().get(0).getId())
-                || hearingBooking.getPreviousHearingVenue() == null
-                || hearingBooking.getPreviousHearingVenue().getPreviousVenue() == null) {
-                caseDetails.getData().put(FIRST_HEARING_FLAG, "Yes");
-            }
         } else if (ADJOURN_HEARING == caseData.getHearingOption()) {
             UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData);
 
@@ -144,7 +139,6 @@ public class ManageHearingsController extends CallbackController {
             caseDetails.getData().putAll(hearingsService.populateHearingCaseFields(
                 reListedHearingBooking, caseData.getAllocatedJudge()));
 
-            caseDetails.getData().put(FIRST_HEARING_FLAG, YES.getValue());
             caseDetails.getData().put(TO_RE_LIST_HEARING_LIST,
                 hearingsService.asDynamicList(caseData.getToBeReListedHearings(), hearingBookingId));
         }
@@ -169,8 +163,6 @@ public class ManageHearingsController extends CallbackController {
 
         caseDetails.getData().putAll(hearingsService.populateHearingCaseFields(
             reListedHearingBooking, caseData.getAllocatedJudge()));
-
-        caseDetails.getData().put(FIRST_HEARING_FLAG, YES.getValue());
 
         return respond(caseDetails);
     }

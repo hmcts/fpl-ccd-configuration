@@ -79,7 +79,6 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
         CaseData updatedCaseData = extractCaseData(postMidEvent(initialCaseData));
 
         assertThat(updatedCaseData.getHearingDateList()).isEqualTo(dynamicList(hearing1.getId(), hearing1, hearing2));
-        assertThat(updatedCaseData.getFirstHearingFlag()).isEqualTo("Yes");
         assertHearingCaseFields(updatedCaseData, hearing1.getValue());
     }
 
