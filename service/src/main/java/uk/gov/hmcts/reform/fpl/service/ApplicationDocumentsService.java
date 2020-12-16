@@ -50,7 +50,8 @@ public class ApplicationDocumentsService {
                 Optional<Element<ApplicationDocument>> documentBefore = findElement(document.getId(),
                     previousDocuments);
 
-                if (documentBefore.isPresent()) {
+                // in the old flow, we allowed other documents with just title and no file
+                if (documentBefore.map(doc -> doc.getValue().hasDocument()).orElse(false)) {
                     Element<ApplicationDocument> oldDocument = documentBefore.get();
                     handleExistingDocuments(document, oldDocument);
 
