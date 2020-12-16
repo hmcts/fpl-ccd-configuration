@@ -119,6 +119,22 @@ Application must be up and running
 
 Report is generated in build/reports/serenity
 
+## Connecting to PR database:
+
+```$bash
+kubectl port-forward fpl-case-service-pr-<PR-ID>-postgresql-0 5020:5432
+```
+then connect to data-store db on port 5020
+
+## Connecting to PR elastic search:
+```$bash
+kubectl port-forward fpl-case-service-pr-<PR-ID>-es-master-0 9210:9200
+```
+then
+```$bash
+curl http://localhost:9210/care_supervision_epo_cases-000001/_search
+```
+
 ## Service:
 See [fpl-service](service/README.md) for more information.
 

@@ -80,6 +80,7 @@ public class StandardDirectionsOrderService {
             .dateOfUpload(time.now().toLocalDate())
             .uploader(userInfo.getName())
             .orderDoc(prepareOrderDocument(currentOrder.getOrderDoc(), currentOrder.getOrderStatus()))
+            .lastUploadedOrder(currentOrder.isSealed() ? currentOrder.getOrderDoc() : null)
             .judgeAndLegalAdvisor(currentOrder.getJudgeAndLegalAdvisor()).build();
     }
 
