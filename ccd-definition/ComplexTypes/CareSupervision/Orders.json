@@ -20,6 +20,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Orders",
+    "ListElementCode": "epoType",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "EPOTypes",
+    "ElementLabel": "What type of EPO are you requesting?",
+    "FieldShowCondition": "orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
     "ListElementCode": "emergencyProtectionOrders",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "EmergencyProtectionOrderType",
@@ -44,6 +54,15 @@
     "FieldTypeParameter": "EmergencyProtectionOrderDirectionType",
     "ElementLabel": "Do you need any of these directions?",
     "FieldShowCondition": "orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "ListElementCode": "excluded",
+    "FieldType": "Text",
+    "ElementLabel": "Who's excluded?",
+    "FieldShowCondition": "emergencyProtectionOrderDirections CONTAINS \"EXCLUSION_REQUIREMENT\" AND orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
     "SecurityClassification": "Public"
   },
   {
