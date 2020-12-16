@@ -51,8 +51,10 @@ xui-webapp:
   nodejs:
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
-    image: hmctspublic.azurecr.io/xui/webapp:prod-95f45685
+    image: hmctspublic.azurecr.io/xui/webapp:latest
     ingressHost: xui-${SERVICE_FQDN}
+    memoryLimits: 1536Mi
+    cpuLimits: 1500m
     environment:
       HEALTH_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}/health
       HEALTH_CCD_DATA_API: http://${SERVICE_NAME}-ccd-data-store-api/health
@@ -62,8 +64,16 @@ xui-webapp:
       SERVICES_TERMS_AND_CONDITIONS: http://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal
       JURISDICTIONS: PUBLICLAW
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
-      FEATURE_REDIS_ENABLED: "false"
+      FEATURE_REDIS_ENABLED: false
+      FEATURE_APP_INSIGHTS_ENABLED: false
+      FEATURE_SECURE_COOKIE_ENABLED: false
+      FEATURE_PROXY_ENABLED: false
+      FEATURE_TERMS_AND_CONDITIONS_ENABLED: false
+      FEATURE_HELMET_ENABLED: false
+      FEATURE_OIDC_ENABLED: false
+      NOW: false
       REDISCLOUD_URL: http://dummyrediscloudurl
+      UV_THREADPOOL_SIZE: 128
     keyVaults:
       rpx:
         resourceGroup: rpx
@@ -120,6 +130,8 @@ ccd:
         ELASTIC_SEARCH_DATA_NODES_HOSTS:  http://${SERVICE_NAME}-es-master:9200
       keyVaults: []
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
+      autoscaling:
+        enabled: false
   ccd-definition-store-api:
     java:
       imagePullPolicy: Always
@@ -142,6 +154,8 @@ ccd:
   postgresql:
     persistence:
       enabled: false
+    postgresConfig:
+      maxConnections: "200"
 
 elastic:
   enabled: true
@@ -178,7 +192,7 @@ logstash:
     port: 9200
   configTpl:
     xpack.monitoring.enabled: "false"
-    db.url: jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/data-store?stringtype=unspecified
+    db.url: jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/data-store?ssl=disable&stringtype=unspecified
     db.user: hmcts
     db.pwd: hmcts
     es.data.nodes.url: http://${SERVICE_NAME}-es-master:9200
