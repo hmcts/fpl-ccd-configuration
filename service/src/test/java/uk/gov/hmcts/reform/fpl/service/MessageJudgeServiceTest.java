@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.exceptions.JudicialMessageNotFoundException;
@@ -36,6 +37,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 
 class MessageJudgeServiceTest {
     private final Time time = new FixedTimeConfiguration().stoppedTime();
@@ -43,7 +45,8 @@ class MessageJudgeServiceTest {
     private final IdentityService identityService = mock(IdentityService.class);
     private final UserService userService = mock(UserService.class);
     private final MessageJudgeService messageJudgeService = new MessageJudgeService(
-        time, identityService, mapper, userService);
+        time, identityService, mapper, userService
+    );
 
     private static final String MESSAGE_NOTE = "Message note";
     private static final String MESSAGE_SENDER = "sender@fpla.com";
@@ -56,74 +59,106 @@ class MessageJudgeServiceTest {
 
     @Test
     void shouldInitialiseCaseFieldsWhenC2DocumentsAndJudicialMessagesExist() {
+        List<Element<JudicialMessage>> judicialMessages = List.of(
+            element(JudicialMessage.builder()
+                .latestMessage("some note")
+                .messageHistory("some history")
+                .dateSent("01 Dec 2020")
+                .build()),
+            element(JudicialMessage.builder()
+                .latestMessage("some note")
+                .messageHistory("some history")
+                .dateSent("02 Dec 2020")
+                .build())
+        );
+
+        List<Element<C2DocumentBundle>> c2DocumentBundle = List.of(element(C2DocumentBundle.builder()
+            .uploadedDateTime("01 Dec 2020")
+            .author("Some author")
+            .build())
+        );
+
         CaseData caseData = CaseData.builder()
-            .judicialMessages(List.of(
-                element(JudicialMessage.builder()
-                    .latestMessage("some note")
-                    .messageHistory("some history")
-                    .dateSent("Some date sent")
-                    .build()),
-                element(JudicialMessage.builder()
-                    .latestMessage("some note")
-                    .messageHistory("some history")
-                    .dateSent("Some date sent")
-                    .build())))
-            .c2DocumentBundle(List.of(element(C2DocumentBundle.builder()
-                .uploadedDateTime("01 Dec 2020")
-                .author("Some author")
-                .build())))
+            .judicialMessages(judicialMessages)
+            .c2DocumentBundle(c2DocumentBundle)
             .build();
 
-        Map<String, Object> expectedData = Map.of(
-            "hasC2Applications", YES.getValue(),
-            "hasJudicialMessages", YES.getValue(),
-            "c2DynamicList", caseData.buildC2DocumentDynamicList(),
-            "judicialMessageDynamicList", caseData.buildJudicialMessageDynamicList());
-
         Map<String, Object> data = messageJudgeService.initialiseCaseFields(caseData);
+
+        DynamicList expectedC2DynamicList = buildDynamicList(
+            Pair.of(c2DocumentBundle.get(0).getId(), "Application 1: 01 Dec 2020")
+        );
+
+        DynamicList expectedJudicialDynamicList = buildDynamicList(
+            Pair.of(judicialMessages.get(0).getId(), "01 Dec 2020"),
+            Pair.of(judicialMessages.get(1).getId(), "02 Dec 2020")
+        );
+
+        Map<String, Object> expectedData = Map.of(
+            "hasC2Applications", "Yes",
+            "hasJudicialMessages", "Yes",
+            "c2DynamicList", expectedC2DynamicList,
+            "judicialMessageDynamicList", expectedJudicialDynamicList);
 
         assertThat(data).isEqualTo(expectedData);
     }
 
     @Test
     void shouldInitialiseC2DocumentFieldsOnlyWhenJudicialMessagesDoNotExist() {
+        List<Element<C2DocumentBundle>> c2DocumentBundle = List.of(element(C2DocumentBundle.builder()
+            .uploadedDateTime("01 Dec 2020")
+            .author("Some author")
+            .build())
+        );
+
         CaseData caseData = CaseData.builder()
-            .c2DocumentBundle(List.of(element(C2DocumentBundle.builder()
-                .uploadedDateTime("01 Dec 2020")
-                .author("Some author")
-                .build())))
+            .c2DocumentBundle(c2DocumentBundle)
             .build();
 
-        Map<String, Object> expectedData = Map.of(
-            "hasC2Applications", YES.getValue(),
-            "c2DynamicList", caseData.buildC2DocumentDynamicList());
-
         Map<String, Object> data = messageJudgeService.initialiseCaseFields(caseData);
+
+        DynamicList expectedC2DynamicList = buildDynamicList(
+            Pair.of(c2DocumentBundle.get(0).getId(), "Application 1: 01 Dec 2020")
+        );
+
+        Map<String, Object> expectedData = Map.of(
+            "hasC2Applications", "Yes",
+            "c2DynamicList", expectedC2DynamicList
+        );
 
         assertThat(data).isEqualTo(expectedData);
     }
 
     @Test
     void shouldInitialiseJudicialFieldsOnlyWhenC2DocumentsDoNotExist() {
+        List<Element<JudicialMessage>> judicialMessages = List.of(
+            element(JudicialMessage.builder()
+                .latestMessage("some note")
+                .messageHistory("some history")
+                .dateSent("01 Dec 2020")
+                .build()),
+            element(JudicialMessage.builder()
+                .latestMessage("some note")
+                .messageHistory("some history")
+                .dateSent("02 Dec 2020")
+                .build())
+        );
+
         CaseData caseData = CaseData.builder()
-            .judicialMessages(List.of(
-                element(JudicialMessage.builder()
-                    .latestMessage("some note")
-                    .messageHistory("some history")
-                    .dateSent("Some date sent")
-                    .build()),
-                element(JudicialMessage.builder()
-                    .latestMessage("some note")
-                    .messageHistory("some history")
-                    .dateSent("Some date sent")
-                    .build())))
+            .judicialMessages(judicialMessages)
             .build();
 
-        Map<String, Object> expectedData = Map.of(
-            "hasJudicialMessages", YES.getValue(),
-            "judicialMessageDynamicList", caseData.buildJudicialMessageDynamicList());
-
         Map<String, Object> data = messageJudgeService.initialiseCaseFields(caseData);
+
+        DynamicList expectedJudicialDynamicList = buildDynamicList(
+            Pair.of(judicialMessages.get(0).getId(), "01 Dec 2020"),
+            Pair.of(judicialMessages.get(1).getId(), "02 Dec 2020")
+        );
+
+        Map<String, Object> expectedData = Map.of(
+            "hasJudicialMessages", "Yes",
+            "judicialMessageDynamicList", expectedJudicialDynamicList
+        );
 
         assertThat(data).isEqualTo(expectedData);
     }
@@ -155,11 +190,12 @@ class MessageJudgeServiceTest {
                 .build())
             .build();
 
+        UUID otherC2DocumentBundleId = UUID.randomUUID();
         CaseData caseData = CaseData.builder()
             .messageJudgeEventData(messageJudgeEventData)
             .c2DocumentBundle(List.of(
                 element(SELECTED_DYNAMIC_LIST_ITEM_ID, selectedC2DocumentBundle),
-                element(UUID.randomUUID(), C2DocumentBundle.builder()
+                element(otherC2DocumentBundleId, C2DocumentBundle.builder()
                     .document(DocumentReference.builder()
                         .filename("other_c2.doc")
                         .build())
@@ -171,7 +207,13 @@ class MessageJudgeServiceTest {
 
         assertThat(messageJudgeService.populateNewMessageFields(caseData))
             .extracting("relatedDocumentsLabel", "c2DynamicList")
-            .containsExactly(expectedC2Label, caseData.buildC2DocumentDynamicList(SELECTED_DYNAMIC_LIST_ITEM_ID));
+            .containsExactly(
+                expectedC2Label,
+                buildDynamicList(0,
+                    Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, "Application 1: null"),
+                    Pair.of(otherC2DocumentBundleId, "Application 2: null")
+                )
+            );
     }
 
     @Test
@@ -209,21 +251,26 @@ class MessageJudgeServiceTest {
             .relatedDocumentFileNames("file1.doc")
             .messageHistory("message history")
             .latestMessage("Some note")
+            .urgency("very")
             .build();
 
+        List<Element<JudicialMessage>> judicialMessages = List.of(
+            element(SELECTED_DYNAMIC_LIST_ITEM_ID, selectedJudicialMessage),
+            element(JudicialMessage.builder().build())
+        );
+
+        DynamicList judicialMessageDynamicList = buildDynamicList(0,
+            Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, "very, null"),
+            Pair.of(judicialMessages.get(1).getId(), "null")
+        );
+
         MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
-            .judicialMessageDynamicList(DynamicList.builder()
-                .value(DynamicListElement.builder()
-                    .code(SELECTED_DYNAMIC_LIST_ITEM_ID)
-                    .build())
-                .build())
+            .judicialMessageDynamicList(judicialMessageDynamicList)
             .build();
 
         CaseData caseData = CaseData.builder()
             .messageJudgeEventData(messageJudgeEventData)
-            .judicialMessages(List.of(
-                element(SELECTED_DYNAMIC_LIST_ITEM_ID, selectedJudicialMessage),
-                element(JudicialMessage.builder().build())))
+            .judicialMessages(judicialMessages)
             .build();
 
         JudicialMessage expectedJudicialMessage = selectedJudicialMessage.toBuilder()
@@ -231,10 +278,15 @@ class MessageJudgeServiceTest {
             .recipient(MESSAGE_SENDER)
             .build();
 
-        assertThat(messageJudgeService.populateReplyMessageFields(caseData))
+        Map<String, Object> populateReplyMessageFields = messageJudgeService.populateReplyMessageFields(caseData);
+
+        assertThat(populateReplyMessageFields)
             .extracting("relatedDocumentsLabel", "judicialMessageReply", "judicialMessageDynamicList")
-            .containsExactly(selectedJudicialMessage.getRelatedDocumentFileNames(), expectedJudicialMessage,
-                caseData.buildJudicialMessageDynamicList(SELECTED_DYNAMIC_LIST_ITEM_ID));
+            .containsExactly(
+                selectedJudicialMessage.getRelatedDocumentFileNames(),
+                expectedJudicialMessage,
+                judicialMessageDynamicList
+            );
     }
 
     @Test
@@ -247,11 +299,7 @@ class MessageJudgeServiceTest {
             .build();
 
         MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
-            .judicialMessageDynamicList(DynamicList.builder()
-                .value(DynamicListElement.builder()
-                    .code(SELECTED_DYNAMIC_LIST_ITEM_ID)
-                    .build())
-                .build())
+            .judicialMessageDynamicList(buildDynamicList(0, Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, "")))
             .build();
 
         CaseData caseData = CaseData.builder()
@@ -326,11 +374,7 @@ class MessageJudgeServiceTest {
         MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
             .judicialMessageNote(MESSAGE_NOTE)
             .judicialMessageMetaData(judicialMessageMetaData)
-            .c2DynamicList(DynamicList.builder()
-                .value(DynamicListElement.builder()
-                    .code(SELECTED_DYNAMIC_LIST_ITEM_ID)
-                    .build())
-                .build())
+            .c2DynamicList(buildDynamicList(0, Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, "Application 1: null")))
             .build();
 
         CaseData caseData = CaseData.builder()
@@ -408,13 +452,10 @@ class MessageJudgeServiceTest {
     @Test
     void shouldUpdateExistingJudicialMessageWhenReplying() {
         String messageReply = "Reply to message";
+        String dateSent = formatLocalDateTimeBaseUsingFormat(time.now().minusDays(1), DATE_TIME_AT);
 
         MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
-            .judicialMessageDynamicList(DynamicList.builder()
-                .value(DynamicListElement.builder()
-                    .code(SELECTED_DYNAMIC_LIST_ITEM_ID)
-                    .build())
-                .build())
+            .judicialMessageDynamicList(buildDynamicList(0, Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, dateSent)))
             .judicialMessageReply(JudicialMessage.builder()
                 .latestMessage(messageReply)
                 .build())
@@ -431,29 +472,30 @@ class MessageJudgeServiceTest {
                     .requestedBy(MESSAGE_REQUESTED_BY)
                     .latestMessage(MESSAGE_NOTE)
                     .messageHistory(MESSAGE_NOTE)
-                    .dateSent(formatLocalDateTimeBaseUsingFormat(time.now().minusDays(1), DATE_TIME_AT))
+                    .dateSent(dateSent)
                     .build())))
-            .build();
-
-        // The sender and recipient are not the wrong way round, the sender of the previous message has be made the
-        // recipient of this one and the recipient has "responded" and become the sender.
-        JudicialMessage expectedUpdatedJudicialMessage = JudicialMessage.builder()
-            .sender(MESSAGE_RECIPIENT)
-            .recipient(MESSAGE_SENDER)
-            .requestedBy(MESSAGE_REQUESTED_BY)
-            .updatedTime(time.now())
-            .status(OPEN)
-            .latestMessage(messageReply)
-            .messageHistory(MESSAGE_NOTE + "\n" + messageReply)
-            .dateSent(formatLocalDateTimeBaseUsingFormat(time.now().minusDays(1), DATE_TIME_AT))
             .build();
 
         when(userService.getUserEmail()).thenReturn(MESSAGE_RECIPIENT);
 
         List<Element<JudicialMessage>> updatedMessages = messageJudgeService.replyToJudicialMessage(caseData);
 
-        assertThat(updatedMessages.get(0)).isEqualTo(
-            element(SELECTED_DYNAMIC_LIST_ITEM_ID, expectedUpdatedJudicialMessage));
+        // The sender and recipient are not the wrong way round, the sender of the previous message has be made the
+        // recipient of this one and the recipient has "responded" and become the sender.
+        Element<JudicialMessage> expectedUpdatedJudicialMessage = element(SELECTED_DYNAMIC_LIST_ITEM_ID,
+            JudicialMessage.builder()
+                .sender(MESSAGE_RECIPIENT)
+                .recipient(MESSAGE_SENDER)
+                .requestedBy(MESSAGE_REQUESTED_BY)
+                .updatedTime(time.now())
+                .status(OPEN)
+                .latestMessage(messageReply)
+                .messageHistory(MESSAGE_NOTE + "\n" + messageReply)
+                .dateSent(dateSent)
+                .build()
+        );
+
+        assertThat(updatedMessages.get(0)).isEqualTo(expectedUpdatedJudicialMessage);
     }
 
     @Test

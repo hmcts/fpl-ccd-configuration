@@ -9,9 +9,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -94,17 +91,8 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
             .messageHistory(MESSAGE + "/n" + REPLY)
             .build();
 
-        DynamicList dynamicList = DynamicList.builder()
-            .value(DynamicListElement.builder()
-                .code(SELECTED_DYNAMIC_LIST_ITEM_ID)
-                .build())
-            .build();
-
         CaseData caseData = CaseData.builder()
             .id(CASE_REFERENCE)
-            .messageJudgeEventData(MessageJudgeEventData.builder()
-                .judicialMessageDynamicList(dynamicList)
-                .build())
             .respondents1(List.of(
                 element(Respondent.builder()
                     .party(RespondentParty.builder()

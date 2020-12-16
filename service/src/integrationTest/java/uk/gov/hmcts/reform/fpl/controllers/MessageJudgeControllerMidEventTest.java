@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -23,6 +24,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.enums.MessageJudgeOptions.REPLY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(MessageJudgeController.class)
@@ -79,13 +81,14 @@ class MessageJudgeControllerMidEventTest extends AbstractControllerTest {
                     .build())))
             .build();
 
+        UUID notSelectedC2BundleId = UUID.randomUUID();
         CaseData caseData = CaseData.builder()
             .messageJudgeEventData(MessageJudgeEventData.builder()
                 .c2DynamicList(DYNAMIC_LIST_ITEM_ID)
                 .build())
             .c2DocumentBundle(List.of(
                 element(DYNAMIC_LIST_ITEM_ID, selectedC2DocumentBundle),
-                element(UUID.randomUUID(), C2DocumentBundle.builder()
+                element(notSelectedC2BundleId, C2DocumentBundle.builder()
                     .document(DocumentReference.builder()
                         .filename("other_c2.doc")
                         .build())
@@ -101,8 +104,13 @@ class MessageJudgeControllerMidEventTest extends AbstractControllerTest {
             response.getData().get("c2DynamicList"), DynamicList.class
         );
 
+        DynamicList expectedDynamicList = buildDynamicList(0,
+            Pair.of(DYNAMIC_LIST_ITEM_ID, "Application 1: null"),
+            Pair.of(notSelectedC2BundleId, "Application 2: null")
+        );
+
         assertThat(response.getData().get("relatedDocumentsLabel")).isEqualTo(expectedC2Label);
-        assertThat(builtDynamicList).isEqualTo(caseData.buildC2DocumentDynamicList(DYNAMIC_LIST_ITEM_ID));
+        assertThat(builtDynamicList).isEqualTo(expectedDynamicList);
     }
 
     @Test
@@ -112,6 +120,7 @@ class MessageJudgeControllerMidEventTest extends AbstractControllerTest {
             .relatedDocumentFileNames("file1.doc")
             .messageHistory("message history")
             .latestMessage("Some note")
+            .dateSent("16 December 2020")
             .build();
 
         CaseData caseData = CaseData.builder()
@@ -124,25 +133,30 @@ class MessageJudgeControllerMidEventTest extends AbstractControllerTest {
             ))
             .build();
 
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
+
+        DynamicList judicialMessageDynamicList = mapper.convertValue(
+            response.getData().get("judicialMessageDynamicList"), DynamicList.class
+        );
+
+        JudicialMessage judicialMessageReply = mapper.convertValue(
+            response.getData().get("judicialMessageReply"), JudicialMessage.class
+        );
+
         JudicialMessage expectedJudicialMessage = selectedJudicialMessage.toBuilder()
             .recipient(selectedJudicialMessage.getSender())
             .latestMessage("")
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
+        DynamicList expectedJudicialMessageDynamicList = buildDynamicList(
+            0, Pair.of(DYNAMIC_LIST_ITEM_ID, "16 December 2020")
+        );
 
-        DynamicList judicialMessageDynamicList = mapper.convertValue(
-            response.getData().get("judicialMessageDynamicList"), DynamicList.class);
-
-        JudicialMessage judicialMessageReply = mapper.convertValue(
-            response.getData().get("judicialMessageReply"), JudicialMessage.class);
-
-        assertThat(response.getData().get("relatedDocumentsLabel")).isEqualTo(
-            expectedJudicialMessage.getRelatedDocumentFileNames());
+        assertThat(response.getData().get("relatedDocumentsLabel"))
+            .isEqualTo(expectedJudicialMessage.getRelatedDocumentFileNames());
 
         assertThat(judicialMessageReply).isEqualTo(expectedJudicialMessage);
 
-        assertThat(judicialMessageDynamicList).isEqualTo(
-            caseData.buildJudicialMessageDynamicList(DYNAMIC_LIST_ITEM_ID));
+        assertThat(judicialMessageDynamicList).isEqualTo(expectedJudicialMessageDynamicList);
     }
 }
