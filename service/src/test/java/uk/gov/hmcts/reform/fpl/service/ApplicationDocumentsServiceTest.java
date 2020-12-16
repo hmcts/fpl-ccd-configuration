@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -42,6 +43,9 @@ class ApplicationDocumentsServiceTest {
     private static final String NEW_FILENAME = "New file";
     private static final LocalDateTime PAST_DATE = LocalDateTime.now().minusDays(2);
     private static final UUID DOCUMENT_ID = UUID.randomUUID();
+    private static final String DOCUMENT_NAME = "documentName";
+    private static final String INCLUDED_IN_SWET = "includedInSwet";
+    private static final ApplicationDocumentType DOCUMENT_TYPE = ApplicationDocumentType.CHECKLIST_DOCUMENT;
 
     @Autowired
     private Time time;
@@ -99,6 +103,40 @@ class ApplicationDocumentsServiceTest {
         ApplicationDocument expectedDocument = buildExpectedDocument(currentDocuments, HMCTS_USER, time.now());
 
         assertThat(actualDocument).isEqualTo(expectedDocument);
+    }
+
+    @Test
+    void shouldUpdateUploadedByAndDateTimeOnOldApplicationDocumentWhenFileNotPresent() {
+
+        UUID previousDocumentId = UUID.randomUUID();
+
+        ApplicationDocument pastDocument = ApplicationDocument.builder()
+            .uploadedBy(LA_USER)
+            .dateTimeUploaded(PAST_DATE)
+            .documentType(DOCUMENT_TYPE)
+            .documentName(DOCUMENT_NAME)
+            .includedInSWET(INCLUDED_IN_SWET)
+            .build();
+
+        Map<String, Object> map = applicationDocumentsService.updateApplicationDocuments(List.of(
+            buildApplicationDocumentElement(previousDocumentId,
+                pastDocument.toBuilder()
+                    .document(buildDocumentReference(NEW_FILENAME))
+                    .build())
+        ), List.of(
+            element(previousDocumentId, pastDocument)
+        ));
+
+        CaseData actualCaseData = mapper.convertValue(map, CaseData.class);
+
+        assertThat(actualCaseData.getApplicationDocuments()).isEqualTo(List.of(
+            element(previousDocumentId, pastDocument.toBuilder()
+                .uploadedBy(HMCTS_USER)
+                .dateTimeUploaded(time.now())
+                .document(buildDocumentReference(NEW_FILENAME))
+                .build()
+            )
+        ));
     }
 
     @Test

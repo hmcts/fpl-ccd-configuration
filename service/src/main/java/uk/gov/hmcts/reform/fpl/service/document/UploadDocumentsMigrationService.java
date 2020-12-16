@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import static java.util.Objects.isNull;
@@ -64,16 +65,14 @@ public class UploadDocumentsMigrationService {
                 applicationDocuments.addAll(transformer.convert(otherDocumentElements)));
 
         ofNullable(caseData.getCourtBundle())
-            .ifPresent(courtBundleElements ->
-                courtBundleList.add(transformer.convert(courtBundleElements)));
+            .ifPresent(courtBundleElement -> Optional.ofNullable(courtBundleElement.getDocument()).ifPresent(
+                bundle -> courtBundleList.add(transformer.convert(courtBundleElement))
+            ));
 
         Map<String, Object> data = new HashMap<>();
         data.put("applicationDocuments", applicationDocuments);
         data.put("applicationDocumentsToFollowReason", String.join(", ", toFollowComments));
-
-        if (!courtBundleList.isEmpty()) {
-            data.put("courtBundleList", courtBundleList);
-        }
+        data.put("courtBundleList", courtBundleList);
 
         return data;
     }
