@@ -191,6 +191,6 @@ public class MessageJudgeService {
     }
 
     private boolean hasJudicialMessages(CaseData caseData) {
-        return caseData.getJudicialMessages() != null && caseData.getJudicialMessages().size() >= 1;
+        return caseData.getJudicialMessages() != null && !caseData.getJudicialMessages().isEmpty();
     }
 }

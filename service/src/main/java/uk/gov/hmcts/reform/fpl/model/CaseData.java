@@ -688,7 +688,7 @@ public class CaseData {
     @JsonIgnore
     public JudicialMessage getJudicialMessageByUUID(UUID elementId) {
         return judicialMessages.stream()
-            .filter(JudicialMessageElement -> JudicialMessageElement.getId().equals(elementId))
+            .filter(judicialMessageElement -> judicialMessageElement.getId().equals(elementId))
             .map(Element::getValue)
             .findFirst()
             .orElse(null);
