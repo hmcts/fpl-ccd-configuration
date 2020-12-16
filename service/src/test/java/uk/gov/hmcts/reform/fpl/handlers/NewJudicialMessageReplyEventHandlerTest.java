@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.JudicialMessageReplyContent
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_JUDICIAL_MESSAGE_REPLY_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDICIAL_MESSAGE_REPLY_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,7 +49,7 @@ class NewJudicialMessageReplyEventHandlerTest {
         );
 
         verify(notificationService).sendEmail(
-            NEW_JUDICIAL_MESSAGE_REPLY_TEMPLATE,
+            JUDICIAL_MESSAGE_REPLY_TEMPLATE,
             recipient,
             expectedParameters,
             caseData.getId());

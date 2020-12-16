@@ -2,8 +2,8 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.ApplicationEventPublisher;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.exceptions.JudicialMessageNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.lang.String.format;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -40,9 +42,8 @@ class MessageJudgeServiceTest {
     private final ObjectMapper mapper = new ObjectMapper();
     private final IdentityService identityService = mock(IdentityService.class);
     private final UserService userService = mock(UserService.class);
-    private final ApplicationEventPublisher applicationEventPublisher = mock(ApplicationEventPublisher.class);
     private final MessageJudgeService messageJudgeService = new MessageJudgeService(
-        time, identityService, mapper, userService, applicationEventPublisher);
+        time, identityService, mapper, userService);
 
     private static final String MESSAGE_NOTE = "Message note";
     private static final String MESSAGE_SENDER = "sender@fpla.com";
@@ -234,6 +235,35 @@ class MessageJudgeServiceTest {
             .extracting("relatedDocumentsLabel", "judicialMessageReply", "judicialMessageDynamicList")
             .containsExactly(selectedJudicialMessage.getRelatedDocumentFileNames(), expectedJudicialMessage,
                 caseData.buildJudicialMessageDynamicList(SELECTED_DYNAMIC_LIST_ITEM_ID));
+    }
+
+    @Test
+    void shouldThrowAnExceptionWhenJudicialMessagesFailsToBeFound() {
+        JudicialMessage selectedJudicialMessage = JudicialMessage.builder()
+            .sender(MESSAGE_SENDER)
+            .relatedDocumentFileNames("file1.doc")
+            .messageHistory("message history")
+            .latestMessage("Some note")
+            .build();
+
+        MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
+            .judicialMessageDynamicList(DynamicList.builder()
+                .value(DynamicListElement.builder()
+                    .code(SELECTED_DYNAMIC_LIST_ITEM_ID)
+                    .build())
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .messageJudgeEventData(messageJudgeEventData)
+            .judicialMessages(List.of(
+                element(UUID.randomUUID(), selectedJudicialMessage),
+                element(JudicialMessage.builder().build())))
+            .build();
+
+        assertThatThrownBy(() -> messageJudgeService.populateReplyMessageFields(caseData))
+            .isInstanceOf(JudicialMessageNotFoundException.class)
+            .hasMessage(format("Judicial message with id %s not found", SELECTED_DYNAMIC_LIST_ITEM_ID));
     }
 
     @Test

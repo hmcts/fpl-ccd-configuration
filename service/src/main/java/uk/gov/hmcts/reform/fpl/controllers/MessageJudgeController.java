@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
 
-import static uk.gov.hmcts.reform.fpl.enums.MessageJudgeOptions.REPLY;
 import static uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData.transientFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
@@ -49,7 +48,7 @@ public class MessageJudgeController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
 
-        if (isReplyingToAMessage(caseData)) {
+        if (caseData.getMessageJudgeEventData().isReplyingToAMessage()) {
             caseDetailsMap.putAll(messageJudgeService.populateReplyMessageFields(caseData));
         } else {
             caseDetailsMap.putAll(messageJudgeService.populateNewMessageFields(caseData));
@@ -67,7 +66,7 @@ public class MessageJudgeController extends CallbackController {
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
         List<Element<JudicialMessage>> updatedMessages;
 
-        if (isReplyingToAMessage(caseData)) {
+        if (caseData.getMessageJudgeEventData().isReplyingToAMessage()) {
             updatedMessages = messageJudgeService.replyToJudicialMessage(caseData);
         } else {
             updatedMessages = messageJudgeService.addNewJudicialMessage(caseData);
@@ -85,14 +84,10 @@ public class MessageJudgeController extends CallbackController {
         CaseData caseData = getCaseData(callbackRequest.getCaseDetails());
         JudicialMessage judicialMessage = caseData.getJudicialMessages().get(0).getValue();
 
-        if (judicialMessage.hasMatchingMessageHistory()) {
+        if (judicialMessage.isFirstMessage()) {
             publishEvent(new NewJudicialMessageEvent(caseData, judicialMessage));
         } else {
             publishEvent(new NewJudicialMessageReplyEvent(caseData, judicialMessage));
         }
-    }
-
-    private boolean isReplyingToAMessage(CaseData caseData) {
-        return REPLY.equals(caseData.getMessageJudgeEventData().getMessageJudgeOption());
     }
 }

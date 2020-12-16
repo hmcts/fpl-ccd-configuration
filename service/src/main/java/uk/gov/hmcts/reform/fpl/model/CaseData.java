@@ -684,13 +684,4 @@ public class CaseData {
     public List<Element<JudicialMessage>> getJudicialMessages() {
         return defaultIfNull(judicialMessages, new ArrayList<>());
     }
-
-    @JsonIgnore
-    public JudicialMessage getJudicialMessageByUUID(UUID elementId) {
-        return judicialMessages.stream()
-            .filter(judicialMessageElement -> judicialMessageElement.getId().equals(elementId))
-            .map(Element::getValue)
-            .findFirst()
-            .orElse(null);
-    }
 }

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -30,7 +31,6 @@ public class JudicialMessage extends JudicialMessageMetaData {
     private final YesNo isRelatedToC2;
     private final String latestMessage;
     private final String messageHistory;
-    private final String requestedBy;
 
     public String toLabel() {
         List<String> labels = new ArrayList<>();
@@ -48,7 +48,8 @@ public class JudicialMessage extends JudicialMessageMetaData {
         return String.join(", ", labels);
     }
 
-    public boolean hasMatchingMessageHistory() {
+    @JsonIgnore
+    public boolean isFirstMessage() {
         return latestMessage.equals(messageHistory);
     }
 }

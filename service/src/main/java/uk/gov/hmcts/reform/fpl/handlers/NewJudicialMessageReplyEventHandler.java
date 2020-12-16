@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.NewJudicialMessageReplyTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.JudicialMessageReplyContentProvider;
 
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_JUDICIAL_MESSAGE_REPLY_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDICIAL_MESSAGE_REPLY_TEMPLATE;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -27,7 +27,7 @@ public class NewJudicialMessageReplyEventHandler {
         NewJudicialMessageReplyTemplate notifyData =
             newJudicialMessageReplyContentProvider.buildNewJudicialMessageReplyTemplate(caseData, newJudicialMessage);
 
-        notificationService.sendEmail(NEW_JUDICIAL_MESSAGE_REPLY_TEMPLATE, newJudicialMessage.getRecipient(),
+        notificationService.sendEmail(JUDICIAL_MESSAGE_REPLY_TEMPLATE, newJudicialMessage.getRecipient(),
             notifyData, caseData.getId());
     }
 }

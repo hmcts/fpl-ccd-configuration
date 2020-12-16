@@ -5,7 +5,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -20,8 +20,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_JUDICIAL_MESSAGE_ADDED_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_JUDICIAL_MESSAGE_REPLY_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDICIAL_MESSAGE_ADDED_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDICIAL_MESSAGE_REPLY_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ActiveProfiles("integration-test")
@@ -51,25 +51,24 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
             .latestMessage(MESSAGE)
             .build();
 
-        CaseDetails caseDetails = CaseDetails.builder()
+        CaseData caseData = CaseData.builder()
             .id(CASE_REFERENCE)
-            .data(Map.of(
-                "respondents1", List.of(
-                    element(Respondent.builder()
-                        .party(RespondentParty.builder()
-                            .lastName("Davidson")
-                            .build())
-                        .build())),
-                    "judicialMessages", List.of(
-                        element(latestJudicialMessage),
-                        element(JudicialMessage.builder()
-                            .recipient("do_not_send@fpla.com")
-                            .sender("someOthersender@fpla.com")
-                            .urgency("High")
-                            .build()))
-            )).build();
+            .respondents1(List.of(
+                element(Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .lastName("Davidson")
+                        .build())
+                    .build())))
+            .judicialMessages(List.of(
+                element(latestJudicialMessage),
+                element(JudicialMessage.builder()
+                    .recipient("do_not_send@fpla.com")
+                    .sender("someOthersender@fpla.com")
+                    .urgency("High")
+                    .build())))
+            .build();
 
-        postSubmittedEvent(caseDetails);
+        postSubmittedEvent(asCaseDetails(caseData));
 
         Map<String, Object> expectedData = Map.of(
             "respondentLastName", "Davidson",
@@ -82,7 +81,7 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
         );
 
         verify(notificationClient).sendEmail(
-            NEW_JUDICIAL_MESSAGE_ADDED_TEMPLATE, JUDICIAL_MESSAGE_RECIPIENT, expectedData, "localhost/12345");
+            JUDICIAL_MESSAGE_ADDED_TEMPLATE, JUDICIAL_MESSAGE_RECIPIENT, expectedData, "localhost/12345");
     }
 
     @Test
@@ -101,27 +100,27 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
                 .build())
             .build();
 
-        CaseDetails caseDetails = CaseDetails.builder()
+        CaseData caseData = CaseData.builder()
             .id(CASE_REFERENCE)
-            .data(Map.of(
-                "messageJudgeEventData", MessageJudgeEventData.builder()
-                    .judicialMessageDynamicList(dynamicList)
-                    .build(),
-                "respondents1", List.of(
-                    element(Respondent.builder()
-                        .party(RespondentParty.builder()
-                            .lastName("Davidson")
-                            .build())
-                        .build())),
-                "judicialMessages", List.of(
-                    element(SELECTED_DYNAMIC_LIST_ITEM_ID, latestJudicialMessage),
-                    element(JudicialMessage.builder()
-                        .recipient("do_not_send@fpla.com")
-                        .sender("someOthersender@fpla.com")
-                        .urgency("High")
-                        .build())))).build();
+            .messageJudgeEventData(MessageJudgeEventData.builder()
+                .judicialMessageDynamicList(dynamicList)
+                .build())
+            .respondents1(List.of(
+                element(Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .lastName("Davidson")
+                        .build())
+                    .build())))
+            .judicialMessages(List.of(
+                element(SELECTED_DYNAMIC_LIST_ITEM_ID, latestJudicialMessage),
+                element(JudicialMessage.builder()
+                    .recipient("do_not_send@fpla.com")
+                    .sender("someOthersender@fpla.com")
+                    .urgency("High")
+                    .build())))
+            .build();
 
-        postSubmittedEvent(caseDetails);
+        postSubmittedEvent(asCaseDetails(caseData));
 
         Map<String, Object> expectedData = Map.of(
             "respondentLastName", "Davidson",
@@ -131,6 +130,6 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
         );
 
         verify(notificationClient).sendEmail(
-            NEW_JUDICIAL_MESSAGE_REPLY_TEMPLATE, JUDICIAL_MESSAGE_RECIPIENT, expectedData, "localhost/12345");
+            JUDICIAL_MESSAGE_REPLY_TEMPLATE, JUDICIAL_MESSAGE_RECIPIENT, expectedData, "localhost/12345");
     }
 }

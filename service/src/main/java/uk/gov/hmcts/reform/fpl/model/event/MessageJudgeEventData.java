@@ -7,6 +7,8 @@ import uk.gov.hmcts.reform.fpl.enums.MessageJudgeOptions;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessageMetaData;
 
+import static uk.gov.hmcts.reform.fpl.enums.MessageJudgeOptions.REPLY;
+
 @Value
 @Builder
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -25,5 +27,9 @@ public class MessageJudgeEventData {
             "judicialMessageMetaData", "judicialMessageNote", "judicialMessageDynamicList", "messageJudgeOption",
             "judicialMessageReply"
         };
+    }
+
+    public boolean isReplyingToAMessage() {
+        return REPLY.equals(messageJudgeOption);
     }
 }

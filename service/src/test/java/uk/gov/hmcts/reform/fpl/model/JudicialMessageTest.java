@@ -50,20 +50,20 @@ class JudicialMessageTest {
     }
 
     @Test
-    void shouldReturnTrueWhenMessageHistoryMatches() {
+    void shouldReturnTrueWhenMessageHasNotHadAReply() {
         JudicialMessage judicialMessage = JudicialMessage.builder()
             .latestMessage("This is a new message")
             .messageHistory("This is a new message").build();
 
-        assertThat(judicialMessage.hasMatchingMessageHistory()).isTrue();
+        assertThat(judicialMessage.isFirstMessage()).isTrue();
     }
 
     @Test
-    void shouldReturnFalseWhenMessageHistoryDoesNotMatches() {
+    void shouldReturnFalseWhenMessageHasHadAReply() {
         JudicialMessage judicialMessage = JudicialMessage.builder()
             .latestMessage("Fix up the order")
             .messageHistory("This is a new message, Fix up the order").build();
 
-        assertThat(judicialMessage.hasMatchingMessageHistory()).isFalse();
+        assertThat(judicialMessage.isFirstMessage()).isFalse();
     }
 }

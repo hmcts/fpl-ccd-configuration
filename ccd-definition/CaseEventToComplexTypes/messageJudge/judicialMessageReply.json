@@ -49,6 +49,6 @@
     "ListElementCode": "latestMessage",
     "FieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Message from judge or legal adviser"
+    "EventElementLabel": "Messages from judge or legal adviser"
   }
 ]

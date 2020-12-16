@@ -111,13 +111,5 @@
     "FieldType": "JudicialMessage",
     "SecurityClassification": "Public",
     "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "judicialMessagesTabHeading",
-    "Label": "## Judicial messages",
-    "FieldType": "Label",
-    "SecurityClassification": "Public"
   }
 ]

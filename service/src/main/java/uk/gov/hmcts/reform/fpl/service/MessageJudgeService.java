@@ -3,10 +3,9 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.exceptions.JudicialMessageNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.JudicialMessageMetaData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -28,6 +27,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
 
 @Service
@@ -37,7 +37,6 @@ public class MessageJudgeService {
     private final IdentityService identityService;
     private final ObjectMapper mapper;
     private final UserService userService;
-    private final ApplicationEventPublisher applicationEventPublisher;
 
     public Map<String, Object> initialiseCaseFields(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
@@ -80,15 +79,22 @@ public class MessageJudgeService {
             caseData.getMessageJudgeEventData().getJudicialMessageDynamicList(), mapper
         );
 
-        JudicialMessage selectedJudicialMessage = caseData.getJudicialMessageByUUID(selectedJudicialMessageId);
+        Optional<Element<JudicialMessage>> selectedJudicialMessage
+            = findElement(selectedJudicialMessageId, caseData.getJudicialMessages());
 
-        selectedJudicialMessage = selectedJudicialMessage.toBuilder()
-            .recipient(selectedJudicialMessage.getSender())
+        if (selectedJudicialMessage.isEmpty()) {
+            throw new JudicialMessageNotFoundException(selectedJudicialMessageId);
+        }
+
+        JudicialMessage judicialMessage = selectedJudicialMessage.get().getValue();
+
+        judicialMessage = judicialMessage.toBuilder()
+            .recipient(judicialMessage.getSender())
             .latestMessage("")
             .build();
 
-        data.put("relatedDocumentsLabel", selectedJudicialMessage.getRelatedDocumentFileNames());
-        data.put("judicialMessageReply", selectedJudicialMessage);
+        data.put("relatedDocumentsLabel", judicialMessage.getRelatedDocumentFileNames());
+        data.put("judicialMessageReply", judicialMessage);
         data.put("judicialMessageDynamicList", rebuildJudicialMessageDynamicList(caseData, selectedJudicialMessageId));
 
         return data;
@@ -164,13 +170,9 @@ public class MessageJudgeService {
     }
 
     public String getFirstHearingLabel(CaseData caseData) {
-        Optional<HearingBooking> firstHearing = caseData.getFirstHearing();
-
-        if (firstHearing.isPresent()) {
-            return String.format("Next hearing in the case: %s", firstHearing.get().toLabel());
-        }
-
-        return "";
+        return caseData.getFirstHearing()
+            .map(hearing -> String.format("Next hearing in the case: %s", hearing.toLabel()))
+            .orElse("");
     }
 
     private DynamicList rebuildC2DynamicList(CaseData caseData, UUID selectedC2Id) {
