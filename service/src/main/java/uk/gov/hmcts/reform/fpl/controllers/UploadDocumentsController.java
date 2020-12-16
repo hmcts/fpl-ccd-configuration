@@ -31,6 +31,7 @@ public class UploadDocumentsController extends CallbackController {
     private final FeatureToggleService featureToggleService;
     private final UploadDocumentsMigrationService uploadDocumentsMigrationService;
 
+    //Delete after toggle on (no mid-event for new event)
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
@@ -58,13 +59,8 @@ public class UploadDocumentsController extends CallbackController {
                 caseDataBefore.getApplicationDocuments()));
         } else {
             // New document event is not enabled so move old collection to new
-            Map<String, Object> migratedData = uploadDocumentsMigrationService.transformFromOldCaseData(caseData);
             Map<String, Object> data = caseDetails.getData();
-            data.put("applicationDocuments",
-                migratedData.getOrDefault("applicationDocuments", null));
-            data.put("applicationDocumentsToFollowReason",
-                migratedData.getOrDefault("applicationDocumentsToFollowReason", null)
-            );
+            data.putAll(uploadDocumentsMigrationService.transformFromOldCaseData(caseData));
         }
 
         return respond(caseDetails);

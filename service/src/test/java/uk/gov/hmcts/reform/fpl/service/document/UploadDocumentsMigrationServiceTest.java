@@ -9,12 +9,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.DocumentStatus;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +29,6 @@ import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SWET;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.THRESHOLD;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-
 
 @ExtendWith(MockitoExtension.class)
 class UploadDocumentsMigrationServiceTest {
@@ -81,6 +80,11 @@ class UploadDocumentsMigrationServiceTest {
     private static final Element<ApplicationDocument> CONVERTED_OTHER_DOCUMENT_2 = element(mock(
         ApplicationDocument.class));
 
+    private static final CourtBundle COURT_BUNDLE = CourtBundle.builder()
+        .document(mock(DocumentReference.class))
+        .build();
+    private static final Element<CourtBundle> CONVERTED_COURT_BUNDLE = element(COURT_BUNDLE);
+
     @Mock
     private UploadDocumentTransformer transformer;
 
@@ -92,8 +96,9 @@ class UploadDocumentsMigrationServiceTest {
         Map<String, Object> actual = underTest.transformFromOldCaseData(CaseData.builder().build());
 
         assertThat(actual).isEqualTo(Map.of(
-            "applicationDocuments", Collections.emptyList(),
-            "applicationDocumentsToFollowReason", ""
+            "applicationDocuments", Lists.emptyList(),
+            "applicationDocumentsToFollowReason", "",
+            "courtBundleList", Lists.emptyList()
             )
         );
     }
@@ -119,6 +124,8 @@ class UploadDocumentsMigrationServiceTest {
         when(transformer.convert(OTHER_SOCIAL_WORK_DOCUMENTS)).thenReturn(List.of(
             CONVERTED_OTHER_DOCUMENT_1, CONVERTED_OTHER_DOCUMENT_2));
 
+        when(transformer.convert(COURT_BUNDLE)).thenReturn(CONVERTED_COURT_BUNDLE);
+
         Map<String, Object> actual = underTest.transformFromOldCaseData(CaseData.builder()
             .socialWorkChronologyDocument(SOCIAL_WORK_CHRONOLOGY_DOCUMENT)
             .socialWorkStatementDocument(SOCIAL_WORK_STATEMENT_DOCUMENT)
@@ -128,6 +135,7 @@ class UploadDocumentsMigrationServiceTest {
             .thresholdDocument(THRESHOLD_DOCUMENT)
             .checklistDocument(CHECKLIST__DOCUMENT)
             .otherSocialWorkDocuments(OTHER_SOCIAL_WORK_DOCUMENTS)
+            .courtBundle(COURT_BUNDLE)
             .build());
 
         assertThat(actual).isEqualTo(Map.of(
@@ -142,7 +150,8 @@ class UploadDocumentsMigrationServiceTest {
                 CONVERTED_OTHER_DOCUMENT_1,
                 CONVERTED_OTHER_DOCUMENT_2
             ),
-            "applicationDocumentsToFollowReason", ""
+            "applicationDocumentsToFollowReason", "",
+            "courtBundleList", List.of(CONVERTED_COURT_BUNDLE)
         ));
     }
 
@@ -167,15 +176,16 @@ class UploadDocumentsMigrationServiceTest {
             "applicationDocuments", List.of(
                 CONVERTED_OTHER_DOCUMENT_1,
                 CONVERTED_OTHER_DOCUMENT_2
-            ),
+                ),
             "applicationDocumentsToFollowReason", "Social work chronology to follow,"
-                + " Social work statement to follow,"
-                + " Care plan to follow,"
-                + " SWET to follow,"
-                + " Social work statement to follow,"
-                + " Threshold to follow,"
-                + " Checklist document to follow"
-        ));
+            + " Social work statement to follow,"
+            + " Care plan to follow,"
+            + " SWET to follow,"
+            + " Social work statement to follow,"
+            + " Threshold to follow,"
+            + " Checklist document to follow",
+            "courtBundleList", Lists.emptyList()
+            ));
     }
 
     @Test
@@ -222,7 +232,8 @@ class UploadDocumentsMigrationServiceTest {
                 CONVERTED_OTHER_DOCUMENT_1,
                 CONVERTED_OTHER_DOCUMENT_2
             ),
-            "applicationDocumentsToFollowReason", ""
+            "applicationDocumentsToFollowReason", "",
+            "courtBundleList", Lists.emptyList()
         ));
     }
 
@@ -246,7 +257,8 @@ class UploadDocumentsMigrationServiceTest {
                 CONVERTED_SOCIAL_WORK_CHRONOLOGY_DOCUMENT,
                 CONVERTED_SOCIAL_WORK_CARE_PLAN_DOCUMENT
             ),
-            "applicationDocumentsToFollowReason", "Social work statement to follow, SWET to follow"
+            "applicationDocumentsToFollowReason", "Social work statement to follow, SWET to follow",
+            "courtBundleList", Lists.emptyList()
         ));
     }
 
@@ -259,7 +271,8 @@ class UploadDocumentsMigrationServiceTest {
 
         assertThat(actual).isEqualTo(Map.of(
             "applicationDocuments", Lists.emptyList(),
-            "applicationDocumentsToFollowReason", "Social work chronology to follow"
+            "applicationDocumentsToFollowReason", "Social work chronology to follow",
+            "courtBundleList", Lists.emptyList()
         ));
     }
 

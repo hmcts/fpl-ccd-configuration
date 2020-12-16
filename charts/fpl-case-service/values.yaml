@@ -7,6 +7,9 @@ idam-pr:
 xui-webapp:
   enabled: false
 
+elastic:
+  enabled: false
+
 java:
   aadIdentityName: family-public-law
   image: hmctspublic.azurecr.io/fpl/case-service:latest

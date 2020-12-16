@@ -1,7 +1,7 @@
 name: fpl-case-service
 apiVersion: v2
 home: https://github.com/hmcts/fpl-ccd-configuration
-version: 1.12.9
+version: 1.12.11
 description: FPL Case Service
 maintainers:
   - name: HMCTS Family Public Law team
@@ -23,3 +23,11 @@ dependencies:
     version: 2.2.6
     repository: '@hmctspublic'
     condition: idam-pr.enabled
+  - name: elasticsearch
+    version: 7.8.1
+    repository: '@hmctspublic'
+    condition: elastic.enabled
+  - name: logstash
+    version: 2.4.1
+    repository: '@hmctspublic'
+    condition: elastic.enabled
