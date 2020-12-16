@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -38,17 +39,19 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 public class UploadDocumentsAboutToSubmitControllerTest extends AbstractControllerTest {
 
     private static final UUID UUID_1 = UUID.randomUUID();
+    private static final UUID UUID_2 = UUID.randomUUID();
     private static final String FILE_URL = "https://docuURL";
     private static final String ANOTHER_FILE_URL = "https://AnotherdocuURL";
     private static final String FILE_NAME = "mockChecklist.pdf";
     private static final String FILE_BINARY_URL = "http://dm-store:8080/documents/fakeUrl/binary";
     private static final LocalDateTime DATE_TIME_UPLOADED = LocalDateTime.of(
         2020, 12, 3,
-            2, 3, 4,
-            10000
+        2, 3, 4,
+        10000
     );
     private static final String USER = "kurt@swansea.gov.uk";
     private static final String ANOTHER_USER = "siva@swansea.gov.uk";
+    private static final String HEARING_INFOS = "Hearing infos";
 
     @MockBean
     private FeatureToggleService featureToggleService;
@@ -66,7 +69,7 @@ public class UploadDocumentsAboutToSubmitControllerTest extends AbstractControll
 
     @BeforeEach
     void setUp() {
-        when(identityService.generateId()).thenReturn(UUID_1);
+        when(identityService.generateId()).thenReturn(UUID_1).thenReturn(UUID_2);
     }
 
     @Test
@@ -157,6 +160,16 @@ public class UploadDocumentsAboutToSubmitControllerTest extends AbstractControll
                 "documents_threshold_document", Map.of(
                     "documentStatus", TO_FOLLOW.getLabel(),
                     "uploadedBy", USER
+                ),
+                "courtBundle", Map.of(
+                    "hearing", HEARING_INFOS,
+                    "dateTimeUploaded", "2020-12-03T02:03:04.000010",
+                    "uploadedBy", USER,
+                    "document", Map.of(
+                        "document_url", FILE_URL,
+                        "document_filename", FILE_NAME,
+                        "document_binary_url", FILE_BINARY_URL
+                    )
                 )
             )).build();
 
@@ -189,6 +202,19 @@ public class UploadDocumentsAboutToSubmitControllerTest extends AbstractControll
                 .build()
         );
 
+        assertThat(responseCaseData.getCourtBundle()).isEqualTo(
+            CourtBundle.builder()
+                .document(DocumentReference.builder()
+                    .binaryUrl(FILE_BINARY_URL)
+                    .filename(FILE_NAME)
+                    .url(FILE_URL)
+                    .build())
+                .uploadedBy(USER)
+                .hearing(HEARING_INFOS)
+                .dateTimeUploaded(DATE_TIME_UPLOADED)
+                .build()
+        );
+
         assertThat(responseCaseData.getApplicationDocuments()).isEqualTo(List.of(
             element(UUID_1, ApplicationDocument.builder()
                 .documentType(SOCIAL_WORK_CHRONOLOGY)
@@ -202,9 +228,47 @@ public class UploadDocumentsAboutToSubmitControllerTest extends AbstractControll
                 .build()))
         );
 
+        assertThat(responseCaseData.getCourtBundleList()).isEqualTo(List.of(
+            element(UUID_2, CourtBundle.builder()
+                .document(DocumentReference.builder()
+                    .binaryUrl(FILE_BINARY_URL)
+                    .filename(FILE_NAME)
+                    .url(FILE_URL)
+                    .build())
+                .uploadedBy(USER)
+                .hearing(HEARING_INFOS)
+                .dateTimeUploaded(DATE_TIME_UPLOADED)
+                .build()
+            ))
+        );
+
         assertThat(responseCaseData.getApplicationDocumentsToFollowReason()).isEqualTo(
             "Threshold to follow"
         );
+    }
+
+    @Test
+    void shouldUpdateWhenNoDocumentsToBeUpdatedToggledOff() {
+
+        given(featureToggleService.isApplicationDocumentsEventEnabled()).willReturn(false);
+
+        CaseDetails caseDetails = CaseDetails.builder().data(Map.of()).build();
+
+        CallbackRequest callbackRequest = CallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .caseDetailsBefore(caseDetails)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
+
+        CaseData responseCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        assertThat(responseCaseData.getSocialWorkChronologyDocument()).isNull();
+        assertThat(responseCaseData.getThresholdDocument()).isNull();
+        assertThat(responseCaseData.getCourtBundle()).isNull();
+        assertThat(responseCaseData.getApplicationDocuments()).isEmpty();
+        assertThat(responseCaseData.getCourtBundleList()).isEmpty();
+        assertThat(responseCaseData.getApplicationDocumentsToFollowReason()).isEmpty();
     }
 
 }
