@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.email;
+package uk.gov.hmcts.reform.fpl.testingsupport.email;
 
 public class EmailContent {
     private static final String NEW_LINE = "\r\n";

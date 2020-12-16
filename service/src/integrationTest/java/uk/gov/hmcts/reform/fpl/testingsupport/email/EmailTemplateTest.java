@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.email;
+package uk.gov.hmcts.reform.fpl.testingsupport.email;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;

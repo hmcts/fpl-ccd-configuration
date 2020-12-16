@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.email;
+package uk.gov.hmcts.reform.fpl.testingsupport.email;
 
 import org.assertj.core.api.AbstractAssert;
 import uk.gov.service.notify.SendEmailResponse;

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.email;
+package uk.gov.hmcts.reform.fpl.testingsupport.email;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,8 +7,8 @@ import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 
 import java.util.UUID;
 
-import static uk.gov.hmcts.reform.fpl.email.EmailContent.emailContent;
-import static uk.gov.hmcts.reform.fpl.email.SendEmailResponseAssert.assertThat;
+import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
+import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
 
 public class SampleEmailTest extends EmailTemplateTest {
 
