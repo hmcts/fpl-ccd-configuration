@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.model;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;

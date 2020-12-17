@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Value;
 import uk.gov.hmcts.reform.fpl.enums.MessageJudgeOptions;
-import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
-import uk.gov.hmcts.reform.fpl.model.JudicialMessageMetaData;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageMetaData;
 
 import static uk.gov.hmcts.reform.fpl.enums.MessageJudgeOptions.REPLY;
 

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.model;
+package uk.gov.hmcts.reform.fpl.model.judicialmessage;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
