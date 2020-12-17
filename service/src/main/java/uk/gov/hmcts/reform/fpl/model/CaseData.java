@@ -494,11 +494,13 @@ public class CaseData {
         return allocatedJudgeExists() && isNotEmpty(allocatedJudge.getJudgeEmailAddress());
     }
 
+    @JsonIgnore
     public Optional<HearingBooking> getFirstHearing() {
         return unwrapElements(hearingDetails).stream()
             .min(comparing(HearingBooking::getStartDate));
     }
 
+    @JsonIgnore
     public HearingBooking getMostUrgentHearingBookingAfter(LocalDateTime time) {
         return unwrapElements(hearingDetails).stream()
             .filter(hearingBooking -> hearingBooking.getStartDate().isAfter(time))

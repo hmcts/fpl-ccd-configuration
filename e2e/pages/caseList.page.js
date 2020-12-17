@@ -25,9 +25,10 @@ module.exports = {
     I.click(this.fields.search);
   },
 
-  searchForCasesWithHandledEvidences(submittedAt) {
+  searchForCasesWithHandledEvidences(submittedAt, state='Any') {
     I.selectOption(this.fields.jurisdiction, config.definition.jurisdictionFullDesc);
     I.selectOption(this.fields.caseType, config.definition.caseTypeFullDesc);
+    I.selectOption(this.fields.caseState, state);
     I.waitForElement(this.fields.evidenceHandled);
     I.fillDate(submittedAt);
     I.click(this.fields.evidenceHandled);
