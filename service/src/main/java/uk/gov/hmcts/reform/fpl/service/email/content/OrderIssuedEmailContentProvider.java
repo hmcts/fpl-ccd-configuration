@@ -4,7 +4,6 @@ import com.google.common.collect.Iterables;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
@@ -20,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
-import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.concatUrlAndMostRecentUploadedDocumentPath;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
@@ -32,9 +30,6 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
     private final GeneratedOrderService generatedOrderService;
     private final Time time;
 
-    @Value("${manage-case.ui.base.url}")
-    private String xuiBaseUrl;
-
     public OrderIssuedNotifyData getNotifyDataWithoutCaseUrl(final CaseData caseData,
                                                              final DocumentReference orderDocument,
                                                              final IssuedOrderType issuedOrderType) {
@@ -44,10 +39,10 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
     }
 
     public OrderIssuedNotifyData getNotifyDataWithCaseUrl(final CaseData caseData,
-                                                          final String binaryUrl,
+                                                          final DocumentReference orderDocument,
                                                           final IssuedOrderType issuedOrderType) {
         return commonOrderIssuedNotifyData(caseData, issuedOrderType).toBuilder()
-            .documentLink(concatUrlAndMostRecentUploadedDocumentPath(xuiBaseUrl, binaryUrl))
+            .documentLink(getDocumentUrl(orderDocument))
             .caseUrl(getCaseUrl(caseData.getId(), "OrdersTab"))
             .build();
     }

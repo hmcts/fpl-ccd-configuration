@@ -41,7 +41,7 @@ public class OrderIssuedNotificationTestHelper {
             "orderType", orderType.toLowerCase(),
             "callout", withCallout ? callout : "",
             "courtName", EXAMPLE_COURT,
-            "documentLink", jsonFileObject,
+            "documentLink", jsonFileObject.toMap(),
             "caseUrl", formatCaseUrl("http://fake-url", 12345L, "OrdersTab"),
             "respondentLastName", "Jones");
     }

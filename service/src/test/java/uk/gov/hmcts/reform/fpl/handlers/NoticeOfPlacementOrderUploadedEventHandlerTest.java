@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
@@ -62,17 +61,16 @@ class NoticeOfPlacementOrderUploadedEventHandlerTest {
     @Autowired
     private NoticeOfPlacementOrderUploadedEventHandler noticeOfPlacementOrderUploadedEventHandler;
 
-    @Value("${manage-case.ui.base.url}")
-    private String xuiBaseUrl;
-
     private final CaseData caseData = caseData();
 
-    private final NoticeOfPlacementOrderUploadedEvent event = new NoticeOfPlacementOrderUploadedEvent(
-        caseData, DocumentReference.builder()
+    private final DocumentReference testDocument = DocumentReference.builder()
         .filename("NoticeOfPlacement")
         .url("url")
         .binaryUrl("testUrl")
-        .build());
+        .build();
+
+    private final NoticeOfPlacementOrderUploadedEvent event = new NoticeOfPlacementOrderUploadedEvent(
+        caseData, testDocument);
 
     @Test
     void shouldSendEmailForPlacementOrderUploaded() {
@@ -106,7 +104,7 @@ class NoticeOfPlacementOrderUploadedEventHandlerTest {
 
         verify(issuedOrderAdminNotificationHandler).notifyAdmin(
             caseData,
-            "testUrl",
+            testDocument,
             NOTICE_OF_PLACEMENT_ORDER);
 
         verify(representativeNotificationService).sendToRepresentativesByServedPreference(

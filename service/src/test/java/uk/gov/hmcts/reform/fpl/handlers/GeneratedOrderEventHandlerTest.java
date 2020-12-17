@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
@@ -73,14 +72,12 @@ class GeneratedOrderEventHandlerTest {
 
     private CaseData caseData = caseData();
 
-    @Value("${manage-case.ui.base.url}")
-    private String xuiBaseUrl;
-
-    private final GeneratedOrderEvent event = new GeneratedOrderEvent(caseData, DocumentReference.builder()
+    private final DocumentReference testDocument = DocumentReference.builder()
         .filename("GeneratedOrder")
         .url("url")
-        .binaryUrl("testUrl")
-        .build());
+        .binaryUrl("testUrl").build();
+
+    private final GeneratedOrderEvent event = new GeneratedOrderEvent(caseData, testDocument);
 
     @BeforeEach
     void before() {
@@ -88,7 +85,7 @@ class GeneratedOrderEventHandlerTest {
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))
             .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
-        given(orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(caseData, "testUrl",
+        given(orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(caseData, testDocument,
             GENERATED_ORDER))
             .willReturn(getExpectedParameters(BLANK_ORDER.getLabel(), true));
 
@@ -103,7 +100,7 @@ class GeneratedOrderEventHandlerTest {
 
         verify(issuedOrderAdminNotificationHandler).notifyAdmin(
             caseData,
-            "testUrl",
+            testDocument,
             GENERATED_ORDER);
 
         verify(notificationService).sendEmail(

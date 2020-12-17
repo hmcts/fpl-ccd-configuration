@@ -55,7 +55,7 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
     private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 
-    private final DocumentReference lastOrderDocumentReference = DocumentReference.builder()
+    private final DocumentReference testDocument = DocumentReference.builder()
         .filename("C21 3.pdf")
         .url("url")
         .binaryUrl("testUrl")
@@ -157,7 +157,7 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
 
     private ImmutableMap.Builder<String, Object> getCommonCaseData() {
         Map<String, Object> caseData = Map.of(
-            "orderCollection", createOrders(lastOrderDocumentReference),
+            "orderCollection", createOrders(testDocument),
             "caseLocalAuthority", DEFAULT_LA,
             "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER,
             "respondents1", createRespondents(),
@@ -172,6 +172,6 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
             CASE_TYPE,
             parseLong(CASE_ID),
             SEND_DOCUMENT_EVENT,
-            Map.of("documentToBeSent", lastOrderDocumentReference));
+            Map.of("documentToBeSent", testDocument));
     }
 }

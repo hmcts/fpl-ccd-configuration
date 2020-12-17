@@ -49,5 +49,8 @@ public abstract class AbstractEmailContentProviderTest {
 
         when(caseUrlService.getCaseUrl(anyLong(), anyString()))
             .thenAnswer(invocation -> caseUrl(invocation.getArgument(0).toString(), invocation.getArgument(1)));
+
+        when(caseUrlService.getBaseUrl())
+            .thenAnswer(invocation -> UI_URL);
     }
 }

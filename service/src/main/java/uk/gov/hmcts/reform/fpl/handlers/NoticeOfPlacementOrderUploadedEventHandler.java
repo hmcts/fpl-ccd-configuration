@@ -50,7 +50,7 @@ public class NoticeOfPlacementOrderUploadedEventHandler {
             NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE, emails, notifyData, caseData.getId().toString());
 
         issuedOrderAdminNotificationHandler.notifyAdmin(
-            caseData, orderDocument.getBinaryUrl(), NOTICE_OF_PLACEMENT_ORDER);
+            caseData, orderDocument, NOTICE_OF_PLACEMENT_ORDER);
 
         representativeNotificationService.sendToRepresentativesByServedPreference(DIGITAL_SERVICE,
             NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE, notifyData, caseData);

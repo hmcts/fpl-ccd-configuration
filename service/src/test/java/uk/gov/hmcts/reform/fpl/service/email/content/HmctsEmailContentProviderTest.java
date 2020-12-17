@@ -20,7 +20,6 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ContextConfiguration(classes = {HmctsEmailContentProvider.class, LookupTestConfig.class})
 class HmctsEmailContentProviderTest extends AbstractEmailContentProviderTest {
@@ -30,7 +29,9 @@ class HmctsEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     private static final byte[] APPLICATION_BINARY = TestDataHelper.DOCUMENT_CONTENT;
 
-    private static DocumentReference applicationDocument = testDocumentReference();
+    private static DocumentReference applicationDocument = DocumentReference.builder()
+        .binaryUrl("applicationBinaryUrl")
+        .build();
 
     @BeforeEach
     void init() {
@@ -60,7 +61,7 @@ class HmctsEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
         CaseData caseData = populatedCaseData(Map.of("applicationBinaryUrl", applicationDocument.getBinaryUrl()));
 
-        assertThat(hmctsEmailContentProvider.buildHmctsSubmissionNotification(caseData, "applicationBinaryUrl"))
+        assertThat(hmctsEmailContentProvider.buildHmctsSubmissionNotification(caseData))
             .usingRecursiveComparison().isEqualTo(hmctsSubmissionTemplate);
     }
 
@@ -82,8 +83,7 @@ class HmctsEmailContentProviderTest extends AbstractEmailContentProviderTest {
             .documentLink("applicationBinaryUrl")
             .build();
 
-        assertThat(hmctsEmailContentProvider.buildHmctsSubmissionNotification(buildCaseData(applicationDocument),
-            "applicationBinaryUrl"))
+        assertThat(hmctsEmailContentProvider.buildHmctsSubmissionNotification(buildCaseData(applicationDocument)))
             .usingRecursiveComparison().isEqualTo(hmctsSubmissionTemplate);
     }
 

@@ -96,7 +96,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
 
         verify(issuedOrderAdminNotificationHandler).notifyAdmin(
             caseData,
-            "testUrl",
+            cmo.getOrder(),
             CMO);
     }
 

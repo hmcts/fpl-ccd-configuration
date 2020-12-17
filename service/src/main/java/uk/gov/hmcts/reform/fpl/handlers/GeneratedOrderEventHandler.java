@@ -44,8 +44,8 @@ public class GeneratedOrderEventHandler {
         final CaseData caseData = orderEvent.getCaseData();
         final DocumentReference orderDocument = orderEvent.getOrderDocument();
 
-        issuedOrderAdminNotificationHandler.notifyAdmin(caseData, orderDocument.getBinaryUrl(), GENERATED_ORDER);
-        sendNotificationToLocalAuthorityAndDigitalServedRepresentatives(caseData, orderDocument.getBinaryUrl());
+        issuedOrderAdminNotificationHandler.notifyAdmin(caseData, orderDocument, GENERATED_ORDER);
+        sendNotificationToLocalAuthorityAndDigitalRepresentatives(caseData, orderDocument);
 
         sendNotificationToEmailServedRepresentatives(caseData, orderDocument);
     }
@@ -77,10 +77,10 @@ public class GeneratedOrderEventHandler {
             ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES, notifyData, caseData);
     }
 
-    private void sendNotificationToLocalAuthorityAndDigitalServedRepresentatives(final CaseData caseData,
-                                                                                 final String binaryUrl) {
+    private void sendNotificationToLocalAuthorityAndDigitalRepresentatives(final CaseData caseData,
+                                                                           final DocumentReference orderDocument) {
         final NotifyData notifyData =
-            orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(caseData, binaryUrl, GENERATED_ORDER);
+            orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(caseData, orderDocument, GENERATED_ORDER);
 
         sendToLocalAuthority(caseData, notifyData);
         representativeNotificationService.sendToRepresentativesByServedPreference(DIGITAL_SERVICE,

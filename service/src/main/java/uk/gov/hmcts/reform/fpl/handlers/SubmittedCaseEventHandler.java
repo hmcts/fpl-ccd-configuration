@@ -44,8 +44,7 @@ public class SubmittedCaseEventHandler {
     public void notifyAdmin(final SubmittedCaseEvent event) {
         CaseData caseData = event.getCaseData();
 
-        NotifyData notifyData = hmctsEmailContentProvider.buildHmctsSubmissionNotification(caseData,
-            caseData.getSubmittedForm().getBinaryUrl());
+        NotifyData notifyData = hmctsEmailContentProvider.buildHmctsSubmissionNotification(caseData);
         String recipient = adminNotificationHandler.getHmctsAdminEmail(caseData);
 
         notificationService.sendEmail(HMCTS_COURT_SUBMISSION_TEMPLATE, recipient, notifyData, caseData.getId());

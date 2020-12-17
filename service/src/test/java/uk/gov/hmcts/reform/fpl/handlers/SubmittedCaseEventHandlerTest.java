@@ -71,16 +71,15 @@ class SubmittedCaseEventHandlerTest {
     @Test
     void shouldSendEmailToHmctsAdmin() {
         final String expectedEmail = "test@test.com";
-        final String binaryUrl = "testUrl";
         final CaseData caseData = caseData().toBuilder()
-            .submittedForm(DocumentReference.builder().binaryUrl(binaryUrl).build())
+            .submittedForm(DocumentReference.builder().binaryUrl("testUrl").build())
             .build();
         final CaseData caseDataBefore = caseData();
         final SubmitCaseHmctsTemplate expectedTemplate = SubmitCaseHmctsTemplate.builder().build();
         final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(caseData, caseDataBefore);
 
         when(adminNotificationHandler.getHmctsAdminEmail(caseData)).thenReturn(expectedEmail);
-        when(hmctsEmailContentProvider.buildHmctsSubmissionNotification(caseData, binaryUrl))
+        when(hmctsEmailContentProvider.buildHmctsSubmissionNotification(caseData))
             .thenReturn(expectedTemplate);
 
         submittedCaseEventHandler.notifyAdmin(submittedCaseEvent);
