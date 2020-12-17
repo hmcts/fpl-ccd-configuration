@@ -37,7 +37,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
     LookupTestConfig.class,
     IssuedOrderAdminNotificationHandler.class, RepresentativeNotificationService.class,
     HmctsAdminNotificationHandler.class})
-@TestPropertySource(properties = {"manage-case.ui.base.url=http://fake-url/"})
 class NoticeOfPlacementOrderUploadedEventHandlerTest {
 
     @MockBean

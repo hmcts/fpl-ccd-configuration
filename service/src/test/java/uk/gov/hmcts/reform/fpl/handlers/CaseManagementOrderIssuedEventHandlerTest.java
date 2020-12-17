@@ -39,7 +39,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 @SpringBootTest(classes = {CaseManagementOrderIssuedEventHandler.class, LookupTestConfig.class,
     IssuedOrderAdminNotificationHandler.class, HmctsAdminNotificationHandler.class, RepresentativeService.class,
     FixedTimeConfiguration.class})
-@TestPropertySource(properties = {"manage-case.ui.base.url=http://fake-url/"})
 class CaseManagementOrderIssuedEventHandlerTest {
 
     @MockBean

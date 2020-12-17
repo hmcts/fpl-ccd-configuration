@@ -46,7 +46,6 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.ge
 @SpringBootTest(classes = {GeneratedOrderEventHandler.class, InboxLookupService.class, LookupTestConfig.class,
     IssuedOrderAdminNotificationHandler.class, RepresentativeNotificationService.class,
     HmctsAdminNotificationHandler.class})
-@TestPropertySource(properties = {"manage-case.ui.base.url=http://fake-url/"})
 class GeneratedOrderEventHandlerTest {
 
     @MockBean
