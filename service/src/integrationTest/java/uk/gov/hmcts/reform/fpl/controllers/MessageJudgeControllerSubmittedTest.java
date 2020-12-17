@@ -82,7 +82,7 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldNotifyJudicialMessageRecipientWhenNewJudicialMessageReplyAdded() throws NotificationClientException {
+    void shouldNotifyJudicialMessageRecipientWhenJudicialMessageReplyAdded() throws NotificationClientException {
         JudicialMessage latestJudicialMessage = JudicialMessage.builder()
             .recipient(JUDICIAL_MESSAGE_RECIPIENT)
             .sender("sender@fpla.com")

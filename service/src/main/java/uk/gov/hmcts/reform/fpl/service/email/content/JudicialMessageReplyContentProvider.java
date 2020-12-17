@@ -14,10 +14,8 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class JudicialMessageReplyContentProvider extends AbstractEmailContentProvider {
-
-
-    public JudicialMessageReplyTemplate buildNewJudicialMessageReplyTemplate(CaseData caseData,
-                                                                             JudicialMessage judicialMessage) {
+    public JudicialMessageReplyTemplate buildJudicialMessageReplyTemplate(CaseData caseData,
+                                                                          JudicialMessage judicialMessage) {
         return JudicialMessageReplyTemplate.builder()
             .respondentLastName(getFirstRespondentLastName(caseData))
             .callout(buildCallout(caseData))

@@ -17,7 +17,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDICIAL_MESSAGE_REPLY_TEM
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class JudicialMessageReplyEventHandler {
     private final NotificationService notificationService;
-    private final JudicialMessageReplyContentProvider newJudicialMessageReplyContentProvider;
+    private final JudicialMessageReplyContentProvider judicialMessageReplyContentProvider;
 
     @EventListener
     public void notifyRecipientOfReply(JudicialMessageReplyEvent event) {
@@ -25,7 +25,7 @@ public class JudicialMessageReplyEventHandler {
         JudicialMessage newJudicialMessage = event.getJudicialMessage();
 
         JudicialMessageReplyTemplate notifyData =
-            newJudicialMessageReplyContentProvider.buildNewJudicialMessageReplyTemplate(caseData, newJudicialMessage);
+            judicialMessageReplyContentProvider.buildJudicialMessageReplyTemplate(caseData, newJudicialMessage);
 
         notificationService.sendEmail(JUDICIAL_MESSAGE_REPLY_TEMPLATE, newJudicialMessage.getRecipient(),
             notifyData, caseData.getId());

@@ -13,7 +13,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 @ContextConfiguration(classes = {JudicialMessageReplyContentProvider.class})
 class JudicialMessageReplyContentProviderTest extends AbstractEmailContentProviderTest {
     @Autowired
-    private JudicialMessageReplyContentProvider newJudicialMessageReplyContentProvider;
+    private JudicialMessageReplyContentProvider judicialMessageReplyContentProvider;
 
     @Test
     void createTemplateWithExpectedParameters() {
@@ -33,8 +33,7 @@ class JudicialMessageReplyContentProviderTest extends AbstractEmailContentProvid
             .respondentLastName("Smith")
             .build();
 
-        assertThat(newJudicialMessageReplyContentProvider
-            .buildNewJudicialMessageReplyTemplate(caseData, judicialMessage))
+        assertThat(judicialMessageReplyContentProvider.buildJudicialMessageReplyTemplate(caseData, judicialMessage))
             .isEqualTo(expectedTemplate);
     }
 }

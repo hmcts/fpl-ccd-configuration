@@ -18,18 +18,18 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDICIAL_MESSAGE_REPLY_TEM
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 
 @ExtendWith(MockitoExtension.class)
-class NewJudicialMessageReplyEventHandlerTest {
+class JudicialMessageReplyEventHandlerTest {
     @Mock
     private NotificationService notificationService;
 
     @Mock
-    private JudicialMessageReplyContentProvider newJudicialMessageReplyContentProvider;
+    private JudicialMessageReplyContentProvider judicialMessageReplyContentProvider;
 
     @InjectMocks
-    private JudicialMessageReplyEventHandler newJudicialMessageReplyEventHandler;
+    private JudicialMessageReplyEventHandler judicialMessageReplyEventHandler;
 
     @Test
-    void shouldNotifyJudicialMessageRecipientWhenNewJudicialMessageReplyCreated() {
+    void shouldNotifyJudicialMessageRecipientWhenJudicialMessageReplyCreated() {
         String recipient = "David@fpla.com";
 
         JudicialMessage judicialMessage = JudicialMessage.builder()
@@ -41,10 +41,10 @@ class NewJudicialMessageReplyEventHandlerTest {
 
         final JudicialMessageReplyTemplate expectedParameters = JudicialMessageReplyTemplate.builder().build();
 
-        given(newJudicialMessageReplyContentProvider.buildNewJudicialMessageReplyTemplate(caseData, judicialMessage))
+        given(judicialMessageReplyContentProvider.buildJudicialMessageReplyTemplate(caseData, judicialMessage))
             .willReturn(expectedParameters);
 
-        newJudicialMessageReplyEventHandler.notifyRecipientOfReply(
+        judicialMessageReplyEventHandler.notifyRecipientOfReply(
             new JudicialMessageReplyEvent(caseData, judicialMessage)
         );
 
