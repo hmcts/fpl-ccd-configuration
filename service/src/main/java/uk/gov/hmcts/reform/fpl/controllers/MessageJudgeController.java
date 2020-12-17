@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.JudicialMessageReplyEvent;
 import uk.gov.hmcts.reform.fpl.events.NewJudicialMessageEvent;
-import uk.gov.hmcts.reform.fpl.events.NewJudicialMessageReplyEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
@@ -87,7 +87,7 @@ public class MessageJudgeController extends CallbackController {
         if (judicialMessage.isFirstMessage()) {
             publishEvent(new NewJudicialMessageEvent(caseData, judicialMessage));
         } else {
-            publishEvent(new NewJudicialMessageReplyEvent(caseData, judicialMessage));
+            publishEvent(new JudicialMessageReplyEvent(caseData, judicialMessage));
         }
     }
 }

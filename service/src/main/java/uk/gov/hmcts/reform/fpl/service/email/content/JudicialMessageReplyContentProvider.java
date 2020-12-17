@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
-import uk.gov.hmcts.reform.fpl.model.notify.NewJudicialMessageReplyTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.JudicialMessageReplyTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCallout;
@@ -16,9 +16,9 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 public class JudicialMessageReplyContentProvider extends AbstractEmailContentProvider {
 
 
-    public NewJudicialMessageReplyTemplate buildNewJudicialMessageReplyTemplate(CaseData caseData,
-                                                                           JudicialMessage judicialMessage) {
-        return NewJudicialMessageReplyTemplate.builder()
+    public JudicialMessageReplyTemplate buildNewJudicialMessageReplyTemplate(CaseData caseData,
+                                                                             JudicialMessage judicialMessage) {
+        return JudicialMessageReplyTemplate.builder()
             .respondentLastName(getFirstRespondentLastName(caseData))
             .callout(buildCallout(caseData))
             .latestMessage(judicialMessage.getLatestMessage())

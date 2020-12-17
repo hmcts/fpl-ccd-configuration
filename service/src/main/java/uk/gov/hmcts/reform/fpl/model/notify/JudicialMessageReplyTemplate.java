@@ -7,7 +7,7 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @SuperBuilder
-public class NewJudicialMessageReplyTemplate extends BaseCaseNotifyData {
+public class JudicialMessageReplyTemplate extends BaseCaseNotifyData {
     private final String callout;
     private final String latestMessage;
 }

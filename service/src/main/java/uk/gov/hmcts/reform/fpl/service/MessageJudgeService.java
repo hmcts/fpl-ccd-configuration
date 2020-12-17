@@ -114,7 +114,7 @@ public class MessageJudgeService {
             .recipient(judicialMessageMetaData.getRecipient())
             .requestedBy(judicialMessageMetaData.getRequestedBy())
             .latestMessage(latestMessage)
-            .messageHistory(String.format("%s - %s", sender, latestMessage))
+            .messageHistory(buildMessageHistory(latestMessage, sender))
             .updatedTime(time.now())
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
             .urgency(judicialMessageMetaData.getUrgency())
@@ -154,9 +154,7 @@ public class MessageJudgeService {
                         .updatedTime(time.now())
                         .sender(sender) // Get the email of the current user
                         .recipient(judicialMessage.getSender()) // Get the sender of the previous message
-                        .messageHistory(String.join("\n \n", List.of(
-                            judicialMessage.getMessageHistory(),
-                            String.format("%s - %s", sender, judicialMessageReply.getLatestMessage()))))
+                        .messageHistory(buildMessageHistory(judicialMessageReply, judicialMessage, sender))
                         .latestMessage(judicialMessageReply.getLatestMessage())
                         .build();
 
@@ -178,6 +176,24 @@ public class MessageJudgeService {
         return caseData.getFirstHearing()
             .map(hearing -> String.format("Next hearing in the case: %s", hearing.toLabel()))
             .orElse("");
+    }
+
+    private String buildMessageHistory(String message, String sender) {
+        return buildMessageHistory(message, "", sender);
+    }
+
+    private String buildMessageHistory(JudicialMessage reply, JudicialMessage previousMessage, String sender) {
+        return buildMessageHistory(reply.getLatestMessage(), previousMessage.getMessageHistory(), sender);
+    }
+
+    private String buildMessageHistory(String message, String history, String sender) {
+        String formattedLatestMessage = String.format("%s - %s", sender, message);
+
+        if (history.isBlank()) {
+            return formattedLatestMessage;
+        }
+
+        return String.join("\n \n", history, formattedLatestMessage);
     }
 
     private DynamicList rebuildC2DynamicList(CaseData caseData, UUID selectedC2Id) {

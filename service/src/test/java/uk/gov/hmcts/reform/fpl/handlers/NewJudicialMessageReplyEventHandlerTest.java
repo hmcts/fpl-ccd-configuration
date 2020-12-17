@@ -5,10 +5,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.fpl.events.NewJudicialMessageReplyEvent;
+import uk.gov.hmcts.reform.fpl.events.JudicialMessageReplyEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
-import uk.gov.hmcts.reform.fpl.model.notify.NewJudicialMessageReplyTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.JudicialMessageReplyTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.JudicialMessageReplyContentProvider;
 
@@ -26,7 +26,7 @@ class NewJudicialMessageReplyEventHandlerTest {
     private JudicialMessageReplyContentProvider newJudicialMessageReplyContentProvider;
 
     @InjectMocks
-    private NewJudicialMessageReplyEventHandler newJudicialMessageReplyEventHandler;
+    private JudicialMessageReplyEventHandler newJudicialMessageReplyEventHandler;
 
     @Test
     void shouldNotifyJudicialMessageRecipientWhenNewJudicialMessageReplyCreated() {
@@ -39,13 +39,13 @@ class NewJudicialMessageReplyEventHandlerTest {
 
         CaseData caseData = caseData();
 
-        final NewJudicialMessageReplyTemplate expectedParameters = NewJudicialMessageReplyTemplate.builder().build();
+        final JudicialMessageReplyTemplate expectedParameters = JudicialMessageReplyTemplate.builder().build();
 
         given(newJudicialMessageReplyContentProvider.buildNewJudicialMessageReplyTemplate(caseData, judicialMessage))
             .willReturn(expectedParameters);
 
-        newJudicialMessageReplyEventHandler.notifyJudicialMessageRecipientOfReply(
-            new NewJudicialMessageReplyEvent(caseData, judicialMessage)
+        newJudicialMessageReplyEventHandler.notifyRecipientOfReply(
+            new JudicialMessageReplyEvent(caseData, judicialMessage)
         );
 
         verify(notificationService).sendEmail(

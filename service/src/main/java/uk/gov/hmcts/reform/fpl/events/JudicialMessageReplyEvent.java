@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 
 @Getter
 @RequiredArgsConstructor
-public class NewJudicialMessageReplyEvent {
+public class JudicialMessageReplyEvent {
     private final CaseData caseData;
     private final JudicialMessage judicialMessage;
 }
