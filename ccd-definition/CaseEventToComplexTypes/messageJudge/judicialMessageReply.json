@@ -8,7 +8,7 @@
     "FieldDisplayOrder": 1,
     "EventElementLabel": "Related documents",
     "DisplayContext": "READONLY",
-    "FieldShowCondition": "relatedDocumentFileNames!=\"*\""
+    "FieldShowCondition": "judicialMessageReply.relatedDocumentFileNames=\"*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -17,7 +17,7 @@
     "CaseFieldID": "judicialMessageReply",
     "ListElementCode": "recipient",
     "FieldDisplayOrder": 2,
-    "EventElementLabel": "Message from CTSC admin member",
+    "EventElementLabel": "Message from CTSC team member",
     "DisplayContext": "READONLY"
   },
   {
@@ -49,7 +49,7 @@
     "ListElementCode": "messageHistory",
     "FieldDisplayOrder": 5,
     "DisplayContext": "READONLY",
-    "EventElementLabel": "Message from CTSC admin team",
+    "EventElementLabel": "Message from CTSC",
     "FieldShowCondition": "messageHistory!=\"ALWAYS_SHOW\""
   },
   {
@@ -60,6 +60,6 @@
     "ListElementCode": "latestMessage",
     "FieldDisplayOrder": 6,
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Messages from judge or legal adviser"
+    "EventElementLabel": "Message from judge or legal adviser"
   }
 ]
