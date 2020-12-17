@@ -82,7 +82,7 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
             .recipient(MESSAGE_RECIPIENT)
             .latestMessage(MESSAGE)
             .sender(SENDER)
-            .messageHistory(MESSAGE)
+            .messageHistory(String.format("%s - %s", SENDER, MESSAGE))
             .urgency("High urgency")
             .build();
 
@@ -112,7 +112,7 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
                     .status(OPEN)
                     .requestedBy(MESSAGE_REQUESTED_BY)
                     .latestMessage(MESSAGE)
-                    .messageHistory(MESSAGE)
+                    .messageHistory(String.format("%s - %s", SENDER, MESSAGE))
                     .dateSent(dateSent)
                     .build())))
             .build();
@@ -124,7 +124,8 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
             .updatedTime(now())
             .status(OPEN)
             .latestMessage(REPLY)
-            .messageHistory(MESSAGE + "\n" + REPLY)
+            .messageHistory(String.format("%s - %s", SENDER, MESSAGE) + "\n \n"
+                + String.format("%s - %s", MESSAGE_RECIPIENT, REPLY))
             .dateSent(dateSent)
             .build();
 

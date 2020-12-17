@@ -107,12 +107,14 @@ public class MessageJudgeService {
         JudicialMessageMetaData judicialMessageMetaData = messageJudgeEventData.getJudicialMessageMetaData();
         String latestMessage = messageJudgeEventData.getJudicialMessageNote();
 
+        String sender = userService.getUserEmail();
+
         JudicialMessage.JudicialMessageBuilder<?, ?> judicialMessageBuilder = JudicialMessage.builder()
-            .sender(userService.getUserEmail())
+            .sender(sender)
             .recipient(judicialMessageMetaData.getRecipient())
             .requestedBy(judicialMessageMetaData.getRequestedBy())
             .latestMessage(latestMessage)
-            .messageHistory(latestMessage)
+            .messageHistory(String.format("%s - %s", sender, latestMessage))
             .updatedTime(time.now())
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
             .urgency(judicialMessageMetaData.getUrgency())
@@ -146,13 +148,15 @@ public class MessageJudgeService {
 
                     JudicialMessage judicialMessage = judicialMessageElement.getValue();
 
+                    String sender = userService.getUserEmail();
+
                     JudicialMessage updatedMessage = judicialMessage.toBuilder()
                         .updatedTime(time.now())
-                        .sender(userService.getUserEmail()) // Get the email of the current user
+                        .sender(sender) // Get the email of the current user
                         .recipient(judicialMessage.getSender()) // Get the sender of the previous message
-                        .messageHistory(String.join("\n", List.of(
+                        .messageHistory(String.join("\n \n", List.of(
                             judicialMessage.getMessageHistory(),
-                            judicialMessageReply.getLatestMessage())))
+                            String.format("%s - %s", sender, judicialMessageReply.getLatestMessage()))))
                         .latestMessage(judicialMessageReply.getLatestMessage())
                         .build();
 

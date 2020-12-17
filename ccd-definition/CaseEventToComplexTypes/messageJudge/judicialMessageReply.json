@@ -49,7 +49,7 @@
     "ListElementCode": "messageHistory",
     "FieldDisplayOrder": 5,
     "DisplayContext": "READONLY",
-    "EventElementLabel": "Message from CTSC",
+    "EventElementLabel": "Message history",
     "FieldShowCondition": "messageHistory!=\"ALWAYS_SHOW\""
   },
   {
@@ -60,6 +60,6 @@
     "ListElementCode": "latestMessage",
     "FieldDisplayOrder": 6,
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Message from judge or legal adviser"
+    "EventElementLabel": "Reply"
   }
 ]

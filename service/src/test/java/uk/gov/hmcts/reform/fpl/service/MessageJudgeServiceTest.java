@@ -345,7 +345,7 @@ class MessageJudgeServiceTest {
             .recipient(MESSAGE_RECIPIENT)
             .requestedBy(MESSAGE_REQUESTED_BY)
             .urgency("High urgency")
-            .messageHistory(MESSAGE_NOTE)
+            .messageHistory(String.format("%s - %s", MESSAGE_SENDER, MESSAGE_NOTE))
             .build());
 
         assertThat(updatedMessages).hasSize(1).first().isEqualTo(expectedJudicialMessageElement);
@@ -435,7 +435,7 @@ class MessageJudgeServiceTest {
             .status(OPEN)
             .requestedBy(MESSAGE_REQUESTED_BY)
             .latestMessage(MESSAGE_NOTE)
-            .messageHistory(MESSAGE_NOTE)
+            .messageHistory(String.format("%s - %s", MESSAGE_SENDER, MESSAGE_NOTE))
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
             .build();
 
@@ -482,6 +482,9 @@ class MessageJudgeServiceTest {
 
         List<Element<JudicialMessage>> updatedMessages = messageJudgeService.replyToJudicialMessage(caseData);
 
+        String formattedMessageHistory = MESSAGE_NOTE + "\n \n"
+            + String.format("%s - %s", MESSAGE_RECIPIENT, messageReply);
+
         // The sender and recipient are not the wrong way round, the sender of the previous message has be made the
         // recipient of this one and the recipient has "responded" and become the sender.
         Element<JudicialMessage> expectedUpdatedJudicialMessage = element(SELECTED_DYNAMIC_LIST_ITEM_ID,
@@ -492,7 +495,7 @@ class MessageJudgeServiceTest {
                 .updatedTime(time.now())
                 .status(OPEN)
                 .latestMessage(messageReply)
-                .messageHistory(MESSAGE_NOTE + "\n" + messageReply)
+                .messageHistory(formattedMessageHistory)
                 .dateSent(dateSent)
                 .build()
         );
