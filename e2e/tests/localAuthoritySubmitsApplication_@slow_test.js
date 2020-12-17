@@ -6,6 +6,7 @@ const applicant = require('../fixtures/applicant.js');
 const solicitor = require('../fixtures/solicitor.js');
 const others = require('../fixtures/others.js');
 const otherProceedings = require('../fixtures/otherProceedingData');
+const ordersAndDirectionsNeeded = require('../fixtures/ordersAndDirectionsNeeded.js');
 
 let caseId;
 
@@ -59,6 +60,8 @@ Scenario('local authority enters orders and directions @create-case-with-mandato
   enterOrdersAndDirectionsNeededEventPage.checkInterimSupervisionOrder();
   enterOrdersAndDirectionsNeededEventPage.checkEducationSupervisionOrder();
   enterOrdersAndDirectionsNeededEventPage.checkEmergencyProtectionOrder();
+  enterOrdersAndDirectionsNeededEventPage.selectPreventRemovalFromAddressEPOType();
+  await enterOrdersAndDirectionsNeededEventPage.enterAddress(ordersAndDirectionsNeeded.address);
   enterOrdersAndDirectionsNeededEventPage.checkOtherOrder();
   enterOrdersAndDirectionsNeededEventPage.checkWhereabouts();
   enterOrdersAndDirectionsNeededEventPage.checkEntry();
@@ -69,6 +72,7 @@ Scenario('local authority enters orders and directions @create-case-with-mandato
   enterOrdersAndDirectionsNeededEventPage.checkAssessment();
   enterOrdersAndDirectionsNeededEventPage.checkMedicalPractitioner();
   enterOrdersAndDirectionsNeededEventPage.checkExclusion();
+  enterOrdersAndDirectionsNeededEventPage.enterWhoIsExcluded('John Doe');
   enterOrdersAndDirectionsNeededEventPage.checkProtectionDirectionsOther();
   enterOrdersAndDirectionsNeededEventPage.enterProtectionDirectionsDetails('Test');
   enterOrdersAndDirectionsNeededEventPage.enterOrderDetails('Test');
