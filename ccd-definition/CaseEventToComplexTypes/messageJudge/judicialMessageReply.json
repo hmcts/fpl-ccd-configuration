@@ -17,7 +17,7 @@
     "CaseFieldID": "judicialMessageReply",
     "ListElementCode": "recipient",
     "FieldDisplayOrder": 2,
-    "EventElementLabel": "Message from CTSC team member",
+    "EventElementLabel": "Message from",
     "DisplayContext": "READONLY"
   },
   {

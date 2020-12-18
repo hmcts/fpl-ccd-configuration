@@ -58,10 +58,9 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "judicialMessageNote",
-    "Label": "Message from the CTSC admin team",
+    "Label": "Message",
     "FieldType": "TextArea",
     "SecurityClassification": "Public",
-    "HintText": "Add any notes given with the application, or what you'd like the judge or legal advisor to do.",
     "Searchable": "N"
   },
   {
