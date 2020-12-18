@@ -141,21 +141,23 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
     @Test
     void shouldRemoveTransientFields() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of(
-                "hasC2Applications", "some data",
-                "isMessageRegardingC2", "some data",
-                "c2DynamicList", "some data",
-                "relatedDocumentsLabel", "some data",
-                "nextHearingLabel", "some data",
-                "judicialMessageMetaData", JudicialMessageMetaData.builder()
+            .data(Map.ofEntries(
+                Map.entry("hasC2Applications", "some data"),
+                Map.entry("isMessageRegardingC2", "some data"),
+                Map.entry("c2DynamicList", "some data"),
+                Map.entry("relatedDocumentsLabel", "some data"),
+                Map.entry("nextHearingLabel", "some data"),
+                Map.entry("judicialMessageMetaData", JudicialMessageMetaData.builder()
                     .recipient("some data")
                     .sender("some data")
                     .urgency("some data")
-                    .build(),
-                "judicialMessageNote", "some data",
-                "judicialMessageDynamicList", buildDynamicList(0, Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, "some data")),
-                "messageJudgeOption", MessageJudgeOptions.REPLY,
-                "judicialMessageReply", JudicialMessage.builder().build()
+                    .build()),
+                Map.entry("judicialMessageNote", "some data"),
+                Map.entry("judicialMessageDynamicList",
+                    buildDynamicList(0, Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, "some data"))),
+                Map.entry("messageJudgeOption", MessageJudgeOptions.REPLY),
+                Map.entry("hasJudicialMessages", "some data"),
+                Map.entry("judicialMessageReply", JudicialMessage.builder().build())
             ))
             .build();
 
@@ -170,7 +172,8 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
             "judicialMessageNote",
             "judicialMessageDynamicList",
             "messageJudgeOption",
-            "judicialMessageReply"
+            "judicialMessageReply",
+            "hasJudicialMessages"
         );
     }
 }

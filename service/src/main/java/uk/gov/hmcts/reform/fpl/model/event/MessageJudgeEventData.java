@@ -22,10 +22,10 @@ public class MessageJudgeEventData {
     JudicialMessage judicialMessageReply;
 
     public static String[] transientFields() {
-        return new String[]{
+        return new String[] {
             "hasC2Applications", "isMessageRegardingC2", "c2DynamicList", "relatedDocumentsLabel", "nextHearingLabel",
             "judicialMessageMetaData", "judicialMessageNote", "judicialMessageDynamicList", "messageJudgeOption",
-            "judicialMessageReply"
+            "judicialMessageReply", "hasJudicialMessages"
         };
     }
 
