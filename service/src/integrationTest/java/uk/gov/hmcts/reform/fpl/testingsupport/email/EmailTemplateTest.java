@@ -55,6 +55,7 @@ public class EmailTemplateTest {
     public static class TestConfiguration {
         @Bean
         public NotificationClient notificationClient(@Value("${integration-test.notify-service.key}") String key) {
+            System.out.println("KEY  ->>>>>> " + key);
             return new NotificationClient(key);
         }
     }

@@ -101,6 +101,10 @@ withPipeline(type, product, component) {
     sh """ git submodule update --init """
   }
 
+  before('test') {
+    loadVaultSecrets(serviceSecrets + otherSecrets)
+  }
+
   before('smoketest:saat') {
     env.URL = "https://ccd-case-management-web-saat.service.core-compute-saat.internal"
     archiveCoreCaseDataDefinitions('saat')
