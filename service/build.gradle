@@ -49,6 +49,15 @@ sourceSets {
     resources.srcDir file('src/integrationTest/resources')
   }
 
+  emailTemplateTest {
+    java {
+      compileClasspath += main.output + test.output
+      runtimeClasspath += main.output + test.output
+      srcDir file('src/emailTemplateTest/java')
+    }
+    resources.srcDir file('src/emailTemplateTest/resources')
+  }
+
   smokeTest {
     java {
       compileClasspath += main.output
@@ -70,6 +79,12 @@ task integration(type: Test, description: 'Runs the integration tests.', group: 
   // set your environment variables here
   // environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
+
+task emailTemplate(type: Test, description: 'Runs the email template tests.', group: 'Verification') {
+  testClassesDirs = sourceSets.emailTemplateTest.output.classesDirs
+  classpath = sourceSets.emailTemplateTest.runtimeClasspath
+}
+
 check.dependsOn integration
 
 task installDependencies(type: Exec, description: 'Installs Yarn dependencies.') {
@@ -121,7 +136,7 @@ task smoke(description: 'Runs the smoke tests.') {
 }
 
 task functional(description: 'Runs the functional tests.') {
-  dependsOn(inStrictOrder(awaitApplicationReadiness, installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runApiTests, runBrowserTests))
+  dependsOn(inStrictOrder(emailTemplate, awaitApplicationReadiness, installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runApiTests, runBrowserTests))
 }
 
 checkstyle {
@@ -278,6 +293,10 @@ dependencies {
     exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-netflix-hystrix'
   }
 
+  emailTemplateTestCompile configurations.testRuntime {
+    exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-netflix-hystrix'
+  }
+
   functionalTestCompile configurations.runtime
 
   smokeTestCompile configurations.runtime
@@ -298,6 +317,10 @@ test {
 }
 
 integration {
+  useJUnitPlatform()
+}
+
+emailTemplate {
   useJUnitPlatform()
 }
 
