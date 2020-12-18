@@ -62,6 +62,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -552,6 +553,13 @@ public class CaseData {
     }
 
     @JsonIgnore
+    public List<Element<HearingBooking>> getAllHearings() {
+        return Stream.of(defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()),
+            defaultIfNull(cancelledHearingDetails, new ArrayList<Element<HearingBooking>>()))
+            .flatMap(Collection::stream).collect(toList());
+    }
+
+    @JsonIgnore
     public List<Element<HearingBooking>> getPastHearings() {
         return defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()).stream()
             .filter(hearingBooking -> !hearingBooking.getValue().startsAfterToday())
@@ -597,7 +605,7 @@ public class CaseData {
 
     @JsonIgnore
     public Optional<HearingBooking> getNextHearingAfterCmo(UUID cmoID) {
-        LocalDateTime currentCmoStartDate = unwrapElements(hearingDetails).stream()
+        LocalDateTime currentCmoStartDate = unwrapElements(getAllHearings()).stream()
             .filter(hearingBooking -> cmoID.equals(hearingBooking.getCaseManagementOrderId()))
             .map(HearingBooking::getStartDate)
             .findAny()
