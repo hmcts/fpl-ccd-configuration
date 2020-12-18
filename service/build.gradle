@@ -231,7 +231,6 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
   compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
 
-  compile group: 'uk.gov.hmcts.reform', name: 'pdf-generator', version: '1.0.2'
   compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: 'v1.5.5'
   compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.5'
