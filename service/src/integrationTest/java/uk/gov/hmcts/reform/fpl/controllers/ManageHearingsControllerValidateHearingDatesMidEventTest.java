@@ -138,15 +138,19 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
             "The end date and time must be after the start date and time");
     }
 
-    @Test
-    void shouldThrowInvalidHearingEndDateTimeErrorWhenHearingEndDateIsSameAsHearingStartDate() {
+    @ParameterizedTest
+    @EnumSource(value = HearingOptions.class, names = {"EDIT_HEARING", "NEW_HEARING"})
+    void shouldThrowInvalidHearingEndTimeErrorWhenHearingEndTimeIsSameAsStartTime(HearingOptions hearingOptions) {
         given(featureToggleService.isAddHearingsInPastEnabled()).willReturn(true);
+
+        LocalDateTime startDate = LocalDateTime.now().plusDays(1);
+        LocalDateTime endDate = startDate.minusHours(1);
 
         CaseData caseDetails = CaseData.builder()
             .id(nextLong())
-            .hearingStartDate(pastDate)
-            .hearingEndDate(pastDate)
-            .hearingOption(NEW_HEARING)
+            .hearingStartDate(startDate)
+            .hearingEndDate(endDate)
+            .hearingOption(hearingOptions)
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "validate-hearing-dates");
@@ -216,7 +220,7 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
         CaseData caseData = CaseData.builder()
             .id(nextLong())
             .hearingStartDate(futureDate)
-            .hearingEndDate(futureDate)
+            .hearingEndDate(futureDate.plusMinutes(1))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "validate-hearing-dates");
