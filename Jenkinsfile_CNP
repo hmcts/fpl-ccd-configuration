@@ -12,11 +12,16 @@ AppPipelineConfig pipelineConf;
 
 def serviceSecrets = [
   'fpl-${env}': [
-    secret('smoke-test-la-username', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY'),
     secret('smoke-test-la-username', 'SMOKE_TEST_LA_USER_USERNAME'),
     secret('smoke-test-la-password', 'SMOKE_TEST_LA_USER_PASSWORD'),
     secret('system-update-user-username', 'SYSTEM_UPDATE_USER_USERNAME'),
     secret('system-update-user-password', 'SYSTEM_UPDATE_USER_PASSWORD')
+  ]
+]
+
+def integrationTestSecrets = [
+  'fpl-aat': [
+    secret('integration-test-notify-service-key', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY')
   ]
 ]
 
@@ -74,7 +79,7 @@ def uploadCoreCaseDataDefinitions(env) {
 withPipeline(type, product, component) {
   pipelineConf = config;
 
-  loadVaultSecrets(serviceSecrets + otherSecrets)
+  loadVaultSecrets(serviceSecrets + integrationTestSecrets + otherSecrets)
 
   disableLegacyDeployment()
 
