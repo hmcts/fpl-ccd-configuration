@@ -3,9 +3,7 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
@@ -29,8 +27,6 @@ import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAsse
     ObjectMapper.class,
     CaseUrlService.class
 })
-@ActiveProfiles("integration-test")
-@OverrideAutoConfiguration(enabled = true)
 class FailedPBAPaymentEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
     @Autowired
