@@ -120,16 +120,32 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
     }
 
     @Test
-    void shouldThrowInvalidHearingEndDateTimeErrorWhenHearingEndDateIsBeforeHearingStartDate() {
+    void shouldThrowInvalidHearingEndDateTimeErrorWhenAddingAHearingWithPastDateAndEndDateIsBeforeStartDate() {
         given(featureToggleService.isAddHearingsInPastEnabled()).willReturn(true);
-
-        LocalDateTime hearingEndDate = pastDate.minusDays(1);
 
         CaseData caseDetails = CaseData.builder()
             .id(nextLong())
             .hearingStartDate(pastDate)
-            .hearingEndDate(hearingEndDate)
+            .hearingEndDate(pastDate.minusDays(1))
             .hearingOption(NEW_HEARING)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "validate-hearing-dates");
+
+        assertThat(callbackResponse.getErrors()).containsOnly(
+            "The end date and time must be after the start date and time");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = HearingOptions.class, names = {"EDIT_HEARING", "NEW_HEARING"})
+    void shouldThrowInvalidHearingEndTimeErrorWhenHearingEndDateIsBeforeStartDate(HearingOptions hearingOptions) {
+        given(featureToggleService.isAddHearingsInPastEnabled()).willReturn(true);
+
+        CaseData caseDetails = CaseData.builder()
+            .id(nextLong())
+            .hearingStartDate(LocalDateTime.now().plusDays(2))
+            .hearingEndDate(LocalDateTime.now().plusDays(1))
+            .hearingOption(hearingOptions)
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "validate-hearing-dates");
@@ -143,13 +159,10 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
     void shouldThrowInvalidHearingEndTimeErrorWhenHearingEndTimeIsSameAsStartTime(HearingOptions hearingOptions) {
         given(featureToggleService.isAddHearingsInPastEnabled()).willReturn(true);
 
-        LocalDateTime startDate = LocalDateTime.now().plusDays(1);
-        LocalDateTime endDate = startDate.minusHours(1);
-
         CaseData caseDetails = CaseData.builder()
             .id(nextLong())
-            .hearingStartDate(startDate)
-            .hearingEndDate(endDate)
+            .hearingStartDate(futureDate)
+            .hearingEndDate(futureDate)
             .hearingOption(hearingOptions)
             .build();
 
