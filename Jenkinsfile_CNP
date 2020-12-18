@@ -101,8 +101,8 @@ withPipeline(type, product, component) {
     sh """ git submodule update --init """
   }
 
-  before('test:preview') {
-    env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY='integrationtests-12f756df-f01d-4a32-a405-e1ea8a494fbb-0d14df98-a35d-4d56-9d0c-006094b18ed4'
+  before('test') {
+    secret('integration-test-notify-service-key', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY')
   }
 
   before('smoketest:saat') {
