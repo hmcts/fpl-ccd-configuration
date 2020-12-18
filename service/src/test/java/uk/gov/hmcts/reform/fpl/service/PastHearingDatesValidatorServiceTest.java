@@ -60,11 +60,12 @@ class PastHearingDatesValidatorServiceTest {
     }
 
     private static Stream<Arguments> validateHearingDatesSource() {
-        LocalDateTime startDateTime = LocalDateTime.of(2020, 12, 10, 10, 10, 0);
+        LocalDateTime startTime = LocalDateTime.of(2020, 12, 10, 10, 10, 10);
         return Stream.of(
-            Arguments.of("Hearing end date is before start date", startDateTime, startDateTime.minusDays(1)),
-            Arguments.of("Hearing end time is before start time", startDateTime, startDateTime.minusHours(1)),
-            Arguments.of("Hearing end date time and start date time are same", startDateTime, startDateTime)
+            Arguments.of("Hearing end date is before start date", startTime, startTime.minusDays(1)),
+            Arguments.of("Hearing end time is 1 second before start time", startTime, startTime.minusSeconds(1)),
+            Arguments.of("Hearing end time is 1 minute before start time", startTime, startTime.minusMinutes(1)),
+            Arguments.of("Hearing end date time and start date time are same", startTime, startTime)
         );
     }
 }
