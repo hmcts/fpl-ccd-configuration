@@ -12,7 +12,7 @@ AppPipelineConfig pipelineConf;
 
 def serviceSecrets = [
   'fpl-${env}': [
-    secret('integration-test-notify-service-key', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY'),
+    secret('smoke-test-la-username', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY'),
     secret('smoke-test-la-username', 'SMOKE_TEST_LA_USER_USERNAME'),
     secret('smoke-test-la-password', 'SMOKE_TEST_LA_USER_PASSWORD'),
     secret('system-update-user-username', 'SYSTEM_UPDATE_USER_USERNAME'),
