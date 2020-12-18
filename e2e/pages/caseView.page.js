@@ -107,12 +107,16 @@ module.exports = {
     }, 'ccd-case-event-trigger');
   },
 
+  getTabSelector(tab){
+    return `//*[@role="tab"]/div[text() = "${tab}"]`;
+  },
+
   checkTabIsNotPresent(tab) {
-    I.dontSee(tab, '.tabs .tabs-list');
+    I.dontSee(this.getTabSelector(tab));
   },
 
   selectTab(tab) {
-    I.click(tab, '.tabs .tabs-list');
+    I.click(this.getTabSelector(tab));
   },
 
   seeInCaseTitle(titleValue) {
