@@ -76,6 +76,8 @@ withPipeline(type, product, component) {
 
   loadVaultSecrets(serviceSecrets + otherSecrets)
 
+  echo "-----OUR TEST KEY IS ${INTEGRATION_TEST_NOTIFY_SERVICE_KEY}------"
+
   disableLegacyDeployment()
 
   enableAksStagingDeployment()
