@@ -13,7 +13,7 @@
     "ID": "Orders",
     "ListElementCode": "emergencyProtectionOrderLabel",
     "FieldType": "Label",
-    "ElementLabel": "## Emergency protection order test",
+    "ElementLabel": "## Emergency protection order",
     "FieldShowCondition": "orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
     "SecurityClassification": "Public"
   },
