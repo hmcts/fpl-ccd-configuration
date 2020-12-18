@@ -102,7 +102,7 @@ withPipeline(type, product, component) {
   }
 
   before('test') {
-    loadVaultSecrets(serviceSecrets + otherSecrets)
+    env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY=integrationtests-12f756df-f01d-4a32-a405-e1ea8a494fbb-0d14df98-a35d-4d56-9d0c-006094b18ed4
   }
 
   before('smoketest:saat') {
