@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.testingsupport.email;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -57,7 +56,6 @@ public class EmailTemplateTest {
         @Bean
         public NotificationClient notificationClient(@Value("${integration-test.notify-service.key}") String key) {
             System.out.println(key);
-//            log.info("KEY TEST TEST {}",key);
             return new NotificationClient(key);
         }
     }
