@@ -5,6 +5,7 @@
     "ListElementCode": "orderType",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "OrderType",
+    "FieldDisplayOrder": "2",
     "ElementLabel": "Which orders do you need?",
     "SecurityClassification": "Public"
   },
@@ -15,6 +16,7 @@
     "FieldType": "Label",
     "ElementLabel": "## Emergency protection order",
     "FieldShowCondition": "orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
+    "FieldDisplayOrder": "1",
     "SecurityClassification": "Public"
   },
   {
