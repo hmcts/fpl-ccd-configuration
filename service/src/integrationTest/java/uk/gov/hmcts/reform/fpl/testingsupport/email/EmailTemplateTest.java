@@ -26,7 +26,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = {ObjectMapper.class, NotificationService.class})
-@ActiveProfiles( {"integration-test", "email-template-test"})
+@ActiveProfiles({"integration-test", "email-template-test"})
 @OverrideAutoConfiguration(enabled = true)
 @Import(EmailTemplateTest.TestConfiguration.class)
 public class EmailTemplateTest {
