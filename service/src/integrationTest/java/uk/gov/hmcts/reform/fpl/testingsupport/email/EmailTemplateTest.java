@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles({"integration-test", "email-template-test"})
 @OverrideAutoConfiguration(enabled = true)
 @Import(EmailTemplateTest.TestConfiguration.class)
-@Slf4j
+//@Slf4j
 public class EmailTemplateTest {
 
     @SpyBean
@@ -57,7 +57,7 @@ public class EmailTemplateTest {
         @Bean
         public NotificationClient notificationClient(@Value("${integration-test.notify-service.key}") String key) {
             System.out.println(key);
-            log.info("KEY TEST TEST {}",key);
+//            log.info("KEY TEST TEST {}",key);
             return new NotificationClient(key);
         }
     }
