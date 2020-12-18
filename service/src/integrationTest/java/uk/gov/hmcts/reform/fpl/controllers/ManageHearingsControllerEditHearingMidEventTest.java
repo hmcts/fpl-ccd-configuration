@@ -16,6 +16,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.RE_LIST_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.VACATE_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsControllerTest {
@@ -104,7 +105,8 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
 
     @Test
     void shouldPopulateHearingToBeReListedFromSelectedCancelledHearing() {
-        Element<HearingBooking> cancelledHearing = element(testHearing(now().plusDays(2)));
+        Element<HearingBooking> cancelledHearing = element(
+            testHearing(now().plusDays(2), "96", VACATED_TO_BE_RE_LISTED));
 
         CaseData initialCaseData = CaseData.builder()
             .hearingOption(RE_LIST_HEARING)
