@@ -46,7 +46,7 @@ module.exports = {
 
   searchForCase(state='Any') {
     // wait for initial filters to load
-    I.waitForVisible(this.fields.jurisdiction, 10);
+    I.waitForVisible(this.fields.jurisdiction, 20);
     I.selectOption(this.fields.jurisdiction, config.definition.jurisdictionFullDesc);
     I.selectOption(this.fields.caseType, config.definition.caseTypeFullDesc);
     I.selectOption(this.fields.caseState, state);
