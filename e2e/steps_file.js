@@ -74,7 +74,7 @@ module.exports = function () {
 
     async logInAndCreateCase(user, caseName) {
       await this.signIn(user);
-      await this.retryUntilExists(() => this.click('Create case'), `#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
+      await this.retryUntilExists(() => this.click('Create case'), openApplicationEventPage.fields.jurisdiction);
       await openApplicationEventPage.populateForm(caseName);
       await this.completeEvent('Save and continue');
       this.waitForElement('.markdown h2', 5);
