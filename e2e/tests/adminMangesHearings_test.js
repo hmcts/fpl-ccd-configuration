@@ -254,11 +254,11 @@ Scenario('HMCTS admin cancels and re-lists hearing', async ({I, caseViewPage, ma
 });
 
 Scenario('HMCTS admin adds past hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
-  hearingStartDate = moment().subtract(5,'m').toDate();
-  hearingEndDate = moment(hearingStartDate).subtract(5,'m').toDate();
+  hearingStartDate = moment().subtract(10,'m').toDate();
+  hearingEndDate = moment(hearingStartDate).add(5,'m').toDate();
 
-  const correctedHearingStartDate = moment().subtract(5,'m').toDate();
-  const correctedHearingEndDate = moment(correctedHearingStartDate).subtract(5,'m').toDate();
+  const correctedHearingStartDate = moment().subtract(10,'m').toDate();
+  const correctedHearingEndDate = moment(correctedHearingStartDate).add(5,'m').toDate();
 
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   await manageHearingsEventPage.selectAddNewHearing();
