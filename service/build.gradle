@@ -222,7 +222,7 @@ dependencies {
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '10.9'
 
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.18'
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.3.1'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.3.2'
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
@@ -231,7 +231,6 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
   compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
 
-  compile group: 'uk.gov.hmcts.reform', name: 'pdf-generator', version: '1.0.2'
   compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: 'v1.5.5'
   compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.5'
@@ -335,6 +334,6 @@ pitest {
 
 dependencyManagement {
   imports {
-    mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2020.0.0-M6'
+    mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2020.0.0-RC1'
   }
 }
