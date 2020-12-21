@@ -17,6 +17,13 @@ spring:
       - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
       - org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration
 
+feign:
+  client:
+    config:
+      idam-api:
+        error-decoder: uk.gov.hmcts.reform.idam.IdamErrorDecoder
+        retryer: uk.gov.hmcts.reform.idam.IdamRetryer
+
 idam:
   s2s-auth:
     microservice: fpl_case_service
