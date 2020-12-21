@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.HearingEndDateGroup;
 
 import java.util.List;
 import java.util.UUID;
@@ -187,6 +188,9 @@ public class ManageHearingsController extends CallbackController {
                 caseData.getHearingEndDate());
         } else {
             errors = validateGroupService.validateGroup(caseData, HearingDatesGroup.class);
+            if (errors.isEmpty()) {
+                errors = validateGroupService.validateGroup(caseData, HearingEndDateGroup.class);
+            }
         }
 
         if (featureToggleService.isAddHearingsInPastEnabled()) {
