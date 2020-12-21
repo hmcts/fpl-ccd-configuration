@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.idam;
+package uk.gov.hmcts.reform.fpl.config.feign.errordecoder;
 
 import feign.Request;
 import feign.Response;
@@ -31,8 +31,8 @@ class IdamErrorDecoderTest {
     private static final int STATUS_5XX = 500;
     private static final int STATUS_NOT_5XX = 404;
 
-    ErrorDecoder defaultDecoder;
-    IdamErrorDecoder idamErrorDecoder;
+    private ErrorDecoder defaultDecoder;
+    private IdamErrorDecoder idamErrorDecoder;
 
     @BeforeEach
     void setUp() {
