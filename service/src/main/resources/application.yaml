@@ -22,7 +22,6 @@ feign:
     config:
       idam-api:
         error-decoder: uk.gov.hmcts.reform.fpl.config.feign.errordecoder.IdamErrorDecoder
-#        retryer: uk.gov.hmcts.reform.fpl.config.feign.FPLRetryer
 
 idam:
   s2s-auth:
