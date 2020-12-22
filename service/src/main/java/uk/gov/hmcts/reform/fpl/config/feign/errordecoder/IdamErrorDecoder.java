@@ -36,6 +36,6 @@ public class IdamErrorDecoder implements ErrorDecoder {
             );
         }
 
-        return null;
+        return exception;
     }
 }
