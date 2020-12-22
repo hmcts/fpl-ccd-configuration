@@ -23,7 +23,7 @@ class FPLRetryerTest {
 
     @Test
     void shouldPropagateExceptionWhenMaxAttemptsReached() {
-        FPLRetryer retryer = new FPLRetryer(100, 1000, 2);
+        FPLRetryer retryer = new FPLRetryer(2, 50, 2);
 
         retryer.continueOrPropagate(EXCEPTION);
 
