@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import feign.FeignException;
-import feign.Request;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +17,6 @@ import uk.gov.hmcts.reform.ccd.client.CaseUserApi;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.ccd.client.model.CaseUser;
 import uk.gov.hmcts.reform.ccd.model.AddCaseAssignedUserRolesRequest;
 import uk.gov.hmcts.reform.ccd.model.AddCaseAssignedUserRolesResponse;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRoleWithOrganisation;
@@ -27,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.GrantCaseAccessException;
 import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityCodeException;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
@@ -44,8 +40,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import static feign.Request.HttpMethod.GET;
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.apache.http.HttpStatus.SC_FORBIDDEN;
@@ -57,14 +51,12 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.CREATOR;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
-import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.feignException;
 import static uk.gov.hmcts.reform.fpl.utils.assertions.ExceptionAssertion.assertException;
@@ -79,8 +71,9 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
     private static final String LA_NOT_IN_PRD_CODE = "LA_1";
     private static final String LA_NOT_IN_PRD_USER_1_ID = "LA_1-1";
     private static final String LA_NOT_IN_PRD_USER_2_ID = "LA_1-2";
-    private static final List<String> LA_NOT_IN_PRD_USER_IDS =
-        List.of(CALLER_ID, LA_NOT_IN_PRD_USER_1_ID, LA_NOT_IN_PRD_USER_2_ID);
+    private static final List<String> LA_NOT_IN_PRD_USER_IDS = List.of(
+        CALLER_ID, LA_NOT_IN_PRD_USER_1_ID, LA_NOT_IN_PRD_USER_2_ID
+    );
 
     private static final String LA_IN_PRD_CODE = "LA_2";
     private static final String LA_IN_PRD_USER_1_ID = "LA_2-1";
@@ -88,7 +81,6 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
     private static final List<String> LA_IN_PRD_USER_IDS = List.of(CALLER_ID, LA_IN_PRD_USER_1_ID, LA_IN_PRD_USER_2_ID);
 
     private static final String CASE_ID = "12345";
-    private static final Set<String> CASE_ROLES = Set.of("[LASOLICITOR]", "[CREATOR]");
 
     @MockBean
     private LocalAuthorityUserLookupConfiguration localAuthorityUserLookupConfiguration;
@@ -104,9 +96,6 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
     @MockBean
     private CaseAccessDataStoreApi caseDataAccessApi;
-
-    @MockBean
-    private FeatureToggleService featureToggleService;
 
     @MockBean
     private IdamClient client;
@@ -197,101 +186,6 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void updateCaseRolesShouldBeCalledOnceForEachUserFetchedFromPRD() {
-        given(featureToggleService.isCaseUserBulkAssignmentEnabled()).willReturn(false);
-        givenPRDWillReturn(LA_IN_PRD_USER_IDS);
-
-        final CallbackRequest request = getCase(LA_IN_PRD_CODE);
-
-        postSubmittedEvent(request);
-
-        verifyGrantCaseRoleAttempts(LA_IN_PRD_USER_IDS);
-        verifyTaskListUpdated(request.getCaseDetails());
-        verifyNoInteractions(caseDataAccessApi);
-    }
-
-    @Test
-    void updateCaseRolesShouldBeCalledForEachFromCustomUserMappingIfOrganisationNotInPRD() {
-        given(featureToggleService.isCaseUserBulkAssignmentEnabled()).willReturn(false);
-        givenPRDWillFail();
-
-        final CallbackRequest request = getCase(LA_NOT_IN_PRD_CODE);
-
-        postSubmittedEvent(request);
-
-        verifyGrantCaseRoleAttempts(LA_NOT_IN_PRD_USER_IDS);
-        verifyTaskListUpdated(request.getCaseDetails());
-        verifyNoInteractions(caseDataAccessApi);
-    }
-
-    @Test
-    void updateCaseRolesShouldBeCalledOnlyForCaseCreatorIfOrganisationNotInPRDAndNoCustomUserMapping() {
-        given(featureToggleService.isCaseUserBulkAssignmentEnabled()).willReturn(false);
-        givenPRDWillFail();
-
-        final CallbackRequest request = getCase(LA_IN_PRD_CODE);
-
-        postSubmittedEvent(request);
-
-        verifyUsersFetchFromPrd(3);
-        verifyGrantCaseRoleAttempts(List.of(CALLER_ID));
-        verifyTaskListUpdated(request.getCaseDetails());
-        verifyNoInteractions(caseDataAccessApi);
-    }
-
-    @Test
-    void shouldRetryPRDCallOnFailure() {
-        given(featureToggleService.isCaseUserBulkAssignmentEnabled()).willReturn(false);
-        givenPRDWillAnswer(
-            invocation -> {
-                throw new RuntimeException();
-            },
-            invocation -> organisation(LA_IN_PRD_USER_IDS));
-
-        final CallbackRequest request = getCase(LA_IN_PRD_CODE);
-
-        postSubmittedEvent(request);
-
-        verifyUsersFetchFromPrd(2);
-        verifyGrantCaseRoleAttempts(LA_IN_PRD_USER_IDS);
-        verifyTaskListUpdated(request.getCaseDetails());
-        verifyNoInteractions(caseDataAccessApi);
-    }
-
-    @Test
-    void shouldBulkGrantCaseRolesToAllLocalAuthorityUsers() {
-        given(featureToggleService.isCaseUserBulkAssignmentEnabled()).willReturn(false);
-        doThrow(RuntimeException.class)
-            .when(caseUserApi).updateCaseRolesForUser(any(), any(), any(), eq(CALLER_ID), any());
-
-        givenPRDWillReturn(LA_NOT_IN_PRD_USER_IDS);
-
-        final Exception exception = assertThrows(Exception.class,
-            () -> postSubmittedEvent(getCase(LA_NOT_IN_PRD_CODE)));
-
-        assertException(exception)
-            .isCausedBy(new GrantCaseAccessException(CASE_ID, Set.of(USER_ID), Set.of(CREATOR, LASOLICITOR)));
-
-        verifyGrantCaseRoleAttempts(LA_NOT_IN_PRD_USER_IDS);
-        verifyNoInteractions(caseDataAccessApi);
-    }
-
-    @Test
-    void shouldAttemptGrantAccessToAllLocalAuthorityUsersWhenGrantAccessFailsForSomeOfThem() {
-        given(featureToggleService.isCaseUserBulkAssignmentEnabled()).willReturn(false);
-        doThrow(RuntimeException.class)
-            .doNothing()
-            .when(caseUserApi).updateCaseRolesForUser(any(), any(), any(), eq(LA_NOT_IN_PRD_USER_1_ID), any());
-
-        givenPRDWillReturn(LA_NOT_IN_PRD_USER_IDS);
-
-        postSubmittedEvent(getCase(LA_NOT_IN_PRD_CODE));
-
-        verifyGrantCaseRoleAttempts(LA_NOT_IN_PRD_USER_IDS, 2);
-        verifyNoInteractions(caseDataAccessApi);
-    }
-
-    @Test
     void shouldGrantCaseAssignmentAccessToListOfUsers() {
         final Organisation organisation = Organisation.builder()
             .organisationIdentifier(RandomStringUtils.randomAlphanumeric(5))
@@ -300,7 +194,6 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
         given(caseDataAccessApi.addCaseUserRoles(anyString(), anyString(),
             any(AddCaseAssignedUserRolesRequest.class)))
             .willReturn(AddCaseAssignedUserRolesResponse.builder().build());
-        given(featureToggleService.isCaseUserBulkAssignmentEnabled()).willReturn(true);
         givenPRDWillReturn(LA_IN_PRD_USER_IDS);
         given(caseDataAccessApi.addCaseUserRoles(any(), any(), any()))
             .willReturn(AddCaseAssignedUserRolesResponse.builder().status("").build());
@@ -339,7 +232,6 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldThrowExceptionWhenAccessNotGranted() {
-        given(featureToggleService.isCaseUserBulkAssignmentEnabled()).willReturn(true);
         given(caseDataAccessApi.addCaseUserRoles(anyString(), anyString(),
             any(AddCaseAssignedUserRolesRequest.class)))
             .willReturn(AddCaseAssignedUserRolesResponse.builder().build());
@@ -369,29 +261,33 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
         verifyNoInteractions(caseUserApi);
     }
 
+    @Test
+    void shouldPopulateTaskListOnSuccessfulSubmission() {
+        final Organisation organisation = Organisation.builder()
+            .organisationIdentifier(RandomStringUtils.randomAlphanumeric(5))
+            .build();
+
+        given(caseDataAccessApi.addCaseUserRoles(anyString(), anyString(),
+            any(AddCaseAssignedUserRolesRequest.class)))
+            .willReturn(AddCaseAssignedUserRolesResponse.builder().build());
+        givenPRDWillReturn(LA_IN_PRD_USER_IDS);
+        given(caseDataAccessApi.addCaseUserRoles(any(), any(), any()))
+            .willReturn(AddCaseAssignedUserRolesResponse.builder().status("").build());
+        given(organisationApi.findUserOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN)).willReturn(organisation);
+
+        final CallbackRequest callbackRequest = getCase(LA_IN_PRD_CODE);
+
+        postSubmittedEvent(callbackRequest);
+
+        verifyTaskListUpdated(callbackRequest.getCaseDetails());
+    }
+
     private CaseAssignedUserRoleWithOrganisation getCaseAssignedRoleForUser(String caseId, String userId) {
         return CaseAssignedUserRoleWithOrganisation.builder()
             .caseRole(LASOLICITOR.formattedName())
             .caseDataId(caseId)
             .userId(userId)
             .build();
-    }
-
-    private void verifyGrantCaseRoleAttempts(List<String> users, int attempts) {
-        verify(caseUserApi).updateCaseRolesForUser(
-            USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, CASE_ID, CALLER_ID,
-            new CaseUser(CALLER_ID, CASE_ROLES));
-
-        checkUntil(() -> users.stream()
-            .filter(userId -> !CALLER_ID.equals(userId))
-            .forEach(userId ->
-                verify(caseUserApi, times(attempts)).updateCaseRolesForUser(
-                    USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, CASE_ID, userId,
-                    new CaseUser(userId, CASE_ROLES))));
-    }
-
-    private void verifyGrantCaseRoleAttempts(List<String> users) {
-        verifyGrantCaseRoleAttempts(users, 1);
     }
 
     private static OrganisationUsers organisation(List<String> userIds) {
@@ -415,30 +311,18 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
             anyMap());
     }
 
-    private void givenPRDWillFail() {
-        Request request = Request.create(GET, "", Map.of(), new byte[]{}, UTF_8, null);
-        givenPRDWillAnswer(invocation -> {
-            throw new FeignException.NotFound("", request, new byte[]{});
-        });
-    }
-
     private void givenPRDWillReturn(List<String> userIds) {
         givenPRDWillAnswer(invocation -> organisation(userIds));
     }
 
-    private void givenPRDWillAnswer(Answer... answers) {
+    private void givenPRDWillAnswer(Answer<?>... answers) {
         BDDMockito.BDDMyOngoingStubbing<OrganisationUsers> stub = given(organisationApi.findUsersInOrganisation(
             USER_AUTH_TOKEN,
             SERVICE_AUTH_TOKEN,
             Status.ACTIVE,
             false));
-        for (Answer answer : answers) {
+        for (Answer<?> answer : answers) {
             stub = stub.willAnswer(answer);
         }
-    }
-
-    private void verifyUsersFetchFromPrd(int times) {
-        checkUntil(() -> verify(organisationApi, times(times))
-            .findUsersInOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, Status.ACTIVE, false));
     }
 }
