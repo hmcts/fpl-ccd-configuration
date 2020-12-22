@@ -131,6 +131,9 @@ public class ManageHearingsController extends CallbackController {
             caseDetails.getData().put(FUTURE_HEARING_LIST,
                 hearingsService.asDynamicList(caseData.getFutureAndTodayHearings(), hearingBookingId));
         } else if (RE_LIST_HEARING == caseData.getHearingOption()) {
+            if (isEmpty(caseData.getToBeReListedHearings())) {
+                return respond(caseDetails, List.of("There are no adjourned or vacated hearings to re-list"));
+            }
             UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData);
 
             HearingBooking cancelledHearing = hearingsService

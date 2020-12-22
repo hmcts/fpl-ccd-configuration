@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
+import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
@@ -41,6 +42,9 @@ public class DocumentsValidatorService {
                 if (isEmpty(document.getDocumentTitle())) {
                     validationErrors.add(String.format("You must give additional document %s a name.", i.get()));
                 }
+                if (isNull(document.getTypeOfDocument())) {
+                    validationErrors.add(String.format("You must upload a file for additional document %s.", i.get()));
+                }
 
                 i.getAndIncrement();
             });
@@ -59,7 +63,7 @@ public class DocumentsValidatorService {
     }
 
     private Stream<String> formatDocumentViolations(Set<ConstraintViolation<CaseData>> constraintViolations,
-                                         MandatoryDocuments document) {
+                                                    MandatoryDocuments document) {
         return constraintViolations.stream()
             .filter(error -> error.getPropertyPath().toString().contains(document.getPropertyKey()))
             .map(error -> String.format("Check document %d. %s", document.getInterfaceDisplayOrder(),
