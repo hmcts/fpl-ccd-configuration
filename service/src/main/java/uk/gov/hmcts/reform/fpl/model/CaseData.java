@@ -172,8 +172,10 @@ public class CaseData {
     private final Hearing hearing;
     private final HearingPreferences hearingPreferences;
     private final InternationalElement internationalElement;
+
     @JsonProperty("documents_socialWorkOther")
     private final List<Element<DocumentSocialWorkOther>> otherSocialWorkDocuments;
+
     @JsonProperty("documents_socialWorkCarePlan_document")
     @NotNull(message = "Add social work documents, or details of when you'll send them")
     @Valid
