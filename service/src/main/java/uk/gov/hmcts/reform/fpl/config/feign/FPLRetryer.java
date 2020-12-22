@@ -3,10 +3,8 @@ package uk.gov.hmcts.reform.fpl.config.feign;
 import feign.RetryableException;
 import feign.Retryer;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 @Slf4j
-@Component
 public class FPLRetryer extends Retryer.Default {
 
     int attempt;
