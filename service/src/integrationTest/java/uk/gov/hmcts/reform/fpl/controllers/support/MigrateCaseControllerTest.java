@@ -4,6 +4,8 @@ import com.google.common.collect.Maps;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -12,17 +14,15 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractControllerTest;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Month;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +35,9 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.TO_FOLLOW;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(MigrateCaseController.class)
@@ -193,18 +195,111 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
             caseDetails.getData().put("migrationId", migrationId);
             return caseDetails;
         }
+    }
 
-        private Element<HearingBooking> buildHearing(int year, Month month, int day, HearingType type) {
-            return buildHearing(LocalDate.of(year, month, day), type);
+    @Nested
+    class Fpla2544 {
+        String familyManCaseNumber = "PO20C50030";
+        String migrationId = "FPLA-2544";
+
+        @Test
+        void shouldChangeCaseStatusAndPrePopulateSDODirections() {
+            CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, SUBMITTED);
+
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getState()).isEqualTo(State.GATEKEEPING);
+            assertThat(extractedCaseData.getAllParties()).hasSize(5);
+            assertThat(extractedCaseData.getAllPartiesCustom()).isNull();
+            assertThat(extractedCaseData.getLocalAuthorityDirections()).hasSize(7);
+            assertThat(extractedCaseData.getLocalAuthorityDirectionsCustom()).isNull();
+            assertThat(extractedCaseData.getCourtDirections()).hasSize(1);
+            assertThat(extractedCaseData.getCourtDirectionsCustom()).isNull();
+            assertThat(extractedCaseData.getCafcassDirections()).hasSize(3);
+            assertThat(extractedCaseData.getCafcassDirectionsCustom()).isNull();
+            assertThat(extractedCaseData.getOtherPartiesDirections()).hasSize(1);
+            assertThat(extractedCaseData.getOtherPartiesDirectionsCustom()).isNull();
+            assertThat(extractedCaseData.getRespondentDirections()).hasSize(1);
+            assertThat(extractedCaseData.getRespondentDirectionsCustom()).isNull();
         }
 
-        private Element<HearingBooking> buildHearing(LocalDate date, HearingType type) {
-            return ElementUtils.element(HearingBooking.builder()
-                .startDate(LocalDateTime.of(date, LocalTime.now()))
-                .type(type)
+        @Test
+        void shouldNotChangeCaseIfNotExpectedFamilyManNumber() {
+            familyManCaseNumber = "something different";
+
+            CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, SUBMITTED);
+
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertDirectionsUnchanged(caseDetails, extractedCaseData);
+        }
+
+        @Test
+        void shouldNotChangeCaseIfNotExpectedMigrationId() {
+            migrationId = "something different";
+
+            CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, SUBMITTED);
+
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertDirectionsUnchanged(caseDetails, extractedCaseData);
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = State.class, names = {"SUBMITTED"}, mode = EnumSource.Mode.EXCLUDE)
+        void shouldThrowExceptionIfUnexpectedCaseState(State state) {
+            CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, state);
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage(String.format("Case is in %s state, expected SUBMITTED", state));
+        }
+
+        private CaseDetails caseDetails(String familyManCaseNumber, String migrationId, State state) {
+            CaseDetails caseDetails = asCaseDetails(CaseData.builder()
+                .familyManCaseNumber(familyManCaseNumber)
+                .hearingDetails(wrapElements(HearingBooking.builder()
+                    .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                        .judgeLastName("Smith")
+                        .judgeEmailAddress("judge@test.com")
+                        .build())
+                    .build()))
+                .state(state)
                 .build());
+            caseDetails.getData().put("migrationId", migrationId);
+            return caseDetails;
+        }
+
+        private void assertDirectionsUnchanged(CaseDetails caseDetails, CaseData updatedCaseData) {
+            CaseData caseData = mapper.convertValue(caseDetails, CaseData.class);
+
+            assertThat(updatedCaseData.getAllParties())
+                .isEqualTo(caseData.getAllParties());
+            assertThat(updatedCaseData.getAllPartiesCustom())
+                .isEqualTo(caseData.getAllPartiesCustom());
+            assertThat(updatedCaseData.getLocalAuthorityDirections())
+                .isEqualTo(caseData.getLocalAuthorityDirections());
+            assertThat(updatedCaseData.getLocalAuthorityDirectionsCustom())
+                .isEqualTo(caseData.getLocalAuthorityDirectionsCustom());
+            assertThat(updatedCaseData.getCourtDirections())
+                .isEqualTo(caseData.getCourtDirections());
+            assertThat(updatedCaseData.getCourtDirectionsCustom())
+                .isEqualTo(caseData.getCourtDirectionsCustom());
+            assertThat(updatedCaseData.getCafcassDirections())
+                .isEqualTo(caseData.getCafcassDirections());
+            assertThat(updatedCaseData.getCafcassDirectionsCustom())
+                .isEqualTo(caseData.getCafcassDirectionsCustom());
+            assertThat(updatedCaseData.getOtherPartiesDirections())
+                .isEqualTo(caseData.getOtherPartiesDirections());
+            assertThat(updatedCaseData.getOtherPartiesDirectionsCustom())
+                .isEqualTo(caseData.getOtherPartiesDirectionsCustom());
+            assertThat(updatedCaseData.getRespondentDirections())
+                .isEqualTo(caseData.getRespondentDirections());
+            assertThat(updatedCaseData.getRespondentDirectionsCustom())
+                .isEqualTo(caseData.getRespondentDirectionsCustom());
         }
     }
+
 
     @Nested
     class Fpla2379 {
