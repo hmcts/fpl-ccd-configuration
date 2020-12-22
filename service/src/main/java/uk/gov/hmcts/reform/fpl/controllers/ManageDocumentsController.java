@@ -78,6 +78,9 @@ public class ManageDocumentsController extends CallbackController {
                     caseData.getCorrespondenceDocuments());
                 break;
             case C2:
+                if (!caseData.hasC2DocumentBundle()) {
+                    return respond(caseDetails, List.of("There are no C2s to associate supporting documents with"));
+                }
                 caseDetails.getData().putAll(manageDocumentService.initialiseC2DocumentListAndLabel(caseData));
                 supportingEvidence = manageDocumentService.getC2SupportingEvidenceBundle(caseData);
                 break;
