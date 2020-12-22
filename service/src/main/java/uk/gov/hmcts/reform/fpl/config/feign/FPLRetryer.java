@@ -20,7 +20,7 @@ public class FPLRetryer extends Retryer.Default {
 
     @Override
     public void continueOrPropagate(RetryableException e) {
-        log.info("Feign retry attempt {} due to {} ", attempt++, e.getCause().getMessage());
+        log.warn("Feign retry attempt {} due to {} ", attempt++, e.getCause().getMessage());
         super.continueOrPropagate(e);
     }
 

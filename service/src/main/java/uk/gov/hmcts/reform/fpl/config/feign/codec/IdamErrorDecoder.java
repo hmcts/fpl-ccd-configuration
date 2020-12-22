@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.config.feign.errordecoder;
+package uk.gov.hmcts.reform.fpl.config.feign.codec;
 
 import feign.Response;
 import feign.RetryableException;

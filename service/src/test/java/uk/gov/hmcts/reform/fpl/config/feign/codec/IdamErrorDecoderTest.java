@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.config.feign.errordecoder;
+package uk.gov.hmcts.reform.fpl.config.feign.codec;
 
 import feign.Request;
 import feign.Response;
@@ -19,17 +19,18 @@ import static org.mockito.Mockito.when;
 
 class IdamErrorDecoderTest {
 
-    private static final String EMPTY_METHOD_KEY = "";
-
     private static final Request REQUEST = Request.create(GET, EMPTY, Map.of(), new byte[] {}, UTF_8, null);
-    private static final Exception NON_RETRYABLE_EXCEPTION = new Exception();
-    private static final Exception RETRYABLE_EXCEPTION = new RetryableException(500, "", null, null, REQUEST);
     private static final Map<String, Collection<String>> EMPTY_HEADERS = Map.of();
     private static final String EMPTY_REASON = "";
     private static final byte[] EMPTY_BODY = new byte[0];
 
     private static final int STATUS_5XX = 500;
     private static final int STATUS_NOT_5XX = 404;
+
+    private static final Exception NON_RETRYABLE_EXCEPTION = new Exception();
+    private static final Exception RETRYABLE_EXCEPTION = new RetryableException(500, "", null, null, REQUEST);
+
+    private static final String EMPTY_METHOD_KEY = "";
 
     private ErrorDecoder defaultDecoder;
     private IdamErrorDecoder idamErrorDecoder;
@@ -47,7 +48,7 @@ class IdamErrorDecoderTest {
 
         Exception decodedException = idamErrorDecoder.decode(EMPTY_METHOD_KEY, response);
 
-        assertThat(decodedException).isEqualTo(RETRYABLE_EXCEPTION);
+        assertThat(decodedException).isSameAs(RETRYABLE_EXCEPTION);
     }
 
     @Test
@@ -64,13 +65,13 @@ class IdamErrorDecoderTest {
     }
 
     @Test
-    void shouldReturnNullForOtherResponseStatuses() {
+    void shouldReturnOriginalExceptionForOtherResponseStatuses() {
         Response response = response(STATUS_NOT_5XX);
         mockDecoder(response, NON_RETRYABLE_EXCEPTION);
 
         Exception decodedException = idamErrorDecoder.decode(EMPTY_METHOD_KEY, response);
 
-        assertThat(decodedException).isNull();
+        assertThat(decodedException).isSameAs(NON_RETRYABLE_EXCEPTION);
     }
 
     private Response response(int status) {
