@@ -13,7 +13,11 @@ import uk.gov.hmcts.reform.rd.model.Status;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi.SERVICE_AUTHORIZATION;
 
-@FeignClient(name = "rd-professional-api", url = "${rd_professional.api.url}", configuration = FeignClientConfiguration.class)
+@FeignClient(
+    name = "rd-professional-api",
+    url = "${rd_professional.api.url}",
+    configuration = FeignClientConfiguration.class
+)
 public interface OrganisationApi {
     @GetMapping("/refdata/external/v1/organisations/users")
     OrganisationUsers findUsersInOrganisation(

@@ -12,7 +12,7 @@ public class FeignClientConfiguration {
 
     @Bean
     public Retryer retryer() {
-        return new Retryer.Default(200, 2000, 5);
+        return new FPLRetryer(200, 2000, 5);
     }
 
     @Bean
