@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.config;
+package uk.gov.hmcts.reform.fpl.config.feign;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Retryer;
@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 
 // removed @Configuration so beans are not globally discoverable
-public class FeignConfiguration {
+public class FeignClientConfiguration {
 
     @Bean
     public Retryer retryer() {
