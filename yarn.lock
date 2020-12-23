@@ -443,10 +443,10 @@ cliui@^5.0.0:
     strip-ansi "^5.2.0"
     wrap-ansi "^5.1.0"
 
-codeceptjs@3.0.3:
-  version "3.0.3"
-  resolved "https://registry.yarnpkg.com/codeceptjs/-/codeceptjs-3.0.3.tgz#95cb69d0597f4be2b8bb94761d55c4d9d14f3dad"
-  integrity sha512-htLLKPovUysW8Rd6khfNFe4nPvK89OL2tCmtAsitgLKPBFrB7Ru2JFGDn47rgCrEvFphovOX1wf/+Pjer1Xfcw==
+codeceptjs@3.0.4:
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/codeceptjs/-/codeceptjs-3.0.4.tgz#53a6265d6bc266454764ed9e69fc2b00c35f2ae7"
+  integrity sha512-qSZuvkyDVpYEf5bkJ0gbP5UfK0EG3uD9JaEU95Kq5a5jh4RQZ/pE4YpafhFJphEKvW/2ozTYpFLQ+ak9O/4+Gw==
   dependencies:
     "@codeceptjs/configure" "^0.6.2"
     "@codeceptjs/helper" "^1.0.1"
@@ -456,6 +456,7 @@ codeceptjs@3.0.3:
     axios "^0.19.1"
     chalk "^4.1.0"
     commander "^2.20.3"
+    cross-spawn "^7.0.3"
     css-to-xpath "^0.1.0"
     cucumber-expressions "^6.6.2"
     envinfo "^7.5.1"
@@ -549,10 +550,10 @@ cross-spawn@^6.0.0:
     shebang-command "^1.2.0"
     which "^1.2.9"
 
-cross-spawn@^7.0.2:
-  version "7.0.2"
-  resolved "https://registry.yarnpkg.com/cross-spawn/-/cross-spawn-7.0.2.tgz#d0d7dcfa74e89115c7619f4f721a94e1fdb716d6"
-  integrity sha512-PD6G8QG3S4FK/XCGFbEQrDqO2AnMMsy0meR7lerlIOHAAbkuavGU/pOqprrlvfTNjvowivTeBsjebAL0NSoMxw==
+cross-spawn@^7.0.2, cross-spawn@^7.0.3:
+  version "7.0.3"
+  resolved "https://registry.yarnpkg.com/cross-spawn/-/cross-spawn-7.0.3.tgz#f73a85b9d5d41d045551c177e2882d4ac85728a6"
+  integrity sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==
   dependencies:
     path-key "^3.1.0"
     shebang-command "^2.0.0"
