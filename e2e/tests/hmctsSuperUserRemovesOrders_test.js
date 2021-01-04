@@ -60,7 +60,7 @@ Scenario('HMCTS super user removes a sdo from a case', async ({I, caseViewPage, 
   await caseViewPage.goToNewActions(config.superUserActions.removeOrder);
 
   let order = finalHearingCaseData.caseData.standardDirectionOrder;
-  const labelToSelect = 'Gatekeeping order - ' + moment(order.dateOfIssue).format('D MMMM YYYY');
+  const labelToSelect = `Gatekeeping order - ${moment(order.dateOfIssue, 'DDMMMMY').format('D MMMM YYYY')}`;
   removeOrderEventPage.selectOrderToRemove(labelToSelect);
   await I.goToNextPage();
   removeOrderEventPage.addRemoveOrderReason('Entered incorrect order');

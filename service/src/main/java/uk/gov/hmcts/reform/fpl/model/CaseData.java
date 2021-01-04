@@ -45,6 +45,7 @@ import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.HearingEndDateGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.MigrateStateGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.SealedSDOGroup;
@@ -55,6 +56,7 @@ import uk.gov.hmcts.reform.fpl.validation.interfaces.HasDocumentsIncludedInSwet;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.IsStateMigratable;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.IsValidHearingEdit;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.EPOTimeRange;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.time.HasHearingEndDateAfterStartDate;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeDifference;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeNotMidnight;
 
@@ -62,6 +64,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -96,6 +99,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @HasDocumentsIncludedInSwet(groups = UploadDocumentsGroup.class)
 @IsStateMigratable(groups = MigrateStateGroup.class)
 @IsValidHearingEdit(groups = HearingBookingGroup.class)
+@HasHearingEndDateAfterStartDate(message = "The end date and time must be after the start date and time",
+    groups = HearingEndDateGroup.class)
 @EPOTimeRange(message = "Date must be within 8 days of the order date", groups = EPOEndDateGroup.class,
     maxDate = @TimeDifference(amount = 8, unit = DAYS))
 public class CaseData {
@@ -167,8 +172,10 @@ public class CaseData {
     private final Hearing hearing;
     private final HearingPreferences hearingPreferences;
     private final InternationalElement internationalElement;
+
     @JsonProperty("documents_socialWorkOther")
     private final List<Element<DocumentSocialWorkOther>> otherSocialWorkDocuments;
+
     @JsonProperty("documents_socialWorkCarePlan_document")
     @NotNull(message = "Add social work documents, or details of when you'll send them")
     @Valid
@@ -493,11 +500,13 @@ public class CaseData {
         return allocatedJudgeExists() && isNotEmpty(allocatedJudge.getJudgeEmailAddress());
     }
 
+    @JsonIgnore
     public Optional<HearingBooking> getFirstHearing() {
         return unwrapElements(hearingDetails).stream()
             .min(comparing(HearingBooking::getStartDate));
     }
 
+    @JsonIgnore
     public HearingBooking getMostUrgentHearingBookingAfter(LocalDateTime time) {
         return unwrapElements(hearingDetails).stream()
             .filter(hearingBooking -> hearingBooking.getStartDate().isAfter(time))
@@ -552,6 +561,13 @@ public class CaseData {
     }
 
     @JsonIgnore
+    public List<Element<HearingBooking>> getAllHearings() {
+        return Stream.of(defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()),
+            defaultIfNull(cancelledHearingDetails, new ArrayList<Element<HearingBooking>>()))
+            .flatMap(Collection::stream).collect(toList());
+    }
+
+    @JsonIgnore
     public List<Element<HearingBooking>> getPastHearings() {
         return defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()).stream()
             .filter(hearingBooking -> !hearingBooking.getValue().startsAfterToday())
@@ -597,7 +613,7 @@ public class CaseData {
 
     @JsonIgnore
     public Optional<HearingBooking> getNextHearingAfterCmo(UUID cmoID) {
-        LocalDateTime currentCmoStartDate = unwrapElements(hearingDetails).stream()
+        LocalDateTime currentCmoStartDate = unwrapElements(getAllHearings()).stream()
             .filter(hearingBooking -> cmoID.equals(hearingBooking.getCaseManagementOrderId()))
             .map(HearingBooking::getStartDate)
             .findAny()
