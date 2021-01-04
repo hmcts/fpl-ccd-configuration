@@ -106,6 +106,18 @@ withPipeline(type, product, component) {
     sh """ git submodule update --init """
   }
 
+  before('test') {
+    withSubscription('nonprod') {
+      withTeamSecrets(pipelineConf, 'aat') {
+        env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY = ${INTEGRATION_TEST_NOTIFY_SERVICE_KEY}
+      }
+    }
+  }
+
+  after('test') {
+    env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY = ''
+  }
+
   before('smoketest:saat') {
     env.URL = "https://ccd-case-management-web-saat.service.core-compute-saat.internal"
     archiveCoreCaseDataDefinitions('saat')
