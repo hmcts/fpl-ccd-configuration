@@ -18,12 +18,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.lang.Integer.parseInt;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.Directions.getAssigneeToDirectionMapping;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -35,12 +37,7 @@ public class StandardDirectionsService {
     private final OrdersLookupService ordersLookupService;
 
     public List<Element<Direction>> getDirections(HearingBooking hearingBooking) {
-        LocalDateTime hearingStartDate = ofNullable(hearingBooking).map(HearingBooking::getStartDate).orElse(null);
-
-        return ordersLookupService.getStandardDirectionOrder().getDirections()
-            .stream()
-            .map(configuration -> constructDirectionForCCD(hearingStartDate, configuration))
-            .collect(toList());
+        return getDirections(Optional.ofNullable(hearingBooking));
     }
 
     public boolean hasEmptyDates(CaseData caseData) {
@@ -57,8 +54,19 @@ public class StandardDirectionsService {
     }
 
     public Map<String, List<Element<Direction>>> populateStandardDirections(CaseData caseData) {
-        return getAssigneeToDirectionMapping(getDirections(caseData.getFirstHearing().orElse(null)))
-            .entrySet().stream().collect(toMap(pair -> pair.getKey().getValue(), Map.Entry::getValue));
+        List<Element<Direction>> directions = getDirections(caseData.getFirstHearingOfType(CASE_MANAGEMENT));
+
+        return getAssigneeToDirectionMapping(directions).entrySet().stream()
+            .collect(toMap(pair -> pair.getKey().getValue(), Map.Entry::getValue));
+    }
+
+    private List<Element<Direction>> getDirections(Optional<HearingBooking> hearingBooking) {
+        LocalDateTime hearingStartDate = hearingBooking.map(HearingBooking::getStartDate).orElse(null);
+
+        return ordersLookupService.getStandardDirectionOrder().getDirections()
+            .stream()
+            .map(configuration -> constructDirectionForCCD(hearingStartDate, configuration))
+            .collect(toList());
     }
 
     private Element<Direction> constructDirectionForCCD(LocalDateTime hearingDate, DirectionConfiguration direction) {

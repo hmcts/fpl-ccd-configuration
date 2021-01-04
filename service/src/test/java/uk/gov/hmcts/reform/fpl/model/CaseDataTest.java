@@ -2,6 +2,9 @@ package uk.gov.hmcts.reform.fpl.model;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -20,6 +23,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static java.time.LocalDateTime.now;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -32,6 +36,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTE
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -379,10 +384,10 @@ class CaseDataTest {
         @Test
         void shouldGetAllHearings() {
             Element<HearingBooking> hearing = element(HearingBooking.builder()
-                .startDate(LocalDateTime.now())
+                .startDate(now())
                 .build());
             Element<HearingBooking> adjournedHearing = element(HearingBooking.builder()
-                .startDate(LocalDateTime.now())
+                .startDate(now())
                 .status(ADJOURNED)
                 .build());
 
@@ -638,16 +643,16 @@ class CaseDataTest {
         @Test
         void shouldReturnPastAndTodayHearingBookings() {
             Element<HearingBooking> todayHearingBooking = element(HearingBooking.builder()
-                .startDate(LocalDateTime.now())
+                .startDate(now())
                 .build());
             Element<HearingBooking> todayLateHearingBooking = element(HearingBooking.builder()
                 .startDate(LocalDate.now().plusDays(1).atStartOfDay().minusMinutes(1))
                 .build());
             Element<HearingBooking> pastHearingBooking = element(HearingBooking.builder()
-                .startDate(LocalDateTime.now().minusDays(1))
+                .startDate(now().minusDays(1))
                 .build());
             Element<HearingBooking> futureHearingBooking = element(HearingBooking.builder()
-                .startDate(LocalDateTime.now().plusDays(1))
+                .startDate(now().plusDays(1))
                 .build());
 
             CaseData caseData = CaseData.builder()
@@ -665,7 +670,7 @@ class CaseDataTest {
         @Test
         void shouldReturnEmptyListWhenNoPastOrTodayHearingBookings() {
             Element<HearingBooking> futureHearingBooking = element(HearingBooking.builder()
-                .startDate(LocalDateTime.now().plusDays(1))
+                .startDate(now().plusDays(1))
                 .build());
 
             CaseData caseData = CaseData.builder()
@@ -689,16 +694,16 @@ class CaseDataTest {
         @Test
         void shouldReturnFutureAndTodayHearingBookings() {
             Element<HearingBooking> todayHearingBooking = element(HearingBooking.builder()
-                .startDate(LocalDateTime.now())
+                .startDate(now())
                 .build());
             Element<HearingBooking> todayLateHearingBooking = element(HearingBooking.builder()
                 .startDate(LocalDate.now().plusDays(1).atStartOfDay().minusMinutes(1))
                 .build());
             Element<HearingBooking> pastHearingBooking = element(HearingBooking.builder()
-                .startDate(LocalDateTime.now().minusDays(1))
+                .startDate(now().minusDays(1))
                 .build());
             Element<HearingBooking> futureHearingBooking = element(HearingBooking.builder()
-                .startDate(LocalDateTime.now().plusDays(1))
+                .startDate(now().plusDays(1))
                 .build());
 
             CaseData caseData = CaseData.builder()
@@ -716,7 +721,7 @@ class CaseDataTest {
         @Test
         void shouldReturnEmptyListWhenNoFutureOrTodayHearingBookings() {
             Element<HearingBooking> pastHearingBooking = element(HearingBooking.builder()
-                .startDate(LocalDateTime.now().minusDays(1))
+                .startDate(now().minusDays(1))
                 .build());
 
             CaseData caseData = CaseData.builder()
@@ -801,7 +806,7 @@ class CaseDataTest {
         @Test
         void shouldAddFirstHearingBooking() {
             Element<HearingBooking> firstHearingBooking = element(HearingBooking.builder()
-                .startDate(LocalDateTime.now().plusDays(1))
+                .startDate(now().plusDays(1))
                 .build());
 
             CaseData caseData = CaseData.builder().build();
@@ -814,11 +819,11 @@ class CaseDataTest {
         @Test
         void shouldAddNewHearingBooking() {
             Element<HearingBooking> existingHearingBooking = element(HearingBooking.builder()
-                .startDate(LocalDateTime.now())
+                .startDate(now())
                 .build());
 
             Element<HearingBooking> newHearingBooking = element(HearingBooking.builder()
-                .startDate(LocalDateTime.now().plusDays(1))
+                .startDate(now().plusDays(1))
                 .build());
 
             CaseData caseData = CaseData.builder()
@@ -851,12 +856,12 @@ class CaseDataTest {
         @Test
         void shouldAddNewAdjournedHearingBooking() {
             Element<HearingBooking> existingAdjournedHearingBooking = element(HearingBooking.builder()
-                .startDate(LocalDateTime.now().minusDays(1))
+                .startDate(now().minusDays(1))
                 .status(ADJOURNED)
                 .build());
 
             Element<HearingBooking> newAdjournedHearingBooking = element(HearingBooking.builder()
-                .startDate(LocalDateTime.now().plusDays(1))
+                .startDate(now().plusDays(1))
                 .build());
 
             CaseData caseData = CaseData.builder()
@@ -949,6 +954,55 @@ class CaseDataTest {
                 )).build();
 
             assertThat(caseData.getHearingLinkedToCMO(hearingId)).isNotPresent();
+        }
+    }
+
+    @Nested
+    class GetFirstHearingOfType {
+
+        @Test
+        void shouldReturnFirstHearingOfGivenType() {
+            HearingBooking otherHearing = hearingBooking(OTHER, now().plusDays(1));
+            HearingBooking caseManagementHearing = hearingBooking(CASE_MANAGEMENT, now());
+            HearingBooking laterCaseManagementHearing = hearingBooking(CASE_MANAGEMENT, now().plusDays(3));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(wrapElements(otherHearing, laterCaseManagementHearing, caseManagementHearing))
+                .build();
+
+            Optional<HearingBooking> foundHearing = caseData.getFirstHearingOfType(CASE_MANAGEMENT);
+
+            assertThat(foundHearing).contains(caseManagementHearing);
+        }
+
+        @Test
+        void shouldReturnEmptyOptionalWhenTypeIsNotInPopulatedList() {
+            HearingBooking caseManagementHearing = hearingBooking(CASE_MANAGEMENT, now());
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(wrapElements(caseManagementHearing))
+                .build();
+
+            Optional<HearingBooking> foundHearing = caseData.getFirstHearingOfType(OTHER);
+
+            assertThat(foundHearing).isNotPresent();
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnEmptyOptional(List<Element<HearingBooking>> hearingBookings) {
+            CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
+
+            Optional<HearingBooking> foundHearing = caseData.getFirstHearingOfType(CASE_MANAGEMENT);
+
+            assertThat(foundHearing).isNotPresent();
+        }
+
+        private HearingBooking hearingBooking(HearingType type, LocalDateTime startDate) {
+            return HearingBooking.builder()
+                .type(type)
+                .startDate(startDate)
+                .build();
         }
     }
 

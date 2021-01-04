@@ -507,6 +507,13 @@ public class CaseData {
     }
 
     @JsonIgnore
+    public Optional<HearingBooking> getFirstHearingOfType(HearingType type) {
+        return unwrapElements(hearingDetails).stream()
+            .filter(hearingBooking -> hearingBooking.isOfType(type))
+            .min(comparing(HearingBooking::getStartDate));
+    }
+
+    @JsonIgnore
     public HearingBooking getMostUrgentHearingBookingAfter(LocalDateTime time) {
         return unwrapElements(hearingDetails).stream()
             .filter(hearingBooking -> hearingBooking.getStartDate().isAfter(time))
