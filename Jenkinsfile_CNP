@@ -76,6 +76,19 @@ def uploadCoreCaseDataDefinitions(env) {
   }
 }
 
+def setupSecretsForIntegrationTests(pipelineConf) {
+  withSubscription('nonprod') {
+    withTeamSecrets(pipelineConf, 'aat') {
+      /* Setup Email template integration tests key with gov.notify */
+      env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY = "${INTEGRATION_TEST_NOTIFY_SERVICE_KEY}"
+    }
+  }
+}
+
+def teardownSecretsForIntegrationTests() {
+  env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY = ''
+}
+
 withPipeline(type, product, component) {
   pipelineConf = config;
 
@@ -107,15 +120,11 @@ withPipeline(type, product, component) {
   }
 
   before('test') {
-    withSubscription('nonprod') {
-      withTeamSecrets(pipelineConf, 'aat') {
-//        env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY = "${INTEGRATION_TEST_NOTIFY_SERVICE_KEY}"
-      }
-    }
+    setupSecretsForIntegrationTests(pipelineConf)
   }
 
   after('test') {
-    env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY = ''
+    teardownSecretsForIntegrationTests()
   }
 
   before('smoketest:saat') {
