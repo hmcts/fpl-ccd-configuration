@@ -21,7 +21,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 @ActiveProfiles("integration-test")
 @WebMvcTest(UploadDocumentsController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class UploadDocumentsControllerTest extends AbstractControllerTest {
+class UploadDocumentsControllerTest extends AbstractControllerTest {
 
     @MockBean
     private UploadDocumentsService uploadDocumentsService;
@@ -44,12 +44,12 @@ public class UploadDocumentsControllerTest extends AbstractControllerTest {
         CaseDetails caseDetails = createCaseDetails();
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 
-        assertThat(callbackResponse.getErrors()).hasSize(4);
-        assertThat(callbackResponse.getErrors()).containsOnlyOnce(
+        assertThat(callbackResponse.getErrors()).containsExactly(
+            "You must give additional document 1 a name.",
+            "You must upload a file for additional document 1.",
             "Check document 1. Attach the document or change the status from 'Attached'.",
             "Check document 3. Attach the SWET or change the status from 'Included in SWET'.",
-            "Check document 5. Attach the document or change the status from 'Attached'.",
-            "You must give additional document 1 a name.");
+            "Check document 5. Attach the document or change the status from 'Attached'.");
     }
 
     private CaseDetails createCaseDetails() {
