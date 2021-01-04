@@ -109,7 +109,7 @@ withPipeline(type, product, component) {
   before('test') {
     withSubscription('nonprod') {
       withTeamSecrets(pipelineConf, 'aat') {
-        env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY = "${INTEGRATION_TEST_NOTIFY_SERVICE_KEY}"
+//        env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY = "${INTEGRATION_TEST_NOTIFY_SERVICE_KEY}"
       }
     }
   }
