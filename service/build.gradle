@@ -219,7 +219,7 @@ dependencies {
 
   compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.2.1'
 
-  implementation group: 'io.github.openfeign', name: 'feign-core', version: '10.9'
+  implementation group: 'io.github.openfeign', name: 'feign-core', version: '10.12'
 
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.18'
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.3.2'
