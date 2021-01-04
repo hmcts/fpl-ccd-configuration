@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.apache.logging.log4j.util.Strings.isBlank;
+import static org.apache.logging.log4j.util.Strings.isNotBlank;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @Data
@@ -40,7 +40,7 @@ public class JudicialMessage extends JudicialMessageMetaData {
             labels.add("C2");
         }
 
-        if (getUrgency() != null && !isBlank(getUrgency().trim())) {
+        if (isNotBlank(getUrgency())) {
             labels.add(getUrgency());
         }
 
