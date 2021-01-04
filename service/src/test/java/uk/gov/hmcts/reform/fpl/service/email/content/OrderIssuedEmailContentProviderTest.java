@@ -7,7 +7,6 @@ import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
@@ -46,8 +45,6 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
 
     @Autowired
     private OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
-
-    private static final DocumentReference testDocument = DocumentReference.builder().binaryUrl("/testUrl").build();
 
     @Test
     void shouldBuildGeneratedOrderParametersWithCaseUrl() {

@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -24,6 +25,11 @@ public abstract class AbstractEmailContentProviderTest {
     static final String CASE_REFERENCE = "12345";
     static final String UI_URL = "http://fake-url";
     static final String COURT_NAME = "Family Court";
+    static final DocumentReference testDocument = DocumentReference.builder()
+        .url("url")
+        .binaryUrl("/testUrl")
+        .build();
+    static final String DOC_URL = "http://fake-url/testUrl";
 
     protected String caseUrl(String caseId) {
         return formatCaseUrl(UI_URL, Long.valueOf(caseId));
