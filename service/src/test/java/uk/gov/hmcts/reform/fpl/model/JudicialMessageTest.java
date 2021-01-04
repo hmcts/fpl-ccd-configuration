@@ -42,6 +42,16 @@ class JudicialMessageTest {
     }
 
     @Test
+    void shouldBuildJudicialMessageLabelWithoutUrgencyIfUrgencyIsBlankString() {
+        JudicialMessage judicialMessage = JudicialMessage.builder()
+            .urgency(" ")
+            .dateSent(DATE_SENT)
+            .build();
+
+        assertThat(judicialMessage.toLabel()).isEqualTo(String.format("%s", DATE_SENT));
+    }
+
+    @Test
     void shouldBuildJudicialMessageLabelWithOnlyDateSent() {
         JudicialMessage judicialMessage = JudicialMessage.builder()
             .dateSent(DATE_SENT)
