@@ -3,8 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
-import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -312,17 +310,7 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
     }
 
     private void givenPRDWillReturn(List<String> userIds) {
-        givenPRDWillAnswer(invocation -> organisation(userIds));
-    }
-
-    private void givenPRDWillAnswer(Answer<?>... answers) {
-        BDDMockito.BDDMyOngoingStubbing<OrganisationUsers> stub = given(organisationApi.findUsersInOrganisation(
-            USER_AUTH_TOKEN,
-            SERVICE_AUTH_TOKEN,
-            Status.ACTIVE,
-            false));
-        for (Answer<?> answer : answers) {
-            stub = stub.willAnswer(answer);
-        }
+        given(organisationApi.findUsersInOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN,
+                                                    Status.ACTIVE, false)).willReturn(organisation(userIds));
     }
 }
