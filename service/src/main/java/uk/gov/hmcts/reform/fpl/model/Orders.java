@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
+import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 
 import java.util.List;
@@ -25,4 +26,6 @@ public class Orders {
     private final String emergencyProtectionOrderDetails;
     private final String emergencyProtectionOrderDirectionDetails;
     private final String directionDetails;
+    private final EPOType epoType;
+    private final String excluded;
 }
