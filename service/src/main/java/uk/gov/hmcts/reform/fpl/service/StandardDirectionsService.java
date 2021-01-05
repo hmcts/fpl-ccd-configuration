@@ -36,10 +36,6 @@ public class StandardDirectionsService {
     private final CalendarService calendarService;
     private final OrdersLookupService ordersLookupService;
 
-    public List<Element<Direction>> getDirections(HearingBooking hearingBooking) {
-        return getDirections(Optional.ofNullable(hearingBooking));
-    }
-
     public boolean hasEmptyDates(CaseData caseData) {
         return Stream.of(caseData.getAllParties(),
             caseData.getLocalAuthorityDirections(),
@@ -58,6 +54,10 @@ public class StandardDirectionsService {
 
         return getAssigneeToDirectionMapping(directions).entrySet().stream()
             .collect(toMap(pair -> pair.getKey().getValue(), Map.Entry::getValue));
+    }
+
+    public List<Element<Direction>> getDirections(HearingBooking hearingBooking) {
+        return getDirections(Optional.ofNullable(hearingBooking));
     }
 
     private List<Element<Direction>> getDirections(Optional<HearingBooking> hearingBooking) {
