@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 
@@ -36,10 +35,6 @@ public class OrdersNeededController extends CallbackController {
         return respond(caseDetails, validateMidEventFields(caseData.getOrders()));
     }
 
-    private boolean orderContainsEPO(List<OrderType> orderTypes) {
-        return orderTypes.contains(EMERGENCY_PROTECTION_ORDER);
-    }
-
     private boolean orderDirectionsContainExclusion(Orders orders) {
         if(!isNull(orders.getEmergencyProtectionOrderDirections()) && orders.getEmergencyProtectionOrderDirections()
             .contains(EXCLUSION_REQUIREMENT)) {
@@ -50,10 +45,6 @@ public class OrdersNeededController extends CallbackController {
 
     public List<String> validateMidEventFields(Orders orders) {
         List<String> errors = new ArrayList<>();
-
-        if(orderContainsEPO(orders.getOrderType()) && isNull(orders.getEpoType())) {
-            errors.add("You need to enter an epo type");
-        }
 
         if(orderDirectionsContainExclusion(orders) && isNullOrEmpty(orders.getExcluded())) {
             errors.add("You need to add an exclusion");

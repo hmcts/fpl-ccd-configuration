@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsTy
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.HasEPOAddress;
 
 import java.util.List;
 import javax.validation.constraints.NotNull;
@@ -14,6 +15,7 @@ import javax.validation.constraints.Size;
 
 @Data
 @Builder(toBuilder = true)
+@HasEPOAddress
 @AllArgsConstructor
 public class Orders {
     @NotNull(message = "Select at least one type of order")
@@ -28,4 +30,5 @@ public class Orders {
     private final String directionDetails;
     private final EPOType epoType;
     private final String excluded;
+    private final Address address;
 }
