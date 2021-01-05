@@ -41,9 +41,9 @@ public class OrdersNeededController extends CallbackController {
     }
 
     private boolean orderDirectionsContainExclusion(Orders orders) {
-        if(!isNull(orders.getEmergencyProtectionOrderDirections())) {
-            System.out.println("Orders are" + orders.getEmergencyProtectionOrderDirections());
-            return orders.getEmergencyProtectionOrderDirections().contains(EXCLUSION_REQUIREMENT);
+        if(!isNull(orders.getEmergencyProtectionOrderDirections()) && orders.getEmergencyProtectionOrderDirections()
+            .contains(EXCLUSION_REQUIREMENT)) {
+            return true;
         }
         return false;
     }
