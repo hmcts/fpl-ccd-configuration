@@ -61,6 +61,7 @@ public class ManageHearingsController extends CallbackController {
     private static final String SELECTED_HEARING_ID = "selectedHearingId";
     private static final String CANCELLED_HEARING_DETAILS_KEY = "cancelledHearingDetails";
     private static final String HEARING_DOCUMENT_BUNDLE_KEY = "hearingFurtherEvidenceDocuments";
+    private static final String HAS_EDIT_HEARING_SESSION_KEY = "hasEditHearingSession";
 
     private final ValidateGroupService validateGroupService;
     private final StandardDirectionsService standardDirectionsService;
@@ -197,13 +198,13 @@ public class ManageHearingsController extends CallbackController {
         }
 
         if (featureToggleService.isAddHearingsInPastEnabled()) {
-            caseDetails.getData().putAll(hearingsService.populateFieldsWhenPastHearingDateAdded(caseData
-                    .getHearingStartDate(),
-                caseData.getHearingEndDate()));
+            caseDetails.getData().putAll(hearingsService.populateFieldsWhenPastHearingDateAdded(
+                caseData.getHearingStartDate(), caseData.getHearingEndDate()));
         }
 
-        return respond(caseDetails, errors);
+        caseDetails.getData().put(HAS_EDIT_HEARING_SESSION_KEY, YES.getValue());
 
+        return respond(caseDetails, errors);
     }
 
     @PostMapping("/hearing-in-past/mid-event")
