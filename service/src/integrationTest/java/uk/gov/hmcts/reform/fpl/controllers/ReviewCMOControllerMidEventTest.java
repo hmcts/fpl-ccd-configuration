@@ -5,12 +5,12 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.controllers.cmo.ReviewCMOController;
+import uk.gov.hmcts.reform.fpl.controllers.orders.ReviewCMOController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 
 import java.util.List;
 import java.util.Map;
@@ -36,7 +36,7 @@ class ReviewCMOControllerMidEventTest extends AbstractControllerTest {
         DocumentReference orderForSecondCMO = testDocumentReference();
         UUID firstDraftCMOId = UUID.randomUUID();
 
-        List<Element<CaseManagementOrder>> draftedCMOs = List.of(
+        List<Element<HearingOrder>> draftedCMOs = List.of(
             element(firstDraftCMOId, buildCMO(orderForFirstCMO, "Case management hearing 25th December 2020")),
             element(buildCMO(orderForSecondCMO, "Issue resolution hearing 1st January 2021"))
         );
@@ -59,8 +59,8 @@ class ReviewCMOControllerMidEventTest extends AbstractControllerTest {
 
     }
 
-    private static CaseManagementOrder buildCMO(DocumentReference order, String hearing) {
-        return CaseManagementOrder.builder()
+    private static HearingOrder buildCMO(DocumentReference order, String hearing) {
+        return HearingOrder.builder()
             .hearing(hearing)
             .order(order)
             .status(SEND_TO_JUDGE).build();

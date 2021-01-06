@@ -7,11 +7,15 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractControllerTest;
+import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,7 +37,10 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
     private final UUID orderTwoId = UUID.randomUUID();
     private final UUID hearingOneId = UUID.randomUUID();
     private final UUID hearingTwoId = UUID.randomUUID();
-    private final CaseManagementOrder cmo = CaseManagementOrder.builder().build();
+    private final HearingOrder cmo = HearingOrder.builder()
+        .type(HearingOrderType.AGREED_CMO)
+        .title("Agreed CMO discussed at hearing")
+        .build();
 
     @Nested
     class Fpla2637 {
@@ -42,12 +49,12 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
 
         @Test
         void shouldRemoveFirstDraftCaseManagementOrderAndUnlinkItsHearing() {
-            Element<CaseManagementOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
-            Element<CaseManagementOrder> additionalOrder = element(orderTwoId, cmo);
+            Element<HearingOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
+            Element<HearingOrder> additionalOrder = element(orderTwoId, cmo);
             Element<HearingBooking> hearingToBeRemoved = element(hearingOneId, hearing(orderToBeRemovedId));
             Element<HearingBooking> additionalHearing = element(hearingTwoId, hearing(orderTwoId));
 
-            List<Element<CaseManagementOrder>> draftCaseManagementOrders = newArrayList(
+            List<Element<HearingOrder>> draftCaseManagementOrders = newArrayList(
                 orderToBeRemoved,
                 additionalOrder);
 
@@ -68,12 +75,12 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
         void shouldNotChangeCaseIfNotExpectedMigrationId() {
             String incorrectMigrationId = "FPLA-1111";
 
-            Element<CaseManagementOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
-            Element<CaseManagementOrder> additionalOrder = element(orderTwoId, cmo);
+            Element<HearingOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
+            Element<HearingOrder> additionalOrder = element(orderTwoId, cmo);
             Element<HearingBooking> hearingToBeRemoved = element(hearingOneId, hearing(orderToBeRemovedId));
             Element<HearingBooking> additionalHearing = element(hearingTwoId, hearing(orderTwoId));
 
-            List<Element<CaseManagementOrder>> draftCaseManagementOrders = newArrayList(
+            List<Element<HearingOrder>> draftCaseManagementOrders = newArrayList(
                 orderToBeRemoved,
                 additionalOrder);
 
@@ -92,12 +99,12 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
         void shouldNotChangeCaseIfNotExpectedCaseNumber() {
             String incorrectFamilyManNumber = "LE30C500231";
 
-            Element<CaseManagementOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
-            Element<CaseManagementOrder> additionalOrder = element(orderTwoId, cmo);
+            Element<HearingOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
+            Element<HearingOrder> additionalOrder = element(orderTwoId, cmo);
             Element<HearingBooking> hearingToBeRemoved = element(hearingOneId, hearing(orderToBeRemovedId));
             Element<HearingBooking> additionalHearing = element(hearingTwoId, hearing(orderTwoId));
 
-            List<Element<CaseManagementOrder>> draftCaseManagementOrders = newArrayList(
+            List<Element<HearingOrder>> draftCaseManagementOrders = newArrayList(
                 orderToBeRemoved,
                 additionalOrder);
 
@@ -132,12 +139,12 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
 
         @Test
         void shouldRemoveFirstDraftCaseManagementOrderAndUnlinkItsHearing() {
-            Element<CaseManagementOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
-            Element<CaseManagementOrder> additionalOrder = element(orderTwoId, cmo);
+            Element<HearingOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
+            Element<HearingOrder> additionalOrder = element(orderTwoId, cmo);
             Element<HearingBooking> hearingToBeRemoved = element(hearingOneId, hearing(orderToBeRemovedId));
             Element<HearingBooking> additionalHearing = element(hearingTwoId, hearing(orderTwoId));
 
-            List<Element<CaseManagementOrder>> draftCaseManagementOrders = newArrayList(
+            List<Element<HearingOrder>> draftCaseManagementOrders = newArrayList(
                 orderToBeRemoved,
                 additionalOrder);
 
@@ -158,12 +165,12 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
         void shouldNotChangeCaseIfNotExpectedMigrationId() {
             String incorrectMigrationId = "FPLA-1111";
 
-            Element<CaseManagementOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
-            Element<CaseManagementOrder> additionalOrder = element(orderTwoId, cmo);
+            Element<HearingOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
+            Element<HearingOrder> additionalOrder = element(orderTwoId, cmo);
             Element<HearingBooking> hearingToBeRemoved = element(hearingOneId, hearing(orderToBeRemovedId));
             Element<HearingBooking> additionalHearing = element(hearingTwoId, hearing(orderTwoId));
 
-            List<Element<CaseManagementOrder>> draftCaseManagementOrders = newArrayList(
+            List<Element<HearingOrder>> draftCaseManagementOrders = newArrayList(
                 orderToBeRemoved,
                 additionalOrder);
 
@@ -182,12 +189,12 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
         void shouldNotChangeCaseIfNotExpectedCaseNumber() {
             String incorrectFamilyManNumber = "LE30C500231";
 
-            Element<CaseManagementOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
-            Element<CaseManagementOrder> additionalOrder = element(orderTwoId, cmo);
+            Element<HearingOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
+            Element<HearingOrder> additionalOrder = element(orderTwoId, cmo);
             Element<HearingBooking> hearingToBeRemoved = element(hearingOneId, hearing(orderToBeRemovedId));
             Element<HearingBooking> additionalHearing = element(hearingTwoId, hearing(orderTwoId));
 
-            List<Element<CaseManagementOrder>> draftCaseManagementOrders = newArrayList(
+            List<Element<HearingOrder>> draftCaseManagementOrders = newArrayList(
                 orderToBeRemoved,
                 additionalOrder);
 
@@ -217,7 +224,7 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
 
     private CaseDetails caseDetails(String migrationId,
                                     String familyManNumber,
-                                    List<Element<CaseManagementOrder>> draftCaseManagementOrders,
+                                    List<Element<HearingOrder>> draftCaseManagementOrders,
                                     List<Element<HearingBooking>> hearingBookings) {
         CaseDetails caseDetails = asCaseDetails(CaseData.builder()
             .familyManCaseNumber(familyManNumber)
@@ -231,6 +238,8 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
 
     private HearingBooking hearing(UUID cmoId) {
         return HearingBooking.builder()
+            .type(HearingType.CASE_MANAGEMENT)
+            .startDate(LocalDateTime.of(2021, Month.JANUARY, 1, 1, 0, 0))
             .caseManagementOrderId(cmoId)
             .build();
     }

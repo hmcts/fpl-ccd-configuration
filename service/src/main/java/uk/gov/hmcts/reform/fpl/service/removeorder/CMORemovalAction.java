@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.removeorder;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
@@ -8,7 +10,8 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrderService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
@@ -22,21 +25,24 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Component
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class CMORemovalAction implements OrderRemovalAction {
+
+    private final DraftOrderService draftOrderService;
 
     @Override
     public boolean isAccepted(RemovableOrder removableOrder) {
-        return removableOrder instanceof CaseManagementOrder;
+        return removableOrder instanceof HearingOrder;
     }
 
     @Override
     public void remove(CaseData caseData, CaseDetailsMap data, UUID removedOrderId,
                        RemovableOrder removableOrder) {
 
-        CaseManagementOrder caseManagementOrder = (CaseManagementOrder) removableOrder;
+        HearingOrder caseManagementOrder = (HearingOrder) removableOrder;
 
-        List<Element<CaseManagementOrder>> sealedCMOs = caseData.getSealedCMOs();
-        Element<CaseManagementOrder> cmoElement = element(removedOrderId, caseManagementOrder);
+        List<Element<HearingOrder>> sealedCMOs = caseData.getSealedCMOs();
+        Element<HearingOrder> cmoElement = element(removedOrderId, caseManagementOrder);
 
         if (!sealedCMOs.remove(cmoElement)) {
             throw new CMONotFoundException(format("Failed to find order matching id %s", removedOrderId));
@@ -44,7 +50,7 @@ public class CMORemovalAction implements OrderRemovalAction {
 
         caseManagementOrder.setRemovalReason(caseData.getReasonToRemoveOrder());
 
-        List<Element<CaseManagementOrder>> hiddenCMOs = caseData.getHiddenCMOs();
+        List<Element<HearingOrder>> hiddenCMOs = caseData.getHiddenCMOs();
         hiddenCMOs.add(cmoElement);
 
         data.put("hiddenCaseManagementOrders", hiddenCMOs);
@@ -53,8 +59,8 @@ public class CMORemovalAction implements OrderRemovalAction {
     }
 
     public void removeDraftCaseManagementOrder(CaseData caseData, CaseDetails data,
-                                               Element<CaseManagementOrder> cmoElement) {
-        List<Element<CaseManagementOrder>> draftUploadedCMOs = caseData.getDraftUploadedCMOs();
+                                               Element<HearingOrder> cmoElement) {
+        List<Element<HearingOrder>> draftUploadedCMOs = caseData.getDraftUploadedCMOs();
 
         if (!draftUploadedCMOs.remove(cmoElement)) {
             throw new CMONotFoundException("Failed to find draft case management order");
@@ -66,6 +72,7 @@ public class CMORemovalAction implements OrderRemovalAction {
             data.getData().put("draftUploadedCMOs", draftUploadedCMOs);
         }
 
+        data.getData().put("hearingOrdersBundlesDrafts", draftOrderService.migrateCmoDraftToOrdersBundles(caseData));
         data.getData().put("hearingDetails", removeHearingLinkedToCMO(caseData, cmoElement));
     }
 
@@ -74,7 +81,7 @@ public class CMORemovalAction implements OrderRemovalAction {
                                    CaseDetailsMap data,
                                    UUID removableOrderId,
                                    RemovableOrder removableOrder) {
-        CaseManagementOrder caseManagementOrder = (CaseManagementOrder) removableOrder;
+        HearingOrder caseManagementOrder = (HearingOrder) removableOrder;
 
         HearingBooking hearing = getHearingToUnlink(caseData, removableOrderId, caseManagementOrder);
 
@@ -85,7 +92,7 @@ public class CMORemovalAction implements OrderRemovalAction {
     }
 
     private List<Element<HearingBooking>> removeHearingLinkedToCMO(CaseData caseData,
-                                                                   Element<CaseManagementOrder> cmoElement) {
+                                                                   Element<HearingOrder> cmoElement) {
 
         HearingBooking hearingToUnlink = getHearingToUnlink(
             caseData,
@@ -99,7 +106,7 @@ public class CMORemovalAction implements OrderRemovalAction {
         return caseData.getHearingDetails();
     }
 
-    private HearingBooking getHearingToUnlink(CaseData caseData, UUID cmoId, CaseManagementOrder cmo) {
+    private HearingBooking getHearingToUnlink(CaseData caseData, UUID cmoId, HearingOrder cmo) {
 
         Optional<Element<HearingBooking>> hearingBooking = caseData.getHearingLinkedToCMO(cmoId);
 
