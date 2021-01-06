@@ -183,19 +183,6 @@
       }
     },
     {
-      "title": "Send the guardian's analysis to all parties",
-      "text": "Send to the court and all parties.",
-      "assignee": "CAFCASS",
-      "display": {
-        "due": "BY",
-        "templateDateFormat": "h:mma, d MMMM yyyy",
-        "directionRemovable": true,
-        "showDateOnly": true,
-        "delta": "-1",
-        "time": "12:00:00"
-      }
-    },
-    {
       "title": "Appoint a children's guardian",
       "text": "",
       "assignee": "CAFCASS",
@@ -206,6 +193,19 @@
         "showDateOnly": false,
         "delta": "-2",
         "time": "16:00:00"
+      }
+    },
+    {
+      "title": "Send the guardian's analysis to all parties",
+      "text": "Send to the court and all parties.",
+      "assignee": "CAFCASS",
+      "display": {
+        "due": "BY",
+        "templateDateFormat": "h:mma, d MMMM yyyy",
+        "directionRemovable": true,
+        "showDateOnly": true,
+        "delta": "-1",
+        "time": "12:00:00"
       }
     },
     {
