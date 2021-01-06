@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderReasonsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
+import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -189,6 +190,11 @@ public class CaseSubmissionGenerationService
         if (isNotEmpty(orders.getEmergencyProtectionOrders())) {
             stringBuilder.append(orders.getEpoType().getLabel());
             stringBuilder.append(NEW_LINE);
+            if(epoTypeIsPreventingRemoval(orders.getEpoType())) {
+                String address = orders.getAddress().getAddressAsString("\n");
+                stringBuilder.append(address);
+                stringBuilder.append(NEW_LINE);
+            }
             stringBuilder.append(orders.getEmergencyProtectionOrders().stream()
                 .map(EmergencyProtectionOrdersType::getLabel)
                 .collect(joining(NEW_LINE)));
@@ -198,6 +204,10 @@ public class CaseSubmissionGenerationService
                 stringBuilder.append(orders.getEmergencyProtectionOrderDetails());
             }
         }
+    }
+
+    private boolean epoTypeIsPreventingRemoval(EPOType epoType) {
+        return epoType == EPOType.PREVENT_REMOVAL;
     }
 
     private String getDirectionsNeeded(final Orders orders) {
