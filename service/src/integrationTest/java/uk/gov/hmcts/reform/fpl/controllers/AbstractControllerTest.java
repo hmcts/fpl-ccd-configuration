@@ -221,6 +221,10 @@ public abstract class AbstractControllerTest {
         return postSubmittedEvent(caseDetails, SC_OK);
     }
 
+    protected SubmittedCallbackResponse postSubmittedEvent(CaseData caseData) {
+        return postSubmittedEvent(asCaseDetails(caseData), SC_OK);
+    }
+
     protected SubmittedCallbackResponse postSubmittedEvent(String filename, int expectedStatus) {
         return postSubmittedEvent(readBytes(filename), expectedStatus);
     }

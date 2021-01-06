@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -11,23 +12,35 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static uk.gov.hmcts.reform.fpl.controllers.UploadCMOSubmittedControllerTest.JUDGE_EMAIL;
+import static uk.gov.hmcts.reform.fpl.controllers.UploadDraftOrdersSubmittedControllerTest.JUDGE_EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
-public abstract class AbstractUploadCMOControllerTest extends AbstractControllerTest {
-    AbstractUploadCMOControllerTest(String eventName) {
-        super(eventName);
+public abstract class AbstractUploadDraftOrdersControllerTest extends AbstractControllerTest {
+
+    static final String JUDGE_EMAIL = "judge@hmcts.gov.uk";
+
+    AbstractUploadDraftOrdersControllerTest() {
+        super("upload-draft-orders");
+    }
+
+    static Pair<String, UUID> option(String label, UUID code) {
+        return Pair.of(label, code);
+    }
+
+    public Map<String, Object> convert(Object o) {
+        return mapper.convertValue(o, new TypeReference<>() {});
     }
 
     @SafeVarargs
-    protected final DynamicList dynamicListWithoutSelected(Pair<String, UUID>... pairs) {
+    protected final DynamicList dynamicListWithoutSelected(Pair<String, UUID>... items) {
         return DynamicList.builder()
             .value(DynamicListElement.EMPTY)
-            .listItems(listItems(pairs))
+            .listItems(listItems(items))
             .build();
     }
 

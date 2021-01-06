@@ -6,15 +6,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.fpl.controllers.cmo.UploadCMOController;
+import uk.gov.hmcts.reform.fpl.controllers.orders.UploadDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.event.UploadCMOEventData;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,17 +26,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(UploadCMOController.class)
+@WebMvcTest(UploadDraftOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
-class UploadCMOAboutToStartControllerTest extends AbstractUploadCMOControllerTest {
-
-    protected UploadCMOAboutToStartControllerTest() {
-        super("upload-cmo");
-    }
+class UploadDraftOrdersAboutToStartControllerTest extends AbstractUploadDraftOrdersControllerTest {
 
     @Test
     void shouldReturnDynamicListsAndHearingsWithSealedCMOs() {
-        Element<CaseManagementOrder> cmo = element(CaseManagementOrder.builder()
+        Element<HearingOrder> cmo = element(HearingOrder.builder()
             .order(DocumentReference.builder().build())
             .status(CMOStatus.SEND_TO_JUDGE)
             .build());
@@ -53,19 +50,27 @@ class UploadCMOAboutToStartControllerTest extends AbstractUploadCMOControllerTes
 
         CaseData responseData = extractCaseData(postAboutToStartEvent(caseData));
 
-        UploadCMOEventData expectedEventData = UploadCMOEventData.builder()
-            .pastHearingsForCMO(dynamicListMap("Case management hearing, 3 March 2020", hearings.get(0).getId()))
-            .futureHearingsForCMO(dynamicListMap("Case management hearing, 3 March 3000", hearings.get(1).getId()))
+        Pair<String, UUID> noHearingOption = option("No hearing", DynamicListElement.DEFAULT_CODE);
+        Pair<String, UUID> hearing1Option = option("Case management hearing, 2 March 2020", hearings.get(2).getId());
+        Pair<String, UUID> hearing2Option = option("Case management hearing, 3 March 2020", hearings.get(0).getId());
+        Pair<String, UUID> hearing3Option = option("Case management hearing, 3 March 3000", hearings.get(1).getId());
+
+        UploadDraftOrdersData expectedEventData = UploadDraftOrdersData.builder()
+            .pastHearingsForCMO(dynamicList(hearing2Option))
+            .futureHearingsForCMO(dynamicList(hearing3Option))
+            .draftOrderHearings(dynamicList(noHearingOption, hearing1Option, hearing2Option, hearing3Option))
             .showCMOsSentToJudge(YesNo.YES)
             .cmosSentToJudge("Case management hearing, 2 March 2020")
             .build();
 
-        CaseData expectedCaseData = caseData.toBuilder().uploadCMOEventData(expectedEventData).build();
+        CaseData expectedCaseData = caseData.toBuilder().uploadDraftOrdersEventData(expectedEventData).build();
 
         assertThat(responseData).isEqualTo(expectedCaseData);
     }
 
-    private Map<String, Object> dynamicListMap(String label, UUID code) {
-        return mapper.convertValue(dynamicListWithoutSelected(Pair.of(label, code)), new TypeReference<>() {});
+    @SafeVarargs
+    private Map<String, Object> dynamicList(Pair<String, UUID>... options) {
+        return mapper.convertValue(dynamicListWithoutSelected(options), new TypeReference<>() {
+        });
     }
 }

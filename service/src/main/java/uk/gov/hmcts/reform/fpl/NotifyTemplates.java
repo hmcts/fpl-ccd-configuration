@@ -19,6 +19,7 @@ public final class NotifyTemplates {
     public static final String ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_JUDGE = "e8a21f19-3e51-4cdd-99cf-a32b4e5fedd4";
     public static final String ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES =
         "1827ae2d-d7c3-4094-8978-c2f77d7713fa";
+    public static final String DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE = "f9ef5385-258b-4d57-84b4-4915afd3ba5e";
     public static final String CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE = "0ec7f651-4f0e-4f95-bff1-6ec232b9baf6";
     public static final String CMO_DRAFT_UPLOADED_NOTIFICATION_TEMPLATE = "00111d3e-a001-4d68-9630-4b3ba8894e66";
     public static final String CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE =

@@ -7,10 +7,13 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderKind.C21;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderKind.CMO;
 
 class UploadCMOEventDataTest {
 
@@ -18,21 +21,25 @@ class UploadCMOEventDataTest {
 
     @Test
     void shouldNotMapNullValues() {
-        UploadCMOEventData eventData = UploadCMOEventData.builder().showReplacementCMO(YesNo.YES).build();
+        UploadDraftOrdersData eventData = UploadDraftOrdersData.builder()
+            .showReplacementCMO(YesNo.YES)
+            .build();
 
-        Map<String, Object> mapped = mapper.convertValue(eventData, new TypeReference<>() {});
+        Map<String, Object> mapped = mapper.convertValue(eventData, new TypeReference<>() {
+        });
 
         assertThat(mapped).isEqualTo(Map.of("showReplacementCMO", "YES"));
     }
 
     @Test
     void shouldNotMapEmptyValues() {
-        UploadCMOEventData eventData = UploadCMOEventData.builder()
+        UploadDraftOrdersData eventData = UploadDraftOrdersData.builder()
             .cmoJudgeInfo("")
             .showReplacementCMO(YesNo.YES)
             .build();
 
-        Map<String, Object> mapped = mapper.convertValue(eventData, new TypeReference<>() {});
+        Map<String, Object> mapped = mapper.convertValue(eventData, new TypeReference<>() {
+        });
 
         assertThat(mapped).isEqualTo(Map.of("showReplacementCMO", "YES"));
     }
@@ -41,7 +48,8 @@ class UploadCMOEventDataTest {
     void shouldMapPastHearingListIfNotNull() {
         UUID id = UUID.randomUUID();
 
-        UploadCMOEventData eventData = UploadCMOEventData.builder()
+        UploadDraftOrdersData eventData = UploadDraftOrdersData.builder()
+            .draftOrderKinds(List.of(CMO))
             .pastHearingsForCMO(DynamicList.builder().value(DynamicListElement.builder().code(id).build()).build())
             .build();
 
@@ -54,7 +62,8 @@ class UploadCMOEventDataTest {
     void shouldMapFutureHearingListIfNotNull() {
         UUID id = UUID.randomUUID();
 
-        UploadCMOEventData eventData = UploadCMOEventData.builder()
+        UploadDraftOrdersData eventData = UploadDraftOrdersData.builder()
+            .draftOrderKinds(List.of(CMO, C21))
             .futureHearingsForCMO(DynamicList.builder().value(DynamicListElement.builder().code(id).build()).build())
             .build();
 

@@ -1,17 +1,21 @@
 const config = require('../config');
 
-const localAuthoritySendsAgreedCmo = async (I, caseViewPage, uploadCMOEventPage, hearing, supportingDocs) => {
-  await uploadCMO(I, caseViewPage, uploadCMOEventPage, hearing, supportingDocs, () => {
+const localAuthoritySendsAgreedCmo = async (I, caseViewPage, uploadCMOEventPage, hearing, supportingDocs, c21s) => {
+  await uploadCMO(I, caseViewPage, uploadCMOEventPage, hearing, supportingDocs, c21s, () => {
     uploadCMOEventPage.selectAgreedCMO();
     uploadCMOEventPage.selectPastHearing(hearing);
   });
 };
 
-const localAuthorityUploadsDraftCmo = async (I, caseViewPage, uploadCMOEventPage, hearing, supportingDocs) => {
-  await uploadCMO(I, caseViewPage, uploadCMOEventPage, hearing, supportingDocs, () => {
+const localAuthorityUploadsDraftCmo = async (I, caseViewPage, uploadCMOEventPage, hearing, supportingDocs, c21s) => {
+  await uploadCMO(I, caseViewPage, uploadCMOEventPage, hearing, supportingDocs, c21s, () => {
     uploadCMOEventPage.selectDraftCMO();
     uploadCMOEventPage.selectFutureHearing(hearing);
   });
+};
+
+const localAuthorityUploadsC21 = async (I, caseViewPage, uploadCMOEventPage, c21s, hearing) => {
+  await uploadC21(I, caseViewPage, uploadCMOEventPage, c21s, hearing);
 };
 
 const judgeSendsReviewedCmoToAllParties = async (I, caseId, caseViewPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage) => {
@@ -27,18 +31,46 @@ const judgeSendsReviewedCmoToAllParties = async (I, caseId, caseViewPage, upload
   I.seeEventSubmissionConfirmation(config.applicationActions.reviewAgreedCmo);
 };
 
-const uploadCMO = async (I, caseViewPage, uploadCMOEventPage, hearing, supportingDocs, selectHearing) => {
+const uploadCMO = async (I, caseViewPage, uploadCMOEventPage, hearing, supportingDocs, c21s, selectHearing) => {
   await caseViewPage.goToNewActions(config.applicationActions.uploadCMO);
+
+  await I.waitForSelector(uploadCMOEventPage.fields.cmoDraftOrder);
+  await I.click(uploadCMOEventPage.fields.cmoDraftOrder);
+  if(c21s) {
+    await I.click(uploadCMOEventPage.fields.c21DraftOrder);
+  }
+  await I.goToNextPage();
+
   await I.waitForSelector(uploadCMOEventPage.fields.cmoUploadType.id);
   selectHearing();
   await I.goToNextPage();
+
   uploadCMOEventPage.checkCMOInfo(hearing);
   await uploadCMOEventPage.uploadCaseManagementOrder(config.testWordFile);
   if (supportingDocs) {
     await uploadCMOEventPage.attachSupportingDocs(supportingDocs);
   }
   await I.goToNextPage();
+  if(c21s) {
+    await uploadCMOEventPage.attachC21({name: c21s.title, file: c21s.file, orderNumber: c21s.number});
+    await I.goToNextPage();
+  }
   uploadCMOEventPage.reviewInfo('mockFile.docx', 'Her Honour Judge Reed');
+  await I.completeEvent('Submit');
+  I.seeEventSubmissionConfirmation(config.applicationActions.uploadCMO);
+};
+
+const uploadC21 = async (I, caseViewPage, uploadCMOEventPage, c21s, hearing) => {
+  await caseViewPage.goToNewActions(config.applicationActions.uploadCMO);
+
+  await I.waitForSelector(uploadCMOEventPage.fields.cmoDraftOrder);
+  await I.click(uploadCMOEventPage.fields.c21DraftOrder);
+
+  await I.goToNextPage();
+
+  uploadCMOEventPage.selectDraftHearing(hearing);
+  await I.goToNextPage();
+  await uploadCMOEventPage.attachC21({name: c21s.title, file: c21s.file, orderNumber:  c21s.number});
   await I.completeEvent('Submit');
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadCMO);
 };
@@ -46,5 +78,6 @@ const uploadCMO = async (I, caseViewPage, uploadCMOEventPage, hearing, supportin
 module.exports = {
   localAuthoritySendsAgreedCmo,
   localAuthorityUploadsDraftCmo,
+  localAuthorityUploadsC21,
   judgeSendsReviewedCmoToAllParties,
 };

@@ -3,6 +3,8 @@ const supportingDocumentsFragment = require('../../fragments/supportingDocuments
 
 module.exports = {
   fields: {
+    cmoDraftOrder: '#draftOrderKinds-CMO',
+    c21DraftOrder: '#draftOrderKinds-C21',
     cmoUploadType: {
       id: '#cmoUploadType',
       options: {
@@ -12,6 +14,7 @@ module.exports = {
     },
     pastHearingDropdown: '#pastHearingsForCMO',
     futureHearingDropdown: '#futureHearingsForCMO',
+    draftOrderHearings: '#draftOrderHearings',
     uploadCMO: {
       main: '#uploadedCaseManagementOrder',
       replacement: '#replacementCMO',
@@ -19,6 +22,14 @@ module.exports = {
     supportingDocuments: {
       id: '#cmoSupportingDocs',
       fields: index => supportingDocumentsFragment.supportingDocuments(index, 'cmoSupportingDocs'),
+    },
+    c21Documents: {
+      fields (index) {
+        return {
+          name: `#hearingDraftOrders_${index}_title`,
+          document: `#hearingDraftOrders_${index}_order`,
+        };
+      },
     },
   },
 
@@ -38,7 +49,15 @@ module.exports = {
     I.selectOption(this.fields.futureHearingDropdown, hearing);
   },
 
+  selectDraftHearing(hearing='No hearing') {
+    I.selectOption(this.fields.draftOrderHearings, hearing);
+  },
+
   uploadCaseManagementOrder(file) {
+    I.attachFile(this.fields.uploadCMO.main, file);
+  },
+
+  uploadC21(file) {
     I.attachFile(this.fields.uploadCMO.main, file);
   },
 
@@ -63,6 +82,18 @@ module.exports = {
     const fields = this.fields.supportingDocuments.fields(await this.getActiveElementIndex());
     I.fillField(fields.name, name);
     I.fillField(fields.notes, notes);
+    I.attachFile(fields.document, file);
+  },
+
+  async attachC21({name, file, orderNumber=1}) {
+    const numberOfElements = await I.grabNumberOfVisibleElements('.collection-title');
+
+    for (let i = 0; i < orderNumber - numberOfElements; i++) {
+      await I.addAnotherElementToCollection();
+    }
+
+    const fields = this.fields.c21Documents.fields(orderNumber - 1);
+    I.fillField(fields.name, name);
     I.attachFile(fields.document, file);
   },
 

@@ -1,7 +1,7 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "UploadedCaseManagementOrder",
+    "ID": "DraftOrder",
     "ListElementCode": "type",
     "FieldType": "FixedRadioList",
     "ElementLabel": "Type",
@@ -11,7 +11,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "UploadedCaseManagementOrder",
+    "ID": "DraftOrder",
     "ListElementCode": "title",
     "FieldType": "Text",
     "ElementLabel": "Title",
@@ -19,7 +19,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "UploadedCaseManagementOrder",
+    "ID": "DraftOrder",
     "ListElementCode": "order",
     "FieldType": "Document",
     "ElementLabel": "Order",
@@ -27,7 +27,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "UploadedCaseManagementOrder",
+    "ID": "DraftOrder",
     "ListElementCode": "lastUploadedOrder",
     "FieldType": "Document",
     "ElementLabel": "Last Uploaded Order",
@@ -36,15 +36,16 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "UploadedCaseManagementOrder",
+    "ID": "DraftOrder",
     "ListElementCode": "hearing",
     "FieldType": "Text",
     "ElementLabel": "Hearing",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "status=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "UploadedCaseManagementOrder",
+    "ID": "DraftOrder",
     "ListElementCode": "dateSent",
     "FieldType": "Date",
     "ElementLabel": "Date sent",
@@ -53,7 +54,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "UploadedCaseManagementOrder",
+    "ID": "DraftOrder",
     "ListElementCode": "dateIssued",
     "FieldType": "Date",
     "ElementLabel": "Date issued",
@@ -61,7 +62,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "UploadedCaseManagementOrder",
+    "ID": "DraftOrder",
     "ListElementCode": "status",
     "FieldType": "FixedList",
     "FieldTypeParameter": "CaseManagementOrderStatus",
@@ -71,15 +72,16 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "UploadedCaseManagementOrder",
+    "ID": "DraftOrder",
     "ListElementCode": "judgeTitleAndName",
     "FieldType": "Text",
     "ElementLabel": "Judge",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "status=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "UploadedCaseManagementOrder",
+    "ID": "DraftOrder",
     "ListElementCode": "supportingDocs",
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
@@ -88,7 +90,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "UploadedCaseManagementOrder",
+    "ID": "DraftOrder",
     "ListElementCode": "requestedChanges",
     "FieldType": "Text",
     "ElementLabel": "Changes requested by judge",
@@ -96,7 +98,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "UploadedCaseManagementOrder",
+    "ID": "DraftOrder",
     "ListElementCode": "removalReason",
     "FieldType": "TextArea",
     "ElementLabel": "Reason for removal",

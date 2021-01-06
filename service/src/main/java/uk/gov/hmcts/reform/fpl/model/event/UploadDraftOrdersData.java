@@ -6,10 +6,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Builder;
 import lombok.Value;
 import uk.gov.hmcts.reform.fpl.enums.CMOType;
+import uk.gov.hmcts.reform.fpl.enums.HearingOrderKind;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,12 +19,16 @@ import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.CMOType.AGREED;
+import static uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement.DEFAULT_CODE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
 
 @Value
-@Builder
+@Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class UploadCMOEventData {
+public class UploadDraftOrdersData {
+
+    List<HearingOrderKind> draftOrderKinds;
+    List<Element<HearingOrder>> hearingDraftOrders;
 
     // Uploaded documents (Page 2)
     DocumentReference uploadedCaseManagementOrder;
@@ -32,6 +38,7 @@ public class UploadCMOEventData {
     // Dynamic lists (Page 1)
     Object pastHearingsForCMO;
     Object futureHearingsForCMO;
+    Object draftOrderHearings;
 
     // Approved or draft CMO (Page 1)
     CMOType cmoUploadType;
@@ -58,15 +65,22 @@ public class UploadCMOEventData {
 
     @JsonIgnore
     public UUID getSelectedHearingId(ObjectMapper mapper) {
-        Object dynamicList = defaultIfNull(pastHearingsForCMO, futureHearingsForCMO);
-        return getDynamicListSelectedValue(dynamicList, mapper);
+        if (draftOrderKinds.contains(HearingOrderKind.CMO)) {
+            Object dynamicList = defaultIfNull(pastHearingsForCMO, futureHearingsForCMO);
+            return getDynamicListSelectedValue(dynamicList, mapper);
+        } else {
+            UUID selectedHearingId = getDynamicListSelectedValue(draftOrderHearings, mapper);
+            return DEFAULT_CODE.equals(selectedHearingId) ? null : selectedHearingId;
+        }
+
     }
 
     public static String[] transientFields() {
         return new String[]{
             "showCMOsSentToJudge", "cmosSentToJudge", "cmoUploadType", "pastHearingsForCMO", "futureHearingsForCMO",
             "cmoHearingInfo", "showReplacementCMO", "previousCMO", "uploadedCaseManagementOrder", "replacementCMO",
-            "cmoSupportingDocs", "cmoJudgeInfo", "cmoToSend"
+            "cmoSupportingDocs", "cmoJudgeInfo", "cmoToSend", "draftOrderHearings", "hearingDraftOrders",
+            "draftOrderKinds"
         };
     }
 }

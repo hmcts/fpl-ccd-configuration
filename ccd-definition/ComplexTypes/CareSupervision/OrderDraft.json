@@ -1,0 +1,53 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderDraft",
+    "ListElementCode": "hearingId",
+    "FieldType": "Text",
+    "ElementLabel": "hearing id",
+    "FieldShowCondition": "title=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public",
+    "RetainHiddenValue": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderDraft",
+    "ListElementCode": "title",
+    "FieldType": "Text",
+    "ElementLabel": "Order name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderDraft",
+    "ListElementCode": "document",
+    "FieldType": "Document",
+    "ElementLabel": "Order document",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderDraft",
+    "ListElementCode": "hearing",
+    "FieldType": "Text",
+    "ElementLabel": "Hearing",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderDraft",
+    "ListElementCode": "dateSent",
+    "FieldType": "Date",
+    "ElementLabel": "Date sent",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderDraft",
+    "ListElementCode": "status",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "CaseManagementOrderStatus",
+    "ElementLabel": "Status",
+    "SecurityClassification": "Public"
+  }
+]

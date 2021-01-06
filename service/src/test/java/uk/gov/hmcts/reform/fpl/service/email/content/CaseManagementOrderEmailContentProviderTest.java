@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.RejectedCMOTemplate;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -42,7 +42,8 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
     @Test
     void shouldBuildCMOIssuedExpectedParametersWithEmptyCaseUrl() {
         given(documentDownloadService.downloadDocument(anyString())).willReturn(TestDataHelper.DOCUMENT_CONTENT);
-        final CaseManagementOrder cmo = buildCmo();
+
+        final HearingOrder cmo = buildCmo();
         IssuedCMOTemplate expectedTemplate = IssuedCMOTemplate.builder()
             .respondentLastName("lastName")
             .familyManCaseNumber("11")
@@ -64,7 +65,7 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
     void shouldBuildCMOIssuedExpectedParametersWithPopulatedCaseUrl() {
         given(documentDownloadService.downloadDocument(anyString())).willReturn(TestDataHelper.DOCUMENT_CONTENT);
 
-        final CaseManagementOrder cmo = buildCmo();
+        final HearingOrder cmo = buildCmo();
 
         IssuedCMOTemplate expectedTemplate = IssuedCMOTemplate.builder()
             .respondentLastName("lastName")
@@ -83,7 +84,7 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
 
     @Test
     void shouldBuildCMORejectedByJudgeNotificationExpectedParameters() {
-        final CaseManagementOrder cmo = buildCmo();
+        final HearingOrder cmo = buildCmo();
         cmo.setRequestedChanges("change it");
 
         RejectedCMOTemplate expectedTemplate = RejectedCMOTemplate.builder()
@@ -99,8 +100,8 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
             .usingRecursiveComparison().isEqualTo(expectedTemplate);
     }
 
-    private CaseManagementOrder buildCmo() {
-        return CaseManagementOrder.builder()
+    private HearingOrder buildCmo() {
+        return HearingOrder.builder()
             .order(testDocument)
             .hearing("Test hearing, 20th June").build();
     }

@@ -14,6 +14,8 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractControllerTest;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
+import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -21,10 +23,12 @@ import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -410,22 +414,25 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
         UUID orderTwoId = UUID.randomUUID();
         UUID hearingOneId = UUID.randomUUID();
         UUID hearingTwoId = UUID.randomUUID();
-        CaseManagementOrder cmo = CaseManagementOrder.builder().build();
+        HearingOrder cmo = HearingOrder.builder()
+            .type(HearingOrderType.AGREED_CMO)
+            .title("Agreed CMO discussed at hearing")
+            .build();
 
         @Test
-        void shouldRemoveFirstDraftCaseManagementOrderAndUnlinkItsHearing() {
-            Element<CaseManagementOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
-            Element<CaseManagementOrder> additionalOrder = element(orderTwoId, cmo);
+        void shouldRemoveFirstDraftHearingOrderAndUnlinkItsHearing() {
+            Element<HearingOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
+            Element<HearingOrder> additionalOrder = element(orderTwoId, cmo);
             Element<HearingBooking> hearingToBeRemoved = element(hearingOneId, hearing(orderToBeRemovedId));
             Element<HearingBooking> additionalHearing = element(hearingTwoId, hearing(orderTwoId));
 
-            List<Element<CaseManagementOrder>> draftCaseManagementOrders = newArrayList(
+            List<Element<HearingOrder>> draftHearingOrders = newArrayList(
                 orderToBeRemoved,
                 additionalOrder);
 
             List<Element<HearingBooking>> hearingBookings = newArrayList(hearingToBeRemoved, additionalHearing);
 
-            CaseDetails caseDetails = caseDetails(migrationId, caseNumber, draftCaseManagementOrders, hearingBookings);
+            CaseDetails caseDetails = caseDetails(migrationId, caseNumber, draftHearingOrders, hearingBookings);
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
             assertThat(extractedCaseData.getDraftUploadedCMOs()).isEqualTo(List.of(additionalOrder));
@@ -438,23 +445,23 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
         void shouldNotChangeCaseIfNotExpectedMigrationId() {
             String incorrectMigrationId = "FPLA-1111";
 
-            Element<CaseManagementOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
-            Element<CaseManagementOrder> additionalOrder = element(orderTwoId, cmo);
+            Element<HearingOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
+            Element<HearingOrder> additionalOrder = element(orderTwoId, cmo);
             Element<HearingBooking> hearingToBeRemoved = element(hearingOneId, hearing(orderToBeRemovedId));
             Element<HearingBooking> additionalHearing = element(hearingTwoId, hearing(orderTwoId));
 
-            List<Element<CaseManagementOrder>> draftCaseManagementOrders = newArrayList(
+            List<Element<HearingOrder>> draftHearingOrders = newArrayList(
                 orderToBeRemoved,
                 additionalOrder);
 
             List<Element<HearingBooking>> hearingBookings = newArrayList(hearingToBeRemoved, additionalHearing);
 
-            CaseDetails caseDetails = caseDetails(incorrectMigrationId, caseNumber, draftCaseManagementOrders,
+            CaseDetails caseDetails = caseDetails(incorrectMigrationId, caseNumber, draftHearingOrders,
                 hearingBookings);
 
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
-            assertThat(extractedCaseData.getDraftUploadedCMOs()).isEqualTo(draftCaseManagementOrders);
+            assertThat(extractedCaseData.getDraftUploadedCMOs()).isEqualTo(draftHearingOrders);
             assertThat(extractedCaseData.getHearingDetails()).isEqualTo(hearingBookings);
         }
 
@@ -462,28 +469,28 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
         void shouldNotChangeCaseIfNotExpectedCaseNumber() {
             Long incorrectCaseNumber = 1599470847274973L;
 
-            Element<CaseManagementOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
-            Element<CaseManagementOrder> additionalOrder = element(orderTwoId, cmo);
+            Element<HearingOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
+            Element<HearingOrder> additionalOrder = element(orderTwoId, cmo);
             Element<HearingBooking> hearingToBeRemoved = element(hearingOneId, hearing(orderToBeRemovedId));
             Element<HearingBooking> additionalHearing = element(hearingTwoId, hearing(orderTwoId));
 
-            List<Element<CaseManagementOrder>> draftCaseManagementOrders = newArrayList(
+            List<Element<HearingOrder>> draftHearingOrders = newArrayList(
                 orderToBeRemoved,
                 additionalOrder);
 
             List<Element<HearingBooking>> hearingBookings = newArrayList(hearingToBeRemoved, additionalHearing);
 
-            CaseDetails caseDetails = caseDetails(migrationId, incorrectCaseNumber, draftCaseManagementOrders,
+            CaseDetails caseDetails = caseDetails(migrationId, incorrectCaseNumber, draftHearingOrders,
                 hearingBookings);
 
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
-            assertThat(extractedCaseData.getDraftUploadedCMOs()).isEqualTo(draftCaseManagementOrders);
+            assertThat(extractedCaseData.getDraftUploadedCMOs()).isEqualTo(draftHearingOrders);
             assertThat(extractedCaseData.getHearingDetails()).isEqualTo(hearingBookings);
         }
 
         @Test
-        void shouldThrowAnExceptionIfCaseDoesNotContainDraftCaseManagementOrders() {
+        void shouldThrowAnExceptionIfCaseDoesNotContainDraftHearingOrders() {
             List<Element<HearingBooking>> hearingBookings = newArrayList(newArrayList());
             CaseDetails caseDetails = caseDetails(migrationId, caseNumber, null, hearingBookings);
 
@@ -494,11 +501,11 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
 
         private CaseDetails caseDetails(String migrationId,
                                         Long caseNumber,
-                                        List<Element<CaseManagementOrder>> draftCaseManagementOrders,
+                                        List<Element<HearingOrder>> draftHearingOrders,
                                         List<Element<HearingBooking>> hearingBookings) {
             CaseDetails caseDetails = asCaseDetails(CaseData.builder()
                 .id(caseNumber)
-                .draftUploadedCMOs(draftCaseManagementOrders)
+                .draftUploadedCMOs(draftHearingOrders)
                 .hearingDetails(hearingBookings)
                 .build());
 
@@ -508,6 +515,8 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
 
         private HearingBooking hearing(UUID cmoId) {
             return HearingBooking.builder()
+                .startDate(LocalDateTime.of(2021, Month.JANUARY, 1, 1, 0, 0))
+                .type(HearingType.CASE_MANAGEMENT)
                 .caseManagementOrderId(cmoId)
                 .build();
         }
@@ -521,22 +530,25 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
         UUID orderTwoId = UUID.randomUUID();
         UUID hearingOneId = UUID.randomUUID();
         UUID hearingTwoId = UUID.randomUUID();
-        CaseManagementOrder cmo = CaseManagementOrder.builder().build();
+        HearingOrder cmo = HearingOrder.builder()
+            .type(HearingOrderType.AGREED_CMO)
+            .title("Agreed CMO discussed at hearing")
+            .build();
 
         @Test
-        void shouldRemoveFirstDraftCaseManagementOrderAndUnlinkItsHearing() {
-            Element<CaseManagementOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
-            Element<CaseManagementOrder> additionalOrder = element(orderTwoId, cmo);
+        void shouldRemoveFirstDraftHearingOrderAndUnlinkItsHearing() {
+            Element<HearingOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
+            Element<HearingOrder> additionalOrder = element(orderTwoId, cmo);
             Element<HearingBooking> hearingToBeRemoved = element(hearingOneId, hearing(orderToBeRemovedId));
             Element<HearingBooking> additionalHearing = element(hearingTwoId, hearing(orderTwoId));
 
-            List<Element<CaseManagementOrder>> draftCaseManagementOrders = newArrayList(
+            List<Element<HearingOrder>> draftHearingOrders = newArrayList(
                 orderToBeRemoved,
                 additionalOrder);
 
             List<Element<HearingBooking>> hearingBookings = newArrayList(hearingToBeRemoved, additionalHearing);
 
-            CaseDetails caseDetails = caseDetails(migrationId, caseNumber, draftCaseManagementOrders, hearingBookings);
+            CaseDetails caseDetails = caseDetails(migrationId, caseNumber, draftHearingOrders, hearingBookings);
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
             assertThat(extractedCaseData.getDraftUploadedCMOs()).isEqualTo(List.of(additionalOrder));
@@ -549,23 +561,23 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
         void shouldNotChangeCaseIfNotExpectedMigrationId() {
             String incorrectMigrationId = "FPLA-1111";
 
-            Element<CaseManagementOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
-            Element<CaseManagementOrder> additionalOrder = element(orderTwoId, cmo);
+            Element<HearingOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
+            Element<HearingOrder> additionalOrder = element(orderTwoId, cmo);
             Element<HearingBooking> hearingToBeRemoved = element(hearingOneId, hearing(orderToBeRemovedId));
             Element<HearingBooking> additionalHearing = element(hearingTwoId, hearing(orderTwoId));
 
-            List<Element<CaseManagementOrder>> draftCaseManagementOrders = newArrayList(
+            List<Element<HearingOrder>> draftHearingOrders = newArrayList(
                 orderToBeRemoved,
                 additionalOrder);
 
             List<Element<HearingBooking>> hearingBookings = newArrayList(hearingToBeRemoved, additionalHearing);
 
-            CaseDetails caseDetails = caseDetails(incorrectMigrationId, caseNumber, draftCaseManagementOrders,
+            CaseDetails caseDetails = caseDetails(incorrectMigrationId, caseNumber, draftHearingOrders,
                 hearingBookings);
 
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
-            assertThat(extractedCaseData.getDraftUploadedCMOs()).isEqualTo(draftCaseManagementOrders);
+            assertThat(extractedCaseData.getDraftUploadedCMOs()).isEqualTo(draftHearingOrders);
             assertThat(extractedCaseData.getHearingDetails()).isEqualTo(hearingBookings);
         }
 
@@ -573,28 +585,28 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
         void shouldNotChangeCaseIfNotExpectedCaseNumber() {
             Long incorrectCaseNumber = 1599470847274973L;
 
-            Element<CaseManagementOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
-            Element<CaseManagementOrder> additionalOrder = element(orderTwoId, cmo);
+            Element<HearingOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
+            Element<HearingOrder> additionalOrder = element(orderTwoId, cmo);
             Element<HearingBooking> hearingToBeRemoved = element(hearingOneId, hearing(orderToBeRemovedId));
             Element<HearingBooking> additionalHearing = element(hearingTwoId, hearing(orderTwoId));
 
-            List<Element<CaseManagementOrder>> draftCaseManagementOrders = newArrayList(
+            List<Element<HearingOrder>> draftHearingOrders = newArrayList(
                 orderToBeRemoved,
                 additionalOrder);
 
             List<Element<HearingBooking>> hearingBookings = newArrayList(hearingToBeRemoved, additionalHearing);
 
-            CaseDetails caseDetails = caseDetails(migrationId, incorrectCaseNumber, draftCaseManagementOrders,
+            CaseDetails caseDetails = caseDetails(migrationId, incorrectCaseNumber, draftHearingOrders,
                 hearingBookings);
 
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
-            assertThat(extractedCaseData.getDraftUploadedCMOs()).isEqualTo(draftCaseManagementOrders);
+            assertThat(extractedCaseData.getDraftUploadedCMOs()).isEqualTo(draftHearingOrders);
             assertThat(extractedCaseData.getHearingDetails()).isEqualTo(hearingBookings);
         }
 
         @Test
-        void shouldThrowAnExceptionIfCaseDoesNotContainDraftCaseManagementOrders() {
+        void shouldThrowAnExceptionIfCaseDoesNotContainDraftHearingOrders() {
             List<Element<HearingBooking>> hearingBookings = newArrayList(newArrayList());
             CaseDetails caseDetails = caseDetails(migrationId, caseNumber, null, hearingBookings);
 
@@ -605,11 +617,11 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
 
         private CaseDetails caseDetails(String migrationId,
                                         Long caseNumber,
-                                        List<Element<CaseManagementOrder>> draftCaseManagementOrders,
+                                        List<Element<HearingOrder>> draftHearingOrders,
                                         List<Element<HearingBooking>> hearingBookings) {
             CaseDetails caseDetails = asCaseDetails(CaseData.builder()
                 .id(caseNumber)
-                .draftUploadedCMOs(draftCaseManagementOrders)
+                .draftUploadedCMOs(draftHearingOrders)
                 .hearingDetails(hearingBookings)
                 .build());
 
@@ -619,6 +631,8 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
 
         private HearingBooking hearing(UUID cmoId) {
             return HearingBooking.builder()
+                .type(HearingType.CASE_MANAGEMENT)
+                .startDate(LocalDateTime.of(2021, Month.JANUARY, 1, 1, 0, 0))
                 .caseManagementOrderId(cmoId)
                 .build();
         }

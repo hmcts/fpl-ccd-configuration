@@ -3,6 +3,37 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadCMO",
+    "CaseFieldID": "draftOrdersInfo",
+    "PageID": "OrderDraftTypeSelection",
+    "PageFieldDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "PageDisplayOrder": 0,
+    "DisplayContext": "READONLY",
+    "ShowSummaryChangeOption": "N"
+  },
+
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "uploadCMO",
+    "CaseFieldID": "draftOrderKinds",
+    "PageID": "OrderDraftTypeSelection",
+    "PageFieldDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "PageDisplayOrder": 0,
+    "DisplayContext": "MANDATORY",
+    "ShowSummaryChangeOption": "N"
+  },
+
+
+
+
+
+
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "uploadCMO",
     "CaseFieldID": "showCMOsSentToJudge",
     "PageID": "CMOChoice",
     "PageFieldDisplayOrder": 1,
@@ -10,8 +41,9 @@
     "PageDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "cmosSentToJudge = \"DO_NOT_SHOW\"",
+    "PageShowCondition": "draftOrderKinds CONTAINS \"CMO\"",
     "ShowSummaryChangeOption": "N",
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-cmo/populate-cmo-info/mid-event"
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-draft-orders/populate-drafts-info/mid-event"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -77,7 +109,7 @@
     "FieldShowCondition": "cmoUploadType = \"DO_NOT_SHOW\"",
     "PageShowCondition": "cmoUploadType != \"\"",
     "ShowSummaryChangeOption": "N",
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-cmo/review-info/mid-event"
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-draft-orders/populate-drafts-info/mid-event"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -142,6 +174,38 @@
     "DisplayContext": "COMPLEX",
     "ShowSummaryChangeOption": "Y"
   },
+
+
+
+
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "uploadCMO",
+    "CaseFieldID": "draftOrderHearings",
+    "PageID": "SelectDraftOrderHearing",
+    "PageFieldDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "PageDisplayOrder": 3,
+    "DisplayContext": "MANDATORY",
+    "PageShowCondition": "draftOrderKinds = \"C21\"",
+    "ShowSummaryChangeOption": "N",
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-draft-orders/populate-drafts-info/mid-event"
+  },
+
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "uploadCMO",
+    "CaseFieldID": "hearingDraftOrders",
+    "PageID": "UploadDraftOrders",
+    "PageFieldDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "PageDisplayOrder": 4,
+    "DisplayContext": "COMPLEX",
+    "PageShowCondition": "draftOrderKinds CONTAINS \"C21\" ",
+    "ShowSummaryChangeOption": "Y"
+  },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
@@ -150,7 +214,7 @@
     "PageID": "Review",
     "PageFieldDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 5,
     "PageShowCondition": "cmoUploadType != \"\"",
     "DisplayContext": "READONLY",
     "ShowSummaryChangeOption": "N"
@@ -163,7 +227,7 @@
     "PageID": "Review",
     "PageFieldDisplayOrder": 2,
     "PageColumnNumber": 1,
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 5,
     "DisplayContext": "READONLY",
     "ShowSummaryChangeOption": "N"
   }

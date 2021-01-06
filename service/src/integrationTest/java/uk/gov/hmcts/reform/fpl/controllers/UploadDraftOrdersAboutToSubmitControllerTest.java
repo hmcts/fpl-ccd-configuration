@@ -7,9 +7,10 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.fpl.controllers.cmo.UploadCMOController;
+import uk.gov.hmcts.reform.fpl.controllers.orders.UploadDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.CMOType;
+import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -18,8 +19,9 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.model.event.UploadCMOEventData;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,23 +31,17 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderKind.CMO;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(UploadCMOController.class)
+@WebMvcTest(UploadDraftOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
-class UploadCMOAboutToSubmitControllerTest extends AbstractUploadCMOControllerTest {
+class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOrdersControllerTest {
 
-    private static final DocumentReference DOCUMENT_REFERENCE = DocumentReference.builder()
-        .binaryUrl("FAKE BINARY")
-        .url("FAKE URL")
-        .filename("FAKE FILE")
-        .build();
-
-    protected UploadCMOAboutToSubmitControllerTest() {
-        super("upload-cmo");
-    }
+    private static final DocumentReference DOCUMENT_REFERENCE = TestDataHelper.testDocumentReference();
 
     @Test
     void shouldAddCMOToListWithDraftStatusAndNotMigrateDocs() {
@@ -57,7 +53,8 @@ class UploadCMOAboutToSubmitControllerTest extends AbstractUploadCMOControllerTe
 
         List<Element<HearingBooking>> hearings = hearingsOnDateAndDayAfter(now().plusDays(3));
 
-        UploadCMOEventData eventData = UploadCMOEventData.builder()
+        UploadDraftOrdersData eventData = UploadDraftOrdersData.builder()
+            .draftOrderKinds(List.of(CMO))
             .futureHearingsForCMO(dynamicList(hearings))
             .uploadedCaseManagementOrder(DOCUMENT_REFERENCE)
             .cmoUploadType(CMOType.DRAFT)
@@ -65,15 +62,15 @@ class UploadCMOAboutToSubmitControllerTest extends AbstractUploadCMOControllerTe
             .build();
 
         CaseData caseData = CaseData.builder()
-            .uploadCMOEventData(eventData)
+            .uploadDraftOrdersEventData(eventData)
             .hearingDetails(hearings)
             .build();
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
-        CaseManagementOrder cmo = orderWithDocs(hearings.get(0).getValue(), DRAFT, bundles);
+        HearingOrder cmo = orderWithDocs(hearings.get(0).getValue(), HearingOrderType.DRAFT_CMO, DRAFT, bundles);
 
-        List<Element<CaseManagementOrder>> unsealedCMOs = responseData.getDraftUploadedCMOs();
+        List<Element<HearingOrder>> unsealedCMOs = responseData.getDraftUploadedCMOs();
 
         assertThat(unsealedCMOs)
             .hasSize(1)
@@ -98,7 +95,8 @@ class UploadCMOAboutToSubmitControllerTest extends AbstractUploadCMOControllerTe
 
         List<Element<HearingBooking>> hearings = hearingsOnDateAndDayAfter(now().minusDays(3));
 
-        UploadCMOEventData eventData = UploadCMOEventData.builder()
+        UploadDraftOrdersData eventData = UploadDraftOrdersData.builder()
+            .draftOrderKinds(List.of(CMO))
             .pastHearingsForCMO(dynamicList(hearings))
             .uploadedCaseManagementOrder(DOCUMENT_REFERENCE)
             .cmoUploadType(CMOType.AGREED)
@@ -106,15 +104,15 @@ class UploadCMOAboutToSubmitControllerTest extends AbstractUploadCMOControllerTe
             .build();
 
         CaseData caseData = CaseData.builder()
-            .uploadCMOEventData(eventData)
+            .uploadDraftOrdersEventData(eventData)
             .hearingDetails(hearings)
             .build();
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
-        CaseManagementOrder cmo = orderWithDocs(hearings.get(0).getValue(), SEND_TO_JUDGE, bundles);
+        HearingOrder cmo = orderWithDocs(hearings.get(0).getValue(), AGREED_CMO, SEND_TO_JUDGE, bundles);
 
-        List<Element<CaseManagementOrder>> unsealedCMOs = responseData.getDraftUploadedCMOs();
+        List<Element<HearingOrder>> unsealedCMOs = responseData.getDraftUploadedCMOs();
 
         assertThat(unsealedCMOs)
             .hasSize(1)
@@ -141,10 +139,11 @@ class UploadCMOAboutToSubmitControllerTest extends AbstractUploadCMOControllerTe
     @Test
     void shouldRemoveTemporaryFields() {
         List<Element<HearingBooking>> hearings = hearingsOnDateAndDayAfter(LocalDateTime.of(2020, 3, 15, 10, 7));
-        List<Element<CaseManagementOrder>> draftCMOs = List.of();
+        List<Element<HearingOrder>> draftCMOs = List.of();
 
         CaseData caseData = CaseData.builder()
-            .uploadCMOEventData(UploadCMOEventData.builder()
+            .uploadDraftOrdersEventData(UploadDraftOrdersData.builder()
+                .draftOrderKinds(List.of(CMO))
                 .uploadedCaseManagementOrder(DOCUMENT_REFERENCE)
                 .pastHearingsForCMO(dynamicList(hearings))
                 .futureHearingsForCMO("DUMMY DATA")
@@ -171,7 +170,8 @@ class UploadCMOAboutToSubmitControllerTest extends AbstractUploadCMOControllerTe
         keys.removeAll(List.of(
             "showCMOsSentToJudge", "cmosSentToJudge", "cmoUploadType", "pastHearingsForCMO", "futureHearingsForCMO",
             "cmoHearingInfo", "showReplacementCMO", "previousCMO", "uploadedCaseManagementOrder", "replacementCMO",
-            "cmoSupportingDocs", "cmoJudgeInfo", "cmoToSend",
+            "cmoSupportingDocs", "cmoJudgeInfo", "cmoToSend"," draftOrderHearings", "hearingDraftOrders",
+            "draftOrderKinds",
             // Delete these ones below when cleaning up
             "numHearingsWithoutCMO", "singleHearingWithCMO", "multiHearingsWithCMOs", "showHearingsSingleTextArea",
             "showHearingsMultiTextArea"
@@ -180,9 +180,11 @@ class UploadCMOAboutToSubmitControllerTest extends AbstractUploadCMOControllerTe
         assertThat(response.getData().keySet()).isEqualTo(keys);
     }
 
-    private CaseManagementOrder orderWithDocs(HearingBooking hearing, CMOStatus status,
-                                              List<Element<SupportingEvidenceBundle>> supportingDocs) {
-        return CaseManagementOrder.builder()
+    private HearingOrder orderWithDocs(HearingBooking hearing, HearingOrderType type, CMOStatus status,
+                                       List<Element<SupportingEvidenceBundle>> supportingDocs) {
+        return HearingOrder.builder()
+            .type(type)
+            .title(type == AGREED_CMO ? "Agreed CMO discussed at hearing" : "Draft CMO from advocates' meeting")
             .status(status)
             .hearing(hearing.toLabel())
             .order(DOCUMENT_REFERENCE)
