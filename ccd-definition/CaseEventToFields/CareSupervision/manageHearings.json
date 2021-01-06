@@ -232,7 +232,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageHearings",
-    "CaseFieldID": "hasEditHearingSession",
+    "CaseFieldID": "hasSession",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
     "PageID": "EnterHearingDetails",
@@ -442,7 +442,7 @@
     "PageID": "JudgeInformation",
     "PageDisplayOrder": 7,
     "ShowSummaryChangeOption": "Y",
-    "PageShowCondition": "hasEditHearingSession=\"Yes\" OR hearingOption=\"NEW_HEARING\" OR hearingOption=\"EDIT_HEARING\" OR hearingOption=\"RE_LIST_HEARING\" OR hearingReListOption=\"RE_LIST_NOW\""
+    "PageShowCondition": "hasSession=\"Yes\" OR hearingOption=\"NEW_HEARING\" OR hearingOption=\"EDIT_HEARING\" OR hearingOption=\"RE_LIST_HEARING\" OR hearingReListOption=\"RE_LIST_NOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -454,7 +454,7 @@
     "PageID": "SendNoticeOfHearing",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 8,
-    "PageShowCondition": "hasEditHearingSession=\"Yes\" OR hearingOption=\"NEW_HEARING\" OR hearingOption=\"EDIT_HEARING\" OR hearingOption=\"RE_LIST_HEARING\" OR hearingReListOption=\"RE_LIST_NOW\""
+    "PageShowCondition": "hasSession=\"Yes\" OR hearingOption=\"NEW_HEARING\" OR hearingOption=\"EDIT_HEARING\" OR hearingOption=\"RE_LIST_HEARING\" OR hearingReListOption=\"RE_LIST_NOW\""
   },
   {
     "LiveFrom": "01/01/2017",
