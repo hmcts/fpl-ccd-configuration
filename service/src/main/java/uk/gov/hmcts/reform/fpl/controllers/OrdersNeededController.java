@@ -9,48 +9,17 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Orders;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static java.util.Objects.isNull;
-import static org.xhtmlrenderer.util.Util.isNullOrEmpty;
-import static uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType.EXCLUSION_REQUIREMENT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
 
 @Api
 @RestController
 @RequestMapping("/callback/orders-needed")
 public class OrdersNeededController extends CallbackController {
-
-    @PostMapping("/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest request) {
-        CaseDetails caseDetails = request.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
-
-        return respond(caseDetails, validateMidEventFields(caseData.getOrders()));
-    }
-
-    private boolean orderDirectionsContainExclusion(Orders orders) {
-        if(!isNull(orders.getEmergencyProtectionOrderDirections()) && orders.getEmergencyProtectionOrderDirections()
-            .contains(EXCLUSION_REQUIREMENT)) {
-            return true;
-        }
-        return false;
-    }
-
-    public List<String> validateMidEventFields(Orders orders) {
-        List<String> errors = new ArrayList<>();
-
-        if(orderDirectionsContainExclusion(orders) && isNullOrEmpty(orders.getExcluded())) {
-            errors.add("You need to add an exclusion");
-        }
-        return errors;
-    }
 
     @PostMapping("/about-to-submit")
     @SuppressWarnings("unchecked")

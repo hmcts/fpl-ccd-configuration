@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.validation.interfaces;
 
-import uk.gov.hmcts.reform.fpl.validation.validators.HasEPOAddressValidator;
+import uk.gov.hmcts.reform.fpl.validation.validators.HasEPOTypeValidator;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -11,9 +11,9 @@ import javax.validation.Payload;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = { HasEPOAddressValidator.class })
-public @interface HasEPOAddress {
-    String message() default "Enter a valid address for EPO";
+@Constraint(validatedBy = { HasEPOTypeValidator.class })
+public @interface HasEPOType {
+    String message() default "Enter an EPO type";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

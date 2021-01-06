@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.validation.validators;
 
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.Orders;
-import uk.gov.hmcts.reform.fpl.validation.interfaces.HasEPOAddress;
 
 import java.util.List;
 import javax.validation.ConstraintValidator;
@@ -13,7 +12,7 @@ import static org.apache.logging.log4j.util.Strings.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
 
-public class HasEPOlAddress implements ConstraintValidator<HasEPOAddress, Orders> {
+public class HasEPOAddressValidator implements ConstraintValidator<uk.gov.hmcts.reform.fpl.validation.interfaces.HasEPOAddress, Orders> {
     @Override
     public boolean isValid(Orders value, ConstraintValidatorContext context) {
         if(orderContainsEPO(value.getOrderType()) && epoIsPreventRemoval(value)) {

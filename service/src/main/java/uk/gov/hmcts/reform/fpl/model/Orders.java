@@ -8,6 +8,9 @@ import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.HasEPOAddress;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.HasEPOPostcode;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.HasEPOType;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.HasEnteredExcluded;
 
 import java.util.List;
 import javax.validation.constraints.NotNull;
@@ -16,6 +19,9 @@ import javax.validation.constraints.Size;
 @Data
 @Builder(toBuilder = true)
 @HasEPOAddress
+@HasEPOPostcode
+@HasEPOType
+@HasEnteredExcluded
 @AllArgsConstructor
 public class Orders {
     @NotNull(message = "Select at least one type of order")
