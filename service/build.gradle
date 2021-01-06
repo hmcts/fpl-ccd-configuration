@@ -3,7 +3,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath("net.serenity-bdd:serenity-gradle-plugin:2.3.9")
+    classpath("net.serenity-bdd:serenity-gradle-plugin:2.3.10")
   }
 }
 
@@ -334,6 +334,6 @@ pitest {
 
 dependencyManagement {
   imports {
-    mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2020.0.0-RC1'
+    mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2020.0.0'
   }
 }

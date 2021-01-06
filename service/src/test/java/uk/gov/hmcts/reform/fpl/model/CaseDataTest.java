@@ -377,6 +377,33 @@ class CaseDataTest {
     @Nested
     class GetNextHearingAfterCmo {
         @Test
+        void shouldGetAllHearings() {
+            Element<HearingBooking> hearing = element(HearingBooking.builder()
+                .startDate(LocalDateTime.now())
+                .build());
+            Element<HearingBooking> adjournedHearing = element(HearingBooking.builder()
+                .startDate(LocalDateTime.now())
+                .status(ADJOURNED)
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(List.of(hearing))
+                .cancelledHearingDetails(List.of(adjournedHearing))
+                .build();
+
+            List<Element<HearingBooking>> allHearings = caseData.getAllHearings();
+            assertThat(allHearings).containsExactly(hearing, adjournedHearing);
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenNoHearings() {
+            CaseData caseData = CaseData.builder().build();
+
+            List<Element<HearingBooking>> allHearings = caseData.getAllHearings();
+            assertThat(allHearings).isEmpty();
+        }
+
+        @Test
         void shouldReturnExpectedNextHearingBooking() {
             HearingBooking nextHearing = createHearingBooking(futureDate.plusDays(6), futureDate.plusDays(7),
                 ISSUE_RESOLUTION, randomUUID());
@@ -388,6 +415,26 @@ class CaseDataTest {
                 element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, null)));
 
             CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
+            Optional<HearingBooking> nextHearingBooking = caseData.getNextHearingAfterCmo(cmoID);
+
+            assertThat(nextHearingBooking).isPresent().contains(nextHearing);
+        }
+
+        @Test
+        void shouldReturnExpectedHearingWhenCMOAssociatedWithAdjournedHearing() {
+            HearingBooking nextHearing = createHearingBooking(futureDate.plusDays(6), futureDate.plusDays(7),
+                ISSUE_RESOLUTION, randomUUID());
+
+            List<Element<HearingBooking>> hearingBookings = List.of(
+                element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3), CASE_MANAGEMENT, null)),
+                element(nextHearing),
+                element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, null)));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(hearingBookings)
+                .cancelledHearingDetails(List.of(element(
+                    createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6), FINAL, cmoID))))
+                .build();
             Optional<HearingBooking> nextHearingBooking = caseData.getNextHearingAfterCmo(cmoID);
 
             assertThat(nextHearingBooking).isPresent().contains(nextHearing);
@@ -904,7 +951,6 @@ class CaseDataTest {
             assertThat(caseData.getHearingLinkedToCMO(hearingId)).isNotPresent();
         }
     }
-
 
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {
         return C2DocumentBundle.builder().uploadedDateTime(dateTime.toString()).build();

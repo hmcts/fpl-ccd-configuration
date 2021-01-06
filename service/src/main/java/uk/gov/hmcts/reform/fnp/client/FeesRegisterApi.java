@@ -4,9 +4,13 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import uk.gov.hmcts.reform.fnp.model.fee.FeeResponse;
-import uk.gov.hmcts.reform.fpl.config.FeignConfiguration;
+import uk.gov.hmcts.reform.fpl.config.feign.FeignClientConfiguration;
 
-@FeignClient(name = "fees-register-api", url = "${fees-register.api.url}", configuration = FeignConfiguration.class)
+@FeignClient(
+    name = "fees-register-api",
+    url = "${fees-register.api.url}",
+    configuration = FeignClientConfiguration.class
+)
 public interface FeesRegisterApi {
     @GetMapping("/fees-register/fees/lookup")
     FeeResponse findFee(

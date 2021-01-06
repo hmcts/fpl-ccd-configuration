@@ -12,15 +12,18 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.document.UploadDocumentsMigrationService;
 
 import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 
 @Api
 @RestController
@@ -30,7 +33,7 @@ import static java.lang.String.format;
 public class MigrateCaseController extends CallbackController {
 
     private final UploadDocumentsMigrationService uploadDocumentsMigrationService;
-
+    private final StandardDirectionsService standardDirectionsService;
     private static final String MIGRATION_ID_KEY = "migrationId";
 
     @PostMapping("/about-to-submit")
@@ -43,6 +46,9 @@ public class MigrateCaseController extends CallbackController {
         }
         if ("FPLA-2525".equals(migrationId)) {
             run2525(caseDetails);
+        }
+        if ("FPLA-2544".equals(migrationId)) {
+            run2544(caseDetails);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
@@ -91,6 +97,20 @@ public class MigrateCaseController extends CallbackController {
             caseData.getId());
         Map<String, Object> data = caseDetails.getData();
         data.putAll(uploadDocumentsMigrationService.transformFromOldCaseData(caseData));
+    }
+
+    private void run2544(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if ("PO20C50030".equals(caseData.getFamilyManCaseNumber())) {
+            if (!SUBMITTED.equals(caseData.getState())) {
+                throw new IllegalStateException(
+                    format("Case is in %s state, expected %s", caseData.getState(), SUBMITTED));
+            }
+
+            caseDetails.getData().put("state", State.GATEKEEPING);
+            caseDetails.getData().putAll(standardDirectionsService.populateStandardDirections(caseData));
+        }
     }
 
 }
