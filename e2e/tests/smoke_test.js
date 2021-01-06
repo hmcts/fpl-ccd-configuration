@@ -8,6 +8,6 @@ Scenario('Sign in as local authority and create a case', async ({I, caseListPage
   const caseName = `smoke test case (${new Date().toISOString()})`;
   const caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne, caseName);
   await I.navigateToCaseList();
-  await caseListPage.searchForCasesWithName(caseName, 'Open');
+  await I.retryUntilExists(() => caseListPage.searchForCasesWithName(caseName, 'Open'), `//ccd-search-result/table//tr[//a[contains(@href,'${caseId}')]]`);
   await I.seeCaseInSearchResult(caseId);
 });
