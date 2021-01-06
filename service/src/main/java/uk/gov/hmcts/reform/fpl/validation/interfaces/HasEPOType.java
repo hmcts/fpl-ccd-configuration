@@ -13,7 +13,7 @@ import javax.validation.Payload;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = { HasEPOTypeValidator.class })
 public @interface HasEPOType {
-    String message() default "Enter an EPO type";
+    String message() default "Select the type of EPO you need.";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

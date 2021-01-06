@@ -190,7 +190,7 @@ public class CaseSubmissionGenerationService
         if (isNotEmpty(orders.getEmergencyProtectionOrders())) {
             stringBuilder.append(orders.getEpoType().getLabel());
             stringBuilder.append(NEW_LINE);
-            if(epoTypeIsPreventingRemoval(orders.getEpoType())) {
+            if (epoTypeIsPreventingRemoval(orders.getEpoType())) {
                 String address = orders.getAddress().getAddressAsString("\n");
                 stringBuilder.append(address);
                 stringBuilder.append(NEW_LINE);
@@ -235,7 +235,7 @@ public class CaseSubmissionGenerationService
     private void appendEmergencyProtectionOrderDirectionDetails(final Orders orders,
                                                                 final StringBuilder stringBuilder) {
 
-        if(StringUtils.isNotBlank(orders.getExcluded())) {
+        if (StringUtils.isNotBlank(orders.getExcluded())) {
             stringBuilder.append(orders.getExcluded() + " excluded");
             stringBuilder.append(NEW_LINE);
         }

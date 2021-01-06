@@ -13,7 +13,7 @@ import javax.validation.Payload;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = { HasEPOAddressValidator.class })
 public @interface HasEPOAddress {
-    String message() default "Enter a valid address for EPO";
+    String message() default "Enter the postcode and select the address.";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

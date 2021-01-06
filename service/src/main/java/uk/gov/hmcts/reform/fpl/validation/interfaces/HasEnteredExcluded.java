@@ -13,7 +13,7 @@ import javax.validation.Payload;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = { HasEnteredExcludedValidator.class })
 public @interface HasEnteredExcluded {
-    String message() default "Enter excluded";
+    String message() default "Enter who you want excluded.";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

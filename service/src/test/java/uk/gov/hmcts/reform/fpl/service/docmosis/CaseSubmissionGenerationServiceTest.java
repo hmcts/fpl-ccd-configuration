@@ -196,6 +196,8 @@ class CaseSubmissionGenerationServiceTest {
 
             DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
 
+            System.out.println(caseSubmission);
+
             String expectedOrdersNeeded = "Emergency protection order\n"
                 + "Information on the whereabouts of the child\n"
                 + "Authorisation for entry of premises\n"
