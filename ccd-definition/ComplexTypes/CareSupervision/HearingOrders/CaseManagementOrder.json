@@ -2,6 +2,24 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "UploadedCaseManagementOrder",
+    "ListElementCode": "type",
+    "FieldType": "FixedRadioList",
+    "ElementLabel": "Type",
+    "FieldTypeParameter": "DraftOrderType",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "status=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadedCaseManagementOrder",
+    "ListElementCode": "title",
+    "FieldType": "Text",
+    "ElementLabel": "Title",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadedCaseManagementOrder",
     "ListElementCode": "order",
     "FieldType": "Document",
     "ElementLabel": "Order",

@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
 import java.util.List;
@@ -73,7 +73,7 @@ public class RemoveOrderControllerMidEventTest extends AbstractControllerTest {
             .caseManagementOrderId(removedOrderId)
             .build();
 
-        CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder()
+        HearingOrder caseManagementOrder = HearingOrder.builder()
             .order(documentReference)
             .build();
 
@@ -150,7 +150,7 @@ public class RemoveOrderControllerMidEventTest extends AbstractControllerTest {
             .caseManagementOrderId(UUID.randomUUID())
             .build();
 
-        CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder()
+        HearingOrder caseManagementOrder = HearingOrder.builder()
             .order(documentReference)
             .build();
 

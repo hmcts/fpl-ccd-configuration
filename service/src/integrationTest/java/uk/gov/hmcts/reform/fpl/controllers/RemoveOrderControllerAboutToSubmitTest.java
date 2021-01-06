@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 
@@ -188,13 +188,13 @@ public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTe
     void shouldRemoveCaseManagementOrderAndRemoveHearingAssociation() {
         UUID removedOrderId = UUID.randomUUID();
 
-        Element<CaseManagementOrder> caseManagementOrder1 = element(removedOrderId, CaseManagementOrder.builder()
+        Element<HearingOrder> caseManagementOrder1 = element(removedOrderId, HearingOrder.builder()
             .status(APPROVED)
             .build());
 
-        List<Element<CaseManagementOrder>> caseManagementOrders = List.of(
+        List<Element<HearingOrder>> caseManagementOrders = List.of(
             caseManagementOrder1,
-            element(CaseManagementOrder.builder().build()));
+            element(HearingOrder.builder().build()));
 
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(HearingBooking.builder()
@@ -212,7 +212,7 @@ public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTe
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
 
         CaseData responseData = extractCaseData(response);
-        List<Element<CaseManagementOrder>> hiddenCMOs = responseData.getHiddenCMOs();
+        List<Element<HearingOrder>> hiddenCMOs = responseData.getHiddenCMOs();
         HearingBooking unlinkedHearing = responseData.getHearingDetails().get(0).getValue();
 
         assertThat(hiddenCMOs).hasSize(1).first().isEqualTo(caseManagementOrder1);
