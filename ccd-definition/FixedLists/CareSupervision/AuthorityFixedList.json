@@ -429,15 +429,22 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "WIR",
+    "ListElement": "Wirral Borough Council",
+    "DisplayOrder": 97
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "WOL",
     "ListElement": "Wolverhampton City Council",
-    "DisplayOrder": 97
+    "DisplayOrder": 98
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "WSC",
     "ListElement": "Worcestershire County Council",
-    "DisplayOrder": 98
+    "DisplayOrder": 99
   }
 ]
