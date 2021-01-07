@@ -137,6 +137,18 @@ class FeatureToggleServiceTest {
             eq(false));
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForIsEpoOrderTypeAndExclusionEnabledBoolean(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isEpoOrderTypeAndExclusionEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("epo-order-type-and-exclusion"),
+            ldUser(ENVIRONMENT).build(),
+            eq(false));
+    }
+
     private static Stream<Arguments> userAttributesTestSource() {
         return Stream.of(
             Arguments.of(
