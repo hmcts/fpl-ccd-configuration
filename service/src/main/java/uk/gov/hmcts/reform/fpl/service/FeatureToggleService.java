@@ -68,7 +68,7 @@ public class FeatureToggleService {
     }
 
     public boolean isEpoOrderTypeAndExclusionEnabled() {
-        return ldClient.boolVariation("epo-order-type-and-exclusion", createLDUser(), false);
+        return ldClient.boolVariation("epo-order-type-and-exclusion", createLDUser(), true);
     }
 
     private LDUser createLDUser() {
