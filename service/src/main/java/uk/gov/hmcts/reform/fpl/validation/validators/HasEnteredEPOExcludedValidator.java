@@ -8,6 +8,7 @@ import java.util.List;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+import static java.util.Objects.isNull;
 import static org.apache.logging.log4j.util.Strings.isEmpty;
 import static uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType.EXCLUSION_REQUIREMENT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
@@ -15,15 +16,16 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER
 public class HasEnteredEPOExcludedValidator implements ConstraintValidator<HasEnteredEPOExcluded, Orders> {
     @Override
     public boolean isValid(Orders value, ConstraintValidatorContext context) {
-        if (orderContainsEPO(value.getOrderType()) && directionsContainExclusionRequirement(value) &&
-        isEmpty(value.getExcluded())) {
+        if (orderContainsEPO(value.getOrderType()) && directionsContainExclusionRequirement(value)
+            && isEmpty(value.getExcluded())) {
             return false;
         }
         return true;
     }
 
     private boolean directionsContainExclusionRequirement(Orders orders) {
-        return orders.getEmergencyProtectionOrderDirections().contains(EXCLUSION_REQUIREMENT);
+        return !isNull(orders.getEmergencyProtectionOrderDirections()) && orders.getEmergencyProtectionOrderDirections()
+            .contains(EXCLUSION_REQUIREMENT);
     }
 
     private boolean orderContainsEPO(List<OrderType> orderTypes) {
