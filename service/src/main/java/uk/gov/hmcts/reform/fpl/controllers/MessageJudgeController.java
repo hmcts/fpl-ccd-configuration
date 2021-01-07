@@ -10,10 +10,11 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.JudicialMessageReplyEvent;
 import uk.gov.hmcts.reform.fpl.events.NewJudicialMessageEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.service.MessageJudgeService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
@@ -47,10 +48,13 @@ public class MessageJudgeController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
 
-        caseData.getFirstHearing().ifPresent(hearingBooking -> caseDetailsMap.put("nextHearingLabel",
-            String.format("Next hearing in the case: %s", hearingBooking.toLabel())));
+        if (caseData.getMessageJudgeEventData().isReplyingToAMessage()) {
+            caseDetailsMap.putAll(messageJudgeService.populateReplyMessageFields(caseData));
+        } else {
+            caseDetailsMap.putAll(messageJudgeService.populateNewMessageFields(caseData));
+        }
 
-        caseDetailsMap.putAll(messageJudgeService.buildRelatedC2DocumentFields(caseData));
+        caseDetailsMap.put("nextHearingLabel", messageJudgeService.getFirstHearingLabel(caseData));
 
         return respond(caseDetailsMap);
     }
@@ -60,8 +64,14 @@ public class MessageJudgeController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
+        List<Element<JudicialMessage>> updatedMessages;
 
-        List<Element<JudicialMessage>> updatedMessages = messageJudgeService.addNewJudicialMessage(caseData);
+        if (caseData.getMessageJudgeEventData().isReplyingToAMessage()) {
+            updatedMessages = messageJudgeService.replyToJudicialMessage(caseData);
+        } else {
+            updatedMessages = messageJudgeService.addNewJudicialMessage(caseData);
+        }
+
         caseDetailsMap.put("judicialMessages", messageJudgeService.sortJudicialMessages(updatedMessages));
 
         removeTemporaryFields(caseDetailsMap, transientFields());
@@ -71,11 +81,13 @@ public class MessageJudgeController extends CallbackController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
+        CaseData caseData = getCaseData(callbackRequest.getCaseDetails());
+        JudicialMessage judicialMessage = caseData.getJudicialMessages().get(0).getValue();
 
-        JudicialMessage newJudicialMessage = caseData.getJudicialMessages().get(0).getValue();
-
-        publishEvent(new NewJudicialMessageEvent(caseData, newJudicialMessage));
+        if (judicialMessage.isFirstMessage()) {
+            publishEvent(new NewJudicialMessageEvent(caseData, judicialMessage));
+        } else {
+            publishEvent(new JudicialMessageReplyEvent(caseData, judicialMessage));
+        }
     }
 }

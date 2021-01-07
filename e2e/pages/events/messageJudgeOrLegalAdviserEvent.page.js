@@ -6,11 +6,17 @@ module.exports = {
       yes: '#isMessageRegardingC2-Yes',
       no: '#isMessageRegardingC2-Yes',
     },
+    eventOptions: {
+      newMessage: '#messageJudgeOption-NEW_MESSAGE',
+      reply: '#messageJudgeOption-REPLY',
+    },
     c2List: '#c2DynamicList',
+    existingMessagesList: '#judicialMessageDynamicList',
     recipientEmail: '#judicialMessageMetaData_recipient',
-    senderEmail: '#judicialMessageMetaData_sender',
+    requested: '#judicialMessageMetaData_requestedBy',
     urgency: '#judicialMessageMetaData_urgency',
-    note: '#judicialMessageNote',
+    latestMessage: '#judicialMessageNote',
+    replyMessage: '#judicialMessageReply_latestMessage',
   },
 
   relatedMessageToAC2() {
@@ -27,15 +33,29 @@ module.exports = {
     I.fillField(this.fields.recipientEmail, email);
   },
 
-  enterSenderEmail(email) {
-    I.fillField(this.fields.senderEmail, email);
+  enterRequester(requester) {
+    I.fillField(this.fields.requested, requester);
   },
 
   enterUrgency(urgency) {
     I.fillField(this.fields.urgency, urgency);
   },
 
-  enterMessageNote(note) {
-    I.fillField(this.fields.note, note);
+  enterMessage(latestMessage) {
+    I.fillField(this.fields.latestMessage, latestMessage);
+  },
+
+  selectReplyToMessage() {
+    I.click(this.fields.eventOptions.reply);
+  },
+
+  async selectJudicialMessage() {
+    const messageLabel = await I.grabTextFrom(`${this.fields.existingMessagesList} option:nth-child(2)`);
+    I.waitForElement(this.fields.existingMessagesList);
+    I.selectOption(this.fields.existingMessagesList, messageLabel);
+  },
+
+  enterMessageReply(reply) {
+    I.fillField(this.fields.replyMessage, reply);
   },
 };
