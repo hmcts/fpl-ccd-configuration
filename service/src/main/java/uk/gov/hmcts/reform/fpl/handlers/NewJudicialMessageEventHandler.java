@@ -6,12 +6,12 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.NewJudicialMessageEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.notify.NewJudicialMessageTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.JudicialMessageContentProvider;
 
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NEW_JUDICIAL_MESSAGE_ADDED_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDICIAL_MESSAGE_ADDED_TEMPLATE;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -27,7 +27,7 @@ public class NewJudicialMessageEventHandler {
         NewJudicialMessageTemplate notifyData =
             newJudicialMessageContentProvider.buildNewJudicialMessageTemplate(caseData, newJudicialMessage);
 
-        notificationService.sendEmail(NEW_JUDICIAL_MESSAGE_ADDED_TEMPLATE, newJudicialMessage.getRecipient(),
+        notificationService.sendEmail(JUDICIAL_MESSAGE_ADDED_TEMPLATE, newJudicialMessage.getRecipient(),
             notifyData, caseData.getId());
     }
 }
