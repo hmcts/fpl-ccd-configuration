@@ -64,4 +64,73 @@ class AgreedCMOUploadedContentProviderTest extends AbstractEmailContentProviderT
 
         assertThat(template).usingRecursiveComparison().isEqualTo(expected);
     }
+
+    @Test
+    void shouldSetJudgeNameCorrectlyWhenMagistrateJudgeIncludesFullName() {
+        List<Element<Respondent>> respondents = wrapElements(
+            Respondent.builder()
+                .party(RespondentParty.builder()
+                    .lastName("Vlad")
+                    .build())
+                .build());
+        String familyManCaseNumber = "123456";
+
+        JudgeAndLegalAdvisor judge = JudgeAndLegalAdvisor.builder()
+            .judgeFullName("Mark Simmons")
+            .judgeTitle(JudgeOrMagistrateTitle.MAGISTRATES)
+            .build();
+
+        HearingBooking hearing = HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .startDate(LocalDateTime.of(SOME_DATE, LocalTime.of(0, 0)))
+            .judgeAndLegalAdvisor(judge)
+            .build();
+
+        CMOReadyToSealTemplate template = contentProvider.buildTemplate(hearing, CASE_NUMBER, judge,
+            respondents, familyManCaseNumber);
+
+        CMOReadyToSealTemplate expected = CMOReadyToSealTemplate.builder()
+            .judgeName("Mark Simmons (JP)")
+            .judgeTitle("")
+            .respondentLastName("Vlad")
+            .subjectLineWithHearingDate("Vlad, 123456, case management hearing, 20 February 2020")
+            .caseUrl(caseUrl(CASE_NUMBER.toString(), "DraftOrdersTab"))
+            .build();
+
+        assertThat(template).usingRecursiveComparison().isEqualTo(expected);
+    }
+
+    @Test
+    void shouldSetJudgeTitleCorrectlyWhenMagistrateJudgeDoesNotIncludeName() {
+        List<Element<Respondent>> respondents = wrapElements(
+            Respondent.builder()
+                .party(RespondentParty.builder()
+                    .lastName("Vlad")
+                    .build())
+                .build());
+        String familyManCaseNumber = "123456";
+
+        JudgeAndLegalAdvisor judge = JudgeAndLegalAdvisor.builder()
+            .judgeTitle(JudgeOrMagistrateTitle.MAGISTRATES)
+            .build();
+
+        HearingBooking hearing = HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .startDate(LocalDateTime.of(SOME_DATE, LocalTime.of(0, 0)))
+            .judgeAndLegalAdvisor(judge)
+            .build();
+
+        CMOReadyToSealTemplate template = contentProvider.buildTemplate(hearing, CASE_NUMBER, judge,
+            respondents, familyManCaseNumber);
+
+        CMOReadyToSealTemplate expected = CMOReadyToSealTemplate.builder()
+            .judgeName("")
+            .judgeTitle("Justice of the Peace")
+            .respondentLastName("Vlad")
+            .subjectLineWithHearingDate("Vlad, 123456, case management hearing, 20 February 2020")
+            .caseUrl(caseUrl(CASE_NUMBER.toString(), "DraftOrdersTab"))
+            .build();
+
+        assertThat(template).usingRecursiveComparison().isEqualTo(expected);
+    }
 }

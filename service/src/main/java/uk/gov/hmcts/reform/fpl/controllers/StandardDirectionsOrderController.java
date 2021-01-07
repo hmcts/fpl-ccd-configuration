@@ -167,7 +167,7 @@ public class StandardDirectionsOrderController extends CallbackController {
 
         DocmosisStandardDirectionOrder templateData = standardDirectionOrderGenerationService.getTemplateData(updated);
         Document document = documentService.getDocumentFromDocmosisOrderTemplate(templateData, SDO);
-
+        // 1608031031785743
         order.setDirectionsToEmptyList();
         order.setOrderDocReferenceFromDocument(document);
 
