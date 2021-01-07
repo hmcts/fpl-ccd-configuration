@@ -3,12 +3,14 @@ package uk.gov.hmcts.reform.fpl.service.validators;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.util.List;
 
@@ -21,6 +23,9 @@ class OrdersSoughtCheckerTest {
 
     @Autowired
     private OrdersSoughtChecker ordersSoughtChecker;
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     @Test
     void shouldReturnErrorWhenNoNeededOrders() {

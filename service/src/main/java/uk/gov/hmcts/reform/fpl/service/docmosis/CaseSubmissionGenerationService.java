@@ -188,7 +188,7 @@ public class CaseSubmissionGenerationService
     private void appendEmergencyProtectionOrdersAndDetailsToOrdersNeeded(final Orders orders,
                                                                          final StringBuilder stringBuilder) {
         if (isNotEmpty(orders.getEmergencyProtectionOrders())) {
-            if(isNotEmpty(orders.getEpoType())) {
+            if (isNotEmpty(orders.getEpoType())) {
                 stringBuilder.append(orders.getEpoType().getLabel());
                 stringBuilder.append(NEW_LINE);
                 if (orders.getEpoType() == PREVENT_REMOVAL) {
