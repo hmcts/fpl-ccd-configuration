@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -14,7 +13,6 @@ import uk.gov.hmcts.reform.fpl.model.notify.c2uploaded.C2UploadedTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
-import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.concatUrlAndMostRecentUploadedDocumentPath;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
@@ -24,8 +22,6 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider {
 
     private final Time time;
-    @Value("${manage-case.ui.base.url}")
-    private String xuiBaseUrl;
     private static final String C2 = "C2Tab";
 
     public C2UploadedTemplate getNotifyData(final CaseData caseData, final DocumentReference latestC2) {
@@ -33,8 +29,7 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
             .callout(buildCallout(caseData))
             .respondentLastName(getFirstRespondentLastName(caseData.getRespondents1()))
             .caseUrl(getCaseUrl(caseData.getId(), C2))
-            .documentUrl(concatUrlAndMostRecentUploadedDocumentPath(xuiBaseUrl,
-                latestC2.getBinaryUrl()))
+            .documentUrl(getDocumentUrl(latestC2))
             .build();
     }
 

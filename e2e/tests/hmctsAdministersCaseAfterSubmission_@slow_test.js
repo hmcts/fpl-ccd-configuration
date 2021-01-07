@@ -283,7 +283,7 @@ Scenario('HMCTS admin handles supplementary evidence', async ({I, caseListPage, 
   await I.seeEventSubmissionConfirmation(config.administrationActions.handleSupplementaryEvidence);
 
   await I.navigateToCaseList();
-  await caseListPage.searchForCasesWithHandledEvidences(submittedAt);
+  await I.retryUntilExists(() => caseListPage.searchForCasesWithHandledEvidences(submittedAt), caseListPage.locateCase(caseId));
   await I.seeCaseInSearchResult(caseId);
 });
 
@@ -332,24 +332,6 @@ Scenario('HMCTS admin makes 26-week case extension', async ({I, caseViewPage, ad
   I.see('10 Oct 2030');
   I.see('Timetable for child');
   I.see('Comment');
-});
-
-Scenario('HMCTS admin messages the judge', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
-  await caseViewPage.goToNewActions(config.applicationActions.messageJudge);
-  messageJudgeOrLegalAdviserEventPage.relatedMessageToAC2();
-  await messageJudgeOrLegalAdviserEventPage.selectC2();
-  messageJudgeOrLegalAdviserEventPage.enterRecipientEmail('recipient@fpla.com');
-  messageJudgeOrLegalAdviserEventPage.enterSenderEmail('sender@fpla.com');
-  messageJudgeOrLegalAdviserEventPage.enterUrgency('High');
-  await I.goToNextPage();
-  messageJudgeOrLegalAdviserEventPage.enterMessageNote('Some note');
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.applicationActions.messageJudge);
-  caseViewPage.selectTab(caseViewPage.tabs.judicialMessages);
-  I.seeInTab(['Message 1', 'From'], 'sender@fpla.com');
-  I.seeInTab(['Message 1', 'Sent to'], 'recipient@fpla.com');
-  I.seeInTab(['Message 1', 'Note'], 'Some note');
-  I.seeInTab(['Message 1', 'Status'], 'Open');
 });
 
 Scenario('HMCTS admin closes the case', async ({I, caseViewPage, closeTheCaseEventPage}) => {

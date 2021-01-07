@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,12 +11,13 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
-import java.util.UUID;
 import javax.validation.Validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.INCLUDED_IN_SWET;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ExtendWith(SpringExtension.class)
 class DocumentsValidatorServiceTest {
@@ -34,17 +34,31 @@ class DocumentsValidatorServiceTest {
     }
 
     @Test
-    void shouldGenerateErrorsWhenAdditionalDocumentsAreMissingDocumentTitle() {
-        List<Element<DocumentSocialWorkOther>> additionalDocuments = createSocialWorkOtherDocuments("");
+    void shouldGenerateErrorsWhenAdditionalDocumentsAreMissingTitleOrFile() {
+        List<Element<DocumentSocialWorkOther>> additionalDocuments = wrapElements(
+            DocumentSocialWorkOther.builder().typeOfDocument(testDocumentReference()).build(),
+            DocumentSocialWorkOther.builder().documentTitle("doc 1").build(),
+            DocumentSocialWorkOther.builder().build()
+        );
+
         List<String> validationErrors = documentsValidatorService.validateSocialWorkOtherDocuments(additionalDocuments);
-        assertThat(validationErrors).containsOnlyOnce("You must give additional document 1 a name.",
-            "You must give additional document 2 a name.");
+
+        assertThat(validationErrors).containsExactly(
+            "You must give additional document 1 a name.",
+            "You must upload a file for additional document 2.",
+            "You must give additional document 3 a name.",
+            "You must upload a file for additional document 3."
+        );
     }
 
     @Test
-    void shouldNotGenerateErrorsWhenAdditionalDocumentsHaveDocumentTitles() {
-        List<Element<DocumentSocialWorkOther>> additionalDocuments =
-            createSocialWorkOtherDocuments("Mock title");
+    void shouldNotGenerateErrorsWhenAdditionalDocumentsHaveNameAndFileAttached() {
+        List<Element<DocumentSocialWorkOther>> additionalDocuments = wrapElements(
+            DocumentSocialWorkOther.builder()
+                .documentTitle("doc 1")
+                .typeOfDocument(testDocumentReference())
+                .build());
+
         List<String> validationErrors = documentsValidatorService.validateSocialWorkOtherDocuments(additionalDocuments);
 
         assertThat(validationErrors).isEmpty();
@@ -120,19 +134,5 @@ class DocumentsValidatorServiceTest {
             .build();
     }
 
-    private List<Element<DocumentSocialWorkOther>> createSocialWorkOtherDocuments(String documentTitle) {
-        return ImmutableList.of(
-            Element.<DocumentSocialWorkOther>builder()
-                .id(UUID.randomUUID())
-                .value(DocumentSocialWorkOther.builder()
-                    .documentTitle(documentTitle)
-                    .build())
-                .build(),
-            Element.<DocumentSocialWorkOther>builder()
-                .id(UUID.randomUUID())
-                .value(DocumentSocialWorkOther.builder()
-                    .documentTitle(documentTitle)
-                    .build())
-                .build());
-    }
+
 }

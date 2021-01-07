@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
@@ -23,7 +22,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ContextConfiguration(classes = {C2UploadedEmailContentProvider.class, FixedTimeConfiguration.class})
-@TestPropertySource(properties = {"manage-case.ui.base.url=http://fake-url"})
 class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     @Autowired
