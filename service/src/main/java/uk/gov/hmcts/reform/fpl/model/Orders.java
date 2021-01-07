@@ -15,6 +15,8 @@ import java.util.List;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
+
 @Data
 @Builder(toBuilder = true)
 @HasEPOAddress
@@ -35,4 +37,8 @@ public class Orders {
     private final EPOType epoType;
     private final String excluded;
     private final Address address;
+
+    public boolean orderContainsEPO() {
+        return this.getOrderType().contains(EMERGENCY_PROTECTION_ORDER);
+    }
 }
