@@ -19,12 +19,12 @@ public class HasEPOAddressValidator implements ConstraintValidator<HasEPOAddress
 
     @Override
     public boolean isValid(Orders value, ConstraintValidatorContext context) {
-            if (value.orderContainsEPO() && epoIsPreventRemoval(value)) {
-                if (isEmpty(value.getAddress().getAddressLine1()) || isEmpty(value.getAddress().getPostcode())) {
-                    return false;
-                }
+        if (value.orderContainsEPO() && epoIsPreventRemoval(value)) {
+            if (isEmpty(value.getAddress().getAddressLine1()) || isEmpty(value.getAddress().getPostcode())) {
+                return false;
             }
-            return true;
+        }
+        return true;
     }
 
     private boolean epoIsPreventRemoval(Orders orders) {

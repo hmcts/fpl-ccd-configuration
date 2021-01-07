@@ -20,13 +20,14 @@ public class HasEnteredEPOExcludedValidator implements ConstraintValidator<HasEn
 
     @Override
     public boolean isValid(Orders value, ConstraintValidatorContext context) {
-        if(featureToggleService.isEpoOrderTypeAndExclusionEnabled()) {
+        if (featureToggleService.isEpoOrderTypeAndExclusionEnabled()) {
             if (value.orderContainsEPO() && directionsContainExclusionRequirement(value)
                 && isEmpty(value.getExcluded())) {
                 return false;
             }
             return true;
-        } return true;
+        }
+        return true;
     }
 
     private boolean directionsContainExclusionRequirement(Orders orders) {
