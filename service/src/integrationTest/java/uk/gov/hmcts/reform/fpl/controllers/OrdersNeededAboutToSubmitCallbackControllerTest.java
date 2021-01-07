@@ -11,7 +11,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(OrdersNeededController.class)
+@WebMvcTest(OrdersNeededAboutToSubmitCallbackController.class)
 @OverrideAutoConfiguration(enabled = true)
 class OrdersNeededAboutToSubmitCallbackControllerTest extends AbstractControllerTest {
 

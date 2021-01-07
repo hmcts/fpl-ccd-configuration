@@ -1,25 +1,28 @@
 package uk.gov.hmcts.reform.fpl.validation.validators;
 
-import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.Orders;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.HasEPOType;
 
-import java.util.List;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 import static java.util.Objects.isNull;
-import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
 
-public class HasEPOTypeValidator implements ConstraintValidator<uk.gov.hmcts.reform.fpl.validation.interfaces.HasEPOType, Orders> {
-    @Override
-    public boolean isValid(Orders value, ConstraintValidatorContext context) {
-        if(orderContainsEPO(value.getOrderType()) && isNull(value.getEpoType())) {
-            return false;
-        }
-        return true;
+public class HasEPOTypeValidator implements ConstraintValidator<HasEPOType, Orders> {
+    private final FeatureToggleService featureToggleService;
+
+    public HasEPOTypeValidator(FeatureToggleService featureToggleService) {
+        this.featureToggleService = featureToggleService;
     }
 
-    private boolean orderContainsEPO(List<OrderType> orderTypes) {
-        return orderTypes.contains(EMERGENCY_PROTECTION_ORDER);
+    @Override
+    public boolean isValid(Orders value, ConstraintValidatorContext context) {
+        if(featureToggleService.isEpoOrderTypeAndExclusionEnabled()) {
+            if (value.orderContainsEPO() && isNull(value.getEpoType())) {
+                return false;
+            }
+            return true;
+        } return true;
     }
 }

@@ -63,6 +63,8 @@ import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.REMOVED_BY_POLI
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.VOLUNTARILY_SECTION_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.DRAFT_WATERMARK;
+import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
+import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.DONT_KNOW;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -191,12 +193,14 @@ class CaseSubmissionGenerationServiceTest {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .orders(givenCaseData.getOrders().toBuilder()
                     .emergencyProtectionOrders(of(EmergencyProtectionOrdersType.values()))
+                    .epoType(REMOVE_TO_ACCOMMODATION)
                     .build())
                 .build();
 
             DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
 
             String expectedOrdersNeeded = "Emergency protection order\n"
+                + "Remove to accommodation\n"
                 + "Information on the whereabouts of the child\n"
                 + "Authorisation for entry of premises\n"
                 + "Authorisation to search for another child on the premises\n"
@@ -209,6 +213,7 @@ class CaseSubmissionGenerationServiceTest {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .orders(givenCaseData.getOrders().toBuilder()
                     .emergencyProtectionOrders(of(CHILD_WHEREABOUTS))
+                    .epoType(REMOVE_TO_ACCOMMODATION)
                     .emergencyProtectionOrderDetails("emergency protection order details")
                     .build())
                 .build();
@@ -216,8 +221,41 @@ class CaseSubmissionGenerationServiceTest {
             DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
 
             String expectedOrdersNeeded = "Emergency protection order\n"
+                + "Remove to accommodation\n"
                 + "Information on the whereabouts of the child\n"
                 + "emergency protection order details";
+            assertThat(caseSubmission.getOrdersNeeded()).isEqualTo(expectedOrdersNeeded);
+        }
+
+        @Test
+        void shouldIncludeAddressWhenPreventRemovalEPOTypeSelected() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .emergencyProtectionOrders(of(EmergencyProtectionOrdersType.values()))
+                    .epoType(PREVENT_REMOVAL)
+                    .address(Address.builder()
+                        .addressLine1("45")
+                        .addressLine2("Ethel Street")
+                        .postcode("BT7H3B")
+                        .postTown("Lisburn Road")
+                        .country("United Kingdom")
+                        .build())
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            String expectedOrdersNeeded = "Emergency protection order\n"
+                + "Prevent removal from an address\n"
+                + "45\n"
+                + "Ethel Street\n"
+                + "Lisburn Road\n"
+                + "BT7H3B\n"
+                + "United Kingdom\n"
+                + "Information on the whereabouts of the child\n"
+                + "Authorisation for entry of premises\n"
+                + "Authorisation to search for another child on the premises\n"
+                + "Other order under section 48 of the Children Act 1989";
             assertThat(caseSubmission.getOrdersNeeded()).isEqualTo(expectedOrdersNeeded);
         }
     }

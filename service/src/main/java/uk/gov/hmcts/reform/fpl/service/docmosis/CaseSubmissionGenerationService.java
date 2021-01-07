@@ -68,6 +68,7 @@ import static org.apache.commons.lang3.StringUtils.endsWith;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.fromString;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
+import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.DONT_KNOW;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -187,6 +188,13 @@ public class CaseSubmissionGenerationService
     private void appendEmergencyProtectionOrdersAndDetailsToOrdersNeeded(final Orders orders,
                                                                          final StringBuilder stringBuilder) {
         if (isNotEmpty(orders.getEmergencyProtectionOrders())) {
+            stringBuilder.append(orders.getEpoType().getLabel());
+            stringBuilder.append(NEW_LINE);
+            if (orders.getEpoType() == PREVENT_REMOVAL) {
+                String address = orders.getAddress().getAddressAsString("\n");
+                stringBuilder.append(address);
+                stringBuilder.append(NEW_LINE);
+            }
             stringBuilder.append(orders.getEmergencyProtectionOrders().stream()
                 .map(EmergencyProtectionOrdersType::getLabel)
                 .collect(joining(NEW_LINE)));
@@ -222,6 +230,12 @@ public class CaseSubmissionGenerationService
 
     private void appendEmergencyProtectionOrderDirectionDetails(final Orders orders,
                                                                 final StringBuilder stringBuilder) {
+
+        if (StringUtils.isNotBlank(orders.getExcluded())) {
+            stringBuilder.append(orders.getExcluded() + " excluded");
+            stringBuilder.append(NEW_LINE);
+        }
+
         if (StringUtils.isNotEmpty(orders.getEmergencyProtectionOrderDirectionDetails())) {
             stringBuilder.append(orders.getEmergencyProtectionOrderDirectionDetails());
             stringBuilder.append(NEW_LINE);
