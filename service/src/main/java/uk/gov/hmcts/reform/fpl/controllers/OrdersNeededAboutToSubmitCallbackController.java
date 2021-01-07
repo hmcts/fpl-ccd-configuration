@@ -9,17 +9,16 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.OrderType;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
-
 @Api
 @RestController
 @RequestMapping("/callback/orders-needed")
-public class OrdersNeededController extends CallbackController {
+public class OrdersNeededAboutToSubmitCallbackController extends CallbackController {
 
     @PostMapping("/about-to-submit")
     @SuppressWarnings("unchecked")
@@ -34,7 +33,7 @@ public class OrdersNeededController extends CallbackController {
 
         if (orderType.isPresent()) {
             orderType.ifPresent(orderTypes -> {
-                if (orderTypes.contains(EMERGENCY_PROTECTION_ORDER.name())) {
+                if (orderTypes.contains(OrderType.EMERGENCY_PROTECTION_ORDER.name())) {
                     data.put(showEpoFieldId, ImmutableList.of("SHOW_FIELD"));
 
                 } else if (data.containsKey(showEpoFieldId)) {

@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderReasonsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
-import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -69,6 +68,7 @@ import static org.apache.commons.lang3.StringUtils.endsWith;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.fromString;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
+import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.DONT_KNOW;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -190,7 +190,7 @@ public class CaseSubmissionGenerationService
         if (isNotEmpty(orders.getEmergencyProtectionOrders())) {
             stringBuilder.append(orders.getEpoType().getLabel());
             stringBuilder.append(NEW_LINE);
-            if (epoTypeIsPreventingRemoval(orders.getEpoType())) {
+            if (orders.getEpoType() == PREVENT_REMOVAL) {
                 String address = orders.getAddress().getAddressAsString("\n");
                 stringBuilder.append(address);
                 stringBuilder.append(NEW_LINE);
@@ -204,10 +204,6 @@ public class CaseSubmissionGenerationService
                 stringBuilder.append(orders.getEmergencyProtectionOrderDetails());
             }
         }
-    }
-
-    private boolean epoTypeIsPreventingRemoval(EPOType epoType) {
-        return epoType == EPOType.PREVENT_REMOVAL;
     }
 
     private String getDirectionsNeeded(final Orders orders) {
