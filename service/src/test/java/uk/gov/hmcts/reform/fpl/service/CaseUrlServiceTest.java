@@ -25,6 +25,8 @@ class CaseUrlServiceTest {
 
     @Test
     void shouldGetCaseUrlsForXui() {
+        assertThat(caseUrlService.getBaseUrl())
+            .isEqualTo(XUI_URL);
         assertThat(caseUrlService.getCaseUrl(caseId))
             .isEqualTo(String.format("%s/cases/case-details/%s", XUI_URL, caseId));
         assertThat(caseUrlService.getCaseUrl(caseId, "Tab1"))

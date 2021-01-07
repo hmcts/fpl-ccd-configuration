@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -32,7 +31,6 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ContextConfiguration(classes = {NoticeOfHearingEmailContentProvider.class, CaseDataExtractionService.class,
     HearingVenueLookUpService.class, LookupTestConfig.class, FixedTimeConfiguration.class})
@@ -63,7 +61,7 @@ class NoticeOfHearingEmailContentProviderTest extends AbstractEmailContentProvid
 
     @Test
     void shouldReturnExpectedNewHearingTemplateWithDigitalPreference() {
-        NoticeOfHearingTemplate expectedTemplateData = buildExpectedTemplate(hearingBooking, YES);
+        NoticeOfHearingTemplate expectedTemplateData = buildExpectedDigitalTemplate(hearingBooking);
 
         assertThat(noticeOfHearingEmailContentProvider
             .buildNewNoticeOfHearingNotification(caseData, hearingBooking, DIGITAL_SERVICE))
@@ -72,7 +70,7 @@ class NoticeOfHearingEmailContentProviderTest extends AbstractEmailContentProvid
 
     @Test
     void shouldReturnExpectedNewHearingTemplateWithEmailPreference() {
-        NoticeOfHearingTemplate expectedTemplateData = buildExpectedTemplate(hearingBooking, NO);
+        NoticeOfHearingTemplate expectedTemplateData = buildExpectedEmailTemplate(hearingBooking);
 
         assertThat(noticeOfHearingEmailContentProvider
             .buildNewNoticeOfHearingNotification(caseData, hearingBooking, EMAIL))
@@ -85,26 +83,36 @@ class NoticeOfHearingEmailContentProviderTest extends AbstractEmailContentProvid
             .startDate(startDate)
             .venue("Venue")
             .endDate(endDate)
-            .noticeOfHearing(testDocumentReference())
+            .noticeOfHearing(testDocument)
             .build();
     }
 
-    private NoticeOfHearingTemplate buildExpectedTemplate(HearingBooking hearingBooking,
-                                                          YesNo hasDigitalPreference) {
+    private NoticeOfHearingTemplate buildCommonParameters(HearingBooking hearingBooking) {
         return NoticeOfHearingTemplate.builder()
             .hearingType(CASE_MANAGEMENT.getLabel().toLowerCase())
             .hearingDate(formatLocalDateToString(hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG))
             .hearingVenue("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW")
             .hearingTime(caseDataExtractionService.getHearingTime(hearingBooking))
             .preHearingTime(caseDataExtractionService.extractPrehearingAttendance(hearingBooking))
-            .caseUrl(hasDigitalPreference.equals(YES) ? caseUrl(CASE_REFERENCE, "HearingTab") : "")
             .familyManCaseNumber(FAMILY_MAN_ID)
+            .respondentLastName("Wilson")
+            .build();
+    }
+
+    private NoticeOfHearingTemplate buildExpectedDigitalTemplate(HearingBooking hearingBooking) {
+        return buildCommonParameters(hearingBooking).toBuilder()
+            .caseUrl(caseUrl(CASE_REFERENCE, "HearingTab"))
+            .documentLink(DOC_URL)
+            .digitalPreference(YES.getValue()).build();
+    }
+
+    private NoticeOfHearingTemplate buildExpectedEmailTemplate(HearingBooking hearingBooking) {
+        return buildCommonParameters(hearingBooking).toBuilder()
+            .caseUrl("")
             .documentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
                 .map(JSONObject::toMap)
                 .orElse(null))
-            .digitalPreference(hasDigitalPreference.getValue())
-            .respondentLastName("Wilson")
-            .build();
+            .digitalPreference(NO.getValue()).build();
     }
 
     private CaseData buildCaseDetails() {

@@ -11,13 +11,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
-import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
@@ -26,12 +25,10 @@ import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotification
 import java.util.List;
 import java.util.Set;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
@@ -39,22 +36,16 @@ import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.ALLOCATED_JUDGE_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.DOCUMENT_CONTENTS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParameters;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
-import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {GeneratedOrderEventHandler.class, InboxLookupService.class, LookupTestConfig.class,
     IssuedOrderAdminNotificationHandler.class, RepresentativeNotificationService.class,
     HmctsAdminNotificationHandler.class})
 class GeneratedOrderEventHandlerTest {
-
-    private static final String DOCUMENT_URL =
-        "http://fake-document-gateway/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary";
 
     @MockBean
     private GeneratedOrderService generatedOrderService;
@@ -66,70 +57,67 @@ class GeneratedOrderEventHandlerTest {
     private InboxLookupService inboxLookupService;
 
     @MockBean
-    private RepresentativeService representativeService;
+    private RepresentativeNotificationService representativeNotificationService;
 
     @MockBean
     private NotificationService notificationService;
 
     @MockBean
-    private FeatureToggleService featureToggleService;
+    private IssuedOrderAdminNotificationHandler issuedOrderAdminNotificationHandler;
 
     @Autowired
     private GeneratedOrderEventHandler generatedOrderEventHandler;
 
-    private CaseData caseData;
+    private CaseData caseData = caseData();
+
+    private final DocumentReference testDocument = DocumentReference.builder()
+        .filename("GeneratedOrder")
+        .url("url")
+        .binaryUrl("testUrl").build();
+
+    private final GeneratedOrderEvent event = new GeneratedOrderEvent(caseData, testDocument);
 
     @BeforeEach
     void before() {
-        caseData = caseData();
-
         given(inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))
             .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
-        given(orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(caseData, DOCUMENT_CONTENTS, GENERATED_ORDER))
+        given(orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(caseData, testDocument,
+            GENERATED_ORDER))
             .willReturn(getExpectedParameters(BLANK_ORDER.getLabel(), true));
 
         given(orderIssuedEmailContentProvider.getNotifyDataWithoutCaseUrl(
-            caseData, DOCUMENT_CONTENTS, GENERATED_ORDER))
+            caseData, event.getOrderDocument(), GENERATED_ORDER))
             .willReturn(getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true));
     }
 
     @Test
     void shouldNotifyPartiesOnOrderSubmission() {
-        given(representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(), EMAIL))
-            .willReturn(getExpectedEmailRepresentativesForAddingPartiesToCase());
+        generatedOrderEventHandler.notifyParties(event);
 
-        given(representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(),
-            DIGITAL_SERVICE))
-            .willReturn(getExpectedDigitalServedRepresentativesForAddingPartiesToCase());
-
-        generatedOrderEventHandler.notifyParties(new GeneratedOrderEvent(caseData, DOCUMENT_URL,
-            DOCUMENT_CONTENTS));
+        verify(issuedOrderAdminNotificationHandler).notifyAdmin(
+            caseData,
+            testDocument,
+            GENERATED_ORDER);
 
         verify(notificationService).sendEmail(
-            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-            eq(COURT_EMAIL_ADDRESS),
-            eqJson(getExpectedParameters(BLANK_ORDER.getLabel(), true)),
-            eq(caseData.getId()));
+            ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES,
+            Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            getExpectedParameters(BLANK_ORDER.getLabel(), true),
+            caseData.getId().toString());
 
-        verify(notificationService).sendEmail(
-            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES),
-            eq("barney@rubble.com"),
-            eqJson(getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true)),
-            eq(caseData.getId()));
+        verify(representativeNotificationService).sendToRepresentativesByServedPreference(
+            DIGITAL_SERVICE,
+            ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES,
+            getExpectedParameters(BLANK_ORDER.getLabel(), true),
+            caseData);
 
-        verify(notificationService).sendEmail(
-            eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
-            eq(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS)),
-            eqJson(getExpectedParameters(BLANK_ORDER.getLabel(), true)),
-            eq(caseData.getId().toString()));
-
-        verify(notificationService).sendEmail(
-            eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
-            eq("fred@flinstone.com"),
-            eqJson(getExpectedParameters(BLANK_ORDER.getLabel(), true)),
-            eq(caseData.getId()));
+        verify(representativeNotificationService).sendToRepresentativesByServedPreference(
+            EMAIL,
+            ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES,
+            getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true),
+            caseData);
     }
 
     @Test
@@ -146,8 +134,7 @@ class GeneratedOrderEventHandlerTest {
         given(orderIssuedEmailContentProvider.buildAllocatedJudgeOrderIssuedNotification(caseData))
             .willReturn(expectedParameters);
 
-        generatedOrderEventHandler.notifyAllocatedJudge(new GeneratedOrderEvent(caseData,
-            DOCUMENT_URL, DOCUMENT_CONTENTS));
+        generatedOrderEventHandler.notifyAllocatedJudge(event);
 
         verify(notificationService).sendEmail(
             ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_JUDGE,
@@ -168,8 +155,7 @@ class GeneratedOrderEventHandlerTest {
         given(orderIssuedEmailContentProvider.buildAllocatedJudgeOrderIssuedNotification(caseData))
             .willReturn(expectedParameters);
 
-        generatedOrderEventHandler.notifyAllocatedJudge(new GeneratedOrderEvent(caseData,
-            DOCUMENT_URL, DOCUMENT_CONTENTS));
+        generatedOrderEventHandler.notifyAllocatedJudge(event);
 
         verifyNoInteractions(notificationService);
     }
