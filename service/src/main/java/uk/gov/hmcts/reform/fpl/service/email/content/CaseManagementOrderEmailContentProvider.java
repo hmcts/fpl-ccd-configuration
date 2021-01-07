@@ -22,7 +22,8 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .hearing(uncapitalize(cmo.getHearing()))
             .digitalPreference(hasDigitalServingPreference(servingPreference) ? "Yes" : "No")
-            .documentLink(linkToAttachedDocument(cmo.getOrder()))
+            .documentLink((hasDigitalServingPreference(servingPreference)
+                ? getDocumentUrl(cmo.getOrder()) : linkToAttachedDocument(cmo.getOrder())))
             .caseUrl((hasDigitalServingPreference(servingPreference)
                 ? getCaseUrl(caseData.getId(), "OrdersTab") : ""))
             .build();
