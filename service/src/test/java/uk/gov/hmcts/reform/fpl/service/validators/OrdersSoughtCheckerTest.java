@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.Orders;
 
 import java.util.List;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
@@ -34,7 +35,9 @@ class OrdersSoughtCheckerTest {
 
     @Test
     void shouldReturnErrorWhenNoNeededOrdersSelected() {
-        final Orders orders = Orders.builder().build();
+        final Orders orders = Orders.builder()
+            .orderType(emptyList())
+            .build();
         final CaseData caseData = CaseData.builder()
                 .orders(orders)
                 .build();
