@@ -18,6 +18,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudicialMessage",
+    "ListElementCode": "requestedBy",
+    "FieldType": "Text",
+    "ElementLabel": "Requested by",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
     "ListElementCode": "dateSent",
     "FieldType": "Text",
     "ElementLabel": "Date sent",
@@ -26,7 +34,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudicialMessage",
-    "ListElementCode": "dateSentAsLocalDateTime",
+    "ListElementCode": "updatedTime",
     "FieldType": "DateTime",
     "ElementLabel": " ",
     "SecurityClassification": "Public",
@@ -45,9 +53,9 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudicialMessage",
-    "ListElementCode": "note",
+    "ListElementCode": "latestMessage",
     "FieldType": "TextArea",
-    "ElementLabel": "Note",
+    "ElementLabel": "Message",
     "SecurityClassification": "Public"
   },
   {
@@ -67,5 +75,32 @@
     "FieldTypeParameter": "Document",
     "ElementLabel": "Related documents",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "relatedDocumentFileNames",
+    "FieldType": "Text",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "relatedDocuments=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "isRelatedToC2",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "relatedDocuments=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "messageHistory",
+    "FieldType": "TextArea",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "relatedDocuments=\"DO_NOT_SHOW\""
   }
 ]

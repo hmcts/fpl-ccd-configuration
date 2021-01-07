@@ -13,7 +13,7 @@
     "ID": "JudicialMessageMetaData",
     "CaseEventID": "messageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageMetaData",
-    "ListElementCode": "sender",
+    "ListElementCode": "requestedBy",
     "SecurityClassification": "Public",
     "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY"
