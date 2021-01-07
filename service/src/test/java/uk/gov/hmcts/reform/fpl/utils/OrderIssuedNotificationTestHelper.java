@@ -47,16 +47,11 @@ public class OrderIssuedNotificationTestHelper {
     }
 
     public static OrderIssuedNotifyData getExpectedParameters(String orderType, boolean withCallout) {
-        String fileContent = new String(Base64.encodeBase64(PDF), ISO_8859_1);
-        JSONObject jsonFileObject = new JSONObject()
-            .put("file", fileContent)
-            .put("is_csv", false);
-
         return OrderIssuedNotifyData.builder()
             .orderType(orderType.toLowerCase())
             .callout(withCallout ? callout : "")
             .courtName(EXAMPLE_COURT)
-            .documentLink(jsonFileObject.toMap())
+            .documentLink("http://fake-url/testUrl")
             .caseUrl(formatCaseUrl("http://fake-url", 12345L, "OrdersTab"))
             .respondentLastName("Jones")
             .build();

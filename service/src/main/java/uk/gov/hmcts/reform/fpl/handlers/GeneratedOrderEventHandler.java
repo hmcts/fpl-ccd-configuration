@@ -7,11 +7,11 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -38,17 +38,16 @@ public class GeneratedOrderEventHandler {
     private final RepresentativeNotificationService representativeNotificationService;
     private final IssuedOrderAdminNotificationHandler issuedOrderAdminNotificationHandler;
     private final GeneratedOrderService generatedOrderService;
-    private final FeatureToggleService featureToggleService;
 
     @EventListener
     public void notifyParties(final GeneratedOrderEvent orderEvent) {
         final CaseData caseData = orderEvent.getCaseData();
-        final byte[] documentContents = orderEvent.getDocumentContents();
+        final DocumentReference orderDocument = orderEvent.getOrderDocument();
 
-        issuedOrderAdminNotificationHandler.notifyAdmin(caseData, orderEvent.getDocumentContents(), GENERATED_ORDER);
+        issuedOrderAdminNotificationHandler.notifyAdmin(caseData, orderDocument, GENERATED_ORDER);
+        sendNotificationToLocalAuthorityAndDigitalRepresentatives(caseData, orderDocument);
 
-        sendNotificationToEmailServedRepresentatives(caseData, documentContents);
-        sendNotificationToLocalAuthorityAndDigitalServedRepresentatives(caseData, documentContents);
+        sendNotificationToEmailServedRepresentatives(caseData, orderDocument);
     }
 
     @EventListener
@@ -70,18 +69,18 @@ public class GeneratedOrderEventHandler {
     }
 
     private void sendNotificationToEmailServedRepresentatives(final CaseData caseData,
-                                                              final byte[] documentContents) {
+                                                              final DocumentReference orderDocument) {
         final NotifyData notifyData =
-            orderIssuedEmailContentProvider.getNotifyDataWithoutCaseUrl(caseData, documentContents, GENERATED_ORDER);
+            orderIssuedEmailContentProvider.getNotifyDataWithoutCaseUrl(caseData, orderDocument, GENERATED_ORDER);
 
         representativeNotificationService.sendToRepresentativesByServedPreference(EMAIL,
             ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES, notifyData, caseData);
     }
 
-    private void sendNotificationToLocalAuthorityAndDigitalServedRepresentatives(final CaseData caseData,
-                                                                                 final byte[] documentContents) {
+    private void sendNotificationToLocalAuthorityAndDigitalRepresentatives(final CaseData caseData,
+                                                                           final DocumentReference orderDocument) {
         final NotifyData notifyData =
-            orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(caseData, documentContents, GENERATED_ORDER);
+            orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(caseData, orderDocument, GENERATED_ORDER);
 
         sendToLocalAuthority(caseData, notifyData);
         representativeNotificationService.sendToRepresentativesByServedPreference(DIGITAL_SERVICE,
