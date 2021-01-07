@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -36,20 +35,17 @@ public class CaseManagementOrderIssuedEventHandler {
     private final CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final IssuedOrderAdminNotificationHandler issuedOrderAdminNotificationHandler;
-    private final DocumentDownloadService documentDownloadService;
 
     @EventListener
     public void notifyParties(final CaseManagementOrderIssuedEvent event) {
         CaseData caseData = event.getCaseData();
         CaseManagementOrder issuedCmo = event.getCmo();
 
-        //TODO Document is downloaded 5 times, this could impact performance. Investigate in FPLA-2061
         sendToLocalAuthority(caseData, issuedCmo);
         sendToCafcass(caseData, issuedCmo);
         sendToRepresentatives(caseData, issuedCmo, DIGITAL_SERVICE);
         sendToRepresentatives(caseData, issuedCmo, EMAIL);
-        issuedOrderAdminNotificationHandler.notifyAdmin(caseData,
-            documentDownloadService.downloadDocument(issuedCmo.getOrder().getBinaryUrl()), CMO);
+        issuedOrderAdminNotificationHandler.notifyAdmin(caseData, issuedCmo.getOrder(), CMO);
     }
 
     private void sendToLocalAuthority(final CaseData caseData, CaseManagementOrder cmo) {
