@@ -40,6 +40,9 @@ application-user-mappings.yaml
 # feature toggle file
 application-feature-toggle.yaml
 
+# email template integration tests
+application-email-template-test.yaml
+
 # wiremock response
 docker/wiremock/__files/mockResponse.json
 docker/wiremock/mappings/user-by-email/*

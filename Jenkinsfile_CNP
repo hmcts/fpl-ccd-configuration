@@ -19,6 +19,12 @@ def serviceSecrets = [
   ]
 ]
 
+def integrationTestSecrets = [
+  'fpl-aat': [
+    secret('integration-test-notify-service-key', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY')
+  ]
+]
+
 def otherSecrets = [
   // below is just for CCD in AKS - to be cleaned up when CCD Helm chart is updated to use flex volume for secrets
   's2s-${env}': [
@@ -70,10 +76,23 @@ def uploadCoreCaseDataDefinitions(env) {
   }
 }
 
+def setupSecretsForIntegrationTests(pipelineConf) {
+  withSubscription('nonprod') {
+    withTeamSecrets(pipelineConf, 'aat') {
+      /* Setup Email template integration tests key with gov.notify */
+      env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY = "${INTEGRATION_TEST_NOTIFY_SERVICE_KEY}"
+    }
+  }
+}
+
+def teardownSecretsForIntegrationTests() {
+  env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY = ''
+}
+
 withPipeline(type, product, component) {
   pipelineConf = config;
 
-  loadVaultSecrets(serviceSecrets + otherSecrets)
+  loadVaultSecrets(serviceSecrets + integrationTestSecrets + otherSecrets)
 
   disableLegacyDeployment()
 
@@ -98,6 +117,14 @@ withPipeline(type, product, component) {
       }
     }
     sh """ git submodule update --init """
+  }
+
+  before('test') {
+    setupSecretsForIntegrationTests(pipelineConf)
+  }
+
+  after('test') {
+    teardownSecretsForIntegrationTests()
   }
 
   before('smoketest:saat') {
