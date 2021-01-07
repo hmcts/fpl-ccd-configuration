@@ -36,8 +36,7 @@ public class NotificationService {
         });
         log.debug("Sending email (with template id: {}) to {}", templateId, maskEmail(recipient));
         try {
-            notificationClient
-                .sendEmail(templateId, recipient, personalisation, environment + "/" + reference);
+            notificationClient.sendEmail(templateId, recipient, personalisation, environment + "/" + reference);
         } catch (NotificationClientException e) {
             log.error("Failed to send email (with template id: {}) to {}", templateId, maskEmail(recipient), e);
         }
