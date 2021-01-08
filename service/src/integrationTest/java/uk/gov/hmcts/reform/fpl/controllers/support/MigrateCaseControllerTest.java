@@ -423,6 +423,15 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
             assertThat(extractedCaseData.getOthers()).isEqualTo(others);
         }
 
+        @Test
+        void shouldThrowAnExceptionIfCaseDoesNotContainOthers() {
+            CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, null);
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage("No others in the case");
+        }
+
         private CaseDetails caseDetails(String familyManCaseNumber, String migrationId, Others others) {
             CaseDetails caseDetails = asCaseDetails(CaseData.builder()
                 .familyManCaseNumber(familyManCaseNumber)

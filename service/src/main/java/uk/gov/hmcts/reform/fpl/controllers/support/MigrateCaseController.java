@@ -67,6 +67,10 @@ public class MigrateCaseController extends CallbackController {
         if ("LE20C50023".equals(caseData.getFamilyManCaseNumber())) {
             Others others = caseData.getOthers();
 
+            if (others == null) {
+                throw new IllegalArgumentException("No others in the case");
+            }
+
             if (isEmpty(others.getAdditionalOthers())) {
                 caseDetails.getData().remove("others");
             } else {
