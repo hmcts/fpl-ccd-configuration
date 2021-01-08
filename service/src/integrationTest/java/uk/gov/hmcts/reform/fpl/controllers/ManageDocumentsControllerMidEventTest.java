@@ -155,6 +155,16 @@ public class ManageDocumentsControllerMidEventTest extends AbstractControllerTes
     }
 
     @Test
+    void shouldReturnErrorWhenNoC2sOnCaseAndUserSelectsC2SupportingDocs() {
+        CaseData caseData = CaseData.builder().manageDocument(buildManagementDocument(C2)).build();
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
+            "initialise-manage-document-collections");
+
+        assertThat(callbackResponse.getErrors()).containsExactly(
+            "There are no C2s to associate supporting documents with");
+    }
+
+    @Test
     void shouldReturnValidationErrorsIfSupportingEvidenceDateTimeReceivedOnFurtherEvidenceIsInTheFuture() {
         LocalDateTime futureDate = LocalDateTime.now().plusDays(1);
         CaseDetails caseDetails = buildCaseDetails(TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, futureDate);

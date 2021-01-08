@@ -3,13 +3,13 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import com.google.common.collect.Iterables;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.OrderIssuedNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
@@ -17,13 +17,9 @@ import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
-import java.util.Map;
-import java.util.Optional;
-
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
-import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 @Slf4j
@@ -35,29 +31,18 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
     private final Time time;
 
     public OrderIssuedNotifyData getNotifyDataWithoutCaseUrl(final CaseData caseData,
-                                                             final byte[] documentContents,
+                                                             final DocumentReference orderDocument,
                                                              final IssuedOrderType issuedOrderType) {
-        Optional<JSONObject> documentJSONObject = generateAttachedDocumentLink(documentContents);
-        Map<String, Object> documentDownloadLink = null;
-
-        if (documentJSONObject.isPresent()) {
-            documentDownloadLink = documentJSONObject.get().toMap();
-        }
-
-        return OrderIssuedNotifyData.builder()
-            .respondentLastName(getFirstRespondentLastName(caseData))
-            .orderType(getTypeOfOrder(caseData, issuedOrderType))
-            .courtName(config.getCourt(caseData.getCaseLocalAuthority()).getName())
-            .callout((issuedOrderType != NOTICE_OF_PLACEMENT_ORDER) ? buildCallout(caseData) : "")
-            .documentLink(documentDownloadLink)
+        return commonOrderIssuedNotifyData(caseData, issuedOrderType).toBuilder()
+            .documentLink(linkToAttachedDocument(orderDocument))
             .build();
     }
 
     public OrderIssuedNotifyData getNotifyDataWithCaseUrl(final CaseData caseData,
-                                                          final byte[] documentContents,
+                                                          final DocumentReference orderDocument,
                                                           final IssuedOrderType issuedOrderType) {
-        return getNotifyDataWithoutCaseUrl(caseData, documentContents, issuedOrderType)
-            .toBuilder()
+        return commonOrderIssuedNotifyData(caseData, issuedOrderType).toBuilder()
+            .documentLink(getDocumentUrl(orderDocument))
             .caseUrl(getCaseUrl(caseData.getId(), "OrdersTab"))
             .build();
     }
@@ -73,6 +58,17 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
             .respondentLastName(getFirstRespondentLastName(caseData))
             .judgeTitle(judge.getJudgeOrMagistrateTitle())
             .judgeName(judge.getJudgeName())
+            .build();
+    }
+
+    private OrderIssuedNotifyData commonOrderIssuedNotifyData(
+        final CaseData caseData,
+        final IssuedOrderType issuedOrderType) {
+        return OrderIssuedNotifyData.builder()
+            .respondentLastName(getFirstRespondentLastName(caseData))
+            .orderType(getTypeOfOrder(caseData, issuedOrderType))
+            .courtName(config.getCourt(caseData.getCaseLocalAuthority()).getName())
+            .callout((issuedOrderType != NOTICE_OF_PLACEMENT_ORDER) ? buildCallout(caseData) : "")
             .build();
     }
 

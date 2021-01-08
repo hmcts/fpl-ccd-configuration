@@ -12,10 +12,14 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 public class CaseUrlService {
 
     @Value("${manage-case.ui.base.url}")
-    private String xuiBaseUrl;
+    private String baseUrl;
+
+    public String getBaseUrl() {
+        return baseUrl;
+    }
 
     public String getCaseUrl(Long caseId) {
-        return String.format("%s/cases/case-details/%s", xuiBaseUrl, caseId);
+        return String.format("%s/cases/case-details/%s", baseUrl, caseId);
     }
 
     public String getCaseUrl(Long caseId, String tab) {

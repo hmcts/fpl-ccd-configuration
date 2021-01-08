@@ -26,9 +26,10 @@ module.exports = function () {
       if (currentUser !== user) {
         output.debug(`Logging in as ${user.email}`);
         currentUser = {}; // reset in case the login fails
-        await this.retryUntilExists(async () => {
-          await this.goToPage(baseUrl);
 
+        await this.goToPage(baseUrl);
+
+        await this.retryUntilExists(async () => {
           if (await this.waitForAnySelector([signedOutSelector, signedInSelector]) == null) {
             return;
           }
@@ -38,7 +39,7 @@ module.exports = function () {
           }
 
           await loginPage.signIn(user);
-        }, signedInSelector);
+        }, signedInSelector, false);
         output.debug(`Logged in as ${user.email}`);
         currentUser = user;
       } else {
@@ -73,7 +74,7 @@ module.exports = function () {
 
     async logInAndCreateCase(user, caseName) {
       await this.signIn(user);
-      await this.retryUntilExists(() => this.click('Create case'), `#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
+      await this.retryUntilExists(() => this.click('Create case'), openApplicationEventPage.fields.jurisdiction);
       await openApplicationEventPage.populateForm(caseName);
       await this.completeEvent('Save and continue');
       this.waitForElement('.markdown h2', 5);
@@ -157,13 +158,13 @@ module.exports = function () {
     tabFieldSelector(pathToField) {
       let path = [].concat(pathToField);
       let fieldName = path.splice(-1, 1)[0];
-      let selector = '//div[@class="tabs-panel"]';
+      let selector = '//mat-tab-body';
 
       path.forEach(step => {
         selector = `${selector}//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="${step}"]]]`;
       }, this);
 
-      return `${selector}//*[@class="complex-panel-simple-field" and .//th/span[text()="${fieldName}"]]`;
+      return `${selector}//*[contains(@class,"complex-panel-simple-field") and .//th/span[text()="${fieldName}"]]`;
     },
 
     seeInTab(pathToField, fieldValue) {
@@ -329,7 +330,9 @@ module.exports = function () {
      * @param locator - locator for an element that is expected to be present upon successful execution of an action
      * @returns {Promise<void>} - promise holding no result if resolved or error if rejected
      */
-    async retryUntilExists(action, locator, maxNumberOfTries = maxRetries) {
+    async retryUntilExists(action, locator, checkUrlChanged = true, maxNumberOfTries = maxRetries) {
+      const originalUrl = await this.grabCurrentUrl();
+
       for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
         output.log(`retryUntilExists(${locator}): starting try #${tryNumber}`);
         if (tryNumber > 1 && await this.hasSelector(locator)) {
@@ -337,6 +340,10 @@ module.exports = function () {
           break;
         }
         try {
+          if (checkUrlChanged && (originalUrl !== await this.grabCurrentUrl())) {
+            output.print('Url changed, action skipped');
+            continue;
+          }
           await action();
         } catch (error) {
           output.error(error);

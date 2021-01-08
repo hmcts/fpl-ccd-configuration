@@ -1,10 +1,13 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.OrderExclusionClause;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -32,9 +35,12 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTE
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
 
@@ -377,6 +383,33 @@ class CaseDataTest {
     @Nested
     class GetNextHearingAfterCmo {
         @Test
+        void shouldGetAllHearings() {
+            Element<HearingBooking> hearing = element(HearingBooking.builder()
+                .startDate(LocalDateTime.now())
+                .build());
+            Element<HearingBooking> adjournedHearing = element(HearingBooking.builder()
+                .startDate(LocalDateTime.now())
+                .status(ADJOURNED)
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(List.of(hearing))
+                .cancelledHearingDetails(List.of(adjournedHearing))
+                .build();
+
+            List<Element<HearingBooking>> allHearings = caseData.getAllHearings();
+            assertThat(allHearings).containsExactly(hearing, adjournedHearing);
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenNoHearings() {
+            CaseData caseData = CaseData.builder().build();
+
+            List<Element<HearingBooking>> allHearings = caseData.getAllHearings();
+            assertThat(allHearings).isEmpty();
+        }
+
+        @Test
         void shouldReturnExpectedNextHearingBooking() {
             HearingBooking nextHearing = createHearingBooking(futureDate.plusDays(6), futureDate.plusDays(7),
                 ISSUE_RESOLUTION, randomUUID());
@@ -388,6 +421,26 @@ class CaseDataTest {
                 element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, null)));
 
             CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
+            Optional<HearingBooking> nextHearingBooking = caseData.getNextHearingAfterCmo(cmoID);
+
+            assertThat(nextHearingBooking).isPresent().contains(nextHearing);
+        }
+
+        @Test
+        void shouldReturnExpectedHearingWhenCMOAssociatedWithAdjournedHearing() {
+            HearingBooking nextHearing = createHearingBooking(futureDate.plusDays(6), futureDate.plusDays(7),
+                ISSUE_RESOLUTION, randomUUID());
+
+            List<Element<HearingBooking>> hearingBookings = List.of(
+                element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3), CASE_MANAGEMENT, null)),
+                element(nextHearing),
+                element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, null)));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(hearingBookings)
+                .cancelledHearingDetails(List.of(element(
+                    createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6), FINAL, cmoID))))
+                .build();
             Optional<HearingBooking> nextHearingBooking = caseData.getNextHearingAfterCmo(cmoID);
 
             assertThat(nextHearingBooking).isPresent().contains(nextHearing);
@@ -905,6 +958,58 @@ class CaseDataTest {
         }
     }
 
+    @Nested
+    class BuildJudicialMessageList {
+        UUID firstId = randomUUID();
+        UUID secondId = randomUUID();
+        UUID thirdId = randomUUID();
+
+        @Test
+        void shouldBuildDynamicJudicialMessageListFromJudicialMessages() {
+            List<Element<JudicialMessage>> judicialMessages = List.of(
+                element(firstId, buildJudicialMessage("Low", "11 November 2020", YES)),
+                element(secondId, buildJudicialMessage("Medium", "12 November 2020", NO)),
+                element(thirdId, buildJudicialMessage("High", "13 November 2020", YES))
+            );
+
+            CaseData caseData = CaseData.builder().judicialMessages(judicialMessages).build();
+            DynamicList expectedDynamicList = buildDynamicList(
+                Pair.of(firstId, "C2, Low, 11 November 2020"),
+                Pair.of(secondId, "Medium, 12 November 2020"),
+                Pair.of(thirdId, "C2, High, 13 November 2020")
+            );
+
+            assertThat(caseData.buildJudicialMessageDynamicList())
+                .isEqualTo(expectedDynamicList);
+        }
+
+        @Test
+        void shouldBuildDynamicJudicialMessageListWithSelectorPropertyFromJudicialMessage() {
+            List<Element<JudicialMessage>> judicialMessages = List.of(
+                element(firstId, buildJudicialMessage("Low", "11 November 2020", YES)),
+                element(secondId, buildJudicialMessage("Medium", "12 November 2020", NO)),
+                element(thirdId, buildJudicialMessage("High", "13 November 2020", YES))
+            );
+
+            CaseData caseData = CaseData.builder().judicialMessages(judicialMessages).build();
+            DynamicList expectedDynamicList = buildDynamicList(2,
+                Pair.of(firstId, "C2, Low, 11 November 2020"),
+                Pair.of(secondId, "Medium, 12 November 2020"),
+                Pair.of(thirdId, "C2, High, 13 November 2020")
+            );
+
+            assertThat(caseData.buildJudicialMessageDynamicList(thirdId))
+                .isEqualTo(expectedDynamicList);
+        }
+
+        private JudicialMessage buildJudicialMessage(String urgency, String dateSent, YesNo isRelatedToC2) {
+            return JudicialMessage.builder()
+                .urgency(urgency)
+                .dateSent(dateSent)
+                .isRelatedToC2(isRelatedToC2)
+                .build();
+        }
+    }
 
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {
         return C2DocumentBundle.builder().uploadedDateTime(dateTime.toString()).build();

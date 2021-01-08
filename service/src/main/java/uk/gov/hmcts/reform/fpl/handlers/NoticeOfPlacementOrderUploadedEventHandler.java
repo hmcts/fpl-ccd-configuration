@@ -6,6 +6,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.OrderIssuedNotifyData;
@@ -36,6 +37,8 @@ public class NoticeOfPlacementOrderUploadedEventHandler {
     @EventListener
     public void notifyParties(NoticeOfPlacementOrderUploadedEvent noticeOfPlacementEvent) {
         CaseData caseData = noticeOfPlacementEvent.getCaseData();
+        DocumentReference orderDocument = noticeOfPlacementEvent.getOrderDocument();
+
         Collection<String> emails = inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()
         );
@@ -46,15 +49,15 @@ public class NoticeOfPlacementOrderUploadedEventHandler {
         notificationService.sendEmail(
             NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE, emails, notifyData, caseData.getId().toString());
 
-        issuedOrderAdminNotificationHandler.notifyAdmin(caseData,
-            noticeOfPlacementEvent.getDocumentContents(), NOTICE_OF_PLACEMENT_ORDER);
+        issuedOrderAdminNotificationHandler.notifyAdmin(
+            caseData, orderDocument, NOTICE_OF_PLACEMENT_ORDER);
 
         representativeNotificationService.sendToRepresentativesByServedPreference(DIGITAL_SERVICE,
             NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE, notifyData, caseData);
 
         OrderIssuedNotifyData representativesTemplateParameters =
-            orderIssuedEmailContentProvider.getNotifyDataWithoutCaseUrl(caseData,
-                noticeOfPlacementEvent.getDocumentContents(), NOTICE_OF_PLACEMENT_ORDER);
+            orderIssuedEmailContentProvider.getNotifyDataWithoutCaseUrl(caseData, orderDocument,
+                NOTICE_OF_PLACEMENT_ORDER);
 
         representativeNotificationService.sendToRepresentativesByServedPreference(EMAIL,
             ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES, representativesTemplateParameters, caseData);

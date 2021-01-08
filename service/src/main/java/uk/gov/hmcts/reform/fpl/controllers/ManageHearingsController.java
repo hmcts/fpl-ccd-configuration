@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.HearingEndDateGroup;
 
 import java.util.List;
 import java.util.UUID;
@@ -130,6 +131,9 @@ public class ManageHearingsController extends CallbackController {
             caseDetails.getData().put(FUTURE_HEARING_LIST,
                 hearingsService.asDynamicList(caseData.getFutureAndTodayHearings(), hearingBookingId));
         } else if (RE_LIST_HEARING == caseData.getHearingOption()) {
+            if (isEmpty(caseData.getToBeReListedHearings())) {
+                return respond(caseDetails, List.of("There are no adjourned or vacated hearings to re-list"));
+            }
             UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData);
 
             HearingBooking cancelledHearing = hearingsService
@@ -187,6 +191,9 @@ public class ManageHearingsController extends CallbackController {
                 caseData.getHearingEndDate());
         } else {
             errors = validateGroupService.validateGroup(caseData, HearingDatesGroup.class);
+            if (errors.isEmpty()) {
+                errors = validateGroupService.validateGroup(caseData, HearingEndDateGroup.class);
+            }
         }
 
         if (featureToggleService.isAddHearingsInPastEnabled()) {

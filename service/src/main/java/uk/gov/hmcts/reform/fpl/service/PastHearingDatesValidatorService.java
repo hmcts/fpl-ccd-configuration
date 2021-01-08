@@ -25,6 +25,12 @@ public class PastHearingDatesValidatorService {
             errors.add("Enter a valid end time");
         }
 
+        if (errors.isEmpty() && hearingStartDate != null && hearingEndDate != null
+            && !hearingEndDate.isAfter(hearingStartDate)
+        ) {
+            errors.add("The end date and time must be after the start date and time");
+        }
+
         return errors;
     }
 
