@@ -17,6 +17,8 @@ import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
@@ -300,6 +302,93 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
         }
     }
 
+    @Nested
+    class Fpla2481 {
+        String familyManCaseNumber = "LE20C50023";
+        String migrationId = "FPLA-2481";
+
+        @Test
+        void shouldRemoveOthersPropertyIfOthersContainsFirstOtherPropertyOnly() {
+            Others others = Others.builder()
+                .firstOther(Other.builder()
+                    .name("John Smith")
+                    .telephone("07741172242")
+                    .build())
+                .build();
+
+            CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, others);
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getOthers()).isNull();
+        }
+
+        @Test
+        void shouldRemoveOthersPropertyIfOthersContainsFirstOtherAndEmptyAdditionalOthers() {
+            Others others = Others.builder()
+                .additionalOthers(List.of())
+                .firstOther(Other.builder()
+                    .name("John Smith")
+                    .telephone("07741172242")
+                    .build())
+                .build();
+
+            CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, others);
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getOthers()).isNull();
+        }
+
+        @Test
+        void shouldRemoveFirstOtherPropertyOnlyIfCaseHasAdditionalOthers() {
+            List<Element<Other>> additionalOthers = List.of(element(Other.builder()
+                .name("Additional other 1")
+                .build()));
+
+            Others others = Others.builder()
+                .additionalOthers(additionalOthers)
+                .firstOther(Other.builder()
+                    .name("John Smith")
+                    .telephone("07741172242")
+                    .build())
+                .build();
+
+            CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, others);
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getOthers().getFirstOther()).isNull();
+            assertThat(extractedCaseData.getOthers().getAdditionalOthers()).isEqualTo(additionalOthers);
+        }
+
+        @Test
+        void shouldNotChangeCaseIfNotExpectedMigrationId() {
+            List<Element<Other>> additionalOthers = List.of(element(Other.builder()
+                .name("Additional other 1")
+                .build()));
+
+            Others others = Others.builder()
+                .additionalOthers(additionalOthers)
+                .firstOther(Other.builder()
+                    .name("John Smith")
+                    .telephone("07741172242")
+                    .build())
+                .build();
+
+            CaseDetails caseDetails = caseDetails(familyManCaseNumber, "FPLA-1111", others);
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getFamilyManCaseNumber()).isEqualTo(familyManCaseNumber);
+            assertThat(extractedCaseData.getOthers()).isEqualTo(others);
+        }
+
+        private CaseDetails caseDetails(String familyManCaseNumber, String migrationId, Others others) {
+            CaseDetails caseDetails = asCaseDetails(CaseData.builder()
+                .familyManCaseNumber(familyManCaseNumber)
+                .others(others)
+                .build());
+            caseDetails.getData().put("migrationId", migrationId);
+            return caseDetails;
+        }
+    }
 
     @Nested
     class Fpla2379 {
