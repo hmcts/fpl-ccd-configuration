@@ -28,7 +28,6 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIG
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ContextConfiguration(classes = {CaseManagementOrderEmailContentProvider.class, EmailNotificationHelper.class,
     FixedTimeConfiguration.class, CaseConverter.class})
@@ -43,7 +42,6 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
     @Test
     void shouldBuildCMOIssuedExpectedParametersWithEmptyCaseUrl() {
         given(documentDownloadService.downloadDocument(anyString())).willReturn(TestDataHelper.DOCUMENT_CONTENT);
-
         final CaseManagementOrder cmo = buildCmo();
         IssuedCMOTemplate expectedTemplate = IssuedCMOTemplate.builder()
             .respondentLastName("lastName")
@@ -74,9 +72,7 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
             .digitalPreference("Yes")
             .hearing("test hearing, 20th June")
             .caseUrl(caseUrl(CASE_REFERENCE, "OrdersTab"))
-            .documentLink(generateAttachedDocumentLink(TestDataHelper.DOCUMENT_CONTENT)
-                .map(JSONObject::toMap)
-                .orElse(null))
+            .documentLink(DOC_URL)
             .build();
 
         assertThat(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(
@@ -105,7 +101,7 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
 
     private CaseManagementOrder buildCmo() {
         return CaseManagementOrder.builder()
-            .order(testDocumentReference())
+            .order(testDocument)
             .hearing("Test hearing, 20th June").build();
     }
 

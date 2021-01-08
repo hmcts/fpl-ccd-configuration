@@ -11,7 +11,6 @@ java:
     IDAM_CLIENT_REDIRECT_URI: https://fpl-case-service-*.service.core-compute-aat.internal/oauth2/callback
     SPRING_SECURITY_ENABLED: true
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI: https://idam-api.aat.platform.hmcts.net/o/jwks
-    GATEWAY_URL: https://gateway-${SERVICE_FQDN}
     CCD_UI_BASE_URL: https://case-management-web-${SERVICE_FQDN}
     MANAGE_CASE_UI_BASE_URL: https://xui-${SERVICE_FQDN}
     LD_USER_KEY: FPLA_PREVIEW
