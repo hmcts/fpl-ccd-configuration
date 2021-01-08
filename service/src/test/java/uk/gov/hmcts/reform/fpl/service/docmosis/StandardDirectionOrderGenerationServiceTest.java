@@ -81,7 +81,6 @@ class StandardDirectionOrderGenerationServiceTest {
     @BeforeEach
     void setup() {
         given(calendarService.getWorkingDayFrom(any(LocalDate.class), anyInt())).willReturn(LocalDate.now());
-
     }
 
     @Test
@@ -110,8 +109,8 @@ class StandardDirectionOrderGenerationServiceTest {
 
         DocmosisStandardDirectionOrder template = service.getTemplateData(caseData);
 
-        assertThat(template)
-            .isEqualToComparingFieldByField(docmosisOrder(
+        assertThat(template).usingRecursiveComparison()
+            .isEqualTo(docmosisOrder(
                 "Her Honour Judge Smith",
                 "Bob Ross",
                 "123",
@@ -123,7 +122,8 @@ class StandardDirectionOrderGenerationServiceTest {
     void shouldMapCompleteCaseDataForSDOTemplate() {
         DocmosisStandardDirectionOrder template = service.getTemplateData(fullCaseData());
 
-        assertThat(template).isEqualToComparingFieldByField(fullDocmosisOrder());
+        assertThat(template).usingRecursiveComparison()
+            .isEqualTo(fullDocmosisOrder());
     }
 
     private CaseData getCaseData(StandardDirectionOrder order) {
@@ -141,10 +141,6 @@ class StandardDirectionOrderGenerationServiceTest {
         return wrapElements(Applicant.builder()
             .party(ApplicantParty.builder().build())
             .build());
-    }
-
-    private DocmosisStandardDirectionOrder emptyDocmosisOrder(StandardDirectionOrder order) {
-        return docmosisOrder("", "", null, order.getDateOfIssue(), emptyList());
     }
 
     private CaseData caseDataWithEmptyListValues() {
