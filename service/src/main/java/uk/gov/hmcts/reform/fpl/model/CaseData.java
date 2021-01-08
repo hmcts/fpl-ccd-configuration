@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadCMOEventData;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
@@ -507,6 +508,13 @@ public class CaseData {
     }
 
     @JsonIgnore
+    public Optional<HearingBooking> getFirstHearingOfType(HearingType type) {
+        return unwrapElements(hearingDetails).stream()
+            .filter(hearingBooking -> hearingBooking.isOfType(type))
+            .min(comparing(HearingBooking::getStartDate));
+    }
+
+    @JsonIgnore
     public HearingBooking getMostUrgentHearingBookingAfter(LocalDateTime time) {
         return unwrapElements(hearingDetails).stream()
             .filter(hearingBooking -> hearingBooking.getStartDate().isAfter(time))
@@ -688,6 +696,14 @@ public class CaseData {
     @Builder.Default
     private final MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder().build();
     private final List<Element<JudicialMessage>> judicialMessages;
+
+    public DynamicList buildJudicialMessageDynamicList(UUID selected) {
+        return asDynamicList(judicialMessages, selected, JudicialMessage::toLabel);
+    }
+
+    public DynamicList buildJudicialMessageDynamicList() {
+        return buildJudicialMessageDynamicList(null);
+    }
 
     public List<Element<JudicialMessage>> getJudicialMessages() {
         return defaultIfNull(judicialMessages, new ArrayList<>());

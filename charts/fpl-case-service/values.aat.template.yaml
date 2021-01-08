@@ -4,6 +4,5 @@ java:
   environment:
     IDAM_CLIENT_REDIRECT_URI: https://fpl-case-service-*.service.core-compute-aat.internal/oauth2/callback
     SPRING_SECURITY_ENABLED: false
-    GATEWAY_URL: http://gateway-ccd.aat.platform.hmcts.net
     TESTING_SUPPORT_ENABLED: true
   aadIdentityName: family-public-law

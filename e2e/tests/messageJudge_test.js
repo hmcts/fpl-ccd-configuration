@@ -1,0 +1,48 @@
+const config = require('../config.js');
+const mandatoryWithC2DocumentBundle = require('../fixtures/caseData/mandatoryWithC2DocumentBundle.json');
+
+let caseId;
+let reply = 'This is a reply';
+
+Feature('Message judge or legal adviser');
+
+BeforeSuite(async ({I}) => {
+  caseId = await I.submitNewCaseWithData(mandatoryWithC2DocumentBundle);
+});
+
+Scenario('HMCTS admin messages the judge', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await caseViewPage.goToNewActions(config.applicationActions.messageJudge);
+  messageJudgeOrLegalAdviserEventPage.relatedMessageToAC2();
+  await messageJudgeOrLegalAdviserEventPage.selectC2();
+  messageJudgeOrLegalAdviserEventPage.enterRecipientEmail('recipient@fpla.com');
+  messageJudgeOrLegalAdviserEventPage.enterRequester('Swansea city council');
+  messageJudgeOrLegalAdviserEventPage.enterUrgency('High');
+  await I.goToNextPage();
+  messageJudgeOrLegalAdviserEventPage.enterMessage('Some note');
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.messageJudge);
+  caseViewPage.selectTab(caseViewPage.tabs.judicialMessages);
+  I.seeInTab(['Message 1', 'From'], config.hmctsAdminUser);
+  I.seeInTab(['Message 1', 'Sent to'], 'recipient@fpla.com');
+  I.seeInTab(['Message 1', 'Requested by'], 'Swansea city council');
+  I.seeInTab(['Message 1', 'Message'], 'Some note');
+  I.seeInTab(['Message 1', 'Status'], 'Open');
+});
+
+Scenario('Judge replies to HMCTS admin', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
+  await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
+  await caseViewPage.goToNewActions(config.applicationActions.messageJudge);
+  messageJudgeOrLegalAdviserEventPage.selectReplyToMessage();
+  await messageJudgeOrLegalAdviserEventPage.selectJudicialMessage();
+  await I.goToNextPage();
+  messageJudgeOrLegalAdviserEventPage.enterMessageReply(reply);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.messageJudge);
+  caseViewPage.selectTab(caseViewPage.tabs.judicialMessages);
+  I.seeInTab(['Message 1', 'From'], config.judicaryUser);
+  I.seeInTab(['Message 1', 'Sent to'], config.hmctsAdminUser);
+  I.seeInTab(['Message 1', 'Requested by'], 'Swansea city council');
+  I.seeInTab(['Message 1', 'Message'], reply);
+  I.seeInTab(['Message 1', 'Status'], 'Open');
+});
