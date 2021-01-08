@@ -17,6 +17,8 @@ import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
@@ -300,6 +302,145 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
         }
     }
 
+    @Nested
+    class Fpla2481 {
+        String familyManCaseNumber = "LE20C50023";
+        String migrationId = "FPLA-2481";
+
+        @Test
+        void shouldRemoveOthersPropertyIfOthersContainsFirstOtherPropertyOnly() {
+            Others others = Others.builder()
+                .firstOther(Other.builder()
+                    .name("John Smith")
+                    .telephone("07741172242")
+                    .build())
+                .build();
+
+            CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, others);
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getOthers()).isNull();
+        }
+
+        @Test
+        void shouldRemoveOthersPropertyIfOthersContainsFirstOtherAndEmptyAdditionalOthers() {
+            Others others = Others.builder()
+                .additionalOthers(List.of())
+                .firstOther(Other.builder()
+                    .name("John Smith")
+                    .telephone("07741172242")
+                    .build())
+                .build();
+
+            CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, others);
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getOthers()).isNull();
+        }
+
+        @Test
+        void shouldMigrateAdditionalOtherToFirstOtherWhenRemovingFirstOtherWithAdditionalOthers() {
+            Other additionalOther = Other.builder()
+                .name("Additional other 1")
+                .build();
+
+            List<Element<Other>> additionalOthers = List.of(element(additionalOther));
+
+            Others others = Others.builder()
+                .additionalOthers(additionalOthers)
+                .firstOther(Other.builder()
+                    .name("John Smith")
+                    .telephone("07741172242")
+                    .build())
+                .build();
+
+            CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, others);
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getOthers().getFirstOther()).isEqualTo(additionalOther);
+            assertThat(extractedCaseData.getOthers().getAdditionalOthers()).isNull();
+        }
+
+        @Test
+        void shouldOnlyMigrateFirstAdditionalOtherWhenMultipleAdditionalOthersExist() {
+            UUID additionalOtherTwoId = UUID.randomUUID();
+            UUID additionalOtherThreeId = UUID.randomUUID();
+
+            Other firstAdditionalOther = Other.builder()
+                .name("Additional other 1")
+                .build();
+
+            List<Element<Other>> additionalOthers = List.of(
+                element(firstAdditionalOther),
+                element(additionalOtherTwoId, Other.builder()
+                    .name("Additional other 2")
+                    .build()),
+                element(additionalOtherThreeId, Other.builder()
+                    .name("Additional other 3")
+                    .build()));
+
+            List<Element<Other>> expectedAdditionalOthers = List.of(
+                element(additionalOtherTwoId, Other.builder()
+                    .name("Additional other 2")
+                    .build()),
+                element(additionalOtherThreeId, Other.builder()
+                    .name("Additional other 3")
+                    .build()));
+
+            Others others = Others.builder()
+                .additionalOthers(additionalOthers)
+                .firstOther(Other.builder()
+                    .name("John Smith")
+                    .telephone("07741172242")
+                    .build())
+                .build();
+
+            CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, others);
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getOthers().getFirstOther()).isEqualTo(firstAdditionalOther);
+            assertThat(extractedCaseData.getOthers().getAdditionalOthers()).isEqualTo(expectedAdditionalOthers);
+        }
+
+        @Test
+        void shouldNotChangeCaseIfNotExpectedMigrationId() {
+            List<Element<Other>> additionalOthers = List.of(element(Other.builder()
+                .name("Additional other 1")
+                .build()));
+
+            Others others = Others.builder()
+                .additionalOthers(additionalOthers)
+                .firstOther(Other.builder()
+                    .name("John Smith")
+                    .telephone("07741172242")
+                    .build())
+                .build();
+
+            CaseDetails caseDetails = caseDetails(familyManCaseNumber, "FPLA-1111", others);
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getFamilyManCaseNumber()).isEqualTo(familyManCaseNumber);
+            assertThat(extractedCaseData.getOthers()).isEqualTo(others);
+        }
+
+        @Test
+        void shouldThrowAnExceptionIfCaseDoesNotContainOthers() {
+            CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, null);
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage("No others in the case");
+        }
+
+        private CaseDetails caseDetails(String familyManCaseNumber, String migrationId, Others others) {
+            CaseDetails caseDetails = asCaseDetails(CaseData.builder()
+                .familyManCaseNumber(familyManCaseNumber)
+                .others(others)
+                .build());
+            caseDetails.getData().put("migrationId", migrationId);
+            return caseDetails;
+        }
+    }
 
     @Nested
     class Fpla2379 {
