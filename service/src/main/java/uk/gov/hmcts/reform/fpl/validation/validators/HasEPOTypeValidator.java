@@ -19,10 +19,7 @@ public class HasEPOTypeValidator implements ConstraintValidator<HasEPOType, Orde
     @Override
     public boolean isValid(Orders value, ConstraintValidatorContext context) {
         if (featureToggleService.isEpoOrderTypeAndExclusionEnabled()) {
-            if (value.orderContainsEPO() && isNull(value.getEpoType())) {
-                return false;
-            }
-            return true;
+            return !value.orderContainsEPO() || !isNull(value.getEpoType());
         }
         return true;
     }
