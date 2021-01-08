@@ -15,6 +15,8 @@ import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.document.UploadDocumentsMigrationService;
@@ -23,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
+import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 
 @Api
@@ -50,9 +53,42 @@ public class MigrateCaseController extends CallbackController {
         if ("FPLA-2544".equals(migrationId)) {
             run2544(caseDetails);
         }
+        if ("FPLA-2481".equals(migrationId)) {
+            run2481(caseDetails);
+        }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
+    }
+
+    private void run2481(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if ("LE20C50023".equals(caseData.getFamilyManCaseNumber())) {
+            Others others = caseData.getOthers();
+
+            if (others == null) {
+                throw new IllegalArgumentException("No others in the case");
+            }
+
+            if (isEmpty(others.getAdditionalOthers())) {
+                caseDetails.getData().remove("others");
+            } else {
+                caseDetails.getData().put("others", migrateAdditionalOthers(others));
+            }
+        }
+    }
+
+    private Others migrateAdditionalOthers(Others others) {
+        Element<Other> removedAdditionalOther = others.getAdditionalOthers().remove(0);
+
+        others = others.toBuilder().firstOther(removedAdditionalOther.getValue()).build();
+
+        if (isEmpty(others.getAdditionalOthers())) {
+            others = others.toBuilder().additionalOthers(null).build();
+        }
+
+        return others;
     }
 
     private void run2525(CaseDetails caseDetails) {
