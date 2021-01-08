@@ -339,10 +339,12 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
         }
 
         @Test
-        void shouldRemoveFirstOtherPropertyOnlyIfCaseHasAdditionalOthers() {
-            List<Element<Other>> additionalOthers = List.of(element(Other.builder()
+        void shouldMigrateAdditionalOtherToFirstOtherWhenRemovingFirstOtherWithAdditionalOthers() {
+            Other additionalOther = Other.builder()
                 .name("Additional other 1")
-                .build()));
+                .build();
+
+            List<Element<Other>> additionalOthers = List.of(element(additionalOther));
 
             Others others = Others.builder()
                 .additionalOthers(additionalOthers)
@@ -355,8 +357,49 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
             CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, others);
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
-            assertThat(extractedCaseData.getOthers().getFirstOther()).isNull();
-            assertThat(extractedCaseData.getOthers().getAdditionalOthers()).isEqualTo(additionalOthers);
+            assertThat(extractedCaseData.getOthers().getFirstOther()).isEqualTo(additionalOther);
+            assertThat(extractedCaseData.getOthers().getAdditionalOthers()).isNull();
+        }
+
+        @Test
+        void shouldOnlyMigrateFirstAdditionalOtherWhenMultipleAdditionalOthersExist() {
+            UUID additionalOtherTwoId = UUID.randomUUID();
+            UUID additionalOtherThreeId = UUID.randomUUID();
+
+            Other firstAdditionalOther = Other.builder()
+                .name("Additional other 1")
+                .build();
+
+            List<Element<Other>> additionalOthers = List.of(
+                element(firstAdditionalOther),
+                element(additionalOtherTwoId, Other.builder()
+                    .name("Additional other 2")
+                    .build()),
+                element(additionalOtherThreeId, Other.builder()
+                    .name("Additional other 3")
+                    .build()));
+
+            List<Element<Other>> expectedAdditionalOthers = List.of(
+                element(additionalOtherTwoId, Other.builder()
+                    .name("Additional other 2")
+                    .build()),
+                element(additionalOtherThreeId, Other.builder()
+                    .name("Additional other 3")
+                    .build()));
+
+            Others others = Others.builder()
+                .additionalOthers(additionalOthers)
+                .firstOther(Other.builder()
+                    .name("John Smith")
+                    .telephone("07741172242")
+                    .build())
+                .build();
+
+            CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, others);
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getOthers().getFirstOther()).isEqualTo(firstAdditionalOther);
+            assertThat(extractedCaseData.getOthers().getAdditionalOthers()).isEqualTo(expectedAdditionalOthers);
         }
 
         @Test

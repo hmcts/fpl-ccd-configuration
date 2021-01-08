@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
@@ -69,10 +70,21 @@ public class MigrateCaseController extends CallbackController {
             if (isEmpty(others.getAdditionalOthers())) {
                 caseDetails.getData().remove("others");
             } else {
-                others = others.toBuilder().firstOther(null).build();
-                caseDetails.getData().put("others", others);
+                caseDetails.getData().put("others", migrateAdditionalOthers(others));
             }
         }
+    }
+
+    private Others migrateAdditionalOthers(Others others) {
+        Element<Other> removedAdditionalOther = others.getAdditionalOthers().remove(0);
+
+        others = others.toBuilder().firstOther(removedAdditionalOther.getValue()).build();
+
+        if (isEmpty(others.getAdditionalOthers())) {
+            others = others.toBuilder().additionalOthers(null).build();
+        }
+
+        return others;
     }
 
     private void run2525(CaseDetails caseDetails) {
