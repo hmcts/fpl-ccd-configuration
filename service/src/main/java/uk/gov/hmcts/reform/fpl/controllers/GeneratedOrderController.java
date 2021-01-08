@@ -35,6 +35,7 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOAddressGroup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -217,6 +218,23 @@ public class GeneratedOrderController extends CallbackController {
         }
 
         return respond(caseDetails);
+    }
+
+    @PostMapping("/exclusion-requirement/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleMidEventEPOExclusionRequirement(
+        @RequestBody CallbackRequest callbackrequest) {
+        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+        Map<String, Object> data = caseDetails.getData();
+
+        List<String> errors = List.of();
+        errors = validateGroupService.validateGroup(caseData, EPOAddressGroup.class);
+
+        data.put("epoWhoIsExcluded",caseData.getOrders().getExcluded());
+        data.put("epoType",caseData.getOrders().getEpoType());
+        data.put("epoRemovalAddress",caseData.getOrders().getAddress());
+
+        return respond(caseDetails, errors);
     }
 
     @PostMapping("/about-to-submit")
