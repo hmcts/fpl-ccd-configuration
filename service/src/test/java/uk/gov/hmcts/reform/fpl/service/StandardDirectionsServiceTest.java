@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -24,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -45,6 +46,70 @@ class StandardDirectionsServiceTest {
 
     @Autowired
     private StandardDirectionsService service;
+
+    @Test
+    void shouldPopulateDirectionsWithCaseManagementHearingDate() {
+        HearingBooking otherHearing = HearingBooking.builder()
+            .type(HearingType.OTHER)
+            .startDate(LocalDateTime.now().plusDays(1))
+            .build();
+
+        LocalDateTime dayAfterTomorrow = LocalDateTime.now().plusDays(2);
+        LocalDate dayAfterTomorrowDate = dayAfterTomorrow.toLocalDate();
+
+        HearingBooking caseManagementHearing = HearingBooking.builder()
+            .type(HearingType.CASE_MANAGEMENT)
+            .startDate(dayAfterTomorrow)
+            .build();
+
+        given(calendarService.getWorkingDayFrom(dayAfterTomorrowDate, -2))
+            .willReturn(dayAfterTomorrowDate.minusDays(2));
+        given(calendarService.getWorkingDayFrom(dayAfterTomorrowDate, -3))
+            .willReturn(dayAfterTomorrowDate.minusDays(3));
+
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(List.of(element(otherHearing), element(caseManagementHearing)))
+            .build();
+
+        //test data in test/resources/ordersConfig.json
+        Map<String, List<Element<Direction>>> populatedDirections = service.populateStandardDirections(caseData);
+
+        List<Element<Direction>> allPartiesDirections = populatedDirections.get(ALL_PARTIES.getValue());
+        List<Element<Direction>> localAuthorityDirections = populatedDirections.get(LOCAL_AUTHORITY.getValue());
+
+        Direction[] expectedDirections = expectedDirections(dayAfterTomorrowDate);
+
+        assertThat(unwrapElements(allPartiesDirections)).containsExactly(expectedDirections[0]);
+        assertThat(unwrapElements(localAuthorityDirections)).containsExactly(
+            expectedDirections[1], expectedDirections[2]
+        );
+    }
+
+    @Test
+    void shouldPopulateDirectionsWithEmptyDate() {
+        HearingBooking otherHearing = HearingBooking.builder()
+            .type(HearingType.OTHER)
+            .startDate(LocalDateTime.now().plusDays(1))
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(List.of(element(otherHearing)))
+            .build();
+
+        //test data in test/resources/ordersConfig.json
+        Map<String, List<Element<Direction>>> populatedDirections = service.populateStandardDirections(caseData);
+
+        List<Element<Direction>> allPartiesDirections = populatedDirections.get(ALL_PARTIES.getValue());
+        List<Element<Direction>> localAuthorityDirections = populatedDirections.get(LOCAL_AUTHORITY.getValue());
+
+        Direction[] expectedDirections = expectedDirections(null);
+
+        assertThat(unwrapElements(allPartiesDirections)).containsExactly(expectedDirections[0]);
+        assertThat(unwrapElements(localAuthorityDirections)).containsExactly(
+            expectedDirections[1], expectedDirections[2]
+        );
+    }
 
     @Test
     void shouldReturnExpectedListOfDirectionsWithPopulatedDatesWhenThereIsHearingDate() {
@@ -92,31 +157,6 @@ class StandardDirectionsServiceTest {
         assertThat(service.hasEmptyDates(caseData)).isFalse();
     }
 
-    @Test
-    void shouldPopulateStandardDirections() {
-        LocalDate hearingDate = LocalDate.now().plusYears(10);
-        given(calendarService.getWorkingDayFrom(hearingDate, -2)).willReturn(hearingDate.minusDays(2));
-        given(calendarService.getWorkingDayFrom(hearingDate, -3)).willReturn(hearingDate.minusDays(3));
-
-        List<Element<HearingBooking>> hearings = createHearingBookings(hearingDate.atStartOfDay(),
-            hearingDate.atStartOfDay().plusDays(1));
-
-        CaseData caseData = CaseData.builder().hearingDetails(hearings).build();
-
-        Map<String, List<Element<Direction>>> standardDirections = service.populateStandardDirections(
-            caseData);
-
-        //test data in test/resources/ordersConfig.json
-        List<Element<Direction>> allPartiesDirections = standardDirections.get(ALL_PARTIES.getValue());
-        List<Element<Direction>> localAuthorityDirections = standardDirections.get(LOCAL_AUTHORITY.getValue());
-
-        Direction[] expectedDirections = expectedDirections(hearingDate);
-
-        assertThat(unwrapElements(allPartiesDirections)).containsExactly(expectedDirections[0]);
-        assertThat(unwrapElements(localAuthorityDirections)).containsExactly(
-            expectedDirections[1], expectedDirections[2]);
-    }
-
     private Direction buildDirectionWithDate() {
         return Direction.builder().dateToBeCompletedBy(LocalDateTime.now()).build();
     }
@@ -128,15 +168,16 @@ class StandardDirectionsServiceTest {
     private Direction[] expectedDirections(LocalDate date) {
         Optional<LocalDate> hearingDate = ofNullable(date);
 
-        return new Direction[] {Direction.builder()
-            .assignee(ALL_PARTIES)
-            .directionType(DIRECTION_TYPE_1)
-            .directionText(DIRECTION_TEXT_1)
-            .readOnly("Yes")
-            .directionRemovable("No")
-            .directionNeeded("Yes")
-            .dateToBeCompletedBy(hearingDate.map(LocalDate::atStartOfDay).orElse(null))
-            .build(),
+        return new Direction[] {
+            Direction.builder()
+                .assignee(ALL_PARTIES)
+                .directionType(DIRECTION_TYPE_1)
+                .directionText(DIRECTION_TEXT_1)
+                .readOnly("Yes")
+                .directionRemovable("No")
+                .directionNeeded("Yes")
+                .dateToBeCompletedBy(hearingDate.map(LocalDate::atStartOfDay).orElse(null))
+                .build(),
             Direction.builder()
                 .assignee(LOCAL_AUTHORITY)
                 .directionType(DIRECTION_TYPE_2)
@@ -154,6 +195,7 @@ class StandardDirectionsServiceTest {
                 .directionRemovable("Yes")
                 .directionNeeded("Yes")
                 .dateToBeCompletedBy(hearingDate.map(x -> x.minusDays(2).atTime(16, 0, 0)).orElse(null))
-                .build()};
+                .build()
+        };
     }
 }
