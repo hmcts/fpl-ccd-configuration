@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.docmosis;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -34,7 +35,7 @@ public class StandardDirectionOrderGenerationService extends
     public DocmosisStandardDirectionOrder getTemplateData(CaseData caseData) {
         StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
 
-        HearingBooking firstHearing = caseData.getFirstHearing()
+        HearingBooking firstHearing = caseData.getFirstHearingOfType(HearingType.CASE_MANAGEMENT)
             .orElse(null);
 
         DocmosisStandardDirectionOrder.DocmosisStandardDirectionOrderBuilder<?,?> orderBuilder =
