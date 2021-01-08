@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.fpl.validation.validators;
 
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.fpl.validation.interfaces.HasEnteredEPOExcluded;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.epo.HasEnteredEPOExcluded;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

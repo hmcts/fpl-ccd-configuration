@@ -52,6 +52,19 @@ class HasEPOTypeValidatorTest extends AbstractValidationTest {
     }
 
     @Test
+    void shouldNotReturnAnyErrorsWhenEpoOrderIsNotSelectedAndToggledOn() {
+        given(featureToggleService.isEpoOrderTypeAndExclusionEnabled()).willReturn(true);
+
+        Orders orders = Orders.builder()
+            .orderType(List.of(OrderType.CARE_ORDER))
+            .build();
+
+        List<String> errorMessages = validate(orders);
+
+        assertThat(errorMessages).isEmpty();
+    }
+
+    @Test
     void shouldNotReturnAnyErrorsWhenEpoExclusionIsToggledOff() {
         given(featureToggleService.isEpoOrderTypeAndExclusionEnabled()).willReturn(false);
 

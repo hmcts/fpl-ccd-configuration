@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.validation.interfaces;
+package uk.gov.hmcts.reform.fpl.validation.interfaces.epo;
 
 import uk.gov.hmcts.reform.fpl.validation.validators.HasEPOAddressValidator;
 

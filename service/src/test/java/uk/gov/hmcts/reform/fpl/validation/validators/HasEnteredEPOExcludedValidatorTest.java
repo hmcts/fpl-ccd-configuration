@@ -16,6 +16,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType.EXCLUSION_REQUIREMENT;
+import static uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType.MEDICAL_PRACTITIONER;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
 
 @ExtendWith(SpringExtension.class)
@@ -54,6 +55,21 @@ class HasEnteredEPOExcludedValidatorTest extends AbstractValidationTest {
         List<String> errorMessages = validate(orders);
 
         assertThat(errorMessages).contains("Enter who you want excluded.");
+    }
+
+    @Test
+    void shouldReturnAnErrorWhenExclusionRequirementIsNotSelectedAndToggledOn() {
+        given(featureToggleService.isEpoOrderTypeAndExclusionEnabled()).willReturn(true);
+
+        Orders orders = Orders.builder()
+            .epoType(REMOVE_TO_ACCOMMODATION)
+            .orderType(List.of(OrderType.EMERGENCY_PROTECTION_ORDER))
+            .emergencyProtectionOrderDirections(List.of(MEDICAL_PRACTITIONER))
+            .build();
+
+        List<String> errorMessages = validate(orders);
+
+        assertThat(errorMessages).isEmpty();
     }
 
     @Test

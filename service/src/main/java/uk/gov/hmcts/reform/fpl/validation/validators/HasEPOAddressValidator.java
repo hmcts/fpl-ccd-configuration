@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.fpl.validation.validators;
 
 import uk.gov.hmcts.reform.fpl.model.Orders;
-import uk.gov.hmcts.reform.fpl.validation.interfaces.HasEPOAddress;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.epo.HasEPOAddress;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
