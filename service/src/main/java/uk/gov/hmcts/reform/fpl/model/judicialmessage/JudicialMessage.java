@@ -30,6 +30,7 @@ public class JudicialMessage extends JudicialMessageMetaData {
     private final List<Element<DocumentReference>> relatedDocuments;
     private final String relatedDocumentFileNames;
     private final YesNo isRelatedToC2;
+    private final String isReplying;
     private final String latestMessage;
     private final String messageHistory;
 
@@ -51,6 +52,7 @@ public class JudicialMessage extends JudicialMessageMetaData {
 
     @JsonIgnore
     public boolean isFirstMessage() {
-        return latestMessage.equals(messageHistory);
+        String formattedLatestMessage = String.format("%s - %s", getSender(), latestMessage);
+        return formattedLatestMessage.equals(messageHistory);
     }
 }

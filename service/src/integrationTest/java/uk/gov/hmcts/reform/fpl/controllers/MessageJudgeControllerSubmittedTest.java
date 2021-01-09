@@ -16,9 +16,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDICIAL_MESSAGE_ADDED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDICIAL_MESSAGE_REPLY_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.CLOSED;
+import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ActiveProfiles("integration-test")
@@ -41,10 +45,12 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
     @Test
     void shouldNotifyJudicialMessageRecipientWhenNewJudicialMessageAdded() throws NotificationClientException {
         JudicialMessage latestJudicialMessage = JudicialMessage.builder()
+            .updatedTime(now())
+            .status(OPEN)
             .recipient(JUDICIAL_MESSAGE_RECIPIENT)
             .sender("sender@fpla.com")
             .urgency("High")
-            .messageHistory(MESSAGE)
+            .messageHistory(String.format("%s - %s", "sender@fpla.com", MESSAGE))
             .latestMessage(MESSAGE)
             .build();
 
@@ -59,6 +65,8 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
             .judicialMessages(List.of(
                 element(latestJudicialMessage),
                 element(JudicialMessage.builder()
+                    .updatedTime(now().minusDays(1))
+                    .status(OPEN)
                     .recipient("do_not_send@fpla.com")
                     .sender("someOthersender@fpla.com")
                     .urgency("High")
@@ -85,6 +93,8 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
     void shouldNotifyJudicialMessageRecipientWhenJudicialMessageReplyAdded() throws NotificationClientException {
         JudicialMessage latestJudicialMessage = JudicialMessage.builder()
             .recipient(JUDICIAL_MESSAGE_RECIPIENT)
+            .updatedTime(now().minusDays(1))
+            .status(OPEN)
             .sender("sender@fpla.com")
             .urgency("High")
             .latestMessage(REPLY)
@@ -102,6 +112,8 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
             .judicialMessages(List.of(
                 element(SELECTED_DYNAMIC_LIST_ITEM_ID, latestJudicialMessage),
                 element(JudicialMessage.builder()
+                    .updatedTime(now().minusDays(3))
+                    .status(OPEN)
                     .recipient("do_not_send@fpla.com")
                     .sender("someOthersender@fpla.com")
                     .urgency("High")
@@ -119,5 +131,41 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
 
         verify(notificationClient).sendEmail(
             JUDICIAL_MESSAGE_REPLY_TEMPLATE, JUDICIAL_MESSAGE_RECIPIENT, expectedData, "localhost/12345");
+    }
+
+    @Test
+    void shouldNotSendEmailNotificationsWhenJudicialMessageIsClosed() throws NotificationClientException {
+        JudicialMessage latestJudicialMessage = JudicialMessage.builder()
+            .recipient(JUDICIAL_MESSAGE_RECIPIENT)
+            .updatedTime(now())
+            .status(CLOSED)
+            .sender("sender@fpla.com")
+            .urgency("High")
+            .latestMessage(null)
+            .messageHistory(MESSAGE + "/n" + REPLY)
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_REFERENCE)
+            .respondents1(List.of(
+                element(Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .lastName("Davidson")
+                        .build())
+                    .build())))
+            .judicialMessages(List.of(
+                element(JudicialMessage.builder()
+                    .updatedTime(now().minusDays(1))
+                    .status(OPEN)
+                    .recipient("do_not_send@fpla.com")
+                    .sender("someOthersender@fpla.com")
+                    .urgency("High")
+                    .build())))
+            .closedJudicialMessages(List.of(element(SELECTED_DYNAMIC_LIST_ITEM_ID, latestJudicialMessage)))
+            .build();
+
+        postSubmittedEvent(asCaseDetails(caseData));
+
+        verify(notificationClient, never()).sendEmail(any(), any(), any(), any());
     }
 }

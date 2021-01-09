@@ -14,6 +14,8 @@ import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageMetaData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +24,10 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.google.common.collect.Lists.newArrayList;
+import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -133,8 +138,20 @@ public class MessageJudgeService {
         return judicialMessages;
     }
 
-    public List<Element<JudicialMessage>> replyToJudicialMessage(CaseData caseData) {
-        List<Element<JudicialMessage>> judicialMessages = caseData.getJudicialMessages();
+    public List<Element<JudicialMessage>> sortJudicialMessages(List<Element<JudicialMessage>> judicialMessages) {
+        judicialMessages.sort(Comparator.comparing(judicialMessageElement
+            -> judicialMessageElement.getValue().getUpdatedTime(), Comparator.reverseOrder()));
+
+        return judicialMessages;
+    }
+
+    public String getFirstHearingLabel(CaseData caseData) {
+        return caseData.getFirstHearing()
+            .map(hearing -> String.format("Next hearing in the case: %s", hearing.toLabel()))
+            .orElse("");
+    }
+
+    public Map<String, Object> updateJudicialMessages(CaseData caseData) {
         MessageJudgeEventData messageJudgeEventData = caseData.getMessageJudgeEventData();
         JudicialMessage judicialMessageReply = messageJudgeEventData.getJudicialMessageReply();
 
@@ -142,6 +159,43 @@ public class MessageJudgeService {
             caseData.getMessageJudgeEventData().getJudicialMessageDynamicList(), mapper
         );
 
+        if (YES.getValue().equals(judicialMessageReply.getIsReplying())) {
+            List<Element<JudicialMessage>> updatedMessages = replyToJudicialMessage(
+                selectedJudicialMessageId, judicialMessageReply, caseData.getJudicialMessages());
+            return Map.of("judicialMessages", sortJudicialMessages(updatedMessages));
+        } else if (NO.getValue().equals(judicialMessageReply.getIsReplying())) {
+            return closeJudicialMessage(
+                selectedJudicialMessageId, caseData.getJudicialMessages(), caseData.getClosedJudicialMessages());
+        }
+
+        return Collections.emptyMap();
+    }
+
+    private Map<String, Object> closeJudicialMessage(UUID selectedJudicialMessageId,
+                                                     List<Element<JudicialMessage>> openJudicialMessages,
+                                                     List<Element<JudicialMessage>> closedJudicialMessages) {
+
+        Element<JudicialMessage> judicialMessageElement = openJudicialMessages.stream()
+            .filter(message -> selectedJudicialMessageId.equals(message.getId()))
+            .findFirst()
+            .orElseThrow(() -> new JudicialMessageNotFoundException(selectedJudicialMessageId));
+
+        List<Element<JudicialMessage>> updatedJudicialMessages = new ArrayList<>(openJudicialMessages);
+        updatedJudicialMessages.remove(judicialMessageElement); // remove from open judicial messages
+
+        List<Element<JudicialMessage>> updatedClosedJudicialMessages = new ArrayList<>(
+            Optional.ofNullable(closedJudicialMessages).orElse(newArrayList()));
+
+        updatedClosedJudicialMessages.add(element(judicialMessageElement.getId(),
+            judicialMessageElement.getValue().toBuilder().status(CLOSED).updatedTime(time.now()).build()));
+
+        return Map.of("judicialMessages", updatedJudicialMessages,
+            "closedJudicialMessages", sortJudicialMessages(updatedClosedJudicialMessages));
+    }
+
+    private List<Element<JudicialMessage>> replyToJudicialMessage(UUID selectedJudicialMessageId,
+                                                                  JudicialMessage judicialMessageReply,
+                                                                  List<Element<JudicialMessage>> judicialMessages) {
         return judicialMessages.stream()
             .map(judicialMessageElement -> {
                 if (selectedJudicialMessageId.equals(judicialMessageElement.getId())) {
@@ -163,19 +217,6 @@ public class MessageJudgeService {
 
                 return judicialMessageElement;
             }).collect(Collectors.toList());
-    }
-
-    public List<Element<JudicialMessage>> sortJudicialMessages(List<Element<JudicialMessage>> judicialMessages) {
-        judicialMessages.sort(Comparator.comparing(judicialMessageElement
-            -> judicialMessageElement.getValue().getUpdatedTime(), Comparator.reverseOrder()));
-
-        return judicialMessages;
-    }
-
-    public String getFirstHearingLabel(CaseData caseData) {
-        return caseData.getFirstHearing()
-            .map(hearing -> String.format("Next hearing in the case: %s", hearing.toLabel()))
-            .orElse("");
     }
 
     private String buildMessageHistory(String message, String sender) {

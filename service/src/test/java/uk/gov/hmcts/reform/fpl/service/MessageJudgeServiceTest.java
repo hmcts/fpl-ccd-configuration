@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus;
 import uk.gov.hmcts.reform.fpl.exceptions.JudicialMessageNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -28,10 +29,13 @@ import java.util.UUID;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.groups.Tuple.tuple;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
@@ -153,6 +157,43 @@ class MessageJudgeServiceTest {
         DynamicList expectedJudicialDynamicList = buildDynamicList(
             Pair.of(judicialMessages.get(0).getId(), "01 Dec 2020"),
             Pair.of(judicialMessages.get(1).getId(), "02 Dec 2020")
+        );
+
+        Map<String, Object> expectedData = Map.of(
+            "hasJudicialMessages", "Yes",
+            "judicialMessageDynamicList", expectedJudicialDynamicList
+        );
+
+        assertThat(data).isEqualTo(expectedData);
+    }
+
+    @Test
+    void shouldInitialiseJudicialMessagesWithOpenStatusWhenC2DocumentsDoNotExist() {
+        List<Element<JudicialMessage>> judicialMessages = List.of(
+            element(JudicialMessage.builder()
+                .latestMessage("some note")
+                .messageHistory("some history")
+                .dateSent("01 Dec 2020")
+                .build())
+        );
+
+        List<Element<JudicialMessage>> closedJudicialMessages = List.of(
+            element(JudicialMessage.builder()
+                .latestMessage("some note")
+                .messageHistory("some history")
+                .dateSent("02 Dec 2020")
+                .build())
+        );
+
+        CaseData caseData = CaseData.builder()
+            .judicialMessages(judicialMessages)
+            .closedJudicialMessages(closedJudicialMessages)
+            .build();
+
+        Map<String, Object> data = messageJudgeService.initialiseCaseFields(caseData);
+
+        DynamicList expectedJudicialDynamicList = buildDynamicList(
+            Pair.of(judicialMessages.get(0).getId(), "01 Dec 2020")
         );
 
         Map<String, Object> expectedData = Map.of(
@@ -452,35 +493,22 @@ class MessageJudgeServiceTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void shouldUpdateExistingJudicialMessageWhenReplying() {
         String messageReply = "Reply to message";
         String dateSent = formatLocalDateTimeBaseUsingFormat(time.now().minusDays(1), DATE_TIME_AT);
 
-        MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
-            .judicialMessageDynamicList(buildDynamicList(0, Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, dateSent)))
-            .judicialMessageReply(JudicialMessage.builder()
-                .latestMessage(messageReply)
-                .build())
-            .build();
+        MessageJudgeEventData messageJudgeEventData = buildMessageEventData(messageReply, dateSent, true);
 
         CaseData caseData = CaseData.builder()
             .messageJudgeEventData(messageJudgeEventData)
-            .judicialMessages(List.of(
-                element(SELECTED_DYNAMIC_LIST_ITEM_ID, JudicialMessage.builder()
-                    .sender(MESSAGE_SENDER)
-                    .recipient(MESSAGE_RECIPIENT)
-                    .updatedTime(time.now().minusDays(1))
-                    .status(OPEN)
-                    .requestedBy(MESSAGE_REQUESTED_BY)
-                    .latestMessage(MESSAGE_NOTE)
-                    .messageHistory(MESSAGE_NOTE)
-                    .dateSent(dateSent)
-                    .build())))
+            .judicialMessages(List.of(element(SELECTED_DYNAMIC_LIST_ITEM_ID, buildJudicialMessage(dateSent))))
             .build();
 
         when(userService.getUserEmail()).thenReturn(MESSAGE_RECIPIENT);
 
-        List<Element<JudicialMessage>> updatedMessages = messageJudgeService.replyToJudicialMessage(caseData);
+        Map<String, Object> updatedData = messageJudgeService.updateJudicialMessages(caseData);
+        List<Element<JudicialMessage>> updatedMessages = (List<Element<JudicialMessage>>) updatedData.get("judicialMessages");
 
         String formattedMessageHistory = MESSAGE_NOTE + "\n \n"
             + String.format("%s - %s", MESSAGE_RECIPIENT, messageReply);
@@ -505,9 +533,9 @@ class MessageJudgeServiceTest {
 
     @Test
     void shouldSortThreadOfJudicialMessagesByDate() {
-        Element<JudicialMessage> latestJudicialMessage = buildJudicialMessageElement(time.now().plusDays(1));
-        Element<JudicialMessage> pastJudicialMessage = buildJudicialMessageElement(time.now().plusMinutes(1));
-        Element<JudicialMessage> oldestJudicialMessage = buildJudicialMessageElement(time.now().minusHours(1));
+        Element<JudicialMessage> latestJudicialMessage = buildJudicialMessageElement(time.now().plusDays(1), OPEN);
+        Element<JudicialMessage> pastJudicialMessage = buildJudicialMessageElement(time.now().plusMinutes(1), OPEN);
+        Element<JudicialMessage> oldestJudicialMessage = buildJudicialMessageElement(time.now().minusHours(1), OPEN);
 
         List<Element<JudicialMessage>> judicialMessages = new ArrayList<>();
         judicialMessages.add(oldestJudicialMessage);
@@ -545,7 +573,106 @@ class MessageJudgeServiceTest {
         assertThat(messageJudgeService.getFirstHearingLabel(caseData)).isEmpty();
     }
 
-    private Element<JudicialMessage> buildJudicialMessageElement(LocalDateTime dateTime) {
-        return element(JudicialMessage.builder().updatedTime(dateTime).build());
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldCloseJudicialMessageWhenIsReplyingToJudicialMessageIsSelectedAsNo() {
+        String dateSent = formatLocalDateTimeBaseUsingFormat(time.now().minusDays(1), DATE_TIME_AT);
+
+        MessageJudgeEventData messageJudgeEventData = buildMessageEventData(null, dateSent, false);
+
+        Element<JudicialMessage> oldJudicialMessage = buildJudicialMessageElement(time.now().minusDays(1), OPEN);
+
+        Element<JudicialMessage> selectedJudicialMessage = element(
+            SELECTED_DYNAMIC_LIST_ITEM_ID, buildJudicialMessage(dateSent));
+        Element<JudicialMessage> closedJudicialMessage = buildJudicialMessageElement(time.now().minusDays(2), CLOSED);
+
+        CaseData caseData = CaseData.builder()
+            .messageJudgeEventData(messageJudgeEventData)
+            .judicialMessages(List.of(oldJudicialMessage, selectedJudicialMessage))
+            .closedJudicialMessages(List.of(closedJudicialMessage))
+            .build();
+
+        when(userService.getUserEmail()).thenReturn(MESSAGE_RECIPIENT);
+        List<Element<JudicialMessage>> expectedJudicialMessages = List.of(oldJudicialMessage);
+
+        Map<String, Object> updatedJudicialMessages = messageJudgeService.updateJudicialMessages(caseData);
+
+        assertThat(updatedJudicialMessages).containsEntry("judicialMessages", expectedJudicialMessages);
+
+        List<Element<JudicialMessage>> updatedClosedMessages = (List<Element<JudicialMessage>>) updatedJudicialMessages.get("closedJudicialMessages");
+        assertThat(updatedClosedMessages)
+            .extracting(Element::getId, judicialMessageElement -> judicialMessageElement.getValue().getStatus())
+            .containsExactly(
+                tuple(closedJudicialMessage.getId(), CLOSED),
+                tuple(selectedJudicialMessage.getId(), CLOSED));
     }
+
+    @Test
+    void shouldThrowAnExceptionWhenSelectedJudicialMessageToCloseIsNotFound() {
+        MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
+            .judicialMessageDynamicList(buildDynamicList(0, Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, "")))
+            .judicialMessageReply(JudicialMessage.builder().isReplying(NO.getValue()).build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .messageJudgeEventData(messageJudgeEventData)
+            .judicialMessages(List.of(
+                element(UUID.randomUUID(), JudicialMessage.builder().build()),
+                element(UUID.randomUUID(), JudicialMessage.builder().build())))
+            .build();
+
+        assertThatThrownBy(() -> messageJudgeService.updateJudicialMessages(caseData))
+            .isInstanceOf(JudicialMessageNotFoundException.class)
+            .hasMessage(format("Judicial message with id %s not found", SELECTED_DYNAMIC_LIST_ITEM_ID));
+    }
+
+    @Test
+    void shouldNotUpdateJudicialMessagesWhenIsReplyingIsNotSet() {
+        String dateSent = formatLocalDateTimeBaseUsingFormat(time.now().minusHours(1), DATE_TIME_AT);
+
+        MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
+            .judicialMessageDynamicList(buildDynamicList(0, Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, dateSent)))
+            .judicialMessageReply(JudicialMessage.builder().build())
+            .build();
+
+        Element<JudicialMessage> oldOpenMessage = element(SELECTED_DYNAMIC_LIST_ITEM_ID, buildJudicialMessage(dateSent));
+        Element<JudicialMessage> latestOpenMessage = element(UUID.randomUUID(), JudicialMessage.builder().status(OPEN).build());
+        Element<JudicialMessage> closedMessage = element(UUID.randomUUID(), JudicialMessage.builder().status(CLOSED).build());
+
+        CaseData caseData = CaseData.builder()
+            .messageJudgeEventData(messageJudgeEventData)
+            .judicialMessages(List.of(latestOpenMessage, oldOpenMessage))
+            .closedJudicialMessages(List.of(closedMessage))
+            .build();
+
+        assertThat(messageJudgeService.updateJudicialMessages(caseData)).isEmpty();
+    }
+
+    private MessageJudgeEventData buildMessageEventData(String messageReply, String dateSent, boolean isReplying) {
+        return MessageJudgeEventData.builder()
+            .judicialMessageDynamicList(buildDynamicList(0, Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, dateSent)))
+            .judicialMessageReply(JudicialMessage.builder()
+                .isReplying(isReplying ? YES.getValue() : NO.getValue())
+                .latestMessage(isReplying ? messageReply : null)
+                .build())
+            .build();
+    }
+
+    private Element<JudicialMessage> buildJudicialMessageElement(LocalDateTime dateTime, JudicialMessageStatus status) {
+        return element(JudicialMessage.builder().updatedTime(dateTime).status(status).build());
+    }
+
+    private JudicialMessage buildJudicialMessage(String dateSent) {
+        return JudicialMessage.builder()
+            .sender(MESSAGE_SENDER)
+            .recipient(MESSAGE_RECIPIENT)
+            .updatedTime(time.now().minusDays(1))
+            .status(OPEN)
+            .requestedBy(MESSAGE_REQUESTED_BY)
+            .latestMessage(MESSAGE_NOTE)
+            .messageHistory(MESSAGE_NOTE)
+            .dateSent(dateSent)
+            .build();
+    }
+
 }
