@@ -3,7 +3,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath("net.serenity-bdd:serenity-gradle-plugin:2.3.10")
+    classpath("net.serenity-bdd:serenity-gradle-plugin:2.3.12")
   }
 }
 
