@@ -524,7 +524,7 @@ class MessageJudgeServiceTest {
                 .updatedTime(time.now())
                 .status(OPEN)
                 .latestMessage(messageReply)
-                .messageHistory(formattedMessageHistory)
+                .messageHistory(String.format("%s - %s", MESSAGE_SENDER, formattedMessageHistory))
                 .dateSent(dateSent)
                 .build()
         );
@@ -626,31 +626,6 @@ class MessageJudgeServiceTest {
         assertThatThrownBy(() -> messageJudgeService.updateJudicialMessages(caseData))
             .isInstanceOf(JudicialMessageNotFoundException.class)
             .hasMessage(format("Judicial message with id %s not found", SELECTED_DYNAMIC_LIST_ITEM_ID));
-    }
-
-    @Test
-    void shouldNotUpdateJudicialMessagesWhenIsReplyingIsNotSet() {
-        String dateSent = formatLocalDateTimeBaseUsingFormat(time.now().minusHours(1), DATE_TIME_AT);
-
-        MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
-            .judicialMessageDynamicList(buildDynamicList(0, Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, dateSent)))
-            .judicialMessageReply(JudicialMessage.builder().build())
-            .build();
-
-        Element<JudicialMessage> oldOpenMessage =
-            element(SELECTED_DYNAMIC_LIST_ITEM_ID, buildJudicialMessage(dateSent));
-        Element<JudicialMessage> latestOpenMessage =
-            element(UUID.randomUUID(), JudicialMessage.builder().status(OPEN).build());
-        Element<JudicialMessage> closedMessage =
-            element(UUID.randomUUID(), JudicialMessage.builder().status(CLOSED).build());
-
-        CaseData caseData = CaseData.builder()
-            .messageJudgeEventData(messageJudgeEventData)
-            .judicialMessages(List.of(latestOpenMessage, oldOpenMessage))
-            .closedJudicialMessages(List.of(closedMessage))
-            .build();
-
-        assertThat(messageJudgeService.updateJudicialMessages(caseData)).isEmpty();
     }
 
     private MessageJudgeEventData buildMessageEventData(String messageReply, String dateSent, boolean isReplying) {
