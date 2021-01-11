@@ -508,7 +508,8 @@ class MessageJudgeServiceTest {
         when(userService.getUserEmail()).thenReturn(MESSAGE_RECIPIENT);
 
         Map<String, Object> updatedData = messageJudgeService.updateJudicialMessages(caseData);
-        List<Element<JudicialMessage>> updatedMessages = (List<Element<JudicialMessage>>) updatedData.get("judicialMessages");
+        List<Element<JudicialMessage>> updatedMessages =
+            (List<Element<JudicialMessage>>) updatedData.get("judicialMessages");
 
         String formattedMessageHistory = MESSAGE_NOTE + "\n \n"
             + String.format("%s - %s", MESSAGE_RECIPIENT, messageReply);
@@ -599,12 +600,13 @@ class MessageJudgeServiceTest {
 
         assertThat(updatedJudicialMessages).containsEntry("judicialMessages", expectedJudicialMessages);
 
-        List<Element<JudicialMessage>> updatedClosedMessages = (List<Element<JudicialMessage>>) updatedJudicialMessages.get("closedJudicialMessages");
+        List<Element<JudicialMessage>> updatedClosedMessages =
+            (List<Element<JudicialMessage>>) updatedJudicialMessages.get("closedJudicialMessages");
         assertThat(updatedClosedMessages)
             .extracting(Element::getId, judicialMessageElement -> judicialMessageElement.getValue().getStatus())
             .containsExactly(
-                tuple(closedJudicialMessage.getId(), CLOSED),
-                tuple(selectedJudicialMessage.getId(), CLOSED));
+                tuple(selectedJudicialMessage.getId(), CLOSED),
+                tuple(closedJudicialMessage.getId(), CLOSED));
     }
 
     @Test
@@ -635,9 +637,12 @@ class MessageJudgeServiceTest {
             .judicialMessageReply(JudicialMessage.builder().build())
             .build();
 
-        Element<JudicialMessage> oldOpenMessage = element(SELECTED_DYNAMIC_LIST_ITEM_ID, buildJudicialMessage(dateSent));
-        Element<JudicialMessage> latestOpenMessage = element(UUID.randomUUID(), JudicialMessage.builder().status(OPEN).build());
-        Element<JudicialMessage> closedMessage = element(UUID.randomUUID(), JudicialMessage.builder().status(CLOSED).build());
+        Element<JudicialMessage> oldOpenMessage =
+            element(SELECTED_DYNAMIC_LIST_ITEM_ID, buildJudicialMessage(dateSent));
+        Element<JudicialMessage> latestOpenMessage =
+            element(UUID.randomUUID(), JudicialMessage.builder().status(OPEN).build());
+        Element<JudicialMessage> closedMessage =
+            element(UUID.randomUUID(), JudicialMessage.builder().status(CLOSED).build());
 
         CaseData caseData = CaseData.builder()
             .messageJudgeEventData(messageJudgeEventData)
@@ -670,7 +675,7 @@ class MessageJudgeServiceTest {
             .status(OPEN)
             .requestedBy(MESSAGE_REQUESTED_BY)
             .latestMessage(MESSAGE_NOTE)
-            .messageHistory(MESSAGE_NOTE)
+            .messageHistory(String.format("%s - %s", MESSAGE_SENDER, MESSAGE_NOTE))
             .dateSent(dateSent)
             .build();
     }
