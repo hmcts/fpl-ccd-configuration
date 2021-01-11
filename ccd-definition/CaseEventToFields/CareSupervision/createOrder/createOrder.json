@@ -339,7 +339,7 @@
     "PageID": "EPOType",
     "PageDisplayOrder": 12,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "epoType=\"PREVENT_REMOVAL\"",
+    "FieldShowCondition": "epoExclusionRequirementType=\"STARTING_ON_DIFFERENT_DATE\" OR epoExclusionRequirementType=\"STARTING_ON_SAME_DATE\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
