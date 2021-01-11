@@ -1,15 +1,15 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
-import uk.gov.hmcts.reform.fpl.validation.interfaces.HasEPOAddress;
-import uk.gov.hmcts.reform.fpl.validation.interfaces.HasEPOType;
-import uk.gov.hmcts.reform.fpl.validation.interfaces.HasEnteredEPOExcluded;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.epo.HasEPOAddress;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.epo.HasEPOType;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.epo.HasEnteredEPOExcluded;
 
 import java.util.List;
 import javax.validation.constraints.NotNull;
@@ -22,7 +22,7 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER
 @HasEPOAddress
 @HasEPOType
 @HasEnteredEPOExcluded
-@AllArgsConstructor
+@Jacksonized
 public class Orders {
     @NotNull(message = "Select at least one type of order")
     @Size(min = 1, message = "Select at least one type of order")

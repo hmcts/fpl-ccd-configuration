@@ -1,6 +1,6 @@
-package uk.gov.hmcts.reform.fpl.validation.interfaces;
+package uk.gov.hmcts.reform.fpl.validation.interfaces.epo;
 
-import uk.gov.hmcts.reform.fpl.validation.validators.HasEPOTypeValidator;
+import uk.gov.hmcts.reform.fpl.validation.validators.epo.HasEPOAddressValidator;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -11,9 +11,9 @@ import javax.validation.Payload;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = { HasEPOTypeValidator.class })
-public @interface HasEPOType {
-    String message() default "Select the type of EPO you need.";
+@Constraint(validatedBy = { HasEPOAddressValidator.class })
+public @interface HasEPOAddress {
+    String message() default "Enter the postcode and select the address.";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

@@ -1,8 +1,8 @@
-package uk.gov.hmcts.reform.fpl.validation.validators;
+package uk.gov.hmcts.reform.fpl.validation.validators.epo;
 
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.fpl.validation.interfaces.HasEPOType;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.epo.HasEPOType;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -19,10 +19,7 @@ public class HasEPOTypeValidator implements ConstraintValidator<HasEPOType, Orde
     @Override
     public boolean isValid(Orders value, ConstraintValidatorContext context) {
         if (featureToggleService.isEpoOrderTypeAndExclusionEnabled()) {
-            if (value.orderContainsEPO() && isNull(value.getEpoType())) {
-                return false;
-            }
-            return true;
+            return !value.orderContainsEPO() || !isNull(value.getEpoType());
         }
         return true;
     }

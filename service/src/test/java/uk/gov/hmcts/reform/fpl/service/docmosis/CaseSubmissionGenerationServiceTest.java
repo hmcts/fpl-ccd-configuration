@@ -463,6 +463,22 @@ class CaseSubmissionGenerationServiceTest {
             String expectedDirectionsNeeded = "directions\ndirection  details";
             assertThat(caseSubmission.getDirectionsNeeded()).isEqualTo(expectedDirectionsNeeded);
         }
+
+        @Test
+        void shouldIncludeEPOExcludedWhenEntered() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(Orders.builder()
+                    .directions("directions")
+                    .directionDetails("direction details")
+                    .excluded("John Doe")
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            String expectedDirectionsNeeded = "John Doe excluded\ndirections\ndirection details";
+            assertThat(caseSubmission.getDirectionsNeeded()).isEqualTo(expectedDirectionsNeeded);
+        }
     }
 
     @Nested

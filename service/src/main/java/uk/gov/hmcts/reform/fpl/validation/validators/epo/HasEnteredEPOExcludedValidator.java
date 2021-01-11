@@ -1,8 +1,8 @@
-package uk.gov.hmcts.reform.fpl.validation.validators;
+package uk.gov.hmcts.reform.fpl.validation.validators.epo;
 
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.fpl.validation.interfaces.HasEnteredEPOExcluded;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.epo.HasEnteredEPOExcluded;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -21,11 +21,8 @@ public class HasEnteredEPOExcludedValidator implements ConstraintValidator<HasEn
     @Override
     public boolean isValid(Orders value, ConstraintValidatorContext context) {
         if (featureToggleService.isEpoOrderTypeAndExclusionEnabled()) {
-            if (value.orderContainsEPO() && directionsContainExclusionRequirement(value)
-                && isEmpty(value.getExcluded())) {
-                return false;
-            }
-            return true;
+            return !value.orderContainsEPO() || !directionsContainExclusionRequirement(value)
+                || !isEmpty(value.getExcluded());
         }
         return true;
     }
