@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentPr
 
 import java.time.format.FormatStyle;
 
+import static uk.gov.hmcts.reform.fpl.enums.TabLabel.HEARINGS;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
@@ -23,7 +24,7 @@ public class NoticeOfProceedingsEmailContentProvider extends AbstractEmailConten
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .respondentLastName(getFirstRespondentLastName(caseData))
             .hearingDate(getHearingBookingStartDate(caseData))
-            .caseUrl(getCaseUrl(caseData.getId(), "HearingTab"))
+            .caseUrl(getCaseUrl(caseData.getId(), HEARINGS))
             .judgeTitle(caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()
                 .getJudgeOrMagistrateTitle())
             .judgeName(caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor().getJudgeName())

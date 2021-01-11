@@ -6,13 +6,16 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.enums.TabLabel;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
+import java.io.UnsupportedEncodingException;
+
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 
@@ -49,11 +52,11 @@ public abstract class AbstractEmailContentProviderTest {
     DocumentDownloadService documentDownloadService;
 
     @BeforeEach
-    void initCaseUrlService() {
+    void initCaseUrlService() throws UnsupportedEncodingException {
         when(caseUrlService.getCaseUrl(anyLong()))
             .thenAnswer(invocation -> caseUrl(invocation.getArgument(0).toString()));
 
-        when(caseUrlService.getCaseUrl(anyLong(), anyString()))
+        when(caseUrlService.getCaseUrl(anyLong(), any(TabLabel.class)))
             .thenAnswer(invocation -> caseUrl(invocation.getArgument(0).toString(), invocation.getArgument(1)));
 
         when(caseUrlService.getBaseUrl())

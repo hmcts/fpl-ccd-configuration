@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.sdo.SDONotifyData;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.StandardDirectionOrderContent;
 
+import static uk.gov.hmcts.reform.fpl.enums.TabLabel.ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCallout;
 
 @Service
@@ -23,7 +24,7 @@ public class CafcassEmailContentProviderSDOIssued extends StandardDirectionOrder
             .leadRespondentsName(getLeadRespondentsName(caseData))
             .hearingDate(getHearingDate(caseData))
             .reference(caseData.getId().toString())
-            .caseUrl(getCaseUrl(caseData.getId(), "OrdersTab"))
+            .caseUrl(getCaseUrl(caseData.getId(), ORDERS))
             .callout(buildCallout(caseData))
             .build();
     }

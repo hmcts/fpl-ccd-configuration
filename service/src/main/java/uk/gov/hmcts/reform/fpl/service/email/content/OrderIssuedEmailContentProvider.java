@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.TabLabel.ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
@@ -43,7 +44,7 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
                                                           final IssuedOrderType issuedOrderType) {
         return commonOrderIssuedNotifyData(caseData, issuedOrderType).toBuilder()
             .documentLink(getDocumentUrl(orderDocument))
-            .caseUrl(getCaseUrl(caseData.getId(), "OrdersTab"))
+            .caseUrl(getCaseUrl(caseData.getId(), ORDERS))
             .build();
     }
 
@@ -54,7 +55,7 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
         return AllocatedJudgeTemplateForGeneratedOrder.builder()
             .orderType(getTypeOfOrder(caseData, GENERATED_ORDER))
             .callout(buildCallout(caseData))
-            .caseUrl(getCaseUrl(caseData.getId(), "OrdersTab"))
+            .caseUrl(getCaseUrl(caseData.getId(), ORDERS))
             .respondentLastName(getFirstRespondentLastName(caseData))
             .judgeTitle(judge.getJudgeOrMagistrateTitle())
             .judgeName(judge.getJudgeName())

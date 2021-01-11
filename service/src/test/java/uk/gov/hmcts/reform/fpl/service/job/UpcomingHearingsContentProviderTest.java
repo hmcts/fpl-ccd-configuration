@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.hearing.UpcomingHearingNotifyData;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.email.content.UpcomingHearingsContentProvider;
 
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +26,7 @@ import static java.time.Month.MAY;
 import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.TabLabel.ORDERS;
 
 @ExtendWith(SpringExtension.class)
 class UpcomingHearingsContentProviderTest {
@@ -45,9 +47,9 @@ class UpcomingHearingsContentProviderTest {
     private UpcomingHearingsContentProvider contentProvider;
 
     @BeforeEach
-    void setup() {
-        when(caseUrlService.getCaseUrl(CASE_1_ID, "OrdersTab")).thenReturn(CASE_1_URL);
-        when(caseUrlService.getCaseUrl(CASE_2_ID, "OrdersTab")).thenReturn(CASE_2_URL);
+    void setup() throws UnsupportedEncodingException {
+        when(caseUrlService.getCaseUrl(CASE_1_ID, ORDERS)).thenReturn(CASE_1_URL);
+        when(caseUrlService.getCaseUrl(CASE_2_ID, ORDERS)).thenReturn(CASE_2_URL);
     }
 
     @Test

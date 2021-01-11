@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
+import static uk.gov.hmcts.reform.fpl.enums.TabLabel.PLACEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 @Service
@@ -16,7 +17,7 @@ public class PlacementApplicationContentProvider extends AbstractEmailContentPro
     public BaseCaseNotifyData buildPlacementApplicationNotificationParameters(CaseData caseData) {
 
         return BaseCaseNotifyData.builder()
-            .caseUrl(getCaseUrl(caseData.getId(), "PlacementTab"))
+            .caseUrl(getCaseUrl(caseData.getId(), PLACEMENT))
             .respondentLastName(getFirstRespondentLastName(caseData))
             .build();
     }

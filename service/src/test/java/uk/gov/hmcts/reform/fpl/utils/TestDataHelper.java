@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
+import uk.gov.hmcts.reform.fpl.enums.TabLabel;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -27,6 +28,8 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudge;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -240,7 +243,7 @@ public class TestDataHelper {
     public static FeignException feignException(int status, String message) {
         return FeignException.errorStatus(message, Response.builder()
             .status(status)
-            .request(Request.create(GET, EMPTY, Map.of(), new byte[]{}, UTF_8, null))
+            .request(Request.create(GET, EMPTY, Map.of(), new byte[] {}, UTF_8, null))
             .build());
     }
 
@@ -262,5 +265,14 @@ public class TestDataHelper {
             .listItems(listItems)
             .value(selected != -1 && selected < listItems.size() ? listItems.get(selected) : DynamicListElement.EMPTY)
             .build();
+    }
+
+    public static String buildCaseUrl(TabLabel tab, String caseId) {
+        return String.format("%s/cases/case-details/%s#%s", "http://fake-url", caseId,
+            URLEncoder.encode(tab.getLabel(), StandardCharsets.UTF_8));
+    }
+
+    public static String buildCaseUrl(TabLabel tab, Long caseId) {
+        return buildCaseUrl(tab, caseId.toString());
     }
 }

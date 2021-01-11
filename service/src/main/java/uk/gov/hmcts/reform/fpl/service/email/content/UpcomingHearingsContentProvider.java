@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 
 import static java.lang.System.lineSeparator;
 import static java.util.stream.Collectors.joining;
+import static uk.gov.hmcts.reform.fpl.enums.TabLabel.ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @Service
@@ -34,7 +35,7 @@ public class UpcomingHearingsContentProvider extends AbstractEmailContentProvide
     private String formatCase(CaseDetails caseDetails) {
         Object caseNumber = caseDetails.getData().get("familyManCaseNumber");
         Object caseName = caseDetails.getData().get("caseName");
-        String caseUrl = getCaseUrl(caseDetails.getId(), "OrdersTab");
+        String caseUrl = getCaseUrl(caseDetails.getId(), ORDERS);
 
         return Stream.of(caseNumber, caseName, caseUrl)
             .filter(Objects::nonNull)

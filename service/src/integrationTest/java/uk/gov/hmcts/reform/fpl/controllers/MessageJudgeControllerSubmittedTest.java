@@ -19,7 +19,9 @@ import java.util.UUID;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDICIAL_MESSAGE_ADDED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDICIAL_MESSAGE_REPLY_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.TabLabel.JUDICIAL_MESSAGES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildCaseUrl;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(MessageJudgeController.class)
@@ -69,7 +71,7 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
 
         Map<String, Object> expectedData = Map.of(
             "respondentLastName", "Davidson",
-            "caseUrl", "http://fake-url/cases/case-details/12345#JudicialMessagesTab",
+            "caseUrl", buildCaseUrl(JUDICIAL_MESSAGES, CASE_REFERENCE),
             "callout", "^Davidson",
             "sender", "sender@fpla.com",
             "urgency", "High",
@@ -112,7 +114,7 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
 
         Map<String, Object> expectedData = Map.of(
             "respondentLastName", "Davidson",
-            "caseUrl", "http://fake-url/cases/case-details/12345#JudicialMessagesTab",
+            "caseUrl", buildCaseUrl(JUDICIAL_MESSAGES, CASE_REFERENCE),
             "callout", "^Davidson",
             "latestMessage", REPLY
         );
