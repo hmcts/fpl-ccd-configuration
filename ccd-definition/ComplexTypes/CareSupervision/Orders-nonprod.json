@@ -33,7 +33,7 @@
     "ListElementCode": "address",
     "FieldType": "AddressUK",
     "ElementLabel": "Address",
-    "FieldShowCondition": "epoType=\"PREVENT_REMOVAL\"",
+    "FieldShowCondition": "epoType=\"PREVENT_REMOVAL\" AND orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
     "SecurityClassification": "Public"
   },
   {
@@ -71,7 +71,7 @@
     "ListElementCode": "excluded",
     "FieldType": "Text",
     "ElementLabel": "Who's excluded?",
-    "FieldShowCondition": "emergencyProtectionOrderDirections CONTAINS \"EXCLUSION_REQUIREMENT\"",
+    "FieldShowCondition": "emergencyProtectionOrderDirections CONTAINS \"EXCLUSION_REQUIREMENT\", AND orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
     "SecurityClassification": "Public"
   },
   {
