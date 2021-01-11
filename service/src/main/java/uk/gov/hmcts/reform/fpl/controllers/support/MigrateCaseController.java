@@ -18,8 +18,10 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.document.UploadDocumentsMigrationService;
+import uk.gov.hmcts.reform.fpl.service.removeorder.CMORemovalAction;
 
 import java.util.List;
 import java.util.Map;
@@ -37,6 +39,7 @@ public class MigrateCaseController extends CallbackController {
 
     private final UploadDocumentsMigrationService uploadDocumentsMigrationService;
     private final StandardDirectionsService standardDirectionsService;
+    private final CMORemovalAction cmoRemovalAction;
     private static final String MIGRATION_ID_KEY = "migrationId";
 
     @PostMapping("/about-to-submit")
@@ -56,9 +59,26 @@ public class MigrateCaseController extends CallbackController {
         if ("FPLA-2481".equals(migrationId)) {
             run2481(caseDetails);
         }
+        if ("FPLA-2521".equals(migrationId)) {
+            run2521(caseDetails);
+        }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
+    }
+
+    private void run2521(CaseDetails caseDetails) {
+        if ("1599470847274974".equals(caseDetails.getId().toString())) {
+            CaseData caseData = getCaseData(caseDetails);
+
+            if (isEmpty(caseData.getDraftUploadedCMOs())) {
+                throw new IllegalArgumentException("No draft case management orders in the case");
+            }
+
+            Element<CaseManagementOrder> firstDraftCmo = caseData.getDraftUploadedCMOs().get(0);
+
+            cmoRemovalAction.removeDraftCaseManagementOrder(caseData, caseDetails, firstDraftCmo);
+        }
     }
 
     private void run2481(CaseDetails caseDetails) {
