@@ -31,4 +31,9 @@ public enum TabLabel {
         return label;
     }
 
+    @Override
+    public String toString() {
+        return getLabel();
+    }
+
 }

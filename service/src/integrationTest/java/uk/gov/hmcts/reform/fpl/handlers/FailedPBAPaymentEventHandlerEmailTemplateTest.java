@@ -15,8 +15,10 @@ import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C110A_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.enums.TabLabel.C2;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildCaseUrl;
 
 @SpringBootTest(classes = {
     FailedPBAPaymentEventHandler.class,
@@ -43,7 +45,7 @@ class FailedPBAPaymentEventHandlerEmailTemplateTest extends EmailTemplateTest {
             .hasBody(emailContent()
                 .line("The online payment has failed for:")
                 .line()
-                .line("^http://fake-url/cases/case-details/123#C2Tab")
+                .line("^" + buildCaseUrl(C2, "123"))
                 .line()
                 .end("Contact the relevant court so they can take the payment.")
             );

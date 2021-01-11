@@ -17,6 +17,7 @@ import static java.lang.String.format;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.TabLabel.C2;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
@@ -30,7 +31,6 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
     private static final byte[] C2_DOCUMENT_BINARY = testDocumentBinaries();
     private static DocumentReference applicationDocument;
     private DocumentReference uploadedC2 = testDocumentReference();
-    private static final String C2 = "C2Tab";
 
     @BeforeEach
     void init() {

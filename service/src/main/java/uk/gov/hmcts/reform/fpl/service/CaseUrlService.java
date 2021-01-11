@@ -10,7 +10,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 @Service
-@RequiredArgsConstructor(onConstructor = @__( {@Autowired}))
+@RequiredArgsConstructor(onConstructor = @__({@Autowired}))
 public class CaseUrlService {
 
     @Value("${manage-case.ui.base.url}")

@@ -12,8 +12,6 @@ import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
-import java.io.UnsupportedEncodingException;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
@@ -38,7 +36,7 @@ public abstract class AbstractEmailContentProviderTest {
         return formatCaseUrl(UI_URL, Long.valueOf(caseId));
     }
 
-    protected String caseUrl(String caseId, String tab) {
+    protected String caseUrl(String caseId, TabLabel tab) {
         return formatCaseUrl(UI_URL, Long.valueOf(caseId), tab);
     }
 
@@ -52,7 +50,7 @@ public abstract class AbstractEmailContentProviderTest {
     DocumentDownloadService documentDownloadService;
 
     @BeforeEach
-    void initCaseUrlService() throws UnsupportedEncodingException {
+    void initCaseUrlService() {
         when(caseUrlService.getCaseUrl(anyLong()))
             .thenAnswer(invocation -> caseUrl(invocation.getArgument(0).toString()));
 

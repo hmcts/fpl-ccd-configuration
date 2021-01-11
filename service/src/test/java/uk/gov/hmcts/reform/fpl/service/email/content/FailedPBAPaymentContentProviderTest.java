@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.payment.FailedPBANotificationData;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C110A_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.enums.TabLabel.C2;
 
 @ContextConfiguration(classes = {FailedPBAPaymentContentProvider.class})
 class FailedPBAPaymentContentProviderTest extends AbstractEmailContentProviderTest {
@@ -27,7 +28,7 @@ class FailedPBAPaymentContentProviderTest extends AbstractEmailContentProviderTe
 
         final FailedPBANotificationData expectedParameters = FailedPBANotificationData.builder()
             .applicationType(applicationType.getType())
-            .caseUrl(caseUrl(caseData.getId().toString(), "C2Tab"))
+            .caseUrl(caseUrl(caseData.getId().toString(), C2))
             .build();
 
         final FailedPBANotificationData actualParameters = contentProvider

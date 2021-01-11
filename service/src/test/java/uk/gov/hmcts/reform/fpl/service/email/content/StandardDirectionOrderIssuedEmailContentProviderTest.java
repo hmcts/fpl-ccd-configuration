@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.TabLabel.ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
 
@@ -20,8 +21,6 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
 
     @Autowired
     private StandardDirectionOrderIssuedEmailContentProvider standardDirectionOrderIssuedEmailContentProvider;
-
-    private static final String ORDERS = "OrdersTab";
 
     @Test
     void shouldReturnNotifyDataForCTSCWithValidSDODetails() {

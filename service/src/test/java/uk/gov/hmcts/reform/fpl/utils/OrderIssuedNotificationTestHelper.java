@@ -18,6 +18,7 @@ import java.util.Map;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.enums.TabLabel.ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 
@@ -42,7 +43,7 @@ public class OrderIssuedNotificationTestHelper {
             "callout", withCallout ? callout : "",
             "courtName", EXAMPLE_COURT,
             "documentLink", jsonFileObject.toMap(),
-            "caseUrl", formatCaseUrl("http://fake-url", 12345L, "OrdersTab"),
+            "caseUrl", formatCaseUrl("http://fake-url", 12345L, ORDERS),
             "respondentLastName", "Jones");
     }
 
@@ -52,7 +53,7 @@ public class OrderIssuedNotificationTestHelper {
             .callout(withCallout ? callout : "")
             .courtName(EXAMPLE_COURT)
             .documentLink("http://fake-url/testUrl")
-            .caseUrl(formatCaseUrl("http://fake-url", 12345L, "OrdersTab"))
+            .caseUrl(formatCaseUrl("http://fake-url", 12345L, ORDERS))
             .respondentLastName("Jones")
             .build();
     }
@@ -93,7 +94,7 @@ public class OrderIssuedNotificationTestHelper {
             .respondentLastName("Jones")
             .judgeTitle("Deputy District Judge")
             .judgeName("Scott")
-            .caseUrl(formatCaseUrl("http://fake-url", 12345L, "OrdersTab"))
+            .caseUrl(formatCaseUrl("http://fake-url", 12345L, ORDERS))
             .build();
     }
 

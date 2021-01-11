@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.model.notify.hearing.UpcomingHearingNotifyData;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.email.content.UpcomingHearingsContentProvider;
 
-import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +46,7 @@ class UpcomingHearingsContentProviderTest {
     private UpcomingHearingsContentProvider contentProvider;
 
     @BeforeEach
-    void setup() throws UnsupportedEncodingException {
+    void setup() {
         when(caseUrlService.getCaseUrl(CASE_1_ID, ORDERS)).thenReturn(CASE_1_URL);
         when(caseUrlService.getCaseUrl(CASE_2_ID, ORDERS)).thenReturn(CASE_2_URL);
     }

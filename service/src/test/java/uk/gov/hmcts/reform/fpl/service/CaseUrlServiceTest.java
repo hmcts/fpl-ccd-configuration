@@ -8,8 +8,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.io.UnsupportedEncodingException;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.TabLabel.ORDERS;
 import static uk.gov.hmcts.reform.fpl.service.CaseUrlServiceTest.XUI_URL;
@@ -27,7 +25,7 @@ class CaseUrlServiceTest {
     private CaseUrlService caseUrlService;
 
     @Test
-    void shouldGetCaseUrlsForXui() throws UnsupportedEncodingException {
+    void shouldGetCaseUrlsForXui() {
         assertThat(caseUrlService.getBaseUrl())
             .isEqualTo(XUI_URL);
         assertThat(caseUrlService.getCaseUrl(caseId))
