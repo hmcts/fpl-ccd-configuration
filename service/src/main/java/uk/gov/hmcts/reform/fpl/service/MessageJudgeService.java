@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageMetaData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -159,16 +158,14 @@ public class MessageJudgeService {
             caseData.getMessageJudgeEventData().getJudicialMessageDynamicList(), mapper
         );
 
-        if (YES.getValue().equals(judicialMessageReply.getIsReplying())) {
+        if (NO.getValue().equals(judicialMessageReply.getIsReplying())) {
+            return closeJudicialMessage(
+                selectedJudicialMessageId, caseData.getJudicialMessages(), caseData.getClosedJudicialMessages());
+        } else {
             List<Element<JudicialMessage>> updatedMessages = replyToJudicialMessage(
                 selectedJudicialMessageId, judicialMessageReply, caseData.getJudicialMessages());
             return Map.of("judicialMessages", sortJudicialMessages(updatedMessages));
-        } else if (NO.getValue().equals(judicialMessageReply.getIsReplying())) {
-            return closeJudicialMessage(
-                selectedJudicialMessageId, caseData.getJudicialMessages(), caseData.getClosedJudicialMessages());
         }
-
-        return Collections.emptyMap();
     }
 
     private Map<String, Object> closeJudicialMessage(UUID selectedJudicialMessageId,

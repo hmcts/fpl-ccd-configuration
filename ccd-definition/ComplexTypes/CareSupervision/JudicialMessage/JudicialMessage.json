@@ -57,7 +57,7 @@
     "FieldType": "TextArea",
     "ElementLabel": "Message",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "status=\"OPEN\""
+    "FieldShowCondition": "status!=\"CLOSED\""
   },
   {
     "LiveFrom": "01/01/2017",
