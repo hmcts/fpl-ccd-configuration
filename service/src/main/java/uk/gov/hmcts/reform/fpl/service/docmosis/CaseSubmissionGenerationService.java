@@ -192,7 +192,7 @@ public class CaseSubmissionGenerationService
                 stringBuilder.append(orders.getEpoType().getLabel());
                 stringBuilder.append(NEW_LINE);
                 if (orders.getEpoType() == PREVENT_REMOVAL) {
-                    String address = orders.getAddress().getAddressAsString("\n");
+                    String address = orders.getAddress().getAddressAsString(NEW_LINE);
                     stringBuilder.append(address);
                     stringBuilder.append(NEW_LINE);
                 }

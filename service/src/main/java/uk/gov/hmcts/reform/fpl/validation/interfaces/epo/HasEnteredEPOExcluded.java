@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.validation.interfaces.epo;
 
-import uk.gov.hmcts.reform.fpl.validation.validators.HasEnteredEPOExcludedValidator;
+import uk.gov.hmcts.reform.fpl.validation.validators.epo.HasEnteredEPOExcludedValidator;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

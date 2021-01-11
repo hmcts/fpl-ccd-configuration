@@ -1,5 +1,6 @@
-package uk.gov.hmcts.reform.fpl.validation.validators;
+package uk.gov.hmcts.reform.fpl.validation.validators.epo;
 
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.epo.HasEPOAddress;
 
@@ -14,9 +15,13 @@ public class HasEPOAddressValidator implements ConstraintValidator<HasEPOAddress
     @Override
     public boolean isValid(Orders value, ConstraintValidatorContext context) {
         if (value.orderContainsEPO() && epoIsPreventRemoval(value)) {
-            return !isEmpty(value.getAddress().getAddressLine1()) && !isEmpty(value.getAddress().getPostcode());
+            return hasPopulatedAddress(value.getAddress());
         }
         return true;
+    }
+
+    private boolean hasPopulatedAddress(Address address) {
+        return !isEmpty(address.getAddressLine1()) && !isEmpty(address.getPostcode());
     }
 
     private boolean epoIsPreventRemoval(Orders orders) {
