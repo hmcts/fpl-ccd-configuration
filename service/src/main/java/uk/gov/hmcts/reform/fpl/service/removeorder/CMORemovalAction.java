@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.removeorder;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.exceptions.removeorder.UnexpectedNumberOfCMOsRemovedException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -16,6 +17,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -48,6 +50,23 @@ public class CMORemovalAction implements OrderRemovalAction {
         data.put("hiddenCaseManagementOrders", hiddenCMOs);
         data.putIfNotEmpty("sealedCMOs", sealedCMOs);
         data.put("hearingDetails", removeHearingLinkedToCMO(caseData, cmoElement));
+    }
+
+    public void removeDraftCaseManagementOrder(CaseData caseData, CaseDetails data,
+                                               Element<CaseManagementOrder> cmoElement) {
+        List<Element<CaseManagementOrder>> draftUploadedCMOs = caseData.getDraftUploadedCMOs();
+
+        if (!draftUploadedCMOs.remove(cmoElement)) {
+            throw new CMONotFoundException("Failed to find draft case management order");
+        }
+
+        if (isEmpty(draftUploadedCMOs)) {
+            data.getData().remove("draftUploadedCMOs");
+        } else {
+            data.getData().put("draftUploadedCMOs", draftUploadedCMOs);
+        }
+
+        data.getData().put("hearingDetails", removeHearingLinkedToCMO(caseData, cmoElement));
     }
 
     @Override
