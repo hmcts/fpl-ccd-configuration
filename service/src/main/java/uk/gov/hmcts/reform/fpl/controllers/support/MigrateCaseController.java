@@ -81,7 +81,6 @@ public class MigrateCaseController extends CallbackController {
             Element<GeneratedOrder> firstOrder = caseData.getOrderCollection().get(0);
 
             generatedOrderRemovalAction.remove(caseData, caseDetailsMap, firstOrder.getId(), firstOrder.getValue());
-            caseDetailsMap = caseDetailsMap.putIfNotEmpty("hiddenOrders", caseData.getHiddenOrders());
 
             caseDetails.setData(caseDetailsMap);
         }
