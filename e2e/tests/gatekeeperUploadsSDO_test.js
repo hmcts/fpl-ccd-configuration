@@ -1,5 +1,5 @@
 const config = require('../config.js');
-const gatekeeping = require('../fixtures/caseData/gatekeeping.json');
+const gatekeeping = require('../fixtures/caseData/gatekeepingFullDetails.json');
 const dateFormat = require('dateformat');
 
 let caseId;
