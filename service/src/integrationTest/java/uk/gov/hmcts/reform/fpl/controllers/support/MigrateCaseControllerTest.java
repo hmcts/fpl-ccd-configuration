@@ -13,15 +13,19 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractControllerTest;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 
 import java.time.LocalDate;
@@ -38,10 +42,15 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.TO_FOLLOW;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(MigrateCaseController.class)
@@ -782,6 +791,169 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
         private HearingBooking hearing(UUID cmoId) {
             return HearingBooking.builder()
                 .caseManagementOrderId(cmoId)
+                .build();
+        }
+    }
+
+    @Nested
+    class Fpla2535 {
+        Long caseNumber = 1607361111762499L;
+        String migrationId = "FPLA-2535";
+        UUID orderToBeRemovedId = UUID.randomUUID();
+        UUID orderTwoId = UUID.randomUUID();
+        UUID childrenId = UUID.randomUUID();
+
+        @Test
+        void shouldRemoveFirstGeneratedOrderAndNotModifyChildren() {
+            Element<Child> childElement = element(childrenId, Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("Tom")
+                    .lastName("Wilson")
+                    .build())
+                .finalOrderIssuedType("Yes")
+                .finalOrderIssued("Yes")
+                .build());
+
+            List<Element<Child>> children = newArrayList(childElement);
+
+            Element<GeneratedOrder> orderToBeRemoved = element(orderToBeRemovedId, generateOrder(CARE_ORDER, children));
+            Element<GeneratedOrder> additionalOrder = element(orderTwoId, generateOrder(BLANK_ORDER));
+
+            List<Element<GeneratedOrder>> orderCollection = newArrayList(
+                orderToBeRemoved,
+                additionalOrder);
+
+            CaseDetails caseDetails = caseDetails(migrationId, caseNumber, orderCollection, children);
+
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getOrderCollection()).isEqualTo(List.of(additionalOrder));
+            assertThat(extractedCaseData.getChildren1()).isEqualTo(children);
+            assertThat(extractedCaseData.getHiddenOrders()).isEqualTo(List.of());
+        }
+
+        @Test
+        void shouldUnsetFinalChildrenPropertiesWhenRemovingFinalOrder() {
+            Element<Child> childElement = element(childrenId, Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("Tom")
+                    .lastName("Wilson")
+                    .build())
+                .finalOrderIssuedType("Yes")
+                .finalOrderIssued("Yes")
+                .build());
+
+            List<Element<Child>> children = newArrayList(childElement);
+
+            Element<GeneratedOrder> orderToBeRemoved = element(orderToBeRemovedId,
+                generateOrder(EMERGENCY_PROTECTION_ORDER, children));
+            Element<GeneratedOrder> additionalOrder = element(orderTwoId, generateOrder(BLANK_ORDER));
+
+            List<Element<GeneratedOrder>> orderCollection = newArrayList(
+                orderToBeRemoved,
+                additionalOrder);
+
+            List<Element<GeneratedOrder>> hiddenOrders = newArrayList(
+                element(GeneratedOrder.builder().build()));
+
+            CaseDetails caseDetails = caseDetails(migrationId, caseNumber, orderCollection, children);
+            caseDetails.getData().put("hiddenOrders", hiddenOrders);
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getOrderCollection()).isEqualTo(List.of(additionalOrder));
+            assertThat(extractedCaseData.getChildren1()).isEqualTo(List.of(
+                element(childrenId, Child.builder()
+                    .party(ChildParty.builder()
+                        .firstName("Tom")
+                        .lastName("Wilson")
+                        .build())
+                    .finalOrderIssuedType(null)
+                    .finalOrderIssued(null)
+                    .build())));
+            assertThat(extractedCaseData.getHiddenOrders()).isEqualTo(hiddenOrders);
+        }
+
+        @Test
+        void shouldNotChangeCaseIfNotExpectedMigrationId() {
+            String incorrectMigrationId = "FPLA-1111";
+
+            Element<GeneratedOrder> orderToBeRemoved = element(orderToBeRemovedId, generateOrder(UPLOAD));
+            Element<GeneratedOrder> additionalOrder = element(orderTwoId, generateOrder(BLANK_ORDER));
+            Element<Child> childElement = element(childrenId, Child.builder()
+                .finalOrderIssuedType("Test")
+                .finalOrderIssued("Test")
+                .build());
+
+            List<Element<GeneratedOrder>> orderCollection = newArrayList(
+                orderToBeRemoved,
+                additionalOrder);
+
+            List<Element<Child>> children = newArrayList(childElement);
+
+            CaseDetails caseDetails = caseDetails(incorrectMigrationId, caseNumber, orderCollection, children);
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getOrderCollection()).isEqualTo(orderCollection);
+            assertThat(extractedCaseData.getChildren1()).isEqualTo(children);
+        }
+
+        @Test
+        void shouldNotChangeCaseIfNotExpectedCaseNumber() {
+            Long incorrectCaseNumber = 1599470847274973L;
+
+            Element<GeneratedOrder> orderToBeRemoved = element(orderToBeRemovedId, generateOrder(UPLOAD));
+            Element<GeneratedOrder> additionalOrder = element(orderTwoId, generateOrder(BLANK_ORDER));
+            Element<Child> childElement = element(childrenId, Child.builder()
+                .finalOrderIssuedType("Test")
+                .finalOrderIssued("Test")
+                .build());
+
+            List<Element<GeneratedOrder>> orderCollection = newArrayList(
+                orderToBeRemoved,
+                additionalOrder);
+
+            List<Element<Child>> children = newArrayList(childElement);
+
+            CaseDetails caseDetails = caseDetails(migrationId, incorrectCaseNumber, orderCollection, children);
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getOrderCollection()).isEqualTo(orderCollection);
+            assertThat(extractedCaseData.getChildren1()).isEqualTo(children);
+        }
+
+        @Test
+        void shouldThrowAnExceptionIfCaseDoesNotContainGeneratedOrders() {
+            List<Element<Child>> children = newArrayList(newArrayList());
+            CaseDetails caseDetails = caseDetails(migrationId, caseNumber, null, children);
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage("No generated orders in the case");
+        }
+
+        private CaseDetails caseDetails(String migrationId,
+                                        Long caseNumber,
+                                        List<Element<GeneratedOrder>> orders,
+                                        List<Element<Child>> children) {
+            CaseDetails caseDetails = asCaseDetails(CaseData.builder()
+                .id(caseNumber)
+                .orderCollection(orders)
+                .children1(children)
+                .build());
+
+            caseDetails.getData().put("migrationId", migrationId);
+            return caseDetails;
+        }
+
+        private GeneratedOrder generateOrder(GeneratedOrderType type, List<Element<Child>> linkedChildren) {
+            return generateOrder(type).toBuilder()
+                .children(linkedChildren)
+                .build();
+        }
+
+        private GeneratedOrder generateOrder(GeneratedOrderType type) {
+            return GeneratedOrder.builder()
+                .type(getFullOrderType(type))
                 .build();
         }
     }

@@ -19,9 +19,12 @@ import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.document.UploadDocumentsMigrationService;
 import uk.gov.hmcts.reform.fpl.service.removeorder.CMORemovalAction;
+import uk.gov.hmcts.reform.fpl.service.removeorder.GeneratedOrderRemovalAction;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
 import java.util.Map;
@@ -40,6 +43,7 @@ public class MigrateCaseController extends CallbackController {
     private final UploadDocumentsMigrationService uploadDocumentsMigrationService;
     private final StandardDirectionsService standardDirectionsService;
     private final CMORemovalAction cmoRemovalAction;
+    private final GeneratedOrderRemovalAction generatedOrderRemovalAction;
     private static final String MIGRATION_ID_KEY = "migrationId";
 
     @PostMapping("/about-to-submit")
@@ -64,8 +68,32 @@ public class MigrateCaseController extends CallbackController {
             run2521(caseDetails);
         }
 
+        if ("FPLA-2535".equals(migrationId)) {
+            Object hiddenOrders = caseDetails.getData().get("hiddenOrders");
+            run2535(caseDetails);
+            caseDetails.getData().put("hiddenOrders", hiddenOrders);
+        }
+
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
+    }
+
+    private void run2535(CaseDetails caseDetails) {
+        if ("1607361111762499".equals(caseDetails.getId().toString())) {
+            CaseData caseData = getCaseData(caseDetails);
+            CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
+
+            if (isEmpty(caseData.getOrderCollection())) {
+                throw new IllegalArgumentException("No generated orders in the case");
+            }
+
+            Element<GeneratedOrder> firstOrder = caseData.getOrderCollection().get(0);
+
+            generatedOrderRemovalAction.remove(caseData, caseDetailsMap, firstOrder.getId(), firstOrder.getValue());
+            caseDetailsMap = caseDetailsMap.putIfNotEmpty("hiddenOrders", caseData.getHiddenOrders());
+
+            caseDetails.setData(caseDetailsMap);
+        }
     }
 
     private void run2521(CaseDetails caseDetails) {
