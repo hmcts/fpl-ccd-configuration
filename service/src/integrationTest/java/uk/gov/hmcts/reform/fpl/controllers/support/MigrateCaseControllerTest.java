@@ -14,29 +14,23 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractControllerTest;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
-import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
@@ -46,7 +40,6 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.UPLOAD;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -74,141 +67,6 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
 
     @MockBean
     private IdentityService identityService;
-
-    @Nested
-    class Fpla2525 {
-        String familyManCaseNumber = "SN20C50028";
-        String migrationId = "FPLA-2525";
-
-        Element<HearingBooking> hearing1 = element(HearingBooking.builder()
-            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                .judgeLastName("Smith")
-                .judgeEmailAddress("judge@test.com")
-                .build())
-            .build());
-
-        Element<HearingBooking> hearing2 = element(HearingBooking.builder()
-            .type(CASE_MANAGEMENT)
-            .startDate(LocalDateTime.now())
-            .endDate(LocalDateTime.now().plusDays(1))
-            .venue("7")
-            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                .judgeLastName("Smith")
-                .judgeEmailAddress("judge@test.com")
-                .build())
-            .build());
-
-        @Test
-        void removeCorrectHearingsFromTheCase() {
-            CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, hearing1, hearing2);
-
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            assertThat(extractedCaseData.getHearingDetails()).containsOnly(hearing2);
-        }
-
-        @Test
-        void shouldNotRemoveHearingsIfNotExpectedFamilyManNumber() {
-            familyManCaseNumber = "something different";
-
-            CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, hearing1, hearing2);
-
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            assertThat(extractedCaseData.getHearingDetails()).containsOnly(hearing1, hearing2);
-        }
-
-        @Test
-        void shouldNotRemoveHearingsIfNotExpectedMigrationId() {
-            migrationId = "something different";
-
-            CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, hearing1, hearing2);
-
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            assertThat(extractedCaseData.getHearingDetails()).containsOnly(hearing1, hearing2);
-        }
-
-        @Test
-        void shouldThrowExceptionIfUnexpectedNumberOfHearings() {
-            CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId);
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-                .getRootCause()
-                .hasMessage("No hearings in a case");
-        }
-
-        @Test
-        void shouldThrowExceptionIfHearingHasUnexpectedStartDate() {
-            LocalDate invalidDate = LocalDate.of(1990, 1, 1);
-
-            Element<HearingBooking> unexpectedHearing = element(hearing1.getValue().toBuilder()
-                .startDate(invalidDate.atStartOfDay())
-                .build());
-
-            CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, unexpectedHearing, hearing2);
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-                .getRootCause()
-                .hasMessage(format("Invalid hearing date %s", invalidDate));
-        }
-
-        @Test
-        void shouldThrowExceptionIfHearingHasUnexpectedEndDate() {
-            LocalDate invalidDate = LocalDate.of(1990, 1, 1);
-
-            Element<HearingBooking> unexpectedHearing = element(hearing1.getValue().toBuilder()
-                .endDate(invalidDate.atStartOfDay())
-                .build());
-
-            CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, unexpectedHearing, hearing2);
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-                .getRootCause()
-                .hasMessage(format("Invalid hearing end date %s", invalidDate));
-        }
-
-        @Test
-        void shouldThrowExceptionIfHearingHasUnexpectedVenue() {
-            String invalidVenue = "0";
-
-            Element<HearingBooking> unexpectedHearing = element(hearing1.getValue().toBuilder()
-                .venue(invalidVenue)
-                .build());
-
-            CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, unexpectedHearing, hearing2);
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-                .getRootCause()
-                .hasMessage(format("Invalid hearing venue %s", invalidVenue));
-        }
-
-        @Test
-        void shouldThrowExceptionIfHearingHasUnexpectedType() {
-            HearingType invalidType = CASE_MANAGEMENT;
-
-            Element<HearingBooking> unexpectedHearing = element(hearing1.getValue().toBuilder()
-                .type(invalidType)
-                .build());
-
-            CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, unexpectedHearing, hearing2);
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-                .getRootCause()
-                .hasMessage(format("Invalid hearing type %s", CASE_MANAGEMENT));
-        }
-
-        @SafeVarargs
-        private CaseDetails caseDetails(String familyManCaseNumber, String migrationId,
-                                        Element<HearingBooking>... hearings) {
-            CaseDetails caseDetails = asCaseDetails(CaseData.builder()
-                .familyManCaseNumber(familyManCaseNumber)
-                .hearingDetails(List.of(hearings))
-                .build());
-            caseDetails.getData().put("migrationId", migrationId);
-            return caseDetails;
-        }
-    }
 
     @Nested
     class Fpla2544 {
@@ -310,146 +168,6 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
                 .isEqualTo(caseData.getRespondentDirections());
             assertThat(updatedCaseData.getRespondentDirectionsCustom())
                 .isEqualTo(caseData.getRespondentDirectionsCustom());
-        }
-    }
-
-    @Nested
-    class Fpla2481 {
-        String familyManCaseNumber = "LE20C50023";
-        String migrationId = "FPLA-2481";
-
-        @Test
-        void shouldRemoveOthersPropertyIfOthersContainsFirstOtherPropertyOnly() {
-            Others others = Others.builder()
-                .firstOther(Other.builder()
-                    .name("John Smith")
-                    .telephone("07741172242")
-                    .build())
-                .build();
-
-            CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, others);
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            assertThat(extractedCaseData.getOthers()).isNull();
-        }
-
-        @Test
-        void shouldRemoveOthersPropertyIfOthersContainsFirstOtherAndEmptyAdditionalOthers() {
-            Others others = Others.builder()
-                .additionalOthers(List.of())
-                .firstOther(Other.builder()
-                    .name("John Smith")
-                    .telephone("07741172242")
-                    .build())
-                .build();
-
-            CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, others);
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            assertThat(extractedCaseData.getOthers()).isNull();
-        }
-
-        @Test
-        void shouldMigrateAdditionalOtherToFirstOtherWhenRemovingFirstOtherWithAdditionalOthers() {
-            Other additionalOther = Other.builder()
-                .name("Additional other 1")
-                .build();
-
-            List<Element<Other>> additionalOthers = List.of(element(additionalOther));
-
-            Others others = Others.builder()
-                .additionalOthers(additionalOthers)
-                .firstOther(Other.builder()
-                    .name("John Smith")
-                    .telephone("07741172242")
-                    .build())
-                .build();
-
-            CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, others);
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            assertThat(extractedCaseData.getOthers().getFirstOther()).isEqualTo(additionalOther);
-            assertThat(extractedCaseData.getOthers().getAdditionalOthers()).isNull();
-        }
-
-        @Test
-        void shouldOnlyMigrateFirstAdditionalOtherWhenMultipleAdditionalOthersExist() {
-            UUID additionalOtherTwoId = UUID.randomUUID();
-            UUID additionalOtherThreeId = UUID.randomUUID();
-
-            Other firstAdditionalOther = Other.builder()
-                .name("Additional other 1")
-                .build();
-
-            List<Element<Other>> additionalOthers = List.of(
-                element(firstAdditionalOther),
-                element(additionalOtherTwoId, Other.builder()
-                    .name("Additional other 2")
-                    .build()),
-                element(additionalOtherThreeId, Other.builder()
-                    .name("Additional other 3")
-                    .build()));
-
-            List<Element<Other>> expectedAdditionalOthers = List.of(
-                element(additionalOtherTwoId, Other.builder()
-                    .name("Additional other 2")
-                    .build()),
-                element(additionalOtherThreeId, Other.builder()
-                    .name("Additional other 3")
-                    .build()));
-
-            Others others = Others.builder()
-                .additionalOthers(additionalOthers)
-                .firstOther(Other.builder()
-                    .name("John Smith")
-                    .telephone("07741172242")
-                    .build())
-                .build();
-
-            CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, others);
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            assertThat(extractedCaseData.getOthers().getFirstOther()).isEqualTo(firstAdditionalOther);
-            assertThat(extractedCaseData.getOthers().getAdditionalOthers()).isEqualTo(expectedAdditionalOthers);
-        }
-
-        @Test
-        void shouldNotChangeCaseIfNotExpectedMigrationId() {
-            List<Element<Other>> additionalOthers = List.of(element(Other.builder()
-                .name("Additional other 1")
-                .build()));
-
-            Others others = Others.builder()
-                .additionalOthers(additionalOthers)
-                .firstOther(Other.builder()
-                    .name("John Smith")
-                    .telephone("07741172242")
-                    .build())
-                .build();
-
-            CaseDetails caseDetails = caseDetails(familyManCaseNumber, "FPLA-1111", others);
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            assertThat(extractedCaseData.getFamilyManCaseNumber()).isEqualTo(familyManCaseNumber);
-            assertThat(extractedCaseData.getOthers()).isEqualTo(others);
-        }
-
-        @Test
-        void shouldThrowAnExceptionIfCaseDoesNotContainOthers() {
-            CaseDetails caseDetails = caseDetails(familyManCaseNumber, migrationId, null);
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-                .getRootCause()
-                .hasMessage("No others in the case");
-        }
-
-        private CaseDetails caseDetails(String familyManCaseNumber, String migrationId, Others others) {
-            CaseDetails caseDetails = asCaseDetails(CaseData.builder()
-                .familyManCaseNumber(familyManCaseNumber)
-                .others(others)
-                .build());
-            caseDetails.getData().put("migrationId", migrationId);
-            return caseDetails;
         }
     }
 
