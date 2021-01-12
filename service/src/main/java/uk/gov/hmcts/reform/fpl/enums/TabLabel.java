@@ -30,10 +30,4 @@ public enum TabLabel {
     public String getLabel() {
         return label;
     }
-
-    @Override
-    public String toString() {
-        return getLabel();
-    }
-
 }
