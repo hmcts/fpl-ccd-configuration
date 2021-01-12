@@ -22,7 +22,7 @@
     "PageID": "EPOType",
     "PageDisplayOrder": 9,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "epoExclusionRequirementType=\"STARTING_ON_DIFFERENT_DATE\"",
+    "FieldShowCondition": "epoExclusionRequirementType=\"STARTING_ON_DIFFERENT_DATE\" AND epoType=\"PREVENT_REMOVAL\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -35,7 +35,7 @@
     "PageID": "EPOType",
     "PageDisplayOrder": 9,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "epoExclusionRequirementType=\"STARTING_ON_DIFFERENT_DATE\" OR epoExclusionRequirementType=\"STARTING_ON_SAME_DATE\"",
+    "FieldShowCondition": "epoExclusionRequirementType!=\"NO_TO_EXCLUSION\" AND epoType=\"PREVENT_REMOVAL\"",
     "ShowSummaryChangeOption": "Y"
   }
 ]
