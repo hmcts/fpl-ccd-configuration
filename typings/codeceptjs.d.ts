@@ -304,6 +304,7 @@ declare namespace CodeceptJS {
     retryStep(opts: string) : void,
     submitNewCaseWithData(data?: object): Promise<string>
     addAnotherElementToCollection(): void,
+    addAnotherElementToCollection(collectionName: string): void,
     removeElementFromCollection(): void,
     retryUntilExists(action: Function, locator: string) : void,
     fillDate(date: {day: number, month: number, year: number}, dateId: string): void,
