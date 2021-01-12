@@ -220,15 +220,14 @@ public class GeneratedOrderController extends CallbackController {
         return respond(caseDetails);
     }
 
-    @PostMapping("/exclusion-requirement/mid-event")
+    @PostMapping("/populate-epo-address/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEventEPOExclusionRequirement(
         @RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         Map<String, Object> data = caseDetails.getData();
 
-        List<String> errors = List.of();
-        errors = validateGroupService.validateGroup(caseData, EPOAddressGroup.class);
+        List<String> errors = validateGroupService.validateGroup(caseData, EPOAddressGroup.class);
 
         data.put("epoWhoIsExcluded",caseData.getOrders().getExcluded());
         data.put("epoType",caseData.getOrders().getEpoType());
