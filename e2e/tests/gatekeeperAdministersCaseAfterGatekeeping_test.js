@@ -85,7 +85,7 @@ Scenario('Gatekeeper submits final version of standard directions', async ({I, c
   I.seeInTab(['Gatekeeping order', 'File'], 'standard-directions-order.pdf');
   I.seeInTab(['Gatekeeping order', 'Date of issue'], '11 January 2020');
 
-  caseViewPage.checkActionsAreAvailable([
+  await caseViewPage.checkActionsAreAvailable([
     config.administrationActions.manageHearings,
     config.administrationActions.amendChildren,
     config.administrationActions.amendRespondents,
@@ -93,7 +93,7 @@ Scenario('Gatekeeper submits final version of standard directions', async ({I, c
     config.administrationActions.amendInternationalElement,
     config.administrationActions.amendAttendingHearing,
   ]);
-  caseViewPage.checkActionsAreNotAvailable([
+  await caseViewPage.checkActionsAreNotAvailable([
     config.applicationActions.enterAllocationDecision,
     config.administrationActions.draftStandardDirections,
   ]);
