@@ -7,11 +7,13 @@ import uk.gov.hmcts.reform.fpl.exceptions.removeorder.UnexpectedNumberOfCMOsRemo
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -273,6 +275,96 @@ class CMORemovalActionTest {
             removedOrder))
             .usingRecursiveComparison()
             .isEqualTo(unexpectedNumberOfCMOsRemovedException(TO_REMOVE_ORDER_ID, 2));
+    }
+
+    @Test
+    void shouldRemoveDraftCaseManagementOrderAndUnlinkHearing() {
+        Element<CaseManagementOrder> orderToBeRemoved = element(TO_REMOVE_ORDER_ID, cmo());
+
+        CaseData caseData = CaseData.builder()
+            .draftUploadedCMOs(newArrayList(
+                orderToBeRemoved,
+                element(ANOTHER_CASE_MANAGEMENT_ORDER_ID, cmo())
+            ))
+            .hearingDetails(newArrayList(
+                element(HEARING_ID, hearing(TO_REMOVE_ORDER_ID)),
+                element(ANOTHER_HEARING_ID, hearing(ANOTHER_CASE_MANAGEMENT_ORDER_ID))
+            ))
+            .build();
+
+        CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
+
+        underTest.removeDraftCaseManagementOrder(caseData, caseDetails, orderToBeRemoved);
+
+        Map<String, List<?>> expectedData = Map.of(
+            "hearingDetails", List.of(
+                element(HEARING_ID, hearing(null)),
+                element(ANOTHER_HEARING_ID, hearing(ANOTHER_CASE_MANAGEMENT_ORDER_ID))
+            ),
+            "draftUploadedCMOs", List.of(element(ANOTHER_CASE_MANAGEMENT_ORDER_ID, cmo()))
+        );
+
+        assertThat(caseDetails.getData()).isEqualTo(expectedData);
+    }
+
+    @Test
+    void shouldNotRemoveHearingWhenCannotSafelyDetermineUniqueHearingToBeRemoved() {
+        Element<CaseManagementOrder> cmoToRemove = element(TO_REMOVE_ORDER_ID, CaseManagementOrder.builder().build());
+
+        CaseData caseData = CaseData.builder()
+            .reasonToRemoveOrder(REASON)
+            .draftUploadedCMOs(newArrayList(cmoToRemove))
+            .hearingDetails(List.of(
+                element(HEARING_ID, hearing(CASE_MANAGEMENT_ORDER_ID)),
+                element(ANOTHER_HEARING_ID, hearing(ANOTHER_CASE_MANAGEMENT_ORDER_ID))
+            ))
+            .build();
+
+        CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
+
+        assertThatThrownBy(() -> underTest.removeDraftCaseManagementOrder(caseData, caseDetails, cmoToRemove))
+            .usingRecursiveComparison()
+            .isEqualTo(unexpectedNumberOfCMOsRemovedException(TO_REMOVE_ORDER_ID, 2));
+    }
+
+    @Test
+    void shouldRemoveDraftOrderWhenNoMatchingIDButMatchingHearingLabel() {
+        LocalDateTime differentStartDate = HEARING_START_DATE.plusDays(3);
+        Element<CaseManagementOrder> cmoToRemove = element(TO_REMOVE_ORDER_ID, cmo(differentStartDate));
+        CaseData caseData = CaseData.builder()
+            .draftUploadedCMOs(newArrayList(cmoToRemove))
+            .hearingDetails(List.of(
+                element(HEARING_ID, hearing(CASE_MANAGEMENT_ORDER_ID, differentStartDate)),
+                element(ANOTHER_HEARING_ID, hearing(ANOTHER_CASE_MANAGEMENT_ORDER_ID))
+            ))
+            .build();
+
+        CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
+
+        underTest.removeDraftCaseManagementOrder(caseData, caseDetails, cmoToRemove);
+
+        assertThat(caseDetails.getData()).isEqualTo(Map.of(
+            "hearingDetails", List.of(
+                element(HEARING_ID, hearing(null, differentStartDate)),
+                element(ANOTHER_HEARING_ID, hearing(ANOTHER_CASE_MANAGEMENT_ORDER_ID))
+            ))
+        );
+    }
+
+    @Test
+    void shouldThrowAnExceptionIfDraftOrderToBeRemovedIsNotFound() {
+        Element<CaseManagementOrder> removedOrder = element(ALREADY_REMOVED_ORDER_ID, cmo());
+
+        CaseData caseData = CaseData.builder()
+            .reasonToRemoveOrder(REASON)
+            .draftUploadedCMOs(newArrayList(element(TO_REMOVE_ORDER_ID, cmo())))
+            .build();
+
+        CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
+
+        assertThatThrownBy(() -> underTest.removeDraftCaseManagementOrder(caseData, caseDetails, removedOrder))
+            .isInstanceOf(CMONotFoundException.class)
+            .hasMessage("Failed to find draft case management order");
     }
 
     private HearingBooking hearing() {
