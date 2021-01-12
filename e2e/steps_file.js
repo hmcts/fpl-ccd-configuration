@@ -160,6 +160,11 @@ module.exports = function () {
       let fieldName = path.splice(-1, 1)[0];
       let selector = '//mat-tab-body';
 
+      // if it is a simple case field then it will not have a complex-panel-[title|simple-field] class
+      if (path.length === 0) {
+        return `${selector}//tr[.//th/div[text()="${fieldName}"]]`;
+      }
+
       path.forEach(step => {
         selector = `${selector}//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="${step}"]]]`;
       }, this);
@@ -215,8 +220,8 @@ module.exports = function () {
       await this.navigateToCaseDetails(caseId);
     },
 
-    async navigateToCaseList() {
-      await caseListPage.navigate();
+    navigateToCaseList() {
+      caseListPage.navigate();
     },
 
     async fillDate(date, sectionId = 'form') {

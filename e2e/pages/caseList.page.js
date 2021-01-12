@@ -23,10 +23,10 @@ module.exports = {
     I.click(this.fields.search);
   },
 
-  searchForCasesWithHandledEvidences(submittedAt, state='Any') {
+  async searchForCasesWithHandledEvidences(submittedAt, state = 'Any') {
     this.searchForCase(state);
     I.waitForElement(this.fields.evidenceHandled);
-    I.fillDate(submittedAt);
+    await I.fillDate(submittedAt);
     I.click(this.fields.evidenceHandled);
     I.click(this.fields.search);
   },

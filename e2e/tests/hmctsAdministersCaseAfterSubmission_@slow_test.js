@@ -38,41 +38,34 @@ Scenario('HMCTS admin enters FamilyMan reference number', async ({I, caseViewPag
 });
 
 Scenario('HMCTS admin amends children, respondents, others, international element, other proceedings and attending hearing', async ({I, caseViewPage, enterOtherProceedingsEventPage}) => {
-  async function I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(event, summary, description, I_doActionsOnEditPage = () => {
-  }) {
+  const I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible = async (event, summary, description, I_doActionsOnEditPage = () => {}) => {
     await caseViewPage.goToNewActions(event);
     I_doActionsOnEditPage();
     await I.completeEvent('Save and continue', {summary: summary, description: description});
     I.seeEventSubmissionConfirmation(event);
     I.see(summary);
     I.see(description);
-  }
+  };
 
   const summaryText = 'Summary of change';
   const descriptionText = 'Description of change';
 
-  await I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendChildren,
-    summaryText, descriptionText);
+  await I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendChildren, summaryText, descriptionText);
 
-  await I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendRespondents,
-    summaryText, descriptionText);
+  await I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendRespondents, summaryText, descriptionText);
 
-  await I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendOther,
-    summaryText, descriptionText);
+  await I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendOther, summaryText, descriptionText);
 
-  await I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendInternationalElement,
-    summaryText, descriptionText);
+  await I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendInternationalElement, summaryText, descriptionText);
 
-  await I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendOtherProceedings,
-    summaryText, descriptionText, () => enterOtherProceedingsEventPage.selectNoForProceeding());
+  await I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendOtherProceedings, summaryText, descriptionText, () => enterOtherProceedingsEventPage.selectNoForProceeding());
 
-  await I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendAttendingHearing,
-    summaryText, descriptionText);
+  await I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendAttendingHearing, summaryText, descriptionText);
 });
 
 Scenario('HMCTS admin uploads correspondence documents', async ({I, caseViewPage, manageDocumentsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
-  await manageDocumentsEventPage.selectCorrespondence();
+  manageDocumentsEventPage.selectCorrespondence();
   await I.goToNextPage();
   await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[0]);
   await I.addAnotherElementToCollection();
@@ -140,10 +133,10 @@ Scenario('HMCTS admin uploads C2 documents to the case', async ({I, caseViewPage
 
 Scenario('HMCTS admin edits supporting evidence document on C2 application', async({I, caseViewPage, manageDocumentsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
-  await manageDocumentsEventPage.selectC2SupportingDocuments();
+  manageDocumentsEventPage.selectC2SupportingDocuments();
   await manageDocumentsEventPage.selectC2FromDropdown();
   await I.goToNextPage();
-  await manageDocumentsEventPage.enterDocumentName('Updated document name');
+  manageDocumentsEventPage.enterDocumentName('Updated document name');
   await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
   I.seeEventSubmissionConfirmation(config.administrationActions.manageDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.c2);
@@ -272,9 +265,9 @@ xScenario('HMCTS admin creates notice of proceedings documents with allocated ju
 });
 
 Scenario('HMCTS admin handles supplementary evidence', async ({I, caseListPage, caseViewPage, handleSupplementaryEvidenceEventPage}) => {
-  await I.navigateToCaseList();
+  I.navigateToCaseList();
   await caseListPage.searchForCasesWithHandledEvidences(submittedAt);
-  await I.dontSeeCaseInSearchResult(caseId);
+  I.dontSeeCaseInSearchResult(caseId);
 
   await I.navigateToCaseDetails(caseId);
   await caseViewPage.goToNewActions(config.administrationActions.handleSupplementaryEvidence);
@@ -282,9 +275,9 @@ Scenario('HMCTS admin handles supplementary evidence', async ({I, caseListPage, 
   await I.completeEvent('Save and continue');
   await I.seeEventSubmissionConfirmation(config.administrationActions.handleSupplementaryEvidence);
 
-  await I.navigateToCaseList();
-  await I.retryUntilExists(() => caseListPage.searchForCasesWithHandledEvidences(submittedAt), caseListPage.locateCase(caseId));
-  await I.seeCaseInSearchResult(caseId);
+  I.navigateToCaseList();
+  await I.retryUntilExists(async () => await caseListPage.searchForCasesWithHandledEvidences(submittedAt), caseListPage.locateCase(caseId));
+  I.seeCaseInSearchResult(caseId);
 });
 
 Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async ({I, caseViewPage, sendCaseToGatekeeperEventPage}) => {
@@ -329,14 +322,14 @@ Scenario('HMCTS admin makes 26-week case extension', async ({I, caseViewPage, ad
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.extend26WeekTimeline);
   caseViewPage.selectTab(caseViewPage.tabs.overview);
-  I.see('10 Oct 2030');
-  I.see('Timetable for child');
-  I.see('Comment');
+  I.seeInTab('26-week timeline date', '10 Oct 2030');
+  I.seeInTab('Why is this case being extended?', 'Timetable for child');
+  I.seeInTab('Add comments', 'Comment');
 });
 
 Scenario('HMCTS admin closes the case', async ({I, caseViewPage, closeTheCaseEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.closeTheCase);
-  closeTheCaseEventPage.closeCase({day: 12, month: 3, year: 2020}, true, closeTheCaseEventPage.fields.radioGroup.partialReason.options.deprivation);
+  await closeTheCaseEventPage.closeCase({day: 12, month: 3, year: 2020}, closeTheCaseEventPage.fields.reasons.deprivation);
   await I.completeEvent('Submit');
   I.seeEventSubmissionConfirmation(config.administrationActions.closeTheCase);
   caseViewPage.selectTab(caseViewPage.tabs.overview);
@@ -344,7 +337,7 @@ Scenario('HMCTS admin closes the case', async ({I, caseViewPage, closeTheCaseEve
   I.seeInTab(['Close the case', 'Reason'], 'Deprivation of liberty');
 });
 
-const verifyOrderCreation = async function(I, caseViewPage, createOrderEventPage, order){
+const verifyOrderCreation = async (I, caseViewPage, createOrderEventPage, order) => {
   await caseViewPage.goToNewActions(config.administrationActions.createOrder);
   const defaultIssuedDate = new Date();
   await orderFunctions.createOrder(I, createOrderEventPage, order);
