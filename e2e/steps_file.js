@@ -59,7 +59,7 @@ module.exports = function () {
         if (!config.hmctsUser.email || !config.hmctsUser.password) {
           throw new Error('For environment requiring hmcts authentication please provide HMCTS_USER_USERNAME and HMCTS_USER_PASSWORD environment variables');
         }
-        within(hmctsLoginIn, () => {
+        await within(hmctsLoginIn, () => {
           this.fillField('//input[@type="email"]', config.hmctsUser.email);
           this.wait(0.2);
           this.click('Next');
@@ -225,7 +225,7 @@ module.exports = function () {
       }
 
       if (date) {
-        return within(sectionId, () => {
+        await within(sectionId, () => {
           this.fillField('Day', date.day);
           this.fillField('Month', date.month);
           this.fillField('Year', date.year);
@@ -233,7 +233,7 @@ module.exports = function () {
       }
     },
 
-    fillDateAndTime(date, sectionId = 'form') {
+    async fillDateAndTime(date, sectionId = 'form') {
       if (date instanceof Date) {
         date = {
           day: date.getDate(), month: date.getMonth() + 1, year: date.getFullYear(),
@@ -242,23 +242,23 @@ module.exports = function () {
       }
 
       if (date) {
-        return within(sectionId, () => {
-          if(date.day) {
+        await within(sectionId, () => {
+          if (date.day) {
             this.fillField('Day', date.day);
           }
-          if(date.month) {
+          if (date.month) {
             this.fillField('Month', date.month);
           }
-          if(date.year) {
+          if (date.year) {
             this.fillField('Year', date.year);
           }
-          if(date.hour) {
+          if (date.hour) {
             this.fillField('Hour', date.hour);
           }
-          if(date.minute) {
+          if (date.minute) {
             this.fillField('Minute', date.minute);
           }
-          if(date.second) {
+          if (date.second) {
             this.fillField('Second', date.second);
           }
         });
