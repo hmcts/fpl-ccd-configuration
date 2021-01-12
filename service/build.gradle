@@ -89,7 +89,7 @@ task awaitApplicationReadiness(type: Exec, description: 'Awaits until applicatio
 }
 
 task runSmokeTests(type: Exec, description: 'Runs smoke tests.') {
-//  commandLine '/usr/bin/yarn', '--silent', 'test:smoke'
+  commandLine '/usr/bin/curl', '--silent', '--insecure', '--fail', environment.get('URL') + '/health'
 }
 
 task runBrowserTests(type: Exec, description: 'Runs brower tests.') {
