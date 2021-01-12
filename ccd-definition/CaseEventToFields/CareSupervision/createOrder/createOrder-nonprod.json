@@ -1,0 +1,41 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "epoExclusionRequirementType",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY",
+    "PageID": "EPOType",
+    "PageDisplayOrder": 9,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "epoType=\"PREVENT_REMOVAL\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "epoExclusionStartDate",
+    "PageFieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "PageID": "EPOType",
+    "PageDisplayOrder": 9,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "epoExclusionRequirementType=\"STARTING_ON_DIFFERENT_DATE\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "epoWhoIsExcluded",
+    "PageFieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY",
+    "PageID": "EPOType",
+    "PageDisplayOrder": 9,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "epoExclusionRequirementType=\"STARTING_ON_DIFFERENT_DATE\" OR epoExclusionRequirementType=\"STARTING_ON_SAME_DATE\"",
+    "ShowSummaryChangeOption": "Y"
+  }
+]
