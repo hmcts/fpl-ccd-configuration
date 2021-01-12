@@ -77,6 +77,17 @@ module.exports = {
         description: '#epoChildren_description',
       },
       type: '#epoType',
+      epoExclusionRequirementType: {
+        differentDate: '#epoExclusionRequirementType-STARTING_ON_DIFFERENT_DATE',
+        sameDate: '#epoExclusionRequirementType-STARTING_ON_SAME_DATE',
+        noExclusion: '#epoExclusionRequirementType-NO_TO_EXCLUSION',
+      },
+      exclusionStartDate: {
+        day: '#epoExclusionStartDate-day',
+        month: '#epoExclusionStartDate-month',
+        year: '#epoExclusionStartDate-year',
+      },
+      epoWhoIsExcluded: '#epoWhoIsExcluded',
       removalAddress: '#epoRemovalAddress_epoRemovalAddress',
       includePhrase: '#epoPhrase_includePhrase',
       endDate: {
@@ -257,5 +268,19 @@ module.exports = {
     } else {
       I.click(this.fields.closeCase.options.no);
     }
+  },
+
+  selectExclusionRequirement() {
+    I.click(this.fields.epo.epoExclusionRequirementType.differentDate);
+  },
+
+  selectExclusionRequirementStartDate() {
+    I.fillField(this.fields.epo.exclusionStartDate.day, '01');
+    I.fillField(this.fields.epo.exclusionStartDate.month, '11');
+    I.fillField(this.fields.epo.exclusionStartDate.year, '2021');
+  },
+
+  selectWhoIsExcluded() {
+    I.fillField(this.fields.epo.epoWhoIsExcluded, 'John Doe');
   },
 };

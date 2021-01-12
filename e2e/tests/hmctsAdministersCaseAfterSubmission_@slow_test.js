@@ -18,7 +18,7 @@ const supportingEvidenceDocuments = require('../fixtures/supportingEvidenceDocum
 let caseId;
 let submittedAt;
 
-Feature('Case administration after submission');
+Feature('test case');
 
 BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
