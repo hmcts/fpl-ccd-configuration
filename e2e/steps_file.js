@@ -84,7 +84,7 @@ module.exports = function () {
     },
 
     async completeEvent(button, changeDetails, confirmationPage = false) {
-      await this.retryUntilExists(() => this.click('Continue'), '.check-your-answers');
+      await this.retryUntilExists(async () => await this.goToNextPage(), '.check-your-answers');
       if (changeDetails != null) {
         eventSummaryPage.provideSummary(changeDetails.summary, changeDetails.description);
       }
@@ -92,7 +92,7 @@ module.exports = function () {
     },
 
     async seeCheckAnswersAndCompleteEvent(button, confirmationPage = false) {
-      await this.retryUntilExists(() => this.click('Continue'), '.check-your-answers');
+      await this.retryUntilExists(async () => await this.goToNextPage(), '.check-your-answers');
       this.see('Check the information below carefully.');
       await this.submitEvent(button, confirmationPage);
     },
@@ -321,6 +321,7 @@ module.exports = function () {
         }
       }
     },
+
     async getActiveElementIndex() {
       return await this.grabNumberOfVisibleElements('//button[text()="Remove"]') - 1;
     },
@@ -333,6 +334,8 @@ module.exports = function () {
      *
      * @param action - an action that will be retried until either condition is met or max number of retries is reached
      * @param locator - locator for an element that is expected to be present upon successful execution of an action
+     * @param checkUrlChanged - check if the url has changed, if true skip the action
+     * @param maxNumberOfTries - maximum number of attempts to retry
      * @returns {Promise<void>} - promise holding no result if resolved or error if rejected
      */
     async retryUntilExists(action, locator, checkUrlChanged = true, maxNumberOfTries = maxRetries) {
@@ -347,9 +350,9 @@ module.exports = function () {
         try {
           if (checkUrlChanged && (originalUrl !== await this.grabCurrentUrl())) {
             output.print('Url changed, action skipped');
-            continue;
+          } else {
+            await action();
           }
-          await action();
         } catch (error) {
           output.error(error);
         }
