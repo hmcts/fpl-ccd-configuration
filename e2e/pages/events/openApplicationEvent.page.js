@@ -16,7 +16,7 @@ module.exports = {
 
   async populateForm(caseName) {
     // wait until the dropdown is populated
-    I.waitForElement(`${this.fields.jurisdiction} > option[value="${config.definition.jurisdiction}"]`, 10);
+    I.waitForElement(`${this.fields.jurisdiction} > option[value="${config.definition.jurisdiction}"]`, 30);
     I.selectOption(this.fields.jurisdiction, config.definition.jurisdictionFullDesc);
     I.selectOption(this.fields.caseType, config.definition.caseTypeFullDesc);
     I.selectOption(this.fields.event, 'Start application');
@@ -25,7 +25,7 @@ module.exports = {
   },
 
   enterCaseName(caseName = 'Barnet Council v Smith') {
-    I.waitForElement(this.enterCaseNamePage.caseName);
+    I.waitForElement(this.enterCaseNamePage.caseName, 5);
     I.fillField(this.enterCaseNamePage.caseName, caseName);
   },
 };
