@@ -84,7 +84,7 @@ module.exports = function () {
     },
 
     async completeEvent(button, changeDetails, confirmationPage = false) {
-      await this.retryUntilExists(async () => await this.goToNextPage(), '.check-your-answers');
+      await this.retryUntilExists(() => this.click('Continue'), '.check-your-answers');
       if (changeDetails != null) {
         eventSummaryPage.provideSummary(changeDetails.summary, changeDetails.description);
       }
@@ -92,7 +92,7 @@ module.exports = function () {
     },
 
     async seeCheckAnswersAndCompleteEvent(button, confirmationPage = false) {
-      await this.retryUntilExists(async () => await this.goToNextPage(), '.check-your-answers');
+      await this.retryUntilExists(() => this.click('Continue'), '.check-your-answers');
       this.see('Check the information below carefully.');
       await this.submitEvent(button, confirmationPage);
     },
