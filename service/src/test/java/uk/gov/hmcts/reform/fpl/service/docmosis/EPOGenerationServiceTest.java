@@ -111,7 +111,7 @@ class EPOGenerationServiceTest extends AbstractOrderGenerationServiceTest {
 
         DocmosisGeneratedOrder templateData = service.populateCustomOrderFields(caseData);
 
-        assertThat(templateData.getExclusionRequirement()).isEqualTo(null);
+        assertThat(templateData.getExclusionRequirement()).isNull();
     }
 
     @Test
@@ -124,7 +124,7 @@ class EPOGenerationServiceTest extends AbstractOrderGenerationServiceTest {
 
         DocmosisGeneratedOrder templateData = service.populateCustomOrderFields(caseData);
 
-        assertThat(templateData.getExclusionRequirement()).isEqualTo(null);
+        assertThat(templateData.getExclusionRequirement()).isNull();
     }
 
     CaseData getCase(OrderStatus orderStatus) {
