@@ -15,7 +15,7 @@ Before(async ({I}) => await I.navigateToCaseDetails(caseId));
 Scenario('local authority tries to submit incomplete case', async ({I, caseViewPage, submitApplicationEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationEventPage.giveConsent();
-  await I.goToNextPage();
+  await I.goToNextPage('Continue', 1);
   I.waitForElement('.error-summary-list');
   I.see('Add the orders and directions sought');
   I.see('Add the hearing urgency details');
