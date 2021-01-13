@@ -59,7 +59,7 @@
     "CaseFieldID": "judicialMessageReply",
     "ListElementCode": "isReplying",
     "FieldDisplayOrder": 6,
-    "DisplayContext": "OPTIONAL",
+    "DisplayContext": "MANDATORY",
     "EventElementLabel": "Do you need to reply?"
   },
   {
