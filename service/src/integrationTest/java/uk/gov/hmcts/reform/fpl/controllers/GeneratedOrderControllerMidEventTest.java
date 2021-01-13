@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -597,5 +598,36 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
             childElement.getValue().setFinalOrderIssued(finalOrderIssued);
             return childElement;
         }
+    }
+
+    @Nested
+    class PopulateEPOTypeAndAddressMidEvent {
+
+        private final String callbackType = "populate-epo-address";
+
+        @Test
+        void shouldPrePopulateEpoOrderFieldsIfPresentInCaseData() {
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+                buildCaseData(), callbackType);
+
+            CaseData caseData = extractCaseData(callbackResponse);
+
+            System.out.println("Response is" + caseData);
+
+            assertThat(caseData.getOrder().getType());
+
+//            assertThat(callbackResponse.getData().get("children_label"))
+//                .isEqualTo("Child 1: Wallace\nChild 2: Gromit\n");
+//
+//            assertThat(caseData.getChildSelector()).isEqualTo(newSelector(2));
+        }
+
+        private CaseData buildCaseData() {
+            return CaseData.builder()
+                .orders(Orders.builder()
+                    .epoType(REMOVE_TO_ACCOMMODATION)
+                    .build()).build();
+        }
+
     }
 }
