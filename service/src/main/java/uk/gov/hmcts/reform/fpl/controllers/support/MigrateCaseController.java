@@ -14,16 +14,15 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.document.UploadDocumentsMigrationService;
 import uk.gov.hmcts.reform.fpl.service.removeorder.CMORemovalAction;
+import uk.gov.hmcts.reform.fpl.service.removeorder.GeneratedOrderRemovalAction;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
-import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
@@ -40,6 +39,7 @@ public class MigrateCaseController extends CallbackController {
     private final UploadDocumentsMigrationService uploadDocumentsMigrationService;
     private final StandardDirectionsService standardDirectionsService;
     private final CMORemovalAction cmoRemovalAction;
+    private final GeneratedOrderRemovalAction generatedOrderRemovalAction;
     private static final String MIGRATION_ID_KEY = "migrationId";
 
     @PostMapping("/about-to-submit")
@@ -50,22 +50,40 @@ public class MigrateCaseController extends CallbackController {
         if ("FPLA-2379".equals(migrationId)) {
             run2379(caseDetails);
         }
-        if ("FPLA-2525".equals(migrationId)) {
-            run2525(caseDetails);
-        }
+
         if ("FPLA-2544".equals(migrationId)) {
             run2544(caseDetails);
-        }
-        if ("FPLA-2481".equals(migrationId)) {
-            run2481(caseDetails);
         }
 
         if ("FPLA-2521".equals(migrationId)) {
             run2521(caseDetails);
         }
 
+        if ("FPLA-2535".equals(migrationId)) {
+            Object hiddenOrders = caseDetails.getData().get("hiddenOrders");
+            run2535(caseDetails);
+            caseDetails.getData().put("hiddenOrders", hiddenOrders);
+        }
+
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
+    }
+
+    private void run2535(CaseDetails caseDetails) {
+        if ("1607361111762499".equals(caseDetails.getId().toString())) {
+            CaseData caseData = getCaseData(caseDetails);
+            CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
+
+            if (isEmpty(caseData.getOrderCollection())) {
+                throw new IllegalArgumentException("No generated orders in the case");
+            }
+
+            Element<GeneratedOrder> firstOrder = caseData.getOrderCollection().get(0);
+
+            generatedOrderRemovalAction.remove(caseData, caseDetailsMap, firstOrder.getId(), firstOrder.getValue());
+
+            caseDetails.setData(caseDetailsMap);
+        }
     }
 
     private void run2521(CaseDetails caseDetails) {
@@ -79,72 +97,6 @@ public class MigrateCaseController extends CallbackController {
             Element<CaseManagementOrder> firstDraftCmo = caseData.getDraftUploadedCMOs().get(0);
 
             cmoRemovalAction.removeDraftCaseManagementOrder(caseData, caseDetails, firstDraftCmo);
-        }
-    }
-
-    private void run2481(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-
-        if ("LE20C50023".equals(caseData.getFamilyManCaseNumber())) {
-            Others others = caseData.getOthers();
-
-            if (others == null) {
-                throw new IllegalArgumentException("No others in the case");
-            }
-
-            if (isEmpty(others.getAdditionalOthers())) {
-                caseDetails.getData().remove("others");
-            } else {
-                caseDetails.getData().put("others", migrateAdditionalOthers(others));
-            }
-        }
-    }
-
-    private Others migrateAdditionalOthers(Others others) {
-        Element<Other> removedAdditionalOther = others.getAdditionalOthers().remove(0);
-
-        others = others.toBuilder().firstOther(removedAdditionalOther.getValue()).build();
-
-        if (isEmpty(others.getAdditionalOthers())) {
-            others = others.toBuilder().additionalOthers(null).build();
-        }
-
-        return others;
-    }
-
-    private void run2525(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-
-        if ("SN20C50028".equals(caseData.getFamilyManCaseNumber())) {
-            List<Element<HearingBooking>> hearings = caseData.getHearingDetails();
-
-            if (hearings.isEmpty()) {
-                throw new IllegalArgumentException("No hearings in a case");
-            }
-
-            Element<HearingBooking> hearingToBeRemoved = hearings.get(0);
-
-            if (hearingToBeRemoved.getValue().getStartDate() != null) {
-                throw new IllegalArgumentException(
-                    format("Invalid hearing date %s", hearingToBeRemoved.getValue().getStartDate().toLocalDate()));
-            }
-            if (hearingToBeRemoved.getValue().getEndDate() != null) {
-                throw new IllegalArgumentException(
-                    format("Invalid hearing end date %s", hearingToBeRemoved.getValue().getEndDate().toLocalDate()));
-            }
-            if (hearingToBeRemoved.getValue().getType() != null) {
-                throw new IllegalArgumentException(
-                    format("Invalid hearing type %s", hearingToBeRemoved.getValue().getType()));
-            }
-
-            if (hearingToBeRemoved.getValue().getVenue() != null) {
-                throw new IllegalArgumentException(
-                    format("Invalid hearing venue %s", hearingToBeRemoved.getValue().getVenue()));
-            }
-
-            hearings.remove(hearingToBeRemoved);
-
-            caseDetails.getData().put("hearingDetails", hearings);
         }
     }
 
