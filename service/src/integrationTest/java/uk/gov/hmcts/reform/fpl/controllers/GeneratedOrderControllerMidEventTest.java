@@ -17,6 +17,8 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.enums.EPOExclusionRequirementType;
+import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.UploadedOrderType;
@@ -61,6 +63,7 @@ import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA;
 import static uk.gov.hmcts.reform.fpl.controllers.CloseCaseControllerAboutToStartTest.EXPECTED_LABEL_TEXT;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
@@ -484,6 +487,7 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
                 .order(GeneratedOrder.builder().details("").build())
                 .orderTypeAndDocument(OrderTypeAndDocument.builder().type(EMERGENCY_PROTECTION_ORDER).build())
                 .dateAndTimeOfIssue(now())
+                .epoExclusionRequirementType(EPOExclusionRequirementType.NO_TO_EXCLUSION)
                 .orderFurtherDirections(FurtherDirections.builder()
                     .directionsNeeded("Yes")
                     .directions("Some directions")
@@ -603,31 +607,33 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
     @Nested
     class PopulateEPOTypeAndAddressMidEvent {
 
-        private final String callbackType = "populate-epo-address";
+        private final String callbackType = "populate-epo-parameters";
 
         @Test
         void shouldPrePopulateEpoOrderFieldsIfPresentInCaseData() {
             AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
-                buildCaseData(), callbackType);
+                buildCaseData(REMOVE_TO_ACCOMMODATION), callbackType);
 
             CaseData caseData = extractCaseData(callbackResponse);
 
-            System.out.println("Response is" + caseData);
-
-            assertThat(caseData.getOrder().getType());
-
-//            assertThat(callbackResponse.getData().get("children_label"))
-//                .isEqualTo("Child 1: Wallace\nChild 2: Gromit\n");
-//
-//            assertThat(caseData.getChildSelector()).isEqualTo(newSelector(2));
+            assertThat(caseData.getOrders().getEpoType().equals(REMOVE_TO_ACCOMMODATION));
         }
 
-        private CaseData buildCaseData() {
+        @Test
+        void shouldPrePopulateAddressFieldsIfPresentInCaseData() {
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+                buildCaseData(PREVENT_REMOVAL), callbackType);
+
+            CaseData caseData = extractCaseData(callbackResponse);
+
+            assertThat(caseData.getOrders().getEpoType().equals(PREVENT_REMOVAL));
+        }
+
+        private CaseData buildCaseData(EPOType epoType) {
             return CaseData.builder()
                 .orders(Orders.builder()
-                    .epoType(REMOVE_TO_ACCOMMODATION)
+                    .epoType(epoType)
                     .build()).build();
         }
-
     }
 }
