@@ -17,8 +17,6 @@ import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCallout;
-import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 @SpringBootTest(classes = {
     JudicialMessageReplyEventHandler.class,
@@ -29,8 +27,9 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 })
 public class JudicialMessageReplyEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
+    public static final String RESPONDENT_LAST_NAME = "Watson";
     public static final Respondent RESPONDENT = Respondent.builder().party(RespondentParty.builder()
-        .lastName("Watson").build())
+        .lastName(RESPONDENT_LAST_NAME).build())
         .build();
 
     @Autowired
@@ -54,12 +53,12 @@ public class JudicialMessageReplyEventHandlerEmailTemplateTest extends EmailTemp
         underTest.notifyRecipientOfReply(new JudicialMessageReplyEvent(caseData, judicialMessage));
 
         assertThat(response())
-            .hasSubject("New message, " + getFirstRespondentLastName(caseData))
+            .hasSubject("New message, " + RESPONDENT_LAST_NAME)
             .hasBody(emailContent()
                 .start()
                 .line("You've received a message about:")
                 .line()
-                .line(buildCallout(caseData))
+                .line("^" + RESPONDENT_LAST_NAME)
                 .line()
                 .line("Message: some reply")
                 .line()
