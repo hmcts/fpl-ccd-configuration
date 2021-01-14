@@ -57,7 +57,7 @@ public class StandardDirectionsService {
             .anyMatch(Objects::isNull);
     }
 
-    public boolean hasDirectionsPopulated(CaseData caseData) {
+    public boolean hasEmptyDirections(CaseData caseData) {
         return Stream.of(caseData.getAllParties(),
             caseData.getLocalAuthorityDirections(),
             caseData.getRespondentDirections(),
