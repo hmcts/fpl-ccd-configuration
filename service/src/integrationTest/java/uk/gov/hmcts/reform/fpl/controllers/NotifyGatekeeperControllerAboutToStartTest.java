@@ -79,13 +79,13 @@ class NotifyGatekeeperControllerAboutToStartTest extends AbstractControllerTest 
         return CaseDetails.builder()
             .id(12345L)
             .data(Map.of(
-                RETURN_APPLICATION, ReturnApplication.builder()
-                    .note("Reason")
-                    .build(),
+                    RETURN_APPLICATION, ReturnApplication.builder()
+                        .note("Reason")
+                        .build(),
                 "familyManCaseNumber", familyManNumber,
                 "gatekeeperEmails", wrapElements(
-                    element(EmailAddress.builder().email("test1@gmail.com").build()),
-                    element(EmailAddress.builder().email("test2@gmail.com").build()))
+                        element(EmailAddress.builder().email("test1@gmail.com").build()),
+                        element(EmailAddress.builder().email("test2@gmail.com").build()))
             ))
             .state(state)
             .build();
