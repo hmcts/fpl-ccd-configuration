@@ -154,8 +154,8 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractControll
 
     @Test
     void shouldNotOverwriteSDODirectionsWhenDirectionsAreNotEmpty() {
-        CaseData caseData = CaseData.builder().
-            localAuthorityDirections(List.of(LOCAL_AUTHORITY_DIRECTION))
+        CaseData caseData = CaseData.builder()
+            .localAuthorityDirections(List.of(LOCAL_AUTHORITY_DIRECTION))
             .build();
 
         postAboutToStartEvent(caseData);
