@@ -88,14 +88,14 @@ public class EmailTemplateTest {
     }
 
     protected String h1(String text) {
-        return("#" + text);
+        return ("#" + text);
     }
 
-    protected String list(String text){
-        return("* " + text);
+    protected String list(String text) {
+        return ("* " + text);
     }
 
     protected String callout(String callout) {
-        return("^" + callout);
+        return ("^" + callout);
     }
 }
