@@ -6,32 +6,22 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import static java.util.Collections.emptyList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute.SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute.UPLOAD;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
@@ -39,21 +29,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @OverrideAutoConfiguration(enabled = true)
 class StandardDirectionsOrderControllerAboutToStartTest extends AbstractControllerTest {
     private static final DocumentReference SDO = DocumentReference.builder().filename("sdo.pdf").build();
-
-    private static final Element<Direction> ALL_PARTIES_DIRECTION =
-        element(Direction.builder().assignee(ALL_PARTIES).build());
-    private static final Element<Direction> LOCAL_AUTHORITY_DIRECTION =
-        element(Direction.builder().assignee(LOCAL_AUTHORITY).build());
-    private static final Element<Direction> RESPONDENT_DIRECTION =
-        element(Direction.builder().assignee(PARENTS_AND_RESPONDENTS).build());
-    private static final List<Element<Direction>> STANDARD_DIRECTIONS = List.of(
-        ALL_PARTIES_DIRECTION, LOCAL_AUTHORITY_DIRECTION, RESPONDENT_DIRECTION);
-    private static final Map<DirectionAssignee, List<Element<Direction>>> DIRECTIONS_SORTED_BY_ASSIGNEE = Map.of(
-        ALL_PARTIES, List.of(ALL_PARTIES_DIRECTION),
-        LOCAL_AUTHORITY, List.of(LOCAL_AUTHORITY_DIRECTION),
-        PARENTS_AND_RESPONDENTS, List.of(RESPONDENT_DIRECTION)
-    );
-
 
     StandardDirectionsOrderControllerAboutToStartTest() {
         super("draft-standard-directions");
@@ -184,15 +159,5 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractControll
             .judgeTitle(HIS_HONOUR_JUDGE)
             .judgeLastName("Davidson")
             .build();
-    }
-
-    private Map<String, List<Element<Direction>>> getExpectedDirections() {
-        return Map.of(
-            ALL_PARTIES.getValue(), DIRECTIONS_SORTED_BY_ASSIGNEE.get(ALL_PARTIES),
-            LOCAL_AUTHORITY.getValue(), DIRECTIONS_SORTED_BY_ASSIGNEE.get(LOCAL_AUTHORITY),
-            PARENTS_AND_RESPONDENTS.getValue(), DIRECTIONS_SORTED_BY_ASSIGNEE.get(PARENTS_AND_RESPONDENTS),
-            CAFCASS.getValue(), emptyList(),
-            COURT.getValue(), emptyList(),
-            OTHERS.getValue(), emptyList());
     }
 }
