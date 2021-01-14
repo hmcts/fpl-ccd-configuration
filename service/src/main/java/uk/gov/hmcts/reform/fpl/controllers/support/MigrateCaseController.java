@@ -59,6 +59,10 @@ public class MigrateCaseController extends CallbackController {
             run2521(caseDetails);
         }
 
+        if ("FPLA-2573".equals(migrationId)) {
+            run2573(caseDetails);
+        }
+
         if ("FPLA-2535".equals(migrationId)) {
             Object hiddenOrders = caseDetails.getData().get("hiddenOrders");
             run2535(caseDetails);
@@ -86,17 +90,15 @@ public class MigrateCaseController extends CallbackController {
         }
     }
 
+    private void run2573(CaseDetails caseDetails) {
+        if ("1603717767912577".equals(caseDetails.getId().toString())) {
+            removeFirstDraftCaseManagementOrder(caseDetails);
+        }
+    }
+
     private void run2521(CaseDetails caseDetails) {
         if ("1599470847274974".equals(caseDetails.getId().toString())) {
-            CaseData caseData = getCaseData(caseDetails);
-
-            if (isEmpty(caseData.getDraftUploadedCMOs())) {
-                throw new IllegalArgumentException("No draft case management orders in the case");
-            }
-
-            Element<CaseManagementOrder> firstDraftCmo = caseData.getDraftUploadedCMOs().get(0);
-
-            cmoRemovalAction.removeDraftCaseManagementOrder(caseData, caseDetails, firstDraftCmo);
+            removeFirstDraftCaseManagementOrder(caseDetails);
         }
     }
 
@@ -120,6 +122,18 @@ public class MigrateCaseController extends CallbackController {
             caseDetails.getData().put("state", State.GATEKEEPING);
             caseDetails.getData().putAll(standardDirectionsService.populateStandardDirections(caseData));
         }
+    }
+
+    private void removeFirstDraftCaseManagementOrder(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if (isEmpty(caseData.getDraftUploadedCMOs())) {
+            throw new IllegalArgumentException("No draft case management orders in the case");
+        }
+
+        Element<CaseManagementOrder> firstDraftCmo = caseData.getDraftUploadedCMOs().get(0);
+
+        cmoRemovalAction.removeDraftCaseManagementOrder(caseData, caseDetails, firstDraftCmo);
     }
 
 }
