@@ -6,6 +6,7 @@ const applicant = require('../fixtures/applicant.js');
 const solicitor = require('../fixtures/solicitor.js');
 const others = require('../fixtures/others.js');
 const otherProceedings = require('../fixtures/otherProceedingData');
+const ordersAndDirectionsNeeded = require('../fixtures/ordersAndDirectionsNeeded.js');
 
 let caseId;
 
@@ -60,6 +61,8 @@ Scenario('local authority enters orders and directions @create-case-with-mandato
   enterOrdersAndDirectionsNeededEventPage.checkInterimSupervisionOrder();
   enterOrdersAndDirectionsNeededEventPage.checkEducationSupervisionOrder();
   enterOrdersAndDirectionsNeededEventPage.checkEmergencyProtectionOrder();
+  enterOrdersAndDirectionsNeededEventPage.selectPreventRemovalFromAddressEPOType();
+  await enterOrdersAndDirectionsNeededEventPage.enterAddress(ordersAndDirectionsNeeded.address);
   enterOrdersAndDirectionsNeededEventPage.checkOtherOrder();
   enterOrdersAndDirectionsNeededEventPage.checkWhereabouts();
   enterOrdersAndDirectionsNeededEventPage.checkEntry();
@@ -70,6 +73,7 @@ Scenario('local authority enters orders and directions @create-case-with-mandato
   enterOrdersAndDirectionsNeededEventPage.checkAssessment();
   enterOrdersAndDirectionsNeededEventPage.checkMedicalPractitioner();
   enterOrdersAndDirectionsNeededEventPage.checkExclusion();
+  enterOrdersAndDirectionsNeededEventPage.enterWhoIsExcluded('John Doe');
   enterOrdersAndDirectionsNeededEventPage.checkProtectionDirectionsOther();
   enterOrdersAndDirectionsNeededEventPage.enterProtectionDirectionsDetails('Test');
   enterOrdersAndDirectionsNeededEventPage.enterOrderDetails('Test');
@@ -80,9 +84,11 @@ Scenario('local authority enters orders and directions @create-case-with-mandato
   I.seeEventSubmissionConfirmation(config.applicationActions.enterOrdersAndDirectionsNeeded);
   caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
   I.seeInTab(['Orders and directions needed', 'Which orders do you need?'], ['Care order', 'Interim care order', 'Supervision order', 'Interim supervision order', 'Education supervision order', 'Emergency protection order', 'Variation or discharge of care or supervision order']);
+  I.seeInTab(['Orders and directions needed', 'What type of EPO are you requesting?'], 'Prevent removal from an address');
   I.seeInTab(['Orders and directions needed', 'Do you need any of these related orders?'], ['Information on the whereabouts of the child', 'Authorisation for entry of premises', 'Authorisation to search for another child on the premises', 'Other order under section 48 of the Children Act 1989']);
   I.seeInTab(['Orders and directions needed', 'Give details'], 'Test');
   I.seeInTab(['Orders and directions needed', 'Do you need any of these directions?'], ['Contact with any named person', 'A medical or psychiatric examination, or another assessment of the child', 'To be accompanied by a registered medical practitioner, nurse or midwife', 'An exclusion requirement', 'Other direction relating to an emergency protection order']);
+  I.seeInTab(['Orders and directions needed', 'Who\'s excluded?'], 'John Doe');
   I.seeInTab(['Orders and directions needed', 'Give details'], 'Test');
   I.seeInTab(['Orders and directions needed', 'Which order do you need?'], 'Test');
   I.seeInTab(['Orders and directions needed', 'Do you need any other directions?'], 'Yes');
