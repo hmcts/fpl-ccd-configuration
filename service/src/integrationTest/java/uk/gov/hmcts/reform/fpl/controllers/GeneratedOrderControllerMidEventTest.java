@@ -435,7 +435,8 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
                 .map(child -> child.getValue().getParty().getFullName())
                 .collect(Collectors.joining("\n"));
 
-            Map<String, Object> documentMap = mapper.convertValue(uploadedOrder, new TypeReference<>() {});
+            Map<String, Object> documentMap = mapper.convertValue(uploadedOrder, new TypeReference<>() {
+            });
 
             assertThat(response.getData())
                 .extracting("readOnlyFamilyManCaseNumber", "readOnlyOrder", "readOnlyChildren")
@@ -610,30 +611,51 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
         private final String callbackType = "populate-epo-parameters";
 
         @Test
-        void shouldPrePopulateEpoOrderFieldsIfPresentInCaseData() {
+        void shouldPrePopulateAddressFieldIfPresentInCaseData() {
+            String address = "1 Main Street, Lurgan, BT66 7PP, Armagh, United Kingdom";
             AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
-                buildCaseData(REMOVE_TO_ACCOMMODATION), callbackType);
+                buildCaseData(), callbackType);
 
             CaseData caseData = extractCaseData(callbackResponse);
 
-            assertThat(caseData.getOrders().getEpoType().equals(REMOVE_TO_ACCOMMODATION));
+            assertThat(caseData.getEpoRemovalAddress().toString().equals(address));
         }
 
         @Test
-        void shouldPrePopulateAddressFieldsIfPresentInCaseData() {
+        void shouldPrePopulateEpoTypeFieldIfPresentInCaseData() {
             AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
-                buildCaseData(PREVENT_REMOVAL), callbackType);
+                buildCaseData(), callbackType);
 
             CaseData caseData = extractCaseData(callbackResponse);
 
-            assertThat(caseData.getOrders().getEpoType().equals(PREVENT_REMOVAL));
+            assertThat(caseData.getEpoType().equals(PREVENT_REMOVAL));
         }
 
-        private CaseData buildCaseData(EPOType epoType) {
+        @Test
+        void shouldPrePopulateWhoIsExcludedFieldIfPresentInCaseData() {
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+                buildCaseData(), callbackType);
+
+            CaseData caseData = extractCaseData(callbackResponse);
+
+            assertThat(caseData.getEpoWhoIsExcluded().equals("Test User"));
+        }
+
+        private CaseData buildCaseData() {
             return CaseData.builder()
                 .orders(Orders.builder()
-                    .epoType(epoType)
-                    .build()).build();
+                    .epoType(EPOType.PREVENT_REMOVAL)
+                    .excluded("Test User")
+                    .address(Address.builder()
+                        .addressLine1("1 Main Street")
+                        .addressLine2("Lurgan")
+                        .postTown("BT66 7PP")
+                        .county("Armagh")
+                        .country("United Kingdom")
+                        .build())
+
+                    .build())
+                .build();
         }
     }
 }
