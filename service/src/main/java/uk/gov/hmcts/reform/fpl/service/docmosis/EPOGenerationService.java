@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.EPOExclusionRequirementType;
+import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
@@ -54,7 +55,8 @@ public class EPOGenerationService extends GeneratedOrderTemplateDataGeneration {
     }
 
     private String buildExclusionRequirement(CaseData caseData) {
-        if (caseData.getEpoExclusionRequirementType() == EPOExclusionRequirementType.NO_TO_EXCLUSION) {
+        if (caseData.getEpoType() == EPOType.REMOVE_TO_ACCOMMODATION
+            || caseData.getEpoExclusionRequirementType() == EPOExclusionRequirementType.NO_TO_EXCLUSION) {
             return null;
         }
         String who = caseData.getEpoWhoIsExcluded();

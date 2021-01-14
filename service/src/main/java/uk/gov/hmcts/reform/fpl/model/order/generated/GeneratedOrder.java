@@ -42,9 +42,6 @@ public class GeneratedOrder implements RemovableOrder {
     @JsonSerialize(contentConverter = BasicChildConverter.class)
     private final List<Element<Child>> children;
     private String removalReason;
-    private final String epoType;
-    private final String epoRemovalAddress;
-    private final String epoWhoIsExcluded;
 
     @JsonIgnore
     public boolean isRemovable() {

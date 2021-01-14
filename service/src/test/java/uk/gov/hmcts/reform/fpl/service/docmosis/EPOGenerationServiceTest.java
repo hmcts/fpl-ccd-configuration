@@ -8,6 +8,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.EPOExclusionRequirementType;
+import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -28,6 +29,7 @@ import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
@@ -75,7 +77,7 @@ class EPOGenerationServiceTest extends AbstractOrderGenerationServiceTest {
         CaseData caseData = getEpoExclusionRequirementCase(DRAFT,
             EPOExclusionRequirementType.STARTING_ON_SAME_DATE,
             LocalDate.of(2021, 1, 13),
-            "Test User");
+            "Test User", PREVENT_REMOVAL);
 
         DocmosisGeneratedOrder templateData = service.populateCustomOrderFields(caseData);
 
@@ -90,7 +92,7 @@ class EPOGenerationServiceTest extends AbstractOrderGenerationServiceTest {
         CaseData caseData = getEpoExclusionRequirementCase(DRAFT,
             EPOExclusionRequirementType.STARTING_ON_DIFFERENT_DATE,
             LocalDate.of(2021, 1, 26),
-            "Test User");
+            "Test User", PREVENT_REMOVAL);
 
 
         DocmosisGeneratedOrder templateData = service.populateCustomOrderFields(caseData);
@@ -107,7 +109,20 @@ class EPOGenerationServiceTest extends AbstractOrderGenerationServiceTest {
         CaseData caseData = getEpoExclusionRequirementCase(DRAFT,
             EPOExclusionRequirementType.NO_TO_EXCLUSION,
             LocalDate.of(2021, 1, 13),
-            "Temp User");
+            "Temp User", PREVENT_REMOVAL);
+
+        DocmosisGeneratedOrder templateData = service.populateCustomOrderFields(caseData);
+
+        assertThat(templateData.getExclusionRequirement()).isNull();
+    }
+
+    @Test
+    void shouldVerifyExclusionRequirementWhenRemoveToAccommodationHasBeenSelectedAndToggledOn() {
+        given(featureToggleService.isEpoOrderTypeAndExclusionEnabled()).willReturn(true);
+        CaseData caseData = getEpoExclusionRequirementCase(DRAFT,
+            EPOExclusionRequirementType.STARTING_ON_SAME_DATE,
+            LocalDate.of(2021, 1, 13),
+            "Temp User", REMOVE_TO_ACCOMMODATION);
 
         DocmosisGeneratedOrder templateData = service.populateCustomOrderFields(caseData);
 
@@ -120,7 +135,7 @@ class EPOGenerationServiceTest extends AbstractOrderGenerationServiceTest {
         CaseData caseData = getEpoExclusionRequirementCase(DRAFT,
             EPOExclusionRequirementType.STARTING_ON_DIFFERENT_DATE,
             LocalDate.of(2021, 1, 13),
-            "Some User");
+            "Some User", PREVENT_REMOVAL);
 
         DocmosisGeneratedOrder templateData = service.populateCustomOrderFields(caseData);
 
@@ -162,7 +177,7 @@ class EPOGenerationServiceTest extends AbstractOrderGenerationServiceTest {
     CaseData getEpoExclusionRequirementCase(OrderStatus orderStatus,
                                             EPOExclusionRequirementType epoExclusionRequirementType,
                                             LocalDate epoExclusionStartDate,
-                                            String whoIsExcluded) {
+                                            String whoIsExcluded, EPOType epoType) {
         return defaultCaseData(orderStatus)
             .dateOfIssue(null)
             .dateAndTimeOfIssue(time.now())
@@ -178,7 +193,7 @@ class EPOGenerationServiceTest extends AbstractOrderGenerationServiceTest {
             .epoPhrase(EPOPhrase.builder()
                 .includePhrase("Yes")
                 .build())
-            .epoType(REMOVE_TO_ACCOMMODATION)
+            .epoType(epoType)
             .orderFurtherDirections(FurtherDirections.builder()
                 .directionsNeeded("Yes")
                 .directions("Example Directions")
