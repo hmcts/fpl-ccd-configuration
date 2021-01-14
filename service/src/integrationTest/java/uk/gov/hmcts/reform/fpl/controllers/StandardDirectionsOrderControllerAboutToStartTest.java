@@ -26,6 +26,8 @@ import static java.util.Collections.emptyList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -148,6 +150,18 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractControll
         assertThat(data.getLocalAuthorityDirections().get(0)).isEqualTo(LOCAL_AUTHORITY_DIRECTION);
         assertThat(data.getAllParties().get(0)).isEqualTo(ALL_PARTIES_DIRECTION);
         assertThat(data.getRespondentDirections().get(0)).isEqualTo(RESPONDENT_DIRECTION);
+    }
+
+    @Test
+    void shouldNotOverwriteSDODirectionsWhenDirectionsAreNotEmpty() {
+        CaseData caseData = CaseData.builder().
+            localAuthorityDirections(List.of(LOCAL_AUTHORITY_DIRECTION))
+            .build();
+
+        postAboutToStartEvent(caseData);
+
+        verify(standardDirectionsService, never()).populateStandardDirections(any());
+
     }
 
     private CaseDetails buildCaseDetailsWithDateOfIssueAndRoute(String date, SDORoute route) {
