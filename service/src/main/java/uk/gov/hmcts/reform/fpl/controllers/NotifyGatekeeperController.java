@@ -11,10 +11,10 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeepersEvent;
+import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
-import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 
@@ -23,7 +23,7 @@ import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.controllers.ReturnApplicationController.RETURN_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Api
 @RestController
@@ -32,7 +32,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 public class NotifyGatekeeperController extends CallbackController {
     private static final String GATEKEEPER_EMAIL_KEY = "gatekeeperEmails";
     private final ValidateGroupService validateGroupService;
-    private final StandardDirectionsService standardDirectionsService;
 
     //TODO: can we validate a hearing has been added at this point? Saves some nasty exceptions in the case of
     // no hearing being present when populating standard directions FPLA-1516
@@ -42,7 +41,7 @@ public class NotifyGatekeeperController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         List<String> errors = new ArrayList<>();
-        if (SUBMITTED.equals(caseData.getState())) {
+        if (SUBMITTED.getValue().equals(caseDetails.getState())) {
             errors = validateGroupService.validateGroup(caseData, ValidateFamilyManCaseNumberGroup.class);
         }
 
@@ -52,25 +51,18 @@ public class NotifyGatekeeperController extends CallbackController {
         return respond(caseDetails, errors);
     }
 
-    @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
-
-        if (SUBMITTED.equals(caseData.getState())) {
-            caseDetails.getData().putAll(standardDirectionsService.populateStandardDirections(caseData));
-        }
-
-        return respond(caseDetails);
-    }
-
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = getCaseData(callbackRequest);
+        if (SUBMITTED.equals(caseData.getState())) {
+            publishEvent(new PopulateStandardDirectionsEvent(callbackRequest));
+        }
         publishEvent(new NotifyGatekeepersEvent(caseData));
     }
 
     private List<Element<EmailAddress>> resetGateKeeperEmailCollection() {
-        return wrapElements(EmailAddress.builder().email("").build());
+        return List.of(
+            element(EmailAddress.builder().email("").build())
+        );
     }
 }

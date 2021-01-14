@@ -7,10 +7,10 @@ Feature('Local authority deletes application');
 
 BeforeSuite(async ({I}) => {
   caseName = `Case ${new Date().toISOString()}`;
-  caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne, caseName);
+  caseId = await I.submitNewCase(config.swanseaLocalAuthorityUserOne, caseName);
 });
 
-Before(async ({I}) => await I.navigateToCaseDetails(caseId));
+Before(async ({I}) => await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId));
 
 Scenario('local authority deletes application', async ({I, caseViewPage, deleteApplicationEventPage, caseListPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.deleteApplication);
