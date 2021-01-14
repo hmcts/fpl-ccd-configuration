@@ -2,6 +2,7 @@
 const output = require('codeceptjs').output;
 const lodash = require('lodash');
 const config = require('./config');
+const moment = require('moment');
 const caseHelper = require('./helpers/case_helper.js');
 
 const loginPage = require('./pages/login.page');
@@ -39,7 +40,7 @@ module.exports = function () {
           }
 
           await loginPage.signIn(user);
-        }, signedInSelector, false);
+        }, signedInSelector, false, 20);
         output.debug(`Logged in as ${user.email}`);
         currentUser = user;
       } else {
@@ -298,10 +299,20 @@ module.exports = function () {
     },
 
     async submitNewCaseWithData(data = mandatorySubmissionFields) {
-      const caseId = await this.logInAndCreateCase(config.swanseaLocalAuthorityUserOne);
+      const caseId = await this.submitNewCase(config.swanseaLocalAuthorityUserOne);
       await caseHelper.populateWithData(caseId, data);
       await this.refreshPage();
       output.print(`Case #${caseId} has been populated with data`);
+
+      return caseId;
+    },
+
+    async submitNewCase(user, name) {
+      const caseName = name || `Test case (${moment().format('YYYY-MM-DD HH:MM')})`;
+      const creator = user || config.swanseaLocalAuthorityUserOne;
+      const caseData = await caseHelper.createCase(creator, caseName);
+      const caseId = caseData.id;
+      output.print(`Case #${caseId} has been created`);
 
       return caseId;
     },
