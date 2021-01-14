@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -11,12 +12,16 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute.SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute.UPLOAD;
@@ -25,6 +30,8 @@ import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute.UPLOAD;
 @WebMvcTest(StandardDirectionsOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
 class StandardDirectionsOrderControllerAboutToStartTest extends AbstractControllerTest {
+    @MockBean
+    private StandardDirectionsService standardDirectionsService;
 
     private static final DocumentReference SDO = DocumentReference.builder().filename("sdo.pdf").build();
 
@@ -99,6 +106,16 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractControll
         CaseData responseCaseData = mapper.convertValue(response.getData(), CaseData.class);
 
         assertThat(responseCaseData.getJudgeAndLegalAdvisor()).isEqualTo(judgeAndLegalAdvisor);
+    }
+
+    @Test
+    void shouldPopulateSDODirectionsWhenDirectionsAreEmpty() {
+        CaseData caseData = CaseData.builder().build();
+        given(standardDirectionsService.hasEmptyDirections(any())).willReturn(true);
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseData);
+
+        verify(standardDirectionsService).populateStandardDirections(any());
     }
 
     private CaseDetails buildCaseDetailsWithDateOfIssueAndRoute(String date, SDORoute route) {
