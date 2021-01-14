@@ -151,7 +151,8 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractControll
         CaseData actualCaseData = extractCaseData(postAboutToStartEvent(originalCaseData));
 
         assertThat(actualCaseData.getAllParties()).isEqualTo(originalCaseData.getAllParties());
-        assertThat(actualCaseData.getLocalAuthorityDirections()).isEqualTo(originalCaseData.getLocalAuthorityDirections());
+        assertThat(actualCaseData.getLocalAuthorityDirections()).isEqualTo(originalCaseData
+            .getLocalAuthorityDirections());
         assertThat(actualCaseData.getRespondentDirections()).isEqualTo(originalCaseData.getRespondentDirections());
         assertThat(actualCaseData.getOtherPartiesDirections()).isEqualTo(originalCaseData.getOtherPartiesDirections());
         assertThat(actualCaseData.getCafcassDirections()).isEqualTo(originalCaseData.getCafcassDirections());
