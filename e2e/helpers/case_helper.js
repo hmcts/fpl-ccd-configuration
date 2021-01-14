@@ -71,8 +71,20 @@ const populateWithData = async (caseId, data) => {
   return post(url, data, headers);
 };
 
-const getAuthToken = async () => {
-  const url = `${config.idamApiUrl}/loginUser?username=${config.systemUpdateUser.email}&password=${config.systemUpdateUser.password}`;
+const createCase = async (user, caseName) => {
+  const authToken = await getAuthToken(user);
+  const url = `${config.fplServiceUrl}/testing-support/case/create`;
+  const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${authToken}`,
+  };
+  let data = {caseName: caseName};
+  let response = await post(url, data, headers);
+  return await response.json();
+};
+
+const getAuthToken = async (user=config.systemUpdateUser) => {
+  const url = `${config.idamApiUrl}/loginUser?username=${user.email}&password=${user.password}`;
   const data = {};
   const headers = {
     'Content-Type': 'application/x-www-form-urlencoded',
@@ -85,4 +97,5 @@ const getAuthToken = async () => {
 
 module.exports = {
   populateWithData,
+  createCase,
 };
