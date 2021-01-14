@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -17,15 +18,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute.SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute.UPLOAD;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(StandardDirectionsOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
 class StandardDirectionsOrderControllerAboutToStartTest extends AbstractControllerTest {
-
     private static final DocumentReference SDO = DocumentReference.builder().filename("sdo.pdf").build();
 
     StandardDirectionsOrderControllerAboutToStartTest() {
@@ -99,6 +101,37 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractControll
         CaseData responseCaseData = mapper.convertValue(response.getData(), CaseData.class);
 
         assertThat(responseCaseData.getJudgeAndLegalAdvisor()).isEqualTo(judgeAndLegalAdvisor);
+    }
+
+    @Test
+    void shouldPopulateSDODirectionsWhenDirectionsAreEmpty() {
+        CaseData originalCaseData = CaseData.builder().build();
+
+        CaseData actualCaseData = extractCaseData(postAboutToStartEvent(originalCaseData));
+
+        assertThat(actualCaseData.getAllParties()).hasSize(5);
+        assertThat(actualCaseData.getLocalAuthorityDirections()).hasSize(7);
+        assertThat(actualCaseData.getRespondentDirections()).hasSize(1);
+        assertThat(actualCaseData.getOtherPartiesDirections()).hasSize(1);
+        assertThat(actualCaseData.getCafcassDirections()).hasSize(3);
+        assertThat(actualCaseData.getCourtDirections()).hasSize(1);
+    }
+
+    @Test
+    void shouldNotOverwriteSDODirectionsWhenDirectionsAreNotEmpty() {
+        CaseData originalCaseData = CaseData.builder()
+            .localAuthorityDirections(wrapElements(Direction.builder().assignee(LOCAL_AUTHORITY).build()))
+            .build();
+
+        CaseData actualCaseData = extractCaseData(postAboutToStartEvent(originalCaseData));
+
+        assertThat(actualCaseData.getAllParties()).isEqualTo(originalCaseData.getAllParties());
+        assertThat(actualCaseData.getLocalAuthorityDirections()).isEqualTo(originalCaseData
+            .getLocalAuthorityDirections());
+        assertThat(actualCaseData.getRespondentDirections()).isEqualTo(originalCaseData.getRespondentDirections());
+        assertThat(actualCaseData.getOtherPartiesDirections()).isEqualTo(originalCaseData.getOtherPartiesDirections());
+        assertThat(actualCaseData.getCafcassDirections()).isEqualTo(originalCaseData.getCafcassDirections());
+        assertThat(actualCaseData.getCourtDirections()).isEqualTo(originalCaseData.getCourtDirections());
     }
 
     private CaseDetails buildCaseDetailsWithDateOfIssueAndRoute(String date, SDORoute route) {
