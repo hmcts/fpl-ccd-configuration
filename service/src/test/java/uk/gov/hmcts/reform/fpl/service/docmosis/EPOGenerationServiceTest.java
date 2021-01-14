@@ -74,7 +74,7 @@ class EPOGenerationServiceTest extends AbstractOrderGenerationServiceTest {
     @Test
     void shouldVerifyExclusionRequirementWhenTheStartDateIsSameAndToggledOn() {
         given(featureToggleService.isEpoOrderTypeAndExclusionEnabled()).willReturn(true);
-        CaseData caseData = getEpoExclusionRequirementCase(DRAFT,
+        CaseData caseData = getCaseWithEpoExclusionRequirement(DRAFT,
             EPOExclusionRequirementType.STARTING_ON_SAME_DATE,
             LocalDate.of(2021, 1, 13),
             "Test User", PREVENT_REMOVAL);
@@ -89,7 +89,7 @@ class EPOGenerationServiceTest extends AbstractOrderGenerationServiceTest {
     @Test
     void shouldVerifyExclusionRequirementWhenTheStartDateIsDifferentAndToggledOn() {
         given(featureToggleService.isEpoOrderTypeAndExclusionEnabled()).willReturn(true);
-        CaseData caseData = getEpoExclusionRequirementCase(DRAFT,
+        CaseData caseData = getCaseWithEpoExclusionRequirement(DRAFT,
             EPOExclusionRequirementType.STARTING_ON_DIFFERENT_DATE,
             LocalDate.of(2021, 1, 26),
             "Test User", PREVENT_REMOVAL);
@@ -106,7 +106,7 @@ class EPOGenerationServiceTest extends AbstractOrderGenerationServiceTest {
     @Test
     void shouldVerifyExclusionRequirementWhenNoToExclusionHasBeenSelectedAndToggledOn() {
         given(featureToggleService.isEpoOrderTypeAndExclusionEnabled()).willReturn(true);
-        CaseData caseData = getEpoExclusionRequirementCase(DRAFT,
+        CaseData caseData = getCaseWithEpoExclusionRequirement(DRAFT,
             EPOExclusionRequirementType.NO_TO_EXCLUSION,
             LocalDate.of(2021, 1, 13),
             "Temp User", PREVENT_REMOVAL);
@@ -119,7 +119,7 @@ class EPOGenerationServiceTest extends AbstractOrderGenerationServiceTest {
     @Test
     void shouldVerifyExclusionRequirementWhenRemoveToAccommodationHasBeenSelectedAndToggledOn() {
         given(featureToggleService.isEpoOrderTypeAndExclusionEnabled()).willReturn(true);
-        CaseData caseData = getEpoExclusionRequirementCase(DRAFT,
+        CaseData caseData = getCaseWithEpoExclusionRequirement(DRAFT,
             EPOExclusionRequirementType.STARTING_ON_SAME_DATE,
             LocalDate.of(2021, 1, 13),
             "Temp User", REMOVE_TO_ACCOMMODATION);
@@ -132,7 +132,7 @@ class EPOGenerationServiceTest extends AbstractOrderGenerationServiceTest {
     @Test
     void shouldVerifyExclusionRequirementIsNullWhenToggledOff() {
         given(featureToggleService.isEpoOrderTypeAndExclusionEnabled()).willReturn(false);
-        CaseData caseData = getEpoExclusionRequirementCase(DRAFT,
+        CaseData caseData = getCaseWithEpoExclusionRequirement(DRAFT,
             EPOExclusionRequirementType.STARTING_ON_DIFFERENT_DATE,
             LocalDate.of(2021, 1, 13),
             "Some User", PREVENT_REMOVAL);
@@ -174,10 +174,10 @@ class EPOGenerationServiceTest extends AbstractOrderGenerationServiceTest {
             .build();
     }
 
-    CaseData getEpoExclusionRequirementCase(OrderStatus orderStatus,
-                                            EPOExclusionRequirementType epoExclusionRequirementType,
-                                            LocalDate epoExclusionStartDate,
-                                            String whoIsExcluded, EPOType epoType) {
+    CaseData getCaseWithEpoExclusionRequirement(OrderStatus orderStatus,
+                                                EPOExclusionRequirementType epoExclusionRequirementType,
+                                                LocalDate epoExclusionStartDate,
+                                                String whoIsExcluded, EPOType epoType) {
         return defaultCaseData(orderStatus)
             .dateOfIssue(null)
             .dateAndTimeOfIssue(time.now())

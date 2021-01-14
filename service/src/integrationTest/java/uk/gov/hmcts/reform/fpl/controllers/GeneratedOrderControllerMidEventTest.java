@@ -435,8 +435,7 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
                 .map(child -> child.getValue().getParty().getFullName())
                 .collect(Collectors.joining("\n"));
 
-            Map<String, Object> documentMap = mapper.convertValue(uploadedOrder, new TypeReference<>() {
-            });
+            Map<String, Object> documentMap = mapper.convertValue(uploadedOrder, new TypeReference<>() {});
 
             assertThat(response.getData())
                 .extracting("readOnlyFamilyManCaseNumber", "readOnlyOrder", "readOnlyChildren")
@@ -606,7 +605,7 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
     }
 
     @Nested
-    class PopulateEPOTypeAndAddressMidEvent {
+    class PrePopulateEpoFieldsMidEvent {
 
         private final String callbackType = "populate-epo-parameters";
 
