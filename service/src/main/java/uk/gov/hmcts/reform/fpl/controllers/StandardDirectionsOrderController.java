@@ -85,7 +85,7 @@ public class StandardDirectionsOrderController extends CallbackController {
         StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
         SDORoute sdoRouter = caseData.getSdoRouter();
 
-        if(standardDirectionsService.hasEmptyDirections(caseData)){
+        if (standardDirectionsService.hasEmptyDirections(caseData)) {
             caseDetails.getData().putAll(standardDirectionsService.populateStandardDirections(caseData));
         }
 
