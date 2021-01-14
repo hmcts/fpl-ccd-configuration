@@ -11,9 +11,9 @@ let caseId;
 
 Feature('Application draft (populated draft)');
 
-BeforeSuite(async ({I}) => caseId = await I.logInAndCreateCase(config.swanseaLocalAuthorityUserOne));
+BeforeSuite(async ({I}) => caseId = await I.submitNewCase(config.swanseaLocalAuthorityUserOne));
 
-Before(async ({I}) => await I.navigateToCaseDetails(caseId));
+Before(async ({I}) => await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId));
 
 Scenario('local authority sees task list', async ({caseViewPage}) => {
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
