@@ -96,6 +96,9 @@ public class StandardDirectionsOrderController extends CallbackController {
                 case SERVICE:
                     data.put(DATE_OF_ISSUE_KEY, sdoService.generateDateOfIssue(standardDirectionOrder));
                     data.put("useServiceRoute", YES);
+                    if(!standardDirectionsService.hasDirectionsPopulated(caseData)){
+                        caseDetails.getData().putAll(standardDirectionsService.populateStandardDirections(caseData));
+                    }
                     break;
                 default:
                     throw new IllegalStateException("Unexpected value: " + sdoRouter);

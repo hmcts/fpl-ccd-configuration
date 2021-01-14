@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.Integer.parseInt;
@@ -37,16 +39,32 @@ public class StandardDirectionsService {
     private final OrdersLookupService ordersLookupService;
 
     public boolean hasEmptyDates(CaseData caseData) {
+        List<List<Element<Direction>>> directions = Stream.of(caseData.getAllParties(),
+            caseData.getLocalAuthorityDirections(),
+            caseData.getRespondentDirections(),
+            caseData.getCafcassDirections(),
+            caseData.getOtherPartiesDirections(),
+            caseData.getCourtDirections())
+            .filter(ObjectUtils::isNotEmpty)
+            .collect(Collectors.toList());
+        if(directions.isEmpty()){
+            return true;
+        }
+        return directions.stream()
+            .flatMap(Collection::stream)
+            .map(Element::getValue)
+            .map(Direction::getDateToBeCompletedBy)
+            .anyMatch(Objects::isNull);
+    }
+
+    public boolean hasDirectionsPopulated(CaseData caseData) {
         return Stream.of(caseData.getAllParties(),
             caseData.getLocalAuthorityDirections(),
             caseData.getRespondentDirections(),
             caseData.getCafcassDirections(),
             caseData.getOtherPartiesDirections(),
             caseData.getCourtDirections())
-            .flatMap(Collection::stream)
-            .map(Element::getValue)
-            .map(Direction::getDateToBeCompletedBy)
-            .anyMatch(Objects::isNull);
+            .allMatch(ObjectUtils::isEmpty);
     }
 
     public Map<String, List<Element<Direction>>> populateStandardDirections(CaseData caseData) {
