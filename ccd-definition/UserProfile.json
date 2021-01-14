@@ -127,7 +127,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "UserIDAMId": "hmcts-superuser@mailnesia.com'",
+    "UserIDAMId": "hmcts-superuser@mailnesia.com",
     "WorkBasketDefaultJurisdiction": "PUBLICLAW",
     "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
     "WorkBasketDefaultState": "Submitted"
