@@ -55,7 +55,17 @@
         ],
         "emergencyProtectionOrderDirections": [
           "CONTACT_WITH_NAMED_PERSON"
-        ]
+        ],
+        "epoType": "PREVENT_REMOVAL",
+        "address": {
+          "County": "Co.test",
+          "Country": "United Kingdom",
+          "PostCode": "BT35 HBN",
+          "PostTown": "Belfast",
+          "AddressLine1": "45 Ethel Street",
+          "AddressLine2": "Lisburn Road",
+          "AddressLine3": "South Belfast"
+        }
       },
       "groundsForEPO": {
         "reason": [
