@@ -86,16 +86,4 @@ public class EmailTemplateTest {
     protected SendEmailResponse response() {
         return resultsCaptor.getResult();
     }
-
-    protected String h1(String text) {
-        return ("#" + text);
-    }
-
-    protected String list(String text) {
-        return ("* " + text);
-    }
-
-    protected String callout(String callout) {
-        return ("^" + callout);
-    }
 }

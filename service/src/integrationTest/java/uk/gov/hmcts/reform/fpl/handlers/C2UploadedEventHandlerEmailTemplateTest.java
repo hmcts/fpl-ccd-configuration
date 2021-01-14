@@ -77,14 +77,14 @@ public class C2UploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
             .hasBody(emailContent()
                 .line("A C2 application has been received for the case:")
                 .line()
-                .line(callout(calloutText))
+                .callout(calloutText)
                 .line()
-                .line(h1("Next steps"))
+                .h1("Next steps")
                 .line("You need to:")
-                .line(list("check the C2"))
-                .line(list("check payment has been taken"))
-                .line(list("send a message to the judge or legal adviser"))
-                .line(list("send a copy to relevant parties"))
+                .list("check the C2",
+                    "check payment has been taken",
+                    "send a message to the judge or legal adviser",
+                    "send a copy to relevant parties")
                 .line()
                 .end("To review the application, sign in to " + caseUrl)
             );
