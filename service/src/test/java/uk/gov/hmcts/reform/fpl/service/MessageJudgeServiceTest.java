@@ -511,7 +511,7 @@ class MessageJudgeServiceTest {
         List<Element<JudicialMessage>> updatedMessages =
             (List<Element<JudicialMessage>>) updatedData.get("judicialMessages");
 
-        String formattedMessageHistory = MESSAGE_NOTE + "\n \n"
+        String formattedMessageHistory = String.format("%s - %s", MESSAGE_SENDER, MESSAGE_NOTE) + "\n \n"
             + String.format("%s - %s", MESSAGE_RECIPIENT, messageReply);
 
         // The sender and recipient are not the wrong way round, the sender of the previous message has be made the
@@ -524,7 +524,7 @@ class MessageJudgeServiceTest {
                 .updatedTime(time.now())
                 .status(OPEN)
                 .latestMessage(messageReply)
-                .messageHistory(String.format("%s - %s", MESSAGE_SENDER, formattedMessageHistory))
+                .messageHistory(formattedMessageHistory)
                 .dateSent(dateSent)
                 .build()
         );

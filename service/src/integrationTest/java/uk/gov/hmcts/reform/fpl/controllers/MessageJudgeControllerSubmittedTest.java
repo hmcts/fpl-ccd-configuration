@@ -16,9 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDICIAL_MESSAGE_ADDED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDICIAL_MESSAGE_REPLY_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.CLOSED;
@@ -134,7 +133,7 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldNotSendEmailNotificationsWhenJudicialMessageIsClosed() throws NotificationClientException {
+    void shouldNotSendEmailNotificationsWhenJudicialMessageIsClosed() {
         JudicialMessage latestJudicialMessage = JudicialMessage.builder()
             .recipient(JUDICIAL_MESSAGE_RECIPIENT)
             .updatedTime(now())
@@ -166,6 +165,6 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
 
         postSubmittedEvent(asCaseDetails(caseData));
 
-        verify(notificationClient, never()).sendEmail(any(), any(), any(), any());
+        verifyNoInteractions(notificationClient);
     }
 }
