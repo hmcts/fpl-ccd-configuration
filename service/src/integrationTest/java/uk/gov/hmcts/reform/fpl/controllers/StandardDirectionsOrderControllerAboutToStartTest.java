@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -15,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -24,10 +22,6 @@ import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -38,14 +32,12 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute.SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(StandardDirectionsOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
 class StandardDirectionsOrderControllerAboutToStartTest extends AbstractControllerTest {
-    @MockBean
-    private StandardDirectionsService standardDirectionsService;
-
     private static final DocumentReference SDO = DocumentReference.builder().filename("sdo.pdf").build();
 
     private static final Element<Direction> ALL_PARTIES_DIRECTION =
@@ -138,30 +130,32 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractControll
 
     @Test
     void shouldPopulateSDODirectionsWhenDirectionsAreEmpty() {
-        CaseData caseData = CaseData.builder().build();
-        given(standardDirectionsService.hasEmptyDirections(any())).willReturn(true);
-        given(standardDirectionsService.getDirections(any())).willReturn(STANDARD_DIRECTIONS);
-        given(standardDirectionsService.populateStandardDirections(any())).willReturn(getExpectedDirections());
+        CaseData originalCaseData = CaseData.builder().build();
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseData);
+        CaseData actualCaseData = extractCaseData(postAboutToStartEvent(originalCaseData));
 
-        CaseData data = mapper.convertValue(response.getData(), CaseData.class);
-
-        assertThat(data.getLocalAuthorityDirections().get(0)).isEqualTo(LOCAL_AUTHORITY_DIRECTION);
-        assertThat(data.getAllParties().get(0)).isEqualTo(ALL_PARTIES_DIRECTION);
-        assertThat(data.getRespondentDirections().get(0)).isEqualTo(RESPONDENT_DIRECTION);
+        assertThat(actualCaseData.getAllParties()).hasSize(5);
+        assertThat(actualCaseData.getLocalAuthorityDirections()).hasSize(7);
+        assertThat(actualCaseData.getRespondentDirections()).hasSize(1);
+        assertThat(actualCaseData.getOtherPartiesDirections()).hasSize(1);
+        assertThat(actualCaseData.getCafcassDirections()).hasSize(3);
+        assertThat(actualCaseData.getCourtDirections()).hasSize(1);
     }
 
     @Test
     void shouldNotOverwriteSDODirectionsWhenDirectionsAreNotEmpty() {
-        CaseData caseData = CaseData.builder()
-            .localAuthorityDirections(List.of(LOCAL_AUTHORITY_DIRECTION))
+        CaseData originalCaseData = CaseData.builder()
+            .localAuthorityDirections(wrapElements(Direction.builder().assignee(LOCAL_AUTHORITY).build()))
             .build();
 
-        postAboutToStartEvent(caseData);
+        CaseData actualCaseData = extractCaseData(postAboutToStartEvent(originalCaseData));
 
-        verify(standardDirectionsService, never()).populateStandardDirections(any());
-
+        assertThat(actualCaseData.getAllParties()).isEqualTo(originalCaseData.getAllParties());
+        assertThat(actualCaseData.getLocalAuthorityDirections()).isEqualTo(originalCaseData.getLocalAuthorityDirections());
+        assertThat(actualCaseData.getRespondentDirections()).isEqualTo(originalCaseData.getRespondentDirections());
+        assertThat(actualCaseData.getOtherPartiesDirections()).isEqualTo(originalCaseData.getOtherPartiesDirections());
+        assertThat(actualCaseData.getCafcassDirections()).isEqualTo(originalCaseData.getCafcassDirections());
+        assertThat(actualCaseData.getCourtDirections()).isEqualTo(originalCaseData.getCourtDirections());
     }
 
     private CaseDetails buildCaseDetailsWithDateOfIssueAndRoute(String date, SDORoute route) {
