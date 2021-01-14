@@ -48,6 +48,7 @@ idam-pr:
 xui-webapp:
   enabled: true
   nodejs:
+    replicas: 2
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
     image: hmctspublic.azurecr.io/xui/webapp:latest
