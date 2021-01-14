@@ -35,7 +35,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 public class C2UploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private final C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder().build();
     private final String respondentLastName = "Smith";
-    private final String callout = "Smith, SACCCCCCCC5676576567";
+    private final String calloutText = "Smith, SACCCCCCCC5676576567";
     private final String caseUrl = "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345#C2Tab";
 
     @Autowired
@@ -63,7 +63,7 @@ public class C2UploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
             c2DocumentBundle.getDocument()))
             .willReturn(
                 C2UploadedTemplate.builder()
-                    .callout(callout)
+                    .callout(calloutText)
                     .respondentLastName(respondentLastName)
                     .caseUrl(caseUrl)
                     .documentLink(DOCUMENT_LINK)
@@ -77,20 +77,17 @@ public class C2UploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
             .hasBody(emailContent()
                 .line("A C2 application has been received for the case:")
                 .line()
-                .line("^ " + callout)//callout
+                .line(callout(calloutText))
                 .line()
-                .line("#Next steps")
+                .line(h1("Next steps"))
                 .line("You need to:")
-                .line("* check the C2")
-                .line("* check payment has been taken")
-                .line("* send a message to the judge or legal adviser")
-                .line("* send a copy to relevant parties")
+                .line(list("check the C2"))
+                .line(list("check payment has been taken"))
+                .line(list("send a message to the judge or legal adviser"))
+                .line(list("send a copy to relevant parties"))
                 .line()
                 .end("To review the application, sign in to " + caseUrl)
             );
     }
 
 }
-
-
-

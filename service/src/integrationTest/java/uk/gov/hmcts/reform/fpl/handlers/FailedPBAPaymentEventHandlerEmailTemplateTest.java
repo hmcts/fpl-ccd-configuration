@@ -43,7 +43,7 @@ class FailedPBAPaymentEventHandlerEmailTemplateTest extends EmailTemplateTest {
             .hasBody(emailContent()
                 .line("The online payment has failed for:")
                 .line()
-                .line("^http://fake-url/cases/case-details/123#C2Tab")
+                .line(callout("http://fake-url/cases/case-details/123#C2Tab"))
                 .line()
                 .end("Contact the relevant court so they can take the payment.")
             );
@@ -60,7 +60,7 @@ class FailedPBAPaymentEventHandlerEmailTemplateTest extends EmailTemplateTest {
             .hasBody(emailContent()
                 .line("The online payment has failed for:")
                 .line()
-                .line("^http://fake-url/cases/case-details/123")
+                .line(callout("http://fake-url/cases/case-details/123"))
                 .line()
                 .end("Contact the relevant court so they can take the payment.")
             );
