@@ -55,9 +55,12 @@ public class NotifyGatekeeperController extends CallbackController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
         CaseData caseData = getCaseData(caseDetails);
+        CaseData caseDataBefore = getCaseData(caseDetailsBefore);
 
-        if (SUBMITTED.equals(caseData.getState())) {
+
+        if (SUBMITTED.equals(caseDataBefore.getState())) {
             caseDetails.getData().putAll(standardDirectionsService.populateStandardDirections(caseData));
         }
 

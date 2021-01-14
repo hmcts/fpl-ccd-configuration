@@ -7,8 +7,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.fpl.controllers.AbstractControllerTest;
-import uk.gov.hmcts.reform.fpl.controllers.NotifyGatekeeperController;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -37,11 +36,21 @@ class NotifyGatekeeperControllerAboutToSubmitTest extends AbstractControllerTest
     void shouldPopulateStandardDirectionsWhenCaseInSubmittedState() {
 
         CaseData caseData = CaseData.builder()
+            .state(State.GATEKEEPING)
+            .hearingDetails(wrapElements(testHearing()))
+            .build();
+
+        CaseData caseDataBefore = CaseData.builder()
             .state(State.SUBMITTED)
             .hearingDetails(wrapElements(testHearing()))
             .build();
 
-        CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
+        CallbackRequest callbackRequest = CallbackRequest.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .caseDetailsBefore(asCaseDetails(caseDataBefore))
+            .build();
+
+        CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(callbackRequest));
 
         assertThat(updatedCaseData.getAllParties()).hasSize(5);
         assertThat(updatedCaseData.getAllPartiesCustom()).isNull();
@@ -68,7 +77,17 @@ class NotifyGatekeeperControllerAboutToSubmitTest extends AbstractControllerTest
             .hearingDetails(wrapElements(HearingBooking.builder().startDate(LocalDateTime.now()).build()))
             .build();
 
-        CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
+        CaseData caseDataBefore = CaseData.builder()
+            .state(State.GATEKEEPING)
+            .hearingDetails(wrapElements(testHearing()))
+            .build();
+
+        CallbackRequest callbackRequest = CallbackRequest.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .caseDetailsBefore(asCaseDetails(caseDataBefore))
+            .build();
+
+        CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(callbackRequest));
 
         assertThat(updatedCaseData.getAllParties())
             .isEqualTo(caseData.getAllParties());
