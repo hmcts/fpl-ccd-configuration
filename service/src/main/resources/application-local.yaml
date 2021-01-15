@@ -8,7 +8,15 @@ spring:
           jwk-set-uri: http://localhost:5000/o/jwks
   config:
     activate:
-      on-profile: dev
+      on-profile: local
+
+logging:
+  level:
+    uk:
+      gov:
+        hmcts:
+          reform:
+            fpl: debug
 
 idam:
   api:
