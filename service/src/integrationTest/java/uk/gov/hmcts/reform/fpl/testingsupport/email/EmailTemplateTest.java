@@ -40,8 +40,6 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 @Import(EmailTemplateTest.TestConfiguration.class)
 //@Slf4j
 public class EmailTemplateTest {
-    protected static final Map<String, Object> DOCUMENT_LINK = new JSONObject().put("file.txt",
-        new String(Base64.encodeBase64(DOCUMENT_CONTENTS), ISO_8859_1)).toMap();
 
     @SpyBean
     private NotificationClient client;

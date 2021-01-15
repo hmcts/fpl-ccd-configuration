@@ -66,7 +66,6 @@ public class C2UploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
                     .callout(calloutText)
                     .respondentLastName(respondentLastName)
                     .caseUrl(caseUrl)
-                    .documentLink(DOCUMENT_LINK)
                     .build()
             );
 
