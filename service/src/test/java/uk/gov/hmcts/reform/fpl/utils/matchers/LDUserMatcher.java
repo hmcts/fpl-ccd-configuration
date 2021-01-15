@@ -63,8 +63,8 @@ public class LDUserMatcher implements ArgumentMatcher<LDUser>, ContainsExtraType
             return this;
         }
 
-        public LDUser build() {
-            return argThat(new LDUserMatcher(attrs));
+        public LDUserMatcher build() {
+            return new LDUserMatcher(attrs);
         }
     }
 }
