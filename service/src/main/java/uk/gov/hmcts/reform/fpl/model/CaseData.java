@@ -515,7 +515,7 @@ public class CaseData {
     }
 
     @JsonIgnore
-    public Optional<HearingBooking> getNextHearing(LocalDateTime time) {
+    public Optional<HearingBooking> getNextHearingAfter(LocalDateTime time) {
         return unwrapElements(hearingDetails).stream()
             .filter(hearingBooking -> hearingBooking.getStartDate().isAfter(time))
             .min(comparing(HearingBooking::getStartDate));
@@ -523,7 +523,7 @@ public class CaseData {
 
     @JsonIgnore
     public HearingBooking getMostUrgentHearingBookingAfter(LocalDateTime time) {
-        return getNextHearing(time).orElseThrow(NoHearingBookingException::new);
+        return getNextHearingAfter(time).orElseThrow(NoHearingBookingException::new);
     }
 
     @JsonIgnore
