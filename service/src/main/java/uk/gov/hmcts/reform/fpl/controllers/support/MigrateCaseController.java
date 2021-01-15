@@ -49,7 +49,7 @@ public class MigrateCaseController extends CallbackController {
 
     private void run2589(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
-        if ("PO20C50030".equals(caseData.getFamilyManCaseNumber())) {
+        if ("PO20C50026".equals(caseData.getFamilyManCaseNumber())) {
             if (caseData.getDraftUploadedCMOs().size() < 2) {
                 throw new IllegalArgumentException(String.format("Expected 2 draft case management orders but found %s",
                     caseData.getDraftUploadedCMOs().size()));

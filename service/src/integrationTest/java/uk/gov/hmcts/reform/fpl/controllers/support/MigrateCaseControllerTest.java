@@ -41,7 +41,7 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
     @Nested
     class Fpla2589 {
         String errorMessage = "Expected 2 draft case management orders but found %s";
-        String familyManNumber = "PO20C50030";
+        String familyManNumber = "PO20C50026";
         String migrationId = "FPLA-2589";
 
         @Test
