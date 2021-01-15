@@ -13,6 +13,14 @@ module.exports = {
     c2List: '#c2DynamicList',
     existingMessagesList: '#judicialMessageDynamicList',
     recipientEmail: '#judicialMessageMetaData_recipient',
+    replyingToMessage: {
+      id: '#judicialMessageReply_isReplying',
+      options: {
+        yes: '#judicialMessageReply_isReplying-Yes',
+        no: '#judicialMessageReply_isReplying-No',
+      },
+    },
+    closeMessageLabel: '#judicialMessageReply_closeMessageLabel',
     requested: '#judicialMessageMetaData_requestedBy',
     urgency: '#judicialMessageMetaData_urgency',
     latestMessage: '#judicialMessageNote',
@@ -53,6 +61,14 @@ module.exports = {
     const messageLabel = await I.grabTextFrom(`${this.fields.existingMessagesList} option:nth-child(2)`);
     I.waitForElement(this.fields.existingMessagesList);
     I.selectOption(this.fields.existingMessagesList, messageLabel);
+  },
+
+  selectReplyingToJudicialMessage() {
+    I.click(this.fields.replyingToMessage.options.yes);
+  },
+
+  selectClosingJudicialMessage() {
+    I.click(this.fields.replyingToMessage.options.no);
   },
 
   enterMessageReply(reply) {

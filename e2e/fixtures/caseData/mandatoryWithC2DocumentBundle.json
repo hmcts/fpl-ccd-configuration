@@ -182,9 +182,9 @@
           "type":"WITH_NOTICE",
           "author":"HMCTS",
           "document":{
-            "document_url":"http://dm-store:8080/documents/9e5d0a2c-8884-46ba-a147-dd0ca6b9e684",
+            "document_url":"${DM_STORE_URL}/documents/9e5d0a2c-8884-46ba-a147-dd0ca6b9e684",
             "document_filename":"mockFile.txt",
-            "document_binary_url":"http://dm-store:8080/documents/9e5d0a2c-8884-46ba-a147-dd0ca6b9e684/binary"
+            "document_binary_url":"${DM_STORE_URL}/documents/9e5d0a2c-8884-46ba-a147-dd0ca6b9e684/binary"
           },
           "pbaNumber":"PBA0082848",
           "clientCode":"8888",
@@ -200,9 +200,9 @@
           "type":"WITHOUT_NOTICE",
           "author":"HMCTS",
           "document":{
-            "document_url":"http://dm-store:8080/documents/a928c836-5d25-41d7-a6bd-d973f2c326b1",
+            "document_url":"${DM_STORE_URL}/documents/a928c836-5d25-41d7-a6bd-d973f2c326b1",
             "document_filename":"mockFile.txt",
-            "document_binary_url":"http://dm-store:8080/documents/a928c836-5d25-41d7-a6bd-d973f2c326b1/binary"
+            "document_binary_url":"${DM_STORE_URL}/documents/a928c836-5d25-41d7-a6bd-d973f2c326b1/binary"
           },
           "description":"Jessica Pearson C2",
           "usePbaPayment":"No",
