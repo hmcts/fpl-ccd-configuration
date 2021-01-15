@@ -696,6 +696,7 @@ public class CaseData {
     @Builder.Default
     private final MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder().build();
     private final List<Element<JudicialMessage>> judicialMessages;
+    private final List<Element<JudicialMessage>> closedJudicialMessages;
 
     public DynamicList buildJudicialMessageDynamicList(UUID selected) {
         return asDynamicList(judicialMessages, selected, JudicialMessage::toLabel);

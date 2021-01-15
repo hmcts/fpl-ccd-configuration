@@ -1,5 +1,6 @@
 const config = require('../config');
 const fetch = require('node-fetch');
+const lodash = require('lodash');
 
 const wait = duration => new Promise(resolve => setTimeout(resolve, duration));
 
@@ -28,13 +29,15 @@ const documentData = filename => {
   };
 };
 
-const updateCaseDataWithTodaysDateTime = (caseData) => {
+const updateCaseDataWithTodaysDateTime = (data) => {
+  let caseData = data.caseData;
   const dateTime = new Date().toISOString();
   caseData.dateSubmitted = dateTime.slice(0, 10);
   caseData.dateAndTimeSubmitted = dateTime.slice(0, -1);
 };
 
-const updateCaseDataWithDocuments = (caseData) => {
+const updateCaseDataWithDocuments = (data) => {
+  let caseData = data.caseData;
   caseData.submittedForm = documentData('mockSubmittedForm.pdf');
   caseData.documents_checklist_document.typeOfDocument = documentData('mockChecklist.pdf');
   caseData.documents_threshold_document.typeOfDocument = documentData('mockThreshold.pdf');
@@ -55,11 +58,13 @@ const updateCaseDataWithDocuments = (caseData) => {
       cmo.value.order = documentData('mockFile.pdf');
     }
   }
+
+  data.caseData = JSON.parse(lodash.template(JSON.stringify(caseData))({'DM_STORE_URL': config.dmStoreUrl}));
 };
 
 const populateWithData = async (caseId, data) => {
-  updateCaseDataWithTodaysDateTime(data.caseData);
-  updateCaseDataWithDocuments(data.caseData);
+  updateCaseDataWithTodaysDateTime(data);
+  updateCaseDataWithDocuments(data);
 
   const authToken = await getAuthToken();
   const url = `${config.fplServiceUrl}/testing-support/case/populate/${caseId}`;
