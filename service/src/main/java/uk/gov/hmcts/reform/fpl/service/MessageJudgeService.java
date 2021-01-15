@@ -172,8 +172,8 @@ public class MessageJudgeService {
         return judicialMessages;
     }
 
-    public String getFirstHearingLabel(CaseData caseData) {
-        return caseData.getFirstHearing()
+    public String getNextHearingLabel(CaseData caseData) {
+        return caseData.getNextHearing(time.now())
             .map(hearing -> String.format("Next hearing in the case: %s", hearing.toLabel()))
             .orElse("");
     }
