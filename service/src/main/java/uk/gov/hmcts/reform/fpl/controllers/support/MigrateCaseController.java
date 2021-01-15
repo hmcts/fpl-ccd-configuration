@@ -15,11 +15,7 @@ import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
-import uk.gov.hmcts.reform.fpl.service.document.UploadDocumentsMigrationService;
 import uk.gov.hmcts.reform.fpl.service.removeorder.CMORemovalAction;
-
-import java.util.Map;
 
 import static org.springframework.util.ObjectUtils.isEmpty;
 
@@ -29,8 +25,6 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Slf4j
 public class MigrateCaseController extends CallbackController {
-    private final UploadDocumentsMigrationService uploadDocumentsMigrationService;
-    private final StandardDirectionsService standardDirectionsService;
     private final CMORemovalAction cmoRemovalAction;
     private static final String MIGRATION_ID_KEY = "migrationId";
 
@@ -38,9 +32,7 @@ public class MigrateCaseController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Object migrationId = caseDetails.getData().get(MIGRATION_ID_KEY);
-        if ("FPLA-2379".equals(migrationId)) {
-            run2379(caseDetails);
-        }
+
         if ("FPLA-2589".equals(migrationId)) {
             run2589(caseDetails);
         }
@@ -50,6 +42,7 @@ public class MigrateCaseController extends CallbackController {
         if ("FPLA-2599".equals(migrationId)) {
             run2599(caseDetails);
         }
+
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
     }
@@ -82,14 +75,6 @@ public class MigrateCaseController extends CallbackController {
         if ("SA20C50016".equals(caseData.getFamilyManCaseNumber())) {
             removeDraftCaseManagementOrder(caseDetails, 0);
         }
-    }
-
-    private void run2379(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-        log.info("Migration of Old Documents to Application Documents for case ID {}",
-            caseData.getId());
-        Map<String, Object> data = caseDetails.getData();
-        data.putAll(uploadDocumentsMigrationService.transformFromOldCaseData(caseData));
     }
 
     private void removeDraftCaseManagementOrder(CaseDetails caseDetails, int index) {
