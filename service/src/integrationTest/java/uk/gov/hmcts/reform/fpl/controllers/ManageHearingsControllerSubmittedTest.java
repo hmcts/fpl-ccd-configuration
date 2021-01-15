@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
+import uk.gov.hmcts.reform.fpl.service.calendar.BankHolidaysService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -68,9 +69,12 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
     private Element<HearingBooking> hearingWithoutNotice = element(HearingBooking.builder()
         .type(CASE_MANAGEMENT)
-        .startDate(LocalDateTime.of(2050, 5, 20, 13, 00))
+        .startDate(LocalDateTime.of(2050, 5, 20, 13, 0))
         .noticeOfHearing(null)
         .build());
+
+    @MockBean
+    private BankHolidaysService bankHolidaysService;
 
     @MockBean
     private CoreCaseDataService coreCaseDataService;
@@ -151,16 +155,16 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         throws NotificationClientException {
         Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
             .type(CASE_MANAGEMENT)
-            .startDate(LocalDateTime.of(2050, 5, 20, 13, 00))
-            .endDate(LocalDateTime.of(2050, 5, 20, 14, 00))
+            .startDate(LocalDateTime.of(2050, 5, 20, 13, 0))
+            .endDate(LocalDateTime.of(2050, 5, 20, 14, 0))
             .noticeOfHearing(testDocumentReference())
             .venue("96")
             .build());
 
         Element<HearingBooking> existingHearing = element(HearingBooking.builder()
             .type(ISSUE_RESOLUTION)
-            .startDate(LocalDateTime.of(2020, 5, 20, 13, 00))
-            .endDate(LocalDateTime.of(2020, 5, 20, 14, 00))
+            .startDate(LocalDateTime.of(2020, 5, 20, 13, 0))
+            .endDate(LocalDateTime.of(2020, 5, 20, 14, 0))
             .noticeOfHearing(testDocumentReference())
             .venue("162")
             .build());
@@ -205,7 +209,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         throws NotificationClientException {
         Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
             .type(CASE_MANAGEMENT)
-            .startDate(LocalDateTime.of(2050, 5, 20, 13, 00))
+            .startDate(LocalDateTime.of(2050, 5, 20, 13, 0))
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeEmailAddress(JUDGE_EMAIL)
                 .judgeLastName("Davidson")
@@ -243,7 +247,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         throws NotificationClientException {
         Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
             .type(CASE_MANAGEMENT)
-            .startDate(LocalDateTime.of(2050, 5, 20, 13, 00))
+            .startDate(LocalDateTime.of(2050, 5, 20, 13, 0))
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeEmailAddress(JUDGE_EMAIL)
                 .judgeLastName("Davidson")
@@ -280,7 +284,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
     void shouldNotTriggerTemporaryHearingJudgeEventWhenUsingAllocatedJudge() {
         Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
             .type(CASE_MANAGEMENT)
-            .startDate(LocalDateTime.of(2050, 5, 20, 13, 00))
+            .startDate(LocalDateTime.of(2050, 5, 20, 13, 0))
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeTitle(HIS_HONOUR_JUDGE)
                 .judgeLastName("Watson")
@@ -316,7 +320,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         HearingOptions hearingOption) {
         Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
             .type(CASE_MANAGEMENT)
-            .startDate(LocalDateTime.of(2050, 5, 20, 13, 00))
+            .startDate(LocalDateTime.of(2050, 5, 20, 13, 0))
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeEmailAddress(JUDGE_EMAIL)
                 .judgeLastName("Davidson")

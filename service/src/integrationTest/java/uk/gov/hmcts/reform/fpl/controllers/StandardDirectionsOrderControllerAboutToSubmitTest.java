@@ -35,6 +35,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.calendar.BankHolidaysService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
@@ -90,6 +91,9 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
 
     @MockBean
     private DocmosisDocumentGeneratorService docmosisService;
+
+    @MockBean
+    private BankHolidaysService bankHolidaysService;
 
     @MockBean
     private UploadDocumentService uploadDocumentService;
