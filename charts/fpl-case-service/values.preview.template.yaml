@@ -43,7 +43,7 @@ idam-pr:
   enabled: true
   redirect_uris:
     XUI:
-      - https://xui-${SERVICE_FQDN}/oauth2/callback
+      - http://xui-${SERVICE_FQDN}/oauth2/callback
 
 xui-webapp:
   enabled: true
@@ -73,6 +73,7 @@ xui-webapp:
       NOW: false
       REDISCLOUD_URL: http://dummyrediscloudurl
       UV_THREADPOOL_SIZE: 128
+      PROTOCOL: http
     keyVaults:
       rpx:
         resourceGroup: rpx
