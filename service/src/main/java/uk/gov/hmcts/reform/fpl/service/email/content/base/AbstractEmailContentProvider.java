@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import uk.gov.hmcts.reform.fpl.enums.TabLabel;
+import uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor;
 import uk.gov.hmcts.reform.fpl.exceptions.DocumentException;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
@@ -31,7 +31,7 @@ public abstract class AbstractEmailContentProvider {
         return caseUrlService.getCaseUrl(caseId);
     }
 
-    public String getCaseUrl(Long caseId, TabLabel tab) {
+    public String getCaseUrl(Long caseId, TabUrlAnchor tab) {
         return caseUrlService.getCaseUrl(caseId, tab);
     }
 

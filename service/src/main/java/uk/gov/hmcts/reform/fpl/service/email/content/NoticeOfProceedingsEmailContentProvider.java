@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentPr
 
 import java.time.format.FormatStyle;
 
-import static uk.gov.hmcts.reform.fpl.enums.TabLabel.HEARINGS;
+import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.HEARINGS;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 

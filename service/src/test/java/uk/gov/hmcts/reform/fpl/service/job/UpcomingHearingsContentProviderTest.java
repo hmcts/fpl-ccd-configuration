@@ -25,7 +25,7 @@ import static java.time.Month.MAY;
 import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.enums.TabLabel.ORDERS;
+import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.ORDERS;
 
 @ExtendWith(SpringExtension.class)
 class UpcomingHearingsContentProviderTest {

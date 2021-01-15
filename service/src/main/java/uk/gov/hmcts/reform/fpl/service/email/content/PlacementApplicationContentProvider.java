@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
-import static uk.gov.hmcts.reform.fpl.enums.TabLabel.PLACEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.PLACEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 @Service

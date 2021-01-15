@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.payment.FailedPBANotificationData;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
-import static uk.gov.hmcts.reform.fpl.enums.TabLabel.C2;
+import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.C2;
 
 @Service
 public class FailedPBAPaymentContentProvider extends AbstractEmailContentProvider {

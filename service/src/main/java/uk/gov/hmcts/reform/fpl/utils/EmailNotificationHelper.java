@@ -1,15 +1,12 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
 import org.apache.commons.lang3.StringUtils;
-import uk.gov.hmcts.reform.fpl.enums.TabLabel;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,15 +46,6 @@ public class EmailNotificationHelper {
         return Stream.of(subjectLine, hearingDateText)
             .filter(StringUtils::isNotBlank)
             .collect(joining(","));
-    }
-
-    public static String formatCaseUrl(String uiBaseUrl, Long caseId) {
-        return String.format("%s/cases/case-details/%s", uiBaseUrl, caseId);
-    }
-
-    public static String formatCaseUrl(String uiBaseUrl, Long caseId, TabLabel tab) {
-        String caseUrl = formatCaseUrl(uiBaseUrl, caseId);
-        return String.format("%s#%s", caseUrl, URLEncoder.encode(tab.getLabel(), StandardCharsets.UTF_8));
     }
 
     public static String buildCallout(final CaseData caseData) {

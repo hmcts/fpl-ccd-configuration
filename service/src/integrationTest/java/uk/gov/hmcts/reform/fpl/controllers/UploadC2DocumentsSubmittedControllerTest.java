@@ -40,11 +40,9 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FA
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.enums.TabLabel.C2;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildCaseUrl;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ActiveProfiles("integration-test")
@@ -325,11 +323,10 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
 
     private Map<String, Object> expectedCtscNotificationParameters() {
         return Map.of("applicationType", "C2",
-            "caseUrl", buildCaseUrl(C2, CASE_ID));
+            "caseUrl", "http://fake-url/cases/case-details/12345#C2");
     }
 
     private Map<String, Object> expectedPbaPaymentNotTakenNotificationParams() {
-        return Map.of(
-            "caseUrl", buildCaseUrl(C2, CASE_ID));
+        return Map.of("caseUrl", "http://fake-url/cases/case-details/12345#C2");
     }
 }

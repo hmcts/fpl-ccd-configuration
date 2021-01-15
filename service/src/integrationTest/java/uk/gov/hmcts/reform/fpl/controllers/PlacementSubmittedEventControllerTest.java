@@ -45,7 +45,6 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
-import static uk.gov.hmcts.reform.fpl.enums.TabLabel.PLACEMENT;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_HEARING;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices.PlacementOrderAndNoticesType.NOTICE_OF_PROCEEDINGS;
@@ -56,7 +55,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersMap;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersMapForRepresentatives;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildCaseUrl;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacement;
@@ -197,7 +195,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
         private Map<String, Object> expectedTemplateParameters() {
             return Map.of(
                 "respondentLastName", "Watson",
-                "caseUrl", buildCaseUrl(PLACEMENT, CASE_ID));
+                "caseUrl", "http://fake-url/cases/case-details/12345#Placements");
         }
     }
 
@@ -324,7 +322,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
         private Map<String, Object> expectedParameters() {
             return Map.of(
                 "respondentLastName", "Jones",
-                "caseUrl", buildCaseUrl(PLACEMENT, CASE_ID));
+                "caseUrl", "http://fake-url/cases/case-details/12345#Placement");
         }
 
         private Respondent respondent() {

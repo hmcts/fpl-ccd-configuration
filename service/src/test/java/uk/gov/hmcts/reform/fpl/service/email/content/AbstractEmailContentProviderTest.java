@@ -1,24 +1,20 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.fpl.enums.TabLabel;
+import uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
-
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class})
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, CaseUrlService.class})
+@TestPropertySource(properties = "manage-case.ui.base.url:http://fake-url")
 public abstract class AbstractEmailContentProviderTest {
     static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
     static final String LOCAL_AUTHORITY_CODE = "example";
@@ -33,31 +29,16 @@ public abstract class AbstractEmailContentProviderTest {
     static final String DOC_URL = "http://fake-url/testUrl";
 
     protected String caseUrl(String caseId) {
-        return formatCaseUrl(UI_URL, Long.valueOf(caseId));
+        return String.format("%s/cases/case-details/%s", UI_URL, caseId);
     }
 
-    protected String caseUrl(String caseId, TabLabel tab) {
-        return formatCaseUrl(UI_URL, Long.valueOf(caseId), tab);
+    protected String caseUrl(String caseId, TabUrlAnchor tab) {
+        return String.format("%s/cases/case-details/%s#%s", UI_URL, caseId, tab.getAnchor());
     }
-
-    @MockBean
-    CaseUrlService caseUrlService;
 
     @MockBean
     FeatureToggleService featureToggleService;
 
     @MockBean
     DocumentDownloadService documentDownloadService;
-
-    @BeforeEach
-    void initCaseUrlService() {
-        when(caseUrlService.getCaseUrl(anyLong()))
-            .thenAnswer(invocation -> caseUrl(invocation.getArgument(0).toString()));
-
-        when(caseUrlService.getCaseUrl(anyLong(), any(TabLabel.class)))
-            .thenAnswer(invocation -> caseUrl(invocation.getArgument(0).toString(), invocation.getArgument(1)));
-
-        when(caseUrlService.getBaseUrl())
-            .thenAnswer(invocation -> UI_URL);
-    }
 }

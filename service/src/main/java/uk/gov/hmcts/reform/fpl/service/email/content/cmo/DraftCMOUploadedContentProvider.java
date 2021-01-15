@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentPr
 import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.uncapitalize;
-import static uk.gov.hmcts.reform.fpl.enums.TabLabel.DRAFT_ORDERS;
+import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.DRAFT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 

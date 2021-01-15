@@ -16,7 +16,6 @@ import java.util.UUID;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.TabLabel.PEOPLE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookingsFromInitialDate;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
@@ -25,7 +24,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCallout;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
-import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 
 class EmailNotificationHelperTest {
 
@@ -154,20 +152,6 @@ class EmailNotificationHelperTest {
             caseData.getRespondents1(), null);
 
         assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    void shouldFormatUrlCorrectlyWhenBaseUrlAndCaseIdProvided() {
-        String formattedUrl = formatCaseUrl("http://testurl", 123L);
-        String expectedUrl = "http://testurl/cases/case-details/123";
-        assertThat(formattedUrl).isEqualTo(expectedUrl);
-    }
-
-    @Test
-    void shouldFormatUrlCorrectlyWhenBaseUrlCaseIdAndTabProvided() {
-        String formattedUrl = formatCaseUrl("http://testurl", 123L, PEOPLE);
-        String expectedUrl = "http://testurl/cases/case-details/123#People+in+the+case";
-        assertThat(formattedUrl).isEqualTo(expectedUrl);
     }
 
     @Test

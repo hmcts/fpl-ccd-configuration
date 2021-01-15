@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.enums.TabLabel;
-
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__({@Autowired}))
@@ -24,8 +21,8 @@ public class CaseUrlService {
         return String.format("%s/cases/case-details/%s", baseUrl, caseId);
     }
 
-    public String getCaseUrl(Long caseId, TabLabel tab) {
+    public String getCaseUrl(Long caseId, TabUrlAnchor tab) {
         String caseUrl = getCaseUrl(caseId);
-        return String.format("%s#%s", caseUrl, URLEncoder.encode(tab.getLabel(), StandardCharsets.UTF_8));
+        return String.format("%s#%s", caseUrl, tab.getAnchor());
     }
 }

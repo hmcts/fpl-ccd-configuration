@@ -12,6 +12,8 @@ import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -19,9 +21,8 @@ import java.util.UUID;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDICIAL_MESSAGE_ADDED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDICIAL_MESSAGE_REPLY_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.enums.TabLabel.JUDICIAL_MESSAGES;
+import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.JUDICIAL_MESSAGES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildCaseUrl;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(MessageJudgeController.class)
@@ -71,7 +72,7 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
 
         Map<String, Object> expectedData = Map.of(
             "respondentLastName", "Davidson",
-            "caseUrl", buildCaseUrl(JUDICIAL_MESSAGES, CASE_REFERENCE),
+            "caseUrl", "http://fake-url/cases/case-details/12345#Judicial%20messages",
             "callout", "^Davidson",
             "sender", "sender@fpla.com",
             "urgency", "High",
@@ -114,7 +115,8 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
 
         Map<String, Object> expectedData = Map.of(
             "respondentLastName", "Davidson",
-            "caseUrl", buildCaseUrl(JUDICIAL_MESSAGES, CASE_REFERENCE),
+            "caseUrl", String.format("http://fake-url/cases/case-details/%s#%s", CASE_REFERENCE.toString(),
+                URLEncoder.encode(JUDICIAL_MESSAGES.getAnchor(), StandardCharsets.UTF_8)),
             "callout", "^Davidson",
             "latestMessage", REPLY
         );

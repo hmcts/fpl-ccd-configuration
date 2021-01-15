@@ -36,10 +36,8 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
-import static uk.gov.hmcts.reform.fpl.enums.TabLabel.DRAFT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildCaseUrl;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(UploadCMOController.class)
@@ -108,7 +106,7 @@ class UploadCMOSubmittedControllerTest extends AbstractUploadCMOControllerTest {
             .respondentLastName("Davidson")
             .judgeTitle("Her Honour Judge")
             .judgeName("Judy")
-            .caseUrl(buildCaseUrl(DRAFT_ORDERS, CASE_ID))
+            .caseUrl("http://fake-url/cases/case-details/12345#Draft%20orders")
             .build();
         return mapper.convertValue(template, new TypeReference<>() {
         });

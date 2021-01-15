@@ -6,7 +6,7 @@ import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.TabLabel.PLACEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.PLACEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 
 @ContextConfiguration(classes = {PlacementApplicationContentProvider.class})
