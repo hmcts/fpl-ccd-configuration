@@ -11,8 +11,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.mockito.ArgumentMatchers.argThat;
-
 public class LDUserMatcher implements ArgumentMatcher<LDUser>, ContainsExtraTypeInfo, Serializable {
     private final Map<String, LDValue> wanted;
 
