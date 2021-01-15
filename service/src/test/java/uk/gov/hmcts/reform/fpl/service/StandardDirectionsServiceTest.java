@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -155,6 +156,36 @@ class StandardDirectionsServiceTest {
             .build();
 
         assertThat(service.hasEmptyDates(caseData)).isFalse();
+    }
+
+    @Test
+    void shouldReturnTrueWhenAllDirectionsAreEmpty() {
+        CaseData caseData = CaseData.builder()
+            .allParties(Collections.emptyList())
+            .localAuthorityDirections(Collections.emptyList())
+            .respondentDirections(Collections.emptyList())
+            .cafcassDirections(Collections.emptyList())
+            .otherPartiesDirections(Collections.emptyList())
+            .courtDirections(Collections.emptyList())
+            .build();
+
+        assertThat(service.hasEmptyDirections(caseData)).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenSomeDirectionsAreEmpty() {
+        CaseData caseData = CaseData.builder()
+            .allParties(List.of(element(Direction.builder()
+                .assignee(ALL_PARTIES)
+                .build())))
+            .localAuthorityDirections(Collections.emptyList())
+            .respondentDirections(Collections.emptyList())
+            .cafcassDirections(Collections.emptyList())
+            .otherPartiesDirections(Collections.emptyList())
+            .courtDirections(Collections.emptyList())
+            .build();
+
+        assertThat(service.hasEmptyDirections(caseData)).isFalse();
     }
 
     private Direction buildDirectionWithDate() {
