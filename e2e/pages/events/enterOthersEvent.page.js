@@ -40,8 +40,7 @@ module.exports = {
     I.fillField(this.fields(elementIndex).DOB.year, other.DOB.year);
     I.selectOption(this.fields(elementIndex).gender, other.gender);
     I.fillField(this.fields(elementIndex).birthPlace, other.birthPlace);
-    within(this.fields(elementIndex).address, () => {
-      //XXX postcode lookup
+    await within(this.fields(elementIndex).address, () => {
       postcodeLookup.enterAddressManually(other.address);
     });
     I.fillField(this.fields(elementIndex).telephoneNumber, other.telephoneNumber);
@@ -83,11 +82,11 @@ module.exports = {
   },
 
   async getActiveElementIndex() {
-    const count = await I.grabNumberOfVisibleElements('//button[text()="Remove"]');
-    if (count === 0) {
+    const count = await I.getActiveElementIndex();
+    if (count === -1) {
       return 'firstOther';
     } else {
-      return `additionalOthers_${count - 1}`;
+      return `additionalOthers_${count}`;
     }
   },
 };

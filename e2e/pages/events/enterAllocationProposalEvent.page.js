@@ -1,4 +1,4 @@
-const { I } = inject();
+const {I} = inject();
 
 module.exports = {
 
@@ -9,9 +9,7 @@ module.exports = {
 
   selectAllocationProposal(proposal) {
     I.waitForElement(this.fields.allocationProposalRadioGroup);
-    within(this.fields.allocationProposalRadioGroup, () => {
-      I.click(locate('label').withText(proposal));
-    });
+    I.click(proposal);
   },
 
   enterProposalReason(reason) {
