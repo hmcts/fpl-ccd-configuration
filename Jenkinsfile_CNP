@@ -218,6 +218,7 @@ withPipeline(type, product, component) {
   before('smoketest:aat') {
     env.URL = "https://manage-case.aat.platform.hmcts.net"
     env.TEST_CONF_FPL_URL = "http://fpl-case-service-staging.service.core-compute-aat.internal"
+    env.SKIP_SMOKE_TESTS = 'true'
     archiveCoreCaseDataDefinitions('aat')
     uploadCoreCaseDataDefinitions('aat')
   }
