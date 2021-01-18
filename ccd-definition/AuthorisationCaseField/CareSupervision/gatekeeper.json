@@ -25,7 +25,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allParties",
     "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "RU"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -46,7 +46,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "localAuthorityDirections",
     "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "RU"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -67,7 +67,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respondentDirections",
     "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "RU"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -88,7 +88,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "cafcassDirections",
     "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "RU"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -109,7 +109,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "otherPartiesDirections",
     "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "RU"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -130,7 +130,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "courtDirections",
     "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "RU"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1685,5 +1685,26 @@
     "CaseFieldID": "judicialMessagesTabHeading",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "epoExclusionRequirementType",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "epoExclusionStartDate",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "epoWhoIsExcluded",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
   }
 ]

@@ -58,7 +58,7 @@
     "CaseEventID": "messageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageReply",
     "ListElementCode": "latestMessage",
-    "FieldDisplayOrder": 6,
+    "FieldDisplayOrder": 7,
     "DisplayContext": "MANDATORY",
     "EventElementLabel": "Reply"
   }

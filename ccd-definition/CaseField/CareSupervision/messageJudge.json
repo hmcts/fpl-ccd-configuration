@@ -76,6 +76,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "closedJudicialMessages",
+    "Label": "Message",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "JudicialMessage",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hasJudicialMessages",
     "Label": " ",
     "FieldType": "YesOrNo",

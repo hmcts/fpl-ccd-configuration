@@ -64,7 +64,8 @@ class JudicialMessageTest {
     void shouldReturnTrueWhenMessageHasNotHadAReply() {
         JudicialMessage judicialMessage = JudicialMessage.builder()
             .latestMessage("This is a new message")
-            .messageHistory("This is a new message").build();
+            .sender("test@mail.com")
+            .messageHistory("test@mail.com - This is a new message").build();
 
         assertThat(judicialMessage.isFirstMessage()).isTrue();
     }
@@ -73,7 +74,8 @@ class JudicialMessageTest {
     void shouldReturnFalseWhenMessageHasHadAReply() {
         JudicialMessage judicialMessage = JudicialMessage.builder()
             .latestMessage("Fix up the order")
-            .messageHistory("This is a new message, Fix up the order").build();
+            .sender("test2@mail.com")
+            .messageHistory("test@mail.com - This is a new message, Fix up the order").build();
 
         assertThat(judicialMessage.isFirstMessage()).isFalse();
     }
