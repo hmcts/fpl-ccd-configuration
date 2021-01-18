@@ -29,11 +29,11 @@ const judgeSendsReviewedCmoToAllParties = async (I, caseId, caseViewPage, upload
 
 const uploadCMO = async (I, caseViewPage, uploadCMOEventPage, hearing, supportingDocs, selectHearing) => {
   await caseViewPage.goToNewActions(config.applicationActions.uploadCMO);
-  await I.waitForSelector(uploadCMOEventPage.fields.cmoUploadType.id);
+  I.waitForElement(uploadCMOEventPage.fields.cmoUploadType.id);
   selectHearing();
   await I.goToNextPage();
   uploadCMOEventPage.checkCMOInfo(hearing);
-  await uploadCMOEventPage.uploadCaseManagementOrder(config.testWordFile);
+  uploadCMOEventPage.uploadCaseManagementOrder(config.testWordFile);
   if (supportingDocs) {
     await uploadCMOEventPage.attachSupportingDocs(supportingDocs);
   }

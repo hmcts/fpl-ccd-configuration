@@ -5,18 +5,20 @@ let caseId;
 
 Feature('Uploading bulk scan document');
 
-BeforeSuite(async ({I, caseViewPage, handleSupplementaryEvidenceEventPage, attachScannedDocsEventPage}) => {
+BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData();
-
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+});
+
+Scenario('HMCTS admin uploads documents to be scanned', async ({I, caseViewPage, handleSupplementaryEvidenceEventPage, attachScannedDocsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.bulkScan);
-  attachScannedDocsEventPage.enterScannedDocument(scannedDocument, config.testFile);
+  await attachScannedDocsEventPage.enterScannedDocument(scannedDocument, config.testFile);
   await I.goToNextPage();
   handleSupplementaryEvidenceEventPage.handleSupplementaryEvidence();
   await I.completeEvent('Submit');
 });
 
-Scenario('HMCTS admin can see Documents scanned in with Bulk Scan', async ({I, caseViewPage}) => {
+Scenario('HMCTS admin can see documents scanned in with Bulk Scan', async ({I, caseViewPage}) => {
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.seeInTab(['Scanned Documents 1', 'Document type'], scannedDocument.type);
   I.seeInTab(['Scanned Documents 1', 'Document subtype'], scannedDocument.subtype);

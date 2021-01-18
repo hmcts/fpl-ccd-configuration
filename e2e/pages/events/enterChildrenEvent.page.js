@@ -60,7 +60,7 @@ module.exports = {
   async defineChildSituation(day, month, year) {
     const elementIndex = await this.getActiveElementIndex();
 
-    within(this.fields(elementIndex).child.situation.radioGroup, () => {
+    await within(this.fields(elementIndex).child.situation.radioGroup, () => {
       I.click(locate('label').withText('Living with respondents'));
     });
     I.fillField(this.fields(elementIndex).child.situation.dateStartedStaying.day, day);
@@ -71,7 +71,7 @@ module.exports = {
   async enterAddress(address) {
     const elementIndex = await this.getActiveElementIndex();
 
-    within(this.fields(elementIndex).child.situation.addressOfChild, () => {
+    await within(this.fields(elementIndex).child.situation.addressOfChild, () => {
       //XXX removed postcode lookup due to instability
       postcodeLookup.enterAddressManually(address);
     });

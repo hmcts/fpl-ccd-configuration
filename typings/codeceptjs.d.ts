@@ -305,12 +305,16 @@ declare namespace CodeceptJS {
     submitNewCaseWithData(data?: object): Promise<string>
     submitNewCase(user:{email: string, password: string}, name: string): Promise<string>
     addAnotherElementToCollection(): void,
+    addAnotherElementToCollection(collectionName: string): void,
     removeElementFromCollection(): void,
     retryUntilExists(action: Function, locator: string) : void,
+    fillDate(date: {day: number; month: number; year: number}): void
     fillDate(date: {day: number, month: number, year: number}, dateId: string): void,
+    fillDateAndTime(date: {day: number, month: number, year: number, hour: number, minute: number, second: number}): void,
     fillDateAndTime(date: {day: number, month: number, year: number, hour: number, minute: number, second: number}, dateId: string): void,
     seeEndStateForEvent(eventName: string, state: string): void,
-    goToNextPage(): void
+    goToNextPage(): void,
+    getActiveElementIndex(): number,
   }
 
   export interface config {
