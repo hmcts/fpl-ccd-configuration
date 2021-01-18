@@ -151,6 +151,7 @@ withPipeline(type, product, component) {
   }
 
   after('smoketest:aat') {
+    env.SKIP_SMOKE_TESTS = 'true'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
 
