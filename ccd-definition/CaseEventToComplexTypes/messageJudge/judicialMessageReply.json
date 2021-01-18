@@ -80,7 +80,7 @@
     "CaseFieldID": "judicialMessageReply",
     "ListElementCode": "closeMessageLabel",
     "EventElementLabel": "This message will now be marked as closed",
-    "FieldDisplayOrder": 7,
+    "FieldDisplayOrder": 8,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "judicialMessageReply.isReplying=\"No\""
   }

@@ -228,19 +228,6 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "createOrder",
-    "CaseFieldID": "epoExclusionRequirementType",
-    "PageFieldDisplayOrder": 3,
-    "DisplayContext": "MANDATORY",
-    "PageID": "EPOType",
-    "PageDisplayOrder": 9,
-    "PageColumnNumber": 1,
-    "FieldShowCondition": "epoType=\"PREVENT_REMOVAL\"",
-    "ShowSummaryChangeOption": "Y"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "createOrder",
     "CaseFieldID": "otherFinalOrderChildren",
     "PageFieldDisplayOrder": 4,
     "DisplayContext": "READONLY",
@@ -248,19 +235,6 @@
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "createOrder",
-    "CaseFieldID": "epoExclusionStartDate",
-    "PageFieldDisplayOrder": 4,
-    "DisplayContext": "MANDATORY",
-    "PageID": "EPOType",
-    "PageDisplayOrder": 9,
-    "PageColumnNumber": 1,
-    "FieldShowCondition": "epoExclusionRequirementType=\"STARTING_ON_DIFFERENT_DATE\" AND epoType=\"PREVENT_REMOVAL\"",
-    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -327,6 +301,45 @@
     "PageDisplayOrder": 9,
     "PageColumnNumber": 1,
     "FieldShowCondition": "epoType=\"PREVENT_REMOVAL\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "epoExclusionRequirementType",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY",
+    "PageID": "EPOType",
+    "PageDisplayOrder": 9,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "epoType=\"PREVENT_REMOVAL\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "epoExclusionStartDate",
+    "PageFieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "PageID": "EPOType",
+    "PageDisplayOrder": 9,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "epoExclusionRequirementType=\"STARTING_ON_DIFFERENT_DATE\" AND epoType=\"PREVENT_REMOVAL\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "epoWhoIsExcluded",
+    "PageFieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY",
+    "PageID": "EPOType",
+    "PageDisplayOrder": 9,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "epoExclusionRequirementType!=\"NO_TO_EXCLUSION\" AND epoType=\"PREVENT_REMOVAL\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -499,19 +512,6 @@
     "PageDisplayOrder": 15,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "createOrder",
-    "CaseFieldID": "epoWhoIsExcluded",
-    "PageFieldDisplayOrder": 5,
-    "DisplayContext": "MANDATORY",
-    "PageID": "EPOType",
-    "PageDisplayOrder": 9,
-    "PageColumnNumber": 1,
-    "FieldShowCondition": "epoExclusionRequirementType!=\"NO_TO_EXCLUSION\" AND epoType=\"PREVENT_REMOVAL\"",
-    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
