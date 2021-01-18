@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -47,6 +48,16 @@ public class StandardDirectionsService {
             .map(Element::getValue)
             .map(Direction::getDateToBeCompletedBy)
             .anyMatch(Objects::isNull);
+    }
+
+    public boolean hasEmptyDirections(CaseData caseData) {
+        return Stream.of(caseData.getAllParties(),
+            caseData.getLocalAuthorityDirections(),
+            caseData.getRespondentDirections(),
+            caseData.getCafcassDirections(),
+            caseData.getOtherPartiesDirections(),
+            caseData.getCourtDirections())
+            .allMatch(ObjectUtils::isEmpty);
     }
 
     public Map<String, List<Element<Direction>>> populateStandardDirections(CaseData caseData) {

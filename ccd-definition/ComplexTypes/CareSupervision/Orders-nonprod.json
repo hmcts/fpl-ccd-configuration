@@ -1,0 +1,129 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "ListElementCode": "orderType",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "OrderType",
+    "ElementLabel": "Which orders do you need?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "ListElementCode": "emergencyProtectionOrderLabel",
+    "FieldType": "Label",
+    "ElementLabel": "## Emergency protection order",
+    "FieldShowCondition": "orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "ListElementCode": "epoType",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "EPOTypes",
+    "ElementLabel": "What type of EPO are you requesting?",
+    "FieldShowCondition": "orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "ListElementCode": "address",
+    "FieldType": "AddressUK",
+    "ElementLabel": "Address",
+    "FieldShowCondition": "epoType=\"PREVENT_REMOVAL\" AND orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "ListElementCode": "emergencyProtectionOrders",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "EmergencyProtectionOrderType",
+    "ElementLabel": "Do you need any of these related orders?",
+    "FieldShowCondition": "orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "ListElementCode": "emergencyProtectionOrderDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give details",
+    "FieldShowCondition": "emergencyProtectionOrders CONTAINS \"OTHER\" AND orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "ListElementCode": "emergencyProtectionOrderDirections",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "EmergencyProtectionOrderDirectionType",
+    "ElementLabel": "Do you need any of these directions?",
+    "FieldShowCondition": "orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "ListElementCode": "excluded",
+    "FieldType": "Text",
+    "ElementLabel": "Who's excluded?",
+    "FieldShowCondition": "emergencyProtectionOrderDirections CONTAINS \"EXCLUSION_REQUIREMENT\" AND orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "ListElementCode": "emergencyProtectionOrderDirectionDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give details",
+    "FieldShowCondition": "emergencyProtectionOrderDirections CONTAINS \"OTHER\" AND orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "ListElementCode": "otherOrderLabel",
+    "FieldType": "Label",
+    "ElementLabel": "## Variation or discharge of care or supervision order",
+    "FieldShowCondition": "orderType CONTAINS \"OTHER\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "ListElementCode": "otherOrder",
+    "FieldType": "TextArea",
+    "ElementLabel": "Which order do you need?",
+    "FieldShowCondition": "orderType CONTAINS \"OTHER\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "ListElementCode": "directionLabel",
+    "FieldType": "Label",
+    "ElementLabel": "## Directions",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "ListElementCode": "directions",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Do you need any other directions?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Orders",
+    "ListElementCode": "directionDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give details",
+    "FieldShowCondition": "directions=\"Yes\"",
+    "SecurityClassification": "Public"
+  }
+]

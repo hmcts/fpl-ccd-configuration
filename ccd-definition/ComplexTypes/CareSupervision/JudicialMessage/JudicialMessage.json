@@ -56,7 +56,8 @@
     "ListElementCode": "latestMessage",
     "FieldType": "TextArea",
     "ElementLabel": "Message",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "status!=\"CLOSED\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -97,10 +98,26 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudicialMessage",
+    "ListElementCode": "isReplying",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
     "ListElementCode": "messageHistory",
     "FieldType": "TextArea",
-    "ElementLabel": " ",
+    "ElementLabel": "Message history",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "relatedDocuments=\"DO_NOT_SHOW\""
+    "FieldShowCondition": "status=\"CLOSED\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "closeMessageLabel",
+    "FieldType": "Label",
+    "ElementLabel": "This message will now be marked as closed",
+    "SecurityClassification": "Public"
   }
 ]
