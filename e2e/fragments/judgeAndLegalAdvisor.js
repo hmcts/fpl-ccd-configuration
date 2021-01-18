@@ -1,4 +1,4 @@
-const { I } = inject();
+const {I} = inject();
 
 module.exports = {
   fields: {
@@ -24,22 +24,15 @@ module.exports = {
   },
 
   useAllocatedJudge(complexTypeAppender = '') {
-    within('#' + complexTypeAppender + this.fields.useAllocatedJudge.groupName, () => {
-      I.click(locate('label').withText(this.fields.useAllocatedJudge.yes));
-    });
+    I.click(`#${complexTypeAppender}${this.fields.useAllocatedJudge.groupName}-Yes`);
   },
 
   useAlternateJudge(complexTypeAppender = '') {
-    within('#' + complexTypeAppender + this.fields.useAllocatedJudge.groupName, () => {
-      I.click(locate('label').withText(this.fields.useAllocatedJudge.no));
-    });
+    I.click(`#${complexTypeAppender}${this.fields.useAllocatedJudge.groupName}-No`);
   },
 
   selectJudgeTitle(complexTypeAppender = '', title = this.fields.judgeTitleRadioGroup.herHonourJudge, otherTitle = '') {
-    within('#' + complexTypeAppender + this.fields.judgeTitleRadioGroup.groupName, () => {
-      I.click(locate('label').withText(title));
-    });
-
+    I.click(`#${complexTypeAppender}${this.fields.judgeTitleRadioGroup.groupName}-${judgeTitleToIdMap[title]}`);
     if (title === this.fields.judgeTitleRadioGroup.other) {
       I.fillField('#' + complexTypeAppender + this.fields.otherTitle, otherTitle);
     }
@@ -56,4 +49,14 @@ module.exports = {
   enterLegalAdvisorName(legalAdvisorName, complexTypeAppender = '') {
     I.fillField('#' + complexTypeAppender + this.fields.legalAdvisorName, legalAdvisorName);
   },
+};
+
+const judgeTitleToIdMap = {
+  'Her Honour Judge': 'HER_HONOUR_JUDGE',
+  'His Honour Judge': 'HIS_HONOUR_JUDGE',
+  'District Judge': 'DISTRICT_JUDGE',
+  'Deputy District Judge': 'DEPUTY_DISTRICT_JUDGE',
+  'District Judge Magistrates Court': 'DEPUTY_DISTRICT_JUDGE_MAGISTRATES_COURT',
+  'Magistrates': 'MAGISTRATES',
+  'Other': 'OTHER',
 };
