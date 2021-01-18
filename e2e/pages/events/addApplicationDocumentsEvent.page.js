@@ -10,28 +10,35 @@ module.exports = {
     };
   },
 
-  async selectDocumentType(option) {
-    I.click('Add new');
-    const elementIndex = await this.getActiveElementIndex();
-    I.selectOption(this.fields(elementIndex).documentType, option);
+  async addApplicationDocument(option, file, name, description) {
+    await I.addAnotherElementToCollection('Documents');
+    const index = await I.getActiveElementIndex();
+
+    this.selectDocumentType(option, index);
+    this.uploadFile(file, index);
+
+    if (name) {
+      this.enterDocumentName(name, index);
+    }
+
+    if (description) {
+      this.enterWhatIsIncludedInSWET(description, index);
+    }
   },
 
-  async uploadFile(file) {
-    const elementIndex = await this.getActiveElementIndex();
-    I.attachFile(this.fields(elementIndex).document, file);
+  selectDocumentType(option, index) {
+    I.selectOption(this.fields(index).documentType, option);
   },
 
-  async enterWhatIsIncludedInSWET(description) {
-    const elementIndex = await this.getActiveElementIndex();
-    I.fillField(this.fields(elementIndex).includedInSWET, description);
+  uploadFile(file, index) {
+    I.attachFile(this.fields(index).document, file);
   },
 
-  async enterDocumentName(name) {
-    const elementIndex = await this.getActiveElementIndex();
-    I.fillField(this.fields(elementIndex).documentName, name);
+  enterWhatIsIncludedInSWET(description, index) {
+    I.fillField(this.fields(index).includedInSWET, description);
   },
 
-  async getActiveElementIndex() {
-    return await I.grabNumberOfVisibleElements('//button[text()="Remove"]') - 1;
+  enterDocumentName(name, index) {
+    I.fillField(this.fields(index).documentName, name);
   },
 };

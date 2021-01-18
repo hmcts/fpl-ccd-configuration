@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
+import uk.gov.hmcts.reform.fpl.enums.EPOExclusionRequirementType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
@@ -344,6 +345,10 @@ public class CaseData {
     private final EPOType epoType;
     @Valid
     private final Address epoRemovalAddress;
+    private final String epoWhoIsExcluded;
+    private final LocalDate epoExclusionStartDate;
+    private final EPOExclusionRequirementType epoExclusionRequirementType;
+
 
     @JsonIgnore
     public List<Element<Proceeding>> getAllProceedings() {
@@ -696,6 +701,7 @@ public class CaseData {
     @Builder.Default
     private final MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder().build();
     private final List<Element<JudicialMessage>> judicialMessages;
+    private final List<Element<JudicialMessage>> closedJudicialMessages;
 
     public DynamicList buildJudicialMessageDynamicList(UUID selected) {
         return asDynamicList(judicialMessages, selected, JudicialMessage::toLabel);

@@ -3,15 +3,18 @@ package uk.gov.hmcts.reform.fpl.service.validators;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.util.List;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
@@ -20,6 +23,9 @@ class OrdersSoughtCheckerTest {
 
     @Autowired
     private OrdersSoughtChecker ordersSoughtChecker;
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     @Test
     void shouldReturnErrorWhenNoNeededOrders() {
@@ -34,7 +40,9 @@ class OrdersSoughtCheckerTest {
 
     @Test
     void shouldReturnErrorWhenNoNeededOrdersSelected() {
-        final Orders orders = Orders.builder().build();
+        final Orders orders = Orders.builder()
+            .orderType(emptyList())
+            .build();
         final CaseData caseData = CaseData.builder()
                 .orders(orders)
                 .build();
