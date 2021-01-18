@@ -37,11 +37,11 @@ module.exports = {
     correctedEndDate: '#hearingEndDateConfirmation',
   },
 
-  async selectAddNewHearing() {
+  selectAddNewHearing() {
     I.click(this.fields.hearingOptions.addNewHearing);
   },
 
-  async selectEditHearing(hearing) {
+  selectEditHearing(hearing) {
     I.click(this.fields.hearingOptions.editHearing);
     I.selectOption(this.fields.hearingDateList, hearing);
   },
@@ -76,15 +76,15 @@ module.exports = {
   async enterHearingDetails(hearingDetails) {
     I.click(this.fields.hearingType.final);
 
-    I.fillDateAndTime(hearingDetails.startDate, this.fields.startDate);
-    I.fillDateAndTime(hearingDetails.endDate, this.fields.endDate);
+    await I.fillDateAndTime(hearingDetails.startDate, this.fields.startDate);
+    await I.fillDateAndTime(hearingDetails.endDate, this.fields.endDate);
   },
 
-  async enterVenue(hearingDetails) {
+  enterVenue(hearingDetails) {
     I.selectOption(this.fields.hearingVenue, hearingDetails.venue);
   },
 
-  async selectPreviousVenue() {
+  selectPreviousVenue() {
     I.click(this.fields.usePreviousHearingVenue);
   },
 
@@ -93,37 +93,39 @@ module.exports = {
     I.selectOption(this.fields.newVenue, hearingDetails.venue);
 
     if (hearingDetails.venue === 'Other') {
-      within(this.fields.newVenueCustomAddress, () => {
+      await within(this.fields.newVenueCustomAddress, () => {
         postcodeLookup.enterAddressManually(hearingDetails.venueCustomAddress);
       });
     }
   },
 
-  async enterJudgeDetails(hearingDetails) {
+  enterJudgeDetails(hearingDetails) {
+    // occasionally this page would take a while to load so waiting until the use allocated judge field is visible
+    I.waitForVisible(`#${judgeAndLegalAdvisor.fields.useAllocatedJudge.groupName}`, 10);
     judgeAndLegalAdvisor.useAlternateJudge();
     judgeAndLegalAdvisor.selectJudgeTitle();
     judgeAndLegalAdvisor.enterJudgeLastName(hearingDetails.judgeAndLegalAdvisor.judgeLastName);
     judgeAndLegalAdvisor.enterJudgeEmailAddress(hearingDetails.judgeAndLegalAdvisor.judgeEmail);
   },
 
-  async enterLegalAdvisorName(legalAdvisorName) {
+  enterLegalAdvisorName(legalAdvisorName) {
     judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName);
   },
 
-  async enterJudgeName(name) {
+  enterJudgeName(name) {
     judgeAndLegalAdvisor.enterJudgeLastName(name);
   },
 
-  async selectedAllocatedJudge() {
+  selectedAllocatedJudge() {
     judgeAndLegalAdvisor.useAllocatedJudge();
   },
 
-  async sendNoticeOfHearingWithNotes(notes) {
+  sendNoticeOfHearingWithNotes(notes) {
     I.click(this.fields.sendNotice);
     I.fillField(this.fields.noticeNotes, notes);
   },
 
-  async dontSendNoticeOfHearing() {
+  dontSendNoticeOfHearing() {
     I.click(this.fields.dontSendNotice);
   },
 
@@ -131,9 +133,9 @@ module.exports = {
     I.click(this.fields.confirmHearingDate.hearingDateIncorrect);
   },
 
-  enterCorrectedHearingDate(hearingDetails) {
-    I.fillDateAndTime(hearingDetails.startDate, this.fields.correctedStartDate);
-    I.fillDateAndTime(hearingDetails.endDate, this.fields.correctedEndDate);
+  async enterCorrectedHearingDate(hearingDetails) {
+    await I.fillDateAndTime(hearingDetails.startDate, this.fields.correctedStartDate);
+    await I.fillDateAndTime(hearingDetails.endDate, this.fields.correctedEndDate);
   },
 
 };
