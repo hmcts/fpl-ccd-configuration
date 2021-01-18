@@ -33,46 +33,17 @@ public class MigrateCaseController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Object migrationId = caseDetails.getData().get(MIGRATION_ID_KEY);
 
-        if ("FPLA-2589".equals(migrationId)) {
-            run2589(caseDetails);
-        }
-        if ("FPLA-2593".equals(migrationId)) {
-            run2593(caseDetails);
-        }
-        if ("FPLA-2599".equals(migrationId)) {
-            run2599(caseDetails);
+        if ("FPLA-2480".equals(migrationId)) {
+            run2480(caseDetails);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
     }
 
-    private void run2589(CaseDetails caseDetails) {
+    private void run2480(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
-        if ("PO20C50026".equals(caseData.getFamilyManCaseNumber())) {
-            if (caseData.getDraftUploadedCMOs().size() < 2) {
-                throw new IllegalArgumentException(String.format("Expected 2 draft case management orders but found %s",
-                    caseData.getDraftUploadedCMOs().size()));
-            }
-            removeDraftCaseManagementOrder(caseDetails, 1);
-            removeDraftCaseManagementOrder(caseDetails, 0);
-        }
-    }
-
-    private void run2593(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-        if ("CF20C50030".equals(caseData.getFamilyManCaseNumber())) {
-            if (caseData.getDraftUploadedCMOs().size() < 2) {
-                throw new IllegalArgumentException(String.format("Expected 2 draft case management orders but found %s",
-                    caseData.getDraftUploadedCMOs().size()));
-            }
-            removeDraftCaseManagementOrder(caseDetails, 1);
-        }
-    }
-
-    private void run2599(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-        if ("SA20C50016".equals(caseData.getFamilyManCaseNumber())) {
+        if ("LE20C50003".equals(caseData.getFamilyManCaseNumber())) {
             removeDraftCaseManagementOrder(caseDetails, 0);
         }
     }
