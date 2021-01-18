@@ -60,13 +60,9 @@ module.exports = {
 
   async attachSupportingDocs({name, notes, file}) {
     await I.addAnotherElementToCollection('Case summary or supporting documents');
-    const fields = this.fields.supportingDocuments.fields(await this.getActiveElementIndex());
+    const fields = this.fields.supportingDocuments.fields(await I.getActiveElementIndex());
     I.fillField(fields.name, name);
     I.fillField(fields.notes, notes);
     I.attachFile(fields.document, file);
-  },
-
-  async getActiveElementIndex() {
-    return await I.grabNumberOfVisibleElements('//button[text()="Remove"]') - 1;
   },
 };
