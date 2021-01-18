@@ -30,6 +30,7 @@ class JudicialMessageContentProviderTest extends AbstractEmailContentProviderTes
     @Autowired
     Time time;
 
+    //Tech debt - maybe mock callout instead of setting date to arbitrary far date in future
     private static final LocalDateTime HEARING_START_DATE = LocalDateTime.of(3000, 1, 1, 11, 11, 11);
 
     @Test
