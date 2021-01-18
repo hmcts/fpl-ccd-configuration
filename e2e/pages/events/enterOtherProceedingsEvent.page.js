@@ -34,9 +34,7 @@ module.exports = {
     I.click(this.fields(undefined).onGoingProceeding.no);
   },
 
-  async selectOngoingProceedingStatus(status = 'ongoing') {
-    const elementIndex = await this.getActiveElementIndex();
-
+  selectOngoingProceedingStatus(status = 'ongoing', elementIndex) {
     if(status === 'ongoing') {
       I.click(this.fields(elementIndex).proceedingStatus.ongoing);
     } else if (status === 'previous') {
@@ -47,7 +45,7 @@ module.exports = {
   async enterProceedingInformation(otherProceedingData) {
     const elementIndex = await this.getActiveElementIndex();
 
-    await this.selectOngoingProceedingStatus(otherProceedingData.proceedingStatus);
+    this.selectOngoingProceedingStatus(otherProceedingData.proceedingStatus, elementIndex);
     I.fillField(this.fields(elementIndex).caseNumber, otherProceedingData.caseNumber);
     I.fillField(this.fields(elementIndex).started, otherProceedingData.started);
     I.fillField(this.fields(elementIndex).ended, otherProceedingData.ended);
@@ -59,11 +57,11 @@ module.exports = {
   },
 
   async getActiveElementIndex() {
-    const count = await I.grabNumberOfVisibleElements('//button[text()="Remove"]');
-    if (count === 0) {
+    const count = await I.getActiveElementIndex();
+    if (count === -1) {
       return '';
     } else {
-      return `additionalProceedings_${count - 1}_`;
+      return `additionalProceedings_${count}_`;
     }
   },
 };
