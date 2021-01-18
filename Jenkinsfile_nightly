@@ -21,12 +21,43 @@ properties([
 ])
 
 @Library('Infrastructure')
+import uk.gov.hmcts.contino.AppPipelineConfig
 
 def type = 'java'
 def product = 'fpl'
 def component = 'case-service'
+AppPipelineConfig pipelineConf;
+
+def integrationTestSecrets = [
+  'fpl-aat': [
+    secret('integration-test-notify-service-key', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY')
+  ]
+]
+
+static Map<String, Object> secret(String secretName, String envVariable) {
+  [ $class: 'AzureKeyVaultSecret',
+    secretType: 'Secret',
+    name: secretName,
+    envVariable: envVariable
+  ]
+}
+
+def setupSecretsForIntegrationTests(pipelineConf) {
+  withSubscription('nonprod') {
+    withTeamSecrets(pipelineConf, 'aat') {
+      /* Setup Email template integration tests key with gov.notify */
+      env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY = "${INTEGRATION_TEST_NOTIFY_SERVICE_KEY}"
+    }
+  }
+}
+
+def teardownSecretsForIntegrationTests() {
+  env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY = ''
+}
 
 withNightlyPipeline(type, product, component) {
+  pipelineConf = config;
+
   env.URL = params.FRONTEND_URL
   env.URL_FOR_SECURITY_SCAN = params.CASE_SERVICE_URL
   env.DM_STORE_URL=params.DM_STORE_URL
@@ -34,14 +65,21 @@ withNightlyPipeline(type, product, component) {
   env.CASE_SERVICE_URL=params.CASE_SERVICE_URL
   env.SECURITY_RULES = params.SECURITY_RULES
 
+  loadVaultSecrets(integrationTestSecrets)
+
   enableSecurityScan()
   enableMutationTest()
   enableFullFunctionalTest(120)
+
+  before('mutationTest') {
+    setupSecretsForIntegrationTests(pipelineConf)
+  }
 
   after('mutationTest') {
     withSonarQubeEnv('SonarQube') {
       sh './gradlew --info sonarqube'
     }
+    teardownSecretsForIntegrationTests()
   }
 
   before('fullFunctionalTest') {
