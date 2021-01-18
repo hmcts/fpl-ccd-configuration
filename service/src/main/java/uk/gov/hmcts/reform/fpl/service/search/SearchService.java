@@ -21,10 +21,15 @@ public class SearchService {
 
     private final CoreCaseDataService coreCaseDataService;
 
+    public List<CaseDetails> search(String query) {
+        requireNonNull(query);
+        return coreCaseDataService.searchCases(CASE_TYPE, query);
+    }
+
     public List<CaseDetails> search(String property, LocalDate day) {
         requireNonNull(property);
         requireNonNull(day);
-        return coreCaseDataService.searchCases(CASE_TYPE, dateQuery(property, day));
+        return search(dateQuery(property, day));
     }
 
     private String dateQuery(String property, LocalDate day) {

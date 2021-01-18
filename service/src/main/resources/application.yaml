@@ -12,6 +12,8 @@ management:
 spring:
   application:
     name: fpl-service
+  config:
+    use-legacy-processing: true
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
@@ -147,6 +149,12 @@ scheduler:
       description: 'Finds upcoming hearings'
       jobClass: 'uk.gov.hmcts.reform.fpl.jobs.UpcomingHearingsFinder'
       cron: ${UPCOMING_HEARINGS_CRON:0 0 2 ? * MON-FRI *}
+    - name: 'Summary Tab'
+      enabled: true
+      cronGroup: "NIGHTLY_CRON"
+      description: 'Updates the summary tab'
+      jobClass: 'uk.gov.hmcts.reform.fpl.jobs.UpdateSummaryTab'
+      cron: ${UPDATE_SUMMARY_TAB_CRON:0 0 3 ? * MON-FRI *} # might be a longer running job
 
 testing:
   support:
