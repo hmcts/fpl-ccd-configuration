@@ -26,29 +26,28 @@ Scenario('HMCTS admin manages hearings', async ({I, caseViewPage, manageHearings
 
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   await manageHearingsEventPage.enterHearingDetails({startDate: hearingStartDate, endDate: hearingEndDate});
-  await manageHearingsEventPage.enterVenue(hearingDetails[0]);
+  manageHearingsEventPage.enterVenue(hearingDetails[0]);
   await I.goToNextPage();
-  await manageHearingsEventPage.enterJudgeDetails(hearingDetails[0]);
-  await manageHearingsEventPage.enterLegalAdvisorName(hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
+  manageHearingsEventPage.enterJudgeDetails(hearingDetails[0]);
+  manageHearingsEventPage.enterLegalAdvisorName(hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
   await I.goToNextPage();
-  await manageHearingsEventPage.sendNoticeOfHearingWithNotes(hearingDetails[0].additionalNotes);
+  manageHearingsEventPage.sendNoticeOfHearingWithNotes(hearingDetails[0].additionalNotes);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageHearings);
 
   I.wait(5);
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
-  await manageHearingsEventPage.selectAddNewHearing();
+  manageHearingsEventPage.selectAddNewHearing();
   await I.goToNextPage();
   await manageHearingsEventPage.enterHearingDetails(hearingDetails[1]);
-  await manageHearingsEventPage.selectPreviousVenue();
+  manageHearingsEventPage.selectPreviousVenue();
   await I.goToNextPage();
-  await manageHearingsEventPage.selectedAllocatedJudge();
+  manageHearingsEventPage.selectedAllocatedJudge();
   await I.goToNextPage();
-  await manageHearingsEventPage.dontSendNoticeOfHearing();
+  manageHearingsEventPage.dontSendNoticeOfHearing();
   await I.completeEvent('Save and continue');
 
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
-
 
   I.seeInTab(['Hearing 1', 'Type of hearing'], hearingDetails[0].caseManagement);
   I.seeInTab(['Hearing 1', 'Venue'], hearingDetails[0].venue);
@@ -68,13 +67,13 @@ Scenario('HMCTS admin manages hearings', async ({I, caseViewPage, manageHearings
 
   I.wait(5);
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
-  await manageHearingsEventPage.selectEditHearing('Case management hearing, 1 January 2060');
+  manageHearingsEventPage.selectEditHearing('Case management hearing, 1 January 2060');
   await I.goToNextPage();
   await manageHearingsEventPage.enterNewVenue(hearingDetails[1]);
   await I.goToNextPage();
-  await manageHearingsEventPage.selectedAllocatedJudge();
+  manageHearingsEventPage.selectedAllocatedJudge();
   await I.goToNextPage();
-  await manageHearingsEventPage.sendNoticeOfHearingWithNotes('The venue has changed');
+  manageHearingsEventPage.sendNoticeOfHearingWithNotes('The venue has changed');
   await I.completeEvent('Save and continue');
 
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
@@ -97,9 +96,9 @@ Scenario('HMCTS admin manages hearings', async ({I, caseViewPage, manageHearings
 
 Scenario('HMCTS admin uploads further hearing evidence documents', async ({I, caseViewPage, manageDocumentsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
-  await manageDocumentsEventPage.selectFurtherEvidence();
-  await manageDocumentsEventPage.selectFurtherEvidenceIsRelatedToHearing();
-  await manageDocumentsEventPage.selectHearing(formatHearingDate(hearingStartDate));
+  manageDocumentsEventPage.selectFurtherEvidence();
+  manageDocumentsEventPage.selectFurtherEvidenceIsRelatedToHearing();
+  manageDocumentsEventPage.selectHearing(formatHearingDate(hearingStartDate));
   await I.goToNextPage();
   await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[0]);
   await I.addAnotherElementToCollection();
@@ -108,9 +107,9 @@ Scenario('HMCTS admin uploads further hearing evidence documents', async ({I, ca
   I.seeEventSubmissionConfirmation(config.administrationActions.manageDocuments);
 
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
-  await manageDocumentsEventPage.selectFurtherEvidence();
-  await manageDocumentsEventPage.selectFurtherEvidenceIsRelatedToHearing();
-  await manageDocumentsEventPage.selectHearing('1 January 2060');
+  manageDocumentsEventPage.selectFurtherEvidence();
+  manageDocumentsEventPage.selectFurtherEvidenceIsRelatedToHearing();
+  manageDocumentsEventPage.selectHearing('1 January 2060');
   await I.goToNextPage();
   await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[0]);
   await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
@@ -130,6 +129,7 @@ Scenario('HMCTS admin uploads further hearing evidence documents', async ({I, ca
   I.seeInTab(['Further evidence documents for hearings 1', 'Documents 2', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
   I.seeInTab(['Further evidence documents for hearings 1', 'Documents 2', 'File'], 'mockFile.txt');
   I.seeTextInTab(['Further evidence documents for hearings 1', 'Documents 2', 'Uploaded by']);
+
   I.seeInTab(['Further evidence documents for hearings 2', 'Hearing'], 'Case management hearing, 1 January 2060');
   I.seeInTab(['Further evidence documents for hearings 2', 'Documents 1', 'Document name'], 'Email to say evidence will be late');
   I.seeInTab(['Further evidence documents for hearings 2', 'Documents 1', 'Notes'], 'Evidence will be late');
@@ -144,7 +144,7 @@ Scenario('HMCTS admin adjourns and re-lists a hearing', async ({I, caseViewPage,
   const reListedHearingJudgeName = 'Brown';
 
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
-  await manageHearingsEventPage.selectAdjournHearing(`Case management hearing, ${formatHearingDate(hearingStartDate)}`);
+  manageHearingsEventPage.selectAdjournHearing(`Case management hearing, ${formatHearingDate(hearingStartDate)}`);
   await I.goToNextPage();
   manageHearingsEventPage.selectCancellationReasonType('Other lawyers');
   manageHearingsEventPage.selectCancellationReason('No key issue analysis');
@@ -155,7 +155,7 @@ Scenario('HMCTS admin adjourns and re-lists a hearing', async ({I, caseViewPage,
   await I.goToNextPage();
   manageHearingsEventPage.enterJudgeName(reListedHearingJudgeName);
   await I.goToNextPage();
-  await manageHearingsEventPage.dontSendNoticeOfHearing();
+  manageHearingsEventPage.dontSendNoticeOfHearing();
   await I.completeEvent('Save and continue');
 
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
@@ -178,7 +178,7 @@ Scenario('HMCTS admin adjourns and re-lists a hearing', async ({I, caseViewPage,
 
 Scenario('HMCTS admin vacates and re-lists a hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
-  await manageHearingsEventPage.selectVacateHearing('Case management hearing, 1 January 2060');
+  manageHearingsEventPage.selectVacateHearing('Case management hearing, 1 January 2060');
   await I.goToNextPage();
   manageHearingsEventPage.selectCancellationAction('Yes - and I can add the new date now');
   await I.goToNextPage();
@@ -189,7 +189,7 @@ Scenario('HMCTS admin vacates and re-lists a hearing', async ({I, caseViewPage, 
   await I.goToNextPage();
   manageHearingsEventPage.enterJudgeName(hearingDetails[1].judgeAndLegalAdvisor.judgeLastName);
   await I.goToNextPage();
-  await manageHearingsEventPage.dontSendNoticeOfHearing();
+  manageHearingsEventPage.dontSendNoticeOfHearing();
   await I.completeEvent('Save and continue');
 
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
@@ -211,7 +211,7 @@ Scenario('HMCTS admin vacates and re-lists a hearing', async ({I, caseViewPage, 
 
 Scenario('HMCTS admin cancels and re-lists hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
-  await manageHearingsEventPage.selectVacateHearing('Case management hearing, 1 January 2060');
+  manageHearingsEventPage.selectVacateHearing('Case management hearing, 1 January 2060');
   await I.goToNextPage();
   manageHearingsEventPage.selectCancellationAction('Yes - but I do not have the new date yet');
   await I.goToNextPage();
@@ -226,12 +226,12 @@ Scenario('HMCTS admin cancels and re-lists hearing', async ({I, caseViewPage, ma
   I.seeInTab(['Further evidence documents for hearings 2', 'Hearing'], 'Case management hearing, 1 January 2060 - vacated');
 
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
-  await manageHearingsEventPage.selectReListHearing('Case management hearing, 1 January 2060 - vacated');
+  manageHearingsEventPage.selectReListHearing('Case management hearing, 1 January 2060 - vacated');
   await I.goToNextPage();
   await manageHearingsEventPage.enterHearingDetails(hearingDetails[2]);
   await I.goToNextPage();
   await I.goToNextPage();
-  await manageHearingsEventPage.dontSendNoticeOfHearing();
+  manageHearingsEventPage.dontSendNoticeOfHearing();
   await I.completeEvent('Save and continue');
 
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
@@ -261,21 +261,21 @@ Scenario('HMCTS admin adds past hearing', async ({I, caseViewPage, manageHearing
   const correctedHearingEndDate = moment(correctedHearingStartDate).add(5,'m').toDate();
 
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
-  await manageHearingsEventPage.selectAddNewHearing();
+  manageHearingsEventPage.selectAddNewHearing();
   await I.goToNextPage();
 
   await manageHearingsEventPage.enterHearingDetails({startDate: hearingStartDate, endDate: hearingEndDate});
-  await manageHearingsEventPage.selectPreviousVenue();
+  manageHearingsEventPage.selectPreviousVenue();
   await I.goToNextPage();
 
   manageHearingsEventPage.selectHearingDateIncorrect();
-  manageHearingsEventPage.enterCorrectedHearingDate({startDate: correctedHearingStartDate, endDate: correctedHearingEndDate});
+  await manageHearingsEventPage.enterCorrectedHearingDate({startDate: correctedHearingStartDate, endDate: correctedHearingEndDate});
 
   await I.goToNextPage();
-  await manageHearingsEventPage.enterJudgeDetails(hearingDetails[0]);
-  await manageHearingsEventPage.enterLegalAdvisorName(hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
+  manageHearingsEventPage.enterJudgeDetails(hearingDetails[0]);
+  manageHearingsEventPage.enterLegalAdvisorName(hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
   await I.goToNextPage();
-  await manageHearingsEventPage.sendNoticeOfHearingWithNotes(hearingDetails[0].additionalNotes);
+  manageHearingsEventPage.sendNoticeOfHearingWithNotes(hearingDetails[0].additionalNotes);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageHearings);
 
