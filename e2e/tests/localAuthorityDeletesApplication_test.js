@@ -3,7 +3,7 @@ const config = require('../config.js');
 let caseId;
 let caseName;
 
-Feature('Application draft (empty draft)');
+Feature('Local authority deletes application');
 
 BeforeSuite(async ({I}) => {
   caseName = `Case ${new Date().toISOString()}`;
@@ -12,26 +12,14 @@ BeforeSuite(async ({I}) => {
 
 Before(async ({I}) => await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId));
 
-Scenario('local authority tries to submit incomplete case', async ({I, caseViewPage, submitApplicationEventPage}) => {
-  await caseViewPage.goToNewActions(config.applicationActions.submitCase);
-  submitApplicationEventPage.giveConsent();
-  await I.goToNextPage();
-  I.waitForElement('.error-summary-list');
-  I.see('Add the orders and directions sought');
-  I.see('Add the hearing urgency details');
-  I.see('Add the grounds for the application');
-  I.see('Add your organisation\'s details');
-  I.see('Add the applicant\'s solicitor\'s details');
-  I.see('Add the child\'s details');
-  I.see('Add the respondents\' details');
-  I.see('Add the allocation proposal');
-});
-
 Scenario('local authority deletes application', async ({I, caseViewPage, deleteApplicationEventPage, caseListPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.deleteApplication);
   deleteApplicationEventPage.tickDeletionConsent();
+  // I.completeEvent() tries to search for the success alert, this can sometimes disappear to quickly as the user is
+  // redirected to the case list due to losing permissions to view the case.
+  // As such a manual completion of the event is required here
   await I.goToNextPage();
   await I.retryUntilExists(() => I.click('Delete application'), '.search-block');
-  await caseListPage.searchForCasesWithName(caseName);
+  caseListPage.searchForCasesWithName(caseName);
   I.see('No cases found.');
 });

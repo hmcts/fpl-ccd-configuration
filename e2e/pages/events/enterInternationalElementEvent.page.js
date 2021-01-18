@@ -28,13 +28,6 @@ module.exports = {
     },
   },
 
-  halfFillForm() {
-    I.click(this.fields.possibleCarer.yes);
-    I.fillField(this.fields.possibleCarer.textField, 'test');
-    I.click(this.fields.significantEvents.yes);
-    I.fillField(this.fields.significantEvents.textField, 'test');
-  },
-
   fillForm() {
     I.click(this.fields.possibleCarer.yes);
     I.fillField(this.fields.possibleCarer.textField, 'test');

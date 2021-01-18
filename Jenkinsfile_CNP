@@ -1,7 +1,6 @@
 #!groovy
 
 @Library("Infrastructure")
-import uk.gov.hmcts.contino.ProjectBranch
 import uk.gov.hmcts.contino.AppPipelineConfig
 
 def type = "java"
@@ -144,7 +143,7 @@ withPipeline(type, product, component) {
     env.CASE_SERVICE_URL="http://fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
     env.URL="http://xui-fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
     env.MOCKED_PAYMENTS=false
-    env.PARALLEL_CHUNKS=7
+    env.PARALLEL_CHUNKS=2
   }
 
   after('smoketest:saat') {
