@@ -15,7 +15,7 @@ properties([
       defaultValue: 'https://raw.githubusercontent.com/hmcts/security-test-rules/master/conf/security-rules.conf',
       description: 'The security rules to use'),
     string(name: 'FUNCTIONAL_TESTS_WORKERS',
-      defaultValue: '5',
+      defaultValue: '2',
       description: 'Number of workers running functional tests'),
   ])
 ])
