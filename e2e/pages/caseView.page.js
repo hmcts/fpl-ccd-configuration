@@ -33,7 +33,7 @@ module.exports = {
 
   async goToNewActions(actionSelected) {
     const currentUrl = await I.grabCurrentUrl();
-    return await I.retryUntilExists(async () => {
+    await I.retryUntilExists(async () => {
       if(await I.waitForSelector(this.actionsDropdown, 10) != null) {
         I.selectOption(this.actionsDropdown, actionSelected);
         I.click(this.goButton);
@@ -47,19 +47,19 @@ module.exports = {
     }, 'ccd-case-event-trigger');
   },
 
-  checkActionsAreAvailable(actions) {
-    I.waitForElement(this.actionsDropdown);
-    within(this.actionsDropdown, () => {
-      for (let action of actions) {
+  async checkActionsAreAvailable(actions) {
+    I.waitForElement(this.actionsDropdown, 10);
+    await within(this.actionsDropdown, () => {
+      for (const action of actions) {
         I.seeElementInDOM(`//option[text()="${action}"]`);
       }
     });
   },
 
-  checkActionsAreNotAvailable(actions) {
-    I.waitForElement(this.actionsDropdown);
-    within(this.actionsDropdown, () => {
-      for (let action of actions) {
+  async checkActionsAreNotAvailable(actions) {
+    I.waitForElement(this.actionsDropdown, 10);
+    await within(this.actionsDropdown, () => {
+      for (const action of actions) {
         I.dontSeeElementInDOM(`//option[text()="${action}"]`);
       }
     });
