@@ -43,7 +43,7 @@ idam-pr:
   enabled: true
   redirect_uris:
     XUI:
-      - https://xui-${SERVICE_FQDN}/oauth2/callback
+      - http://xui-${SERVICE_FQDN}/oauth2/callback
 
 xui-webapp:
   enabled: true
@@ -73,6 +73,7 @@ xui-webapp:
       NOW: false
       REDISCLOUD_URL: http://dummyrediscloudurl
       UV_THREADPOOL_SIZE: 128
+      PROTOCOL: http
     keyVaults:
       rpx:
         resourceGroup: rpx
@@ -140,6 +141,8 @@ ccd:
         enabled: false
   ccd-definition-store-api:
     java:
+      autoscaling:
+        enabled: false
       imagePullPolicy: Always
       environment:
         DEFINITION_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
@@ -186,7 +189,7 @@ logstash:
   image:
     repository: hmctspublic.azurecr.io/ccd/logstash
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   logstashJavaOpts: -Xmx1g -Xms512M
   persistence:
     enabled: false
