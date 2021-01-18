@@ -2,18 +2,18 @@ const dateFormat = require('dateformat');
 const dateToString = require('../helpers/date_to_string_helper');
 
 const createBlankOrder = async (I, createOrderEventPage, order, hasAllocatedJudge = false) => {
-  await createOrderEventPage.selectType(order.type);
+  createOrderEventPage.selectType(order.type);
   await fillDateOfIssue(I, createOrderEventPage, order);
   await selectChildren(I, createOrderEventPage, order);
   await I.goToNextPage();
-  await createOrderEventPage.enterC21OrderDetails();
+  createOrderEventPage.enterC21OrderDetails();
   await I.goToNextPage();
-  await enterJudgeAndLegalAdvisor(I, createOrderEventPage, order, hasAllocatedJudge);
+  enterJudgeAndLegalAdvisor(I, createOrderEventPage, order, hasAllocatedJudge);
   await I.completeEvent('Save and continue');
 };
 
 const createCareOrder = async (I, createOrderEventPage, order, hasAllocatedJudge = false) => {
-  await createOrderEventPage.selectType(order.type, order.subtype);
+  createOrderEventPage.selectType(order.type, order.subtype);
   await fillDateOfIssue(I, createOrderEventPage, order);
   if (order.subtype === 'Interim') {
     await fillInterimEndDate(I, createOrderEventPage, order);
@@ -21,23 +21,23 @@ const createCareOrder = async (I, createOrderEventPage, order, hasAllocatedJudge
   await selectChildren(I, createOrderEventPage, order);
 
   await I.goToNextPage();
-  await enterJudgeAndLegalAdvisor(I, createOrderEventPage, order, hasAllocatedJudge);
+  enterJudgeAndLegalAdvisor(I, createOrderEventPage, order, hasAllocatedJudge);
   await I.goToNextPage();
   if (order.subtype === 'Interim') {
-    await createOrderEventPage.enterExclusionClause('example exclusion clause');
+    createOrderEventPage.enterExclusionClause('example exclusion clause');
   }
-  await createOrderEventPage.enterDirections('example directions');
+  createOrderEventPage.enterDirections('example directions');
 
   if (order.closeCase !== undefined) {
     await I.goToNextPage();
-    await createOrderEventPage.closeCaseFromOrder(order.closeCase);
+    createOrderEventPage.closeCaseFromOrder(order.closeCase);
   }
 
   await I.completeEvent('Save and continue');
 };
 
 const createSupervisionOrder = async (I, createOrderEventPage, order, hasAllocatedJudge = false) => {
-  await createOrderEventPage.selectType(order.type, order.subtype);
+  createOrderEventPage.selectType(order.type, order.subtype);
   await fillDateOfIssue(I, createOrderEventPage, order);
   if (order.subtype === 'Interim') {
     await fillInterimEndDate(I, createOrderEventPage, order);
@@ -50,13 +50,13 @@ const createSupervisionOrder = async (I, createOrderEventPage, order, hasAllocat
   }
 
   await I.goToNextPage();
-  await enterJudgeAndLegalAdvisor(I, createOrderEventPage, order, hasAllocatedJudge);
+  enterJudgeAndLegalAdvisor(I, createOrderEventPage, order, hasAllocatedJudge);
   await I.goToNextPage();
-  await createOrderEventPage.enterDirections('example directions');
+  createOrderEventPage.enterDirections('example directions');
 
   if (order.closeCase !== undefined) {
     await I.goToNextPage();
-    await createOrderEventPage.closeCaseFromOrder(order.closeCase);
+    createOrderEventPage.closeCaseFromOrder(order.closeCase);
   }
 
   await I.completeEvent('Save and continue');
@@ -66,43 +66,46 @@ const createEmergencyProtectionOrder = async (I, createOrderEventPage, order, ha
   const today = new Date(Date.now());
   const tomorrow = new Date(Date.now() + (3600 * 1000 * 24));
 
-  await createOrderEventPage.selectType(order.type);
+  createOrderEventPage.selectType(order.type);
   await fillDateAndTimeOfIssue(I, createOrderEventPage, today);
   await selectChildren(I, createOrderEventPage, order);
   await I.goToNextPage();
-  await createOrderEventPage.enterChildrenDescription(order.childrenDescription);
+  createOrderEventPage.enterChildrenDescription(order.childrenDescription);
   await I.goToNextPage();
   createOrderEventPage.selectEpoType(order.epoType);
   createOrderEventPage.enterRemovalAddress(order.removalAddress);
+  createOrderEventPage.selectExclusionRequirement();
+  createOrderEventPage.selectExclusionRequirementStartDate();
+  createOrderEventPage.selectWhoIsExcluded();
   await I.goToNextPage();
   createOrderEventPage.includePhrase(order.includePhrase);
   await I.goToNextPage();
-  createOrderEventPage.enterEpoEndDate(tomorrow);
+  await createOrderEventPage.enterEpoEndDate(tomorrow);
   await I.goToNextPage();
-  await enterJudgeAndLegalAdvisor(I, createOrderEventPage, order, hasAllocatedJudge);
+  enterJudgeAndLegalAdvisor(I, createOrderEventPage, order, hasAllocatedJudge);
   await I.goToNextPage();
-  await createOrderEventPage.enterDirections('example directions');
+  createOrderEventPage.enterDirections('example directions');
 
   if (order.closeCase !== undefined) {
     await I.goToNextPage();
-    await createOrderEventPage.closeCaseFromOrder(order.closeCase);
+    createOrderEventPage.closeCaseFromOrder(order.closeCase);
   }
 
   await I.completeEvent('Save and continue');
 };
 
 const createDischargeCareOrder = async (I, createOrderEventPage, order, hasAllocatedJudge = false) => {
-  await createOrderEventPage.selectType(order.type);
+  createOrderEventPage.selectType(order.type);
   await selectCareOrders(I, createOrderEventPage, order);
   await fillDateOfIssue(I, createOrderEventPage, order);
   await I.goToNextPage();
-  await enterJudgeAndLegalAdvisor(I, createOrderEventPage, order, hasAllocatedJudge);
+  enterJudgeAndLegalAdvisor(I, createOrderEventPage, order, hasAllocatedJudge);
   await I.goToNextPage();
-  await createOrderEventPage.enterDirections('example directions');
+  createOrderEventPage.enterDirections('example directions');
 
   if (order.closeCase !== undefined) {
     await I.goToNextPage();
-    await createOrderEventPage.closeCaseFromOrder(order.closeCase);
+    createOrderEventPage.closeCaseFromOrder(order.closeCase);
   }
 
   await I.completeEvent('Save and continue');
@@ -110,12 +113,12 @@ const createDischargeCareOrder = async (I, createOrderEventPage, order, hasAlloc
 
 const uploadOrder = async (I, createOrderEventPage, order) => {
   I.see(order.orderChecks.familyManCaseNumber);
-  await createOrderEventPage.selectType(order.type, undefined, order.uploadedOrderType);
+  createOrderEventPage.selectType(order.type, undefined, order.uploadedOrderType);
   createOrderEventPage.enterOrderNameAndDescription(order.orderName, order.orderDescription);
   await fillDateOfIssue(I, createOrderEventPage, order);
   await selectChildren(I, createOrderEventPage, order);
   await I.goToNextPage();
-  await createOrderEventPage.uploadOrder(order.orderFile);
+  createOrderEventPage.uploadOrder(order.orderFile);
   await I.goToNextPage();
   createOrderEventPage.checkOrder(order.orderChecks);
   await I.completeEvent('Save and continue');
@@ -126,7 +129,7 @@ const fillInterimEndDate = async (I, createOrderEventPage, order) => {
   if (order.interimEndDate.isNamedDate) {
     await createOrderEventPage.selectAndEnterNamedDate(order.interimEndDate.endDate);
   } else {
-    await createOrderEventPage.selectEndOfProceedings();
+    createOrderEventPage.selectEndOfProceedings();
   }
 };
 
@@ -141,22 +144,22 @@ const fillDateAndTimeOfIssue = async (I, createOrderEventPage, dateAndTime) => {
 };
 
 const selectChildren = async (I, createOrderEventPage, order) => {
-  if (order.children === 'Single') {
-    return I.goToNextPage();
-  }
   await I.goToNextPage();
+  if (order.children === 'Single') {
+    return ;
+  }
   if (order.children === 'All') {
-    await createOrderEventPage.useAllChildren();
+    createOrderEventPage.useAllChildren();
   } else {
-    await createOrderEventPage.notAllChildren();
+    createOrderEventPage.notAllChildren();
     await I.goToNextPage();
-    await createOrderEventPage.selectChildren(order.children);
+    createOrderEventPage.selectChildren(order.children);
   }
 };
 
 const selectCareOrders = async (I, createOrderEventPage, order) => {
   await I.goToNextPage();
-  await createOrderEventPage.selectCareOrder(order.careOrders);
+  createOrderEventPage.selectCareOrder(order.careOrders);
 };
 
 const enterJudgeAndLegalAdvisor =  (I, createOrderEventPage, order, hasAllocatedJudge) => {
