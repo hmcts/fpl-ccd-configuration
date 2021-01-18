@@ -195,7 +195,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
         private Map<String, Object> expectedTemplateParameters() {
             return Map.of(
                 "respondentLastName", "Watson",
-                "caseUrl", "http://fake-url/cases/case-details/12345#Placements");
+                "caseUrl", "http://fake-url/cases/case-details/12345#Placement");
         }
     }
 

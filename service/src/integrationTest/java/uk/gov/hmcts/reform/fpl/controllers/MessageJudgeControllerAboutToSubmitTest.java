@@ -9,7 +9,9 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.MessageJudgeOptions;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageMetaData;
@@ -22,6 +24,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -97,6 +100,7 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
         MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
             .judicialMessageDynamicList(buildDynamicList(0, Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, dateSent)))
             .judicialMessageReply(JudicialMessage.builder()
+                .isReplying(YesNo.YES.getValue())
                 .latestMessage(REPLY)
                 .build())
             .messageJudgeOption(MessageJudgeOptions.REPLY)
@@ -105,16 +109,7 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
         CaseData caseData = CaseData.builder()
             .messageJudgeEventData(messageJudgeEventData)
             .judicialMessages(List.of(
-                element(SELECTED_DYNAMIC_LIST_ITEM_ID, JudicialMessage.builder()
-                    .sender(SENDER)
-                    .recipient(MESSAGE_RECIPIENT)
-                    .updatedTime(now().minusDays(1))
-                    .status(OPEN)
-                    .requestedBy(MESSAGE_REQUESTED_BY)
-                    .latestMessage(MESSAGE)
-                    .messageHistory(String.format("%s - %s", SENDER, MESSAGE))
-                    .dateSent(dateSent)
-                    .build())))
+                element(SELECTED_DYNAMIC_LIST_ITEM_ID, buildJudicialMessage(dateSent, MESSAGE))))
             .build();
 
         JudicialMessage expectedUpdatedJudicialMessage = JudicialMessage.builder()
@@ -136,6 +131,47 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
         assertThat(responseCaseData.getJudicialMessages())
             .first()
             .isEqualTo(element(SELECTED_DYNAMIC_LIST_ITEM_ID, expectedUpdatedJudicialMessage));
+    }
+
+    @Test
+    void shouldCloseJudicialMessageAndSortTheClosedJudicialMessagesListWhenClosingAMessage() {
+        String dateSent = formatLocalDateTimeBaseUsingFormat(now().minusDays(1), DATE_TIME_AT);
+
+        MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
+            .judicialMessageDynamicList(buildDynamicList(0, Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, dateSent)))
+            .judicialMessageReply(JudicialMessage.builder()
+                .isReplying(YesNo.NO.getValue())
+                .latestMessage(null)
+                .build())
+            .messageJudgeOption(MessageJudgeOptions.REPLY)
+            .build();
+
+        Element<JudicialMessage> selectedOpenMessage = element(
+            SELECTED_DYNAMIC_LIST_ITEM_ID, buildJudicialMessage(dateSent, MESSAGE));
+
+        Element<JudicialMessage> oldOpenMessage = element(UUID.randomUUID(), buildJudicialMessage(
+            formatLocalDateTimeBaseUsingFormat(now().minusDays(2), DATE_TIME_AT), null));
+
+        Element<JudicialMessage> closedMessage = element(UUID.randomUUID(), buildJudicialMessage(
+            formatLocalDateTimeBaseUsingFormat(now().minusDays(2), DATE_TIME_AT), null));
+
+        CaseData caseData = CaseData.builder()
+            .messageJudgeEventData(messageJudgeEventData)
+            .judicialMessages(List.of(selectedOpenMessage, oldOpenMessage))
+            .closedJudicialMessages(List.of(closedMessage))
+            .build();
+
+        JudicialMessage expectedClosedJudicialMessage =
+            selectedOpenMessage.getValue().toBuilder().status(CLOSED).updatedTime(now()).build();
+
+        when(userService.getUserEmail()).thenReturn(MESSAGE_RECIPIENT);
+
+        CaseData responseCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
+
+        assertThat(responseCaseData.getClosedJudicialMessages())
+            .containsExactly(element(SELECTED_DYNAMIC_LIST_ITEM_ID, expectedClosedJudicialMessage), closedMessage);
+
+        assertThat(responseCaseData.getJudicialMessages()).containsOnly(oldOpenMessage);
     }
 
     @Test
@@ -175,5 +211,18 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
             "judicialMessageReply",
             "hasJudicialMessages"
         );
+    }
+
+    private JudicialMessage buildJudicialMessage(String dateSent, String latestMessage) {
+        return JudicialMessage.builder()
+            .sender(SENDER)
+            .recipient(MESSAGE_RECIPIENT)
+            .updatedTime(now().minusDays(2))
+            .status(OPEN)
+            .requestedBy(MESSAGE_REQUESTED_BY)
+            .latestMessage(latestMessage)
+            .messageHistory(String.format("%s - %s", SENDER, MESSAGE))
+            .dateSent(dateSent)
+            .build();
     }
 }
