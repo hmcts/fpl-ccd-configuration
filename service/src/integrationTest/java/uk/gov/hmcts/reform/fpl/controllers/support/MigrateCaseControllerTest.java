@@ -163,8 +163,8 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
         UUID orderThreeId = UUID.randomUUID();
         UUID orderFourId = UUID.randomUUID();
         UUID orderFiveId = UUID.randomUUID();
-        UUID orderSixId = UUID.randomUUID();
-        UUID orderSevenId = UUID.randomUUID();
+        UUID orderSixId = UUID.fromString("aaa8e7b5-824c-4fde-9ab6-f0abf28a22be");
+        UUID orderSevenId = UUID.fromString("fa2d3751-3517-455d-a67b-35232d257665");
         UUID orderEightId = UUID.randomUUID();
 
         UUID childrenId = UUID.randomUUID();
@@ -239,7 +239,7 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
             Element<GeneratedOrder> orderSix = element(orderSixId, generateOrder(BLANK_ORDER));
             Element<GeneratedOrder> orderSeven = element(orderSevenId, generateOrder(EMERGENCY_PROTECTION_ORDER,
                 children));
-            
+
             Element<GeneratedOrder> orderEight = element(orderEightId, generateOrder(BLANK_ORDER));
 
             List<Element<GeneratedOrder>> orderCollection = newArrayList(
@@ -281,6 +281,88 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
                     .build())));
 
             assertThat(extractedCaseData.getHiddenOrders()).isEqualTo(hiddenOrders);
+        }
+
+        @Test
+        void shouldThrowAnExceptionWhenGeneratedOrderSixHasAnUnexpectedId() {
+            Element<Child> childElement = element(childrenId, Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("Tom")
+                    .lastName("Wilson")
+                    .build())
+                .finalOrderIssuedType("Yes")
+                .finalOrderIssued("Yes")
+                .build());
+
+            List<Element<Child>> children = newArrayList(childElement);
+
+            Element<GeneratedOrder> orderOne = element(orderOneId, generateOrder(CARE_ORDER));
+            Element<GeneratedOrder> orderTwo = element(orderTwoId, generateOrder(BLANK_ORDER));
+            Element<GeneratedOrder> orderThree = element(orderThreeId, generateOrder(BLANK_ORDER));
+            Element<GeneratedOrder> orderFour = element(orderFourId, generateOrder(BLANK_ORDER));
+            Element<GeneratedOrder> orderFive = element(orderFiveId, generateOrder(BLANK_ORDER));
+            Element<GeneratedOrder> orderSix = element(UUID.randomUUID(), generateOrder(BLANK_ORDER));
+            Element<GeneratedOrder> orderSeven = element(orderSevenId, generateOrder(EMERGENCY_PROTECTION_ORDER,
+                children));
+
+            Element<GeneratedOrder> orderEight = element(orderEightId, generateOrder(BLANK_ORDER));
+
+            List<Element<GeneratedOrder>> orderCollection = newArrayList(
+                orderOne,
+                orderTwo,
+                orderThree,
+                orderFour,
+                orderFive,
+                orderSix,
+                orderSeven,
+                orderEight);
+
+            CaseDetails caseDetails = caseDetails(migrationId, caseNumber, orderCollection, children);
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage("Could not find generated order aaa8e7b5-824c-4fde-9ab6-f0abf28a22be");
+        }
+
+        @Test
+        void shouldThrowAnExceptionWhenGeneratedOrderSevenHasAnUnexpectedId() {
+            Element<Child> childElement = element(childrenId, Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("Tom")
+                    .lastName("Wilson")
+                    .build())
+                .finalOrderIssuedType("Yes")
+                .finalOrderIssued("Yes")
+                .build());
+
+            List<Element<Child>> children = newArrayList(childElement);
+
+            Element<GeneratedOrder> orderOne = element(orderOneId, generateOrder(CARE_ORDER));
+            Element<GeneratedOrder> orderTwo = element(orderTwoId, generateOrder(BLANK_ORDER));
+            Element<GeneratedOrder> orderThree = element(orderThreeId, generateOrder(BLANK_ORDER));
+            Element<GeneratedOrder> orderFour = element(orderFourId, generateOrder(BLANK_ORDER));
+            Element<GeneratedOrder> orderFive = element(orderFiveId, generateOrder(BLANK_ORDER));
+            Element<GeneratedOrder> orderSix = element(orderSixId, generateOrder(BLANK_ORDER));
+            Element<GeneratedOrder> orderSeven = element(UUID.randomUUID(), generateOrder(EMERGENCY_PROTECTION_ORDER,
+                children));
+
+            Element<GeneratedOrder> orderEight = element(orderEightId, generateOrder(BLANK_ORDER));
+
+            List<Element<GeneratedOrder>> orderCollection = newArrayList(
+                orderOne,
+                orderTwo,
+                orderThree,
+                orderFour,
+                orderFive,
+                orderSix,
+                orderSeven,
+                orderEight);
+
+            CaseDetails caseDetails = caseDetails(migrationId, caseNumber, orderCollection, children);
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage("Could not find generated order fa2d3751-3517-455d-a67b-35232d257665");
         }
 
         @Test

@@ -20,7 +20,11 @@ import uk.gov.hmcts.reform.fpl.service.removeorder.CMORemovalAction;
 import uk.gov.hmcts.reform.fpl.service.removeorder.GeneratedOrderRemovalAction;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
+import java.util.Optional;
+import java.util.UUID;
+
 import static org.springframework.util.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 
 @Api
 @RestController
@@ -68,11 +72,30 @@ public class MigrateCaseController extends CallbackController {
                         + " but found %s", caseData.getOrderCollection().size()));
             }
 
-            Element<GeneratedOrder> orderSix = caseData.getOrderCollection().get(5);
-            Element<GeneratedOrder> orderSeven = caseData.getOrderCollection().get(6);
+            UUID orderSixId = UUID.fromString("aaa8e7b5-824c-4fde-9ab6-f0abf28a22be");
+            UUID orderSevenId = UUID.fromString("fa2d3751-3517-455d-a67b-35232d257665");
 
-            generatedOrderRemovalAction.remove(caseData, caseDetailsMap, orderSeven.getId(), orderSeven.getValue());
-            generatedOrderRemovalAction.remove(caseData, caseDetailsMap, orderSix.getId(), orderSix.getValue());
+            Optional<Element<GeneratedOrder>> generatedOrderSix
+                = findElement(orderSixId, caseData.getOrderCollection());
+
+            Optional<Element<GeneratedOrder>> generatedOrderSeven
+                = findElement(orderSevenId, caseData.getOrderCollection());
+
+            if (generatedOrderSix.isEmpty()) {
+                throw new IllegalArgumentException(String.format("Could not find generated order %s",
+                    orderSixId));
+            }
+
+            if (generatedOrderSeven.isEmpty()) {
+                throw new IllegalArgumentException(String.format("Could not find generated order %s",
+                    orderSevenId));
+            }
+
+            generatedOrderRemovalAction.remove(caseData, caseDetailsMap, generatedOrderSeven.get().getId(),
+                generatedOrderSeven.get().getValue());
+
+            generatedOrderRemovalAction.remove(caseData, caseDetailsMap, generatedOrderSix.get().getId(),
+                generatedOrderSix.get().getValue());
 
             caseDetails.setData(caseDetailsMap);
         }
