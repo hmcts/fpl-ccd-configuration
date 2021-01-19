@@ -189,7 +189,6 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
         assertThat(responseData.get("showConfirmPastHearingDatesPage").equals("Yes"));
         assertThat(responseData.get("startDateFlag").equals("Yes"));
         assertThat(responseData.get("endDateFlag").equals("Yes"));
-        assertThat(responseData.get("hasSession").equals("Yes"));
     }
 
     @Test
