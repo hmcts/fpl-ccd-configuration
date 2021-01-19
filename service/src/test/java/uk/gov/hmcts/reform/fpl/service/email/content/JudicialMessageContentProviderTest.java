@@ -1,20 +1,26 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.notify.NewJudicialMessageTemplate;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Locale;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -27,84 +33,43 @@ class JudicialMessageContentProviderTest extends AbstractEmailContentProviderTes
     @Autowired
     private JudicialMessageContentProvider newJudicialMessageContentProvider;
 
-    @Autowired
-    Time time;
+    private static final LocalDateTime HEARING_DATE = LocalDateTime.now().plusMonths(3);
 
-    //Tech debt - maybe mock callout instead of setting date to arbitrary far date in future
-    private static final LocalDateTime HEARING_START_DATE = LocalDateTime.of(3000, 1, 1, 11, 11, 11);
+    private static final String HEARING_CALLOUT = "hearing " + HEARING_DATE
+        .toLocalDate().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).localizedBy(Locale.UK));
 
-    @Test
-    void createTemplateWithExpectedParameters() {
+    @ParameterizedTest
+    @MethodSource("urgency")
+    void testMessageContentWithDifferentUrgency(String urgency, String expectedUrgency, YesNo hasUrgency) {
         CaseData caseData = buildCaseData();
 
         JudicialMessage judicialMessage = JudicialMessage.builder()
             .latestMessage("Please see latest C2")
             .recipient("paulStuart@fpla.com")
             .sender("robertDunlop@fpla.com")
-            .urgency("Needed asap")
+            .urgency(urgency)
             .build();
 
         NewJudicialMessageTemplate expectedTemplate = NewJudicialMessageTemplate.builder()
             .sender("robertDunlop@fpla.com")
             .latestMessage("Please see latest C2")
-            .hasUrgency(YES.getValue())
-            .urgency("Needed asap")
-            .callout("^Smith, 12345, hearing 1 Jan 3000")
-            .caseUrl(caseUrl(CASE_REFERENCE, "JudicialMessagesTab"))
-            .respondentLastName("Smith")
-            .build();
-
-        assertThat(newJudicialMessageContentProvider.buildNewJudicialMessageTemplate(caseData, judicialMessage))
-            .usingRecursiveComparison().isEqualTo(expectedTemplate);
-    }
-
-    @Test
-    void shouldSetUrgencyToNoWhenNotPresentOnJudicialMessageMetaData() {
-        CaseData caseData = buildCaseData();
-
-        JudicialMessage judicialMessage = JudicialMessage.builder()
-            .latestMessage("Please see latest C2")
-            .recipient("paulStuart@fpla.com")
-            .sender("robertDunlop@fpla.com")
-            .build();
-
-        NewJudicialMessageTemplate expectedTemplate = NewJudicialMessageTemplate.builder()
-            .sender("robertDunlop@fpla.com")
-            .latestMessage("Please see latest C2")
-            .hasUrgency(NO.getValue())
-            .urgency("")
-            .callout("^Smith, 12345, hearing 1 Jan 3000")
+            .hasUrgency(hasUrgency.getValue())
+            .urgency(expectedUrgency)
+            .callout("^Smith, 12345, " + HEARING_CALLOUT)
             .caseUrl(caseUrl(CASE_REFERENCE, "JudicialMessagesTab"))
             .respondentLastName("Smith")
             .build();
 
         assertThat(newJudicialMessageContentProvider.buildNewJudicialMessageTemplate(caseData, judicialMessage))
             .isEqualTo(expectedTemplate);
+
     }
 
-    @Test
-    void shouldSetUrgencyToNoWhenNotUrgencyDefinedAsEmptyStringOnJudicialMessageMetaData() {
-        CaseData caseData = buildCaseData();
-
-        JudicialMessage judicialMessage = JudicialMessage.builder()
-            .latestMessage("Please see latest C2")
-            .recipient("paulStuart@fpla.com")
-            .sender("robertDunlop@fpla.com")
-            .urgency("")
-            .build();
-
-        NewJudicialMessageTemplate expectedTemplate = NewJudicialMessageTemplate.builder()
-            .sender("robertDunlop@fpla.com")
-            .latestMessage("Please see latest C2")
-            .hasUrgency(NO.getValue())
-            .urgency("")
-            .callout("^Smith, 12345, hearing 1 Jan 3000")
-            .caseUrl(caseUrl(CASE_REFERENCE, "JudicialMessagesTab"))
-            .respondentLastName("Smith")
-            .build();
-
-        assertThat(newJudicialMessageContentProvider.buildNewJudicialMessageTemplate(caseData, judicialMessage))
-            .isEqualTo(expectedTemplate);
+    private static Stream<Arguments> urgency() {
+        return Stream.of(
+            Arguments.of("Very urgent", "Very urgent", YES),
+            Arguments.of("", "", NO),
+            Arguments.of(null, "", NO));
     }
 
     private CaseData buildCaseData() {
@@ -115,7 +80,8 @@ class JudicialMessageContentProviderTest extends AbstractEmailContentProviderTes
                 .firstName("John")
                 .lastName("Smith")
                 .build()).build()))
-            .hearingDetails(wrapElements(HearingBooking.builder().startDate((HEARING_START_DATE)).build()))
+            .hearingDetails(
+                wrapElements(HearingBooking.builder().startDate(HEARING_DATE).build()))
             .build();
     }
 }

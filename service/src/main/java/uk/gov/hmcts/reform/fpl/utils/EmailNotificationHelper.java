@@ -35,7 +35,6 @@ public class EmailNotificationHelper {
             .collect(joining(", "));
     }
 
-    //Tech debt - Change this to use hearingBooking.toLabel()
     public static String buildSubjectLineWithHearingBookingDateSuffix(final String familyManCaseNumber,
                                                                       final List<Element<Respondent>> respondents,
                                                                       final HearingBooking hearingBooking) {

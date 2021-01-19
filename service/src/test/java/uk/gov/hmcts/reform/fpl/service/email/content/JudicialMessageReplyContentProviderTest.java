@@ -14,6 +14,9 @@ import uk.gov.hmcts.reform.fpl.model.notify.JudicialMessageReplyTemplate;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -24,7 +27,10 @@ class JudicialMessageReplyContentProviderTest extends AbstractEmailContentProvid
     @Autowired
     private JudicialMessageReplyContentProvider judicialMessageReplyContentProvider;
 
-    private static final LocalDateTime HEARING_START_DATE = LocalDateTime.of(3000, 1, 1, 11, 11, 11);
+    private static final LocalDateTime HEARING_DATE = LocalDateTime.now().plusMonths(3);
+
+    private static final String HEARING_CALLOUT = "hearing " + HEARING_DATE
+        .toLocalDate().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).localizedBy(Locale.UK));
 
     @Test
     void createTemplateWithExpectedParameters() {
@@ -35,7 +41,7 @@ class JudicialMessageReplyContentProviderTest extends AbstractEmailContentProvid
                 .firstName("John")
                 .lastName("Smith")
                 .build()).build()))
-            .hearingDetails(wrapElements(HearingBooking.builder().startDate((HEARING_START_DATE)).build()))
+            .hearingDetails(wrapElements(HearingBooking.builder().startDate((HEARING_DATE)).build()))
             .build();
 
         JudicialMessage judicialMessage = JudicialMessage.builder()
@@ -47,7 +53,7 @@ class JudicialMessageReplyContentProviderTest extends AbstractEmailContentProvid
 
         JudicialMessageReplyTemplate expectedTemplate = JudicialMessageReplyTemplate.builder()
             .latestMessage("Please see latest C2")
-            .callout("^Smith, 12345, hearing 1 Jan 3000")
+            .callout("^Smith, 12345, " + HEARING_CALLOUT)
             .caseUrl(caseUrl(CASE_REFERENCE, "JudicialMessagesTab"))
             .respondentLastName("Smith")
             .build();

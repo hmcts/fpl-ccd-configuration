@@ -16,6 +16,9 @@ import uk.gov.hmcts.reform.fpl.model.notify.c2uploaded.C2UploadedTemplate;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Locale;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,7 +38,10 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
     private DocumentReference uploadedC2 = testDocumentReference();
     private static final String C2 = "C2Tab";
 
-    private static final LocalDateTime HEARING_START_DATE = LocalDateTime.of(3000, 1, 1, 11, 11, 11);
+    private static final LocalDateTime HEARING_DATE = LocalDateTime.now().plusMonths(3);
+
+    private static final String HEARING_CALLOUT = "hearing " + HEARING_DATE
+        .toLocalDate().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).localizedBy(Locale.UK));
 
     @BeforeEach
     void init() {
@@ -88,7 +94,7 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
     private AllocatedJudgeTemplateForC2 getAllocatedJudgeParametersForC2() {
         return AllocatedJudgeTemplateForC2.builder()
             .caseUrl(caseUrl(CASE_REFERENCE, C2))
-            .callout("^Smith, 12345, hearing 1 Jan 3000")
+            .callout("^Smith, 12345, " + HEARING_CALLOUT)
             .judgeTitle("Her Honour Judge")
             .judgeName("Moley")
             .respondentLastName("Smith")
@@ -97,7 +103,7 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
 
     private C2UploadedTemplate getC2UploadedTemplateParameters() {
         return C2UploadedTemplate.builder()
-            .callout("^Smith, 12345, hearing 1 Jan 3000")
+            .callout("^Smith, 12345, " + HEARING_CALLOUT)
             .respondentLastName("Smith")
             .caseUrl(caseUrl(CASE_REFERENCE, C2))
             .documentUrl("http://fake-url/documents/b28f859b-7521-4c84-9057-47e56afd773f/binary")
@@ -112,7 +118,7 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
                 .firstName("John")
                 .lastName("Smith")
                 .build()).build()))
-            .hearingDetails(wrapElements(HearingBooking.builder().startDate((HEARING_START_DATE)).build()))
+            .hearingDetails(wrapElements(HearingBooking.builder().startDate((HEARING_DATE)).build()))
             .allocatedJudge(Judge.builder().judgeTitle(HER_HONOUR_JUDGE).judgeLastName("Moley").build())
             .build();
     }
