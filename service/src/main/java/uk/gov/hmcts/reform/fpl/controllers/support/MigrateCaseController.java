@@ -65,7 +65,6 @@ public class MigrateCaseController extends CallbackController {
     private void run2608(CaseDetails caseDetails) {
         if ("1595320156232721".equals(caseDetails.getId().toString())) {
             CaseData caseData = getCaseData(caseDetails);
-            CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
 
             if (caseData.getOrderCollection().size() < 7) {
                 throw new IllegalArgumentException(String.format("Expected to have at least 8 generated orders"
@@ -90,6 +89,8 @@ public class MigrateCaseController extends CallbackController {
                 throw new IllegalArgumentException(String.format("Could not find generated order %s",
                     orderSevenId));
             }
+
+            CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
 
             generatedOrderRemovalAction.remove(caseData, caseDetailsMap, generatedOrderSeven.get().getId(),
                 generatedOrderSeven.get().getValue());
