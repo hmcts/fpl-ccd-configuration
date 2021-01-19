@@ -10,6 +10,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.EPOExclusionRequirementType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedEPOKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
@@ -347,6 +348,7 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
             .epoType(EPOType.PREVENT_REMOVAL)
             .epoPhrase(EPOPhrase.builder().includePhrase("PHRASE").build())
             .epoEndDate(now().plusDays(5))
+            .epoExclusionRequirementType(EPOExclusionRequirementType.NO_TO_EXCLUSION)
             .build();
 
         final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData));

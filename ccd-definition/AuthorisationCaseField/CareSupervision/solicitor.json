@@ -237,6 +237,13 @@
     "CaseFieldID": "orderCollection",
     "UserRole": "[SOLICITOR]",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sealedCMOs",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "R"
   }
 ]
 
