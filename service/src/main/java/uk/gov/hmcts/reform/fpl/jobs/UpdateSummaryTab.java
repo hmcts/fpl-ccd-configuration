@@ -8,14 +8,14 @@ import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.search.SearchService;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.BooleanQuery;
-import uk.gov.hmcts.reform.fpl.utils.elasticsearch.ESClause;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.ESQuery;
-import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Match;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MatchQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MustNot;
 
 import java.util.List;
@@ -67,14 +67,14 @@ public class UpdateSummaryTab implements Job {
         return caseDetails.getData();
     }
 
-    public ESQuery buildQuery(boolean enabled) {
-        Match openMatch = Match.match("state", "Open");
-        Match deletedMatch = Match.match("state", "Deleted");
-        Match closedMatch = Match.match("state", "Closed");
+    public ESQuery buildQuery(boolean firstPassEnabled) {
+        MatchQuery openMatch = MatchQuery.of("state", State.OPEN.getValue());
+        MatchQuery deletedMatch = MatchQuery.of("state", State.DELETED.getValue());
+        MatchQuery closedMatch = MatchQuery.of("state", State.CLOSED.getValue());
 
         MustNot.MustNotBuilder mustNot = MustNot.builder();
 
-        if (enabled) {
+        if (firstPassEnabled) {
             mustNot.clauses(List.of(openMatch, deletedMatch));
 
         } else {
@@ -86,17 +86,9 @@ public class UpdateSummaryTab implements Job {
     }
 
     public static void main(String[] args) {
-        ESClause open = Match.match("state", "Open");
-        ESClause deleted = Match.match("state", "Deleted");
-        ESClause closed = Match.match("state", "Closed");
-
-        ESQuery searchQuery = BooleanQuery.builder().mustNot(MustNot.builder().clauses(List.of(open, deleted, closed)).build()).build();
-
-        System.out.println(searchQuery.toQueryString());
-
         UpdateSummaryTab tab = new UpdateSummaryTab(null, null, null, null, null);
-        System.out.println(tab.buildQuery(false));
-        System.out.println(tab.buildQuery(true));
+        System.out.println("false = " + tab.buildQuery(false).toQueryContext());
+        System.out.println("true  = " + tab.buildQuery(true).toQueryContext());
     }
 
 }

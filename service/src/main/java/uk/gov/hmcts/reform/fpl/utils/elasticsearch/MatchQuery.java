@@ -2,17 +2,17 @@ package uk.gov.hmcts.reform.fpl.utils.elasticsearch;
 
 import java.util.Map;
 
-public class Match implements ESClause {
+public class MatchQuery implements ESQuery {
     private final String field;
     private final Object value;
 
-    public Match(String field, Object value) {
+    public MatchQuery(String field, Object value) {
         this.field = field;
         this.value = value;
     }
 
-    public static Match match(String field, Object value) {
-        return new Match(field, value);
+    public static MatchQuery of(String field, Object value) {
+        return new MatchQuery(field, value);
     }
 
     @Override

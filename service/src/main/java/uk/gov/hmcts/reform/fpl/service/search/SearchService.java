@@ -24,7 +24,7 @@ public class SearchService {
 
     public List<CaseDetails> search(ESQuery query) {
         requireNonNull(query);
-        return search(query.toQueryString());
+        return search(query.toQueryContext());
     }
 
     public List<CaseDetails> search(String query) {

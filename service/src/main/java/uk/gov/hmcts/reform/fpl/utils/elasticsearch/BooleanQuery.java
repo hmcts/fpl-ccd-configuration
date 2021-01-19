@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Builder
-public class BooleanQuery implements ESQuery, ESClause {
+public class BooleanQuery implements ESQuery {
     private final MustNot mustNot;
 
     @Override
