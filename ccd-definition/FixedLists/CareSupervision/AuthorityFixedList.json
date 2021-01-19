@@ -310,9 +310,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "PEM",
+    "ListElement": "Pembrokeshire County Council",
+    "DisplayOrder": 60
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "PCC",
     "ListElement": "Portsmouth City Council",
-    "DisplayOrder": 60
+    "DisplayOrder": 61
   },
   {
     "LiveFrom": "01/01/2017",
