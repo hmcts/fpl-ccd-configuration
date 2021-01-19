@@ -20,24 +20,24 @@ module.exports = {
     },
   },
 
-  async selectFurtherEvidence() {
+  selectFurtherEvidence() {
     I.click(this.fields.documentType.furtherEvidence);
   },
 
-  async selectCorrespondence() {
+  selectCorrespondence() {
     I.click(this.fields.documentType.correspondence);
   },
 
-  async selectC2SupportingDocuments() {
+  selectC2SupportingDocuments() {
     I.click(this.fields.documentType.c2);
   },
 
-  async selectFurtherEvidenceIsRelatedToHearing() {
+  selectFurtherEvidenceIsRelatedToHearing() {
     I.waitForElement(this.fields.relatedToHearing.yes);
     I.click(this.fields.relatedToHearing.yes);
   },
 
-  async selectHearing(hearingDate) {
+  selectHearing(hearingDate) {
     I.waitForElement(this.fields.hearingList);
     I.selectOption(this.fields.hearingList, `Case management hearing, ${hearingDate}`);
   },
@@ -48,34 +48,27 @@ module.exports = {
     I.selectOption(this.fields.c2DocumentsList, dropdownLabel);
   },
 
-  async enterDocumentName(documentName) {
-    const elementIndex = await this.getActiveElementIndex();
-    I.fillField(this.fields.supportingDocuments(elementIndex).name, documentName);
+  enterDocumentName(documentName, index = 0) {
+    I.fillField(this.fields.supportingDocuments(index).name, documentName);
   },
 
-  async enterDocumentNotes(notes) {
-    const elementIndex = await this.getActiveElementIndex();
-    I.fillField(this.fields.supportingDocuments(elementIndex).notes, notes);
+  enterDocumentNotes(notes, index = 0) {
+    I.fillField(this.fields.supportingDocuments(index).notes, notes);
   },
 
-  async enterDateAndTimeReceived(dateAndTime) {
-    const elementIndex = await this.getActiveElementIndex();
-    I.fillDateAndTime(dateAndTime, this.fields.supportingDocuments(elementIndex).dateAndTime);
+  async enterDateAndTimeReceived(dateAndTime, index = 0) {
+    await I.fillDateAndTime(dateAndTime, this.fields.supportingDocuments(index).dateAndTime);
   },
 
-  async uploadDocument(document) {
-    const elementIndex = await this.getActiveElementIndex();
-    I.attachFile(this.fields.supportingDocuments(elementIndex).document, document);
+  uploadDocument(document, index = 0) {
+    I.attachFile(this.fields.supportingDocuments(index).document, document);
   },
 
   async uploadSupportingEvidenceDocument(supportingEvidenceDocument) {
-    await this.enterDocumentName(supportingEvidenceDocument.name);
-    await this.enterDocumentNotes(supportingEvidenceDocument.notes);
-    await this.enterDateAndTimeReceived(supportingEvidenceDocument.date);
-    await this.uploadDocument(supportingEvidenceDocument.document);
-  },
-
-  async getActiveElementIndex() {
-    return await I.grabNumberOfVisibleElements('//button[text()="Remove"]') - 1;
+    const index = await I.getActiveElementIndex();
+    this.enterDocumentName(supportingEvidenceDocument.name, index);
+    this.enterDocumentNotes(supportingEvidenceDocument.notes, index);
+    await this.enterDateAndTimeReceived(supportingEvidenceDocument.date, index);
+    this.uploadDocument(supportingEvidenceDocument.document, index);
   },
 };

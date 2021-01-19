@@ -60,7 +60,7 @@ module.exports = function () {
         if (!config.hmctsUser.email || !config.hmctsUser.password) {
           throw new Error('For environment requiring hmcts authentication please provide HMCTS_USER_USERNAME and HMCTS_USER_PASSWORD environment variables');
         }
-        within(hmctsLoginIn, () => {
+        await within(hmctsLoginIn, () => {
           this.fillField('//input[@type="email"]', config.hmctsUser.email);
           this.wait(0.2);
           this.click('Next');
@@ -161,6 +161,11 @@ module.exports = function () {
       let fieldName = path.splice(-1, 1)[0];
       let selector = '//mat-tab-body';
 
+      // if it is a simple case field then it will not have a complex-panel-[title|simple-field] class
+      if (path.length === 0) {
+        return `${selector}//tr[.//th/div[text()="${fieldName}"]]`;
+      }
+
       path.forEach(step => {
         selector = `${selector}//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="${step}"]]]`;
       }, this);
@@ -216,8 +221,8 @@ module.exports = function () {
       await this.navigateToCaseDetails(caseId);
     },
 
-    async navigateToCaseList() {
-      await caseListPage.navigate();
+    navigateToCaseList() {
+      caseListPage.navigate();
     },
 
     async fillDate(date, sectionId = 'form') {
@@ -226,7 +231,7 @@ module.exports = function () {
       }
 
       if (date) {
-        return within(sectionId, () => {
+        await within(sectionId, () => {
           this.fillField('Day', date.day);
           this.fillField('Month', date.month);
           this.fillField('Year', date.year);
@@ -234,7 +239,7 @@ module.exports = function () {
       }
     },
 
-    fillDateAndTime(date, sectionId = 'form') {
+    async fillDateAndTime(date, sectionId = 'form') {
       if (date instanceof Date) {
         date = {
           day: date.getDate(), month: date.getMonth() + 1, year: date.getFullYear(),
@@ -243,23 +248,23 @@ module.exports = function () {
       }
 
       if (date) {
-        return within(sectionId, () => {
-          if(date.day) {
+        await within(sectionId, () => {
+          if (date.day) {
             this.fillField('Day', date.day);
           }
-          if(date.month) {
+          if (date.month) {
             this.fillField('Month', date.month);
           }
-          if(date.year) {
+          if (date.year) {
             this.fillField('Year', date.year);
           }
-          if(date.hour) {
+          if (date.hour) {
             this.fillField('Hour', date.hour);
           }
-          if(date.minute) {
+          if (date.minute) {
             this.fillField('Minute', date.minute);
           }
-          if(date.second) {
+          if (date.second) {
             this.fillField('Second', date.second);
           }
         });
@@ -327,6 +332,7 @@ module.exports = function () {
         }
       }
     },
+
     async getActiveElementIndex() {
       return await this.grabNumberOfVisibleElements('//button[text()="Remove"]') - 1;
     },
@@ -339,6 +345,8 @@ module.exports = function () {
      *
      * @param action - an action that will be retried until either condition is met or max number of retries is reached
      * @param locator - locator for an element that is expected to be present upon successful execution of an action
+     * @param checkUrlChanged - check if the url has changed, if true skip the action
+     * @param maxNumberOfTries - maximum number of attempts to retry
      * @returns {Promise<void>} - promise holding no result if resolved or error if rejected
      */
     async retryUntilExists(action, locator, checkUrlChanged = true, maxNumberOfTries = maxRetries) {
@@ -353,9 +361,9 @@ module.exports = function () {
         try {
           if (checkUrlChanged && (originalUrl !== await this.grabCurrentUrl())) {
             output.print('Url changed, action skipped');
-            continue;
+          } else {
+            await action();
           }
-          await action();
         } catch (error) {
           output.error(error);
         }
