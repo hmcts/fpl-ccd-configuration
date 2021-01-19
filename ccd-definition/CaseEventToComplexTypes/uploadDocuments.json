@@ -1,155 +1,60 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "OtherDocuments",
+    "ID": "UploadApplicationDocuments",
     "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "documents_socialWorkOther",
-    "ListElementCode": "documentTitle",
+    "CaseFieldID": "applicationDocuments",
+    "ListElementCode": "documentType",
     "FieldDisplayOrder": 1,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "OtherDocuments",
+    "ID": "UploadApplicationDocuments",
     "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "documents_socialWorkOther",
-    "ListElementCode": "typeOfDocument",
+    "CaseFieldID": "applicationDocuments",
+    "ListElementCode": "documentName",
     "FieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadApplicationDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "applicationDocuments",
+    "ListElementCode": "includedInSWET",
+    "EventElementLabel": "Let us know what you are including in your SWET",
+    "FieldDisplayOrder": 3,
     "DisplayContext": "OPTIONAL"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "OtherDocuments",
+    "ID": "UploadApplicationDocuments",
     "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "documents_socialWorkChronology_document",
-    "ListElementCode": "typeOfDocument",
-    "FieldDisplayOrder": 1,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "OtherDocuments",
-    "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "documents_socialWorkChronology_document",
-    "ListElementCode": "documentStatus",
-    "FieldDisplayOrder": 2,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "OtherDocuments",
-    "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "documents_socialWorkStatement_document",
-    "ListElementCode": "typeOfDocument",
-    "FieldDisplayOrder": 1,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "OtherDocuments",
-    "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "documents_socialWorkStatement_document",
-    "ListElementCode": "documentStatus",
-    "FieldDisplayOrder": 2,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "OtherDocuments",
-    "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "documents_socialWorkAssessment_document",
-    "ListElementCode": "typeOfDocument",
-    "FieldDisplayOrder": 1,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "OtherDocuments",
-    "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "documents_socialWorkAssessment_document",
-    "ListElementCode": "documentStatus",
-    "FieldDisplayOrder": 2,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "OtherDocuments",
-    "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "documents_socialWorkCarePlan_document",
-    "ListElementCode": "typeOfDocument",
-    "FieldDisplayOrder": 1,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "OtherDocuments",
-    "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "documents_socialWorkCarePlan_document",
-    "ListElementCode": "documentStatus",
-    "FieldDisplayOrder": 2,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "OtherDocuments",
-    "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "documents_socialWorkEvidenceTemplate_document",
-    "ListElementCode": "typeOfDocument",
-    "FieldDisplayOrder": 1,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "OtherDocuments",
-    "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "documents_socialWorkEvidenceTemplate_document",
-    "ListElementCode": "documentStatus",
-    "FieldDisplayOrder": 2,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "OtherDocuments",
-    "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "documents_threshold_document",
-    "ListElementCode": "typeOfDocument",
-    "FieldDisplayOrder": 1,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "OtherDocuments",
-    "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "documents_threshold_document",
-    "ListElementCode": "documentStatus",
-    "FieldDisplayOrder": 2,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "OtherDocuments",
-    "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "documents_checklist_document",
-    "ListElementCode": "typeOfDocument",
-    "FieldDisplayOrder": 1,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "OtherDocuments",
-    "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "documents_checklist_document",
-    "ListElementCode": "documentStatus",
-    "FieldDisplayOrder": 2,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "OtherDocuments",
-    "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "courtBundle",
+    "CaseFieldID": "applicationDocuments",
     "ListElementCode": "document",
-    "FieldDisplayOrder": 1,
-    "DisplayContext": "OPTIONAL"
+    "EventElementLabel": "Upload a file",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadApplicationDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "applicationDocuments",
+    "ListElementCode": "dateTimeUploaded",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "OPTIONAL",
+    "FieldShowCondition": "applicationDocuments=\"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadApplicationDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "applicationDocuments",
+    "ListElementCode": "uploadedBy",
+    "FieldDisplayOrder": 6,
+    "DisplayContext": "OPTIONAL",
+    "FieldShowCondition": "applicationDocuments=\"DO NOT SHOW\""
   }
 ]

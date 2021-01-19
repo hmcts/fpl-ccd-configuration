@@ -48,6 +48,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisProceeding;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRisks;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
@@ -67,6 +68,7 @@ import static org.apache.commons.lang3.StringUtils.endsWith;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.fromString;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
+import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.DONT_KNOW;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -87,6 +89,8 @@ public class CaseSubmissionGenerationService
     private final HmctsCourtLookupConfiguration courtLookupConfiguration;
     private final IdamClient idamClient;
     private final RequestData requestData;
+    private final FeatureToggleService featureToggleService;
+    private final CaseSubmissionDocumentAnnexGenerator annexGenerator;
 
     public DocmosisCaseSubmission getTemplateData(final CaseData caseData) {
         DocmosisCaseSubmission.Builder applicationFormBuilder = DocmosisCaseSubmission.builder();
@@ -116,8 +120,10 @@ public class CaseSubmissionGenerationService
             .groundsThresholdReason(caseData.getGrounds() != null
                 ? buildGroundsThresholdReason(caseData.getGrounds().getThresholdReason()) : DEFAULT_STRING)
             .thresholdDetails(getThresholdDetails(caseData.getGrounds()))
-            .annexDocuments(buildDocmosisAnnexDocuments(caseData))
-            .userFullName(idamClient.getUserInfo(requestData.authorisation()).getName());
+            .annexDocuments(
+                featureToggleService.isApplicationDocumentsEventEnabled()
+                    ? annexGenerator.generate(caseData) : buildDocmosisAnnexDocuments(caseData)
+            ).userFullName(idamClient.getUserInfo(requestData.authorisation()).getName());
 
         return applicationFormBuilder.build();
     }
@@ -182,6 +188,15 @@ public class CaseSubmissionGenerationService
     private void appendEmergencyProtectionOrdersAndDetailsToOrdersNeeded(final Orders orders,
                                                                          final StringBuilder stringBuilder) {
         if (isNotEmpty(orders.getEmergencyProtectionOrders())) {
+            if (isNotEmpty(orders.getEpoType())) {
+                stringBuilder.append(orders.getEpoType().getLabel());
+                stringBuilder.append(NEW_LINE);
+                if (orders.getEpoType() == PREVENT_REMOVAL) {
+                    String address = orders.getAddress().getAddressAsString(NEW_LINE);
+                    stringBuilder.append(address);
+                    stringBuilder.append(NEW_LINE);
+                }
+            }
             stringBuilder.append(orders.getEmergencyProtectionOrders().stream()
                 .map(EmergencyProtectionOrdersType::getLabel)
                 .collect(joining(NEW_LINE)));
@@ -217,6 +232,12 @@ public class CaseSubmissionGenerationService
 
     private void appendEmergencyProtectionOrderDirectionDetails(final Orders orders,
                                                                 final StringBuilder stringBuilder) {
+
+        if (StringUtils.isNotBlank(orders.getExcluded())) {
+            stringBuilder.append(orders.getExcluded() + " excluded");
+            stringBuilder.append(NEW_LINE);
+        }
+
         if (StringUtils.isNotEmpty(orders.getEmergencyProtectionOrderDirectionDetails())) {
             stringBuilder.append(orders.getEmergencyProtectionOrderDirectionDetails());
             stringBuilder.append(NEW_LINE);

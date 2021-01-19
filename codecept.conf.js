@@ -1,10 +1,42 @@
 /* global process */
 
+const lodash = require('lodash');
+
 exports.config = {
   output: './output',
   multiple: {
     parallel: {
-      chunks: parseInt(process.env.PARALLEL_CHUNKS || '5'),
+      chunks: (files) => {
+
+        const splitFiles = (list, size) => {
+          const sets = [];
+          const chunks = list.length / size;
+          let i = 0;
+
+          while (i < chunks) {
+            sets[i] = list.splice(0, size);
+            i++;
+          }
+          return sets;
+        };
+
+        const buckets = parseInt(process.env.PARALLEL_CHUNKS || '5');
+        const slowTests = lodash.filter(files, file => file.includes('@slow'));
+        const otherTests = lodash.difference(files, slowTests);
+
+        let chunks = [];
+        if (buckets > slowTests.length) {
+          const slowTestChunkSize = 1;
+          const regularChunkSize = Math.ceil((files.length - slowTests.length) / (buckets - slowTests.length));
+          chunks = lodash.union(splitFiles(slowTests, slowTestChunkSize), splitFiles(otherTests, regularChunkSize));
+        } else {
+          chunks = splitFiles(files, Math.ceil(files.length / buckets));
+        }
+
+        console.log(chunks);
+
+        return chunks;
+      },
     },
   },
   helpers: {
@@ -12,7 +44,7 @@ exports.config = {
       show: process.env.SHOW_BROWSER_WINDOW || false,
       restart: false,
       keepCookies: true,
-      waitForTimeout: 20000,
+      waitForTimeout: parseInt(process.env.WAIT_FOR_TIMEOUT || '20000'),
       chrome: {
         ignoreHTTPSErrors: true,
         args: process.env.PROXY_SERVER ? [
@@ -76,14 +108,17 @@ exports.config = {
     addNoteEventPage: './e2e/pages/events/addNoteEvent.page.js',
     addExpertReportEventPage: './e2e/pages/events/addExpertReportEvent.page.js',
     addExtend26WeekTimelineEventPage: './e2e/pages/events/addExtend26WeekTimelineEvent.page.js',
-    closeTheCaseEventPage: './e2e/pages/events/closeTheCase.page.js',
+    closeTheCaseEventPage: './e2e/pages/events/closeTheCaseEvent.page.js',
     returnApplicationEventPage: './e2e/pages/events/returnApplicationEvent.page.js',
     uploadCaseManagementOrderEventPage: './e2e/pages/events/uploadCaseManagementOrderEvent.page.js',
     reviewAgreedCaseManagementOrderEventPage: './e2e/pages/events/reviewAgreedCaseManagementOrderEvent.page.js',
     removeOrderEventPage: './e2e/pages/events/removeOrderEvent.page.js',
     manageDocumentsEventPage: './e2e/pages/events/manageDocumentsEvent.page.js',
+    manageDocumentsLAEventPage: './e2e/pages/events/manageDocumentsLAEvent.page.js',
     changeCaseStateEventPage: './e2e/pages/events/changeCaseStateEvent.page.js',
     manageLegalRepresentativesEventPage: './e2e/pages/events/manageLegalRepresentativesEvent.page.js',
+    addApplicationDocumentsEventPage: './e2e/pages/events/addApplicationDocumentsEvent.page.js',
+    messageJudgeOrLegalAdviserEventPage: './e2e/pages/events/messageJudgeOrLegalAdviserEvent.page.js',
   },
   plugins: {
     autoDelay: {

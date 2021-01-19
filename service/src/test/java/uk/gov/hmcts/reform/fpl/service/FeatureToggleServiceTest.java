@@ -20,16 +20,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.C2_APPLICATION;
-import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.CMO;
-import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.GENERATED_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.NOTICE_OF_PROCEEDINGS;
-import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.SDO;
 import static uk.gov.hmcts.reform.fpl.utils.matchers.LDUserMatcher.ldUser;
 
 class FeatureToggleServiceTest {
@@ -55,7 +51,7 @@ class FeatureToggleServiceTest {
         assertThat(service.isCtscEnabled(LOCAL_AUTHORITY)).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
             eq("CTSC"),
-            ldUser(ENVIRONMENT).withLocalAuthority(LOCAL_AUTHORITY).build(),
+            argThat(ldUser(ENVIRONMENT).withLocalAuthority(LOCAL_AUTHORITY).build()),
             eq(false));
     }
 
@@ -67,92 +63,7 @@ class FeatureToggleServiceTest {
         assertThat(service.isCtscReportEnabled()).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
             eq("CTSC"),
-            ldUser(ENVIRONMENT).build(),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForCaseUserAssignment(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isCaseUserBulkAssignmentEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("case-user-assignment"),
-            ldUser(ENVIRONMENT).build(),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForAllocatedJudgeNotificationCMO(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isAllocatedJudgeNotificationEnabled(CMO)).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("judge-notification"),
-            ldUser(ENVIRONMENT).build(),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForAllocatedJudgeNotificationSDO(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isAllocatedJudgeNotificationEnabled(SDO)).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("judge-notification"),
-            ldUser(ENVIRONMENT).build(),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForAllocatedJudgeNotificationNoticeOfProceedings(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isAllocatedJudgeNotificationEnabled(NOTICE_OF_PROCEEDINGS))
-            .isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("judge-notification"),
-            ldUser(ENVIRONMENT).build(),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForAllocatedJudgeNotificationGeneratedOrder(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isAllocatedJudgeNotificationEnabled(GENERATED_ORDER)).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("judge-notification"),
-            ldUser(ENVIRONMENT).build(),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForAllocatedJudgeNotificationC2Application(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isAllocatedJudgeNotificationEnabled(C2_APPLICATION)).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("judge-notification"),
-            ldUser(ENVIRONMENT).build(),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForNewCaseStateModel(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isNewCaseStateModelEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("new-case-state-model"),
-            ldUser(ENVIRONMENT).build(),
+            argThat(ldUser(ENVIRONMENT).build()),
             eq(false));
     }
 
@@ -175,7 +86,7 @@ class FeatureToggleServiceTest {
         assertThat(service.isAllowCaseCreationForUsersNotOnboardedToMOEnabled(LOCAL_AUTHORITY)).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
             eq("allow-case-creation-for-users-not-onboarded-to-mo"),
-            ldUser(ENVIRONMENT).withLocalAuthority(LOCAL_AUTHORITY).build(),
+            argThat(ldUser(ENVIRONMENT).withLocalAuthority(LOCAL_AUTHORITY).build()),
             eq(false));
     }
 
@@ -187,7 +98,43 @@ class FeatureToggleServiceTest {
         assertThat(service.isRestrictedFromCaseSubmission(LOCAL_AUTHORITY)).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
             eq("restrict-case-submission"),
-            ldUser(ENVIRONMENT).withLocalAuthority(LOCAL_AUTHORITY).build(),
+            argThat(ldUser(ENVIRONMENT).withLocalAuthority(LOCAL_AUTHORITY).build()),
+            eq(false));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForIsAddHearingsInPastEnabled(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isAddHearingsInPastEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("add-hearings-in-past"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(false));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForIsApplicationDocumentsEventEnabled(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isApplicationDocumentsEventEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("application-documents-event"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(false));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForIsEpoOrderTypeAndExclusionEnabledBoolean(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isEpoOrderTypeAndExclusionEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("epo-order-type-and-exclusion"),
+            argThat(ldUser(ENVIRONMENT).build()),
             eq(false));
     }
 
@@ -197,10 +144,6 @@ class FeatureToggleServiceTest {
                 (Runnable) () -> service.isCtscReportEnabled(),
                 (Runnable) () -> service.isCtscEnabled("test name"),
                 buildAttributes("report")),
-            Arguments.of(
-                (Runnable) () -> service.isAllocatedJudgeNotificationEnabled(SDO),
-                (Runnable) () -> service.isCtscReportEnabled(),
-                buildAttributes("allocatedJudgeNotificationType")),
             Arguments.of(
                 (Runnable) () -> service.isCtscEnabled("test name"),
                 (Runnable) () -> service.isCtscReportEnabled(),

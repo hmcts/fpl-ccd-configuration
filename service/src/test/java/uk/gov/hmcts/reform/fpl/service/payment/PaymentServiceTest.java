@@ -27,7 +27,7 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import java.math.BigDecimal;
 import java.util.List;
 
-import static org.apache.commons.lang.StringUtils.defaultIfBlank;
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;

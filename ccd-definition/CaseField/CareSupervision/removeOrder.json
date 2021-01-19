@@ -19,7 +19,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hiddenOrders",
-    "Label": "Removed orders",
+    "Label": "Other removed orders",
     "FieldType": "Collection",
     "FieldTypeParameter": "GeneratedOrder",
     "SecurityClassification": "Public"
@@ -63,5 +63,60 @@
     "Label": "Date and time of upload",
     "FieldType": "Text",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hiddenCaseManagementOrders",
+    "Label": "Removed case management orders",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hearingToUnlink",
+    "Label": "Hearing",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "showRemoveCMOFieldsFlag",
+    "Label": " ",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "removeStandardDirectionOrderWarning",
+    "Label": "The case state will return to Gatekeeping",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "showRemoveSDOWarningFlag",
+    "Label": " ",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hiddenStandardDirectionOrders",
+    "Label": "Removed gatekeeping orders",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "StandardDirectionOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]

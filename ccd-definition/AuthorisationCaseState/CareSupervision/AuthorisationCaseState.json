@@ -88,6 +88,7 @@
     "UserRoles": [
       "caseworker-publiclaw-solicitor",
       "caseworker-publiclaw-courtadmin",
+      "caseworker-publiclaw-systemupdate",
       "caseworker-caa"
     ],
     "CRUD": "CRU"

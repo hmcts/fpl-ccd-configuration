@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute.SERVICE;
@@ -83,6 +84,10 @@ public class StandardDirectionsOrderController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
         SDORoute sdoRouter = caseData.getSdoRouter();
+
+        if (standardDirectionsService.hasEmptyDirections(caseData)) {
+            caseDetails.getData().putAll(standardDirectionsService.populateStandardDirections(caseData));
+        }
 
         if (sdoRouter != null && standardDirectionOrder != null) {
             switch (sdoRouter) {
@@ -294,7 +299,7 @@ public class StandardDirectionsOrderController extends CallbackController {
     }
 
     private String getFirstHearingStartDate(CaseData caseData) {
-        return caseData.getFirstHearing()
+        return caseData.getFirstHearingOfType(CASE_MANAGEMENT)
             .map(hearing -> formatLocalDateTimeBaseUsingFormat(hearing.getStartDate(), DATE_TIME))
             .orElse("Please enter a hearing date");
     }

@@ -90,7 +90,7 @@ class SendNoticeOfHearingHandlerTest {
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))
             .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
-        sendNoticeOfHearingHandler.sendEmailToLA(new SendNoticeOfHearing(caseData, hearing));
+        sendNoticeOfHearingHandler.notifyLocalAuthority(new SendNoticeOfHearing(caseData, hearing));
 
         verify(notificationService).sendEmail(
             NOTICE_OF_NEW_HEARING,
@@ -103,26 +103,26 @@ class SendNoticeOfHearingHandlerTest {
     void shouldSendNotificationToCafcassWhenNewHearingIsAdded() {
         final CaseData caseData = caseData();
 
-        sendNoticeOfHearingHandler.sendEmailToCafcass(new SendNoticeOfHearing(caseData, hearing));
+        sendNoticeOfHearingHandler.notifyCafcass(new SendNoticeOfHearing(caseData, hearing));
 
         verify(notificationService).sendEmail(
             NOTICE_OF_NEW_HEARING,
             CAFCASS_EMAIL_ADDRESS,
             noticeOfHearingTemplate,
-            caseData.getId().toString());
+            caseData.getId());
     }
 
     @Test
     void shouldSendNotificationToRepresentativesWhenNewHearingIsAdded() {
         final CaseData caseData = caseData();
 
-        sendNoticeOfHearingHandler.sendEmailToRepresentatives(new SendNoticeOfHearing(caseData, hearing));
+        sendNoticeOfHearingHandler.notifyRepresentatives(new SendNoticeOfHearing(caseData, hearing));
 
         verify(representativeNotificationService)
             .sendToRepresentativesByServedPreference(
                 RepresentativeServingPreferences.EMAIL,
                 NOTICE_OF_NEW_HEARING,
-                noticeOfHearingTemplate.toMap(mapper),
+                noticeOfHearingTemplate,
                 caseData
             );
 
@@ -130,7 +130,7 @@ class SendNoticeOfHearingHandlerTest {
             .sendToRepresentativesByServedPreference(
                 RepresentativeServingPreferences.DIGITAL_SERVICE,
                 NOTICE_OF_NEW_HEARING,
-                noticeOfHearingTemplate.toMap(mapper),
+                noticeOfHearingTemplate,
                 caseData
             );
     }

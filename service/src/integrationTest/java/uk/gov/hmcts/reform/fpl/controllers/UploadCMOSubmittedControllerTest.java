@@ -100,13 +100,14 @@ class UploadCMOSubmittedControllerTest extends AbstractUploadCMOControllerTest {
     }
 
     private Map<String, Object> draftEmailTemplate() {
-        DraftCMOUploadedTemplate template = new DraftCMOUploadedTemplate()
-            .setSubjectLineWithHearingDate(String.format("Davidson, %s, case management hearing, 3 November 2020",
+        DraftCMOUploadedTemplate template = DraftCMOUploadedTemplate.builder()
+            .subjectLineWithHearingDate(String.format("Davidson, %s, case management hearing, 3 November 2020",
                 FAMILY_MAN_CASE_NUMBER))
-            .setRespondentLastName("Davidson")
-            .setJudgeTitle("Her Honour Judge")
-            .setJudgeName("Judy")
-            .setCaseUrl(String.format("http://fake-url/cases/case-details/%s#DraftOrdersTab", CASE_ID));
+            .respondentLastName("Davidson")
+            .judgeTitle("Her Honour Judge")
+            .judgeName("Judy")
+            .caseUrl(String.format("http://fake-url/cases/case-details/%s#DraftOrdersTab", CASE_ID))
+            .build();
         return mapper.convertValue(template, new TypeReference<>() {
         });
     }

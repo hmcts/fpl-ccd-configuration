@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.config.GatewayConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -29,7 +28,6 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.DischargeCareOrderService;
-import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
@@ -37,6 +35,7 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOAddressGroup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +55,6 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.CloseCaseReason.FINAL_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
-import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.concatUrlAndMostRecentUploadedDocumentPath;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
@@ -72,11 +70,9 @@ public class GeneratedOrderController extends CallbackController {
     private final ValidateGroupService validateGroupService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
-    private final GatewayConfiguration gatewayConfiguration;
     private final CoreCaseDataService coreCaseDataService;
     private final ChildrenService childrenService;
     private final DischargeCareOrderService dischargeCareOrder;
-    private final DocumentDownloadService documentDownloadService;
     private final Time time;
 
     @PostMapping("/about-to-start")
@@ -224,6 +220,22 @@ public class GeneratedOrderController extends CallbackController {
         return respond(caseDetails);
     }
 
+    @PostMapping("/populate-epo-parameters/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleMidEventEPOExclusionRequirement(
+        @RequestBody CallbackRequest callbackrequest) {
+        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+        Map<String, Object> data = caseDetails.getData();
+
+        final List<String> errors = validateGroupService.validateGroup(caseData, EPOAddressGroup.class);
+
+        data.put("epoWhoIsExcluded",caseData.getOrders().getExcluded());
+        data.put("epoType",caseData.getOrders().getEpoType());
+        data.put("epoRemovalAddress",caseData.getOrders().getAddress());
+
+        return respond(caseDetails, errors);
+    }
+
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
@@ -284,11 +296,7 @@ public class GeneratedOrderController extends CallbackController {
             "internal-change-SEND_DOCUMENT",
             Map.of("documentToBeSent", mostRecentUploadedDocument)
         );
-        publishEvent(new GeneratedOrderEvent(caseData,
-            concatUrlAndMostRecentUploadedDocumentPath(
-                gatewayConfiguration.getUrl(),
-                mostRecentUploadedDocument.getBinaryUrl()),
-            documentDownloadService.downloadDocument(mostRecentUploadedDocument.getBinaryUrl())));
+        publishEvent(new GeneratedOrderEvent(caseData, mostRecentUploadedDocument));
     }
 
     private JudgeAndLegalAdvisor setAllocatedJudgeLabel(Judge allocatedJudge) {

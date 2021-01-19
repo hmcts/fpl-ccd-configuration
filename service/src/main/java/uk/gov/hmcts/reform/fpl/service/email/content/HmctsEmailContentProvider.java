@@ -17,7 +17,7 @@ public class HmctsEmailContentProvider extends SharedNotifyContentProvider {
 
     public SubmitCaseHmctsTemplate buildHmctsSubmissionNotification(CaseData caseData) {
 
-        SubmitCaseHmctsTemplate template = super.buildNotifyTemplate(new SubmitCaseHmctsTemplate(),
+        SubmitCaseHmctsTemplate template = super.buildNotifyTemplate(SubmitCaseHmctsTemplate.builder().build(),
             caseData.getId(),
             caseData.getOrders(),
             caseData.getHearing(),
@@ -26,7 +26,7 @@ public class HmctsEmailContentProvider extends SharedNotifyContentProvider {
         template.setCourt(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName());
         template.setLocalAuthority(localAuthorityNameLookupConfiguration
             .getLocalAuthorityName(caseData.getCaseLocalAuthority()));
-        template.setDocumentLink(linkToAttachedDocument(caseData.getSubmittedForm()));
+        template.setDocumentLink(caseData.getSubmittedForm().getBinaryUrl());
 
         return template;
     }

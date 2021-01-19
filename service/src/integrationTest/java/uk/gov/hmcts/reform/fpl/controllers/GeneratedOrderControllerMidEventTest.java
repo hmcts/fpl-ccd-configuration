@@ -17,6 +17,8 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.enums.EPOExclusionRequirementType;
+import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.UploadedOrderType;
@@ -26,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -60,6 +63,7 @@ import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA;
 import static uk.gov.hmcts.reform.fpl.controllers.CloseCaseControllerAboutToStartTest.EXPECTED_LABEL_TEXT;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
@@ -483,6 +487,7 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
                 .order(GeneratedOrder.builder().details("").build())
                 .orderTypeAndDocument(OrderTypeAndDocument.builder().type(EMERGENCY_PROTECTION_ORDER).build())
                 .dateAndTimeOfIssue(now())
+                .epoExclusionRequirementType(EPOExclusionRequirementType.NO_TO_EXCLUSION)
                 .orderFurtherDirections(FurtherDirections.builder()
                     .directionsNeeded("Yes")
                     .directions("Some directions")
@@ -596,6 +601,60 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
             Element<Child> childElement = testChild();
             childElement.getValue().setFinalOrderIssued(finalOrderIssued);
             return childElement;
+        }
+    }
+
+    @Nested
+    class PrePopulateEpoFieldsMidEvent {
+
+        private final String callbackType = "populate-epo-parameters";
+
+        @Test
+        void shouldPrePopulateAddressFieldIfPresentInCaseData() {
+            String address = "1 Main Street, Lurgan, BT66 7PP, Armagh, United Kingdom";
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+                buildCaseData(), callbackType);
+
+            CaseData caseData = extractCaseData(callbackResponse);
+
+            assertThat(caseData.getEpoRemovalAddress().toString().equals(address));
+        }
+
+        @Test
+        void shouldPrePopulateEpoTypeFieldIfPresentInCaseData() {
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+                buildCaseData(), callbackType);
+
+            CaseData caseData = extractCaseData(callbackResponse);
+
+            assertThat(caseData.getEpoType().equals(PREVENT_REMOVAL));
+        }
+
+        @Test
+        void shouldPrePopulateWhoIsExcludedFieldIfPresentInCaseData() {
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+                buildCaseData(), callbackType);
+
+            CaseData caseData = extractCaseData(callbackResponse);
+
+            assertThat(caseData.getEpoWhoIsExcluded().equals("Test User"));
+        }
+
+        private CaseData buildCaseData() {
+            return CaseData.builder()
+                .orders(Orders.builder()
+                    .epoType(EPOType.PREVENT_REMOVAL)
+                    .excluded("Test User")
+                    .address(Address.builder()
+                        .addressLine1("1 Main Street")
+                        .addressLine2("Lurgan")
+                        .postTown("BT66 7PP")
+                        .county("Armagh")
+                        .country("United Kingdom")
+                        .build())
+
+                    .build())
+                .build();
         }
     }
 }

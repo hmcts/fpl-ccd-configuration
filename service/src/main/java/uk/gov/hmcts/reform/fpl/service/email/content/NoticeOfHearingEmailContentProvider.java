@@ -39,9 +39,10 @@ public class NoticeOfHearingEmailContentProvider extends AbstractEmailContentPro
             .hearingVenue(hearingVenueLookUpService.buildHearingVenue(venue))
             .hearingTime(caseDataExtractionService.getHearingTime(hearingBooking))
             .preHearingTime(caseDataExtractionService.extractPrehearingAttendance(hearingBooking))
-            .documentLink(linkToAttachedDocument(hearingBooking.getNoticeOfHearing()))
+            .documentLink(servingPreference == DIGITAL_SERVICE ? getDocumentUrl(hearingBooking.getNoticeOfHearing())
+                : linkToAttachedDocument(hearingBooking.getNoticeOfHearing()))
             .familyManCaseNumber(defaultIfNull(caseData.getFamilyManCaseNumber(), ""))
-            .respondentLastName(getFirstRespondentLastName(caseData.getRespondents1()))
+            .respondentLastName(getFirstRespondentLastName(caseData))
             .digitalPreference(servingPreference == DIGITAL_SERVICE ? "Yes" : "No")
             .caseUrl(servingPreference == DIGITAL_SERVICE ? getCaseUrl(caseData.getId(), "HearingTab") : "")
             .build();

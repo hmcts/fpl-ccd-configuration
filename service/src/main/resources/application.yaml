@@ -17,6 +17,12 @@ spring:
       - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
       - org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration
 
+feign:
+  client:
+    config:
+      idam-api:
+        error-decoder: uk.gov.hmcts.reform.fpl.config.feign.codec.IdamErrorDecoder
+
 idam:
   s2s-auth:
     microservice: fpl_case_service
@@ -186,9 +192,6 @@ docmosis:
 
 document_management:
   url: http://fake-document-management-store-api
-
-gateway:
-  url: http://fake-document-gateway
 
 notify:
   api_key: testApiKey

@@ -8,7 +8,7 @@
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/migrate-case/about-to-submit",
-    "Comment": "Event is triggered by running migration tool - callback modifies the data. Current controller code is for FPLA-2135"
+    "Comment": "Event is triggered by running migration tool - callback modifies the data."
   },
   {
     "LiveFrom": "01/01/2017",
@@ -140,7 +140,8 @@
     "ShowSummary": "Y",
     "ShowEventNotes": "Y",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/remove-order/about-to-start",
-    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/remove-order/about-to-submit"
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/remove-order/about-to-submit",
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/remove-order/submitted"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -154,7 +155,6 @@
     "SecurityClassification": "Public",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/notice-of-proceedings/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/notice-of-proceedings/about-to-submit",
-    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/notice-of-proceedings/submitted",
     "EndButtonLabel": "Save and continue",
     "ShowSummary": "Y",
     "ShowEventNotes": "N"
@@ -381,17 +381,18 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "uploadDocuments",
-    "Name": "Upload documents",
-    "Description": "Upload documents",
+    "ID": "manageDocumentsLA",
+    "Name": "Manage documents",
+    "Description": "Manage documents",
     "DisplayOrder": 14,
-    "PreConditionState(s)": "Open;Submitted;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING;RETURNED",
+    "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue",
-    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-task-list/submitted"
+    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documents-la/about-to-start",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documents-la/about-to-submit"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -669,5 +670,22 @@
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-legal-representatives/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-legal-representatives/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-legal-representatives/submitted"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "messageJudgeOrLegalAdviser",
+    "Name": "Message judge or legal adviser",
+    "Description": "Message judge or legal adviser",
+    "DisplayOrder": 26,
+    "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING",
+    "PostConditionState": "*",
+    "SecurityClassification": "Public",
+    "ShowSummary": "Y",
+    "ShowEventNotes": "N",
+    "EndButtonLabel": "Save and continue",
+    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/message-judge/about-to-start",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/message-judge/about-to-submit",
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/message-judge/submitted"
   }
 ]

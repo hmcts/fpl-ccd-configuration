@@ -1,0 +1,10 @@
+spring:
+  config:
+    use-legacy-processing: true
+
+test-conf:
+  users:
+    solicitor:
+      name: james@swansea.gov.uk
+    admin:
+      name: hmcts-admin@example.com

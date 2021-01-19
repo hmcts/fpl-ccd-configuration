@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.HashMap;
@@ -36,7 +35,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 public class ReviewCMOService {
 
     private final ObjectMapper mapper;
-    private final FeatureToggleService featureToggleService;
     private final Time time;
 
     /**
@@ -89,7 +87,7 @@ public class ReviewCMOService {
         } else {
             order = cmo.getValue().getOrder();
         }
-        return element(cmo.getValue().toBuilder()
+        return element(cmo.getId(), cmo.getValue().toBuilder()
             .dateIssued(time.now().toLocalDate())
             .status(CMOStatus.APPROVED)
             .order(order)
@@ -127,14 +125,12 @@ public class ReviewCMOService {
 
     public State getStateBasedOnNextHearing(CaseData caseData, UUID cmoID) {
         State currentState = caseData.getState();
-        if (featureToggleService.isNewCaseStateModelEnabled()) {
-            Optional<HearingBooking> nextHearingBooking = caseData.getNextHearingAfterCmo(cmoID);
+        Optional<HearingBooking> nextHearingBooking = caseData.getNextHearingAfterCmo(cmoID);
 
-            if (nextHearingBooking.isPresent()
-                && caseData.getReviewCMODecision().hasReviewOutcomeOf(SEND_TO_ALL_PARTIES)
-                && nextHearingBooking.get().isOfType(HearingType.FINAL)) {
-                return State.FINAL_HEARING;
-            }
+        if (nextHearingBooking.isPresent()
+            && caseData.getReviewCMODecision().hasReviewOutcomeOf(SEND_TO_ALL_PARTIES)
+            && nextHearingBooking.get().isOfType(HearingType.FINAL)) {
+            return State.FINAL_HEARING;
         }
         return currentState;
     }

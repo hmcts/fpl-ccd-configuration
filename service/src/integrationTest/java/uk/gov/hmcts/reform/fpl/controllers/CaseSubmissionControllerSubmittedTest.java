@@ -1,11 +1,14 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -19,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.SharedNotifyTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
@@ -80,6 +84,8 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     private static final Long CASE_ID = nextLong();
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 
+    @Autowired
+    protected ObjectMapper mapper;
 
     @MockBean
     private PaymentService paymentService;
@@ -104,11 +110,17 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
     @Test
     void shouldBuildNotificationTemplatesWithCompleteValues() {
-        Map<String, Object> expectedHmctsParameters = getExpectedHmctsParameters(true);
-        Map<String, Object> completeCafcassParameters = getExpectedCafcassParameters(true);
+        final Map<String, Object> expectedHmctsParameters = mapper.convertValue(
+            getExpectedHmctsParameters(true), new TypeReference<>() {
+            });
+
+        final Map<String, Object> completeCafcassParameters = mapper.convertValue(
+            getExpectedCafcassParameters(true), new TypeReference<>() {
+            });
 
         CaseDetails caseDetails = populatedCaseDetails(Map.of("id", CASE_ID));
         caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
+        caseDetails.getData().put("submittedForm", DocumentReference.builder().binaryUrl("testUrl").build());
 
         postSubmittedEvent(buildCallbackRequest(caseDetails, OPEN));
 
@@ -138,7 +150,9 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
         postSubmittedEvent(callbackRequest);
 
-        Map<String, Object> expectedIncompleteHmctsParameters = getExpectedHmctsParameters(false);
+        Map<String, Object> expectedIncompleteHmctsParameters = mapper.convertValue(
+            getExpectedHmctsParameters(false), new TypeReference<>() {
+            });
 
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
@@ -165,7 +179,9 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
         postSubmittedEvent(callbackRequest);
 
-        Map<String, Object> expectedIncompleteHmctsParameters = getExpectedHmctsParameters(false);
+        Map<String, Object> expectedIncompleteHmctsParameters = mapper.convertValue(
+            getExpectedHmctsParameters(false), new TypeReference<>() {
+            });
 
         checkUntil(() ->
             verify(notificationClient).sendEmail(
@@ -361,7 +377,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         return CaseDetails.builder()
             .id(CASE_ID)
             .data(new HashMap<>(Map.of(
-                "submittedForm", TestDataHelper.testDocumentReference(),
+                "submittedForm", DocumentReference.builder().binaryUrl("testUrl").build(),
                 RETURN_APPLICATION, ReturnApplication.builder()
                     .note("Some note")
                     .reason(List.of(INCOMPLETE))
@@ -376,30 +392,37 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
             ))).build();
     }
 
-    private Map<String, Object> getExpectedHmctsParameters(boolean completed) {
+    private SubmitCaseHmctsTemplate getExpectedHmctsParameters(boolean completed) {
         SubmitCaseHmctsTemplate submitCaseHmctsTemplate;
 
         if (completed) {
-            submitCaseHmctsTemplate = getCompleteParameters(new SubmitCaseHmctsTemplate());
+            submitCaseHmctsTemplate = getCompleteParameters(SubmitCaseHmctsTemplate.builder().build());
         } else {
-            submitCaseHmctsTemplate = getIncompleteParameters(new SubmitCaseHmctsTemplate());
+            submitCaseHmctsTemplate = getIncompleteParameters(SubmitCaseHmctsTemplate.builder().build());
         }
 
         submitCaseHmctsTemplate.setCourt(DEFAULT_LA_COURT);
-        return submitCaseHmctsTemplate.toMap(mapper);
+        return submitCaseHmctsTemplate;
     }
 
     private Map<String, Object> getExpectedCafcassParameters(boolean completed) {
         SubmitCaseCafcassTemplate submitCaseCafcassTemplate;
 
+        String fileContent = new String(Base64.encodeBase64(DOCUMENT_CONTENT), ISO_8859_1);
+        JSONObject jsonFileObject = new JSONObject()
+            .put("file", fileContent)
+            .put("is_csv", false);
+
         if (completed) {
-            submitCaseCafcassTemplate = getCompleteParameters(new SubmitCaseCafcassTemplate());
+            submitCaseCafcassTemplate = getCompleteParameters(SubmitCaseCafcassTemplate.builder().build());
         } else {
-            submitCaseCafcassTemplate = getIncompleteParameters(new SubmitCaseCafcassTemplate());
+            submitCaseCafcassTemplate = getIncompleteParameters(SubmitCaseCafcassTemplate.builder().build());
         }
 
         submitCaseCafcassTemplate.setCafcass(DEFAULT_CAFCASS_COURT);
-        return submitCaseCafcassTemplate.toMap(mapper);
+        submitCaseCafcassTemplate.setDocumentLink(jsonFileObject.toMap());
+        return mapper.convertValue(submitCaseCafcassTemplate, new TypeReference<>() {
+        });
     }
 
     private <T extends SharedNotifyTemplate> T getCompleteParameters(T template) {
@@ -427,18 +450,13 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     }
 
     private <T extends SharedNotifyTemplate> void setSharedTemplateParameters(T template) {
-        String fileContent = new String(Base64.encodeBase64(DOCUMENT_CONTENT), ISO_8859_1);
-        JSONObject jsonFileObject = new JSONObject()
-            .put("file", fileContent)
-            .put("is_csv", false);
-
         template.setLocalAuthority("Example Local Authority");
         template.setReference(CASE_ID.toString());
         template.setCaseUrl(String.format("http://fake-url/cases/case-details/%s", CASE_ID));
         template.setDataPresent(YES.getValue());
         template.setFullStop(NO.getValue());
         template.setOrdersAndDirections(List.of("Emergency protection order", "Contact with any named person"));
-        template.setDocumentLink(jsonFileObject.toMap());
+        template.setDocumentLink("testUrl");
     }
 
     private CallbackRequest buildCallbackRequest(CaseDetails caseDetails, State stateBefore) {

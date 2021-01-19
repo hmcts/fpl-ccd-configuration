@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -15,7 +17,10 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -25,6 +30,8 @@ import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.C2;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
@@ -46,6 +53,18 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 public class ManageDocumentsControllerMidEventTest extends AbstractControllerTest {
     ManageDocumentsControllerMidEventTest() {
         super("manage-documents");
+    }
+
+    @MockBean
+    private IdamClient idamClient;
+
+    @MockBean
+    private RequestData requestData;
+
+    @BeforeEach
+    void before() {
+        given(idamClient.getUserDetails(eq(USER_AUTH_TOKEN))).willReturn(createUserDetailsWithHmctsRole());
+        given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
     }
 
     @Test
@@ -136,6 +155,16 @@ public class ManageDocumentsControllerMidEventTest extends AbstractControllerTes
     }
 
     @Test
+    void shouldReturnErrorWhenNoC2sOnCaseAndUserSelectsC2SupportingDocs() {
+        CaseData caseData = CaseData.builder().manageDocument(buildManagementDocument(C2)).build();
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
+            "initialise-manage-document-collections");
+
+        assertThat(callbackResponse.getErrors()).containsExactly(
+            "There are no C2s to associate supporting documents with");
+    }
+
+    @Test
     void shouldReturnValidationErrorsIfSupportingEvidenceDateTimeReceivedOnFurtherEvidenceIsInTheFuture() {
         LocalDateTime futureDate = LocalDateTime.now().plusDays(1);
         CaseDetails caseDetails = buildCaseDetails(TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, futureDate);
@@ -174,7 +203,10 @@ public class ManageDocumentsControllerMidEventTest extends AbstractControllerTes
     }
 
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
-        return wrapElements(SupportingEvidenceBundle.builder().name("test").build());
+        return wrapElements(SupportingEvidenceBundle.builder()
+            .name("test")
+            .uploadedBy("HMCTS")
+            .build());
     }
 
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {
@@ -184,6 +216,16 @@ public class ManageDocumentsControllerMidEventTest extends AbstractControllerTes
     private C2DocumentBundle buildC2DocumentBundle(List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle) {
         return buildC2DocumentBundle(now()).toBuilder()
             .supportingEvidenceBundle(supportingEvidenceBundle)
+            .build();
+    }
+
+    private UserDetails createUserDetailsWithHmctsRole() {
+        return UserDetails.builder()
+            .id(USER_ID)
+            .surname("Hudson")
+            .forename("Steve")
+            .email("steve.hudson@gov.uk")
+            .roles(List.of("caseworker-publiclaw-courtadmin"))
             .build();
     }
 }

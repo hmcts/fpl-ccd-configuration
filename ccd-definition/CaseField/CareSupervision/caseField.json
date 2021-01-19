@@ -1092,7 +1092,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "supportingDocumentsHeadingLabel",
     "FieldType": "Label",
-    "Label": "## Supporting documents",
+    "Label": "## Application documents",
     "SecurityClassification": "Public"
   },
   {
@@ -1194,14 +1194,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "documentsSubHeadingLabel",
-    "FieldType": "Label",
-    "Label": "#### Documents",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "organisationDetailsSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### Your organisation details",
@@ -1270,5 +1262,66 @@
     "Label": "## Orders",
     "FieldType": "Label",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documentTabFurtherEvidenceHeading",
+    "Label": "## Further evidence documents",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documentTabBulkScanHeading",
+    "Label": "## Bulk scan documents",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documentTabApplicationHeading",
+    "Label": "## Application documents",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "uploadApplicationDocumentsLabel",
+    "Label": "Select the supporting or annex documents you're sending with this application. <br> These can be part of the social work evidence template (SWET) or separate.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hearingsTabHeading",
+    "Label": "## Hearings",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "applicationDocuments",
+    "Label": "Documents",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Documents",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "applicationDocumentsToFollowReason",
+    "Label": "Documents to follow",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]

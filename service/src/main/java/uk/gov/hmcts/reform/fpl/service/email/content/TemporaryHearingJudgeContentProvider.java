@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.TemporaryHearingJudgeTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
@@ -19,14 +20,29 @@ import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubject
 public class TemporaryHearingJudgeContentProvider extends AbstractEmailContentProvider {
 
     public TemporaryHearingJudgeTemplate buildNotificationParameters(CaseData caseData, HearingBooking hearingBooking) {
-        TemporaryHearingJudgeTemplate temporaryHearingJudgeTemplate = new TemporaryHearingJudgeTemplate();
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = hearingBooking.getJudgeAndLegalAdvisor();
 
-        temporaryHearingJudgeTemplate.setJudgeTitle(judgeAndLegalAdvisor.getJudgeOrMagistrateTitle());
-        temporaryHearingJudgeTemplate.setJudgeName(judgeAndLegalAdvisor.getJudgeName());
-        temporaryHearingJudgeTemplate.setHearingType(hearingBooking.getType().getLabel());
-        temporaryHearingJudgeTemplate.setCaseUrl(getCaseUrl(caseData.getId()));
-        temporaryHearingJudgeTemplate.setCallout(buildCallout(caseData, hearingBooking));
+        String judgeTitle = judgeAndLegalAdvisor.getJudgeOrMagistrateTitle();
+        String judgeName = judgeAndLegalAdvisor.getJudgeName();
+
+        if (judgeAndLegalAdvisor.getJudgeTitle().equals(MAGISTRATES)) {
+            if (judgeName != null) {
+                judgeTitle = "";
+                judgeName = judgeName.concat(" (JP)");
+            } else {
+                judgeTitle = "Justice of the Peace";
+                judgeName = "";
+            }
+        }
+
+        TemporaryHearingJudgeTemplate temporaryHearingJudgeTemplate = TemporaryHearingJudgeTemplate.builder()
+            .judgeTitle(judgeTitle)
+            .judgeName(judgeName)
+            .hearingType(hearingBooking.getType().getLabel())
+            .caseUrl(getCaseUrl(caseData.getId()))
+            .callout(buildCallout(caseData, hearingBooking))
+            .build();
+
         setAllocatedJudgeFields(caseData.getAllocatedJudge(), temporaryHearingJudgeTemplate);
 
         return temporaryHearingJudgeTemplate;

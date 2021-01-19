@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
@@ -58,7 +59,7 @@ class TemporaryHearingJudgeContentProviderTest extends AbstractEmailContentProvi
             .build();
 
         assertThat(temporaryHearingJudgeContentProvider.buildNotificationParameters(caseData, hearingBooking))
-            .isEqualToComparingFieldByField(getExpectedNotificationParameters());
+            .usingRecursiveComparison().isEqualTo(getExpectedNotificationParameters());
     }
 
     @Test
@@ -91,19 +92,62 @@ class TemporaryHearingJudgeContentProviderTest extends AbstractEmailContentProvi
         assertThat(partiallyCompleteTemplate.getAllocatedJudgeTitle()).isEmpty();
     }
 
+    @Test
+    void shouldBuildHearingJudgeTemplateWhenMagistrateSelectedAsHearingJudgeAndNoNameProvided() {
+        CaseData caseData = CaseData.builder()
+            .id(12345L)
+            .familyManCaseNumber("123")
+            .build();
+
+        HearingBooking hearingBooking = HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .startDate(NOW)
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeTitle(MAGISTRATES)
+                .build())
+            .build();
+
+        TemporaryHearingJudgeTemplate template =
+            temporaryHearingJudgeContentProvider.buildNotificationParameters(caseData, hearingBooking);
+
+        assertThat(template.getJudgeTitle()).isEqualTo("Justice of the Peace");
+        assertThat(template.getJudgeName()).isEmpty();
+    }
+
+    @Test
+    void shouldBuildHearingJudgeTemplateWhenMagistrateSelectedAsHearingJudgeAndNameIsProvided() {
+        CaseData caseData = CaseData.builder()
+            .id(12345L)
+            .familyManCaseNumber("123")
+            .build();
+
+        HearingBooking hearingBooking = HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .startDate(NOW)
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeTitle(MAGISTRATES)
+                .judgeFullName("Paul Hastings")
+                .build())
+            .build();
+
+        TemporaryHearingJudgeTemplate template =
+            temporaryHearingJudgeContentProvider.buildNotificationParameters(caseData, hearingBooking);
+
+        assertThat(template.getJudgeTitle()).isEmpty();
+        assertThat(template.getJudgeName()).isEqualTo("Paul Hastings (JP)");
+    }
+
     private TemporaryHearingJudgeTemplate getExpectedNotificationParameters() {
-        TemporaryHearingJudgeTemplate allocatedJudgeTemplate = new TemporaryHearingJudgeTemplate();
         String hearingStartDate = formatLocalDateToString(NOW.toLocalDate(), FormatStyle.MEDIUM);
-
-        allocatedJudgeTemplate.setJudgeTitle(HER_HONOUR_JUDGE.getLabel());
-        allocatedJudgeTemplate.setJudgeName("Davidson");
-        allocatedJudgeTemplate.setCaseUrl("http://fake-url/cases/case-details/12345");
-        allocatedJudgeTemplate.setCallout(String.format("Watson, 123, hearing %s", hearingStartDate));
-        allocatedJudgeTemplate.setHearingType(CASE_MANAGEMENT.getLabel());
-        allocatedJudgeTemplate.setAllocatedJudgeTitle(HIS_HONOUR_JUDGE.getLabel());
-        allocatedJudgeTemplate.setAllocatedJudgeName("Watson");
-        allocatedJudgeTemplate.setHasAllocatedJudge(YES.getValue());
-
-        return allocatedJudgeTemplate;
+        return TemporaryHearingJudgeTemplate.builder()
+            .judgeTitle(HER_HONOUR_JUDGE.getLabel())
+            .judgeName("Davidson")
+            .caseUrl("http://fake-url/cases/case-details/12345")
+            .callout(String.format("Watson, 123, hearing %s", hearingStartDate))
+            .hearingType(CASE_MANAGEMENT.getLabel())
+            .allocatedJudgeTitle(HIS_HONOUR_JUDGE.getLabel())
+            .allocatedJudgeName("Watson")
+            .hasAllocatedJudge(YES.getValue())
+            .build();
     }
 }

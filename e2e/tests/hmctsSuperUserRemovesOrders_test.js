@@ -1,0 +1,69 @@
+const config = require('../config.js');
+
+const finalHearingCaseData = require('../fixtures/caseData/finalHearingWithMultipleOrders.json');
+const moment = require('moment');
+
+Feature('HMCTS super user removes orders');
+
+let caseId;
+
+BeforeSuite(async ({I}) => {
+  caseId = await I.submitNewCaseWithData(finalHearingCaseData);
+  await I.navigateToCaseDetailsAs(config.hmctsSuperUser, caseId);
+});
+
+Before(async ({I}) => await I.navigateToCaseDetails(caseId));
+
+Scenario('HMCTS super user removes a generated order from a case', async ({I, caseViewPage, removeOrderEventPage}) => {
+  const orderToRemove = finalHearingCaseData.caseData.orderCollection[0];
+  const labelToSelect = `${orderToRemove.value.title} - ${orderToRemove.value.dateOfIssue}`;
+
+  await removeOrder(I, caseViewPage, removeOrderEventPage, labelToSelect);
+
+  caseViewPage.selectTab(caseViewPage.tabs.orders);
+  const generatedOrders = 'Other removed orders 1';
+  I.seeInTab([generatedOrders, 'Order title'], 'Example Order Title');
+  I.seeInTab([generatedOrders, 'Order document'], 'Blank order (C21).pdf');
+  I.seeInTab([generatedOrders, 'Starts on'], '26 May 2020');
+  I.seeInTab([generatedOrders, 'Date and time of upload'], '2:33pm, 26 May 2020');
+  I.seeInTab([generatedOrders, 'Reason for removal'], 'Entered incorrect order');
+});
+
+Scenario('HMCTS super user removes a cmo from a case', async ({I, caseViewPage, removeOrderEventPage}) => {
+  const orderToRemove = finalHearingCaseData.caseData.sealedCMOs[0].value;
+  const labelToSelect = 'Case management order - ' + moment(orderToRemove.dateIssued).format('D MMMM YYYY');
+
+  await removeOrder(I, caseViewPage, removeOrderEventPage, labelToSelect);
+
+  caseViewPage.selectTab(caseViewPage.tabs.orders);
+  const sealedCMO = 'Removed case management orders 1';
+  I.seeInTab([sealedCMO, 'Order'], 'mockFile.pdf');
+  I.seeInTab([sealedCMO, 'Hearing'], 'Case management hearing, 1 January 2020');
+  I.seeInTab([sealedCMO, 'Date sent'], '27 Aug 2020');
+  I.seeInTab([sealedCMO, 'Date issued'], '27 Aug 2020');
+  I.seeInTab([sealedCMO, 'Judge'], 'Her Honour Judge Reed');
+  I.seeInTab([sealedCMO, 'Reason for removal'], 'Entered incorrect order');
+});
+
+Scenario('HMCTS super user removes a sdo from a case', async ({I, caseViewPage, removeOrderEventPage}) => {
+  const orderToRemove = finalHearingCaseData.caseData.standardDirectionOrder;
+  const labelToSelect = `Gatekeeping order - ${moment(orderToRemove.dateOfIssue, 'DDMMMMY').format('D MMMM YYYY')}`;
+
+  await removeOrder(I, caseViewPage, removeOrderEventPage, labelToSelect);
+
+  caseViewPage.selectTab(caseViewPage.tabs.orders);
+  const removeSDO = 'Removed gatekeeping orders 1';
+  I.seeInTab([removeSDO, 'File'], 'sdo.pdf');
+  I.seeInTab([removeSDO, 'Date of issue'], '28 April 2020');
+  I.seeInTab([removeSDO, 'Reason for removal'], 'Entered incorrect order');
+});
+
+const removeOrder = async (I, caseViewPage, removeOrderEventPage, labelToSelect) => {
+  await caseViewPage.goToNewActions(config.superUserActions.removeOrder);
+  removeOrderEventPage.selectOrderToRemove(labelToSelect);
+  await I.goToNextPage();
+  removeOrderEventPage.addRemoveOrderReason('Entered incorrect order');
+  await I.completeEvent('Submit');
+  I.seeEventSubmissionConfirmation(config.superUserActions.removeOrder);
+};
+

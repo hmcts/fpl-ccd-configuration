@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisAnnexDocuments;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisFactorsParenting;
@@ -42,6 +43,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingPreferences;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisInternationalElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRisks;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
@@ -53,12 +55,16 @@ import static java.time.LocalDate.now;
 import static java.util.List.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType.CHILD_WHEREABOUTS;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.HOSPITAL_SOON_TO_BE_DISCHARGED;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.REMOVED_BY_POLICE_POWER_ENDS;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.VOLUNTARILY_SECTION_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.DRAFT_WATERMARK;
+import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
+import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.DONT_KNOW;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -76,9 +82,16 @@ class CaseSubmissionGenerationServiceTest {
 
     private static final String FORMATTED_DATE = formatLocalDateToString(NOW, DATE);
     private static final String AUTH_TOKEN = "Bearer token";
+    private static final DocmosisAnnexDocuments DOCMOSIS_ANNEX_DOCUMENTS = mock(DocmosisAnnexDocuments.class);
 
     @MockBean
     private IdamClient idamClient;
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
+
+    @MockBean
+    private CaseSubmissionDocumentAnnexGenerator annexGenerator;
 
     @MockBean
     private RequestData requestData;
@@ -180,12 +193,14 @@ class CaseSubmissionGenerationServiceTest {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .orders(givenCaseData.getOrders().toBuilder()
                     .emergencyProtectionOrders(of(EmergencyProtectionOrdersType.values()))
+                    .epoType(REMOVE_TO_ACCOMMODATION)
                     .build())
                 .build();
 
             DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
 
             String expectedOrdersNeeded = "Emergency protection order\n"
+                + "Remove to accommodation\n"
                 + "Information on the whereabouts of the child\n"
                 + "Authorisation for entry of premises\n"
                 + "Authorisation to search for another child on the premises\n"
@@ -198,6 +213,7 @@ class CaseSubmissionGenerationServiceTest {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .orders(givenCaseData.getOrders().toBuilder()
                     .emergencyProtectionOrders(of(CHILD_WHEREABOUTS))
+                    .epoType(REMOVE_TO_ACCOMMODATION)
                     .emergencyProtectionOrderDetails("emergency protection order details")
                     .build())
                 .build();
@@ -205,8 +221,41 @@ class CaseSubmissionGenerationServiceTest {
             DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
 
             String expectedOrdersNeeded = "Emergency protection order\n"
+                + "Remove to accommodation\n"
                 + "Information on the whereabouts of the child\n"
                 + "emergency protection order details";
+            assertThat(caseSubmission.getOrdersNeeded()).isEqualTo(expectedOrdersNeeded);
+        }
+
+        @Test
+        void shouldIncludeAddressWhenPreventRemovalEPOTypeSelected() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .emergencyProtectionOrders(of(EmergencyProtectionOrdersType.values()))
+                    .epoType(PREVENT_REMOVAL)
+                    .address(Address.builder()
+                        .addressLine1("45")
+                        .addressLine2("Ethel Street")
+                        .postcode("BT7H3B")
+                        .postTown("Lisburn Road")
+                        .country("United Kingdom")
+                        .build())
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            String expectedOrdersNeeded = "Emergency protection order\n"
+                + "Prevent removal from an address\n"
+                + "45\n"
+                + "Ethel Street\n"
+                + "Lisburn Road\n"
+                + "BT7H3B\n"
+                + "United Kingdom\n"
+                + "Information on the whereabouts of the child\n"
+                + "Authorisation for entry of premises\n"
+                + "Authorisation to search for another child on the premises\n"
+                + "Other order under section 48 of the Children Act 1989";
             assertThat(caseSubmission.getOrdersNeeded()).isEqualTo(expectedOrdersNeeded);
         }
     }
@@ -412,6 +461,22 @@ class CaseSubmissionGenerationServiceTest {
             DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
 
             String expectedDirectionsNeeded = "directions\ndirection  details";
+            assertThat(caseSubmission.getDirectionsNeeded()).isEqualTo(expectedDirectionsNeeded);
+        }
+
+        @Test
+        void shouldIncludeEPOExcludedWhenEntered() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(Orders.builder()
+                    .directions("directions")
+                    .directionDetails("direction details")
+                    .excluded("John Doe")
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            String expectedDirectionsNeeded = "John Doe excluded\ndirections\ndirection details";
             assertThat(caseSubmission.getDirectionsNeeded()).isEqualTo(expectedDirectionsNeeded);
         }
     }
@@ -955,8 +1020,24 @@ class CaseSubmissionGenerationServiceTest {
         }
     }
 
+    @Test
+    void shouldReturnDocmosisAnnexToggledOn() {
+        when(featureToggleService.isApplicationDocumentsEventEnabled()).thenReturn(true);
+        when(annexGenerator.generate(givenCaseData)).thenReturn(DOCMOSIS_ANNEX_DOCUMENTS);
+
+        DocmosisCaseSubmission actual = templateDataGenerationService.getTemplateData(givenCaseData);
+
+        assertThat(actual.getAnnexDocuments()).isEqualTo(DOCMOSIS_ANNEX_DOCUMENTS);
+    }
+
     @Nested
+    @Deprecated
     class DocmosisCaseSubmissionFormatAnnexDocumentDisplayTest {
+
+        @BeforeEach
+        void setUp() {
+            when(featureToggleService.isApplicationDocumentsEventEnabled()).thenReturn(false);
+        }
 
         @Test
         void shouldReturnEmptyWhenDocumentIsNotAvailable() {

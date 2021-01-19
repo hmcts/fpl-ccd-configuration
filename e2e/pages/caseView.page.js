@@ -24,16 +24,17 @@ module.exports = {
     viewApplication: 'View application',
     startApplication: 'Start application',
     correspondence: 'Correspondence',
+    courtBundle: 'Court bundle',
+    judicialMessages: 'Judicial messages',
   },
   actionsDropdown: '.ccd-dropdown',
   goButton: 'Go',
   caseTitle: '.case-title .markdown',
 
   async goToNewActions(actionSelected) {
-    I.waitForElement(this.actionsDropdown);
     const currentUrl = await I.grabCurrentUrl();
     await I.retryUntilExists(async () => {
-      if(await I.hasSelector(this.actionsDropdown)) {
+      if(await I.waitForSelector(this.actionsDropdown, 10) != null) {
         I.selectOption(this.actionsDropdown, actionSelected);
         I.click(this.goButton);
       } else {
@@ -41,25 +42,24 @@ module.exports = {
         if(newUrl === currentUrl){
           output.print('Page refresh');
           I.refreshPage();
-          I.wait(5);
         }
       }
     }, 'ccd-case-event-trigger');
   },
 
-  checkActionsAreAvailable(actions) {
-    I.waitForElement(this.actionsDropdown);
-    within(this.actionsDropdown, () => {
-      for (let action of actions) {
+  async checkActionsAreAvailable(actions) {
+    I.waitForElement(this.actionsDropdown, 10);
+    await within(this.actionsDropdown, () => {
+      for (const action of actions) {
         I.seeElementInDOM(`//option[text()="${action}"]`);
       }
     });
   },
 
-  checkActionsAreNotAvailable(actions) {
-    I.waitForElement(this.actionsDropdown);
-    within(this.actionsDropdown, () => {
-      for (let action of actions) {
+  async checkActionsAreNotAvailable(actions) {
+    I.waitForElement(this.actionsDropdown, 10);
+    await within(this.actionsDropdown, () => {
+      for (const action of actions) {
         I.dontSeeElementInDOM(`//option[text()="${action}"]`);
       }
     });
@@ -86,10 +86,13 @@ module.exports = {
     this.checkTaskStatus(task, undefined);
   },
 
-  checkTaskIsAvailable(task) {
-    I.click(`${task}`);
-    I.seeElement(`//ccd-case-event-trigger//h1[text()="${task}"]`);
-    I.click('Cancel');
+  async checkTaskIsAvailable(task) {
+    await I.retryUntilExists(() => {
+      I.click(task);
+    }, 'ccd-case-event-trigger');
+    await I.retryUntilExists(() => {
+      I.click('Cancel');
+    }, this.caseTitle);
   },
 
   async checkTaskIsUnavailable(task) {
@@ -104,12 +107,16 @@ module.exports = {
     }, 'ccd-case-event-trigger');
   },
 
+  getTabSelector(tab){
+    return `//*[@role="tab"]/div[text() = "${tab}"]`;
+  },
+
   checkTabIsNotPresent(tab) {
-    I.dontSee(tab, '.tabs .tabs-list');
+    I.dontSee(this.getTabSelector(tab));
   },
 
   selectTab(tab) {
-    I.click(tab, '.tabs .tabs-list');
+    I.click(this.getTabSelector(tab));
   },
 
   seeInCaseTitle(titleValue) {

@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
+import uk.gov.hmcts.reform.fpl.enums.EPOExclusionRequirementType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
@@ -29,7 +30,9 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
+import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadCMOEventData;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
@@ -44,6 +47,7 @@ import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.HearingEndDateGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.MigrateStateGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.SealedSDOGroup;
@@ -54,6 +58,7 @@ import uk.gov.hmcts.reform.fpl.validation.interfaces.HasDocumentsIncludedInSwet;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.IsStateMigratable;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.IsValidHearingEdit;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.EPOTimeRange;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.time.HasHearingEndDateAfterStartDate;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeDifference;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeNotMidnight;
 
@@ -61,6 +66,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -95,6 +101,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @HasDocumentsIncludedInSwet(groups = UploadDocumentsGroup.class)
 @IsStateMigratable(groups = MigrateStateGroup.class)
 @IsValidHearingEdit(groups = HearingBookingGroup.class)
+@HasHearingEndDateAfterStartDate(message = "The end date and time must be after the start date and time",
+    groups = HearingEndDateGroup.class)
 @EPOTimeRange(message = "Date must be within 8 days of the order date", groups = EPOEndDateGroup.class,
     maxDate = @TimeDifference(amount = 8, unit = DAYS))
 public class CaseData {
@@ -148,6 +156,12 @@ public class CaseData {
 
     private final List<Element<Placement>> placements;
     private final StandardDirectionOrder standardDirectionOrder;
+    private final List<Element<StandardDirectionOrder>> hiddenStandardDirectionOrders;
+
+    public List<Element<StandardDirectionOrder>> getHiddenStandardDirectionOrders() {
+        return defaultIfNull(hiddenStandardDirectionOrders, new ArrayList<>());
+    }
+
     private SDORoute sdoRouter;
     private final DocumentReference preparedSDO;
     private final DocumentReference replacementSDO;
@@ -160,8 +174,10 @@ public class CaseData {
     private final Hearing hearing;
     private final HearingPreferences hearingPreferences;
     private final InternationalElement internationalElement;
+
     @JsonProperty("documents_socialWorkOther")
     private final List<Element<DocumentSocialWorkOther>> otherSocialWorkDocuments;
+
     @JsonProperty("documents_socialWorkCarePlan_document")
     @NotNull(message = "Add social work documents, or details of when you'll send them")
     @Valid
@@ -225,6 +241,14 @@ public class CaseData {
     @JsonIgnore
     public Optional<Element<HearingBooking>> findHearingBookingElement(UUID elementId) {
         return findElement(elementId, hearingDetails);
+    }
+
+    @JsonIgnore
+    public Optional<Element<HearingBooking>> getHearingLinkedToCMO(UUID removedOrderId) {
+        return hearingDetails.stream()
+            .filter(hearingBookingElement ->
+                removedOrderId.equals(hearingBookingElement.getValue().getCaseManagementOrderId()))
+            .findFirst();
     }
 
     private LocalDate dateSubmitted;
@@ -321,6 +345,10 @@ public class CaseData {
     private final EPOType epoType;
     @Valid
     private final Address epoRemovalAddress;
+    private final String epoWhoIsExcluded;
+    private final LocalDate epoExclusionStartDate;
+    private final EPOExclusionRequirementType epoExclusionRequirementType;
+
 
     @JsonIgnore
     public List<Element<Proceeding>> getAllProceedings() {
@@ -427,16 +455,27 @@ public class CaseData {
     private final String closeCaseFromOrder;
 
     private final ManageDocument manageDocument;
+    private final ManageDocumentLA manageDocumentLA;
     private final List<Element<SupportingEvidenceBundle>> supportingEvidenceDocumentsTemp;
-    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments;
+    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments; //general evidence
+    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA; //general evidence
     private final List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocuments;
+    private final List<Element<SupportingEvidenceBundle>> correspondenceDocumentsLA;
     private final List<Element<SupportingEvidenceBundle>> c2SupportingDocuments;
     private final Object manageDocumentsHearingList;
     private final Object manageDocumentsSupportingC2List;
+    private final Object courtBundleHearingList;
+
+    private final CourtBundle manageDocumentsCourtBundle;
+    private final List<Element<CourtBundle>> courtBundleList;
 
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceDocumentsTemp() {
         return defaultIfNull(supportingEvidenceDocumentsTemp, new ArrayList<>());
+    }
+
+    public List<Element<CourtBundle>> getCourtBundleList() {
+        return defaultIfNull(courtBundleList, new ArrayList<>());
     }
 
     public List<Element<SupportingEvidenceBundle>> getCorrespondenceDocuments() {
@@ -467,11 +506,20 @@ public class CaseData {
         return allocatedJudgeExists() && isNotEmpty(allocatedJudge.getJudgeEmailAddress());
     }
 
+    @JsonIgnore
     public Optional<HearingBooking> getFirstHearing() {
         return unwrapElements(hearingDetails).stream()
             .min(comparing(HearingBooking::getStartDate));
     }
 
+    @JsonIgnore
+    public Optional<HearingBooking> getFirstHearingOfType(HearingType type) {
+        return unwrapElements(hearingDetails).stream()
+            .filter(hearingBooking -> hearingBooking.isOfType(type))
+            .min(comparing(HearingBooking::getStartDate));
+    }
+
+    @JsonIgnore
     public HearingBooking getMostUrgentHearingBookingAfter(LocalDateTime time) {
         return unwrapElements(hearingDetails).stream()
             .filter(hearingBooking -> hearingBooking.getStartDate().isAfter(time))
@@ -526,6 +574,13 @@ public class CaseData {
     }
 
     @JsonIgnore
+    public List<Element<HearingBooking>> getAllHearings() {
+        return Stream.of(defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()),
+            defaultIfNull(cancelledHearingDetails, new ArrayList<Element<HearingBooking>>()))
+            .flatMap(Collection::stream).collect(toList());
+    }
+
+    @JsonIgnore
     public List<Element<HearingBooking>> getPastHearings() {
         return defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()).stream()
             .filter(hearingBooking -> !hearingBooking.getValue().startsAfterToday())
@@ -554,17 +609,10 @@ public class CaseData {
     }
 
     @JsonIgnore
-    public List<Element<HearingBooking>> getAllHearings() {
-        List<Element<HearingBooking>> allHearings = new ArrayList<>();
-        if (isNotEmpty(getHearingDetails())) {
-            allHearings.addAll(getHearingDetails());
-        }
-
-        if (isNotEmpty(getCancelledHearingDetails())) {
-            allHearings.addAll(getCancelledHearingDetails());
-        }
-
-        return allHearings;
+    public List<Element<HearingBooking>> getToBeReListedHearings() {
+        return defaultIfNull(cancelledHearingDetails, new ArrayList<Element<HearingBooking>>()).stream()
+            .filter(hearingBooking -> hearingBooking.getValue().isToBeReListed())
+            .collect(toList());
     }
 
     private final Object cmoToReviewList;
@@ -578,7 +626,7 @@ public class CaseData {
 
     @JsonIgnore
     public Optional<HearingBooking> getNextHearingAfterCmo(UUID cmoID) {
-        LocalDateTime currentCmoStartDate = unwrapElements(hearingDetails).stream()
+        LocalDateTime currentCmoStartDate = unwrapElements(getAllHearings()).stream()
             .filter(hearingBooking -> cmoID.equals(hearingBooking.getCaseManagementOrderId()))
             .map(HearingBooking::getStartDate)
             .findAny()
@@ -587,6 +635,13 @@ public class CaseData {
         return unwrapElements(hearingDetails).stream()
             .filter(hearingBooking -> hearingBooking.getStartDate().isAfter(currentCmoStartDate))
             .min(comparing(HearingBooking::getStartDate));
+    }
+
+    private final List<Element<CaseManagementOrder>> hiddenCaseManagementOrders;
+
+    @JsonIgnore
+    public List<Element<CaseManagementOrder>> getHiddenCMOs() {
+        return defaultIfNull(hiddenCaseManagementOrders, new ArrayList<>());
     }
 
     private String sendToCtsc;
@@ -612,6 +667,7 @@ public class CaseData {
     private final Object hearingDateList;
     private final Object pastAndTodayHearingDateList;
     private final Object futureAndTodayHearingDateList;
+    private final Object toReListHearingDateList;
     private final String hasExistingHearings;
     private final UUID selectedHearingId;
 
@@ -629,4 +685,33 @@ public class CaseData {
     private final HearingCancellationReason vacatedReason;
     private final List<ProceedingType> proceedingType;
     private final State closedStateRadioList;
+
+    private final LocalDateTime hearingEndDateConfirmation;
+    private final LocalDateTime hearingStartDateConfirmation;
+
+    @JsonIgnore
+    public boolean isHearingDateInPast() {
+        return hearingEndDate.isBefore(LocalDateTime.now()) || hearingStartDate.isBefore(LocalDateTime.now());
+    }
+
+    private final List<Element<ApplicationDocument>> applicationDocuments;
+    private final String applicationDocumentsToFollowReason;
+
+    @JsonUnwrapped
+    @Builder.Default
+    private final MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder().build();
+    private final List<Element<JudicialMessage>> judicialMessages;
+    private final List<Element<JudicialMessage>> closedJudicialMessages;
+
+    public DynamicList buildJudicialMessageDynamicList(UUID selected) {
+        return asDynamicList(judicialMessages, selected, JudicialMessage::toLabel);
+    }
+
+    public DynamicList buildJudicialMessageDynamicList() {
+        return buildJudicialMessageDynamicList(null);
+    }
+
+    public List<Element<JudicialMessage>> getJudicialMessages() {
+        return defaultIfNull(judicialMessages, new ArrayList<>());
+    }
 }

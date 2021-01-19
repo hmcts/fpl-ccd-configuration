@@ -47,7 +47,8 @@ public class ManageDocumentsController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().putAll(manageDocumentService.initialiseManageDocumentEvent(caseData));
+        caseDetails.getData().putAll(
+            manageDocumentService.initialiseManageDocumentEvent(caseData, MANAGE_DOCUMENT_KEY));
 
         caseDetails.getData().remove("furtherEvidenceDocumentsTEMP");
 
@@ -63,14 +64,23 @@ public class ManageDocumentsController extends CallbackController {
 
         switch (caseData.getManageDocument().getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
-                caseDetails.getData().putAll(manageDocumentService.initialiseHearingListAndLabel(caseData));
-                supportingEvidence = manageDocumentService.getFurtherEvidenceCollection(caseData);
+                caseDetails.getData().putAll(manageDocumentService.initialiseHearingListAndLabel(
+                    caseData, caseData.getManageDocument().isDocumentRelatedToHearing()));
+
+                supportingEvidence = manageDocumentService.getFurtherEvidenceCollection(
+                    caseData,
+                    caseData.getManageDocument().isDocumentRelatedToHearing(),
+                    caseData.getFurtherEvidenceDocuments()
+                );
                 break;
             case CORRESPONDENCE:
                 supportingEvidence = manageDocumentService.getSupportingEvidenceBundle(
                     caseData.getCorrespondenceDocuments());
                 break;
             case C2:
+                if (!caseData.hasC2DocumentBundle()) {
+                    return respond(caseDetails, List.of("There are no C2s to associate supporting documents with"));
+                }
                 caseDetails.getData().putAll(manageDocumentService.initialiseC2DocumentListAndLabel(caseData));
                 supportingEvidence = manageDocumentService.getC2SupportingEvidenceBundle(caseData);
                 break;
@@ -106,8 +116,7 @@ public class ManageDocumentsController extends CallbackController {
                     currentBundle = manageDocumentService.setDateTimeOnHearingFurtherEvidenceSupportingEvidence(
                         caseData, caseDataBefore);
 
-                    caseDetails.getData().put(
-                        HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY,
+                    caseDetails.getData().put(HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY,
                         manageDocumentService.buildHearingFurtherEvidenceCollection(caseData, currentBundle)
                     );
                 } else {
@@ -120,8 +129,7 @@ public class ManageDocumentsController extends CallbackController {
             case CORRESPONDENCE:
                 List<Element<SupportingEvidenceBundle>> updatedCorrespondenceDocuments = manageDocumentService
                     .setDateTimeUploadedOnSupportingEvidence(caseData.getSupportingEvidenceDocumentsTemp(),
-                        caseDataBefore.getCorrespondenceDocuments()
-                );
+                        caseDataBefore.getCorrespondenceDocuments());
 
                 caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, updatedCorrespondenceDocuments);
                 break;

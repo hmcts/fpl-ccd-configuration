@@ -11,6 +11,7 @@ const linkLabel = 'Review agreed CMO';
 
 let caseId;
 let today;
+const supportingDocs = {name: 'case summary', notes: 'this is the case summary', file: config.testFile, fileName: 'mockFile.txt'};
 
 Feature('Case Management Order Journey');
 
@@ -20,8 +21,6 @@ BeforeSuite(async ({I}) => {
 });
 
 Scenario('Local authority sends agreed CMOs to judge', async ({I, caseViewPage, uploadCaseManagementOrderEventPage}) => {
-  const supportingDocs = {name: 'case summary', notes: 'this is the case summary', file: config.testFile, fileName: 'mockFile.txt'};
-
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
 
   await cmoHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, 'Case management hearing, 1 January 2020');
@@ -33,10 +32,10 @@ Scenario('Local authority sends agreed CMOs to judge', async ({I, caseViewPage, 
   assertDraftCMO(I, '2', '1 March 2020', withJudgeStatus);
   assertDraftCMO(I, '3', '1 January 2050', draftStatus, supportingDocs);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
-  I.seeInTab(['Further evidence documents 1', 'Hearing'], 'Case management hearing, 1 March 2020');
-  I.seeInTab(['Further evidence documents 1', 'Documents 1', 'Document name'], supportingDocs.name);
-  I.seeInTab(['Further evidence documents 1', 'Documents 1', 'Notes'], supportingDocs.notes);
-  I.seeInTab(['Further evidence documents 1', 'Documents 1', 'File'], supportingDocs.fileName);
+  I.seeInTab(['Further evidence documents for hearings 1', 'Hearing'], 'Case management hearing, 1 March 2020');
+  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Document name'], supportingDocs.name);
+  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Notes'], supportingDocs.notes);
+  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'File'], supportingDocs.fileName);
 });
 
 Scenario('Judge makes changes to agreed CMO and seals', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
@@ -89,7 +88,7 @@ Scenario('Judge seals and sends the agreed CMO to parties', async ({I, caseViewP
   assertDocumentSentToParties(I);
 });
 
-const assertDraftCMO = function (I, collectionId, hearingDate, status, supportingDocs) {
+const assertDraftCMO = (I, collectionId, hearingDate, status, supportingDocs) => {
   const draftCMO = `Draft case management order ${collectionId}`;
 
   I.seeInTab([draftCMO, 'Order'], 'mockFile.docx');
@@ -109,7 +108,7 @@ const assertDraftCMO = function (I, collectionId, hearingDate, status, supportin
   }
 };
 
-const assertSealedCMO = function (I, collectionId, hearingDate) {
+const assertSealedCMO = (I, collectionId, hearingDate) => {
   const sealedCMO = `Sealed Case Management Order ${collectionId}`;
 
   I.seeInTab([sealedCMO, 'Order'], 'mockFile.pdf');
@@ -118,7 +117,7 @@ const assertSealedCMO = function (I, collectionId, hearingDate) {
   I.seeInTab([sealedCMO, 'Judge'], 'Her Honour Judge Reed');
 };
 
-const assertDocumentSentToParties = function (I) {
+const assertDocumentSentToParties = I => {
   I.seeInTab(['Party 1', 'Representative name'], 'Marie Kelly');
   I.seeInTab(['Party 1', 'Document 1', 'File'], 'mockFile.pdf');
 };

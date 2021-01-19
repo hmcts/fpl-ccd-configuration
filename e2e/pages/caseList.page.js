@@ -19,17 +19,14 @@ module.exports = {
   },
 
   changeStateFilter(desiredState) {
-    I.selectOption(this.fields.jurisdiction, config.definition.jurisdictionFullDesc);
-    I.selectOption(this.fields.caseType, config.definition.caseTypeFullDesc);
-    I.selectOption(this.fields.caseState, desiredState);
+    this.setInitialSearchFields(desiredState);
     I.click(this.fields.search);
   },
 
-  searchForCasesWithHandledEvidences(submittedAt) {
-    I.selectOption(this.fields.jurisdiction, config.definition.jurisdictionFullDesc);
-    I.selectOption(this.fields.caseType, config.definition.caseTypeFullDesc);
-    I.waitForElement(this.fields.evidenceHandled);
-    I.fillDate(submittedAt);
+  async searchForCasesWithHandledEvidences(submittedAt, state = 'Any') {
+    this.setInitialSearchFields(state);
+    I.waitForElement(this.fields.evidenceHandled, 30);
+    await I.fillDate(submittedAt);
     I.click(this.fields.evidenceHandled);
     I.click(this.fields.search);
   },
@@ -40,11 +37,19 @@ module.exports = {
   },
 
   searchForCasesWithName(caseName, state='Any') {
+    this.setInitialSearchFields(state);
+    // wait for our filters to load
+    I.waitForVisible(this.fields.caseName, 30);
+    I.fillField(this.fields.caseName, caseName);
+    I.click(this.fields.search);
+  },
+
+  setInitialSearchFields(state='Any') {
+    // wait for initial filters to load
+    I.waitForVisible(this.fields.jurisdiction, 30);
     I.selectOption(this.fields.jurisdiction, config.definition.jurisdictionFullDesc);
     I.selectOption(this.fields.caseType, config.definition.caseTypeFullDesc);
     I.selectOption(this.fields.caseState, state);
-    I.fillField(this.fields.caseName, caseName);
-    I.click(this.fields.search);
   },
 
   locateCase(caseId){

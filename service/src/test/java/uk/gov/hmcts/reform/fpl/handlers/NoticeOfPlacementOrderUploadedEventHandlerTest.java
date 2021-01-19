@@ -2,19 +2,23 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfPlacementOrderUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
+import uk.gov.hmcts.reform.fpl.model.notify.OrderIssuedNotifyData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
-import java.util.Map;
 import java.util.Set;
 
 import static org.mockito.BDDMockito.given;
@@ -24,43 +28,58 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.DOCUMENT_CONTENTS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 
 @ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = {NoticeOfPlacementOrderUploadedEventHandler.class, InboxLookupService.class,
+    LookupTestConfig.class,
+    IssuedOrderAdminNotificationHandler.class, RepresentativeNotificationService.class,
+    HmctsAdminNotificationHandler.class})
 class NoticeOfPlacementOrderUploadedEventHandlerTest {
 
-    @Mock
+    @MockBean
     private InboxLookupService inboxLookupService;
 
-    @Mock
+    @MockBean
     private NotificationService notificationService;
 
-    @Mock
+    @MockBean
     private OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
 
-    @Mock
+    @MockBean
     private RepresentativeNotificationService representativeNotificationService;
 
-    @Mock
+    @MockBean
     private LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
 
-    @Mock
+    @MockBean
     private IssuedOrderAdminNotificationHandler issuedOrderAdminNotificationHandler;
 
-    @InjectMocks
+    @Autowired
     private NoticeOfPlacementOrderUploadedEventHandler noticeOfPlacementOrderUploadedEventHandler;
+
+    private final CaseData caseData = caseData();
+
+    private final DocumentReference testDocument = DocumentReference.builder()
+        .filename("NoticeOfPlacement")
+        .url("url")
+        .binaryUrl("testUrl")
+        .build();
+
+    private final NoticeOfPlacementOrderUploadedEvent event = new NoticeOfPlacementOrderUploadedEvent(
+        caseData, testDocument);
 
     @Test
     void shouldSendEmailForPlacementOrderUploaded() {
 
-        final Map<String, Object> localAuthorityParameters = Map.of("key1", "value1");
-        final Map<String, Object> representativesParameters = Map.of("key2", "value2");
+        final BaseCaseNotifyData localAuthorityParameters = BaseCaseNotifyData.builder()
+            .caseUrl("test1")
+            .build();
 
-        final CaseData caseData = caseData();
-        final NoticeOfPlacementOrderUploadedEvent event = new NoticeOfPlacementOrderUploadedEvent(
-            caseData, DOCUMENT_CONTENTS);
+        final OrderIssuedNotifyData representativesParameters = OrderIssuedNotifyData.builder()
+            .caseUrl("test2")
+            .build();
 
         given(inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))
@@ -69,11 +88,11 @@ class NoticeOfPlacementOrderUploadedEventHandlerTest {
         given(localAuthorityEmailContentProvider.buildNoticeOfPlacementOrderUploadedNotification(caseData))
             .willReturn(localAuthorityParameters);
 
-        given(orderIssuedEmailContentProvider.buildParametersWithoutCaseUrl(
-            caseData, DOCUMENT_CONTENTS, NOTICE_OF_PLACEMENT_ORDER))
+        given(orderIssuedEmailContentProvider.getNotifyDataWithoutCaseUrl(
+            caseData, event.getOrderDocument(), NOTICE_OF_PLACEMENT_ORDER))
             .willReturn(representativesParameters);
 
-        noticeOfPlacementOrderUploadedEventHandler.sendEmailForNoticeOfPlacementOrderUploaded(event);
+        noticeOfPlacementOrderUploadedEventHandler.notifyParties(event);
 
         verify(notificationService).sendEmail(
             NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE,
@@ -81,9 +100,9 @@ class NoticeOfPlacementOrderUploadedEventHandlerTest {
             localAuthorityParameters,
             caseData.getId().toString());
 
-        verify(issuedOrderAdminNotificationHandler).sendToAdmin(
+        verify(issuedOrderAdminNotificationHandler).notifyAdmin(
             caseData,
-            event.getDocumentContents(),
+            testDocument,
             NOTICE_OF_PLACEMENT_ORDER);
 
         verify(representativeNotificationService).sendToRepresentativesByServedPreference(

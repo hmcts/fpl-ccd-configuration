@@ -1960,6 +1960,16 @@
     }
   },
   {
+    "hearingVenueId": 23,
+    "venue": "Leeds Civil Hearing Centre",
+    "address": {
+      "AddressLine1": "Leeds Civil Hearing Centre, 13-15 East Parade",
+      "AddressLine2": "Coverdale House",
+      "PostTown": "Leeds",
+      "PostCode": "LS1 2BH"
+    }
+  },
+  {
     "hearingVenueId": 266,
     "venue": "Leeds M&F Court",
     "address": {

@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -21,7 +20,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailCon
 import java.util.Collection;
 import java.util.List;
 
-import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
@@ -36,20 +35,17 @@ public class CaseManagementOrderIssuedEventHandler {
     private final CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final IssuedOrderAdminNotificationHandler issuedOrderAdminNotificationHandler;
-    private final DocumentDownloadService documentDownloadService;
 
     @EventListener
-    public void sendEmailsForIssuedCaseManagementOrder(final CaseManagementOrderIssuedEvent event) {
+    public void notifyParties(final CaseManagementOrderIssuedEvent event) {
         CaseData caseData = event.getCaseData();
         CaseManagementOrder issuedCmo = event.getCmo();
 
-        //TODO Document is downloaded 5 times, this could impact performance. Investigate in FPLA-2061
         sendToLocalAuthority(caseData, issuedCmo);
         sendToCafcass(caseData, issuedCmo);
         sendToRepresentatives(caseData, issuedCmo, DIGITAL_SERVICE);
         sendToRepresentatives(caseData, issuedCmo, EMAIL);
-        issuedOrderAdminNotificationHandler.sendToAdmin(caseData,
-            documentDownloadService.downloadDocument(issuedCmo.getOrder().getBinaryUrl()), CMO);
+        issuedOrderAdminNotificationHandler.notifyAdmin(caseData, issuedCmo.getOrder(), CMO);
     }
 
     private void sendToLocalAuthority(final CaseData caseData, CaseManagementOrder cmo) {
@@ -70,7 +66,7 @@ public class CaseManagementOrderIssuedEventHandler {
         final String cafcassEmail = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
 
         notificationService.sendEmail(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, cafcassEmail, cafcassParameters,
-            caseData.getId().toString());
+            caseData.getId());
     }
 
     private void sendToRepresentatives(final CaseData caseData,
@@ -87,7 +83,7 @@ public class CaseManagementOrderIssuedEventHandler {
                         caseData, cmo, servingPreference);
 
                 notificationService.sendEmail(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, representative.getEmail(),
-                    representativeNotificationParameters, caseData.getId().toString());
+                    representativeNotificationParameters, caseData.getId());
             });
     }
 }

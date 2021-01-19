@@ -7,6 +7,9 @@ idam-pr:
 xui-webapp:
   enabled: false
 
+elastic:
+  enabled: false
+
 java:
   aadIdentityName: family-public-law
   image: hmctspublic.azurecr.io/fpl/case-service:latest
@@ -29,6 +32,7 @@ java:
     SCHEDULER_DB_USER: fpl_scheduler@fpl-case-service-{{ .Values.global.environment }}
     SCHEDULER_DB_HOST: fpl-case-service-{{ .Values.global.environment }}.postgres.database.azure.com
     SCHEDULER_DB_PORT: 5432
+    SPRING_CLOUD_BOOTSTRAP_ENABLED: true
   keyVaults:
     fpl:
       secrets:

@@ -21,7 +21,7 @@ git submodule update
 
 Add services, roles and users from fpla-docker repository.
 
-Run 
+Run
 ```
 ./bin/generate-local-user-mappings.sh
 ```
@@ -101,7 +101,13 @@ Note: Case number will be printed to the console while tests run e.g. `Applicati
 ```$bash
 URL="https://manage-case.aat.platform.hmcts.net" IDAM_API_URL="https://idam-api.aat.platform.hmcts.net" CASE_SERVICE_URL="http://fpl-case-service-aat.service.core-compute-aat.internal" DM_STORE_URL="http://dm-store-aat.service.core-compute-aat.internal" yarn test
 ```
-If environment requires user to login into hmcts account first then set HMCTS_USER_USERNAME and HMCTS_USER_PASSWORD 
+If environment requires user to login into hmcts account first then set HMCTS_USER_USERNAME and HMCTS_USER_PASSWORD
+
+## Running E2E against PR enviroment
+
+```$bash
+PARALLEL_CHUNKS=1 SHOW_BROWSER_WINDOW=TRUE URL="https://xui-fpl-case-service-pr-<PR>.service.core-compute-preview.internal" IDAM_API_URL="https://idam-api.aat.platform.hmcts.net" CASE_SERVICE_URL="http://fpl-case-service-pr-<PR>.service.core-compute-preview.internal" DM_STORE_URL="http://dm-store-aat.service.core-compute-aat.internal" yarn test
+```
 
 ## Running api tests
 
@@ -111,18 +117,52 @@ Application must be up and running
 ./gradlew runApiTest
 ```
 
+## Running email template integration tests locally
+
+In order to run the template tests locally you need to add the gov.uk.notify test-key here:
+```
+Create the file in this location (it's already included in .gitignore)
+.service/src/integrationTest/resources/application-email-template-test.yaml
+
+spring:
+  profiles: email-template-test
+
+integration-test:
+  notify-service:
+    key: <ask for the test key to the other developers>
+
+(the key will start with integrationtests-*, hence not sending real emails since this is a test key,
+see https://docs.notifications.service.gov.uk/java.html#api-keys)
+```
+
 Report is generated in build/reports/serenity
+
+## Connecting to PR database:
+
+```$bash
+kubectl port-forward fpl-case-service-pr-<PR-ID>-postgresql-0 5020:5432
+```
+then connect to data-store db on port 5020
+
+## Connecting to PR elastic search:
+```$bash
+kubectl port-forward fpl-case-service-pr-<PR-ID>-es-master-0 9210:9200
+```
+then
+```$bash
+curl http://localhost:9210/care_supervision_epo_cases-000001/_search
+```
 
 ## Service:
 See [fpl-service](service/README.md) for more information.
 
 ## Stubbing
-Some external dependencies need to be stubbed (i.e. professional reference data). 
+Some external dependencies need to be stubbed (i.e. professional reference data).
 Stubbing is configured in fpla-docker repository
 
 ## App insight (optional)
-To connect local environment to azure app insight: 
-- set APPINSIGHTS_INSTRUMENTATIONKEY env variable (value can be found in env vault under name AppInsightsInstrumentationKey) 
+To connect local environment to azure app insight:
+- set APPINSIGHTS_INSTRUMENTATIONKEY env variable (value can be found in env vault under name AppInsightsInstrumentationKey)
 - add env variable JAVA_TOOL_OPTIONS=-javaagent:<PATH_TO_PROJECT>/fpl-ccd-configuration/lib/applicationinsights-agent-2.6.1.jar
 
 To connect preview env to azure app insight:
