@@ -340,8 +340,7 @@ public class ManageHearingsService {
             "hearingStartDateConfirmation",
             "hearingEndDateConfirmation",
             START_DATE_FLAG,
-            END_DATE_FLAG,
-            "hasSession");
+            END_DATE_FLAG);
     }
 
     public HearingVenue getPreviousHearingVenue(CaseData caseData) {
