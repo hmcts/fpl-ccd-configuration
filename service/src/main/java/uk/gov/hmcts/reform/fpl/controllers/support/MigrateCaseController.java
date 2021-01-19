@@ -15,9 +15,16 @@ import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.removeorder.CMORemovalAction;
+import uk.gov.hmcts.reform.fpl.service.removeorder.GeneratedOrderRemovalAction;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
+
+import java.util.Optional;
+import java.util.UUID;
 
 import static org.springframework.util.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 
 @Api
 @RestController
@@ -26,6 +33,7 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private final CMORemovalAction cmoRemovalAction;
+    private final GeneratedOrderRemovalAction generatedOrderRemovalAction;
     private static final String MIGRATION_ID_KEY = "migrationId";
 
     @PostMapping("/about-to-submit")
@@ -33,47 +41,63 @@ public class MigrateCaseController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Object migrationId = caseDetails.getData().get(MIGRATION_ID_KEY);
 
-        if ("FPLA-2589".equals(migrationId)) {
-            run2589(caseDetails);
+        if ("FPLA-2480".equals(migrationId)) {
+            run2480(caseDetails);
         }
-        if ("FPLA-2593".equals(migrationId)) {
-            run2593(caseDetails);
-        }
-        if ("FPLA-2599".equals(migrationId)) {
-            run2599(caseDetails);
+
+        if ("FPLA-2608".equals(migrationId)) {
+            Object hiddenOrders = caseDetails.getData().get("hiddenOrders");
+            run2608(caseDetails);
+            caseDetails.getData().put("hiddenOrders", hiddenOrders);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
     }
 
-    private void run2589(CaseDetails caseDetails) {
+    private void run2480(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
-        if ("PO20C50026".equals(caseData.getFamilyManCaseNumber())) {
-            if (caseData.getDraftUploadedCMOs().size() < 2) {
-                throw new IllegalArgumentException(String.format("Expected 2 draft case management orders but found %s",
-                    caseData.getDraftUploadedCMOs().size()));
-            }
-            removeDraftCaseManagementOrder(caseDetails, 1);
+        if ("LE20C50003".equals(caseData.getFamilyManCaseNumber())) {
             removeDraftCaseManagementOrder(caseDetails, 0);
         }
     }
 
-    private void run2593(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-        if ("CF20C50030".equals(caseData.getFamilyManCaseNumber())) {
-            if (caseData.getDraftUploadedCMOs().size() < 2) {
-                throw new IllegalArgumentException(String.format("Expected 2 draft case management orders but found %s",
-                    caseData.getDraftUploadedCMOs().size()));
-            }
-            removeDraftCaseManagementOrder(caseDetails, 1);
-        }
-    }
+    private void run2608(CaseDetails caseDetails) {
+        if ("1595320156232721".equals(caseDetails.getId().toString())) {
+            CaseData caseData = getCaseData(caseDetails);
+            CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
 
-    private void run2599(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-        if ("SA20C50016".equals(caseData.getFamilyManCaseNumber())) {
-            removeDraftCaseManagementOrder(caseDetails, 0);
+            if (caseData.getOrderCollection().size() < 7) {
+                throw new IllegalArgumentException(String.format("Expected to have at least 8 generated orders"
+                        + " but found %s", caseData.getOrderCollection().size()));
+            }
+
+            UUID orderSixId = UUID.fromString("aaa8e7b5-824c-4fde-9ab6-f0abf28a22be");
+            UUID orderSevenId = UUID.fromString("fa2d3751-3517-455d-a67b-35232d257665");
+
+            Optional<Element<GeneratedOrder>> generatedOrderSix
+                = findElement(orderSixId, caseData.getOrderCollection());
+
+            Optional<Element<GeneratedOrder>> generatedOrderSeven
+                = findElement(orderSevenId, caseData.getOrderCollection());
+
+            if (generatedOrderSix.isEmpty()) {
+                throw new IllegalArgumentException(String.format("Could not find generated order %s",
+                    orderSixId));
+            }
+
+            if (generatedOrderSeven.isEmpty()) {
+                throw new IllegalArgumentException(String.format("Could not find generated order %s",
+                    orderSevenId));
+            }
+
+            generatedOrderRemovalAction.remove(caseData, caseDetailsMap, generatedOrderSeven.get().getId(),
+                generatedOrderSeven.get().getValue());
+
+            generatedOrderRemovalAction.remove(caseData, caseDetailsMap, generatedOrderSix.get().getId(),
+                generatedOrderSix.get().getValue());
+
+            caseDetails.setData(caseDetailsMap);
         }
     }
 
