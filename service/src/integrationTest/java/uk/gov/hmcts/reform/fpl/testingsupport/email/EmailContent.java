@@ -30,4 +30,19 @@ public class EmailContent {
     public String body() {
         return body.toString();
     }
+
+    public EmailContent h1(String header) {
+        return line("#" + header);
+    }
+
+    public EmailContent list(String... listItems) {
+        for (String item : listItems) {
+            line("* " + item);
+        }
+        return this;
+    }
+
+    public EmailContent callout(String callout) {
+        return line("^" + callout);
+    }
 }
