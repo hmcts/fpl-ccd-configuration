@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.ESQuery;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,6 +21,11 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 public class SearchService {
 
     private final CoreCaseDataService coreCaseDataService;
+
+    public List<CaseDetails> search(ESQuery query) {
+        requireNonNull(query);
+        return search(query.toQueryString());
+    }
 
     public List<CaseDetails> search(String query) {
         requireNonNull(query);

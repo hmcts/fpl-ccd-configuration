@@ -3,8 +3,6 @@ package uk.gov.hmcts.reform.fpl.jobs;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.json.JSONObject;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +12,11 @@ import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.search.SearchService;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.BooleanQuery;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.ESClause;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.ESQuery;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Match;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MustNot;
 
 import java.util.List;
 import java.util.Map;
@@ -64,39 +67,36 @@ public class UpdateSummaryTab implements Job {
         return caseDetails.getData();
     }
 
-    public String buildQuery(boolean enabled) {
+    public ESQuery buildQuery(boolean enabled) {
+        Match openMatch = Match.match("state", "Open");
+        Match deletedMatch = Match.match("state", "Deleted");
+        Match closedMatch = Match.match("state", "Closed");
+
+        MustNot.MustNotBuilder mustNot = MustNot.builder();
+
         if (enabled) {
-            return new JSONObject(query(bool(mustNot(match("state", "Open"), match("state", "Deleted"))))).toString();
+            mustNot.clauses(List.of(openMatch, deletedMatch));
+
+        } else {
+            mustNot.clauses(List.of(openMatch, deletedMatch, closedMatch));
         }
-        return new JSONObject(query(bool(mustNot(match("state", "Open"), match("state", "Deleted"), match("state", "Closed"))))).toString();
-    }
-
-    private Map<String, Object> query(Map<String, Object> query) {
-        return Map.of("query", query);
-    }
-
-    private Map<String, Object> bool(Map<String, Object> booleanQuery) {
-        return Map.of("bool", booleanQuery);
-    }
-
-    @SafeVarargs
-    private Map<String, Object> mustNot(Map<String, Object>... queries) {
-        return Map.of("must_not", List.of(queries));
-    }
-
-    private Map<String, Object> match(String field, String value) {
-        return Map.of("match", Map.of(field, Map.of("query", value)));
+        return BooleanQuery.builder()
+            .mustNot(mustNot.build())
+            .build();
     }
 
     public static void main(String[] args) {
-        String query = QueryBuilders.boolQuery()
-            .mustNot(QueryBuilders.matchQuery("state", "Deleted"))
-            .mustNot(QueryBuilders.matchQuery("state", "Open"))
-            .toString();
+        ESClause open = Match.match("state", "Open");
+        ESClause deleted = Match.match("state", "Deleted");
+        ESClause closed = Match.match("state", "Closed");
+
+        ESQuery searchQuery = BooleanQuery.builder().mustNot(MustNot.builder().clauses(List.of(open, deleted, closed)).build()).build();
+
+        System.out.println(searchQuery.toQueryString());
 
         UpdateSummaryTab tab = new UpdateSummaryTab(null, null, null, null, null);
-        System.out.println("tab.buildQuery(true) = " + tab.buildQuery(true));
-        System.out.println("tab.buildQuery(false) = " + tab.buildQuery(false));
+        System.out.println(tab.buildQuery(false));
+        System.out.println(tab.buildQuery(true));
     }
 
 }
