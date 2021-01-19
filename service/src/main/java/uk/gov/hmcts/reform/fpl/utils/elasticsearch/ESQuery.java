@@ -5,7 +5,7 @@ import org.json.JSONObject;
 import java.util.Map;
 
 public interface ESQuery extends ESClause {
-    default String toQueryContext() {
-        return new JSONObject(Map.of("query", this.toMap())).toString();
+    default JSONObject toQueryContext() {
+        return new JSONObject(Map.of("query", this.toMap()));
     }
 }
