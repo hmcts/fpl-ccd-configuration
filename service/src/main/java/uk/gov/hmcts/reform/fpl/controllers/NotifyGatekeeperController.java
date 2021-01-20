@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.events.NotifyGatekeepersEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
-import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 
@@ -32,7 +31,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 public class NotifyGatekeeperController extends CallbackController {
     private static final String GATEKEEPER_EMAIL_KEY = "gatekeeperEmails";
     private final ValidateGroupService validateGroupService;
-    private final StandardDirectionsService standardDirectionsService;
 
     //TODO: can we validate a hearing has been added at this point? Saves some nasty exceptions in the case of
     // no hearing being present when populating standard directions FPLA-1516
@@ -50,21 +48,6 @@ public class NotifyGatekeeperController extends CallbackController {
         caseDetails.getData().put(RETURN_APPLICATION, null);
 
         return respond(caseDetails, errors);
-    }
-
-    @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
-        CaseData caseData = getCaseData(caseDetails);
-        CaseData caseDataBefore = getCaseData(caseDetailsBefore);
-
-
-        if (SUBMITTED.equals(caseDataBefore.getState())) {
-            caseDetails.getData().putAll(standardDirectionsService.populateStandardDirections(caseData));
-        }
-
-        return respond(caseDetails);
     }
 
     @PostMapping("/submitted")
