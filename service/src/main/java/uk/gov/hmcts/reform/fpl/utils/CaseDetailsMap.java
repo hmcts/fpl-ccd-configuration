@@ -21,6 +21,11 @@ public class CaseDetailsMap extends HashMap<String, Object> {
         return this;
     }
 
+    public CaseDetailsMap putIfNotEmpty(Map<String, Object> map) {
+        map.forEach(this::putIfNotEmpty);
+        return this;
+    }
+
     public static CaseDetailsMap caseDetailsMap(CaseDetails caseDetail) {
         return new CaseDetailsMap(caseDetail.getData());
     }

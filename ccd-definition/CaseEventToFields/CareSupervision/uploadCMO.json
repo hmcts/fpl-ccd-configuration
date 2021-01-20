@@ -9,7 +9,8 @@
     "PageColumnNumber": 1,
     "PageDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
-    "ShowSummaryChangeOption": "N"
+    "ShowSummaryChangeOption": "N",
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-draft-orders/populate-initial-data/mid-event"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -22,22 +23,8 @@
     "PageDisplayOrder": 2,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "cmosSentToJudge = \"DO_NOT_SHOW\"",
-    "PageShowCondition": "hearingOrderDraftKind CONTAINS \"CMO\"",
     "ShowSummaryChangeOption": "N",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-draft-orders/populate-drafts-info/mid-event"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadCMO",
-    "CaseFieldID": "cmosSentToJudge",
-    "PageID": "CMOChoice",
-    "PageFieldDisplayOrder": 2,
-    "PageColumnNumber": 1,
-    "PageDisplayOrder": 2,
-    "DisplayContext": "READONLY",
-    "FieldShowCondition": "showCMOsSentToJudge = \"YES\"",
-    "ShowSummaryChangeOption": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -88,21 +75,8 @@
     "PageDisplayOrder": 3,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "cmoUploadType = \"DO_NOT_SHOW\"",
-    "PageShowCondition": "cmoUploadType != \"\"",
     "ShowSummaryChangeOption": "N",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-draft-orders/populate-drafts-info/mid-event"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadCMO",
-    "CaseFieldID": "cmoHearingInfo",
-    "PageID": "Upload",
-    "PageFieldDisplayOrder": 2,
-    "PageColumnNumber": 1,
-    "PageDisplayOrder": 3,
-    "DisplayContext": "READONLY",
-    "ShowSummaryChangeOption": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -181,19 +155,6 @@
     "DisplayContext": "COMPLEX",
     "PageShowCondition": "hearingOrderDraftKind CONTAINS \"C21\" ",
     "ShowSummaryChangeOption": "Y"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadCMO",
-    "CaseFieldID": "cmoToSend",
-    "PageID": "Review",
-    "PageFieldDisplayOrder": 1,
-    "PageColumnNumber": 1,
-    "PageDisplayOrder": 6,
-    "PageShowCondition": "cmoUploadType != \"\"",
-    "DisplayContext": "READONLY",
-    "ShowSummaryChangeOption": "N"
   },
   {
     "LiveFrom": "01/01/2017",

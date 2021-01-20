@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.exceptions.removeorder.UnexpectedNumberOfCMOsRemovedException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -32,7 +33,9 @@ public class CMORemovalAction implements OrderRemovalAction {
 
     @Override
     public boolean isAccepted(RemovableOrder removableOrder) {
-        return removableOrder instanceof HearingOrder;
+        return removableOrder instanceof HearingOrder && Optional.ofNullable(((HearingOrder) removableOrder).getType())
+            .filter(HearingOrderType::isCmo)
+            .isPresent();
     }
 
     @Override

@@ -9,6 +9,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
+import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -43,7 +44,7 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
 @ActiveProfiles("integration-test")
 @WebMvcTest(RemoveOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTest {
+class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTest {
     private static final String REASON = "The order was removed because the order was removed";
     private static final UUID SDO_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
 
@@ -190,6 +191,7 @@ public class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTe
 
         Element<HearingOrder> caseManagementOrder1 = element(removedOrderId, HearingOrder.builder()
             .status(APPROVED)
+            .type(HearingOrderType.AGREED_CMO)
             .build());
 
         List<Element<HearingOrder>> caseManagementOrders = List.of(

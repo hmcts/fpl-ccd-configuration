@@ -27,8 +27,8 @@ public class DraftOrdersUploadedContentProvider extends AbstractEmailContentProv
 
         return DraftOrdersUploadedTemplate.builder()
             .caseUrl(getCaseUrl(caseData.getId(), TabUrlAnchor.DRAFT_ORDERS))
-            .judgeName(judge.getJudgeName())
-            .judgeTitle(judge.getJudgeOrMagistrateTitle())
+            .judgeTitle(getJudgeTitle(judge))
+            .judgeName(getJudgeName(judge))
             .respondentLastName(getFirstRespondentLastName(caseData))
             .subjectLineWithHearingDate(subject(hearing, caseData.getAllRespondents(),
                 caseData.getFamilyManCaseNumber()))

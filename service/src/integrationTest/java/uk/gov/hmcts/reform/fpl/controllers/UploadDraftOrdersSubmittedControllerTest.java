@@ -172,7 +172,7 @@ class UploadDraftOrdersSubmittedControllerTest extends AbstractUploadDraftOrders
             .respondentLastName("Davidson")
             .judgeTitle("Her Honour Judge")
             .judgeName("Judy")
-            .caseUrl(String.format("http://fake-url/cases/case-details/%s#DraftOrdersTab", CASE_ID))
+            .caseUrl("http://fake-url/cases/case-details/" + CASE_ID + "#Draft%20orders")
             .draftOrders("Draft CMO from advocates' meeting\nBlank order")
             .build();
         return convert(template);

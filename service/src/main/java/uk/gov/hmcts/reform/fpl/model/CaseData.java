@@ -571,7 +571,8 @@ public class CaseData {
     private final UUID lastHearingOrderDraftsHearingId;
 
     @JsonUnwrapped
-    private final UploadDraftOrdersData uploadDraftOrdersEventData;
+    @Builder.Default
+    private final UploadDraftOrdersData uploadDraftOrdersEventData = UploadDraftOrdersData.builder().build();
 
     public List<Element<HearingOrder>> getDraftUploadedCMOs() {
         return defaultIfNull(draftUploadedCMOs, new ArrayList<>());

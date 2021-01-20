@@ -99,15 +99,15 @@ class DraftOrdersUploadedHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line()
                 .line("Draft orders have been received for:")
                 .line()
-                .line("^Smith, case management hearing, 1 February 2020")
+                .callout("Smith, case management hearing, 1 February 2020")
                 .line()
                 .line("The draft orders are:")
                 .line()
-                .line("^Agreed CMO discussed at hearing\nTest order")
+                .callout("Agreed CMO discussed at hearing\nTest order")
                 .line()
                 .line("You should now check the orders by signing in to:")
                 .line()
-                .end("http://fake-url/cases/case-details/100#DraftOrdersTab")
+                .end("http://fake-url/cases/case-details/100#Draft%20orders")
             );
     }
 }

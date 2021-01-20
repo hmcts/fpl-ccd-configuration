@@ -68,6 +68,8 @@ public class DraftOrderService {
     private final Time time;
 
     public UploadDraftOrdersData getInitialData(CaseData caseData) {
+        final UploadDraftOrdersData eventData = caseData.getUploadDraftOrdersEventData();
+
         List<Element<HearingBooking>> futureHearings = caseData.getFutureHearings();
         List<Element<HearingBooking>> pastHearings = caseData.getPastHearings();
         List<Element<HearingBooking>> allHearings = defaultIfNull(caseData.getHearingDetails(), new ArrayList<>());
@@ -77,18 +79,15 @@ public class DraftOrderService {
         sortHearings(allHearings);
 
         List<Element<HearingOrder>> unsealedOrders = caseData.getDraftUploadedCMOs();
-
-        DynamicList futureHearingsList = buildDynamicList(futureHearings);
-        DynamicList pastHearingsList = buildDynamicList(getHearingsWithoutCMO(pastHearings, unsealedOrders));
-        DynamicList allHearingsList = buildDynamicList(NO_HEARING, caseData.getHearingDetails());
-
         String hearingsInfo = buildHearingsWithCMOsText(unsealedOrders, pastHearings);
 
-        return UploadDraftOrdersData.builder()
-            .hearingOrderDraftKind(getHearingOrderKinds(null))
-            .futureHearingsForCMO(futureHearingsList)
-            .pastHearingsForCMO(pastHearingsList)
-            .hearingsForHearingOrderDrafts(allHearingsList)
+        return eventData.toBuilder()
+            .hearingOrderDraftKind(getHearingOrderKinds(eventData))
+            .futureHearingsForCMO(rebuildDynamicList(eventData.getFutureHearingsForCMO(), futureHearings))
+            .pastHearingsForCMO(rebuildDynamicList(eventData.getPastHearingsForCMO(),
+                getHearingsWithoutCMO(pastHearings, unsealedOrders)))
+            .hearingsForHearingOrderDrafts(rebuildDynamicList(eventData.getHearingsForHearingOrderDrafts(),
+                allHearings, NO_HEARING))
             .cmosSentToJudge(hearingsInfo)
             .showCMOsSentToJudge(YesNo.from(!hearingsInfo.isBlank()))
             .build();
@@ -96,15 +95,17 @@ public class DraftOrderService {
 
     public UploadDraftOrdersData getDraftsInfo(CaseData caseData) {
         UploadDraftOrdersData eventData = caseData.getUploadDraftOrdersEventData();
+
         UUID selectedHearingId = getSelectedHearingId(eventData);
+
         List<HearingOrderKind> hearingOrderKinds = getHearingOrderKinds(eventData);
 
         UploadDraftOrdersData.UploadDraftOrdersDataBuilder newEventDataBuilder = UploadDraftOrdersData.builder()
             .hearingOrderDraftKind(hearingOrderKinds)
-            .futureHearingsForCMO(regenerateList(eventData.getFutureHearingsForCMO(), caseData.getFutureHearings()))
-            .pastHearingsForCMO(regenerateList(eventData.getPastHearingsForCMO(),
+            .futureHearingsForCMO(rebuildDynamicList(eventData.getFutureHearingsForCMO(), caseData.getFutureHearings()))
+            .pastHearingsForCMO(rebuildDynamicList(eventData.getPastHearingsForCMO(),
                 getHearingsWithoutCMO(caseData.getPastHearings(), caseData.getDraftUploadedCMOs())))
-            .hearingsForHearingOrderDrafts(regenerateList(eventData.getHearingsForHearingOrderDrafts(),
+            .hearingsForHearingOrderDrafts(rebuildDynamicList(eventData.getHearingsForHearingOrderDrafts(),
                 caseData.getHearingDetails(), NO_HEARING));
 
         if (hearingOrderKinds.contains(HearingOrderKind.CMO)) {
@@ -120,6 +121,7 @@ public class DraftOrderService {
 
             }
             newEventDataBuilder
+                .cmoUploadType(eventData.getCmoUploadType())
                 .cmoJudgeInfo(formatJudgeTitleAndName(hearing.getJudgeAndLegalAdvisor()))
                 .cmoToSend(getCMO(eventData, hearing, caseData.getDraftUploadedCMOs()))
                 .showReplacementCMO(YesNo.from(hearing.hasCMOAssociation()))
@@ -127,10 +129,8 @@ public class DraftOrderService {
         }
 
         if (hearingOrderKinds.contains(HearingOrderKind.C21)) {
-            newEventDataBuilder.currentHearingOrderDrafts(
-                defaultIfNull(eventData.getCurrentHearingOrderDrafts(), getC21Drafts(caseData, selectedHearingId)));
+            newEventDataBuilder.currentHearingOrderDrafts(getC21Drafts(caseData, selectedHearingId));
         }
-
         return newEventDataBuilder.build();
     }
 
@@ -177,7 +177,7 @@ public class DraftOrderService {
                 cmo,
                 hearing.getValue(),
                 time.now().toLocalDate(),
-                eventData.isAgreed() ? AGREED_CMO : DRAFT_CMO,
+                eventData.isCmoAgreed() ? AGREED_CMO : DRAFT_CMO,
                 supportingDocs
             ));
 
@@ -185,11 +185,11 @@ public class DraftOrderService {
 
             insertOrder(cmoDrafts, order, previousCmoId.orElse(null));
 
-            if (eventData.isAgreed() && !supportingDocs.isEmpty()) {
+            if (eventData.isCmoAgreed() && !supportingDocs.isEmpty()) {
                 migrateDocuments(evidenceBundles, selectedHearingId, hearing.getValue(), supportingDocs);
             }
 
-            addOrdersToBundle(bundles, List.of(order), hearing, eventData.isAgreed() ? AGREED_CMO : DRAFT_CMO);
+            addOrdersToBundle(bundles, List.of(order), hearing, eventData.isCmoAgreed() ? AGREED_CMO : DRAFT_CMO);
         }
 
         if (hearingOrderKinds.contains(HearingOrderKind.C21)) {
@@ -402,7 +402,10 @@ public class DraftOrderService {
      see RDM-5696 and RDM-6651
      can be deleted when above is fixed
     */
-    private DynamicList regenerateList(Object dynamicList, List<Element<HearingBooking>> hearings) {
+    private DynamicList rebuildDynamicList(Object dynamicList, List<Element<HearingBooking>> hearings) {
+        if (dynamicList == null) {
+            return buildDynamicList(hearings);
+        }
         if (dynamicList instanceof String) {
             UUID selectedId = getDynamicListSelectedValue(dynamicList, mapper);
             sortHearings(hearings);
@@ -411,8 +414,11 @@ public class DraftOrderService {
         return mapper.convertValue(dynamicList, DynamicList.class);
     }
 
-    private DynamicList regenerateList(Object dynamicList, List<Element<HearingBooking>> hearings,
-                                       DynamicListElement item) {
+    private DynamicList rebuildDynamicList(Object dynamicList, List<Element<HearingBooking>> hearings,
+                                           DynamicListElement item) {
+        if (dynamicList == null) {
+            return buildDynamicList(item, hearings);
+        }
         if (dynamicList instanceof String) {
             UUID selectedId = getDynamicListSelectedValue(dynamicList, mapper);
             sortHearings(hearings);

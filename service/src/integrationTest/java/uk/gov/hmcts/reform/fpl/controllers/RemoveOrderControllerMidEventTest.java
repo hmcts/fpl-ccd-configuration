@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
@@ -74,6 +75,7 @@ public class RemoveOrderControllerMidEventTest extends AbstractControllerTest {
             .build();
 
         HearingOrder caseManagementOrder = HearingOrder.builder()
+            .type(HearingOrderType.DRAFT_CMO)
             .order(documentReference)
             .build();
 
@@ -151,6 +153,7 @@ public class RemoveOrderControllerMidEventTest extends AbstractControllerTest {
             .build();
 
         HearingOrder caseManagementOrder = HearingOrder.builder()
+            .type(HearingOrderType.AGREED_CMO)
             .order(documentReference)
             .build();
 
