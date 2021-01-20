@@ -35,7 +35,7 @@ module.exports = {
   },
 
   async enterRespondent(respondent) {
-    const elementIndex = await this.getActiveElementIndex();
+    const elementIndex = await I.getActiveElementIndex();
 
     I.fillField(this.fields(elementIndex).respondent.firstName, respondent.firstName);
     I.fillField(this.fields(elementIndex).respondent.lastName, respondent.lastName);
@@ -47,8 +47,7 @@ module.exports = {
       I.fillField(this.fields(elementIndex).respondent.genderIdentification, '');
     }
     I.fillField(this.fields(elementIndex).respondent.placeOfBirth, respondent.placeOfBirth);
-    within(this.fields(elementIndex).respondent.address, () => {
-      //XXX postcode lookup
+    await within(this.fields(elementIndex).respondent.address, () => {
       postcodeLookup.enterAddressManually(respondent.address);
     });
     I.fillField(this.fields(elementIndex).respondent.telephone, respondent.telephone);
@@ -56,13 +55,13 @@ module.exports = {
   },
 
   async enterRelationshipToChild(relationship) {
-    const elementIndex = await this.getActiveElementIndex();
+    const elementIndex = await I.getActiveElementIndex();
 
     I.fillField(this.fields(elementIndex).respondent.relationshipToChild, relationship);
   },
 
   async enterContactDetailsHidden(option, reason = '') {
-    const elementIndex = await this.getActiveElementIndex();
+    const elementIndex = await I.getActiveElementIndex();
 
     I.click(this.fields(elementIndex).contactDetailsHidden(option).option);
     if (option === 'Yes') {
@@ -71,7 +70,7 @@ module.exports = {
   },
 
   async enterLitigationIssues(litigationIssue = 'No', litigationIssueDetail = 'mock reason') {
-    const elementIndex = await this.getActiveElementIndex();
+    const elementIndex = await I.getActiveElementIndex();
 
     litigationIssue = litigationIssue.toLowerCase();
     switch (litigationIssue) {
@@ -88,9 +87,5 @@ module.exports = {
     if (litigationIssue === 'yes') {
       I.fillField(this.fields(elementIndex).respondent.litigationIssuesDetails, litigationIssueDetail);
     }
-  },
-
-  async getActiveElementIndex() {
-    return await I.grabNumberOfVisibleElements('//button[text()="Remove"]') - 1;
   },
 };
