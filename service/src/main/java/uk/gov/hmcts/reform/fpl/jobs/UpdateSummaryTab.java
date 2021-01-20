@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.jobs;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -20,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MustNot;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
@@ -28,7 +31,7 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class UpdateSummaryTab implements Job {
-    private static final String SOME_EVENT = "";
+    private static final String EVENT_NAME = "internal-update-summary-tab";
 
     private final CaseConverter converter;
     private final ObjectMapper mapper;
@@ -48,15 +51,17 @@ public class UpdateSummaryTab implements Job {
         log.debug("Job {} searching for cases", jobName);
         List<CaseDetails> cases = searchService.search(buildQuery(toggleService.isSummaryTabFirstCronRunEnabled()));
         log.info("Job {} {} cases found", jobName, cases.size());
-        cases.forEach(caseDetails -> {
-            Map<String, Object> updatedData = updateSummaryTab(caseDetails);
+        cases.parallelStream().forEach(caseDetails -> {
+            CaseData caseData = converter.convert(caseDetails);
+            Object updatedData = updateSummaryTab(caseData);
             final Long caseId = caseDetails.getId();
             try {
-                if (updatedData.equals(caseDetails.getData())) {
+                if (!shouldUpdate(updatedData, caseData)) {
                     log.debug("Job {} skipped case {}", jobName, caseId);
                 } else {
                     log.debug("Job {} updating case {}", jobName, caseId);
-                    ccdService.triggerEvent(JURISDICTION, CASE_TYPE, caseId, SOME_EVENT, updatedData);
+                    Map<String, Object> dataToAdd = mapper.convertValue(updatedData, new TypeReference<>() {});
+                    ccdService.triggerEvent(JURISDICTION, CASE_TYPE, caseId, EVENT_NAME, dataToAdd);
                     log.info("Job {} updated case {}", jobName, caseId);
                 }
             } catch (Exception e) {
@@ -66,9 +71,14 @@ public class UpdateSummaryTab implements Job {
         log.info("Job {} finished", jobName);
     }
 
-    private Map<String, Object> updateSummaryTab(CaseDetails caseDetails) {
-        // call update service here
-        return caseDetails.getData();
+    private Object updateSummaryTab(CaseData caseData) {
+        // TODO: 20/01/2021 call update service here
+        return caseData;
+    }
+
+    private boolean shouldUpdate(Object updatedData, CaseData oldData) {
+        // TODO: 20/01/2021 get the old data field here, update params with the actual data type
+        return !Objects.equals(updatedData, oldData);
     }
 
     public ESQuery buildQuery(boolean firstPassEnabled) {
