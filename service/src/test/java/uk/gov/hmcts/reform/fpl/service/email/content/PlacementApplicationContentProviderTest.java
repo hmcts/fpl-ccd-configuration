@@ -6,6 +6,7 @@ import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.PLACEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 
 @ContextConfiguration(classes = {PlacementApplicationContentProvider.class})
@@ -18,7 +19,7 @@ class PlacementApplicationContentProviderTest extends AbstractEmailContentProvid
     void shouldBuildPlacementNotificationWithExpectedParameters() {
         BaseCaseNotifyData expected = BaseCaseNotifyData.builder()
             .respondentLastName("Smith")
-            .caseUrl(caseUrl(CASE_REFERENCE, "PlacementTab"))
+            .caseUrl(caseUrl(CASE_REFERENCE, PLACEMENT))
             .build();
 
         BaseCaseNotifyData actual = placementApplicationContentProvider

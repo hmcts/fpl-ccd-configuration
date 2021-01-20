@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentPr
 import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.uncapitalize;
+import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.DRAFT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
@@ -20,7 +21,7 @@ public class DraftCMOUploadedContentProvider extends AbstractEmailContentProvide
     public DraftCMOUploadedTemplate buildTemplate(HearingBooking hearing, Long caseId, AbstractJudge judge,
                                                   List<Element<Respondent>> respondents, String familyManCaseNumber) {
         return DraftCMOUploadedTemplate.builder()
-            .caseUrl(getCaseUrl(caseId, "DraftOrdersTab"))
+            .caseUrl(getCaseUrl(caseId, DRAFT_ORDERS))
             .judgeName(judge.getJudgeName())
             .judgeTitle(judge.getJudgeOrMagistrateTitle())
             .respondentLastName(getFirstRespondentLastName(respondents))
