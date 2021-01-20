@@ -9,6 +9,9 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.calendar.client.BankHolidaysApi;
+import uk.gov.hmcts.reform.calendar.model.BankHolidays;
+import uk.gov.hmcts.reform.calendar.model.BankHolidays.Division;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
@@ -92,6 +95,9 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
     private DocmosisDocumentGeneratorService docmosisService;
 
     @MockBean
+    private BankHolidaysApi bankHolidaysApi;
+
+    @MockBean
     private UploadDocumentService uploadDocumentService;
 
     @MockBean
@@ -130,11 +136,12 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
 
     @Test
     void shouldPopulateHiddenCCDFieldsInStandardDirectionOrderToPersistData() {
+        given(bankHolidaysApi.retrieveAll()) // there are no holidays :(
+            .willReturn(BankHolidays.builder().englandAndWales(Division.builder().events(List.of()).build()).build());
+
         CaseDetails caseDetails = validSealedCaseDetailsForServiceRoute();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
-
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        CaseData caseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
         assertThat(caseData.getStandardDirectionOrder()).isEqualTo(expectedOrder());
         assertThat(caseData.getJudgeAndLegalAdvisor()).isNull();
@@ -170,11 +177,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
 
         given(idamClient.getUserInfo(anyString())).willReturn(UserInfo.builder().name("adam").build());
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-            validCaseDetailsForUploadRoute(order, DRAFT)
-        );
-
-        CaseData data = mapper.convertValue(response.getData(), CaseData.class);
+        CaseData data = extractCaseData(postAboutToSubmitEvent(validCaseDetailsForUploadRoute(order, DRAFT)));
 
         StandardDirectionOrder expected = StandardDirectionOrder.builder()
             .dateOfUpload(now().toLocalDate())
@@ -188,12 +191,14 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
 
     @Test
     void shouldUpdateStateWhenOrderIsSealedThroughServiceRouteAndRemoveRouterAndSendNoticeOfProceedings() {
+        given(bankHolidaysApi.retrieveAll()) // there are no holidays :(
+            .willReturn(BankHolidays.builder().englandAndWales(Division.builder().events(List.of()).build()).build());
+
         CaseDetails caseDetails = validSealedCaseDetailsForServiceRoute();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
 
-        CaseData responseCaseData = mapper.convertValue(response.getData(), CaseData.class);
+        CaseData responseCaseData = extractCaseData(response);
 
         DocumentReference noticeOfProceedingBundle = responseCaseData.getNoticeOfProceedingsBundle().get(0).getValue()
             .getDocument();
@@ -220,7 +225,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
 
-        CaseData responseCaseData = mapper.convertValue(response.getData(), CaseData.class);
+        CaseData responseCaseData = extractCaseData(response);
 
         DocumentReference noticeOfProceedingBundle = responseCaseData.getNoticeOfProceedingsBundle().get(0).getValue()
             .getDocument();
