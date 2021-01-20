@@ -24,12 +24,7 @@ public class SearchService {
 
     public List<CaseDetails> search(ESQuery query) {
         requireNonNull(query);
-        return search(query.toQueryContext());
-    }
-
-    public List<CaseDetails> search(JSONObject query) {
-        requireNonNull(query);
-        return search(query.toString());
+        return search(query.toQueryContext().toString());
     }
 
     public List<CaseDetails> search(String property, LocalDate day) {
@@ -38,8 +33,7 @@ public class SearchService {
         return search(dateQuery(property, day));
     }
 
-    public List<CaseDetails> search(String query) {
-        requireNonNull(query);
+    private List<CaseDetails> search(String query) {
         return coreCaseDataService.searchCases(CASE_TYPE, query);
     }
 
