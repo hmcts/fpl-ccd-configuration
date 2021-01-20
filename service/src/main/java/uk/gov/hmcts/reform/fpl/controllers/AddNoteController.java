@@ -38,7 +38,6 @@ public class AddNoteController extends CallbackController {
 
         caseDetails.getData().put("caseNotes", caseNotes);
         caseDetails.getData().remove("caseNote");
-        caseDetails.getData().putAll(caseSummaryService.generateSummaryFields(caseData));
 
         return respond(caseDetails);
     }
