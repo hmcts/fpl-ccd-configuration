@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers.support;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,10 +13,12 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
 import java.util.List;
+
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Api
 @RestController
@@ -28,38 +29,41 @@ public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
 
     @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) throws Exception {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Object migrationId = caseDetails.getData().get(MIGRATION_ID_KEY);
 
-        if ("FPLA-2531".equals(migrationId)) {
-            run2531(caseDetails);
+        if ("FPLA-2623".equals(migrationId)) {
+            run2623(caseDetails);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
     }
 
-    private void run2531(CaseDetails caseDetails) {
+    private void run2623(CaseDetails caseDetails) throws Exception {
         CaseData caseData = getCaseData(caseDetails);
 
-        if ("PR20C50001".equals(caseData.getFamilyManCaseNumber())) {
-            List<Element<HearingBooking>> hearings = caseData.getHearingDetails();
+        if ("CF20C50072".equals(caseData.getFamilyManCaseNumber())) {
 
-            if (ObjectUtils.isEmpty(hearings)) {
-                throw new IllegalArgumentException("No hearings in the case");
-            }
-
-            if (hearings.size() < 2) {
-                throw new IllegalArgumentException(String.format("Expected 2 hearings in the case but found %s",
-                    hearings.size()));
-            }
-
-            Element<HearingBooking> hearingToBeRemoved = hearings.get(1);
-
-            hearings.remove(hearingToBeRemoved);
-
-            caseDetails.getData().put("hearingDetails", hearings);
+            removeDuplicateOrder(caseData, caseDetails, 1);
         }
     }
+
+    public void removeDuplicateOrder(CaseData caseData, CaseDetails data,
+                                               Integer orderElement) throws Exception {
+
+        List<Element<GeneratedOrder>> orders = caseData.getOrderCollection();
+
+        if (!orders.remove(orderElement)) {
+            throw new Exception("Failed to find order");
+        }
+
+        if (isEmpty(orders)) {
+            data.getData().remove("orderCollection");
+        } else {
+            data.getData().put("orderCollection", orders);
+        }
+    }
+
 }
