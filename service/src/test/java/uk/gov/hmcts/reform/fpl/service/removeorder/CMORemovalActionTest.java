@@ -2,10 +2,13 @@ package uk.gov.hmcts.reform.fpl.service.removeorder;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.exceptions.removeorder.UnexpectedNumberOfCMOsRemovedException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -31,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
@@ -56,9 +60,23 @@ class CMORemovalActionTest {
     @InjectMocks
     private CMORemovalAction underTest;
 
+    @ParameterizedTest
+    @EnumSource(value = HearingOrderType.class, names = {"C21"}, mode = EnumSource.Mode.EXCLUDE)
+    void isAcceptedIfCaseManagementOrder(HearingOrderType hearingOrderType) {
+        RemovableOrder order = HearingOrder.builder()
+            .type(hearingOrderType)
+            .build();
+
+        assertThat(underTest.isAccepted(order)).isTrue();
+    }
+
     @Test
-    void isAcceptedIfCaseManagementOrder() {
-        assertThat(underTest.isAccepted(mock(HearingOrder.class))).isTrue();
+    void isNotAcceptedC21HearingOrder() {
+        RemovableOrder order = HearingOrder.builder()
+            .type(C21)
+            .build();
+
+        assertThat(underTest.isAccepted(order)).isFalse();
     }
 
     @Test

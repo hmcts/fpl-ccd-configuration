@@ -34,14 +34,13 @@ const judgeSendsReviewedCmoToAllParties = async (I, caseId, caseViewPage, upload
 const uploadCMO = async (I, caseViewPage, uploadCMOEventPage, hearing, supportingDocs, c21s, selectHearing) => {
   await caseViewPage.goToNewActions(config.applicationActions.uploadCMO);
 
-  I.waitForSelector(uploadCMOEventPage.fields.cmoDraftOrder);
+  I.waitForElement(uploadCMOEventPage.fields.cmoDraftOrder);
   I.click(uploadCMOEventPage.fields.cmoDraftOrder);
   if(c21s) {
     I.click(uploadCMOEventPage.fields.c21DraftOrder);
   }
   await I.goToNextPage();
 
-  I.waitForSelector(uploadCMOEventPage.fields.cmoUploadType.id);
   I.waitForElement(uploadCMOEventPage.fields.cmoUploadType.id);
   selectHearing();
   await I.goToNextPage();
@@ -64,8 +63,8 @@ const uploadCMO = async (I, caseViewPage, uploadCMOEventPage, hearing, supportin
 const uploadC21 = async (I, caseViewPage, uploadCMOEventPage, c21s, hearing) => {
   await caseViewPage.goToNewActions(config.applicationActions.uploadCMO);
 
-  I.waitForSelector(uploadCMOEventPage.fields.cmoDraftOrder);
-  await I.click(uploadCMOEventPage.fields.c21DraftOrder);
+  I.waitForElement(uploadCMOEventPage.fields.cmoDraftOrder);
+  I.click(uploadCMOEventPage.fields.c21DraftOrder);
 
   await I.goToNextPage();
 

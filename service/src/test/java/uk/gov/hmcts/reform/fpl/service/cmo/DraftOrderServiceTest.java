@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.service.cmo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -41,7 +40,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -96,11 +94,11 @@ class DraftOrderServiceTest {
 
         @Test
         void shouldAddHearingTextThatHaveCMOsBeingReviewedByJudge() {
-            List<Element<HearingOrder>> unsealedCMOs = Lists.newArrayList(
+            List<Element<HearingOrder>> unsealedCMOs = newArrayList(
                 element(HearingOrder.builder().status(SEND_TO_JUDGE).build()),
                 element(HearingOrder.builder().status(DRAFT).build()));
 
-            List<Element<HearingBooking>> hearings = Lists.newArrayList(
+            List<Element<HearingBooking>> hearings = newArrayList(
                 element(hearing(CASE_MANAGEMENT, LocalDateTime.of(2020, 2, 1, 11, 30), unsealedCMOs.get(0).getId())),
                 element(hearing(CASE_MANAGEMENT, time.now().plusDays(2), unsealedCMOs.get(1).getId())),
                 element(hearing(CASE_MANAGEMENT, time.now().plusDays(3))));
@@ -239,7 +237,7 @@ class DraftOrderServiceTest {
         void shouldRegenerateDynamicListsIfIdsPassedAsStrings() {
             Element<HearingBooking> futureHearing = element(hearing(CASE_MANAGEMENT,
                 LocalDateTime.of(3000, 12, 3, 11, 32)));
-            List<Element<HearingBooking>> hearings = new ArrayList<>(hearings());
+            List<Element<HearingBooking>> hearings = hearings();
             hearings.add(futureHearing);
 
             UUID pastHearingId = hearings.get(0).getId();
@@ -449,9 +447,9 @@ class DraftOrderServiceTest {
                 .cmoUploadType(CMOType.DRAFT)
                 .build();
 
-            List<Element<HearingOrder>> unsealedOrders = new ArrayList<>();
-            List<Element<HearingFurtherEvidenceBundle>> bundles = new ArrayList<>();
-            List<Element<HearingOrdersBundle>> ordersBundles = new ArrayList<>();
+            List<Element<HearingOrder>> unsealedOrders = newArrayList();
+            List<Element<HearingFurtherEvidenceBundle>> bundles = newArrayList();
+            List<Element<HearingOrdersBundle>> ordersBundles = newArrayList();
 
             service.updateCase(eventData, hearings, unsealedOrders, bundles, ordersBundles);
 
@@ -493,9 +491,9 @@ class DraftOrderServiceTest {
                 .cmoUploadType(CMOType.AGREED)
                 .build();
 
-            List<Element<HearingOrder>> unsealedOrders = new ArrayList<>();
-            List<Element<HearingFurtherEvidenceBundle>> bundles = new ArrayList<>();
-            List<Element<HearingOrdersBundle>> ordersBundles = new ArrayList<>();
+            List<Element<HearingOrder>> unsealedOrders = newArrayList();
+            List<Element<HearingFurtherEvidenceBundle>> bundles = newArrayList();
+            List<Element<HearingOrdersBundle>> ordersBundles = newArrayList();
 
             service.updateCase(eventData, hearings, unsealedOrders, bundles, ordersBundles);
 
@@ -524,7 +522,7 @@ class DraftOrderServiceTest {
             Element<HearingFurtherEvidenceBundle> existingHearingBundle = element(
                 hearings.get(0).getId(),
                 HearingFurtherEvidenceBundle.builder()
-                    .supportingEvidenceBundle(new ArrayList<>(List.of(doc1, doc2, doc3)))
+                    .supportingEvidenceBundle(newArrayList(doc1, doc2, doc3))
                     .build());
 
             List<Element<SupportingEvidenceBundle>> cmoSupportingDocuments = List.of(doc1, updatedDoc2, doc3, newDoc);
@@ -537,9 +535,9 @@ class DraftOrderServiceTest {
                 .cmoUploadType(CMOType.AGREED)
                 .build();
 
-            List<Element<HearingOrder>> unsealedOrders = new ArrayList<>();
-            List<Element<HearingFurtherEvidenceBundle>> bundles = List.of(existingHearingBundle);
-            List<Element<HearingOrdersBundle>> ordersBundles = new ArrayList<>();
+            List<Element<HearingOrder>> unsealedOrders = newArrayList();
+            List<Element<HearingFurtherEvidenceBundle>> bundles = newArrayList(existingHearingBundle);
+            List<Element<HearingOrdersBundle>> ordersBundles = newArrayList();
 
             service.updateCase(eventData, hearings, unsealedOrders, bundles, ordersBundles);
 
@@ -550,7 +548,7 @@ class DraftOrderServiceTest {
         @Test
         void shouldUpdateExistingCMOWithNewOrderAndChangeStatus() {
             List<Element<HearingBooking>> hearings = hearings();
-            List<Element<HearingOrder>> unsealedOrders = new ArrayList<>();
+            List<Element<HearingOrder>> unsealedOrders = newArrayList();
             Element<HearingOrder> oldOrder = element(HearingOrder.builder().status(RETURNED).build());
 
             Element<HearingBooking> selectedHearing = hearings.get(0);
@@ -618,19 +616,17 @@ class DraftOrderServiceTest {
                 .cmoUploadType(CMOType.AGREED)
                 .build();
 
-            List<Element<SupportingEvidenceBundle>> currentEvidenceBundles = new ArrayList<>(List.of(
-                element(SupportingEvidenceBundle.builder().name("current").build())
-            ));
+            List<Element<SupportingEvidenceBundle>> currentEvidenceBundles = newArrayList(
+                element(SupportingEvidenceBundle.builder().name("current").build()));
 
-            List<Element<HearingFurtherEvidenceBundle>> bundles = new ArrayList<>(List.of(
+            List<Element<HearingFurtherEvidenceBundle>> bundles = newArrayList(
                 element(hearings.get(0).getId(), HearingFurtherEvidenceBundle.builder()
                     .hearingName("Case management hearing, 2 March 2020")
                     .supportingEvidenceBundle(currentEvidenceBundles)
-                    .build())
-            ));
+                    .build()));
 
-            List<Element<HearingOrder>> unsealedOrders = new ArrayList<>();
-            List<Element<HearingOrdersBundle>> ordersBundles = new ArrayList<>();
+            List<Element<HearingOrder>> unsealedOrders = newArrayList();
+            List<Element<HearingOrdersBundle>> ordersBundles = newArrayList();
 
             service.updateCase(eventData, hearings, unsealedOrders, bundles, ordersBundles);
 
@@ -661,9 +657,9 @@ class DraftOrderServiceTest {
                 .currentHearingOrderDrafts(newArrayList(hearingOrder1, hearingOrder2))
                 .build();
 
-            List<Element<HearingFurtherEvidenceBundle>> evidenceBundles = new ArrayList<>();
-            List<Element<HearingOrder>> unsealedOrders = new ArrayList<>();
-            List<Element<HearingOrdersBundle>> ordersBundles = new ArrayList<>();
+            List<Element<HearingFurtherEvidenceBundle>> evidenceBundles = newArrayList();
+            List<Element<HearingOrder>> unsealedOrders = newArrayList();
+            List<Element<HearingOrdersBundle>> ordersBundles = newArrayList();
 
             service.updateCase(eventData, hearings, unsealedOrders, evidenceBundles, ordersBundles);
 
@@ -922,7 +918,7 @@ class DraftOrderServiceTest {
         @SafeVarargs
         private HearingOrdersBundle ordersBundle(Element<HearingBooking> hearing, Element<HearingOrder>... orders) {
             return HearingOrdersBundle.builder()
-                .orders(new ArrayList<>(Arrays.asList(orders)))
+                .orders(newArrayList(orders))
                 .build()
                 .updateHearing(hearing.getId(), hearing.getValue());
         }
@@ -937,13 +933,13 @@ class DraftOrderServiceTest {
                 element(HearingOrder.builder().status(SEND_TO_JUDGE).build())
             );
 
-            List<Element<HearingBooking>> hearingsBefore = new ArrayList<>(hearings());
+            List<Element<HearingBooking>> hearingsBefore = hearings();
 
             CaseData caseDataBefore = CaseData.builder()
                 .hearingDetails(hearingsBefore)
                 .build();
 
-            List<Element<HearingBooking>> hearingsAfter = new ArrayList<>(hearingsBefore);
+            List<Element<HearingBooking>> hearingsAfter = newArrayList(hearingsBefore);
 
             HearingBooking updatedHearing = hearingsAfter.get(0).getValue().toBuilder()
                 .caseManagementOrderId(unsealedOrders.get(0).getId())
@@ -965,13 +961,13 @@ class DraftOrderServiceTest {
         void shouldBuildDraftEventWhenNewCMOIsDraft() {
             Element<HearingOrder> unsealedOrders = element(HearingOrder.builder().status(DRAFT).build());
 
-            List<Element<HearingBooking>> hearingsBefore = new ArrayList<>(hearings());
+            List<Element<HearingBooking>> hearingsBefore = hearings();
 
             CaseData caseDataBefore = CaseData.builder()
                 .hearingDetails(hearingsBefore)
                 .build();
 
-            List<Element<HearingBooking>> hearingsAfter = new ArrayList<>(hearingsBefore);
+            List<Element<HearingBooking>> hearingsAfter = newArrayList(hearingsBefore);
 
             HearingBooking updatedHearing = hearingsAfter.get(0).getValue().toBuilder()
                 .caseManagementOrderId(unsealedOrders.getId())
@@ -993,13 +989,13 @@ class DraftOrderServiceTest {
         void shouldThrowExceptionWhenCMOHasWrongState(CMOStatus status) {
             Element<HearingOrder> invalidOrder = element(HearingOrder.builder().status(status).build());
 
-            List<Element<HearingBooking>> hearingsBefore = new ArrayList<>(hearings());
+            List<Element<HearingBooking>> hearingsBefore = hearings();
 
             CaseData caseDataBefore = CaseData.builder()
                 .hearingDetails(hearingsBefore)
                 .build();
 
-            List<Element<HearingBooking>> hearingsAfter = new ArrayList<>(hearingsBefore);
+            List<Element<HearingBooking>> hearingsAfter = newArrayList(hearingsBefore);
 
             HearingBooking updatedHearing = hearingsAfter.get(0).getValue().toBuilder()
                 .caseManagementOrderId(invalidOrder.getId())
@@ -1018,7 +1014,7 @@ class DraftOrderServiceTest {
 
         @Test
         void shouldThrowExceptionWhenHearingHasNoCMOAssociated() {
-            List<Element<HearingBooking>> hearings = new ArrayList<>(hearings());
+            List<Element<HearingBooking>> hearings = hearings();
 
             CaseData caseDataBefore = CaseData.builder()
                 .hearingDetails(hearings)
@@ -1077,7 +1073,7 @@ class DraftOrderServiceTest {
 
     private List<Element<HearingBooking>> hearings() {
         LocalTime time = LocalTime.now();
-        return Lists.newArrayList(
+        return newArrayList(
             element(hearing(CASE_MANAGEMENT, LocalDateTime.of(LocalDate.of(2020, 3, 2), time))),
             element(hearing(FURTHER_CASE_MANAGEMENT, LocalDateTime.of(LocalDate.of(2020, 3, 7), time)))
         );
@@ -1111,7 +1107,7 @@ class DraftOrderServiceTest {
     private HearingOrdersBundle ordersBundle(UUID hearingId, Element<HearingOrder>... orders) {
         return HearingOrdersBundle.builder()
             .hearingId(hearingId)
-            .orders(new ArrayList<>(Arrays.asList(orders)))
+            .orders(newArrayList(orders))
             .build();
     }
 }

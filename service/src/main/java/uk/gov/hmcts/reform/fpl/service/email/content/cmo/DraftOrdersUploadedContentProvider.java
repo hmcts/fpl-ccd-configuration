@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.email.content.cmo;
 
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -25,9 +26,9 @@ public class DraftOrdersUploadedContentProvider extends AbstractEmailContentProv
                                                     AbstractJudge judge, List<HearingOrder> orders) {
 
         return DraftOrdersUploadedTemplate.builder()
-            .caseUrl(getCaseUrl(caseData.getId(), "DraftOrdersTab"))
-            .judgeName(judge.getJudgeName())
-            .judgeTitle(judge.getJudgeOrMagistrateTitle())
+            .caseUrl(getCaseUrl(caseData.getId(), TabUrlAnchor.DRAFT_ORDERS))
+            .judgeTitle(getJudgeTitle(judge))
+            .judgeName(getJudgeName(judge))
             .respondentLastName(getFirstRespondentLastName(caseData))
             .subjectLineWithHearingDate(subject(hearing, caseData.getAllRespondents(),
                 caseData.getFamilyManCaseNumber()))
