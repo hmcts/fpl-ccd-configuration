@@ -40,23 +40,27 @@ public class UpdateSummaryTab implements Job {
     public void execute(JobExecutionContext jobExecutionContext) {
         final String jobName = jobExecutionContext.getJobDetail().getKey().getName();
         if (!toggleService.isSummaryTabEnabled()) {
-            log.info("Job {} :: skipping due to feature toggle", jobName);
+            log.info("Job {} skipping due to feature toggle", jobName);
             return;
         }
-        log.info("Job {} :: started", jobName);
+        log.info("Job {} started", jobName);
 
-        log.debug("Job {} :: searching for cases", jobName);
+        log.debug("Job {} searching for cases", jobName);
         List<CaseDetails> cases = searchService.search(buildQuery(toggleService.isSummaryTabFirstCronRunEnabled()));
-        log.info("Job {} :: {} cases found", jobName, cases.size());
+        log.info("Job {} {} cases found", jobName, cases.size());
         cases.forEach(caseDetails -> {
             Map<String, Object> updatedData = updateSummaryTab(caseDetails);
             final Long caseId = caseDetails.getId();
             try {
-                log.debug("Job {} :: updating case {}", jobName, caseId);
-                ccdService.triggerEvent(JURISDICTION, CASE_TYPE, caseId, SOME_EVENT, updatedData);
-                log.info("Job {} :: updated case {}", jobName, caseId);
+                if (updatedData.equals(caseDetails.getData())) {
+                    log.debug("Job {} skipped case {}", jobName, caseId);
+                } else {
+                    log.debug("Job {} updating case {}", jobName, caseId);
+                    ccdService.triggerEvent(JURISDICTION, CASE_TYPE, caseId, SOME_EVENT, updatedData);
+                    log.info("Job {} updated case {}", jobName, caseId);
+                }
             } catch (Exception e) {
-                log.error("Job {} :: could not update case {} due to {}", jobName, caseId, e.getMessage(), e);
+                log.error("Job {} could not update case {} due to {}", jobName, caseId, e.getMessage(), e);
             }
         });
         log.info("Job {} finished", jobName);
@@ -76,7 +80,6 @@ public class UpdateSummaryTab implements Job {
 
         if (firstPassEnabled) {
             mustNot.clauses(List.of(openCases, deletedCases));
-
         } else {
             mustNot.clauses(List.of(openCases, deletedCases, closedCases));
         }
