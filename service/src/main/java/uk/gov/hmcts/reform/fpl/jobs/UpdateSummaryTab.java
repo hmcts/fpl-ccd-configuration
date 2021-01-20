@@ -68,27 +68,20 @@ public class UpdateSummaryTab implements Job {
     }
 
     public ESQuery buildQuery(boolean firstPassEnabled) {
-        MatchQuery openMatch = MatchQuery.of("state", State.OPEN.getValue());
-        MatchQuery deletedMatch = MatchQuery.of("state", State.DELETED.getValue());
-        MatchQuery closedMatch = MatchQuery.of("state", State.CLOSED.getValue());
+        MatchQuery openCases = MatchQuery.of("state", State.OPEN.getValue());
+        MatchQuery deletedCases = MatchQuery.of("state", State.DELETED.getValue());
+        MatchQuery closedCases = MatchQuery.of("state", State.CLOSED.getValue());
 
         MustNot.MustNotBuilder mustNot = MustNot.builder();
 
         if (firstPassEnabled) {
-            mustNot.clauses(List.of(openMatch, deletedMatch));
+            mustNot.clauses(List.of(openCases, deletedCases));
 
         } else {
-            mustNot.clauses(List.of(openMatch, deletedMatch, closedMatch));
+            mustNot.clauses(List.of(openCases, deletedCases, closedCases));
         }
         return BooleanQuery.builder()
             .mustNot(mustNot.build())
             .build();
     }
-
-    public static void main(String[] args) {
-        UpdateSummaryTab tab = new UpdateSummaryTab(null, null, null, null, null);
-        System.out.println("false = " + tab.buildQuery(false).toQueryContext());
-        System.out.println("true  = " + tab.buildQuery(true).toQueryContext());
-    }
-
 }
