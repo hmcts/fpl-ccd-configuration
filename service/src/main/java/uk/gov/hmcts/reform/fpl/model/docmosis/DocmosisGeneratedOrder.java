@@ -23,4 +23,6 @@ public class DocmosisGeneratedOrder extends DocmosisOrder {
     private final GeneratedOrderType orderType;
     private final String furtherDirections;
     private final String exclusionClause;
+    private final String exclusionRequirement;
+
 }

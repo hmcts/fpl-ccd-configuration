@@ -1,17 +1,17 @@
-const { I } = inject();
+const {I} = inject();
 
 module.exports = {
 
   fields: {
     timeFrame: {
       radioGroup: '#hearing_timeFrame',
-      sameDay: 'Same day',
+      sameDay: '#hearing_timeFrame-Same\\ day',
       reason: '#hearing_reason',
     },
 
     hearingType: {
       radioGroup: '#hearing_type',
-      contestedICO: 'Contested interim care order',
+      contestedICO: '#hearing_type-Contested\\ interim\\ care\\ order',
     },
 
     noticeWithoutHearing: {
@@ -28,16 +28,12 @@ module.exports = {
   },
 
   enterTimeFrame(reason = 'test reason') {
-    within(this.fields.timeFrame.radioGroup, () => {
-      I.click(locate('label').withText(this.fields.timeFrame.sameDay));
-    });
+    I.click(this.fields.timeFrame.sameDay);
     I.fillField(this.fields.timeFrame.reason, reason);
   },
 
   enterHearingType() {
-    within(this.fields.hearingType.radioGroup, () => {
-      I.click(locate('label').withText(this.fields.hearingType.contestedICO));
-    });
+    I.click(this.fields.hearingType.contestedICO);
   },
 
   enterWithoutNoticeHearing() {
