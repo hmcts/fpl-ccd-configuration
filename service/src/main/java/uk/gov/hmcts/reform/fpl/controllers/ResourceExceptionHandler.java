@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.exceptions.AboutToStartOrSubmitCallbackException;
 import uk.gov.hmcts.reform.fpl.exceptions.LogAsWarningException;
-import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityDomainException;
 
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
@@ -35,9 +35,13 @@ public class ResourceExceptionHandler {
     }
 
     @ExceptionHandler(value = LogAsWarningException.class)
-    public void handleLogAsWarningException(LogAsWarningException exception) {
-        log.warn(exception.getMessage());
-        throw exception;
+    public ResponseEntity<AboutToStartOrSubmitCallbackResponse> handleLogAsWarningException(
+        LogAsWarningException exception, HttpServletRequest request) {
+        log.warn("Ignorable exception for caller {}. {}", getCaller(request), exception.getMessage());
+        
+        return ResponseEntity.ok(AboutToStartOrSubmitCallbackResponse.builder()
+            .errors(List.of(exception.getUserMessage()))
+            .build());
     }
 
     private String getCaller(HttpServletRequest request) {
