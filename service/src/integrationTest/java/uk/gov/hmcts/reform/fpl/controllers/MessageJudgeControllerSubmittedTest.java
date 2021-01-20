@@ -76,7 +76,7 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
 
         Map<String, Object> expectedData = Map.of(
             "respondentLastName", "Davidson",
-            "caseUrl", "http://fake-url/cases/case-details/12345#JudicialMessagesTab",
+            "caseUrl", "http://fake-url/cases/case-details/12345#Judicial%20messages",
             "callout", "^Davidson",
             "sender", "sender@fpla.com",
             "urgency", "High",
@@ -123,7 +123,7 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
 
         Map<String, Object> expectedData = Map.of(
             "respondentLastName", "Davidson",
-            "caseUrl", "http://fake-url/cases/case-details/12345#JudicialMessagesTab",
+            "caseUrl", "http://fake-url/cases/case-details/12345#Judicial%20messages",
             "callout", "^Davidson",
             "latestMessage", REPLY
         );

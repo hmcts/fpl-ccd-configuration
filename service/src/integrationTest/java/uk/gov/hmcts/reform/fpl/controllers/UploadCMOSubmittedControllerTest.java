@@ -106,7 +106,7 @@ class UploadCMOSubmittedControllerTest extends AbstractUploadCMOControllerTest {
             .respondentLastName("Davidson")
             .judgeTitle("Her Honour Judge")
             .judgeName("Judy")
-            .caseUrl(String.format("http://fake-url/cases/case-details/%s#DraftOrdersTab", CASE_ID))
+            .caseUrl("http://fake-url/cases/case-details/12345#Draft%20orders")
             .build();
         return mapper.convertValue(template, new TypeReference<>() {
         });

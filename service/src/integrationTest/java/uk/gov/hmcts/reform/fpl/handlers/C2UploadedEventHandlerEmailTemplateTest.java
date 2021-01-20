@@ -36,7 +36,7 @@ public class C2UploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private final C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder().build();
     private final String respondentLastName = "Smith";
     private final String calloutText = "Smith, SACCCCCCCC5676576567";
-    private final String caseUrl = "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345#C2Tab";
+    private final String caseUrl = "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345#C2";
 
     @Autowired
     private C2UploadedEventHandler underTest;
