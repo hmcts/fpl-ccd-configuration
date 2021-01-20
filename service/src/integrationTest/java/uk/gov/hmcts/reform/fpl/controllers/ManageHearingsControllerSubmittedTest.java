@@ -5,7 +5,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.calendar.client.BankHolidaysApi;
+import uk.gov.hmcts.reform.calendar.model.BankHolidays;
+import uk.gov.hmcts.reform.calendar.model.BankHolidays.Division;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
@@ -66,11 +68,14 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
     private static final String CAFCASS_EMAIL = "cafcass@cafcass.com";
     private static final String NOTIFICATION_REFERENCE = "localhost/" + parseLong(CASE_ID);
 
-    private Element<HearingBooking> hearingWithoutNotice = element(HearingBooking.builder()
+    private final Element<HearingBooking> hearingWithoutNotice = element(HearingBooking.builder()
         .type(CASE_MANAGEMENT)
-        .startDate(LocalDateTime.of(2050, 5, 20, 13, 00))
+        .startDate(LocalDateTime.of(2050, 5, 20, 13, 0))
         .noticeOfHearing(null)
         .build());
+
+    @MockBean
+    private BankHolidaysApi bankHolidaysApi;
 
     @MockBean
     private CoreCaseDataService coreCaseDataService;
@@ -90,18 +95,19 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
     @Test
     void shouldTriggerPopulateDatesEventWhenEmptyDatesExistAndCaseInGatekeeping() {
-        CallbackRequest callbackRequest = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .jurisdiction(JURISDICTION)
-                .caseTypeId(CASE_TYPE)
-                .id(parseLong(CASE_ID))
-                .data(buildData(List.of(hearingWithoutNotice), hearingWithoutNotice.getId()))
-                .state("Gatekeeping")
-                .build())
-            .caseDetailsBefore(CaseDetails.builder().data(Map.of()).build())
-            .build();
+        given(bankHolidaysApi.retrieveAll()) // there are no holidays :(
+            .willReturn(BankHolidays.builder().englandAndWales(Division.builder().events(List.of()).build()).build());
 
-        postSubmittedEvent(callbackRequest);
+        CaseDetails caseDetails = CaseDetails.builder()
+            .jurisdiction(JURISDICTION)
+            .caseTypeId(CASE_TYPE)
+            .id(parseLong(CASE_ID))
+            .data(buildData(List.of(hearingWithoutNotice), hearingWithoutNotice.getId()))
+            .state("Gatekeeping")
+            .build();
+        CaseDetails caseDetailsBefore = CaseDetails.builder().data(Map.of()).build();
+
+        postSubmittedEvent(toCallBackRequest(caseDetails, caseDetailsBefore));
 
         verify(coreCaseDataService, timeout(ASYNC_METHOD_CALL_TIMEOUT)).triggerEvent(
             eq(JURISDICTION),
@@ -116,18 +122,16 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
     @Test
     void shouldNotTriggerPopulateDatesEventWhenCaseNotInGatekeeping() {
-        CallbackRequest callbackRequest = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .jurisdiction(JURISDICTION)
-                .caseTypeId(CASE_TYPE)
-                .id(parseLong(CASE_ID))
-                .data(buildData(List.of(hearingWithoutNotice), hearingWithoutNotice.getId()))
-                .state("Submitted")
-                .build())
-            .caseDetailsBefore(CaseDetails.builder().data(Map.of()).build())
+        CaseDetails caseDetails = CaseDetails.builder()
+            .jurisdiction(JURISDICTION)
+            .caseTypeId(CASE_TYPE)
+            .id(parseLong(CASE_ID))
+            .data(buildData(List.of(hearingWithoutNotice), hearingWithoutNotice.getId()))
+            .state("Submitted")
             .build();
+        CaseDetails caseDetailsBefore = CaseDetails.builder().data(Map.of()).build();
 
-        postSubmittedEvent(callbackRequest);
+        postSubmittedEvent(toCallBackRequest(caseDetails, caseDetailsBefore));
 
         verifyNoInteractions(coreCaseDataService);
         verifyNoInteractions(notificationClient);
@@ -135,13 +139,11 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
     @Test
     void shouldDoNothingWhenNoHearingAddedOrUpdated() {
-        CallbackRequest callbackRequest = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .data(buildData(List.of(hearingWithoutNotice), hearingWithoutNotice.getId()))
-                .build())
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(buildData(List.of(hearingWithoutNotice), hearingWithoutNotice.getId()))
             .build();
 
-        postSubmittedEvent(callbackRequest);
+        postSubmittedEvent(caseDetails);
 
         verifyNoInteractions(coreCaseDataService, notificationClient, eventPublisher);
     }
@@ -151,35 +153,34 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         throws NotificationClientException {
         Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
             .type(CASE_MANAGEMENT)
-            .startDate(LocalDateTime.of(2050, 5, 20, 13, 00))
-            .endDate(LocalDateTime.of(2050, 5, 20, 14, 00))
+            .startDate(LocalDateTime.of(2050, 5, 20, 13, 0))
+            .endDate(LocalDateTime.of(2050, 5, 20, 14, 0))
             .noticeOfHearing(testDocumentReference())
             .venue("96")
             .build());
 
         Element<HearingBooking> existingHearing = element(HearingBooking.builder()
             .type(ISSUE_RESOLUTION)
-            .startDate(LocalDateTime.of(2020, 5, 20, 13, 00))
-            .endDate(LocalDateTime.of(2020, 5, 20, 14, 00))
+            .startDate(LocalDateTime.of(2020, 5, 20, 13, 0))
+            .endDate(LocalDateTime.of(2020, 5, 20, 14, 0))
             .noticeOfHearing(testDocumentReference())
             .venue("162")
             .build());
 
-        CallbackRequest callbackRequest = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .jurisdiction(JURISDICTION)
-                .caseTypeId(CASE_TYPE)
-                .id(parseLong(CASE_ID))
-                .data(buildData(List.of(hearingWithNotice, existingHearing), hearingWithNotice.getId()))
-                .state("Submitted")
-                .build())
-            .caseDetailsBefore(CaseDetails.builder()
-                .data(buildData(List.of(existingHearing), hearingWithoutNotice.getId())).build())
+        CaseDetails caseDetails = CaseDetails.builder()
+            .jurisdiction(JURISDICTION)
+            .caseTypeId(CASE_TYPE)
+            .id(parseLong(CASE_ID))
+            .data(buildData(List.of(hearingWithNotice, existingHearing), hearingWithNotice.getId()))
+            .state("Submitted")
+            .build();
+        CaseDetails caseDetailsBefore = CaseDetails.builder()
+            .data(buildData(List.of(existingHearing), hearingWithoutNotice.getId()))
             .build();
 
         given(documentDownloadService.downloadDocument(anyString())).willReturn(DOCUMENT_CONTENT);
 
-        postSubmittedEvent(callbackRequest);
+        postSubmittedEvent(toCallBackRequest(caseDetails, caseDetailsBefore));
 
         verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(NOTICE_OF_NEW_HEARING),
@@ -205,7 +206,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         throws NotificationClientException {
         Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
             .type(CASE_MANAGEMENT)
-            .startDate(LocalDateTime.of(2050, 5, 20, 13, 00))
+            .startDate(LocalDateTime.of(2050, 5, 20, 13, 0))
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeEmailAddress(JUDGE_EMAIL)
                 .judgeLastName("Davidson")
@@ -214,21 +215,19 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .hearingJudgeLabel("Her Honour Judge Davidson")
             .build());
 
-        CallbackRequest callbackRequest = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .jurisdiction(JURISDICTION)
-                .caseTypeId(CASE_TYPE)
-                .id(parseLong(CASE_ID))
-                .data(Map.of(
-                    "selectedHearingId", hearingWithNotice.getId(),
-                    "hearingOption", NEW_HEARING,
-                    "hearingDetails", List.of(hearingWithNotice)
-                ))
-                .state("Submitted")
-                .build())
+        CaseDetails caseDetails = CaseDetails.builder()
+            .jurisdiction(JURISDICTION)
+            .caseTypeId(CASE_TYPE)
+            .id(parseLong(CASE_ID))
+            .data(Map.of(
+                "selectedHearingId", hearingWithNotice.getId(),
+                "hearingOption", NEW_HEARING,
+                "hearingDetails", List.of(hearingWithNotice)
+            ))
+            .state("Submitted")
             .build();
 
-        postSubmittedEvent(callbackRequest);
+        postSubmittedEvent(caseDetails);
 
         verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(TEMP_JUDGE_ALLOCATED_TO_HEARING_TEMPLATE),
@@ -243,7 +242,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         throws NotificationClientException {
         Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
             .type(CASE_MANAGEMENT)
-            .startDate(LocalDateTime.of(2050, 5, 20, 13, 00))
+            .startDate(LocalDateTime.of(2050, 5, 20, 13, 0))
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeEmailAddress(JUDGE_EMAIL)
                 .judgeLastName("Davidson")
@@ -252,22 +251,20 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .hearingJudgeLabel("Her Honour Judge Davidson")
             .build());
 
-        CallbackRequest callbackRequest = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .jurisdiction(JURISDICTION)
-                .caseTypeId(CASE_TYPE)
-                .id(parseLong(CASE_ID))
-                .data(Map.of(
-                    "selectedHearingId", hearingWithNotice.getId(),
-                    "hearingOption", hearingOption,
-                    "hearingReListOption", RE_LIST_NOW,
-                    "hearingDetails", List.of(hearingWithNotice)
-                ))
-                .state("Submitted")
-                .build())
+        CaseDetails caseDetails = CaseDetails.builder()
+            .jurisdiction(JURISDICTION)
+            .caseTypeId(CASE_TYPE)
+            .id(parseLong(CASE_ID))
+            .data(Map.of(
+                "selectedHearingId", hearingWithNotice.getId(),
+                "hearingOption", hearingOption,
+                "hearingReListOption", RE_LIST_NOW,
+                "hearingDetails", List.of(hearingWithNotice)
+            ))
+            .state("Submitted")
             .build();
 
-        postSubmittedEvent(callbackRequest);
+        postSubmittedEvent(caseDetails);
 
         verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(TEMP_JUDGE_ALLOCATED_TO_HEARING_TEMPLATE),
@@ -280,32 +277,30 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
     void shouldNotTriggerTemporaryHearingJudgeEventWhenUsingAllocatedJudge() {
         Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
             .type(CASE_MANAGEMENT)
-            .startDate(LocalDateTime.of(2050, 5, 20, 13, 00))
+            .startDate(LocalDateTime.of(2050, 5, 20, 13, 0))
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeTitle(HIS_HONOUR_JUDGE)
                 .judgeLastName("Watson")
                 .build())
             .build());
 
-        CallbackRequest callbackRequest = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .jurisdiction(JURISDICTION)
-                .caseTypeId(CASE_TYPE)
-                .id(parseLong(CASE_ID))
-                .data(Map.of(
-                    "selectedHearingId", hearingWithNotice.getId(),
-                    "hearingOption", NEW_HEARING,
-                    "hearingDetails", List.of(hearingWithNotice),
-                    "allocatedJudge", Judge.builder()
-                        .judgeTitle(HIS_HONOUR_JUDGE)
-                        .judgeLastName("Watson")
-                        .build()
-                ))
-                .state("Submitted")
-                .build())
+        CaseDetails caseDetails = CaseDetails.builder()
+            .jurisdiction(JURISDICTION)
+            .caseTypeId(CASE_TYPE)
+            .id(parseLong(CASE_ID))
+            .data(Map.of(
+                "selectedHearingId", hearingWithNotice.getId(),
+                "hearingOption", NEW_HEARING,
+                "hearingDetails", List.of(hearingWithNotice),
+                "allocatedJudge", Judge.builder()
+                    .judgeTitle(HIS_HONOUR_JUDGE)
+                    .judgeLastName("Watson")
+                    .build()
+            ))
+            .state("Submitted")
             .build();
 
-        postSubmittedEvent(callbackRequest);
+        postSubmittedEvent(caseDetails);
 
         verifyNoInteractions(notificationClient);
     }
@@ -316,7 +311,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         HearingOptions hearingOption) {
         Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
             .type(CASE_MANAGEMENT)
-            .startDate(LocalDateTime.of(2050, 5, 20, 13, 00))
+            .startDate(LocalDateTime.of(2050, 5, 20, 13, 0))
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeEmailAddress(JUDGE_EMAIL)
                 .judgeLastName("Davidson")
@@ -324,21 +319,19 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
                 .build())
             .build());
 
-        CallbackRequest callbackRequest = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .jurisdiction(JURISDICTION)
-                .caseTypeId(CASE_TYPE)
-                .id(parseLong(CASE_ID))
-                .data(Map.of(
-                    "selectedHearingId", hearingWithNotice.getId(),
-                    "hearingOption", hearingOption,
-                    "hearingDetails", List.of(hearingWithNotice)
-                ))
-                .state("Submitted")
-                .build())
+        CaseDetails caseDetails = CaseDetails.builder()
+            .jurisdiction(JURISDICTION)
+            .caseTypeId(CASE_TYPE)
+            .id(parseLong(CASE_ID))
+            .data(Map.of(
+                "selectedHearingId", hearingWithNotice.getId(),
+                "hearingOption", hearingOption,
+                "hearingDetails", List.of(hearingWithNotice)
+            ))
+            .state("Submitted")
             .build();
 
-        postSubmittedEvent(callbackRequest);
+        postSubmittedEvent(caseDetails);
 
         verifyNoInteractions(notificationClient);
     }
