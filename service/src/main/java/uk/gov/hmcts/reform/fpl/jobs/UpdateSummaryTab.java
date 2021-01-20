@@ -50,25 +50,32 @@ public class UpdateSummaryTab implements Job {
 
         log.debug("Job {} searching for cases", jobName);
         List<CaseDetails> cases = searchService.search(buildQuery(toggleService.isSummaryTabFirstCronRunEnabled()));
-        log.info("Job {} {} cases found", jobName, cases.size());
-        cases.parallelStream().forEach(caseDetails -> {
+
+        int total = cases.size();
+        int skipped = 0;
+        int updated = 0;
+
+        log.info("Job {} found {} cases", jobName, total);
+        for (CaseDetails caseDetails : cases) {
             CaseData caseData = converter.convert(caseDetails);
             Object updatedData = updateSummaryTab(caseData);
             final Long caseId = caseDetails.getId();
             try {
                 if (!shouldUpdate(updatedData, caseData)) {
                     log.debug("Job {} skipped case {}", jobName, caseId);
+                    skipped++;
                 } else {
                     log.debug("Job {} updating case {}", jobName, caseId);
                     Map<String, Object> dataToAdd = mapper.convertValue(updatedData, new TypeReference<>() {});
                     ccdService.triggerEvent(JURISDICTION, CASE_TYPE, caseId, EVENT_NAME, dataToAdd);
                     log.info("Job {} updated case {}", jobName, caseId);
+                    updated++;
                 }
             } catch (Exception e) {
                 log.error("Job {} could not update case {} due to {}", jobName, caseId, e.getMessage(), e);
             }
-        });
-        log.info("Job {} finished", jobName);
+        }
+        log.info("Job {} finished. {}", jobName, buildStats(total, skipped, updated));
     }
 
     private Object updateSummaryTab(CaseData caseData) {
@@ -81,7 +88,7 @@ public class UpdateSummaryTab implements Job {
         return !Objects.equals(updatedData, oldData);
     }
 
-    public ESQuery buildQuery(boolean firstPassEnabled) {
+    private ESQuery buildQuery(boolean firstPassEnabled) {
         MatchQuery openCases = MatchQuery.of("state", State.OPEN.getValue());
         MatchQuery deletedCases = MatchQuery.of("state", State.DELETED.getValue());
         MatchQuery closedCases = MatchQuery.of("state", State.CLOSED.getValue());
@@ -96,5 +103,18 @@ public class UpdateSummaryTab implements Job {
         return BooleanQuery.builder()
             .mustNot(mustNot.build())
             .build();
+    }
+
+    private String buildStats(int total, int skipped, int updated) {
+        double percentUpdated = updated * 100.0 / total;
+        double percentSkipped = skipped * 100.0 / total;
+
+        return String.format(
+            "total cases: %1$d, updated cases: %2$d/%1$d (%4$.0f%%), skipped cases: %3$d/%1$d (%5$.0f%%)",
+            total,
+            updated,
+            skipped,
+            percentUpdated,
+            percentSkipped);
     }
 }
