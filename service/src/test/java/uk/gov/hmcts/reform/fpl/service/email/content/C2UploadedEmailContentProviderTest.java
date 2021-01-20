@@ -24,6 +24,7 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.C2;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
@@ -36,7 +37,6 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
 
     private static final byte[] C2_DOCUMENT_BINARY = testDocumentBinaries();
     private DocumentReference uploadedC2 = testDocumentReference();
-    private static final String C2 = "C2Tab";
 
     private static final LocalDateTime HEARING_DATE = LocalDateTime.now().plusMonths(3);
 

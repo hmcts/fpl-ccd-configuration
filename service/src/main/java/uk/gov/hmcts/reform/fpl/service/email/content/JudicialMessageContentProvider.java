@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentPr
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import static org.apache.logging.log4j.util.Strings.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.JUDICIAL_MESSAGES;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCalloutWithNextHearing;
@@ -28,7 +29,7 @@ public class JudicialMessageContentProvider extends AbstractEmailContentProvider
             .callout(buildCalloutWithNextHearing(caseData, time))
             .sender(judicialMessage.getSender())
             .latestMessage(judicialMessage.getLatestMessage())
-            .caseUrl(getCaseUrl(caseData.getId(), "JudicialMessagesTab"));
+            .caseUrl(getCaseUrl(caseData.getId(), JUDICIAL_MESSAGES));
 
         if (isNotEmpty(judicialMessage.getUrgency())) {
             templateBuilder.hasUrgency(YES.getValue());

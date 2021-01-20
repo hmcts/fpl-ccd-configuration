@@ -23,6 +23,7 @@ import java.util.Locale;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.JUDICIAL_MESSAGES;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -56,7 +57,7 @@ class JudicialMessageContentProviderTest extends AbstractEmailContentProviderTes
             .hasUrgency(hasUrgency.getValue())
             .urgency(expectedUrgency)
             .callout("^Smith, 12345, " + HEARING_CALLOUT)
-            .caseUrl(caseUrl(CASE_REFERENCE, "JudicialMessagesTab"))
+            .caseUrl(caseUrl(CASE_REFERENCE, JUDICIAL_MESSAGES))
             .respondentLastName("Smith")
             .build();
 

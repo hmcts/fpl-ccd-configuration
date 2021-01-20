@@ -19,6 +19,7 @@ import java.time.format.FormatStyle;
 import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.JUDICIAL_MESSAGES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
@@ -54,7 +55,7 @@ class JudicialMessageReplyContentProviderTest extends AbstractEmailContentProvid
         JudicialMessageReplyTemplate expectedTemplate = JudicialMessageReplyTemplate.builder()
             .latestMessage("Please see latest C2")
             .callout("^Smith, 12345, " + HEARING_CALLOUT)
-            .caseUrl(caseUrl(CASE_REFERENCE, "JudicialMessagesTab"))
+            .caseUrl(caseUrl(CASE_REFERENCE, JUDICIAL_MESSAGES))
             .respondentLastName("Smith")
             .build();
 

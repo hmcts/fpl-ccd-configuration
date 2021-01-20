@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.JudicialMessageReplyTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
+import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.JUDICIAL_MESSAGES;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCalloutWithNextHearing;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
@@ -23,7 +24,7 @@ public class JudicialMessageReplyContentProvider extends AbstractEmailContentPro
             .respondentLastName(getFirstRespondentLastName(caseData))
             .callout(buildCalloutWithNextHearing(caseData, time))
             .latestMessage(judicialMessage.getLatestMessage())
-            .caseUrl(getCaseUrl(caseData.getId(), "JudicialMessagesTab"))
+            .caseUrl(getCaseUrl(caseData.getId(), JUDICIAL_MESSAGES))
             .build();
     }
 }

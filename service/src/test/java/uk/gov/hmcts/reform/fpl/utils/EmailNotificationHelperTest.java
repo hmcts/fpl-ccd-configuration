@@ -30,7 +30,6 @@ import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCallout
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCalloutWithNextHearing;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
-import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {FixedTimeConfiguration.class})
@@ -164,27 +163,6 @@ class EmailNotificationHelperTest {
             caseData.getRespondents1(), null);
 
         assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    void shouldFormatUrlCorrectlyWhenBaseUrlAndCaseIdProvided() {
-        String formattedUrl = formatCaseUrl("http://testurl", 123L);
-        String expectedUrl = "http://testurl/cases/case-details/123";
-        assertThat(formattedUrl).isEqualTo(expectedUrl);
-    }
-
-    @Test
-    void shouldFormatUrlCorrectlyWhenBaseUrlCaseIdAndTabProvided() {
-        String formattedUrl = formatCaseUrl("http://testurl", 123L, "tab1");
-        String expectedUrl = "http://testurl/cases/case-details/123#tab1";
-        assertThat(formattedUrl).isEqualTo(expectedUrl);
-    }
-
-    @Test
-    void shouldFormatUrlCorrectlyWhenBaseUrlCaseIdAndTabIsEmpty() {
-        String formattedUrl = formatCaseUrl("http://testurl", 123L, "");
-        String expectedUrl = "http://testurl/cases/case-details/123";
-        assertThat(formattedUrl).isEqualTo(expectedUrl);
     }
 
     @Test
